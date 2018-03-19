@@ -180,8 +180,8 @@
     // Placeholder also can represent the intrinsic size when it is visible.
     NSString *text = self.placeholder;
     if (!text.length) {
-      // Zero-width space
-      text = @"\u200B";
+      // Note: `zero-width space` is insufficient in some cases.
+      text = @"I";
     }
     attributedText = [[NSAttributedString alloc] initWithString:text attributes:self.textAttributes.effectiveTextAttributes];
   }
