@@ -28,6 +28,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _baseWritingDirection = NSWritingDirectionNatural;
     _textShadowRadius = NAN;
     _opacity = NAN;
+    _textTransform = RCTTextTransformUndefined;
   }
 
   return self;
@@ -73,9 +74,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted;  // *
   _tag = textAttributes->_tag ?: _tag;
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
-  
-  // Transform
-  _textTransform = textAttributes->_textTransform ?: _textTransform;
+  _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
@@ -217,10 +216,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-- (NSString*) effectiveText: (NSString*) text
+- (NSString*)applyTextAttributesToText:(NSString*)text
 {
-  switch (_textTransform)
-  {
+  switch (_textTransform) {
+    case RCTTextTransformUndefined:
     case RCTTextTransformNone:
     default:
       return text;

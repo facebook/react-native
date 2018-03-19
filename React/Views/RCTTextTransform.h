@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, RCTTextTransform) {
-  RCTTextTransformNone = 0,
+  RCTTextTransformUndefined = 0,
+  RCTTextTransformNone,
   RCTTextTransformCapitalize,
   RCTTextTransformUppercase,
   RCTTextTransformLowercase,

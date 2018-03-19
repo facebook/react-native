@@ -51,7 +51,6 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, strong, nullable) NSNumber *tag;
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection layoutDirection;
-// Transform
 @property (nonatomic, assign) RCTTextTransform textTransform;
 
 #pragma mark - Inheritance
@@ -84,7 +83,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 /**
  * Text transformed per 'none', 'uppercase', 'lowercase', 'capitalize'
  */
-- (NSString*) effectiveText: (NSString*) text;
+- (NSString*)applyTextAttributesToText:(NSString*)text;
 
 @end
 
