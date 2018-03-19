@@ -149,6 +149,7 @@ SharedDebugStringConvertibleList YogaLayoutableShadowNode::getDebugProps() const
   }
 
   YGLayout defaultYogaLayout = YGLayout();
+  defaultYogaLayout.direction = YGDirectionLTR;
   YGLayout currentYogaLayout = std::const_pointer_cast<YGNode>(yogaNode_)->getLayout();
 
 #define YOGA_LAYOUT_PROPS_ADD_TO_SET(stringName, propertyName, accessor, convertor) \
