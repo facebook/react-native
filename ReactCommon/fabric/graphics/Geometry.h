@@ -2,15 +2,21 @@
 
 #pragma once
 
+#include <CoreGraphics/CGBase.h>
+
 namespace facebook {
 namespace react {
 
 /*
  * Exact type of float numbers which ideally should match a type behing
- * platform- and chip-architecture-specific float type (something like
- * CGFloat on iOS).
+ * platform- and chip-architecture-specific float type.
  */
-using Float = double;
+using Float = CGFloat;
+
+/*
+ * Large positive number signifies that the `Float` values is `undefined`.
+ */
+const Float kFloatUndefined = CGFLOAT_MAX;
 
 /*
  * Point

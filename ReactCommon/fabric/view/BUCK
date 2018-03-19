@@ -1,0 +1,52 @@
+load("//configurations/buck/apple:flag_defs.bzl", "get_application_ios_flags", "get_debug_preprocessor_flags", "OBJC_ARC_PREPROCESSOR_FLAGS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "APPLE_INSPECTOR_FLAGS")
+load("//ReactNative:DEFS.bzl", "react_native_xplat_target")
+
+CXX_LIBRARY_COMPILER_FLAGS = [
+    "-std=c++14",
+    "-Wall",
+]
+
+rn_xplat_cxx_library(
+    name = "view",
+    srcs = glob(
+        [
+            "**/*.cpp",
+        ],
+    ),
+    headers = glob(
+        [
+            "**/*.h",
+        ],
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("accessibility", "*.h"),
+            ("yoga", "*.h"),
+        ],
+        prefix = "fabric/view",
+    ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    force_static = True,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
+        "xplat//yoga:yoga",
+        react_native_xplat_target("fabric/debug:debug"),
+        react_native_xplat_target("fabric/core:core"),
+        react_native_xplat_target("fabric/graphics:graphics"),
+    ],
+)
