@@ -51,22 +51,21 @@ function requireNativeComponent(
   extraConfig?: ?{nativeOnly?: Object},
 ): React$ComponentType<any> | string {
   function attachDefaultEventTypes(viewConfig: any) {
-    if (Platform.OS === 'android') {
-      // This is supported on Android platform only,
-      // as lazy view managers discovery is Android-specific.
-      if (UIManager.ViewManagerNames) {
-        // Lazy view managers enabled.
-        viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
-      } else {
-        viewConfig.bubblingEventTypes = merge(
-          viewConfig.bubblingEventTypes,
-          UIManager.genericBubblingEventTypes,
-        );
-        viewConfig.directEventTypes = merge(
-          viewConfig.directEventTypes,
-          UIManager.genericDirectEventTypes,
-        );
-      }
+    // This is supported on UIManager platforms (ex: Android),
+    // as lazy view managers are not implemented for all platforms.
+    // See [UIManager] for details on constants and implementations.
+    if (UIManager.ViewManagerNames) {
+      // Lazy view managers enabled.
+      viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+    } else {
+      viewConfig.bubblingEventTypes = merge(
+        viewConfig.bubblingEventTypes,
+        UIManager.genericBubblingEventTypes,
+      );
+      viewConfig.directEventTypes = merge(
+        viewConfig.directEventTypes,
+        UIManager.genericDirectEventTypes,
+      );
     }
   }
 
