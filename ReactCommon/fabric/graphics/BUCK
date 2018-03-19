@@ -1,4 +1,4 @@
-load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library", "APPLE_INSPECTOR_FLAGS")
 
 APPLE_COMPILER_FLAGS = []
@@ -8,7 +8,7 @@ if not IS_OSS_BUILD:
     APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
 
 rn_xplat_cxx_library(
-    name = "core",
+    name = "graphics",
     srcs = glob(
         [
             "**/*.cpp",
@@ -22,16 +22,15 @@ rn_xplat_cxx_library(
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("primitives", "*.h"),
-            ("shadownode", "*.h"),
+            ("", "*.h"),
         ],
-        prefix = "fabric/core",
+        prefix = "fabric/graphics",
     ),
     compiler_flags = [
-        "-fexceptions",
-        "-frtti",
         "-std=c++14",
         "-Wall",
+        "-fexceptions",
+        "-frtti",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
@@ -47,7 +46,5 @@ rn_xplat_cxx_library(
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
-        react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/graphics:graphics"),
     ],
 )
