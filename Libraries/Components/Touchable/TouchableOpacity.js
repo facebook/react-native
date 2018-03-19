@@ -139,6 +139,8 @@ const TouchableOpacity = createReactClass({
 
   getDefaultProps: function() {
     return {
+      accessibilityComponentType: 'button',
+      accessibilityTraits: 'button',
       activeOpacity: 0.2,
     };
   },

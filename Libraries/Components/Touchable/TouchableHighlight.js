@@ -28,6 +28,8 @@ const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 import type {PressEvent} from 'CoreEventTypes';
 
 const DEFAULT_PROPS = {
+  accessibilityComponentType: 'button',
+  accessibilityTraits: 'button',
   activeOpacity: 0.85,
   delayPressOut: 100,
   underlayColor: 'black',
