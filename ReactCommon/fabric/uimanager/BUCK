@@ -8,14 +8,23 @@ if not IS_OSS_BUILD:
     APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
 
 rn_xplat_cxx_library(
-    name = "fabric",
-    srcs = glob(["*.cpp"]),
+    name = "uimanager",
+    srcs = glob(
+        [
+            "**/*.cpp",
+        ],
+    ),
+    headers = glob(
+        [
+            "**/*.h",
+        ],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric",
+        prefix = "fabric/uimanager",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -30,17 +39,14 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    visibility = [
-        "PUBLIC",
-    ],
+    visibility = ["PUBLIC"],
     deps = [
         "xplat//fbsystrace:fbsystrace",
         "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
+        react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
-        react_native_xplat_target("fabric/uimanager:uimanager"),
-        react_native_xplat_target("fabric/view:view"),
     ],
 )

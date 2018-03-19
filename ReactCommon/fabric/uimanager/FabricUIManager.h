@@ -7,18 +7,22 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
-#include <folly/FBVector.h>
 #include <memory>
 
+#include <folly/dynamic.h>
+
+#include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/ShadowNode.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
 
 namespace facebook {
 namespace react {
 
 class IFabricPlatformUIOperationManager;
+class ComponentDescriptorRegistry;
 
 class FabricUIManager {
+
 public:
   FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager);
 
@@ -33,6 +37,7 @@ public:
   void completeRoot(int rootTag, const SharedShadowNodeUnsharedList &childSet);
 
 private:
+  ComponentDescriptorRegistry _registry;
   std::shared_ptr<IFabricPlatformUIOperationManager> platformUIOperationManager_;
 };
 
