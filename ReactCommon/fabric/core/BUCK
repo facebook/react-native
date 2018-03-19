@@ -24,6 +24,7 @@ rn_xplat_cxx_library(
         [
             ("primitives", "*.h"),
             ("componentdescriptor", "*.h"),
+            ("layout", "*.h"),
             ("shadownode", "*.h"),
         ],
         prefix = "fabric/core",
