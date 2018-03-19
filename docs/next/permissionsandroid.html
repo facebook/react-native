@@ -40,7 +40,8 @@
   }
 }
 </code></pre>
-<h4><a class="anchor" aria-hidden="true" name="permissions-that-require-prompting-the-user"></a><a href="#permissions-that-require-prompting-the-user" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Permissions that require prompting the user</h4>
+<h3><a class="anchor" aria-hidden="true" name="permissions-that-require-prompting-the-user"></a><a href="#permissions-that-require-prompting-the-user" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Permissions that require prompting the user</h3>
+<p>Available as constants under <code>PermissionsAndroid.PERMISSIONS</code>:</p>
 <ul>
 <li><code>READ_CALENDAR</code>: 'android.permission.READ_CALENDAR'</li>
 <li><code>WRITE_CALENDAR</code>: 'android.permission.WRITE_CALENDAR'</li>
@@ -67,6 +68,13 @@
 <li><code>READ_EXTERNAL_STORAGE</code>: 'android.permission.READ_EXTERNAL_STORAGE'</li>
 <li><code>WRITE_EXTERNAL_STORAGE</code>: 'android.permission.WRITE_EXTERNAL_STORAGE'</li>
 </ul>
+<h3><a class="anchor" aria-hidden="true" name="result-strings-for-requesting-permissions"></a><a href="#result-strings-for-requesting-permissions" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Result strings for requesting permissions</h3>
+<p>Available as constants under <code>PermissionsAndroid.RESULTS</code>:</p>
+<ul>
+<li><code>GRANTED</code>: 'granted'</li>
+<li><code>DENIED</code>: 'denied'</li>
+<li><code>NEVER_ASK_AGAIN</code>: 'never_ask_again'</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" name="methods"></a><a href="#methods" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
 <li><a href="/react-native/docs/next/permissionsandroid.html#constructor"><code>constructor</code></a></li>
@@ -84,7 +92,7 @@
 <h3><a class="anchor" aria-hidden="true" name="check"></a><a href="#check" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>check()</code></h3>
 <pre><code class="hljs css javascript">check(permission);
 </code></pre>
-<p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted. Possible return values are <code>GRANTED</code>, <code>DENIED</code>, and <code>NEVER_ASK_AGAIN</code>.</p>
+<p>Returns a promise resolving to a boolean value as to whether the specified permissions has been granted.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -98,7 +106,7 @@
 <h3><a class="anchor" aria-hidden="true" name="request"></a><a href="#request" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>request()</code></h3>
 <pre><code class="hljs css javascript">request(permission, [rationale]);
 </code></pre>
-<p>Prompts the user to enable a permission and returns a promise resolving to a string value indicating whether the user allowed or denied the request</p>
+<p>Prompts the user to enable a permission and returns a promise resolving to a string value (see result strings above) indicating whether the user allowed or denied the request or does not want to be asked again.</p>
 <p>If <code>rationale</code> is provided, this function checks with the OS whether it is necessary to show a dialog explaining why the permission is needed (<a href="https://developer.android.com/training/permissions/requesting.html#explain">https://developer.android.com/training/permissions/requesting.html#explain</a>) and then shows the system permission dialog.</p>
 <p><strong>Parameters:</strong></p>
 <table>
@@ -114,7 +122,7 @@
 <h3><a class="anchor" aria-hidden="true" name="requestmultiple"></a><a href="#requestmultiple" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>requestMultiple()</code></h3>
 <pre><code class="hljs css javascript">requestMultiple(permissions);
 </code></pre>
-<p>Prompts the user to enable multiple permissions in the same dialog and returns an object with the permissions as keys and strings as values indicating whether the user allowed or denied the request</p>
+<p>Prompts the user to enable multiple permissions in the same dialog and returns an object with the permissions as keys and strings as values (see result strings above) indicating whether the user allowed or denied the request or does not want to be asked again.</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
