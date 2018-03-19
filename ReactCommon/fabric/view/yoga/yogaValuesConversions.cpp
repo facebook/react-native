@@ -15,10 +15,18 @@ namespace facebook {
 namespace react {
 
 Float fabricFloatFromYogaFloat(float value) {
+  if (value == YGUndefined) {
+    return Undefined;
+  }
+
   return (Float)value;
 }
 
 float yogaFloatFromFabricFloat(Float value) {
+  if (value == Undefined) {
+    return YGUndefined;
+  }
+
   return (float)value;
 }
 
@@ -44,11 +52,35 @@ LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   YGLayout layout = yogaNode.getLayout();
 
   layoutMetrics.frame = Rect {
-    Point {fabricFloatFromYogaFloat(layout.position[0]), fabricFloatFromYogaFloat(layout.position[1])},
-    Size {fabricFloatFromYogaFloat(layout.dimensions[0]), fabricFloatFromYogaFloat(layout.dimensions[1])}
+    Point {
+      fabricFloatFromYogaFloat(layout.position[YGEdgeLeft]),
+      fabricFloatFromYogaFloat(layout.position[YGEdgeTop])
+    },
+    Size {
+      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
+      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionHeight])
+    }
   };
 
-  // FIXME: Add more.
+  layoutMetrics.borderWidth = EdgeInsets {
+    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeTop]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeRight]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom])
+  };
+
+  layoutMetrics.contentInsets = EdgeInsets {
+    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
+    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
+  };
+
+  layoutMetrics.displayType =
+    yogaNode.getStyle().display == YGDisplayNone ? None : Flex;
+
+  layoutMetrics.layoutDirection =
+    layout.direction == YGDirectionRTL ? RightToLeft : LeftToRight;
 
   return layoutMetrics;
 }
