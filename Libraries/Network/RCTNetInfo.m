@@ -164,6 +164,7 @@ RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
   SCNetworkReachabilityRef reachability = [self getReachabilityRef];
+  SCNetworkReachabilityUnscheduleFromRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
   CFRelease(reachability);
   resolve(@{@"connectionType": _connectionType ?: RCTConnectionTypeUnknown,
             @"effectiveConnectionType": _effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
