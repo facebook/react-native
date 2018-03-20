@@ -331,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   _nativeEventCount++;
 
-  if (_onChange) {
+  if (_onChange && backedTextInputView.markedText == nil) {
     _onChange(@{
        @"text": self.attributedText.string,
        @"target": self.reactTag,
