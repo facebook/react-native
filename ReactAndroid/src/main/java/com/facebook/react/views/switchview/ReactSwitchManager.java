@@ -56,7 +56,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public ReactSwitchShadowNode mutableCopy() {
+    protected ReactSwitchShadowNode copy() {
       return new ReactSwitchShadowNode(this);
     }
 

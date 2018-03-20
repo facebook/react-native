@@ -18,6 +18,7 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -358,4 +359,10 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  /**
+   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
+   * {@link ReactShadowNode}.
+   */
+  List<ReactShadowNode> getChildrenList();
 }

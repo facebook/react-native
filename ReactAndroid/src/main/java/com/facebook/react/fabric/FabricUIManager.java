@@ -177,7 +177,7 @@ public class FabricUIManager implements UIManager {
   private void assertReactShadowNodeCopy(ReactShadowNode source, ReactShadowNode target) {
     Assertions.assertCondition(source.getClass().equals(target.getClass()),
       "Found " + target.getClass() + " class when expecting: " +   source.getClass() +
-        ". Check that " + source.getClass() + " implements the mutableCopy() method correctly.");
+        ". Check that " + source.getClass() + " implements the copy() method correctly.");
   }
 
   /**

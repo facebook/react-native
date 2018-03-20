@@ -28,6 +28,8 @@ import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -96,7 +98,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final Spacing mDefaultPadding = new Spacing(0);
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
-  private final YogaNode mYogaNode;
+  private YogaNode mYogaNode;
 
   private @Nullable ReactStylesDiffMap mNewProps;
 
@@ -120,8 +122,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
     mNodeUpdated = original.mNodeUpdated;
     mIsLayoutOnly = original.mIsLayoutOnly;
-    mTotalNativeChildren = original.mTotalNativeChildren;
-    mNativeParent = original.mNativeParent;
     mNativeParent = original.mNativeParent;
     mScreenX = original.mScreenX;
     mScreenY = original.mScreenY;
@@ -131,24 +131,38 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
     mNewProps = null;
     mParent = null;
-    mYogaNode = original.mYogaNode;
-    // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //mYogaNode = original.mYogaNode.clone();
-    mNativeChildren = original.mNativeChildren == null ? null : new ArrayList<>(original.mNativeChildren);
-    mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
-    mYogaNode.setData(this);
   }
 
-  @Override
-  public ReactShadowNodeImpl mutableCopy() {
+  /**
+   * @return a copy of this object (no including copy of its children or the underlying yogaNode).
+   */
+  protected ReactShadowNodeImpl copy() {
     return new ReactShadowNodeImpl(this);
   }
 
   @Override
+  public ReactShadowNodeImpl mutableCopy() {
+    ReactShadowNodeImpl copy = copy();
+    copy.mYogaNode = mYogaNode;
+    // TODO: T26729293 clone YogaNode instead of reusing the same instance
+    //mYogaNode = original.mYogaNode.clone();
+    copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
+    copy.mTotalNativeChildren = mTotalNativeChildren;
+    copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
+    copy.mYogaNode.setData(this);
+    return copy;
+  }
+
+  @Override
   public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-    ReactShadowNodeImpl copy = mutableCopy();
+    ReactShadowNodeImpl copy = copy();
+    copy.mYogaNode = mYogaNode;
+    // TODO: T26729293 clone YogaNode instead of reusing the same instance
+    //mYogaNode = original.mYogaNode.cloneWithNewChildren();
     copy.mNativeChildren = null;
     copy.mChildren = null;
+    copy.mTotalNativeChildren = 0;
+    copy.mYogaNode.setData(this);
     return copy;
   }
 
@@ -253,10 +267,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void addChildAt(ReactShadowNodeImpl child, int i) {
-    if (child.getParent() != null) {
-      throw new IllegalViewOperationException(
-        "Tried to add child that already has a parent! Remove it from its parent first.");
-    }
     if (mChildren == null) {
       mChildren = new ArrayList<>(4);
     }
@@ -1055,5 +1065,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mYogaNode.reset();
       YogaNodePool.get().release(mYogaNode);
     }
+  }
+
+  @Nullable
+  @Override
+  public List<ReactShadowNode> getChildrenList() {
+    return mChildren == null ? null : Collections.<ReactShadowNode>unmodifiableList(mChildren);
   }
 }
