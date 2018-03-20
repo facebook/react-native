@@ -7,10 +7,12 @@
 
 package com.facebook.react.fabric;
 
+import android.util.Log;
 import com.facebook.react.common.ArrayUtils;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewAtIndex;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,6 +21,9 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 public class FabricReconciler {
+
+  private static final String TAG = FabricReconciler.class.getSimpleName();
+  private static final boolean DEBUG = true;
 
   private UIViewOperationQueue uiViewOperationQueue;
 
@@ -101,8 +106,17 @@ public class FabricReconciler {
       }
     }
 
+    int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
+    if (DEBUG) {
+      Log.d(
+        TAG,
+        "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
+          "\n\tIndices2Remove: " + Arrays.toString(indicesToRemove) +
+          "\n\tViews2Add: " + Arrays.toString(viewsToAdd) +
+          "\n\tTags2Delete: " + Arrays.toString(tagsToDeleteArray));
+    }
     uiViewOperationQueue.enqueueManageChildren(
-      parent.getReactTag(), indicesToRemove, viewsToAdd, ArrayUtils.copyListToArray(tagsToDelete));
+      parent.getReactTag(), indicesToRemove, viewsToAdd, tagsToDeleteArray);
   }
 
 }

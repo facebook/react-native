@@ -42,7 +42,8 @@ import javax.annotation.Nullable;
 @SuppressWarnings("unused") // used from JNI
 public class FabricUIManager implements UIManager {
 
-  private static final String TAG = FabricUIManager.class.toString();
+  private static final String TAG = FabricUIManager.class.getSimpleName();
+  private static final boolean DEBUG = true;
   private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
@@ -225,8 +226,18 @@ public class FabricUIManager implements UIManager {
 
       rootNode = calculateDiffingAndCreateNewRootNode(rootNode, childList);
 
+      if (DEBUG) {
+        Log.d(TAG, "ReactShadowNodeHierarchy after diffing: " + rootNode.getHierarchyInfo());
+      }
+
       notifyOnBeforeLayoutRecursive(rootNode);
       rootNode.calculateLayout();
+
+      if (DEBUG) {
+        Log.d(
+          TAG,
+          "ReactShadowNodeHierarchy after calculate Layout: " + rootNode.getHierarchyInfo());
+      }
 
       applyUpdatesRecursive(rootNode, 0, 0);
       mUIViewOperationQueue.dispatchViewUpdates(
