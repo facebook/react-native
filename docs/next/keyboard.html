@@ -11,7 +11,7 @@
 <span class="hljs-keyword">import</span> { <span class="hljs-type">Keyboard</span>, <span class="hljs-type">TextInput</span> } from <span class="hljs-symbol">'react</span>-native';
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Example</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
-  componentWillMount () {
+  componentDidMount () {
     <span class="hljs-keyword">this</span>.keyboardDidShowListener = <span class="hljs-type">Keyboard</span>.addListener(<span class="hljs-symbol">'keyboardDidSho</span>w', <span class="hljs-keyword">this</span>._keyboardDidShow);
     <span class="hljs-keyword">this</span>.keyboardDidHideListener = <span class="hljs-type">Keyboard</span>.addListener(<span class="hljs-symbol">'keyboardDidHid</span>e', <span class="hljs-keyword">this</span>._keyboardDidHide);
   }
