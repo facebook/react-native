@@ -119,6 +119,9 @@ function requireNativeComponent(
     // TODO (bvaughn) Revert this particular change any time after April 1
     if (componentInterface) {
       viewConfig.propTypes =
+        /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.68 was deployed. To see the error delete
+         * this comment and run Flow. */
         typeof componentInterface.__propTypesSecretDontUseThesePlease ===
         'object'
           ? componentInterface.__propTypesSecretDontUseThesePlease

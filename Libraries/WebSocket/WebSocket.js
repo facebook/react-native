@@ -103,6 +103,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
       /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
