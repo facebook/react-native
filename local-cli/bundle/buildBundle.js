@@ -95,7 +95,6 @@ async function buildBundle(
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(platforms),
     postMinifyProcess: config.postMinifyProcess,
-    postProcessModules: config.postProcessModules,
     postProcessBundleSourcemap: config.postProcessBundleSourcemap,
     projectRoots: config.getProjectRoots(),
     providesModuleNodeModules: providesModuleNodeModules,
