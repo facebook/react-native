@@ -53,7 +53,7 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
   }
 
   @Override
-  public ProgressBarShadowNode mutableCopy() {
+  protected ProgressBarShadowNode copy() {
     return new ProgressBarShadowNode(this);
   }
 

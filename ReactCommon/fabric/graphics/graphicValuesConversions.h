@@ -8,20 +8,13 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <memory>
+#include <fabric/graphics/Color.h>
 
 namespace facebook {
 namespace react {
 
-class ShadowNode {
-public:
-  int reactTag_;
-  std::string viewName_;
-  int rootTag_;
-  folly::dynamic props_;
-  void *instanceHandle_;
+SharedColor colorFromDynamic(folly::dynamic value);
+std::string colorNameFromColor(SharedColor value);
 
-  ShadowNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle);
-};
-
-}}
+} // namespace react
+} // namespace facebook

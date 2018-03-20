@@ -10,7 +10,7 @@
 
 #import <memory>
 
-#include <fabric/IFabricPlatformUIOperationManager.h>
+#include <fabric/uimanager/IFabricPlatformUIOperationManager.h>
 
 @class RCTFabricPlatformUIOperationManager;
 

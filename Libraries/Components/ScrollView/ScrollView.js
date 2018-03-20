@@ -275,6 +275,12 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     minimumZoomScale: PropTypes.number,
+     /**
+     * Enables nested scrolling for Android API level 21+.
+     * Nested scrolling is supported by default on iOS
+     * @platform android
+     */
+    nestedScrollEnabled: PropTypes.bool,
     /**
      * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
      */

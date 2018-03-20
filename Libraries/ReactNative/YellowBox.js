@@ -105,6 +105,9 @@ function sprintf(format, ...args) {
 }
 
 function updateWarningMap(...args): void {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   if (console.disableYellowBox) {
     return;
   }
@@ -178,6 +181,9 @@ function isWarningIgnored(warning: string): boolean {
 
   // DEPRECATED
   return (
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(ignorePrefix =>
       warning.startsWith(String(ignorePrefix)),
@@ -379,6 +385,9 @@ class YellowBox extends React.Component<
   }
 
   render() {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (console.disableYellowBox || this.state.warningMap.size === 0) {
       return null;
     }

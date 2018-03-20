@@ -154,7 +154,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
-  public LayoutShadowNode mutableCopy() {
+  protected LayoutShadowNode copy() {
     return new ReactTextShadowNode(this);
   }
 

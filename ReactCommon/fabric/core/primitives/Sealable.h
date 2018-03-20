@@ -7,21 +7,27 @@
 
 #pragma once
 
+#import <atomic>
+
 namespace facebook {
 namespace react {
 
 /*
- * Represents something which can be *sealed* (imperatively marked as immutable).
+ * Represents an object which can be *sealed* (imperatively marked as immutable).
+ *
+ * The `sealed` flag is tight to a particular instance of the class and resets
+ * to `false` for all newly created (by copy-constructor, assignment operator
+ * and so on) derivative objects.
  *
  * Why do we need this? In Fabric, some objects are semi-immutable
- * even if they explicitly marked as `const`. It means that in some special
- * cases those objects can be const-cast-away and then mutated. That comes from
+ * even if they are explicitly marked as `const`. It means that in some special
+ * cases those objects can be const-casted-away and then mutated. That comes from
  * the fact that we share some object's life-cycle responsibilities with React
  * and the immutability is guaranteed by some logic splitted between native and
- * JavaScript worlds (which makes impossible to fully use immutability
+ * JavaScript worlds (which makes it impossible to fully use immutability
  * enforcement at a language level).
  * To detect possible errors as early as possible we additionally mark objects
- * as *sealed* after some stage and then enforce this at run-time.
+ * as *sealed* after some stages and then enforce this at run-time.
  *
  * How to use:
  *   1. Inherit your class from `Sealable`.
@@ -31,6 +37,13 @@ namespace react {
  */
 class Sealable {
 public:
+  Sealable();
+  Sealable(const Sealable& other);
+  Sealable(Sealable&& other) noexcept;
+  ~Sealable() noexcept;
+  Sealable& operator=(const Sealable& other);
+  Sealable& operator=(Sealable&& other) noexcept;
+
   /*
    * Seals the object. This operation is irreversible;
    * the object cannot be "unsealed" after being sealing.
@@ -50,7 +63,7 @@ protected:
   void ensureUnsealed() const;
 
 private:
-  mutable bool sealed_ {false};
+  mutable std::atomic<bool> sealed_ {false};
 };
 
 } // namespace react

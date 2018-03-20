@@ -176,8 +176,36 @@ public class ReactAppTestActivity extends FragmentActivity
     String bundleName,
     boolean useDevSupport,
     UIImplementationProvider uiImplementationProvider) {
+    loadBundle(spec, bundleName, useDevSupport, uiImplementationProvider);
+    renderComponent(appKey, initialProps);
+  }
 
+  public void renderComponent(String appKey, @Nullable Bundle initialProps) {
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
+    Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
+        new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override
+          public void onGlobalLayout() {
+            currentLayoutEvent.countDown();
+          }
+        });
+    Assertions.assertNotNull(mReactRootView)
+        .startReactApplication(mReactInstanceManager, appKey, initialProps);
+  }
+
+  public void loadBundle(
+      ReactInstanceSpecForTest spec,
+      String bundleName,
+      boolean useDevSupport) {
+    loadBundle(spec, bundleName, useDevSupport, null);
+  }
+
+  public void loadBundle(
+      ReactInstanceSpecForTest spec,
+      String bundleName,
+      boolean useDevSupport,
+      UIImplementationProvider uiImplementationProvider) {
+
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
     ReactInstanceManagerBuilder builder =
@@ -200,49 +228,39 @@ public class ReactAppTestActivity extends FragmentActivity
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
         .setInitialLifecycleState(mLifecycleState)
         .setJSIModulesProvider(
-          new JSIModulesProvider() {
-            @Override
-            public List<JSIModuleHolder> getJSIModules(
-              final ReactApplicationContext reactApplicationContext,
-              final JavaScriptContextHolder jsContext) {
+            new JSIModulesProvider() {
+              @Override
+              public List<JSIModuleHolder> getJSIModules(
+                  final ReactApplicationContext reactApplicationContext,
+                  final JavaScriptContextHolder jsContext) {
 
-              List<JSIModuleHolder> modules = new ArrayList<>();
-              modules.add(
-                new JSIModuleHolder() {
+                List<JSIModuleHolder> modules = new ArrayList<>();
+                modules.add(
+                    new JSIModuleHolder() {
 
-                  @Override
-                  public Class<? extends JSIModule> getJSIModuleClass() {
-                    return UIManager.class;
-                  }
+                      @Override
+                      public Class<? extends JSIModule> getJSIModuleClass() {
+                        return UIManager.class;
+                      }
 
-                  @Override
-                  public FabricUIManager getJSIModule() {
-                    List<ViewManager> viewManagers =
-                      getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext);
-                    FabricUIManager fabricUIManager =
-                      new FabricUIManager(
-                        reactApplicationContext, new ViewManagerRegistry(viewManagers));
-                    new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
-                    return fabricUIManager;
-                  }
-                });
+                      @Override
+                      public FabricUIManager getJSIModule() {
+                        List<ViewManager> viewManagers =
+                            getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext);
+                        FabricUIManager fabricUIManager =
+                            new FabricUIManager(
+                                reactApplicationContext, new ViewManagerRegistry(viewManagers));
+                        new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
+                        return fabricUIManager;
+                      }
+                    });
 
-              return modules;
-            }})
+                return modules;
+              }})
         .setUIImplementationProvider(uiImplementationProvider);
 
     mReactInstanceManager = builder.build();
     mReactInstanceManager.onHostResume(this, this);
-
-    Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
-        new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            currentLayoutEvent.countDown();
-          }
-        });
-    Assertions.assertNotNull(mReactRootView)
-        .startReactApplication(mReactInstanceManager, appKey, initialProps);
   }
 
   private ReactInstanceManager getReactInstanceManager() {

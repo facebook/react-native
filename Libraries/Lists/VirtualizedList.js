@@ -748,10 +748,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-header'}
           key="$header">
           <View onLayout={this._onLayoutHeader} style={inversionStyle}>
-            {/*
-              Flow doesn't know this is a React.Element and not a React.Component
-              $FlowFixMe https://fburl.com/b9xmtm09
-            */}
             {element}
           </View>
         </VirtualizedCellWrapper>,
@@ -883,10 +879,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-footer'}
           key="$footer">
           <View onLayout={this._onLayoutFooter} style={inversionStyle}>
-            {/*
-              Flow doesn't know this is a React.Element and not a React.Component
-              $FlowFixMe https://fburl.com/b9xmtm09
-            */}
             {element}
           </View>
         </VirtualizedCellWrapper>,
@@ -1122,6 +1114,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
       const frame = this._getFrameMetricsApprox(ii);
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       if (frame.inLayout) {
         framesInLayout.push(frame);
       }
@@ -1646,6 +1641,9 @@ class CellRenderer extends React.Component<
       separators: this._separators,
     });
     const onLayout =
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
         ? undefined
         : this.props.onLayout;

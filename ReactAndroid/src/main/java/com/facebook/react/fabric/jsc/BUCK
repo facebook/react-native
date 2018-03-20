@@ -1,4 +1,4 @@
-load("@xplat//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library", "IS_OSS_BUILD")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library", "IS_OSS_BUILD")
 
 rn_android_library(
     name = "jsc",

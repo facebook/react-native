@@ -1,4 +1,4 @@
-load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library", "APPLE_INSPECTOR_FLAGS")
 
 APPLE_COMPILER_FLAGS = []
@@ -8,14 +8,14 @@ if not IS_OSS_BUILD:
     APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
 
 rn_xplat_cxx_library(
-    name = "fabric",
+    name = "exceptions",
     srcs = glob(["*.cpp"]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric",
+        prefix = "cxxreact",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -35,10 +35,6 @@ rn_xplat_cxx_library(
     ],
     deps = [
         "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
         "xplat//third-party/glog:glog",
-        react_native_xplat_target("fabric/core:core"),
     ],
 )

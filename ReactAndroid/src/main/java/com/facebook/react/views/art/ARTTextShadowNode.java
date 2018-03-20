@@ -49,7 +49,7 @@ public class ARTTextShadowNode extends ARTShapeShadowNode {
   }
 
   @Override
-  public ARTShapeShadowNode mutableCopy() {
+  protected ARTShapeShadowNode copy() {
     return new ARTTextShadowNode(this);
   }
 

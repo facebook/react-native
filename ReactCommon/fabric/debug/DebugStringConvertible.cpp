@@ -10,23 +10,31 @@
 namespace facebook {
 namespace react {
 
-std::string DebugStringConvertible::getDebugChildrenDescription(int level) const {
+std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConvertibleOptions options, int depth) const {
+  if (depth >= options.maximumDepth) {
+    return "";
+  }
+
   std::string childrenString = "";
 
   for (auto child : getDebugChildren()) {
-    childrenString += child->getDebugDescription(level + 1);
+    childrenString += child->getDebugDescription(options, depth + 1);
   }
 
   return childrenString;
 }
 
-std::string DebugStringConvertible::getDebugPropsDescription(int level) const {
+std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConvertibleOptions options, int depth) const {
+  if (depth >= options.maximumDepth) {
+    return "";
+  }
+
   std::string propsString = "";
 
   for (auto prop : getDebugProps()) {
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
-    auto children = prop->getDebugPropsDescription(level + 1);
+    auto children = prop->getDebugPropsDescription(options, depth + 1);
     auto valueAndChildren = value + (children.empty() ? "" : "(" + children + ")");
     propsString += " " + name + (valueAndChildren.empty() ? "" : "=" + valueAndChildren);
   }
@@ -39,16 +47,19 @@ std::string DebugStringConvertible::getDebugPropsDescription(int level) const {
   return propsString;
 }
 
-std::string DebugStringConvertible::getDebugDescription(int level) const {
+std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
   std::string nameString = getDebugName();
   std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(level);
-  std::string propsString = getDebugPropsDescription(level);
+  std::string childrenString = getDebugChildrenDescription(options, depth + 1);
+  std::string propsString = getDebugPropsDescription(options, depth /* The first-level props are considered as same-depth things. */);
 
-  return "<" + nameString +
+  std::string leading = options.format ? std::string(depth, '\t') : "";
+  std::string trailing = options.format ? "\n" : "";
+
+  return leading + "<" + nameString +
     (valueString.empty() ? "" : "=" + valueString) +
     (propsString.empty() ? "" : " " + propsString) +
-    (childrenString.empty() ? "/>" : ">" + childrenString + "</" + nameString + ">");
+    (childrenString.empty() ? "/>" + trailing : ">" + trailing + childrenString + leading + "</" + nameString + ">" + trailing);
 }
 
 std::string DebugStringConvertible::getDebugName() const {

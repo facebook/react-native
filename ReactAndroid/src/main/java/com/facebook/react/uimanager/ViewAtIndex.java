@@ -28,4 +28,9 @@ public class ViewAtIndex {
     mTag = tag;
     mIndex = index;
   }
+
+  @Override
+  public String toString() {
+    return "[" + mIndex + ", " + mTag + "]";
+  }
 }
