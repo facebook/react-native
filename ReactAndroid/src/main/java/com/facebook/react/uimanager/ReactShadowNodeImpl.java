@@ -111,35 +111,32 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
   }
 
-  public ReactShadowNodeImpl(ReactShadowNodeImpl original) {
-    try {
-      mReactTag = original.mReactTag;
-      mRootTag = original.mRootTag;
-      mViewClassName = original.mViewClassName;
-      mRootNode = original.mRootNode;
-      mThemedContext = original.mThemedContext;
-      mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
-      mNodeUpdated = original.mNodeUpdated;
-      mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
-      mIsLayoutOnly = original.mIsLayoutOnly;
-      mTotalNativeChildren = original.mTotalNativeChildren;
-      mNativeParent = original.mNativeParent;
-      mNativeChildren = original.mNativeChildren == null ? null : new ArrayList<>(original.mNativeChildren);
-      mNativeParent = original.mNativeParent;
-      mScreenX = original.mScreenX;
-      mScreenY = original.mScreenY;
-      mScreenWidth = original.mScreenWidth;
-      mScreenHeight = original.mScreenHeight;
-      arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
-      arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
-      mYogaNode = original.mYogaNode.clone();
-      mYogaNode.setData(this);
-      mParent = null;
-      mNewProps = null;
-    } catch (CloneNotSupportedException e) {
-      // it should never happen
-      throw new IllegalArgumentException();
-    }
+  protected ReactShadowNodeImpl(ReactShadowNodeImpl original) {
+    mReactTag = original.mReactTag;
+    mRootTag = original.mRootTag;
+    mViewClassName = original.mViewClassName;
+    mRootNode = original.mRootNode;
+    mThemedContext = original.mThemedContext;
+    mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
+    mNodeUpdated = original.mNodeUpdated;
+    mIsLayoutOnly = original.mIsLayoutOnly;
+    mTotalNativeChildren = original.mTotalNativeChildren;
+    mNativeParent = original.mNativeParent;
+    mNativeParent = original.mNativeParent;
+    mScreenX = original.mScreenX;
+    mScreenY = original.mScreenY;
+    mScreenWidth = original.mScreenWidth;
+    mScreenHeight = original.mScreenHeight;
+    arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
+    arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
+    mNewProps = null;
+    mParent = null;
+    mYogaNode = original.mYogaNode;
+    // TODO: T26729293 clone YogaNode instead of reusing the same instance
+    //mYogaNode = original.mYogaNode.clone();
+    mNativeChildren = original.mNativeChildren == null ? null : new ArrayList<>(original.mNativeChildren);
+    mChildren = original.mChildren == null ? null : new ArrayList<>(original.mChildren);
+    mYogaNode.setData(this);
   }
 
   @Override
@@ -278,6 +275,16 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
                 + "' to a '"
                 + toString()
                 + "')");
+      }
+      // TODO: T26729293 This is a temporary code that will be replaced as part of T26729293.
+      YogaNode parent = childYogaNode.getParent();
+      if (parent != null) {
+        for (int k = 0; k < parent.getChildCount(); k++) {
+          if (parent.getChildAt(k) == childYogaNode) {
+            parent.removeChildAt(k);
+            break;
+          }
+        }
       }
       mYogaNode.addChildAt(childYogaNode, i);
     }
