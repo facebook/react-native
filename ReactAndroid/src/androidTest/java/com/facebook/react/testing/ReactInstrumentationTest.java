@@ -12,6 +12,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.testing.fabric.FabricTestModule;
 import com.facebook.react.testing.idledetection.IdleWaiter;
 
 /**
@@ -110,7 +111,11 @@ public abstract class ReactInstrumentationTest extends
    * Override this method to provide extra native modules to be loaded before the app starts
    */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return new ReactInstanceSpecForTest();
+    ReactInstanceSpecForTest instanceSpec = new ReactInstanceSpecForTest();
+    if (isFabricTest()) {
+      instanceSpec.addNativeModule(new FabricTestModule(isFabricTest()));
+    }
+    return instanceSpec;
   }
 
   /**
