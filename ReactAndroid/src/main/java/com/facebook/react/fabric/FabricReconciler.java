@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import android.util.Log;
+import android.util.SparseArray;
 import com.facebook.react.common.ArrayUtils;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -74,15 +75,15 @@ public class FabricReconciler {
     // It is more efficient to reorder removing and adding all the views in the right order, instead
     // of calculating the minimum amount of reorder operations.
     Set<Integer> addedTags = new HashSet<>();
-    ViewAtIndex[] viewsToAdd = new ViewAtIndex[newList.size() - firstRemovedOrAddedViewIndex];
-    int viewsToAddIndex = 0;
+    List<ViewAtIndex> viewsToAdd = new LinkedList<>();
     for (int k = firstRemovedOrAddedViewIndex; k < newList.size(); k++) {
       ReactShadowNode newNode = newList.get(k);
+      if (newNode.isVirtual()) continue;
       if (newNode.getNewProps() != null) {
         uiViewOperationQueue.enqueueUpdateProperties(
           newNode.getReactTag(), newNode.getViewClass(), newNode.getNewProps());
       }
-      viewsToAdd[viewsToAddIndex++] = new ViewAtIndex(newNode.getReactTag(), k);
+      viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());
       newNode.setOriginalReactShadowNode(newNode);
@@ -100,6 +101,7 @@ public class FabricReconciler {
     int indicesToRemoveIndex = 0;
     for (int j = firstRemovedOrAddedViewIndex; j < prevList.size(); j++) {
       ReactShadowNode nodeToRemove = prevList.get(j);
+      if (nodeToRemove.isVirtual()) continue;
       indicesToRemove[indicesToRemoveIndex++] = j;
       if (!addedTags.contains(nodeToRemove.getReactTag())) {
         tagsToDelete.add(nodeToRemove.getReactTag());
@@ -110,16 +112,20 @@ public class FabricReconciler {
     }
 
     int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
+    ViewAtIndex[] viewsToAddArray = viewsToAdd.toArray(new ViewAtIndex[viewsToAdd.size()]);
     if (DEBUG) {
       Log.d(
         TAG,
         "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
           "\n\tIndices2Remove: " + Arrays.toString(indicesToRemove) +
-          "\n\tViews2Add: " + Arrays.toString(viewsToAdd) +
+          "\n\tViews2Add: " + Arrays.toString(viewsToAddArray) +
           "\n\tTags2Delete: " + Arrays.toString(tagsToDeleteArray));
     }
-    uiViewOperationQueue.enqueueManageChildren(
-      parent.getReactTag(), indicesToRemove, viewsToAdd, tagsToDeleteArray);
+    // TODO (t27180994): Mutate views synchronously on main thread
+    if (indicesToRemove.length > 0 || viewsToAddArray.length > 0 || tagsToDeleteArray.length > 0) {
+      uiViewOperationQueue.enqueueManageChildren(
+        parent.getReactTag(), indicesToRemove, viewsToAddArray, tagsToDeleteArray);
+    }
   }
 
 }
