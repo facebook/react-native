@@ -13,8 +13,8 @@
 
 import type {Node} from 'react';
 
-import type {LayoutEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 type PressRetentionOffset = {
   top: number,
@@ -26,28 +26,34 @@ type PressRetentionOffset = {
 /**
  * @see https://facebook.github.io/react-native/docs/text.html#reference
  */
-export type TextProps = {|
-  accessible?: boolean,
-  allowFontScaling?: boolean,
+export type TextProps = $ReadOnly<{
+  accessible?: ?boolean,
+  allowFontScaling?: ?boolean,
   children?: Node,
   ellipsizeMode?: 'clip' | 'head' | 'middle' | 'tail',
   nativeID?: string,
-  numberOfLines?: number,
-  onLayout?: ?(event: LayoutEvent) => void,
-  onLongPress?: ?() => void,
-  onPress?: ?() => void,
-  pressRetentionOffset?: PressRetentionOffset,
-  selectable?: boolean,
-  style?: TextStyleProp,
+  numberOfLines?: ?number,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLongPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: PressEvent) => mixed,
+  onResponderGrant?: ?Function,
+  onResponderMove?: ?Function,
+  onResponderRelease?: ?Function,
+  onResponderTerminate?: ?Function,
+  onResponderTerminationRequest?: ?Function,
+  onStartShouldSetResponder?: ?Function,
+  pressRetentionOffset?: ?PressRetentionOffset,
+  selectable?: ?boolean,
+  style?: ?DangerouslyImpreciseStyleProp,
   testID?: string,
 
   // Android Only
-  disabled?: boolean,
-  selectionColor?: string,
+  disabled?: ?boolean,
+  selectionColor?: ?string,
   textBreakStrategy?: 'balanced' | 'highQuality' | 'simple',
 
   // iOS Only
-  adjustsFontSizeToFit?: boolean,
-  minimumFontScale?: number,
-  suppressHighlighting?: boolean,
-|};
+  adjustsFontSizeToFit?: ?boolean,
+  minimumFontScale?: ?number,
+  suppressHighlighting?: ?boolean,
+}>;

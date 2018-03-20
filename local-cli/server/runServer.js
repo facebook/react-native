@@ -78,6 +78,9 @@ function runServer(
   var ms = null;
 
   const terminal = new Terminal(process.stdout);
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
   const packagerServer = getPackagerServer(args, config, reporter);
@@ -105,10 +108,16 @@ function runServer(
 
   app.use(morgan('combined')).use(errorhandler());
 
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   if (args.https && (!args.key || !args.cert)) {
     throw new Error('Cannot use https without specifying key and cert options');
   }
 
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const serverInstance = args.https
     ? https.createServer(
         {
@@ -157,11 +166,17 @@ function getReporterImpl(customLogReporterPath: ?string) {
 }
 
 function getPackagerServer(args, config, reporter) {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
     : config.getTransformModulePath();
 
   const providesModuleNodeModules =
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
   return Metro.createServer({

@@ -18,6 +18,7 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -72,7 +73,11 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   T mutableCopy();
 
+  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
+
   T mutableCopyWithNewChildren();
+
+  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -99,6 +104,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
+
+  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
@@ -352,4 +359,18 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  /**
+   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
+   * {@link ReactShadowNode}.
+   */
+  List<ReactShadowNode> getChildrenList();
+
+  /**
+   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
+   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
+   */
+  @Nullable ReactShadowNode getOriginalReactShadowNode();
+
+  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
 }

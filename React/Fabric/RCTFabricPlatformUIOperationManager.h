@@ -10,7 +10,7 @@
 
 #import <memory>
 
-#include <fabric/IFabricPlatformUIOperationManager.h>
+#include <fabric/uimanager/IFabricPlatformUIOperationManager.h>
 
 @class RCTFabricPlatformUIOperationManager;
 
@@ -24,7 +24,7 @@ namespace react {
 class RCTFabricPlatformUIOperationManagerConnector : public IFabricPlatformUIOperationManager {
 public:
   RCTFabricPlatformUIOperationManagerConnector();
-  ~RCTFabricPlatformUIOperationManagerConnector();
+  virtual ~RCTFabricPlatformUIOperationManagerConnector();
 
   void performUIOperation();
 

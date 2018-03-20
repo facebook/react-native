@@ -27,6 +27,7 @@ const {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
+  ListEmptyComponent,
   ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
@@ -58,6 +59,7 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     fixedHeight: true,
     logViewable: false,
     virtualized: true,
+    empty: false,
   };
 
   _onChangeFilterText = (filterText) => {
@@ -109,8 +111,9 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
               {renderSmallSwitchOption(this, 'virtualized')}
               {renderSmallSwitchOption(this, 'horizontal')}
               {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'logViewable')}
+              {renderSmallSwitchOption(this, 'log')}
               {renderSmallSwitchOption(this, 'inverted')}
+              {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               <Spindicator value={this._scrollPos} />
             </View>
@@ -120,7 +123,8 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}
-            data={filteredData}
+            ListEmptyComponent={ListEmptyComponent}
+            data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
             getItemLayout={this.state.fixedHeight ?
@@ -210,6 +214,7 @@ const styles = StyleSheet.create({
   },
   list: {
     backgroundColor: 'white',
+    flexGrow: 1,
   },
   options: {
     flexDirection: 'row',

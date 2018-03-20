@@ -17,8 +17,6 @@ const View = require('View');
 
 const ensureComponentIsNative = require('ensureComponentIsNative');
 
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
-
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
  *
@@ -53,7 +51,7 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     }
   }
 
-  _viewRef: ?NativeMethodsMixinType = null;
+  _viewRef: ?React.ElementRef<typeof View> = null;
 
   _captureRef = ref => {
     this._viewRef = ref;

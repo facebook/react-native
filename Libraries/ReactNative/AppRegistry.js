@@ -20,6 +20,10 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
+// Renderer provider must be supplied by each app. If none, traditional
+// renderApplication() will be used.
+let fabricRendererProvider: ?() => typeof renderApplication = null;
+
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => React$ComponentType<any>;
@@ -31,6 +35,7 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
+  fabric?: boolean,
 };
 export type Runnable = {
   component?: ComponentProvider,
@@ -80,6 +85,7 @@ const AppRegistry = {
           appConfig.appKey,
           appConfig.component,
           appConfig.section,
+          appConfig.fabric,
         );
       }
     });
@@ -94,16 +100,26 @@ const AppRegistry = {
     appKey: string,
     componentProvider: ComponentProvider,
     section?: boolean,
+    fabric?: boolean,
   ): string {
     runnables[appKey] = {
       componentProvider,
-      run: appParameters =>
-        renderApplication(
+      run: appParameters => {
+        let renderFunc = renderApplication;
+        if (fabric) {
+          invariant(
+            fabricRendererProvider != null,
+            'A Fabric renderer provider must be set to render Fabric components',
+          );
+          renderFunc = fabricRendererProvider();
+        }
+        renderFunc(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
-        ),
+        );
+      },
     };
     if (section) {
       sections[appKey] = runnables[appKey];
@@ -235,6 +251,10 @@ const AppRegistry = {
         console.error(reason);
         NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
+  },
+
+  setFabricRendererProvider(provider: () => typeof renderApplication): void {
+    fabricRendererProvider = provider;
   },
 };
 

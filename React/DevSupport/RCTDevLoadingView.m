@@ -161,6 +161,7 @@ RCT_EXPORT_METHOD(hide)
 
 + (NSString *)moduleName { return nil; }
 + (void)setEnabled:(BOOL)enabled { }
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor { }
 - (void)showWithURL:(NSURL *)URL { }
 - (void)updateProgress:(RCTLoadingProgress *)progress { }
 - (void)hide { }

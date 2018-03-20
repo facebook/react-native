@@ -23,6 +23,9 @@
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate;
 
+- (void)reportSoftException:(NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(nonnull NSNumber *)exceptionId;
+- (void)reportFatalException:(NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(nonnull NSNumber *)exceptionId;
+
 @property (nonatomic, weak) id<RCTExceptionsManagerDelegate> delegate;
 
 @property (nonatomic, assign) NSUInteger maxReloadAttempts;

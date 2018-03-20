@@ -846,19 +846,25 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         );
       }
     } else if (ListEmptyComponent) {
-      const element = React.isValidElement(ListEmptyComponent) ? (
+      const element: React.Element<any> = (React.isValidElement(
+        ListEmptyComponent,
+      ) ? (
         ListEmptyComponent
       ) : (
         // $FlowFixMe
         <ListEmptyComponent />
-      );
+      ): any);
       cells.push(
-        <View
-          key="$empty"
-          onLayout={this._onLayoutEmpty}
-          style={inversionStyle}>
-          {element}
-        </View>,
+        React.cloneElement(element, {
+          key: '$empty',
+          onLayout: event => {
+            this._onLayoutEmpty(event);
+            if (element.props.onLayout) {
+              element.props.onLayout(event);
+            }
+          },
+          style: [element.props.style, inversionStyle],
+        }),
       );
     }
     if (ListFooterComponent) {
@@ -962,7 +968,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     velocity: 0,
     visibleLength: 0,
   };
-  _scrollRef = (null: any);
+  _scrollRef: ?React.ElementRef<any> = null;
   _sentEndForContentLength = 0;
   _totalCellLength = 0;
   _totalCellsMeasured = 0;
@@ -1108,6 +1114,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
       const frame = this._getFrameMetricsApprox(ii);
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       if (frame.inLayout) {
         framesInLayout.push(frame);
       }
@@ -1163,11 +1172,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  _selectLength(metrics: {height: number, width: number}): number {
+  _selectLength(metrics: $ReadOnly<{height: number, width: number}>): number {
     return !this.props.horizontal ? metrics.height : metrics.width;
   }
 
-  _selectOffset(metrics: {x: number, y: number}): number {
+  _selectOffset(metrics: $ReadOnly<{x: number, y: number}>): number {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
@@ -1632,6 +1641,9 @@ class CellRenderer extends React.Component<
       separators: this._separators,
     });
     const onLayout =
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
         ? undefined
         : this.props.onLayout;

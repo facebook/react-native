@@ -30,7 +30,11 @@ const truncate = function(
   options = Object.assign({}, defaultOptions, options);
   if (str && str.length &&
       str.length - options.minDelta + options.elipsis.length >= maxChars) {
-    str = str.slice(0, maxChars - options.elipsis.length + 1);
+    // If the slice is happening in the middle of a wide char, add one more char
+    var extraChar = str.charCodeAt(maxChars - options.elipsis.length) > 255
+      ? 1
+      : 0;
+    str = str.slice(0, maxChars - options.elipsis.length + 1 + extraChar);
     if (options.breakOnWords) {
       var ii = Math.max(str.lastIndexOf(' '), str.lastIndexOf('\n'));
       str = str.slice(0, ii);

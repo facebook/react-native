@@ -810,6 +810,7 @@ var Fragment = 10;
 var Mode = 11;
 var ContextConsumer = 12;
 var ContextProvider = 13;
+var ForwardRef = 14;
 
 function getParent(inst) {
   do {
@@ -2356,6 +2357,9 @@ var REACT_CONTEXT_TYPE = hasSymbol ? Symbol["for"]("react.context") : 0xeace;
 var REACT_ASYNC_MODE_TYPE = hasSymbol
   ? Symbol["for"]("react.async_mode")
   : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol
+  ? Symbol["for"]("react.forward_ref")
+  : 0xead0;
 
 var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
 var FAUX_ITERATOR_SYMBOL = "@@iterator";
@@ -2637,7 +2641,7 @@ var TouchHistoryMath = {
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.3.0-alpha.1";
+var ReactVersion = "16.3.0-alpha.2";
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -3621,6 +3625,11 @@ var ReactNativeComponent = (function(_React$Component) {
 
   /**
    * Removes focus. This is the opposite of `focus()`.
+   */
+
+  /**
+   * Due to bugs in Flow's handling of React.createClass, some fields already
+   * declared in the base class need to be redeclared below.
    */
   ReactNativeComponent.prototype.blur = function blur() {
     TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
@@ -5237,6 +5246,9 @@ function createFiberFromElement(element, mode, expirationTime) {
               // This is a consumer
               fiberTag = ContextConsumer;
               break;
+            case REACT_FORWARD_REF_TYPE:
+              fiberTag = ForwardRef;
+              break;
             default:
               if (typeof type.tag === "number") {
                 // Currently assumed to be a continuation and therefore is a
@@ -6829,20 +6841,20 @@ var ReactFiberClassComponent = function(
       // In order to support react-lifecycles-compat polyfilled components,
       // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
       if (
-        (typeof instance.UNSAFE_componentWillUpdate === "function" ||
-          typeof instance.componentWillUpdate === "function") &&
+        (typeof instance.UNSAFE_componentWillMount === "function" ||
+          typeof instance.componentWillMount === "function") &&
         typeof ctor.getDerivedStateFromProps !== "function"
       ) {
-        startPhaseTimer(workInProgress, "componentWillUpdate");
-        if (typeof instance.componentWillUpdate === "function") {
-          instance.componentWillUpdate(newProps, newState, newContext);
+        startPhaseTimer(workInProgress, "componentWillMount");
+        if (typeof instance.componentWillMount === "function") {
+          instance.componentWillMount();
         }
-        if (typeof instance.UNSAFE_componentWillUpdate === "function") {
-          instance.UNSAFE_componentWillUpdate(newProps, newState, newContext);
+        if (typeof instance.UNSAFE_componentWillMount === "function") {
+          instance.UNSAFE_componentWillMount();
         }
         stopPhaseTimer();
       }
-      if (typeof instance.componentDidUpdate === "function") {
+      if (typeof instance.componentDidMount === "function") {
         workInProgress.effectTag |= Update;
       }
     } else {
@@ -8327,11 +8339,11 @@ var rendererSigil = void 0;
 function pushProvider(providerFiber) {
   var context = providerFiber.type.context;
   index$1 += 1;
-  changedBitsStack[index$1] = context.changedBits;
-  currentValueStack[index$1] = context.currentValue;
+  changedBitsStack[index$1] = context._changedBits;
+  currentValueStack[index$1] = context._currentValue;
   stack[index$1] = providerFiber;
-  context.currentValue = providerFiber.pendingProps.value;
-  context.changedBits = providerFiber.stateNode;
+  context._currentValue = providerFiber.pendingProps.value;
+  context._changedBits = providerFiber.stateNode;
 
   {
     warning(
@@ -8358,16 +8370,16 @@ function popProvider(providerFiber) {
   stack[index$1] = null;
   index$1 -= 1;
   var context = providerFiber.type.context;
-  context.currentValue = currentValue;
-  context.changedBits = changedBits;
+  context._currentValue = currentValue;
+  context._changedBits = changedBits;
 }
 
 function resetProviderStack() {
   for (var i = index$1; i > -1; i--) {
     var providerFiber = stack[i];
     var context = providerFiber.type.context;
-    context.currentValue = context.defaultValue;
-    context.changedBits = 0;
+    context._currentValue = context._defaultValue;
+    context._changedBits = 0;
     changedBitsStack[i] = null;
     currentValueStack[i] = null;
     stack[i] = null;
@@ -8460,6 +8472,14 @@ var ReactFiberBeginWork = function(
         renderExpirationTime
       );
     }
+  }
+
+  function updateForwardRef(current, workInProgress) {
+    var render = workInProgress.type.render;
+    var nextChildren = render(workInProgress.pendingProps, workInProgress.ref);
+    reconcileChildren(current, workInProgress, nextChildren);
+    memoizeProps(workInProgress, nextChildren);
+    return workInProgress.child;
   }
 
   function updateFragment(current, workInProgress) {
@@ -9149,48 +9169,70 @@ var ReactFiberBeginWork = function(
       pushProvider(workInProgress);
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
-    workInProgress.memoizedProps = newProps;
 
     var newValue = newProps.value;
+    workInProgress.memoizedProps = newProps;
 
     var changedBits = void 0;
     if (oldProps === null) {
       // Initial render
       changedBits = MAX_SIGNED_31_BIT_INT;
     } else {
-      var oldValue = oldProps.value;
-      // Use Object.is to compare the new context value to the old value.
-      // Inlined Object.is polyfill.
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-      if (
-        (oldValue === newValue &&
-          (oldValue !== 0 || 1 / oldValue === 1 / newValue)) ||
-        (oldValue !== oldValue && newValue !== newValue) // eslint-disable-line no-self-compare
-      ) {
-        // No change.
+      if (oldProps.value === newProps.value) {
+        // No change. Bailout early if children are the same.
+        if (oldProps.children === newProps.children) {
+          workInProgress.stateNode = 0;
+          pushProvider(workInProgress);
+          return bailoutOnAlreadyFinishedWork(current, workInProgress);
+        }
         changedBits = 0;
       } else {
-        changedBits =
-          typeof context.calculateChangedBits === "function"
-            ? context.calculateChangedBits(oldValue, newValue)
-            : MAX_SIGNED_31_BIT_INT;
-        {
-          warning(
-            (changedBits & MAX_SIGNED_31_BIT_INT) === changedBits,
-            "calculateChangedBits: Expected the return value to be a " +
-              "31-bit integer. Instead received: %s",
-            changedBits
-          );
-        }
-        changedBits |= 0;
+        var oldValue = oldProps.value;
+        // Use Object.is to compare the new context value to the old value.
+        // Inlined Object.is polyfill.
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+        if (
+          (oldValue === newValue &&
+            (oldValue !== 0 || 1 / oldValue === 1 / newValue)) ||
+          (oldValue !== oldValue && newValue !== newValue) // eslint-disable-line no-self-compare
+        ) {
+          // No change. Bailout early if children are the same.
+          if (oldProps.children === newProps.children) {
+            workInProgress.stateNode = 0;
+            pushProvider(workInProgress);
+            return bailoutOnAlreadyFinishedWork(current, workInProgress);
+          }
+          changedBits = 0;
+        } else {
+          changedBits =
+            typeof context._calculateChangedBits === "function"
+              ? context._calculateChangedBits(oldValue, newValue)
+              : MAX_SIGNED_31_BIT_INT;
+          {
+            warning(
+              (changedBits & MAX_SIGNED_31_BIT_INT) === changedBits,
+              "calculateChangedBits: Expected the return value to be a " +
+                "31-bit integer. Instead received: %s",
+              changedBits
+            );
+          }
+          changedBits |= 0;
 
-        if (changedBits !== 0) {
-          propagateContextChange(
-            workInProgress,
-            context,
-            changedBits,
-            renderExpirationTime
-          );
+          if (changedBits === 0) {
+            // No change. Bailout early if children are the same.
+            if (oldProps.children === newProps.children) {
+              workInProgress.stateNode = 0;
+              pushProvider(workInProgress);
+              return bailoutOnAlreadyFinishedWork(current, workInProgress);
+            }
+          } else {
+            propagateContextChange(
+              workInProgress,
+              context,
+              changedBits,
+              renderExpirationTime
+            );
+          }
         }
       }
     }
@@ -9198,9 +9240,6 @@ var ReactFiberBeginWork = function(
     workInProgress.stateNode = changedBits;
     pushProvider(workInProgress);
 
-    if (oldProps !== null && oldProps.children === newProps.children) {
-      return bailoutOnAlreadyFinishedWork(current, workInProgress);
-    }
     var newChildren = newProps.children;
     reconcileChildren(current, workInProgress, newChildren);
     return workInProgress.child;
@@ -9213,11 +9252,28 @@ var ReactFiberBeginWork = function(
   ) {
     var context = workInProgress.type;
     var newProps = workInProgress.pendingProps;
+    var oldProps = workInProgress.memoizedProps;
 
-    var newValue = context.currentValue;
-    var changedBits = context.changedBits;
+    var newValue = context._currentValue;
+    var changedBits = context._changedBits;
 
-    if (changedBits !== 0) {
+    if (hasContextChanged()) {
+      // Normally we can bail out on props equality but if context has changed
+      // we don't do the bailout and we have to reuse existing props instead.
+    } else if (changedBits === 0 && oldProps === newProps) {
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
+    }
+    workInProgress.memoizedProps = newProps;
+
+    var observedBits = newProps.unstable_observedBits;
+    if (observedBits === undefined || observedBits === null) {
+      // Subscribe to all changes by default
+      observedBits = MAX_SIGNED_31_BIT_INT;
+    }
+    // Store the observedBits on the fiber's stateNode for quick access.
+    workInProgress.stateNode = observedBits;
+
+    if ((changedBits & observedBits) !== 0) {
       // Context change propagation stops at matching consumers, for time-
       // slicing. Continue the propagation here.
       propagateContextChange(
@@ -9226,24 +9282,20 @@ var ReactFiberBeginWork = function(
         changedBits,
         renderExpirationTime
       );
+    } else if (oldProps !== null && oldProps.children === newProps.children) {
+      // No change. Bailout early if children are the same.
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
-
-    // Store the observedBits on the fiber's stateNode for quick access.
-    var observedBits = newProps.observedBits;
-    if (observedBits === undefined || observedBits === null) {
-      // Subscribe to all changes by default
-      observedBits = MAX_SIGNED_31_BIT_INT;
-    }
-    workInProgress.stateNode = observedBits;
 
     var render = newProps.children;
 
-    if (typeof render !== "function") {
-      invariant(
-        false,
-        "A context consumer was rendered with multiple children, or a child that isn't a function. " +
-          "A context consumer expects a single child that is a function. " +
-          "If you did pass a function, make sure there is no trailing or leading whitespace around it."
+    {
+      warning(
+        typeof render === "function",
+        "A context consumer was rendered with multiple children, or a child " +
+          "that isn't a function. A context consumer expects a single child " +
+          "that is a function. If you did pass a function, make sure there " +
+          "is no trailing or leading whitespace around it."
       );
     }
 
@@ -9383,6 +9435,8 @@ var ReactFiberBeginWork = function(
           workInProgress,
           renderExpirationTime
         );
+      case ForwardRef:
+        return updateForwardRef(current, workInProgress);
       case Fragment:
         return updateFragment(current, workInProgress);
       case Mode:
@@ -9935,6 +9989,8 @@ var ReactFiberCompleteWork = function(config, hostContext, hydrationContext) {
       case ReturnComponent:
         // Does nothing.
         return null;
+      case ForwardRef:
+        return null;
       case Fragment:
         return null;
       case Mode:
@@ -10240,7 +10296,7 @@ var ReactFiberCommitWork = function(
           }
         }
       } else {
-        ref.value = null;
+        ref.current = null;
       }
     }
   }
@@ -10405,7 +10461,19 @@ var ReactFiberCommitWork = function(
       if (typeof ref === "function") {
         ref(instanceToUse);
       } else {
-        ref.value = instanceToUse;
+        {
+          if (!ref.hasOwnProperty("current")) {
+            warning(
+              false,
+              "Unexpected ref object provided for %s. " +
+                "Use either a ref-setter function or Reacte.createRef().%s",
+              getComponentName(finishedWork),
+              getStackAddendumByWorkInProgressFiber(finishedWork)
+            );
+          }
+        }
+
+        ref.current = instanceToUse;
       }
     }
   }
@@ -10416,7 +10484,7 @@ var ReactFiberCommitWork = function(
       if (typeof currentRef === "function") {
         currentRef(null);
       } else {
-        currentRef.value = null;
+        currentRef.current = null;
       }
     }
   }

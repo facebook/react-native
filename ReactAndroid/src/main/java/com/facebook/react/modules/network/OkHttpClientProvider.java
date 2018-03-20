@@ -54,7 +54,10 @@ public class OkHttpClientProvider {
     if (sFactory != null) {
       return sFactory.createNewNetworkModuleClient();
     }
+    return createClientBuilder().build();
+  }
 
+  public static OkHttpClient.Builder createClientBuilder() {
     // No timeouts by default
     OkHttpClient.Builder client = new OkHttpClient.Builder()
       .connectTimeout(0, TimeUnit.MILLISECONDS)
@@ -62,7 +65,7 @@ public class OkHttpClientProvider {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
 
-    return enableTls12OnPreLollipop(client).build();
+    return enableTls12OnPreLollipop(client);
   }
 
   /*
