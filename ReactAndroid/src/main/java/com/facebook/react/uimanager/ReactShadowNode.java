@@ -365,4 +365,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * {@link ReactShadowNode}.
    */
   List<ReactShadowNode> getChildrenList();
+
+  /**
+   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
+   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
+   */
+  @Nullable ReactShadowNode getOriginalReactShadowNode();
+
+  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
 }

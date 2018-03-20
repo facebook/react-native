@@ -99,6 +99,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private YogaNode mYogaNode;
+  private ReactShadowNode mOriginalReactShadowNode = null;
 
   private @Nullable ReactStylesDiffMap mNewProps;
 
@@ -1071,5 +1072,15 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public List<ReactShadowNode> getChildrenList() {
     return mChildren == null ? null : Collections.<ReactShadowNode>unmodifiableList(mChildren);
+  }
+
+  @Override
+  public ReactShadowNode getOriginalReactShadowNode() {
+    return mOriginalReactShadowNode;
+  }
+
+  @Override
+  public void setOriginalReactShadowNode(ReactShadowNode node) {
+    mOriginalReactShadowNode = node;
   }
 }
