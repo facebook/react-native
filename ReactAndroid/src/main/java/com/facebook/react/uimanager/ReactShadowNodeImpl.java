@@ -132,6 +132,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
     mNewProps = null;
     mParent = null;
+    mOriginalReactShadowNode = original;
   }
 
   /**
@@ -151,6 +152,13 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     copy.mTotalNativeChildren = mTotalNativeChildren;
     copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
     copy.mYogaNode.setData(this);
+    if (mChildren != null) {
+      for (ReactShadowNode child : mChildren) {
+        if (child.getOriginalReactShadowNode() == null) {
+          child.setOriginalReactShadowNode(child);
+        }
+      }
+    }
     return copy;
   }
 

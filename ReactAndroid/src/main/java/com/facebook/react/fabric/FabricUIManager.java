@@ -14,7 +14,6 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import android.util.Log;
 import android.view.View;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -28,7 +27,6 @@ import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
-import com.facebook.react.uimanager.ViewAtIndex;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
@@ -38,8 +36,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * This class is responsible to create, clone and update {@link ReactShadowNode} using the
- * Fabric API.
+ * This class is responsible to create, clone and update {@link ReactShadowNode} using the Fabric
+ * API.
  */
 @SuppressWarnings("unused") // used from JNI
 public class FabricUIManager implements UIManager {
@@ -49,23 +47,25 @@ public class FabricUIManager implements UIManager {
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIViewOperationQueue mUIViewOperationQueue;
+  private volatile int mCurrentBatch = 0;
+  private ReactShadowNode mCurrentRootShadowNode;
+  private FabricReconciler mFabricReconciler;
 
-  public FabricUIManager(ReactApplicationContext reactContext,
-    ViewManagerRegistry viewManagerRegistry) {
+  public FabricUIManager(
+      ReactApplicationContext reactContext, ViewManagerRegistry viewManagerRegistry) {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mReactApplicationContext = reactContext;
     mViewManagerRegistry = viewManagerRegistry;
-    mUIViewOperationQueue = new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagerRegistry), 0);
+    mUIViewOperationQueue =
+        new UIViewOperationQueue(
+            reactContext, new NativeViewHierarchyManager(viewManagerRegistry), 0);
+    mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
   }
 
-  /**
-   * Creates a new {@link ReactShadowNode}
-   */
+  /** Creates a new {@link ReactShadowNode} */
   @Nullable
-  public ReactShadowNode createNode(int reactTag,
-    String viewName,
-    int rootTag,
-    ReadableNativeMap props) {
+  public ReactShadowNode createNode(
+      int reactTag, String viewName, int rootTag, ReadableNativeMap props) {
     try {
       ViewManager viewManager = mViewManagerRegistry.get(viewName);
       ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
@@ -78,8 +78,8 @@ public class FabricUIManager implements UIManager {
       ReactStylesDiffMap styles = updateProps(node, props);
 
       if (!node.isVirtual()) {
-        mUIViewOperationQueue
-          .enqueueCreateView(rootNode.getThemedContext(), reactTag, viewName, styles);
+        mUIViewOperationQueue.enqueueCreateView(
+            rootNode.getThemedContext(), reactTag, viewName, styles);
       }
       return node;
     } catch (Throwable t) {
@@ -103,8 +103,8 @@ public class FabricUIManager implements UIManager {
 
   /**
    * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   * ReactShadowNode will contain a copy of all the internal data of the original node, including
-   * its children set (note that the children nodes will not be cloned).
+   *     ReactShadowNode will contain a copy of all the internal data of the original node,
+   *     including its children set (note that the children nodes will not be cloned).
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
@@ -120,8 +120,8 @@ public class FabricUIManager implements UIManager {
 
   /**
    * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   * ReactShadowNode will contain a copy of all the internal data of the original node, but
-   * its children set will be empty.
+   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
+   *     children set will be empty.
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
@@ -137,15 +137,15 @@ public class FabricUIManager implements UIManager {
 
   /**
    * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   * ReactShadowNode will contain a copy of all the internal data of the original node, but its
-   * props will be overridden with the {@link ReadableMap} received by parameter.
+   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
+   *     props will be overridden with the {@link ReadableMap} received by parameter.
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewProps(
-      ReactShadowNode node,
-      @Nullable ReadableNativeMap newProps) {
+      ReactShadowNode node, @Nullable ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
+      ReactShadowNode clone =
+          node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -156,16 +156,17 @@ public class FabricUIManager implements UIManager {
 
   /**
    * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   * ReactShadowNode will contain a copy of all the internal data of the original node, but its
-   * props will be overridden with the {@link ReadableMap} received by parameter and its children
-   * set will be empty.
+   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
+   *     props will be overridden with the {@link ReadableMap} received by parameter and its
+   *     children set will be empty.
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
-      ReactShadowNode node,
-      ReadableNativeMap newProps) {
+      ReactShadowNode node, ReadableNativeMap newProps) {
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewChildrenAndProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
+      ReactShadowNode clone =
+          node.mutableCopyWithNewChildrenAndProps(
+              newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -175,38 +176,33 @@ public class FabricUIManager implements UIManager {
   }
 
   private void assertReactShadowNodeCopy(ReactShadowNode source, ReactShadowNode target) {
-    Assertions.assertCondition(source.getClass().equals(target.getClass()),
-      "Found " + target.getClass() + " class when expecting: " +   source.getClass() +
-        ". Check that " + source.getClass() + " implements the copy() method correctly.");
+    Assertions.assertCondition(
+        source.getClass().equals(target.getClass()),
+        "Found "
+            + target.getClass()
+            + " class when expecting: "
+            + source.getClass()
+            + ". Check that "
+            + source.getClass()
+            + " implements the copy() method correctly.");
   }
 
   /**
-   * Appends the child {@link ReactShadowNode} to the children set of the parent
-   * {@link ReactShadowNode}.
+   * Appends the child {@link ReactShadowNode} to the children set of the parent {@link
+   * ReactShadowNode}.
    */
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     try {
-      int childIndex = parent.getChildCount();
-      parent.addChildAt(child, childIndex);
-      ViewAtIndex[] viewsToAdd =
-        new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), childIndex)};
-      if (!child.isVirtual()) {
-        mUIViewOperationQueue.enqueueManageChildren(
-          parent.getReactTag(),
-          null,
-          viewsToAdd,
-          null
-        );
-      }
+      parent.addChildAt(child, parent.getChildCount());
     } catch (Throwable t) {
       handleException(parent, t);
     }
   }
 
   /**
-   * @return an empty {@link List<ReactShadowNode>} that will be used to append the
-   * {@link ReactShadowNode} elements of the root. Typically this List will contain one element.
+   * @return an empty {@link List<ReactShadowNode>} that will be used to append the {@link
+   *     ReactShadowNode} elements of the root. Typically this List will contain one element.
    */
   public List<ReactShadowNode> createChildSet(int rootTag) {
     return new ArrayList<>(1);
@@ -219,22 +215,24 @@ public class FabricUIManager implements UIManager {
     childList.add(child);
   }
 
-  public void completeRoot(int rootTag, List<ReactShadowNode> childList) {
+  public synchronized void completeRoot(int rootTag, List<ReactShadowNode> childList) {
     try {
       ReactShadowNode rootNode = getRootNode(rootTag);
       Assertions.assertNotNull(
-        rootNode,
-        "Root view with tag " + rootTag + " must be added before completeRoot is called");
-      for (int i = 0; i < childList.size(); i++) {
-        ReactShadowNode child = childList.get(i);
-        appendChild(rootNode, child);
-      }
+          rootNode,
+          "Root view with tag " + rootTag + " must be added before completeRoot is called");
+
+
+      rootNode = calculateDiffingAndCreateNewRootNode(rootNode, childList);
 
       notifyOnBeforeLayoutRecursive(rootNode);
-      calculateRootLayout(rootNode);
+      rootNode.calculateLayout();
+
       applyUpdatesRecursive(rootNode, 0, 0);
-      mUIViewOperationQueue
-        .dispatchViewUpdates(1, System.currentTimeMillis(), System.currentTimeMillis());
+      mUIViewOperationQueue.dispatchViewUpdates(
+        mCurrentBatch++, System.currentTimeMillis(), System.currentTimeMillis());
+
+      mCurrentRootShadowNode = rootNode;
     } catch (Exception e) {
       handleException(getRootNode(rootTag), e);
     }
@@ -250,46 +248,45 @@ public class FabricUIManager implements UIManager {
     node.onBeforeLayout();
   }
 
-  private void calculateRootLayout(ReactShadowNode cssRoot) {
-    cssRoot.calculateLayout();
+  private ReactShadowNode calculateDiffingAndCreateNewRootNode(
+    ReactShadowNode currentRootShadowNode, List<ReactShadowNode> newChildList) {
+    ReactShadowNode newRootShadowNode = currentRootShadowNode.mutableCopyWithNewChildren();
+    for (ReactShadowNode child : newChildList) {
+      appendChild(newRootShadowNode, child);
+    }
+
+    mFabricReconciler.manageChildren(mCurrentRootShadowNode, newRootShadowNode);
+    return newRootShadowNode;
   }
 
-  private void applyUpdatesRecursive(
-    ReactShadowNode cssNode,
-    float absoluteX,
-    float absoluteY) {
-
-    if (!cssNode.hasUpdates()) {
+  private void applyUpdatesRecursive(ReactShadowNode node, float absoluteX, float absoluteY) {
+    if (!node.hasUpdates()) {
       return;
     }
 
-    if (!cssNode.isVirtualAnchor()) {
-      for (int i = 0; i < cssNode.getChildCount(); i++) {
+    if (!node.isVirtualAnchor()) {
+      for (int i = 0; i < node.getChildCount(); i++) {
         applyUpdatesRecursive(
-          cssNode.getChildAt(i),
-          absoluteX + cssNode.getLayoutX(),
-          absoluteY + cssNode.getLayoutY());
+            node.getChildAt(i),
+            absoluteX + node.getLayoutX(),
+            absoluteY + node.getLayoutY());
       }
     }
 
-    int tag = cssNode.getReactTag();
+    int tag = node.getReactTag();
     if (mRootShadowNodeRegistry.getNode(tag) == null) {
-      boolean frameDidChange = cssNode.dispatchUpdates(
-        absoluteX,
-        absoluteY,
-        mUIViewOperationQueue,
-        null);
+      boolean frameDidChange =
+          node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
     }
-    cssNode.markUpdateSeen();
+    node.markUpdateSeen();
   }
 
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
-    final T rootView) {
+      final T rootView) {
     int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    ThemedReactContext themedRootContext = new ThemedReactContext(
-      mReactApplicationContext,
-      rootView.getContext());
+    ThemedReactContext themedRootContext =
+        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
 
     ReactShadowNode rootShadowNode = createRootShadowNode(rootTag, themedRootContext);
 
@@ -321,18 +318,18 @@ public class FabricUIManager implements UIManager {
    * parameters.
    */
   public void updateRootView(
-    ReactShadowNode rootCSSNode, int widthMeasureSpec, int heightMeasureSpec) {
+      ReactShadowNode node, int widthMeasureSpec, int heightMeasureSpec) {
     int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
     int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
     switch (widthMode) {
       case EXACTLY:
-        rootCSSNode.setStyleWidth(widthSize);
+        node.setStyleWidth(widthSize);
         break;
       case AT_MOST:
-        rootCSSNode.setStyleMaxWidth(widthSize);
+        node.setStyleMaxWidth(widthSize);
         break;
       case UNSPECIFIED:
-        rootCSSNode.setStyleWidthAuto();
+        node.setStyleWidthAuto();
         break;
     }
 
@@ -340,13 +337,13 @@ public class FabricUIManager implements UIManager {
     int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
     switch (heightMode) {
       case EXACTLY:
-        rootCSSNode.setStyleHeight(heightSize);
+        node.setStyleHeight(heightSize);
         break;
       case AT_MOST:
-        rootCSSNode.setStyleMaxHeight(heightSize);
+        node.setStyleMaxHeight(heightSize);
         break;
       case UNSPECIFIED:
-        rootCSSNode.setStyleHeightAuto();
+        node.setStyleHeightAuto();
         break;
     }
   }
@@ -362,5 +359,4 @@ public class FabricUIManager implements UIManager {
       throw new RuntimeException(ex.getMessage(), t);
     }
   }
-
 }
