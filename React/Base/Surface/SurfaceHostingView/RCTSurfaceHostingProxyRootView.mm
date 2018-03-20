@@ -61,7 +61,10 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
     [bridge.performanceLogger markStartForTag:RCTPLTTI];
   }
 
-  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties]) {
+  // `RCTRootViewSizeFlexibilityNone` is the RCTRootView's default.
+  RCTSurfaceSizeMeasureMode sizeMeasureMode = convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibilityNone);
+
+  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties sizeMeasureMode:sizeMeasureMode]) {
     self.backgroundColor = [UIColor whiteColor];
   }
 
