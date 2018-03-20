@@ -7,6 +7,7 @@
 'use strict';
 
 var path = require('path');
+var resolvePlugins = require('../lib/resolvePlugins');
 
 var hmrTransform = 'react-transform-hmr/lib/index.js';
 var transformPath = require.resolve(hmrTransform);
@@ -22,9 +23,9 @@ module.exports = function(options, filename) {
   }
 
   return {
-    plugins: [
+    plugins: resolvePlugins([
       [
-        require('metro-babel7-plugin-react-transform').default,
+        'react-transform',
         {
           transforms: [{
             transform: transform,
@@ -33,6 +34,6 @@ module.exports = function(options, filename) {
           }]
         },
       ]
-    ]
+    ])
   };
 };
