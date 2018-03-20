@@ -643,7 +643,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public String toString() {
-    return mViewClassName;
+    return "[" + mViewClassName + " " + getReactTag() + "]";
   }
 
   /*

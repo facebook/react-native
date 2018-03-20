@@ -44,6 +44,7 @@ public class FabricUIManager implements UIManager {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
   private static final boolean DEBUG = true;
+
   private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
@@ -67,6 +68,12 @@ public class FabricUIManager implements UIManager {
   @Nullable
   public ReactShadowNode createNode(
       int reactTag, String viewName, int rootTag, ReadableNativeMap props) {
+    if (DEBUG) {
+      Log.d(TAG, "createNode \n\ttag: " + reactTag +
+          "\n\tviewName: " + viewName +
+          "\n\trootTag: " + rootTag +
+          "\n\tprops: " + props);
+    }
     try {
       ViewManager viewManager = mViewManagerRegistry.get(viewName);
       ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
@@ -109,6 +116,9 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNode(ReactShadowNode node) {
+    if (DEBUG) {
+      Log.d(TAG, "cloneNode \n\tnode: " + node);
+    }
     try {
       ReactShadowNode clone = node.mutableCopy();
       assertReactShadowNodeCopy(node, clone);
@@ -126,6 +136,9 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
+    if (DEBUG) {
+      Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
+    }
     try {
       ReactShadowNode clone = node.mutableCopyWithNewChildren();
       assertReactShadowNodeCopy(node, clone);
@@ -144,6 +157,9 @@ public class FabricUIManager implements UIManager {
   @Nullable
   public ReactShadowNode cloneNodeWithNewProps(
       ReactShadowNode node, @Nullable ReadableNativeMap newProps) {
+    if (DEBUG) {
+      Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
+    }
     try {
       ReactShadowNode clone =
           node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
@@ -164,6 +180,9 @@ public class FabricUIManager implements UIManager {
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node, ReadableNativeMap newProps) {
+    if (DEBUG) {
+      Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
+    }
     try {
       ReactShadowNode clone =
           node.mutableCopyWithNewChildrenAndProps(
@@ -194,6 +213,9 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
+    if (DEBUG) {
+      Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
+    }
     try {
       parent.addChildAt(child, parent.getChildCount());
     } catch (Throwable t) {
@@ -206,6 +228,9 @@ public class FabricUIManager implements UIManager {
    *     ReactShadowNode} elements of the root. Typically this List will contain one element.
    */
   public List<ReactShadowNode> createChildSet(int rootTag) {
+    if (DEBUG) {
+      Log.d(TAG, "createChildSet rootTag: " + rootTag);
+    }
     return new ArrayList<>(1);
   }
 
@@ -217,6 +242,9 @@ public class FabricUIManager implements UIManager {
   }
 
   public synchronized void completeRoot(int rootTag, List<ReactShadowNode> childList) {
+    if (DEBUG) {
+      Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
+    }
     try {
       ReactShadowNode rootNode = getRootNode(rootTag);
       Assertions.assertNotNull(
