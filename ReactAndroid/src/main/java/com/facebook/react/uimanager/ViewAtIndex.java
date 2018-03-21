@@ -30,7 +30,16 @@ public class ViewAtIndex {
   }
 
   @Override
+  public boolean equals(Object obj) {
+    if (obj == null || obj.getClass() != getClass()) {
+      return false;
+    }
+    ViewAtIndex other = (ViewAtIndex) obj;
+    return mIndex == other.mIndex && mTag == other.mTag;
+  }
+
+  @Override
   public String toString() {
-    return "[" + mIndex + ", " + mTag + "]";
+    return "[" + mTag + ", " + mIndex + "]";
   }
 }

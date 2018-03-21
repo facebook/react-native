@@ -89,12 +89,11 @@ public class FabricReconciler {
     // If a View is not re-ordered, then the ReactTag is deleted (ReactShadowNode and native View
     // are released from memory)
     List<Integer> tagsToDelete = new LinkedList<>();
-    int[] indicesToRemove = new int[prevList.size() - firstRemovedOrAddedViewIndex];
-    int indicesToRemoveIndex = 0;
-    for (int j = firstRemovedOrAddedViewIndex; j < prevList.size(); j++) {
+    List<Integer> indicesToRemove = new LinkedList<>();
+    for (int j = prevList.size() - 1; j >= firstRemovedOrAddedViewIndex; j--) {
       ReactShadowNode nodeToRemove = prevList.get(j);
       if (nodeToRemove.isVirtual()) continue;
-      indicesToRemove[indicesToRemoveIndex++] = j;
+      indicesToRemove.add(0, j);
       if (!addedTags.contains(nodeToRemove.getReactTag())) {
         tagsToDelete.add(nodeToRemove.getReactTag());
         // TODO: T26729293 since we are not cloning ReactShadowNode's we need to "manually" remove
@@ -103,21 +102,21 @@ public class FabricReconciler {
       }
     }
 
-    int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
-    ViewAtIndex[] viewsToAddArray = viewsToAdd.toArray(new ViewAtIndex[viewsToAdd.size()]);
-
     // TODO (t27180994): Mutate views synchronously on main thread
-    if (indicesToRemove.length > 0 || viewsToAddArray.length > 0 || tagsToDeleteArray.length > 0) {
+    if (!(indicesToRemove.isEmpty() && viewsToAdd.isEmpty() && tagsToDelete.isEmpty())) {
+      int[] indicesToRemoveArray = ArrayUtils.copyListToArray(indicesToRemove);
+      ViewAtIndex[] viewsToAddArray = viewsToAdd.toArray(new ViewAtIndex[viewsToAdd.size()]);
+      int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
       if (DEBUG) {
         Log.d(
             TAG,
             "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
-                "\n\tIndices2Remove: " + Arrays.toString(indicesToRemove) +
+                "\n\tIndices2Remove: " + Arrays.toString(indicesToRemoveArray) +
                 "\n\tViews2Add: " + Arrays.toString(viewsToAddArray) +
                 "\n\tTags2Delete: " + Arrays.toString(tagsToDeleteArray));
       }
       uiViewOperationQueue.enqueueManageChildren(
-        parent.getReactTag(), indicesToRemove, viewsToAddArray, tagsToDeleteArray);
+        parent.getReactTag(), indicesToRemoveArray, viewsToAddArray, tagsToDeleteArray);
     }
   }
 
