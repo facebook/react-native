@@ -212,15 +212,15 @@ Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValu
   return callAsFunction((JSObjectRef)thisObj, args.size(), args.begin());
 }
 
-Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {
+Value Object::callAsFunction(size_t nArgs, const JSValueRef args[]) const {
   return callAsFunction(nullptr, nArgs, args);
 }
 
-Value Object::callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const {
+Value Object::callAsFunction(const Object& thisObj, size_t nArgs, const JSValueRef args[]) const {
   return callAsFunction(static_cast<JSObjectRef>(thisObj), nArgs, args);
 }
 
-Value Object::callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const {
+Value Object::callAsFunction(JSObjectRef thisObj, size_t nArgs, const JSValueRef args[]) const {
   JSValueRef exn;
   JSValueRef result = JSC_JSObjectCallAsFunction(m_context, m_obj, thisObj, nArgs, args, &exn);
   if (!result) {
