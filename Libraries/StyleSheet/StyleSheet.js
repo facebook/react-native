@@ -20,9 +20,13 @@ const flatten = require('flattenStyle');
 import type {
   ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   ____Styles_Internal,
+  ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
+  ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
+  ____TextStyle_Internal,
   ____TextStyleProp_Internal,
+  ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
   LayoutStyle,
 } from 'StyleSheetTypes';
@@ -65,6 +69,91 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  * and using one of the other more restrictive types is likely the right choice.
  */
 export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+
+/**
+ * Utility type for getting the values for specific style keys.
+ *
+ * The following is bad because position is more restrictive than 'string':
+ * ```
+ * type Props = {position: string};
+ * ```
+ *
+ * You should use the following instead:
+ *
+ * ```
+ * type Props = {position: TypeForStyleKey<'position'>};
+ * ```
+ *
+ * This will correctly give you the type 'absolute' | 'relative'
+ */
+export type TypeForStyleKey<
+  +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
+> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for View.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using ViewStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to a View that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type ViewStyle = ____ViewStyle_Internal;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for Text.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using TextStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to a Text that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type TextStyle = ____TextStyle_Internal;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for Image.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using ImageStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to an Image that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type ImageStyle = ____ImageStyle_Internal;
+
+/**
+ * WARNING: You probably shouldn't be using this type. This type is an object
+ * with all possible style keys and their values. Note that this isn't
+ * a safe way to type a style prop for a component as results from
+ * StyleSheet.create return an internal identifier, not an object of styles.
+ *
+ * If you want to type the style prop of a function, consider using
+ * ViewStyleProp, TextStyleProp, or ImageStyleProp.
+ *
+ * This should only be used by very core utilities that operate on an object
+ * containing any possible style value.
+ */
+export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {

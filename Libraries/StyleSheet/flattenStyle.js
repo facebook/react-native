@@ -12,8 +12,10 @@
 
 var ReactNativePropRegistry;
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
-import type {DangerouslyImpreciseStyle} from 'StyleSheetTypes';
+import type {
+  DangerouslyImpreciseStyle,
+  DangerouslyImpreciseStyleProp,
+} from 'StyleSheet';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {

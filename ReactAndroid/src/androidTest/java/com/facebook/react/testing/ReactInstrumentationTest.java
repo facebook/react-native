@@ -11,7 +11,9 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.testing.fabric.FabricTestModule;
 import com.facebook.react.testing.idledetection.IdleWaiter;
 
 /**
@@ -106,11 +108,19 @@ public abstract class ReactInstrumentationTest extends
     return false;
   }
 
+  protected <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
+    return getReactContext().getJSModule(jsInterface);
+  }
+
   /**
    * Override this method to provide extra native modules to be loaded before the app starts
    */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return new ReactInstanceSpecForTest();
+    ReactInstanceSpecForTest instanceSpec = new ReactInstanceSpecForTest();
+    if (isFabricTest()) {
+      instanceSpec.addNativeModule(new FabricTestModule(isFabricTest()));
+    }
+    return instanceSpec;
   }
 
   /**

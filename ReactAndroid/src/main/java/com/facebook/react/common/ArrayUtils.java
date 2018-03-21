@@ -11,10 +11,9 @@ public class ArrayUtils {
 
   public static int[] copyListToArray(List<Integer> list) {
     int[] array = new int[list.size()];
-    for (int t = 0 ; t < list.size() ; t++) {
+    for (int t = 0; t < list.size(); t++) {
       array[t] = list.get(t);
     }
     return array;
   }
-
 }
