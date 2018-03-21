@@ -20,6 +20,7 @@ const flatten = require('flattenStyle');
 import type {
   ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   ____Styles_Internal,
+  ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
   ____ViewStyleProp_Internal,
   ____TextStyleProp_Internal,
@@ -65,6 +66,40 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  * and using one of the other more restrictive types is likely the right choice.
  */
 export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
+
+/**
+ * Utility type for getting the values for specific style keys.
+ *
+ * The following is bad because position is more restrictive than 'string':
+ * ```
+ * type Props = {position: string};
+ * ```
+ *
+ * You should use the following instead:
+ *
+ * ```
+ * type Props = {position: TypeForStyleKey<'position'>};
+ * ```
+ *
+ * This will correctly give you the type 'absolute' | 'relative'
+ */
+export type TypeForStyleKey<
+  +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
+> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+
+/**
+ * WARNING: You probably shouldn't be using this type. This type is an object
+ * with all possible style key's and their values. Note that this isn't
+ * a safe way to type a style prop for a component as results from
+ * StyleSheet.create return an internal identifier, not an object of styles.
+ *
+ * If you want to type the style prop of a function, consider using
+ * ViewStyleProp, TextStyleProp, or ImageStyleProp.
+ *
+ * This should only be used by very core utilities that operate on an object
+ * containing any possible style value.
+ */
+export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
