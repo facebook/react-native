@@ -3838,7 +3838,7 @@ function get$1(name) {
     var callback = viewConfigCallbacks.get(name);
     invariant(
       typeof callback === "function",
-      "View config not found for name %s",
+      "View config not found for name %s. You probably made a component that starts with a lowercase letter. Try changing it to an uppercase letter.",
       name
     );
     viewConfigCallbacks.set(name, null);
@@ -3847,7 +3847,7 @@ function get$1(name) {
   } else {
     viewConfig = viewConfigs.get(name);
   }
-  invariant(viewConfig, "View config not found for name %s", name);
+  invariant(viewConfig, "View config not found for name %s. You probably made a component that starts with a lowercase letter. Try changing it to an uppercase letter.", name);
   return viewConfig;
 }
 

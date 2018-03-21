@@ -6159,13 +6159,13 @@ var NativeRenderer = reactReconciler({
         (viewConfig = viewConfigCallbacks.get(type)),
           invariant(
             "function" === typeof viewConfig,
-            "View config not found for name %s",
+            "View config not found for name %s. You probably made a component that starts with a lowercase letter. Try changing it to an uppercase letter.",
             type
           ),
           viewConfigCallbacks.set(type, null),
           (viewConfig = viewConfig()),
           viewConfigs.set(type, viewConfig);
-      invariant(viewConfig, "View config not found for name %s", type);
+      invariant(viewConfig, "View config not found for name %s. You probably made a component that starts with a lowercase letter. Try changing it to an uppercase letter.", type);
       type = viewConfig;
       viewConfig = diffProperties(
         null,
