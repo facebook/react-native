@@ -191,8 +191,8 @@ public:
 
   Value callAsFunction(std::initializer_list<JSValueRef> args) const;
   Value callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const;
-  Value callAsFunction(int nArgs, const JSValueRef args[]) const;
-  Value callAsFunction(const Object& thisObj, int nArgs, const JSValueRef args[]) const;
+  Value callAsFunction(size_t nArgs, const JSValueRef args[]) const;
+  Value callAsFunction(const Object& thisObj, size_t nArgs, const JSValueRef args[]) const;
 
   Object callAsConstructor(std::initializer_list<JSValueRef> args) const;
 
@@ -245,7 +245,7 @@ private:
   JSObjectRef m_obj;
   bool m_isProtected = false;
 
-  Value callAsFunction(JSObjectRef thisObj, int nArgs, const JSValueRef args[]) const;
+  Value callAsFunction(JSObjectRef thisObj, size_t nArgs, const JSValueRef args[]) const;
 };
 
 // C++ object wrapper for JSValueRef. The underlying JSValueRef is not
