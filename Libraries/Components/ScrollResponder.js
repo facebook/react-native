@@ -451,14 +451,14 @@ const ScrollResponderMixin = {
    * `scrollResponderScrollToEnd({duration: 500})`
    */
   scrollResponderScrollToEnd: function(
-    options?: { animated?: boolean, duration?: boolean },
+    options?: { animated?: boolean, duration?: number },
   ) {
     // Default to true
     const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollToEnd,
-      [animated, getDuration(options.duration)],
+      [animated, getDuration(options && options.duration)],
     );
   },
 

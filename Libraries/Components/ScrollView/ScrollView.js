@@ -576,7 +576,7 @@ const ScrollView = createReactClass({
     const animated = (options && options.animated) !== false;
     this.getScrollResponder().scrollResponderScrollToEnd({
       animated: animated,
-      duration: options.duration
+      duration: options && options.duration
     });
   },
 
