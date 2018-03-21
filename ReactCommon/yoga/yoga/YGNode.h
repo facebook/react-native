@@ -106,13 +106,13 @@ struct YGNode {
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setBaseLineFunc(YGBaselineFunc baseLineFunc);
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc);
-  void setStyle(YGStyle style);
+  void setStyle(const YGStyle& style);
   void setStyleFlexDirection(YGFlexDirection direction);
   void setStyleAlignContent(YGAlign alignContent);
-  void setLayout(YGLayout layout);
+  void setLayout(const YGLayout& layout);
   void setLineIndex(uint32_t lineIndex);
   void setParent(YGNodeRef parent);
-  void setChildren(YGVector children);
+  void setChildren(const YGVector& children);
   void setNextChild(YGNodeRef nextChild);
   void setConfig(YGConfigRef config);
   void setDirty(bool isDirty);

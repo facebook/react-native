@@ -225,11 +225,11 @@ void YGNode::setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
   dirtied_ = dirtiedFunc;
 }
 
-void YGNode::setStyle(YGStyle style) {
+void YGNode::setStyle(const YGStyle& style) {
   style_ = style;
 }
 
-void YGNode::setLayout(YGLayout layout) {
+void YGNode::setLayout(const YGLayout& layout) {
   layout_ = layout;
 }
 
@@ -241,7 +241,7 @@ void YGNode::setParent(YGNodeRef parent) {
   parent_ = parent;
 }
 
-void YGNode::setChildren(YGVector children) {
+void YGNode::setChildren(const YGVector& children) {
   children_ = children;
 }
 
