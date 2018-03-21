@@ -59,12 +59,7 @@ public class FabricReconciler {
       if (prevNode.getReactTag() != newNode.getReactTag()) {
         break;
       }
-
-      if (newNode.getNewProps() != null) {
-        uiViewOperationQueue.enqueueUpdateProperties(
-          newNode.getReactTag(), newNode.getViewClass(), newNode.getNewProps());
-      }
-
+      enqueueUpdateProperties(newNode);
       manageChildren(prevNode, prevNode.getChildrenList(), newNode.getChildrenList());
       prevNode.setOriginalReactShadowNode(newNode);
     }
@@ -79,10 +74,7 @@ public class FabricReconciler {
     for (int k = firstRemovedOrAddedViewIndex; k < newList.size(); k++) {
       ReactShadowNode newNode = newList.get(k);
       if (newNode.isVirtual()) continue;
-      if (newNode.getNewProps() != null) {
-        uiViewOperationQueue.enqueueUpdateProperties(
-          newNode.getReactTag(), newNode.getViewClass(), newNode.getNewProps());
-      }
+      enqueueUpdateProperties(newNode);
       viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());
@@ -113,19 +105,36 @@ public class FabricReconciler {
 
     int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
     ViewAtIndex[] viewsToAddArray = viewsToAdd.toArray(new ViewAtIndex[viewsToAdd.size()]);
-    if (DEBUG) {
-      Log.d(
-        TAG,
-        "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
-          "\n\tIndices2Remove: " + Arrays.toString(indicesToRemove) +
-          "\n\tViews2Add: " + Arrays.toString(viewsToAddArray) +
-          "\n\tTags2Delete: " + Arrays.toString(tagsToDeleteArray));
-    }
+
     // TODO (t27180994): Mutate views synchronously on main thread
     if (indicesToRemove.length > 0 || viewsToAddArray.length > 0 || tagsToDeleteArray.length > 0) {
+      if (DEBUG) {
+        Log.d(
+            TAG,
+            "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
+                "\n\tIndices2Remove: " + Arrays.toString(indicesToRemove) +
+                "\n\tViews2Add: " + Arrays.toString(viewsToAddArray) +
+                "\n\tTags2Delete: " + Arrays.toString(tagsToDeleteArray));
+      }
       uiViewOperationQueue.enqueueManageChildren(
         parent.getReactTag(), indicesToRemove, viewsToAddArray, tagsToDeleteArray);
     }
+  }
+
+  private void enqueueUpdateProperties(ReactShadowNode node) {
+    if (node.getNewProps() == null) {
+      return;
+    }
+    if (DEBUG) {
+      Log.d(
+          TAG,
+          "manageChildren.enqueueUpdateProperties " +
+              "\n\ttag: " + node.getReactTag() +
+              "\n\tviewClass: " + node.getViewClass() +
+              "\n\tnewProps: " + node.getNewProps());
+    }
+    uiViewOperationQueue.enqueueUpdateProperties(
+        node.getReactTag(), node.getViewClass(), node.getNewProps());
   }
 
 }
