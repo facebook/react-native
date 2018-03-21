@@ -126,7 +126,7 @@ export type ShadowStyle = $ReadOnly<{|
   shadowRadius?: number,
 |}>;
 
-export type ViewStyle = $ReadOnly<{|
+export type ____ViewStyle_Internal = $ReadOnly<{|
   ...$Exact<LayoutStyle>,
   ...$Exact<ShadowStyle>,
   ...$Exact<TransformStyle>,
@@ -160,8 +160,8 @@ export type ViewStyle = $ReadOnly<{|
   elevation?: number,
 |}>;
 
-export type TextStyle = $ReadOnly<{|
-  ...$Exact<ViewStyle>,
+export type ____TextStyle_Internal = $ReadOnly<{|
+  ...$Exact<____ViewStyle_Internal>,
   color?: ColorValue,
   fontFamily?: string,
   fontSize?: number,
@@ -206,15 +206,15 @@ export type TextStyle = $ReadOnly<{|
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 |}>;
 
-export type ImageStyle = $ReadOnly<{|
-  ...$Exact<ViewStyle>,
+export type ____ImageStyle_Internal = $ReadOnly<{|
+  ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   tintColor?: ColorValue,
   overlayColor?: string,
 |}>;
 
 export type ____DangerouslyImpreciseStyle_Internal = {
-  ...$Exact<TextStyle>,
+  ...$Exact<____TextStyle_Internal>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   +tintColor?: ColorValue,
   +overlayColor?: string,
@@ -234,13 +234,13 @@ export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
   $Shape<____DangerouslyImpreciseStyle_Internal>,
 >;
 export type ____ViewStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<ViewStyle>>,
+  $ReadOnly<$Shape<____ViewStyle_Internal>>,
 >;
 export type ____TextStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<TextStyle>>,
+  $ReadOnly<$Shape<____TextStyle_Internal>>,
 >;
 export type ____ImageStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<ImageStyle>>,
+  $ReadOnly<$Shape<____ImageStyle_Internal>>,
 >;
 
 export type ____Styles_Internal = {
