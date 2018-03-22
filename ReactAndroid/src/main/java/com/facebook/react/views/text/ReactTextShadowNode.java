@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.widget.TextView;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.yoga.YogaConstants;
@@ -144,7 +145,6 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private ReactTextShadowNode(ReactTextShadowNode node) {
     super(node);
     this.mPreparedSpannableText = node.mPreparedSpannableText;
-    initMeasureFunction();
   }
 
   private void initMeasureFunction() {
@@ -156,6 +156,20 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   @Override
   protected LayoutShadowNode copy() {
     return new ReactTextShadowNode(this);
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopy() {
+    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopy();
+    copy.initMeasureFunction();
+    return copy;
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopyWithNewChildren();
+    copy.initMeasureFunction();
+    return copy;
   }
 
   // Return text alignment according to LTR or RTL style

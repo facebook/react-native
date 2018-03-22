@@ -18,7 +18,7 @@ export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = numb
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
 
-export type LayoutStyle = $ReadOnly<{|
+export type ____LayoutStyle_Internal = $ReadOnly<{|
   display?: 'none' | 'flex',
   width?: DimensionValue,
   height?: DimensionValue,
@@ -92,7 +92,7 @@ export type LayoutStyle = $ReadOnly<{|
   direction?: 'inherit' | 'ltr' | 'rtl',
 |}>;
 
-export type TransformStyle = $ReadOnly<{|
+export type ____TransformStyle_Internal = $ReadOnly<{|
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
     | {|+rotate: string|}
@@ -116,7 +116,7 @@ export type TransformStyle = $ReadOnly<{|
   >,
 |}>;
 
-export type ShadowStyle = $ReadOnly<{|
+export type ____ShadowStyle_Internal = $ReadOnly<{|
   shadowColor?: ColorValue,
   shadowOffset?: $ReadOnly<{|
     width?: number,
@@ -127,9 +127,9 @@ export type ShadowStyle = $ReadOnly<{|
 |}>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{|
-  ...$Exact<LayoutStyle>,
-  ...$Exact<ShadowStyle>,
-  ...$Exact<TransformStyle>,
+  ...$Exact<____LayoutStyle_Internal>,
+  ...$Exact<____ShadowStyle_Internal>,
+  ...$Exact<____TransformStyle_Internal>,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ColorValue,
   borderColor?: ColorValue,

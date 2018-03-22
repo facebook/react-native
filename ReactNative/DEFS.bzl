@@ -35,10 +35,16 @@ with allow_unsafe_import():
 
 # Building is not supported in OSS right now
 def rn_xplat_cxx_library(name, **kwargs):
-    _ignore = kwargs
+    new_kwargs = {
+        k: v
+        for k, v in kwargs.items()
+        if k.startswith("exported_")
+    }
+
     native.cxx_library(
         name=name,
-        visibility=kwargs.get("visibility", [])
+        visibility=kwargs.get("visibility", []),
+        **new_kwargs
     )
 
 
