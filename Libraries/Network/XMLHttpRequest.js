@@ -254,7 +254,11 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
         if (typeof this._response === 'object' && this._response) {
           this._cachedResponse = BlobManager.createFromOptions(this._response);
         } else {
-          throw new Error(`Invalid response for blob: ${this._response}`);
+          if (this._response === '')  {
+            this._cachedResponse = null;
+          } else {
+            throw new Error(`Invalid response for blob: ${this._response}`);
+          }
         }
         break;
 
