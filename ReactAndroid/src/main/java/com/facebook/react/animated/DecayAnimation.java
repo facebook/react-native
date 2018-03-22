@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.animated;
@@ -16,28 +18,20 @@ import com.facebook.react.bridge.ReadableMap;
 public class DecayAnimation extends AnimationDriver {
 
   private final double mVelocity;
+  private final double mDeceleration;
 
-  private double mDeceleration;
-  private long mStartFrameTimeMillis;
-  private double mFromValue;
-  private double mLastValue;
+  private long mStartFrameTimeMillis = -1;
+  private double mFromValue = 0d;
+  private double mLastValue = 0d;
   private int mIterations;
   private int mCurrentLoop;
 
   public DecayAnimation(ReadableMap config) {
-    mVelocity = config.getDouble("velocity"); // initial velocity
-    resetConfig(config);
-  }
-
-  @Override
-  public void resetConfig(ReadableMap config) {
+    mVelocity = config.getDouble("velocity");
     mDeceleration = config.getDouble("deceleration");
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mCurrentLoop = 1;
     mHasFinished = mIterations == 0;
-    mStartFrameTimeMillis = -1;
-    mFromValue = 0;
-    mLastValue = 0;
   }
 
   @Override

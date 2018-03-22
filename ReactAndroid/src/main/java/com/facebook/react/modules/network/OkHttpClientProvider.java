@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.modules.network;
@@ -54,10 +56,7 @@ public class OkHttpClientProvider {
     if (sFactory != null) {
       return sFactory.createNewNetworkModuleClient();
     }
-    return createClientBuilder().build();
-  }
 
-  public static OkHttpClient.Builder createClientBuilder() {
     // No timeouts by default
     OkHttpClient.Builder client = new OkHttpClient.Builder()
       .connectTimeout(0, TimeUnit.MILLISECONDS)
@@ -65,7 +64,7 @@ public class OkHttpClientProvider {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
 
-    return enableTls12OnPreLollipop(client);
+    return enableTls12OnPreLollipop(client).build();
   }
 
   /*

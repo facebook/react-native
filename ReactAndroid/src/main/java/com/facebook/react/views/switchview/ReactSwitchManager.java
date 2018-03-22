@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 // switchview because switch is a keyword
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -40,24 +43,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     private boolean mMeasured;
 
     private ReactSwitchShadowNode() {
-      initMeasureFunction();
-    }
-
-    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-      initMeasureFunction();
-    }
-
-    private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    protected ReactSwitchShadowNode copy() {
-      return new ReactSwitchShadowNode(this);
     }
 
     @Override
@@ -93,7 +79,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
-                  buttonView.getId(),
+                  ReactFindViewUtil.getReactTag(buttonView),
                   isChecked));
         }
       };

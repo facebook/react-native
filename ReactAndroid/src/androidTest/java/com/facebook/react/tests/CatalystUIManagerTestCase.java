@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.tests;
@@ -88,7 +90,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
     jsModule = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
-        .addNativeModule(new AndroidInfoModule(getContext()))
+        .addNativeModule(new AndroidInfoModule())
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
@@ -98,7 +100,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testFlexUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderFlexTestApplication(rootView.getId());
+    jsModule.renderFlexTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());
@@ -122,7 +124,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
   // Find what could be different and make the test independent of env
   // public void testFlexWithTextViews() {
   //   FrameLayout rootView = createRootView();
-  //   jsModule.renderFlexWithTextApplication(rootView.getId());
+  //   jsModule.renderFlexWithTextApplication(rootReactFindViewUtil.getReactTag(view));
   //   waitForBridgeAndUIIdle();
   //
   //   assertEquals(1, rootView.getChildCount());
@@ -160,7 +162,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testAbsolutePositionUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderAbsolutePositionTestApplication(rootView.getId());
+    jsModule.renderAbsolutePositionTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());
@@ -174,7 +176,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testUpdatePositionInList() {
     FrameLayout rootView = createRootView();
-    jsModule.renderUpdatePositionInListTestApplication(rootView.getId());
+    jsModule.renderUpdatePositionInListTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     ViewGroup containerView = getViewByTestId(rootView, "container");
@@ -203,7 +205,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testAbsolutePositionBottomRightUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderAbsolutePositionBottomRightTestApplication(rootView.getId());
+    jsModule.renderAbsolutePositionBottomRightTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());

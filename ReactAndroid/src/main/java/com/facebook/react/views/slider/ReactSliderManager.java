@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.slider;
@@ -22,6 +24,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -48,24 +51,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     private boolean mMeasured;
 
     private ReactSliderShadowNode() {
-      initMeasureFunction();
-    }
-
-    private ReactSliderShadowNode(ReactSliderShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-      initMeasureFunction();
-    }
-
-    private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    protected ReactSliderShadowNode copy() {
-      return new ReactSliderShadowNode(this);
     }
 
     @Override
@@ -97,7 +83,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
-                  seekbar.getId(),
+                  ReactFindViewUtil.getReactTag(seekbar),
                   ((ReactSlider) seekbar).toRealProgress(progress),
                   fromUser));
         }
@@ -111,7 +97,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
-                  seekbar.getId(),
+                  ReactFindViewUtil.getReactTag(seekbar),
                   ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
         }
       };

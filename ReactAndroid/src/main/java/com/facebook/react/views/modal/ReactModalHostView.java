@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.modal;
@@ -28,6 +30,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -276,17 +279,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
 
-    Activity currentActivity = getCurrentActivity();
-    if (currentActivity != null) {
-      int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
-      if ((activityWindowFlags
-          & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-        mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      } else {
-        mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      }
-    }
-
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     } else {
@@ -320,7 +312,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
-        final int viewTag = getChildAt(0).getId();
+        final int viewTag = ReactFindViewUtil.getReactTag(getChildAt(0));
         ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactContext) {

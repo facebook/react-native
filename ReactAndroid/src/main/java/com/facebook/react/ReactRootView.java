@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react;
@@ -16,7 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -42,10 +43,10 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -85,12 +86,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
-  private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private @Nullable Runnable mJSEntryPoint;
-  private boolean mIsFabric = false;
 
   public ReactRootView(Context context) {
     super(context);
@@ -213,47 +212,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       // This will be removed in the future.
       handleException(e);
     }
-  }
-
-  @Override
-  public boolean dispatchKeyEvent(KeyEvent ev) {
-    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
-      mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-        ReactConstants.TAG,
-        "Unable to handle key event as the catalyst instance has not been attached");
-      return super.dispatchKeyEvent(ev);
-    }
-    mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
-    return super.dispatchKeyEvent(ev);
-  }
-
-  @Override
-  protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
-    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
-      mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-        ReactConstants.TAG,
-        "Unable to handle focus changed event as the catalyst instance has not been attached");
-      super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-      return;
-    }
-    mAndroidHWInputDeviceHelper.clearFocus();
-    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
-  }
-
-  @Override
-  public void requestChildFocus(View child, View focused) {
-    if (mReactInstanceManager == null || !mIsAttachedToInstance ||
-      mReactInstanceManager.getCurrentReactContext() == null) {
-      FLog.w(
-        ReactConstants.TAG,
-        "Unable to handle child focus changed event as the catalyst instance has not been attached");
-      super.requestChildFocus(child, focused);
-      return;
-    }
-    mAndroidHWInputDeviceHelper.onFocusChanged(focused);
-    super.requestChildFocus(child, focused);
   }
 
   private void dispatchJSTouchEvent(MotionEvent event) {
@@ -567,25 +525,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
-  public void setIsFabric(boolean isFabric) {
-    mIsFabric = isFabric;
-  }
-
-  public boolean isFabric() {
-    return mIsFabric;
-  }
-
   @Nullable
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
-  }
-  
-  /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager.getCurrentReactContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
-    }
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -715,6 +657,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           .getCurrentReactContext()
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
+    }
+
+    private void sendEvent(String eventName, @Nullable WritableMap params) {
+      if (mReactInstanceManager != null) {
+        mReactInstanceManager.getCurrentReactContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
+      }
     }
   }
 }

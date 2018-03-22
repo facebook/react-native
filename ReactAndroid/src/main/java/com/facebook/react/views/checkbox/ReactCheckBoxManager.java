@@ -1,8 +1,9 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) 2017-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
 package com.facebook.react.views.checkbox;
 
@@ -13,6 +14,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
@@ -27,7 +29,7 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
           reactContext
               .getNativeModule(UIManagerModule.class)
               .getEventDispatcher()
-              .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
+              .dispatchEvent(new ReactCheckBoxEvent(ReactFindViewUtil.getReactTag(buttonView), isChecked));
         }
       };
 

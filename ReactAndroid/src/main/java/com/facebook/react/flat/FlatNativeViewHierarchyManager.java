@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.flat;
@@ -19,10 +21,11 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * FlatNativeViewHierarchyManager is the only class that performs View manipulations. All of this
@@ -51,7 +54,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     // When unmounting, ReactInstanceManager.detachViewFromInstance() will check id of the
     // top-level View (SizeMonitoringFrameLayout) and pass it back to JS. We want that View's id to
     // be set, otherwise NativeViewHierarchyManager will not be able to cleanup properly.
-    view.setId(tag);
+    ReactFindViewUtil.setReactTag(view, tag);
 
     addRootViewGroup(tag, root, themedContext);
   }

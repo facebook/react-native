@@ -1,8 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
 package com.facebook.react.views.text;
 
@@ -22,18 +23,6 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   private @Nullable String mText = null;
 
-  public ReactRawTextShadowNode() { }
-
-  private ReactRawTextShadowNode(ReactRawTextShadowNode node) {
-    super(node);
-    this.mText = node.mText;
-  }
-
-  @Override
-  protected ReactShadowNodeImpl copy() {
-    return new ReactRawTextShadowNode(this);
-  }
-
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
@@ -47,10 +36,5 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
   @Override
   public boolean isVirtual() {
     return true;
-  }
-
-  @Override
-  public String toString() {
-    return getViewClass() + " [text: " + mText + "]";
   }
 }

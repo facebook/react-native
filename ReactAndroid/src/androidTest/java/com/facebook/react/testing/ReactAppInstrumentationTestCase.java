@@ -1,23 +1,26 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * All rights reserved.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.testing;
 
-import android.content.Intent;
+import javax.annotation.Nullable;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import android.graphics.Bitmap;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * Base class for instrumentation tests that runs React based react application in UI mode
@@ -33,9 +36,6 @@ public abstract class ReactAppInstrumentationTestCase extends
   protected void setUp() throws Exception {
     super.setUp();
 
-    Intent intent = new Intent();
-    intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
-    setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
     try {
       runTestOnUiThread(new Runnable() {
@@ -142,10 +142,6 @@ public abstract class ReactAppInstrumentationTestCase extends
   protected abstract String getReactApplicationKeyUnderTest();
 
   protected boolean getEnableDevSupport() {
-    return false;
-  }
-
-  protected boolean isFabricTest() {
     return false;
   }
 

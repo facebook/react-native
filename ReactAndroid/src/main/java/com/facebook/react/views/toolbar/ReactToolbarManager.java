@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.toolbar;
@@ -23,6 +25,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -33,7 +36,6 @@ import javax.annotation.Nullable;
 public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   private static final String REACT_CLASS = "ToolbarAndroid";
-  private static final int COMMAND_DISMISS_POPUP_MENUS = 1;
 
   @Override
   public String getName() {
@@ -125,7 +127,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           @Override
           public void onClick(View v) {
             mEventDispatcher.dispatchEvent(
-                new ToolbarClickEvent(view.getId(), -1));
+                new ToolbarClickEvent(ReactFindViewUtil.getReactTag(view), -1));
           }
         });
 
@@ -135,7 +137,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
           public boolean onMenuItemClick(MenuItem menuItem) {
             mEventDispatcher.dispatchEvent(
                 new ToolbarClickEvent(
-                    view.getId(),
+                    ReactFindViewUtil.getReactTag(view),
                     menuItem.getOrder()));
             return true;
           }
@@ -156,27 +158,6 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
-  }
-
-  @Nullable
-  @Override
-  public Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("dismissPopupMenus", COMMAND_DISMISS_POPUP_MENUS);
-  }
-
-  @Override
-  public void receiveCommand(ReactToolbar view, int commandType, @Nullable ReadableArray args) {
-    switch (commandType) {
-      case COMMAND_DISMISS_POPUP_MENUS: {
-        view.dismissPopupMenus();
-        return;
-      }
-      default:
-        throw new IllegalArgumentException(String.format(
-          "Unsupported command %d received by %s.",
-          commandType,
-          getClass().getSimpleName()));
-    }
   }
 
   private int[] getDefaultContentInsets(Context context) {

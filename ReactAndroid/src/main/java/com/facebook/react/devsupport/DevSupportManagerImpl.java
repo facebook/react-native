@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.devsupport;
@@ -57,6 +59,8 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
 
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -341,7 +345,7 @@ public class DevSupportManagerImpl implements
       final Pair<View, Integer> deepestPairView = getDeepestNativeView(view);
 
       View deepestView = deepestPairView.first;
-      Integer tagId = deepestView.getId();
+      Integer tagId = ReactFindViewUtil.getReactTag(deepestView);
       final int depth = deepestPairView.second;
       JSDevSupport JSDevSupport = mCurrentContext.getNativeModule(JSDevSupport.class);
       JSDevSupport.getJSHierarchy(tagId.toString(), new JSDevSupport.DevSupportCallback() {
@@ -825,9 +829,7 @@ public class DevSupportManagerImpl implements
 
     UiThreadUtil.assertOnUiThread();
 
-    ReactMarker.logMarker(
-        ReactMarkerConstants.RELOAD,
-        mDevSettings.getPackagerConnectionSettings().getDebugServerHost());
+    ReactMarker.logMarker(ReactMarkerConstants.RELOAD);
 
     // dismiss redbox if exists
     hideRedboxDialog();

@@ -16,7 +16,7 @@ class JPage : public jni::JavaClass<JPage> {
 public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/Inspector$Page;";
 
-  static jni::local_ref<JPage::javaobject> create(int id, const std::string& title, const std::string& vm);
+  static jni::local_ref<JPage::javaobject> create(int id, const std::string& title);
 };
 
 class JRemoteConnection : public jni::JavaClass<JRemoteConnection> {

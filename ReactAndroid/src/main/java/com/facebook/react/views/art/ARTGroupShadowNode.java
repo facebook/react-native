@@ -1,13 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.art;
 
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import javax.annotation.Nullable;
 
 import android.graphics.Canvas;
@@ -26,13 +27,6 @@ public class ARTGroupShadowNode extends ARTVirtualNode {
 
   protected @Nullable RectF mClipping;
 
-  public ARTGroupShadowNode() { }
-
-  public ARTGroupShadowNode(ARTGroupShadowNode node) {
-    super(node);
-    this.mClipping = new RectF(node.mClipping);
-  }
-
   @ReactProp(name = "clipping")
   public void setClipping(@Nullable ReadableArray clippingDims) {
     float[] clippingData = PropHelper.toFloatArray(clippingDims);
@@ -40,11 +34,6 @@ public class ARTGroupShadowNode extends ARTVirtualNode {
       mClipping = createClipping(clippingData);
       markUpdated();
     }
-  }
-
-  @Override
-  protected ReactShadowNodeImpl copy() {
-    return new ARTGroupShadowNode(this);
   }
 
   @Override

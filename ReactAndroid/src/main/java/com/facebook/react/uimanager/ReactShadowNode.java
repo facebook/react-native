@@ -1,8 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
+ * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
+ * file in the same directory.
  */
 package com.facebook.react.uimanager;
 
@@ -18,7 +19,6 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
-import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -68,17 +68,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   boolean isYogaLeafNode();
 
-  /**
-   * @return a mutable copy of the {@link ReactShadowNode}
-   */
-  T mutableCopy();
-
-  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
-
-  T mutableCopyWithNewChildren();
-
-  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
-
   String getViewClass();
 
   boolean hasUpdates();
@@ -104,8 +93,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
-
-  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
@@ -194,11 +181,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   boolean isDescendantOf(T ancestorNode);
 
-  /**
-   * @return a {@link String} representation of the Yoga hierarchy of this {@link ReactShadowNode}
-   */
-  String getHierarchyInfo();
-
   /*
    * In some cases we need a way to specify some environmental data to shadow node
    * to improve layout (or do something similar), so {@code localData} serves these needs.
@@ -209,7 +191,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * Use  {@link UIManagerModule#setViewLocalData} to set this property
    * (to provide local/environmental data for a shadow node) from the main thread.
    */
-  void setLocalData(Object data);
+  public void setLocalData(Object data);
 
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
@@ -359,18 +341,4 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
-
-  /**
-   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
-   * {@link ReactShadowNode}.
-   */
-  List<ReactShadowNode> getChildrenList();
-
-  /**
-   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
-   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
-   */
-  @Nullable ReactShadowNode getOriginalReactShadowNode();
-
-  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
 }

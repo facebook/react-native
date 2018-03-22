@@ -37,13 +37,6 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     float value;
     YogaUnit unit;
 
-    private MutableYogaValue() { }
-
-    private MutableYogaValue(MutableYogaValue mutableYogaValue) {
-      this.value = mutableYogaValue.value;
-      this.unit = mutableYogaValue.unit;
-    }
-
     void setFromDynamic(Dynamic dynamic) {
       if (dynamic.isNull()) {
         unit = YogaUnit.UNDEFINED;
@@ -66,21 +59,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
   }
 
-  private final MutableYogaValue mTempYogaValue;
-
-  public LayoutShadowNode() {
-    mTempYogaValue = new MutableYogaValue();
-  }
-
-  protected LayoutShadowNode(LayoutShadowNode node) {
-    super(node);
-    mTempYogaValue = new MutableYogaValue();
-  }
-
-  @Override
-  protected LayoutShadowNode copy() {
-    return new LayoutShadowNode(this);
-  }
+  private final MutableYogaValue mTempYogaValue = new MutableYogaValue();
 
   @ReactProp(name = ViewProps.WIDTH)
   public void setWidth(Dynamic width) {

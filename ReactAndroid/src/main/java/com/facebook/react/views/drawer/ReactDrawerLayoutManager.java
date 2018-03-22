@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.drawer;
@@ -29,6 +31,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
@@ -185,25 +188,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     @Override
     public void onDrawerSlide(View view, float v) {
       mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getId(), v));
+          new DrawerSlideEvent(ReactFindViewUtil.getReactTag(mDrawerLayout), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
       mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getId()));
+        new DrawerOpenedEvent(ReactFindViewUtil.getReactTag(mDrawerLayout)));
     }
 
     @Override
     public void onDrawerClosed(View view) {
       mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getId()));
+          new DrawerClosedEvent(ReactFindViewUtil.getReactTag(mDrawerLayout)));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
       mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getId(), i));
+          new DrawerStateChangedEvent(ReactFindViewUtil.getReactTag(mDrawerLayout), i));
     }
   }
 }

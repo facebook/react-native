@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.views.modal;
@@ -19,6 +21,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * View manager for {@link ReactModalHostView} components.
@@ -79,14 +82,14 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       new ReactModalHostView.OnRequestCloseListener() {
         @Override
         public void onRequestClose(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
+          dispatcher.dispatchEvent(new RequestCloseEvent(ReactFindViewUtil.getReactTag(view)));
         }
       });
     view.setOnShowListener(
       new DialogInterface.OnShowListener() {
         @Override
         public void onShow(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new ShowEvent(view.getId()));
+          dispatcher.dispatchEvent(new ShowEvent(ReactFindViewUtil.getReactTag(view)));
         }
       });
   }

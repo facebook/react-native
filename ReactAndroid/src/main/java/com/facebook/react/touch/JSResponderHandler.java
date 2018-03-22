@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.touch;
@@ -12,6 +14,8 @@ import javax.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * This class coordinates JSResponder commands for {@link UIManagerModule}. It should be set as
@@ -68,7 +72,7 @@ public class JSResponderHandler implements OnInterceptTouchEventListener {
       // Therefore since "UP" event is the last event in a gesture, we should just let it reach the
       // original target that is a child view of {@param v}.
       // http://developer.android.com/reference/android/view/ViewGroup.html#onInterceptTouchEvent(android.view.MotionEvent)
-      return v.getId() == currentJSResponder;
+      return ReactFindViewUtil.getReactTag(v) == currentJSResponder;
     }
     return false;
   }

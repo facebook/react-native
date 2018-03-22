@@ -3,7 +3,6 @@
 #pragma once
 
 #include <memory>
-#include <cxxreact/JSExecutor.h>
 
 namespace folly {
 
@@ -24,7 +23,7 @@ void injectJSCExecutorAndroidPlatform();
 }
 
 std::unique_ptr<JSExecutorFactory> makeAndroidJSCExecutorFactory(
-    const folly::dynamic& jscConfig, NativeExtensionsProvider nativeExtensionsProvider);
+    const folly::dynamic& jscConfig, std::function<folly::dynamic(const std::string&)> nativeExtensionsProvider);
 
 }
 }

@@ -1,8 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 package com.facebook.react.flat;
@@ -37,6 +39,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 
@@ -205,7 +208,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
      * b) PointerEvents.NONE - this method will NOT be executed, because the View will be filtered
      *    out by TouchTargetHelper.
      * c) PointerEvents.BOX_NONE - TouchTargetHelper will make sure that {@link #reactTagForTouch()}
-     *     doesn't return getId().
+     *     doesn't return ReactFindViewUtil.getReactTag(this).
      */
     SoftAssertions.assertCondition(
         mPointerEvents != PointerEvents.NONE,
@@ -219,7 +222,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
     }
 
     // no children found
-    return getId();
+    return ReactFindViewUtil.getReactTag(this);
   }
 
   @Override
