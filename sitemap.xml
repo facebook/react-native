@@ -4,6 +4,7 @@
 <url> <loc>https://facebook.github.io/index.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/index.html" /> </url>
 <url> <loc>https://facebook.github.io/showcase.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/showcase.html" /> </url>
 <url> <loc>https://facebook.github.io/versions.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/versions.html" /> </url>
+<url> <loc>https://facebook.github.io/blog/2018/03/22/building-input-accessory-view-for-react-native.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/03/05/AWS-app-sync.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/01/18/implementing-twitters-app-loading-animation-in-react-native.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/01/09/react-native-monthly-6.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
