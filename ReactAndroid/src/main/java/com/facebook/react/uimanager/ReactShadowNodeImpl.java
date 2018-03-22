@@ -1024,11 +1024,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
-    if ((measureFunction == null ^ mYogaNode.isMeasureDefined()) && getChildCount() != 0) {
-      throw new RuntimeException(
-          "Since a node with a measure function does not add any native yoga children, it's "
-              + "not safe to transition to/from having a measure function unless a node has no children");
-    }
     mYogaNode.setMeasureFunction(measureFunction);
   }
 
