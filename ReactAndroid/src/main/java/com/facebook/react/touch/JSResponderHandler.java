@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
+
 /**
  * This class coordinates JSResponder commands for {@link UIManagerModule}. It should be set as
  * OnInterceptTouchEventListener for all newly created native views that implements
@@ -68,7 +70,7 @@ public class JSResponderHandler implements OnInterceptTouchEventListener {
       // Therefore since "UP" event is the last event in a gesture, we should just let it reach the
       // original target that is a child view of {@param v}.
       // http://developer.android.com/reference/android/view/ViewGroup.html#onInterceptTouchEvent(android.view.MotionEvent)
-      return v.getId() == currentJSResponder;
+      return ReactFindViewUtil.getReactTag(v) == currentJSResponder;
     }
     return false;
   }

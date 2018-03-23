@@ -23,6 +23,7 @@ import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * FlatNativeViewHierarchyManager is the only class that performs View manipulations. All of this
@@ -51,7 +52,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     // When unmounting, ReactInstanceManager.detachViewFromInstance() will check id of the
     // top-level View (SizeMonitoringFrameLayout) and pass it back to JS. We want that View's id to
     // be set, otherwise NativeViewHierarchyManager will not be able to cleanup properly.
-    view.setId(tag);
+    ReactFindViewUtil.setReactTag(view, tag);
 
     addRootViewGroup(tag, root, themedContext);
   }

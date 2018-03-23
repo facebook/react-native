@@ -2,8 +2,10 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.IdRes;
 import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
@@ -43,6 +45,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
    */
   public static final String PROP_TEST_ID = "testID";
   public static final String PROP_NATIVE_ID = "nativeID";
+  public static final String RESOURCE_ID = "id";
 
   private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
       new MatrixMathHelper.MatrixDecompositionContext();
@@ -92,6 +95,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_TEST_ID)
   public void setTestId(T view, String testId) {
+    String packageName = view.getContext().getPackageName();
+    @IdRes int viewId = view.getResources().getIdentifier(testId, RESOURCE_ID, packageName);
+    view.setId(viewId);
     view.setTag(R.id.react_test_id, testId);
 
     // temporarily set the tag and keyed tags to avoid end to end test regressions

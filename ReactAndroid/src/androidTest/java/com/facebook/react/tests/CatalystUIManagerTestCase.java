@@ -98,7 +98,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testFlexUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderFlexTestApplication(rootView.getId());
+    jsModule.renderFlexTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());
@@ -122,7 +122,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
   // Find what could be different and make the test independent of env
   // public void testFlexWithTextViews() {
   //   FrameLayout rootView = createRootView();
-  //   jsModule.renderFlexWithTextApplication(rootView.getId());
+  //   jsModule.renderFlexWithTextApplication(rootReactFindViewUtil.getReactTag(view));
   //   waitForBridgeAndUIIdle();
   //
   //   assertEquals(1, rootView.getChildCount());
@@ -160,7 +160,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testAbsolutePositionUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderAbsolutePositionTestApplication(rootView.getId());
+    jsModule.renderAbsolutePositionTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());
@@ -174,7 +174,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testUpdatePositionInList() {
     FrameLayout rootView = createRootView();
-    jsModule.renderUpdatePositionInListTestApplication(rootView.getId());
+    jsModule.renderUpdatePositionInListTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     ViewGroup containerView = getViewByTestId(rootView, "container");
@@ -203,7 +203,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
 
   public void testAbsolutePositionBottomRightUIRendered() {
     FrameLayout rootView = createRootView();
-    jsModule.renderAbsolutePositionBottomRightTestApplication(rootView.getId());
+    jsModule.renderAbsolutePositionBottomRightTestApplication(rootReactFindViewUtil.getReactTag(view));
     waitForBridgeAndUIIdle();
 
     assertEquals(1, rootView.getChildCount());

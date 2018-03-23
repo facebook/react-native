@@ -37,6 +37,7 @@ import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -73,7 +74,7 @@ public class ReactAppTestActivity extends FragmentActivity
     setContentView(rootView);
 
     mScreenshotingFrameLayout = new ScreenshotingFrameLayout(this);
-    mScreenshotingFrameLayout.setId(ROOT_VIEW_ID);
+    ReactFindViewUtil.setReactTag(mScreenshotingFrameLayout, ROOT_VIEW_ID);
     rootView.addView(mScreenshotingFrameLayout);
 
     mReactRootView = new ReactRootView(this);

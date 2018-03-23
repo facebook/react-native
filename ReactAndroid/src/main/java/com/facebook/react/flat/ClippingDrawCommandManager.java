@@ -23,6 +23,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * Abstract class for a {@link DrawCommandManager} with directional clipping.  Allows support for
@@ -310,7 +311,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
   @Override
   void onClippedViewDropped(View view) {
-    unclip(view.getId());
+    unclip(ReactFindViewUtil.getReactTag(view));
     mFlatViewGroup.removeDetachedView(view);
   }
 
@@ -440,7 +441,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   private void updateClippingRecursively() {
     for (int i = 0, children = mClippingViewGroups.size(); i < children; i++) {
       ReactClippingViewGroup view = mClippingViewGroups.get(i);
-      if (isNotClipped(((View) view).getId())) {
+      if (isNotClipped(ReactFindViewUtil.getReactTag((View) view))) {
         view.updateClippingRect();
       }
     }
@@ -465,12 +466,12 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
   private void updateClippingToCurrentRect() {
     for (int i = 0, size = mFlatViewGroup.getChildCount(); i < size; i++) {
       View view = mFlatViewGroup.getChildAt(i);
-      int index = mDrawViewIndexMap.get(view.getId());
+      int index = mDrawViewIndexMap.get(ReactFindViewUtil.getReactTag(view));
       if (withinBounds(index) || animating(view)) {
         mViewsToKeep.add(view);
       } else {
         mViewsToRemove.append(i, view);
-        clip(view.getId(), view);
+        clip(ReactFindViewUtil.getReactTag(view), view);
       }
     }
 
@@ -497,7 +498,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 
     for (int i = 0, size = mViewsToKeep.size(); i < size; i++) {
       View view = mViewsToKeep.get(i);
-      int commandIndex = mDrawViewIndexMap.get(view.getId());
+      int commandIndex = mDrawViewIndexMap.get(ReactFindViewUtil.getReactTag(view));
       if (current <= commandIndex) {
         while (current != commandIndex) {
           if (mDrawCommands[current] instanceof DrawView) {
@@ -595,7 +596,8 @@ import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
       // This is the command index of the next view that we need to draw.  Since a view might be
       // animating, this view is either before all the commands onscreen, onscreen, or after the
       // onscreen commands.
-      int viewIndex = mDrawViewIndexMap.get(mFlatViewGroup.getChildAt(i).getId());
+      int reactTag = ReactFindViewUtil.getReactTag(mFlatViewGroup.getChildAt(i));
+      int viewIndex = mDrawViewIndexMap.get(reactTag);
       if (mStop < viewIndex) {
         // The current view is outside of the viewport bounds.  We want to draw all the commands
         // up to the stop, then draw all the views outside the viewport bounds.

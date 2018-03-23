@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * View manager for {@link ReactModalHostView} components.
@@ -79,14 +80,14 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       new ReactModalHostView.OnRequestCloseListener() {
         @Override
         public void onRequestClose(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
+          dispatcher.dispatchEvent(new RequestCloseEvent(ReactFindViewUtil.getReactTag(view)));
         }
       });
     view.setOnShowListener(
       new DialogInterface.OnShowListener() {
         @Override
         public void onShow(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new ShowEvent(view.getId()));
+          dispatcher.dispatchEvent(new ShowEvent(ReactFindViewUtil.getReactTag(view)));
         }
       });
   }

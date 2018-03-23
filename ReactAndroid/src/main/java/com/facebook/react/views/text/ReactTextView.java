@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import javax.annotation.Nullable;
 
@@ -75,7 +76,7 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   @Override
   public int reactTagForTouch(float touchX, float touchY) {
     CharSequence text = getText();
-    int target = getId();
+    int target = ReactFindViewUtil.getReactTag(this);
 
     int x = (int) touchX;
     int y = (int) touchY;
