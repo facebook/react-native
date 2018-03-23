@@ -38,6 +38,16 @@ aliases:
       - /opt/android/sdk
     key: v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
+  - &restore-cache-gradle
+    keys:
+      - v1-gradle-{{ arch }}-{{ .Branch }}
+      # Fallback in case this is a first-time run on a fork
+      - v1-gradle-{{ arch }}-master
+  - &save-cache-gradle
+    paths:
+      - ~/.gradle
+    key: v1-gradle-{{ arch }}-{{ .Branch }}
+
   - &restore-cache-ndk
     keys:
       - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
@@ -481,7 +491,11 @@ jobs:
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
+
+      # Gradle
+      - restore-cache: *restore-cache-gradle
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+      - save-cache: *save-cache-gradle
 
       # Build and compile
       - run: *build-android-app
