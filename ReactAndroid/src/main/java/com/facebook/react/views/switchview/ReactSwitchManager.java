@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
-import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -25,6 +24,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * View manager for {@link ReactSwitch} components.

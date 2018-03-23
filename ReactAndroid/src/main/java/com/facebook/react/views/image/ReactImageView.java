@@ -52,6 +52,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
