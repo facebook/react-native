@@ -32,6 +32,8 @@ public:
 
   virtual void apply(const RawProps &rawProps);
 
+  const std::string &getNativeId() const;
+
 private:
   std::string nativeId_ {""};
 };

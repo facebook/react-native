@@ -58,6 +58,14 @@ Tag ShadowNode::getTag() const {
   return tag_;
 }
 
+Tag ShadowNode::getRootTag() const {
+  return rootTag_;
+}
+
+InstanceHandle ShadowNode::getInstanceHandle() const {
+  return instanceHandle_;
+}
+
 SharedShadowNode ShadowNode::getSourceNode() const {
   return sourceNode_;
 }
