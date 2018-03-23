@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
@@ -45,7 +44,6 @@ public class ReactHorizontalScrollViewManager
   };
 
   private @Nullable FpsListener mFpsListener = null;
-  private @Nullable ObjectAnimator mAnimator = null;
 
   public ReactHorizontalScrollViewManager() {
     this(null);
@@ -147,7 +145,7 @@ public class ReactHorizontalScrollViewManager
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mDuration > 0) {
-      animateScroll(scrollView, data.mDestX, data.mDestY, data.mDuration);
+      scrollView.animateScroll(scrollView, data.mDestX, data.mDestY, data.mDuration);
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
@@ -161,7 +159,7 @@ public class ReactHorizontalScrollViewManager
     int right =
       scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
     if (data.mDuration > 0) {
-      animateScroll(scrollView, right, scrollView.getScrollY(), data.mDuration);
+      scrollView.animateScroll(scrollView, right, scrollView.getScrollY(), data.mDuration);
     } else {
       scrollView.scrollTo(right, scrollView.getScrollY());
     }
@@ -224,12 +222,5 @@ public class ReactHorizontalScrollViewManager
         color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
-  }
-
-  private void animateScroll(ReactHorizontalScrollView view, int mDestX, int mDestY, int mDuration) {
-    if (mAnimator != null) {
-      mAnimator.cancel();
-    }
-    mAnimator = ReactScrollViewHelper.animateScroll(view, mDestX, mDestY, mDuration);
   }
 }

@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -40,6 +41,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
   private boolean mActivelyScrolling;
+  private @Nullable ObjectAnimator mAnimator = null;
   private @Nullable Rect mClippingRect;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
@@ -100,6 +102,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public void animateScroll(ReactHorizontalScrollView view, int mDestX, int mDestY, int mDuration) {
+    if (mAnimator != null) {
+      mAnimator.cancel();
+    }
+    mAnimator = ReactScrollViewHelper.animateScroll(view, mDestX, mDestY, mDuration);
   }
 
   @Override
@@ -163,6 +172,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
       return false;
+    }
+
+    if (mAnimator != null) {
+      mAnimator.cancel();
+      mAnimator = null;
     }
 
     mVelocityHelper.calculateVelocity(ev);

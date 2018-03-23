@@ -109,16 +109,6 @@ public class ReactScrollViewHelper {
 
     final ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(scrollView, scrollX, scrollY);
 
-    // Cancel the animation if a user interacts with the ScrollView.
-    scrollView.setOnTouchListener(new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        scrollView.setOnTouchListener(null);
-        animator.cancel();
-        return false;
-      }
-    });
-
     animator.setDuration(mDuration).start();
     return animator;
   }

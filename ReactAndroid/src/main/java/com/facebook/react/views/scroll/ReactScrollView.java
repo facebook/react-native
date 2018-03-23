@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -48,6 +49,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
 
+  private @Nullable ObjectAnimator mAnimator = null;
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
   private boolean mDragging;
@@ -131,6 +133,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     awakenScrollBars();
   }
 
+  public void animateScroll(ReactScrollView view, int mDestX, int mDestY, int mDuration) {
+    if (mAnimator != null) {
+      mAnimator.cancel();
+    }
+    mAnimator = ReactScrollViewHelper.animateScroll(view, mDestX, mDestY, mDuration);
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     MeasureSpecAssertions.assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec);
@@ -210,6 +219,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
       return false;
+    }
+
+    if (mAnimator != null) {
+      mAnimator.cancel();
+      mAnimator = null;
     }
 
     mVelocityHelper.calculateVelocity(ev);
