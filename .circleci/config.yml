@@ -51,6 +51,18 @@ aliases:
       - ~/.gradle
     key: v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
 
+  - &restore-cache-apt
+    keys:
+      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum ".circleci/config.yml" }}
+      # Fallback in case checksum fails
+      - v1-apt-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-apt-{{ arch }}-master-
+  - &save-cache-apt
+    paths:
+      - ~/vendor/apt
+    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum ".circleci/config.yml" }}
+
   - &restore-cache-ndk
     keys:
       - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
@@ -156,7 +168,20 @@ aliases:
     name: Install Android Build Dependencies
     command: |
       sudo apt-get update -y
-      sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+      if ! [[ -d ~/vendor/apt ]]; then
+        mkdir -p ~/vendor/apt
+      fi
+      # First check for archives cache
+      if ! [[ -d ~/vendor/apt/archives ]]; then
+        # It doesn't so download the packages
+        sudo apt-get install --download-only ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+        # Then move them to our cache directory
+        sudo cp -R /var/cache/apt ~/vendor/
+        # Making sure our user has ownership, in order to cache
+        sudo chown -R ${USER:=$(/usr/bin/id -run)}:$USER ~/vendor/apt
+      fi
+      # Install all packages in the cache
+      sudo dpkg -i ~/vendor/apt/archives/*.deb
 
   - &validate-android-sdk
     name: Validate Android SDK Install
@@ -412,7 +437,11 @@ jobs:
       
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
+
+      - run: *restore-cache-apt
       - run: *install-android-build-dependencies
+      - run: *save-cache-apt
+
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
