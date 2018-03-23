@@ -1,20 +1,22 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+react_native
  */
 'use strict';
 
+const ClassComponentMock = class {};
+ClassComponentMock.prototype.isReactComponent = true;
+
 jest
   .clearAllMocks()
-  .setMock('Text', {})
-  .setMock('View', {})
-  .setMock('Image', {})
+  .setMock('Text', ClassComponentMock)
+  .setMock('View', ClassComponentMock)
+  .setMock('Image', ClassComponentMock)
+  .setMock('ScrollView', ClassComponentMock)
   .setMock('React', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},
@@ -29,7 +31,7 @@ const NativeAnimatedHelper = require('NativeAnimatedHelper');
 function createAndMountComponent(ComponentClass, props) {
   const component = new ComponentClass();
   component.props = props;
-  component.componentWillMount();
+  component.UNSAFE_componentWillMount();
   // Simulate that refs were set.
   component._component = {};
   component.componentDidMount();

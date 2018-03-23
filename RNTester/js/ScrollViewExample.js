@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ScrollViewExample
@@ -12,7 +10,7 @@
  */
 'use strict';
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
@@ -81,11 +79,11 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        addtionalStyles: typeof StyleSheet,
+        additionalStyles: typeof StyleSheet,
       ) {
         let _scrollView: ScrollView;
         return (
-          <View style={addtionalStyles}>
+          <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
             <ScrollView
               ref={scrollView => {
@@ -254,7 +252,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: StyleObj,
+  style?: DangerouslyImpreciseStyleProp,
 |}> {
   render() {
     const {source} = this.props;

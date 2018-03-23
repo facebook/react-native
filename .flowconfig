@@ -6,7 +6,7 @@
 .*/local-cli/templates/.*
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/danger/dangerfile.js
+<PROJECT_ROOT>/bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
@@ -52,4 +52,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-^0.63.0
+^0.68.0

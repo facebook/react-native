@@ -1,11 +1,9 @@
 /**
  * /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @emails oncall+javascript_foundation
  */
@@ -57,6 +55,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
       name: 'iPhone 6',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -147,6 +146,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB',
       name: 'iPhone 5',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -218,6 +218,7 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB',
       name: 'iPhone 5',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -263,11 +264,12 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
       name: 'iPhone 6s',
+      booted: true,
       version: 'iOS 9.2'
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined', () => {
+  it('should return the defined simulator in list even if another device is booted', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -306,8 +308,9 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6'
     )).toEqual({
-      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
-      name: 'iPhone 6s',
+      udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
+      name: 'iPhone 6',
+      booted: false,
       version: 'iOS 9.2'
     });
   });
@@ -379,11 +382,12 @@ describe('findMatchingSimulator', () => {
     )).toEqual({
       udid: '3A409DC5-5188-42A6-8598-3AA6F34607A5',
       name: 'iPhone 7',
+      booted: true,
       version: 'iOS 10.0'
     });
   });
 
-  it('should return the booted simulator in list even if another device is defined (multi ios versions)', () => {
+  it('should return the defined simulator in list even if another device is booted (multi ios versions)', () => {
     expect(findMatchingSimulator({
         'devices': {
           'iOS 9.2': [
@@ -448,9 +452,44 @@ describe('findMatchingSimulator', () => {
       },
       'iPhone 6s'
     )).toEqual({
-      udid: '3A409DC5-5188-42A6-8598-3AA6F34607A5',
-      name: 'iPhone 7',
-      version: 'iOS 10.0'
+      udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
+      name: 'iPhone 6s',
+      booted: false,
+      version: 'iOS 9.2'
     });
+  });
+
+  it('should return AppleTV devices if in the list', () => {
+    expect(findMatchingSimulator({
+      'devices': {
+        'tvOS 11.2' : [
+          {
+            'state' : 'Booted',
+            'availability' : '(available)',
+            'name' : 'Apple TV',
+            'udid' : '816C30EA-38EA-41AC-BFDA-96FB632D522E'
+          },
+          {
+            'state' : 'Shutdown',
+            'availability' : '(available)',
+            'name' : 'Apple TV 4K',
+            'udid' : 'BCBB7E4B-D872-4D61-BC61-7C9805551075'
+          },
+          {
+            'state' : 'Shutdown',
+            'availability' : '(available)',
+            'name' : 'Apple TV 4K (at 1080p)',
+            'udid' : '1DE12308-1C14-4F0F-991E-A3ADC41BDFFC'
+          }
+        ]
+      }
+    },
+    'Apple TV'
+  )).toEqual({
+    udid: '816C30EA-38EA-41AC-BFDA-96FB632D522E',
+    name: 'Apple TV',
+    booted: true,
+    version: 'tvOS 11.2'
+  });
   });
 });

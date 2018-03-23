@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 android_prebuilt_aar(
     name = "appcompat",
     aar = ":appcompat-binary-aar",

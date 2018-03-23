@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTScrollView.h"
@@ -419,7 +417,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, UIUserInterfaceLayoutDirection layoutDirection) {
+static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, UIUserInterfaceLayoutDirection layoutDirection) {
   view.transform =
     layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
       CGAffineTransformIdentity :
@@ -430,8 +428,8 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
 {
   [super setReactLayoutDirection:layoutDirection];
 
-  RCTApplyTranformationAccordingLayoutDirection(_scrollView, layoutDirection);
-  RCTApplyTranformationAccordingLayoutDirection(_contentView, layoutDirection);
+  RCTApplyTransformationAccordingLayoutDirection(_scrollView, layoutDirection);
+  RCTApplyTransformationAccordingLayoutDirection(_contentView, layoutDirection);
 }
 
 - (void)setRemoveClippedSubviews:(__unused BOOL)removeClippedSubviews
@@ -450,7 +448,7 @@ static inline void RCTApplyTranformationAccordingLayoutDirection(UIView *view, U
   {
     RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
     _contentView = view;
-    RCTApplyTranformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
+    RCTApplyTransformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
     [_scrollView addSubview:view];
   }
 }

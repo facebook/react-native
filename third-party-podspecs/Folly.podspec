@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.module_name = 'folly'
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
-  spec.dependency 'GLog'
+  spec.dependency 'glog'
   spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
   spec.source_files = 'folly/Bits.cpp',
                       'folly/Conv.cpp',

@@ -66,29 +66,24 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importArray() {
         break;
       }
       case folly::dynamic::Type::BOOL: {
-        jarray->
-          setElement(i,
-              JBoolean::valueOf(ReadableNativeArray::getBoolean(i)).release());
+        (*jarray)[i] = JBoolean::valueOf(ReadableNativeArray::getBoolean(i));
         break;
       }
       case folly::dynamic::Type::INT64:
       case folly::dynamic::Type::DOUBLE: {
-        jarray->setElement(i,
-          JDouble::valueOf(ReadableNativeArray::getDouble(i)).release());
+        (*jarray)[i] = JDouble::valueOf(ReadableNativeArray::getDouble(i));
         break;
       }
       case folly::dynamic::Type::STRING: {
-        jarray->
-          setElement(i,
-                     make_jstring(ReadableNativeArray::getString(i)).release());
+        (*jarray)[i] = make_jstring(ReadableNativeArray::getString(i));
         break;
       }
       case folly::dynamic::Type::OBJECT: {
-        jarray->setElement(i,ReadableNativeArray::getMap(i).release());
+        (*jarray)[i] = ReadableNativeArray::getMap(i);
         break;
       }
       case folly::dynamic::Type::ARRAY: {
-        jarray->setElement(i,ReadableNativeArray::getArray(i).release());
+        (*jarray)[i] = ReadableNativeArray::getArray(i);
         break;
       }
       default:

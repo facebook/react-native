@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ImageExample
@@ -43,7 +41,7 @@ var NetworkImageCallbackExample = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.setState({mountTime: new Date()});
   },
 
@@ -560,30 +558,26 @@ exports.examples = [
                     source={image}
                   />
                 </View>
-                { Platform.OS === 'ios' ?
-                  <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>
-                      Repeat
-                    </Text>
-                    <Image
-                      style={styles.resizeMode}
-                      resizeMode={Image.resizeMode.repeat}
-                      source={image}
-                    />
-                  </View>
-                : null }
-                { Platform.OS === 'android' ?
-                  <View style={styles.leftMargin}>
-                    <Text style={[styles.resizeModeText]}>
-                      Center
-                    </Text>
-                    <Image
-                      style={styles.resizeMode}
-                      resizeMode={Image.resizeMode.center}
-                      source={image}
-                    />
-                  </View>
-                : null }
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Repeat
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.repeat}
+                    source={image}
+                  />
+                </View>
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Center
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.center}
+                    source={image}
+                  />
+                </View>
               </View>
             </View>
           );

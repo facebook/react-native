@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDeviceInfo.h"
@@ -12,6 +10,7 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUIUtils.h"
 #import "RCTUtils.h"
 
 @implementation RCTDeviceInfo {
@@ -72,18 +71,18 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
-  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *dims = @{
-                         @"width": @(screenSize.size.width),
-                         @"height": @(screenSize.size.height),
-                         @"scale": @(RCTScreenScale()),
-                         @"fontScale": @(bridge.accessibilityManager.multiplier)
-                         };
+  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
+  NSDictionary<NSString *, NSNumber *> *dims = @{
+      @"width": @(window.width),
+      @"height": @(window.height),
+      @"scale": @(window.scale),
+      @"fontScale": @(window.fontScale)
+  };
   return @{
-           @"window": dims,
-           @"screen": dims
-           };
+      @"window": dims,
+      @"screen": dims
+  };
 }
 
 - (void)dealloc

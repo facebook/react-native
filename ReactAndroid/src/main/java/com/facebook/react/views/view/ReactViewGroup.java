@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.view;
@@ -667,12 +665,10 @@ public class ReactViewGroup extends ViewGroup implements
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
       RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
-      IllegalViewOperationException wrappedException =
-        new IllegalViewOperationException("StackOverflowError", e);
       if (rootView != null) {
-        rootView.handleException(wrappedException);
+        rootView.handleException(e);
       } else {
-        throw wrappedException;
+        throw e;
       }
     }
   }
