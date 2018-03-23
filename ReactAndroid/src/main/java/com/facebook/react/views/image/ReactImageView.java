@@ -53,6 +53,7 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
@@ -240,8 +241,9 @@ public class ReactImageView extends GenericDraweeView {
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override
         public void onSubmit(String id, Object callerContext) {
+          Integer reactTag = ReactFindViewUtil.getReactTag(ReactImageView.this);
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
+              new ImageLoadEvent(reactTag, ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
@@ -250,20 +252,22 @@ public class ReactImageView extends GenericDraweeView {
           @Nullable final ImageInfo imageInfo,
           @Nullable Animatable animatable) {
           if (imageInfo != null) {
+            Integer reactTag = ReactFindViewUtil.getReactTag(ReactImageView.this);
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD,
+              new ImageLoadEvent(reactTag, ImageLoadEvent.ON_LOAD,
                 mImageSource.getSource(), imageInfo.getWidth(), imageInfo.getHeight()));
             mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+              new ImageLoadEvent(reactTag, ImageLoadEvent.ON_LOAD_END));
           }
         }
 
         @Override
         public void onFailure(String id, Throwable throwable) {
+          Integer reactTag = ReactFindViewUtil.getReactTag(ReactImageView.this);
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
+            new ImageLoadEvent(reactTag, ImageLoadEvent.ON_ERROR));
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(reactTag, ImageLoadEvent.ON_LOAD_END));
         }
       };
     }

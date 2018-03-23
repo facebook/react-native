@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -93,7 +94,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
-                  buttonView.getId(),
+                  ReactFindViewUtil.getReactTag(buttonView),
                   isChecked));
         }
       };

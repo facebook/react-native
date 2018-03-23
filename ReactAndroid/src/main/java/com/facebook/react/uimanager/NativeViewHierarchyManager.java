@@ -32,6 +32,7 @@ import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import javax.annotation.Nullable;
@@ -228,7 +229,7 @@ public class NativeViewHierarchyManager {
       // Use android View id field to store React tag. This is possible since we don't inflate
       // React views from layout xmls. Thus it is easier to just reuse that field instead of
       // creating another (potentially much more expensive) mapping from view to React tag
-      view.setId(tag);
+      ReactFindViewUtil.setReactTag(view, tag);
       if (initialProps != null) {
         viewManager.updateProperties(view, initialProps);
       }
@@ -246,13 +247,15 @@ public class NativeViewHierarchyManager {
     StringBuilder stringBuilder = new StringBuilder();
 
     if (null != viewToManage) {
-      stringBuilder.append("View tag:" + viewToManage.getId() + "\n");
+      stringBuilder.append("View tag:" + ReactFindViewUtil.getReactTag(viewToManage) + "\n");
       stringBuilder.append("  children(" + viewManager.getChildCount(viewToManage) + "): [\n");
       for (int index=0; index<viewManager.getChildCount(viewToManage); index+=16) {
         for (int innerOffset=0;
              ((index+innerOffset) < viewManager.getChildCount(viewToManage)) && innerOffset < 16;
              innerOffset++) {
-          stringBuilder.append(viewManager.getChildAt(viewToManage, index+innerOffset).getId() + ",");
+          View child = viewManager.getChildAt(viewToManage, index+innerOffset);
+          int reactTag = ReactFindViewUtil.getReactTag(child);
+          stringBuilder.append(reactTag + ",");
         }
         stringBuilder.append("\n");
       }
@@ -372,7 +375,7 @@ public class NativeViewHierarchyManager {
 
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
-            arrayContains(tagsToDelete, viewToRemove.getId())) {
+            arrayContains(tagsToDelete, ReactFindViewUtil.getReactTag(viewToRemove))) {
           // Display the view in the parent after removal for the duration of the layout animation,
           // but pretend that it doesn't exist when calling other ViewGroup methods.
           viewManager.startViewTransition(viewToManage, viewToRemove);
@@ -509,7 +512,7 @@ public class NativeViewHierarchyManager {
       int tag,
       ViewGroup view,
       ThemedReactContext themedContext) {
-    if (view.getId() != View.NO_ID) {
+    if (ReactFindViewUtil.getReactTag(view) != View.NO_ID) {
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses " +
           "the id field to track react tags and will overwrite this field. If that is fine, " +
@@ -519,7 +522,7 @@ public class NativeViewHierarchyManager {
     mTagsToViews.put(tag, view);
     mTagsToViewManagers.put(tag, mRootViewManager);
     mRootTags.put(tag, true);
-    view.setId(tag);
+    ReactFindViewUtil.setReactTag(view, tag);
   }
 
   /**
@@ -527,24 +530,24 @@ public class NativeViewHierarchyManager {
    */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
-    if (!mRootTags.get(view.getId())) {
+    if (!mRootTags.get(ReactFindViewUtil.getReactTag(view))) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      resolveViewManager(view.getId()).onDropViewInstance(view);
+      resolveViewManager(ReactFindViewUtil.getReactTag(view)).onDropViewInstance(view);
     }
-    ViewManager viewManager = mTagsToViewManagers.get(view.getId());
+    ViewManager viewManager = mTagsToViewManagers.get(ReactFindViewUtil.getReactTag(view));
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (mTagsToViews.get(ReactFindViewUtil.getReactTag(child)) != null) {
           dropView(child);
         }
       }
       viewGroupManager.removeAllViews(viewGroup);
     }
-    mTagsToViews.remove(view.getId());
-    mTagsToViewManagers.remove(view.getId());
+    mTagsToViews.remove(ReactFindViewUtil.getReactTag(view));
+    mTagsToViewManagers.remove(ReactFindViewUtil.getReactTag(view));
   }
 
   public synchronized void removeRootView(int rootViewTag) {

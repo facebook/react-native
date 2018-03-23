@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -320,7 +321,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
       if (getChildCount() > 0) {
-        final int viewTag = getChildAt(0).getId();
+        final int viewTag = ReactFindViewUtil.getReactTag(getChildAt(0));
         ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
           new GuardedRunnable(reactContext) {

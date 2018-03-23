@@ -154,7 +154,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -162,7 +162,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             newText.toString(),
             "",
             start,
@@ -186,7 +186,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -194,7 +194,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             moreText,
             "",
             start,
@@ -218,7 +218,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextChangedEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             newText.toString(),
             (int) PixelUtil.toDIPFromPixel(contentWidth),
             (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -226,7 +226,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     eventDispatcher.dispatchEvent(
         new ReactTextInputEvent(
-            reactEditText.getId(),
+            ReactFindViewUtil.getReactTag(reactEditText),
             moreText,
             "",
             start,

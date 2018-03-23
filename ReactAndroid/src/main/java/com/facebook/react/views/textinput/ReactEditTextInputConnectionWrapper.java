@@ -16,6 +16,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /**
  * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.
@@ -156,7 +157,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     }
     mEventDispatcher.dispatchEvent(
         new ReactTextInputKeyPressEvent(
-            mEditText.getId(),
+            ReactFindViewUtil.getReactTag(mEditText),
             key));
   }
 }

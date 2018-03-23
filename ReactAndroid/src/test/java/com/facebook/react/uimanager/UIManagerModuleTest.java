@@ -32,6 +32,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
@@ -479,22 +480,22 @@ public class UIManagerModuleTest {
     TestMoveDeleteHierarchy hierarchy = createMoveDeleteHierarchy(uiManager);
 
     View view0 = hierarchy.nativeRootView.getChildAt(0);
-    assertThat(view0.getId()).isEqualTo(hierarchy.view0);
+    assertThat(ReactFindViewUtil.getReactTag(view0)).isEqualTo(hierarchy.view0);
 
     View viewWithChildren1 = hierarchy.nativeRootView.getChildAt(1);
-    assertThat(viewWithChildren1.getId()).isEqualTo(hierarchy.viewWithChildren1);
+    assertThat(ReactFindViewUtil.getReactTag(viewWithChildren1)).isEqualTo(hierarchy.viewWithChildren1);
 
     View childView0 = ((ViewGroup) viewWithChildren1).getChildAt(0);
-    assertThat(childView0.getId()).isEqualTo(hierarchy.childView0);
+    assertThat(ReactFindViewUtil.getReactTag(childView0)).isEqualTo(hierarchy.childView0);
 
     View childView1 = ((ViewGroup) viewWithChildren1).getChildAt(1);
-    assertThat(childView1.getId()).isEqualTo(hierarchy.childView1);
+    assertThat(ReactFindViewUtil.getReactTag(childView1)).isEqualTo(hierarchy.childView1);
 
     View view2 = hierarchy.nativeRootView.getChildAt(2);
-    assertThat(view2.getId()).isEqualTo(hierarchy.view2);
+    assertThat(ReactFindViewUtil.getReactTag(view2)).isEqualTo(hierarchy.view2);
 
     View view3 = hierarchy.nativeRootView.getChildAt(3);
-    assertThat(view3.getId()).isEqualTo(hierarchy.view3);
+    assertThat(ReactFindViewUtil.getReactTag(view3)).isEqualTo(hierarchy.view3);
   }
 
   @Test

@@ -51,6 +51,7 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.Responder;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;

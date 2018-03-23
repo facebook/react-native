@@ -37,6 +37,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 
@@ -205,7 +206,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
      * b) PointerEvents.NONE - this method will NOT be executed, because the View will be filtered
      *    out by TouchTargetHelper.
      * c) PointerEvents.BOX_NONE - TouchTargetHelper will make sure that {@link #reactTagForTouch()}
-     *     doesn't return getId().
+     *     doesn't return ReactFindViewUtil.getReactTag(this).
      */
     SoftAssertions.assertCondition(
         mPointerEvents != PointerEvents.NONE,
@@ -219,7 +220,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
     }
 
     // no children found
-    return getId();
+    return ReactFindViewUtil.getReactTag(this);
   }
 
   @Override
