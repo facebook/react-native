@@ -11,28 +11,9 @@
 #include <fabric/core/ShadowNode.h>
 #include <gtest/gtest.h>
 
+#include "TestComponent.h"
+
 using namespace facebook::react;
-
-class TestProps : public Props {
-public:
-  TestProps() {
-    RawProps raw;
-    raw["nativeID"] = "testNativeID";
-    apply(raw);
-  }
-};
-using SharedTestProps = std::shared_ptr<const TestProps>;
-
-class TestShadowNode;
-using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
-class TestShadowNode : public ConcreteShadowNode<TestProps> {
-public:
-  using ConcreteShadowNode::ConcreteShadowNode;
-
-  ComponentName getComponentName() const override {
-    return ComponentName("Test");
-  }
-};
 
 TEST(ShadowNodeTest, handleProps) {
   RawProps raw;

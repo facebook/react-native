@@ -61,6 +61,7 @@ if not IS_OSS_BUILD:
     cxx_test(
         name = "tests",
         srcs = glob(["tests/**/*.cpp"]),
+        headers = glob(["tests/**/*.h"]),
         contacts = ["oncall+react_native@xmail.facebook.com"],
         compiler_flags = [
             "-fexceptions",

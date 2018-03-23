@@ -9,8 +9,9 @@
 
 #include <memory>
 
-#include <fabric/core/ShadowNode.h>
+#include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/Props.h>
+#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
