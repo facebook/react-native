@@ -40,13 +40,16 @@ aliases:
 
   - &restore-cache-gradle
     keys:
-      - v1-gradle-{{ arch }}-{{ .Branch }}
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+      # Fallback in case checksum fails
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-
+      - v1-gradle-{{ arch }}-{{ .Branch }}-
       # Fallback in case this is a first-time run on a fork
-      - v1-gradle-{{ arch }}-master
+      - v1-gradle-{{ arch }}-master-
   - &save-cache-gradle
     paths:
       - ~/.gradle
-    key: v1-gradle-{{ arch }}-{{ .Branch }}
+    key: v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-ndk
     keys:
