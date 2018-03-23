@@ -69,9 +69,6 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   // Keyed by viewName
   NSDictionary *_componentDataByName;
-
-  BOOL _isMountingInProgress;
-  BOOL _isRemountingNeeded;
 }
 
 @synthesize bridge = _bridge;
@@ -1049,19 +1046,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
  */
 - (void)_layoutAndMount
 {
-  // Mounting is (usually, not always) an asynchronous process.
-  // So, we have to ensure that there is no any case of self-interleaving
-  // (when another mourning process is initiated before the previous
-  // one finishes) here.
-  if (_isMountingInProgress) {
-    // In a case when another mounting process hasn't completed yet,
-    // we have to run another pass right after it finishes.
-    _isRemountingNeeded = YES;
-    return;
-  }
-
-  _isMountingInProgress = YES;
-
   [self _dispatchPropsDidChangeEvents];
   [self _dispatchChildrenDidChangeEvents];
 
@@ -1079,13 +1063,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
   [self flushUIBlocksWithCompletion:^{
     [self->_observerCoordinator uiManagerDidPerformMounting:self];
-
-    self->_isMountingInProgress = NO;
-
-    if (self->_isRemountingNeeded) {
-      self->_isRemountingNeeded = NO;
-      [self _layoutAndMount];
-    }
   }];
 }
 
