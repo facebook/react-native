@@ -10,7 +10,6 @@ package com.facebook.react.views.scroll;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
