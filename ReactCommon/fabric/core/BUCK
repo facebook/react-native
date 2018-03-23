@@ -10,14 +10,12 @@ if not IS_OSS_BUILD:
 rn_xplat_cxx_library(
     name = "core",
     srcs = glob(
-        [
-            "**/*.cpp",
-        ],
+        ["**/*.cpp"],
+        excludes = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        [
-            "**/*.h",
-        ],
+        ["**/*.h"],
+        excludes = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
@@ -42,6 +40,9 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
+    tests = [
+        ":tests",
+    ],
     visibility = ["PUBLIC"],
     deps = [
         "xplat//fbsystrace:fbsystrace",
@@ -53,3 +54,24 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/graphics:graphics"),
     ],
 )
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
+
+    cxx_test(
+        name = "tests",
+        srcs = glob(["tests/**/*.cpp"]),
+        contacts = ["oncall+react_native@xmail.facebook.com"],
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        platforms = APPLE,
+        deps = [
+            "xplat//folly:molly",
+            "xplat//third-party/gmock:gtest",
+            ":core",
+        ],
+    )
