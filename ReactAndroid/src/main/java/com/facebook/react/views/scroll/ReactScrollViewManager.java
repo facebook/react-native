@@ -10,10 +10,7 @@ package com.facebook.react.views.scroll;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
-<<<<<<< HEAD
-=======
 import android.support.v4.view.ViewCompat;
->>>>>>> master
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
