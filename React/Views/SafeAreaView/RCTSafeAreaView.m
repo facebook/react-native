@@ -14,6 +14,7 @@
 
 @implementation RCTSafeAreaView {
   __weak RCTBridge *_bridge;
+  BOOL _safeAreaAvailable;
   UIEdgeInsets _currentSafeAreaInsets;
 }
 
@@ -21,6 +22,7 @@
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
+    _safeAreaAvailable = [self respondsToSelector:@selector(safeAreaInsets)];
   }
 
   return self;
@@ -28,8 +30,6 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 
 static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold) {
   return
@@ -39,9 +39,11 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
     ABS(insets1.bottom - insets2.bottom) <= threshold;
 }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+
 - (void)safeAreaInsetsDidChange
 {
-  if (![self respondsToSelector:@selector(safeAreaInsets)]) {
+  if (!_safeAreaAvailable) {
     return;
   }
 
@@ -59,5 +61,41 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 }
 
 #endif
+
+// Emulate safe area for iOS < 11
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  if (_safeAreaAvailable) {
+    return;
+  }
+  UIViewController* vc = self.reactViewController;
+  if (!vc) {
+    return;
+  }
+  CGFloat topLayoutOffset = vc.topLayoutGuide.length;
+  CGFloat bottomLayoutOffset = vc.bottomLayoutGuide.length;
+  CGRect safeArea = vc.view.bounds;
+  safeArea.origin.y += topLayoutOffset;
+  safeArea.size.height -= topLayoutOffset + bottomLayoutOffset;
+  CGRect localSafeArea = [vc.view convertRect:safeArea toView:self];
+  UIEdgeInsets safeAreaInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+  if (CGRectGetMinY(localSafeArea) > CGRectGetMinY(self.bounds)) {
+    safeAreaInsets.top = CGRectGetMinY(localSafeArea) - CGRectGetMinY(self.bounds);
+  }
+  if (CGRectGetMaxY(localSafeArea) < CGRectGetMaxY(self.bounds)) {
+    safeAreaInsets.bottom = CGRectGetMaxY(self.bounds) - CGRectGetMaxY(localSafeArea);
+  }
+
+  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+    return;
+  }
+
+  _currentSafeAreaInsets = safeAreaInsets;
+
+  RCTSafeAreaViewLocalData *localData =
+  [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
+  [_bridge.uiManager setLocalData:localData forView:self];
+}
 
 @end
