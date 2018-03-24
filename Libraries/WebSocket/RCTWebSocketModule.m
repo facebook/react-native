@@ -82,6 +82,7 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(N
   }];
 
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  [webSocket setDelegateDispatchQueue:_methodQueue];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
   if (!_sockets) {
