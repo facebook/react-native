@@ -47,17 +47,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
     return;
   }
 
-  UIEdgeInsets safeAreaInsets = self.safeAreaInsets;
-
-  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
-    return;
-  }
-
-  _currentSafeAreaInsets = safeAreaInsets;
-
-  RCTSafeAreaViewLocalData *localData =
-    [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
-  [_bridge.uiManager setLocalData:localData forView:self];
+  [self setSafeAreaInsets:self.safeAreaInsets];
 }
 
 #endif
@@ -87,14 +77,18 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
     safeAreaInsets.bottom = CGRectGetMaxY(self.bounds) - CGRectGetMaxY(localSafeArea);
   }
 
+  [self setSafeAreaInsets:safeAreaInsets];
+}
+
+- (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
+{
   if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
     return;
   }
 
   _currentSafeAreaInsets = safeAreaInsets;
 
-  RCTSafeAreaViewLocalData *localData =
-  [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
+  RCTSafeAreaViewLocalData *localData = [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
   [_bridge.uiManager setLocalData:localData forView:self];
 }
 
