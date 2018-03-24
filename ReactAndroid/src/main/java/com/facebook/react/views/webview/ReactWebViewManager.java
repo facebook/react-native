@@ -319,6 +319,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         loadUrl("javascript:(" +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data) {" +
+            "window.originalPostMessage.apply(window, arguments);" +
             BRIDGE_NAME + ".postMessage(String(data));" +
           "}" +
         ")");
