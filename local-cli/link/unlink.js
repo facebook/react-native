@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -48,7 +49,7 @@ const unlinkDependency = (platforms, project, dependency, packageName, otherDepe
         otherDependencies
       );
 
-      log.info(`Platform '${platform}' module ${dependency.name} has been successfully unlinked`);
+      log.info(`Platform '${platform}' module ${packageName} has been successfully unlinked`);
     });
 };
 

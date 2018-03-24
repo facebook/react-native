@@ -13,7 +13,7 @@ const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
 const makeImportPatch = require('./patches/makeImportPatch');
-const makePackagePatch = require('./patches/makePackagePatch');
+const { revokePackagePatch } = require('./patches/makePackagePatch');
 
 module.exports = function unregisterNativeAndroidModule(
   name,
@@ -41,7 +41,7 @@ module.exports = function unregisterNativeAndroidModule(
 
   revokePatch(
     projectConfig.mainFilePath,
-    makePackagePatch(androidConfig.packageInstance, params, name)
+    revokePackagePatch(projectConfig.mainFilePath, androidConfig.packageInstance, params, name)
   );
 
   revokePatch(

@@ -10,7 +10,7 @@ const makeStringsPatch = require('./patches/makeStringsPatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
 const makeImportPatch = require('./patches/makeImportPatch');
-const makePackagePatch = require('./patches/makePackagePatch');
+const { applyPackagePatch } = require('./patches/makePackagePatch');
 
 module.exports = function registerNativeAndroidModule(
   name,
@@ -30,7 +30,7 @@ module.exports = function registerNativeAndroidModule(
 
   applyPatch(
     projectConfig.mainFilePath,
-    makePackagePatch(androidConfig.packageInstance, params, name)
+    applyPackagePatch(androidConfig.packageInstance, params, name)
   );
 
   applyPatch(
