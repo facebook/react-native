@@ -65,6 +65,7 @@ class WebView extends React.Component {
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
+    handleIFrameLoadingEvent: PropTypes.bool, // allow handling of iframe loading events
     style: ViewPropTypes.style,
 
     html: deprecatedPropType(
@@ -236,7 +237,8 @@ class WebView extends React.Component {
     javaScriptEnabled : true,
     thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
-    saveFormDataDisabled: false
+    saveFormDataDisabled: false,
+    handleIFrameLoadingEvent: false
   };
 
   state = {
@@ -300,6 +302,7 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        handleIFrameLoadingEvent={this.props.handleIFrameLoadingEvent}
         thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}
