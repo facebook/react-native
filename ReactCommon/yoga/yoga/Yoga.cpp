@@ -295,8 +295,8 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
 }
 
 void YGNodeFree(const YGNodeRef node) {
-  if (node->getParent()) {
-    node->getParent()->removeChild(node);
+  if (YGNodeRef parent = node->getParent()) {
+    parent->removeChild(node);
     node->setParent(nullptr);
   }
 
@@ -475,6 +475,48 @@ void YGNodeRemoveAllChildren(const YGNodeRef parent) {
   // Otherwise, we are not the owner of the child set. We don't have to do anything to clear it.
   parent->setChildren(YGVector());
   parent->markDirtyAndPropogate();
+}
+
+static void YGNodeSetChildrenInternal(YGNodeRef const parent, const std::vector<YGNodeRef> &children)
+{
+  if (!parent) {
+    return;
+  }
+  if (children.size() == 0) {
+    if (YGNodeGetChildCount(parent) > 0) {
+      for (YGNodeRef const child : parent->getChildren()) {
+        child->setLayout(YGLayout());
+        child->setParent(nullptr);
+      }
+      parent->setChildren(YGVector());
+      parent->markDirtyAndPropogate();
+    }
+  } else {
+    if (YGNodeGetChildCount(parent) > 0) {
+      for (YGNodeRef const oldChild : parent->getChildren()) {
+        // Our new children may have nodes in common with the old children. We don't reset these common nodes.
+        if (std::find(children.begin(), children.end(), oldChild) == children.end()) {
+          oldChild->setLayout(YGLayout());
+          oldChild->setParent(nullptr);
+        }
+      }
+    }
+    parent->setChildren(children);
+    for (YGNodeRef child : children) {
+      child->setParent(parent);
+    }
+    parent->markDirtyAndPropogate();
+  }
+}
+
+void YGNodeSetChildren(YGNodeRef const parent, const YGNodeRef c[], const uint32_t count) {
+  const YGVector children = {c, c + count};
+  YGNodeSetChildrenInternal(parent, children);
+}
+
+void YGNodeSetChildren(YGNodeRef const parent, const std::vector<YGNodeRef> &children)
+{
+  YGNodeSetChildrenInternal(parent, children);
 }
 
 YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index) {
@@ -3924,4 +3966,19 @@ void *YGConfigGetContext(const YGConfigRef config) {
 
 void YGConfigSetNodeClonedFunc(const YGConfigRef config, const YGNodeClonedFunc callback) {
   config->cloneNodeCallback = callback;
+}
+
+static void YGTraverseChildrenPreOrder(const YGVector& children, const std::function<void(YGNodeRef node)>& f) {
+  for (YGNodeRef node : children) {
+    f(node);
+    YGTraverseChildrenPreOrder(node->getChildren(), f);
+  }
+}
+
+void YGTraversePreOrder(YGNodeRef const node, std::function<void(YGNodeRef node)>&& f) {
+  if (!node) {
+    return;
+  }
+  f(node);
+  YGTraverseChildrenPreOrder(node->getChildren(), f);
 }
