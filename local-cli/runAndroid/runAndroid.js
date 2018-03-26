@@ -34,7 +34,7 @@ function runAndroid(argv, config, args) {
         {stdio: 'inherit'}
       );
     } else {
-      console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
+      console.log(chalk.red('Android project not found. Maybe run react-native eject first?'));
     }
     return;
   }
