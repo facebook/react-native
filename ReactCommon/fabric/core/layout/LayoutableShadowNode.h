@@ -93,9 +93,8 @@ protected:
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
-   * Default implementation does nothing and returns `child`.
    */
-  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child);
+  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) = 0;
 
   /*
    * Sets layout metrics for the shadow node.
