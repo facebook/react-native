@@ -57,7 +57,7 @@ aliases:
       # Fallback in case checksum fails
       - v1-apt-{{ arch }}-{{ .Branch }}-
       # Fallback in case this is a first-time run on a fork
-      - v1-apt-{{ arch }}-master
+      - v1-apt-{{ arch }}-master-
   - &save-cache-apt
     paths:
       - ~/vendor/apt
@@ -474,9 +474,9 @@ jobs:
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
-      - run: *restore-cache-apt
+      - restore-cache: *restore-cache-apt
       - run: *install-android-build-dependencies
-      - run: *save-cache-apt
+      - save-cache: *save-cache-apt
 
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
