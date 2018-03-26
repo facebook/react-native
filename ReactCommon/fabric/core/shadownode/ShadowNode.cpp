@@ -39,6 +39,7 @@ ShadowNode::ShadowNode(
   SharedShadowNodeSharedList children
 ):
   tag_(shadowNode->tag_),
+  rootTag_(shadowNode->rootTag_),
   instanceHandle_(shadowNode->instanceHandle_),
   props_(props ? props : shadowNode->props_),
   children_(children ? children : shadowNode->children_),
@@ -56,6 +57,14 @@ SharedProps ShadowNode::getProps() const {
 
 Tag ShadowNode::getTag() const {
   return tag_;
+}
+
+Tag ShadowNode::getRootTag() const {
+  return rootTag_;
+}
+
+InstanceHandle ShadowNode::getInstanceHandle() const {
+  return instanceHandle_;
 }
 
 SharedShadowNode ShadowNode::getSourceNode() const {

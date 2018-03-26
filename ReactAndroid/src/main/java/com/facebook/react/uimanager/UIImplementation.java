@@ -276,6 +276,7 @@ public class UIImplementation {
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
+    Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
     cssNode.setRootNode(rootNode);

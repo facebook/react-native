@@ -893,7 +893,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
-      invertStickyHeaders: this.props.inverted,
+      invertStickyHeaders: this.props.invertStickyHeaders !== undefined
+        ? this.props.invertStickyHeaders
+        : this.props.inverted,	
       stickyHeaderIndices,
     };
     if (inversionStyle) {

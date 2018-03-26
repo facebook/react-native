@@ -490,6 +490,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         if (appProperties != null) {
           appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
         }
+        if (isFabric()) {
+          appParams.putBoolean("fabric", true);
+        }
 
         mShouldLogContentAppeared = true;
 

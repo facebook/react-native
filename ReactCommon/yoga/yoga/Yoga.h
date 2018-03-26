@@ -84,6 +84,7 @@ WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(const YGNodeRef node);
+WIN_EXPORT void YGNodeSetChildren(YGNodeRef const parent, const YGNodeRef children[], const uint32_t count);
 
 WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
                                       const float availableWidth,
@@ -298,3 +299,15 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     const bool forceFloor);
 
 YG_EXTERN_C_END
+
+#ifdef __cplusplus
+
+#include <functional>
+#include <vector>
+
+// Calls f on each node in the tree including the given node argument.
+extern void YGTraversePreOrder(YGNodeRef const node, std::function<void(YGNodeRef node)>&& f);
+
+extern void YGNodeSetChildren(YGNodeRef const parent, const std::vector<YGNodeRef> &children);
+
+#endif

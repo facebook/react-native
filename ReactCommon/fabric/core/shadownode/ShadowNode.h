@@ -55,6 +55,8 @@ public:
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
   Tag getTag() const;
+  Tag getRootTag() const;
+  InstanceHandle getInstanceHandle() const;
   SharedShadowNode getSourceNode() const;
   void sealRecursive() const;
 

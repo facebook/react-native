@@ -35,7 +35,6 @@ export type AppConfig = {
   component?: ComponentProvider,
   run?: Function,
   section?: boolean,
-  fabric?: boolean,
 };
 export type Runnable = {
   component?: ComponentProvider,
@@ -85,7 +84,6 @@ const AppRegistry = {
           appConfig.appKey,
           appConfig.component,
           appConfig.section,
-          appConfig.fabric,
         );
       }
     });
@@ -100,13 +98,12 @@ const AppRegistry = {
     appKey: string,
     componentProvider: ComponentProvider,
     section?: boolean,
-    fabric?: boolean,
   ): string {
     runnables[appKey] = {
       componentProvider,
       run: appParameters => {
         let renderFunc = renderApplication;
-        if (fabric) {
+        if (appParameters.fabric) {
           invariant(
             fabricRendererProvider != null,
             'A Fabric renderer provider must be set to render Fabric components',
