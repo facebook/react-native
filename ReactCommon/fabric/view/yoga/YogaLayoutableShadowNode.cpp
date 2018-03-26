@@ -31,13 +31,6 @@ SharedYogaConfig YogaLayoutableShadowNode::suitableYogaConfig() {
   return sharedYogaConfig;
 }
 
-YogaLayoutableShadowNode::YogaLayoutableShadowNode() {
-  auto yogaNode = std::make_shared<YGNode>();
-  yogaNode->markDirtyAndPropogate();
-  yogaNode->setConfig(suitableYogaConfig().get());
-  yogaNode->setContext(this);
-  yogaNode_ = yogaNode;
-}
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   const SharedYogaStylableProps &props,
