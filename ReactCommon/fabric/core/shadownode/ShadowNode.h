@@ -81,6 +81,7 @@ protected:
   SharedProps props_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
+  int revision_;
 };
 
 } // namespace react

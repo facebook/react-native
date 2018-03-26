@@ -31,7 +31,8 @@ ShadowNode::ShadowNode(
   rootTag_(rootTag),
   instanceHandle_(instanceHandle),
   props_(props),
-  children_(children) {}
+  children_(children),
+  revision_(1) {}
 
 ShadowNode::ShadowNode(
   SharedShadowNode shadowNode,
@@ -43,7 +44,8 @@ ShadowNode::ShadowNode(
   instanceHandle_(shadowNode->instanceHandle_),
   props_(props ? props : shadowNode->props_),
   children_(children ? children : shadowNode->children_),
-  sourceNode_(shadowNode) {}
+  sourceNode_(shadowNode),
+  revision_(shadowNode->revision_ + 1) {}
 
 #pragma mark - Getters
 
@@ -121,7 +123,7 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return getSealed() ? "sealed" : "";
+  return "r" + std::to_string(revision_) + (getSealed() ? "/sealed" : "");
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
