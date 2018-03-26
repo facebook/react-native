@@ -68,7 +68,7 @@ InstanceHandle ShadowNode::getInstanceHandle() const {
 }
 
 SharedShadowNode ShadowNode::getSourceNode() const {
-  return sourceNode_;
+  return sourceNode_.lock();
 }
 
 void ShadowNode::sealRecursive() const {
@@ -111,7 +111,7 @@ void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShad
 
 void ShadowNode::clearSourceNode() {
   ensureUnsealed();
-  sourceNode_ = nullptr;
+  sourceNode_.reset();
 }
 
 #pragma mark - DebugStringConvertible
@@ -146,10 +146,11 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("handle", std::to_string((size_t)instanceHandle_)));
   }
 
-  if (sourceNode_) {
+  SharedShadowNode sourceNode = getSourceNode();
+  if (sourceNode) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>(
       "source",
-      sourceNode_->getDebugDescription({.maximumDepth = 1, .format = false})
+      sourceNode->getDebugDescription({.maximumDepth = 1, .format = false})
     ));
   }
 

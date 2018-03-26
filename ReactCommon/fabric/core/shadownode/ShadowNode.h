@@ -24,6 +24,7 @@ using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
+using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
 class ShadowNode:
   public virtual Sealable,
@@ -79,7 +80,7 @@ protected:
   InstanceHandle instanceHandle_;
   SharedProps props_;
   SharedShadowNodeSharedList children_;
-  SharedShadowNode sourceNode_;
+  WeakShadowNode sourceNode_;
 };
 
 } // namespace react
