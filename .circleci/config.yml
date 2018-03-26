@@ -122,7 +122,8 @@ aliases:
       yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   - &install-yarn
-    |
+    name: Install Yarn
+    command: |
       curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
@@ -132,7 +133,8 @@ aliases:
       npm install --no-package-lock --no-spin --no-progress
 
   - &install-buck
-    |
+    name: Install BUCK
+    command: |
       if [[ ! -e ~/buck ]]; then
         git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
       fi
@@ -140,7 +142,8 @@ aliases:
       buck --version
 
   - &install-node
-    |
+    name: Install Node
+    command: |
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
 
