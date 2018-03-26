@@ -150,7 +150,6 @@ const STYLES_WHITELIST = {
   borderBottomLeftRadius: true,
   borderBottomRightRadius: true,
   borderBottomStartRadius: true,
-  borderBottomWidth: true,
   borderTopEndRadius: true,
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
