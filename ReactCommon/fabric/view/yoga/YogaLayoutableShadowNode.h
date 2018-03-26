@@ -40,7 +40,6 @@ class YogaLayoutableShadowNode:
 public:
 
 #pragma mark - Constructors
-  YogaLayoutableShadowNode();
 
   YogaLayoutableShadowNode(
     const SharedYogaStylableProps &props,

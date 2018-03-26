@@ -57,6 +57,7 @@ private:
 #pragma mark - LayoutableShadowNode
 
   SharedLayoutableShadowNodeList getChildren() const override;
+  SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) override;
 };
 
 } // namespace react

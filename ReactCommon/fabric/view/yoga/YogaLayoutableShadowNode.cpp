@@ -31,14 +31,6 @@ SharedYogaConfig YogaLayoutableShadowNode::suitableYogaConfig() {
   return sharedYogaConfig;
 }
 
-YogaLayoutableShadowNode::YogaLayoutableShadowNode() {
-  auto yogaNode = std::make_shared<YGNode>();
-  yogaNode->markDirtyAndPropogate();
-  yogaNode->setConfig(suitableYogaConfig().get());
-  yogaNode->setContext(this);
-  yogaNode_ = yogaNode;
-}
-
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   const SharedYogaStylableProps &props,
   const SharedShadowNodeSharedList &children
@@ -205,6 +197,7 @@ void YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNod
   assert(newShadowNode);
 
   // And finally, we have to replace underline yoga node with the new one provided by Yoga.
+  newYogaNode->setContext((void *)newShadowNode.get());
   newShadowNode->yogaNode_ = std::shared_ptr<YGNode>(newYogaNode);
 }
 

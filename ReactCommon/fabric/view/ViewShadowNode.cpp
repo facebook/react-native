@@ -7,6 +7,8 @@
 
 #include "ViewShadowNode.h"
 
+#include <algorithm>
+
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
@@ -85,6 +87,31 @@ SharedLayoutableShadowNodeList ViewShadowNode::getChildren() const {
   }
 
   return sharedLayoutableShadowNodeList;
+}
+
+SharedLayoutableShadowNode ViewShadowNode::cloneAndReplaceChild(const SharedLayoutableShadowNode &child) {
+  ensureUnsealed();
+
+  // We cannot mutate `children_` in place here because it is a *shared*
+  // data structure which means other `ShadowNodes` might refer to its old value.
+  // So, we have to clone this and only then mutate.
+  auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
+
+  auto viewShadowNodeChild = std::dynamic_pointer_cast<const ViewShadowNode>(child);
+  assert(viewShadowNodeChild);
+
+  auto viewShadowNodeChildClone = std::make_shared<const ViewShadowNode>(viewShadowNodeChild);
+
+  std::replace(
+    nonConstChildrenCopy.begin(),
+    nonConstChildrenCopy.end(),
+    std::static_pointer_cast<const ShadowNode>(viewShadowNodeChild),
+    std::static_pointer_cast<const ShadowNode>(viewShadowNodeChildClone)
+  );
+
+  children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+
+  return std::static_pointer_cast<const LayoutableShadowNode>(viewShadowNodeChildClone);
 }
 
 #pragma mark - DebugStringConvertible

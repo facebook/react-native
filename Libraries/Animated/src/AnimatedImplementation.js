@@ -521,7 +521,7 @@ module.exports = {
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See https://facebook.github.io/react-native/releases/next/docs/animatedvaluexy.html
+   * See https://facebook.github.io/react-native/docs/animatedvaluexy.html
    */
   ValueXY: AnimatedValueXY,
   /**

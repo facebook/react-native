@@ -28,8 +28,6 @@ class Props:
   public virtual DebugStringConvertible {
 
 public:
-  virtual ~Props() = default;
-
   virtual void apply(const RawProps &rawProps);
 
   const std::string &getNativeId() const;

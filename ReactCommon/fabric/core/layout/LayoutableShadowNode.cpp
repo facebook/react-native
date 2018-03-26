@@ -93,9 +93,5 @@ void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   // Default implementation does nothing.
 }
 
-SharedLayoutableShadowNode LayoutableShadowNode::cloneAndReplaceChild(const SharedLayoutableShadowNode &child) {
-  return child;
-}
-
 } // namespace react
 } // namespace facebook
