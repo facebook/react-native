@@ -38,6 +38,13 @@ public class PositionError {
     if (message != null) {
       error.putString("message", message);
     }
+    
+    /**
+    * Include error types in error. Feature parity with iOS
+    */
+    error.putInt("PERMISSION_DENIED", PERMISSION_DENIED);
+    error.putInt("POSITION_UNAVAILABLE", POSITION_UNAVAILABLE);
+    error.putInt("TIMEOUT", TIMEOUT);
     return error;
   }
 }
