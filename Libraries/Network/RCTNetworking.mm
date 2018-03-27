@@ -439,10 +439,6 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
 
-  if (data.length == 0) {
-    return;
-  }
-
   id responseData = nil;
   for (id<RCTNetworkingResponseHandler> handler in _responseHandlers) {
     if ([handler canHandleNetworkingResponse:responseType]) {
@@ -452,6 +448,10 @@ RCT_EXPORT_MODULE()
   }
 
   if (!responseData) {
+    if (data.length == 0) {
+      return;
+    }
+
     if ([responseType isEqualToString:@"text"]) {
       // No carry storage is required here because the entire data has been loaded.
       responseData = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];

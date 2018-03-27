@@ -50,7 +50,6 @@ public class FabricUIManager implements UIManager {
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIViewOperationQueue mUIViewOperationQueue;
   private volatile int mCurrentBatch = 0;
-  private ReactShadowNode mCurrentRootShadowNode;
   private FabricReconciler mFabricReconciler;
 
   public FabricUIManager(
@@ -246,32 +245,32 @@ public class FabricUIManager implements UIManager {
       Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
     }
     try {
-      ReactShadowNode rootNode = getRootNode(rootTag);
+      ReactShadowNode currentRootShadowNode = getRootNode(rootTag);
       Assertions.assertNotNull(
-          rootNode,
+          currentRootShadowNode,
           "Root view with tag " + rootTag + " must be added before completeRoot is called");
 
 
-      rootNode = calculateDiffingAndCreateNewRootNode(rootNode, childList);
+      currentRootShadowNode = calculateDiffingAndCreateNewRootNode(currentRootShadowNode, childList);
 
       if (DEBUG) {
-        Log.d(TAG, "ReactShadowNodeHierarchy after diffing: " + rootNode.getHierarchyInfo());
+        Log.d(TAG, "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
       }
 
-      notifyOnBeforeLayoutRecursive(rootNode);
-      rootNode.calculateLayout();
+      notifyOnBeforeLayoutRecursive(currentRootShadowNode);
+      currentRootShadowNode.calculateLayout();
 
       if (DEBUG) {
         Log.d(
           TAG,
-          "ReactShadowNodeHierarchy after calculate Layout: " + rootNode.getHierarchyInfo());
+          "ReactShadowNodeHierarchy after calculate Layout: " + currentRootShadowNode.getHierarchyInfo());
       }
 
-      applyUpdatesRecursive(rootNode, 0, 0);
+      applyUpdatesRecursive(currentRootShadowNode, 0, 0);
       mUIViewOperationQueue.dispatchViewUpdates(
         mCurrentBatch++, System.currentTimeMillis(), System.currentTimeMillis());
 
-      mCurrentRootShadowNode = rootNode;
+      mRootShadowNodeRegistry.addNode(currentRootShadowNode);
     } catch (Exception e) {
       handleException(getRootNode(rootTag), e);
     }
@@ -294,7 +293,7 @@ public class FabricUIManager implements UIManager {
       appendChild(newRootShadowNode, child);
     }
 
-    mFabricReconciler.manageChildren(mCurrentRootShadowNode, newRootShadowNode);
+    mFabricReconciler.manageChildren(currentRootShadowNode, newRootShadowNode);
     return newRootShadowNode;
   }
 
@@ -321,7 +320,7 @@ public class FabricUIManager implements UIManager {
   }
 
   @Override
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public synchronized <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
     int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext themedRootContext =
