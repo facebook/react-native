@@ -38,6 +38,31 @@ aliases:
       - /opt/android/sdk
     key: v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
+  - &restore-cache-gradle
+    keys:
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+      # Fallback in case checksum fails
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-
+      - v1-gradle-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-gradle-{{ arch }}-master-
+  - &save-cache-gradle
+    paths:
+      - ~/.gradle
+    key: v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+
+  - &restore-cache-apt
+    keys:
+      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
+      # Fallback in case checksum fails
+      - v1-apt-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-apt-{{ arch }}-master-
+  - &save-cache-apt
+    paths:
+      - ~/vendor/apt
+    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
+
   - &restore-cache-ndk
     keys:
       - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
@@ -97,7 +122,8 @@ aliases:
       yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   - &install-yarn
-    |
+    name: Install Yarn
+    command: |
       curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
@@ -107,7 +133,8 @@ aliases:
       npm install --no-package-lock --no-spin --no-progress
 
   - &install-buck
-    |
+    name: Install BUCK
+    command: |
       if [[ ! -e ~/buck ]]; then
         git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
       fi
@@ -115,7 +142,8 @@ aliases:
       buck --version
 
   - &install-node
-    |
+    name: Install Node
+    command: |
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
 
@@ -141,9 +169,7 @@ aliases:
 
   - &install-android-build-dependencies
     name: Install Android Build Dependencies
-    command: |
-      sudo apt-get update -y
-      sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+    command: ./scripts/circleci/apt-get-android-deps.sh
 
   - &validate-android-sdk
     name: Validate Android SDK Install
@@ -400,6 +426,7 @@ jobs:
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
+
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -450,7 +477,10 @@ jobs:
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
+      - restore-cache: *restore-cache-apt
       - run: *install-android-build-dependencies
+      - save-cache: *save-cache-apt
+
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -481,7 +511,11 @@ jobs:
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
+
+      # Gradle
+      - restore-cache: *restore-cache-gradle
       - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+      - save-cache: *save-cache-gradle
 
       # Build and compile
       - run: *build-android-app
