@@ -83,7 +83,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 /**
  * Text transformed per 'none', 'uppercase', 'lowercase', 'capitalize'
  */
-- (NSString*)applyTextAttributesToText:(NSString*)text;
+- (NSString *)applyTextAttributesToText:(NSString *)text;
 
 @end
 

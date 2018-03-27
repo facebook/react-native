@@ -216,7 +216,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-- (NSString*)applyTextAttributesToText:(NSString*)text
+- (NSString *)applyTextAttributesToText:(NSString *)text
 {
   switch (_textTransform) {
     case RCTTextTransformUndefined:
