@@ -412,10 +412,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
+  [self shouldHandleSecureTextEntryChange:changedProps];
+
   if ([changedProps containsObject:@"inputAccessoryViewID"] && self.inputAccessoryViewID) {
     [self setCustomInputAccessoryViewWithNativeID:self.inputAccessoryViewID];
   } else if (!self.inputAccessoryViewID) {
     [self setDefaultInputAccessoryView];
+  }
+}
+
+- (void)shouldHandleSecureTextEntryChange:(NSArray<NSString *> *)changedProps
+{
+  BOOL didSecureTextEntryUpdate = [changedProps containsObject: @"secureTextEntry"];
+  if (didSecureTextEntryUpdate) {
+    NSAttributedString *originalText = self.backedTextInputView.attributedText;
+    
+    self.backedTextInputView.attributedText = nil;
+    self.backedTextInputView.attributedText = originalText;
   }
 }
 
