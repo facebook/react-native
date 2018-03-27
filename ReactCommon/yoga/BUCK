@@ -1,41 +1,20 @@
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library")
+load("//ReactNative:DEFS.bzl", "cxx_library")
 
-if IS_OSS_BUILD:
-    cxx_library(
-        name = "yoga",
-        srcs = glob(["yoga/*.cpp"]),
-        header_namespace = "",
-        exported_headers = glob(["yoga/*.h"]),
-        compiler_flags = [
-            "-fno-omit-frame-pointer",
-            "-fexceptions",
-            "-Wall",
-            "-Werror",
-            "-std=c++1y",
-            "-O3",
-        ],
-        force_static = True,
-        visibility = ["PUBLIC"],
-        deps = [
-        ],
-    )
-
-if not IS_OSS_BUILD:
-    rn_xplat_cxx_library(
-        name = "yoga",
-        srcs = glob(["yoga/*.cpp"]),
-        header_namespace = "",
-        exported_headers = glob(["yoga/*.h"]),
-        compiler_flags = [
-            "-fno-omit-frame-pointer",
-            "-fexceptions",
-            "-Wall",
-            "-Werror",
-            "-std=c++1y",
-            "-O3",
-        ],
-        force_static = True,
-        visibility = ["PUBLIC"],
-        deps = [
-        ],
-    )
+cxx_library(
+    name = "yoga",
+    srcs = glob(["yoga/*.cpp"]),
+    header_namespace = "",
+    exported_headers = glob(["yoga/*.h"]),
+    compiler_flags = [
+        "-fno-omit-frame-pointer",
+        "-fexceptions",
+        "-Wall",
+        "-Werror",
+        "-std=c++1y",
+        "-O3",
+    ],
+    force_static = True,
+    visibility = ["PUBLIC"],
+    deps = [
+    ],
+)
