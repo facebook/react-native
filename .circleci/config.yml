@@ -1,42 +1,33 @@
 aliases:
   # Cache Management
-  - &restore-yarn-cache
+  - &restore-cache-yarn
     keys:
-      - v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
-      # Fallback in case checksum fails
-      - v1-yarn-{{ arch }}-{{ .Branch }}-
-      # Fallback in case this is a first-time run on a fork
-      - v1-yarn-{{ arch }}-master-
-  - &save-yarn-cache
+      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+      - v1-yarn-{{ arch }}-
+  - &save-cache-yarn
     paths:
       - node_modules
       - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-      # Fallback in case checksum fails
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
-      # Fallback in case this is a first-time run on a fork
-      - v1-analysis-dependencies-{{ arch }}-master-
+      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
       - bots/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      # Fallback in case checksum fails
-      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-
-      # Fallback in case this is a first-time run on a fork
-      - v1-android-sdkmanager-packages-{{ arch }}-master-api-26-alpha-
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-gradle
     keys:
@@ -66,7 +57,6 @@ aliases:
   - &restore-cache-ndk
     keys:
       - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      # Fallback in case checksum fails
       - v2-android-ndk-{{ arch }}-r10e-32-64-
   - &save-cache-ndk
     paths:
@@ -88,6 +78,17 @@ aliases:
     paths:
       - ~/watchman
     key: v1-watchman-{{ arch }}-v4.9.0
+
+  - &restore-cache-gradle-downloads
+    keys:
+      - v1-gradle-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+      - v1-gradle-{{ arch }}-
+  - &save-cache-gradle-downloads
+    paths:
+      - ~/.gradle
+      - ReactAndroid/build/downloads
+      - ReactAndroid/build/third-party-ndk
+    key: v1-gradle-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
 
   # Branch Filtering
   - &filter-only-master-stable
@@ -201,6 +202,10 @@ aliases:
       ./scripts/circleci/check_license.sh
       ./scripts/circleci/check_cache.sh
     when: always
+
+  - &gradle-download-deps
+    name: Download C++ Dependencies
+    command: ./scripts/circleci/gradle_download_deps.sh
     
   - &build-android-app
     name: Build Android App
@@ -309,9 +314,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -357,9 +362,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
 
       - run: *run-js-tests
 
@@ -447,13 +452,16 @@ jobs:
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
-      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+
+      - restore-cache: *restore-cache-gradle-downloads
+      - run: *gradle-download-deps
+      - save-cache: *save-cache-gradle-downloads
 
       - run: *install-node
       - run: *install-yarn
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
       
       - run:
           name: Publish React Native Package
@@ -512,10 +520,9 @@ jobs:
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
 
-      # Gradle
-      - restore-cache: *restore-cache-gradle
-      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
-      - save-cache: *save-cache-gradle
+      - restore-cache: *restore-cache-gradle-downloads
+      - run: *gradle-download-deps
+      - save-cache: *save-cache-gradle-downloads
 
       # Build and compile
       - run: *build-android-app
