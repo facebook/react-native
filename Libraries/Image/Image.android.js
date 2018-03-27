@@ -75,6 +75,10 @@ var Image = createReactClass({
      */
     blurRadius: PropTypes.number,
     /**
+    * See https://facebook.github.io/react-native/docs/image.html#defaultsource
+    */
+    defaultSource: PropTypes.number,
+    /**
      * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
      */
     loadingIndicatorSource: PropTypes.oneOfType([
@@ -197,6 +201,7 @@ var Image = createReactClass({
 
   render: function() {
     const source = resolveAssetSource(this.props.source);
+    const defaultSource = resolveAssetSource(this.props.defaultSource);
     const loadingIndicatorSource = resolveAssetSource(
       this.props.loadingIndicatorSource,
     );
@@ -217,6 +222,12 @@ var Image = createReactClass({
     if (this.props.children) {
       throw new Error(
         'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+      );
+    }
+
+    if (this.props.defaultSource && this.props.loadingIndicatorSource) {
+      throw new Error(
+        'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
       );
     }
 
@@ -243,6 +254,9 @@ var Image = createReactClass({
         ),
         src: sources,
         headers: source.headers,
+        defaultSrc: defaultSource
+          ? defaultSource.uri
+          : null,
         loadingIndicatorSrc: loadingIndicatorSource
           ? loadingIndicatorSource.uri
           : null,
@@ -268,6 +282,7 @@ var cfg = {
   nativeOnly: {
     src: true,
     headers: true,
+    defaultSrc: true,
     loadingIndicatorSrc: true,
     shouldNotifyLoadEvents: true,
   },
