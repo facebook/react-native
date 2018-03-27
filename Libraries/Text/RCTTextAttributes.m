@@ -221,7 +221,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   switch (_textTransform) {
     case RCTTextTransformUndefined:
     case RCTTextTransformNone:
-    default:
       return text;
     case RCTTextTransformLowercase:
       return [text lowercaseString];
@@ -282,7 +281,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareOthers(_isHighlighted) &&
     RCTTextAttributesCompareObjects(_tag) &&
     RCTTextAttributesCompareOthers(_layoutDirection) &&
-    // Transform
     RCTTextAttributesCompareOthers(_textTransform);
 }
 
