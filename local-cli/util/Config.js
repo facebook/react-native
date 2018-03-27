@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  * @flow
@@ -17,7 +15,7 @@ const getPolyfills = require('../../rn-get-polyfills');
 const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {Config: MetroConfig} = require('metro');
+const {Config: MetroConfig, createBlacklist} = require('metro');
 
 const RN_CLI_CONFIG = 'rn-cli.config.js';
 
@@ -56,6 +54,10 @@ const getProjectRoots = () => {
   return resolveSymlinksForRoots([getProjectPath()]);
 };
 
+const getBlacklistRE = () => {
+  return createBlacklist([/.*\/__fixtures__\/.*/]);
+};
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
@@ -67,6 +69,7 @@ const getProjectRoots = () => {
 const Config = {
   DEFAULT: ({
     ...MetroConfig.DEFAULT,
+    getBlacklistRE,
     getProjectRoots,
     getPolyfills,
     getModulesRunBeforeMainModule: () => [
@@ -92,6 +95,9 @@ const Config = {
     const configPath = findConfigPath(startDir);
     return configPath ? this.load(configPath, startDir) : {...Config.DEFAULT};
   },
+
+  getProjectPath,
+  getProjectRoots,
 
   load(configFile: string): ConfigT {
     return MetroConfig.load(configFile, Config.DEFAULT);

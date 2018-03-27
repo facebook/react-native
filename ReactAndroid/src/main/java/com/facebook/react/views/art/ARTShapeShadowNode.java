@@ -1,30 +1,28 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.art;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.DashPathEffect;
-import android.graphics.LinearGradient;
 import android.graphics.Shader;
-import android.graphics.Color;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import javax.annotation.Nullable;
+
+import static com.facebook.react.common.ArrayUtils.copyArray;
 
 /**
  * Shadow node for virtual ARTShape view
@@ -59,6 +57,24 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   private float mStrokeWidth = 1;
   private int mStrokeCap = CAP_ROUND;
   private int mStrokeJoin = JOIN_ROUND;
+
+  public ARTShapeShadowNode() { }
+
+  public ARTShapeShadowNode(ARTShapeShadowNode node) {
+    super(node);
+    mPath = new Path(node.mPath);
+    mStrokeColor = copyArray(node.mStrokeColor);
+    mBrushData = copyArray(node.mBrushData);
+    mStrokeDash = copyArray(node.mStrokeDash);
+    mStrokeWidth = node.mStrokeWidth;
+    mStrokeCap = node.mStrokeCap;
+    mStrokeJoin = node.mStrokeJoin;
+  }
+
+  @Override
+  protected ARTShapeShadowNode copy() {
+    return new ARTShapeShadowNode(this);
+  }
 
   @ReactProp(name = "d")
   public void setShapePath(@Nullable ReadableArray shapePath) {

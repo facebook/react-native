@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextAttributes.h"
@@ -23,6 +21,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (self = [super init]) {
     _fontSize = NAN;
     _letterSpacing = NAN;
+    _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
@@ -190,7 +189,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (CGFloat)effectiveFontSizeMultiplier
 {
-  return _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+  return !RCTHasFontHandlerSet() && _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
 }
 
 - (UIColor *)effectiveForegroundColor

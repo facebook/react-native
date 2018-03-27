@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -23,6 +21,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -283,6 +282,13 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
+    }
+  }
+
+  private final class DismissPopupMenuOperation implements UIOperation {
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dismissPopupMenu();
     }
   }
 
@@ -657,6 +663,10 @@ public class UIViewOperationQueue {
     mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
   }
 
+  public void enqueueDismissPopupMenu() {
+    mOperations.add(new DismissPopupMenuOperation());
+  }
+
   public void enqueueCreateView(
       ThemedReactContext themedContext,
       int viewReactTag,
@@ -765,7 +775,7 @@ public class UIViewOperationQueue {
     mOperations.add(0, new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(
+  public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

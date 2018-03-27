@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule KeyboardAvoidingView
  * @flow
@@ -133,7 +131,7 @@ const KeyboardAvoidingView = createReactClass({
     this.frame = event.nativeEvent.layout;
   },
 
-  componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
+  UNSAFE_componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
     if (nextState.bottom === this.state.bottom &&
         this.props.behavior === 'height' &&
         nextProps.behavior === 'height') {
@@ -143,7 +141,7 @@ const KeyboardAvoidingView = createReactClass({
     }
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (Platform.OS === 'ios') {
       this.subscriptions = [
         Keyboard.addListener('keyboardWillChangeFrame', this._onKeyboardChange),

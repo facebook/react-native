@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -13,6 +11,7 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.facebook.infer.annotation.Assertions;
 import javax.annotation.Nullable;
@@ -250,7 +249,31 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
         }
       return hashMap;
     }
-    return getLocalMap();
+
+    // we can almost just return getLocalMap(), but we need to convert nested arrays and maps to the
+    // correct types first
+    HashMap<String, Object> hashMap = new HashMap<>(getLocalMap());
+    Iterator iterator = hashMap.keySet().iterator();
+
+    while (iterator.hasNext()) {
+      String key = (String) iterator.next();
+      switch (getType(key)) {
+        case Null:
+        case Boolean:
+        case Number:
+        case String:
+          break;
+        case Map:
+          hashMap.put(key, Assertions.assertNotNull(getMap(key)).toHashMap());
+          break;
+        case Array:
+          hashMap.put(key, Assertions.assertNotNull(getArray(key)).toArrayList());
+          break;
+        default:
+          throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+      }
+    }
+    return hashMap;
   }
 
   /**

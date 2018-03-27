@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RCTNetworking
  * @flow
@@ -17,6 +15,8 @@ const RCTNetworkingNative = require('NativeModules').Networking;
 const convertRequestBody = require('convertRequestBody');
 
 import type {RequestBody} from 'convertRequestBody';
+
+import type { NativeResponseType } from './XMLHttpRequest';
 
 class RCTNetworking extends NativeEventEmitter {
 
@@ -32,7 +32,7 @@ class RCTNetworking extends NativeEventEmitter {
     url: string,
     headers: Object,
     data: RequestBody,
-    responseType: 'text' | 'base64',
+    responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => any,

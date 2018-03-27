@@ -1,26 +1,24 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ViewPagerAndroid
  * @flow
  */
 'use strict';
 
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var UIManager = require('UIManager');
-var ViewPropTypes = require('ViewPropTypes');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const UIManager = require('UIManager');
+const ViewPropTypes = require('ViewPropTypes');
 
-var dismissKeyboard = require('dismissKeyboard');
-var requireNativeComponent = require('requireNativeComponent');
+const dismissKeyboard = require('dismissKeyboard');
+const requireNativeComponent = require('requireNativeComponent');
 
-var VIEWPAGER_REF = 'viewPager';
+const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
 
@@ -165,7 +163,7 @@ class ViewPagerAndroid extends React.Component<{
       if (!child) {
         return null;
       }
-      var newProps = {
+      const newProps = {
         ...child.props,
         style: [child.props.style, {
           position: 'absolute',
@@ -248,6 +246,6 @@ class ViewPagerAndroid extends React.Component<{
   }
 }
 
-var NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
+const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
 
 module.exports = ViewPagerAndroid;

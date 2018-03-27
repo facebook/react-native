@@ -1,27 +1,27 @@
 /*
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.yoga;
 
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNode {
+public class YogaNode implements Cloneable {
 
   static {
-    SoLoader.loadLibrary("yoga");
+    if (YogaConstants.shouldUseFastMath) {
+      SoLoader.loadLibrary("yogafastmath");
+    } else {
+      SoLoader.loadLibrary("yoga");
+    }
   }
 
   /**
@@ -33,7 +33,7 @@ public class YogaNode {
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
-  private final long mNativePointer;
+  private long mNativePointer;
   private Object mData;
 
   /* Those flags needs be in sync with YGJNI.cpp */
@@ -82,6 +82,7 @@ public class YogaNode {
   private int mLayoutDirection = 0;
   @DoNotStrip
   private boolean mHasNewLayout = true;
+  @DoNotStrip private boolean mDoesLegacyStretchFlagAffectsLayout = false;
 
   private native long jni_YGNodeNew();
   public YogaNode() {
@@ -136,6 +137,7 @@ public class YogaNode {
     mMeasureFunction = null;
     mBaselineFunction = null;
     mData = null;
+    mDoesLegacyStretchFlagAffectsLayout = false;
 
     jni_YGNodeReset(mNativePointer);
   }
@@ -160,6 +162,18 @@ public class YogaNode {
     mChildren.add(i, child);
     child.mParent = this;
     jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
+  }
+
+  private native long jni_YGNodeClone(long nativePointer, Object newNode);
+
+  @Override
+  public YogaNode clone() throws CloneNotSupportedException {
+    YogaNode clonedYogaNode = (YogaNode) super.clone();
+    long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+    clonedYogaNode.mNativePointer = clonedNativePointer;
+    clonedYogaNode.mChildren =
+        mChildren != null ? (List<YogaNode>) ((ArrayList) mChildren).clone() : null;
+    return clonedYogaNode;
   }
 
   private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
@@ -193,6 +207,12 @@ public class YogaNode {
   private native void jni_YGNodeMarkDirty(long nativePointer);
   public void dirty() {
     jni_YGNodeMarkDirty(mNativePointer);
+  }
+
+  private native void jni_YGNodeMarkDirtyAndPropogateToDescendants(long nativePointer);
+
+  public void dirtyAllDescendants() {
+    jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
   }
 
   private native boolean jni_YGNodeIsDirty(long nativePointer);
@@ -555,6 +575,10 @@ public class YogaNode {
     return mHeight;
   }
 
+  public boolean getDoesLegacyStretchFlagAffectsLayout() {
+    return mDoesLegacyStretchFlagAffectsLayout;
+  }
+
   public float getLayoutMargin(YogaEdge edge) {
     switch (edge) {
       case LEFT:
@@ -634,11 +658,11 @@ public class YogaNode {
     }
 
     return mMeasureFunction.measure(
-          this,
-          width,
-          YogaMeasureMode.fromInt(widthMode),
-          height,
-          YogaMeasureMode.fromInt(heightMode));
+        this,
+        width,
+        YogaMeasureMode.fromInt(widthMode),
+        height,
+        YogaMeasureMode.fromInt(heightMode));
   }
 
   private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);

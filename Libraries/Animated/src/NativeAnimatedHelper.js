@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NativeAnimatedHelper
  * @flow
@@ -147,6 +145,15 @@ const API = {
 const STYLES_WHITELIST = {
   opacity: true,
   transform: true,
+  borderRadius: true,
+  borderBottomEndRadius: true,
+  borderBottomLeftRadius: true,
+  borderBottomRightRadius: true,
+  borderBottomStartRadius: true,
+  borderTopEndRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderTopStartRadius: true,
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,

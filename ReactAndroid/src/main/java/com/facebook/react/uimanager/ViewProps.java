@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -90,6 +88,7 @@ public class ViewProps {
   public static final String FONT_STYLE = "fontStyle";
   public static final String FONT_FAMILY = "fontFamily";
   public static final String LINE_HEIGHT = "lineHeight";
+  public static final String LETTER_SPACING = "letterSpacing";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
   public static final String NUMBER_OF_LINES = "numberOfLines";
   public static final String ELLIPSIZE_MODE = "ellipsizeMode";
