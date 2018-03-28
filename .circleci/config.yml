@@ -290,7 +290,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-26-alpha
+    - image: circleci/android:api-26-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
