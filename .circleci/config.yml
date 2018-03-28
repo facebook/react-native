@@ -65,11 +65,12 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v2-buck-{{ arch }}-v2018.02.16.01
+      - v3-buck-{{ arch }}-v2018.02.16.01
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v2-buck-{{ arch }}-v2018.02.16.01
+      - ~/okbuck
+    key: v3-buck-{{ arch }}-v2018.02.16.01
 
   - &restore-cache-watchman
     keys:
@@ -141,11 +142,13 @@ aliases:
       fi
       cd ~/buck && ant
       buck --version
+      # Install related tooling
       if [[ ! -e ~/okbuck ]]; then
         git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
       fi
       mkdir -p ~/react-native/tooling/junit
       cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
+
 
   - &install-node
     name: Install Node
