@@ -29,6 +29,8 @@ import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
+import com.facebook.drawee.drawable.RoundedColorDrawable;
+
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -91,25 +93,25 @@ public class ReactImageView extends GenericDraweeView {
 
     void getRadii(Bitmap source, float[] computedCornerRadii, float[] mappedRadii) {
       mScaleType.getTransform(
-            sMatrix,
-            new Rect(0, 0, source.getWidth(), source.getHeight()),
-            source.getWidth(),
-            source.getHeight(),
-            0.0f,
-            0.0f);
-        sMatrix.invert(sInverse);
+        sMatrix,
+        new Rect(0, 0, source.getWidth(), source.getHeight()),
+        source.getWidth(),
+        source.getHeight(),
+        0.0f,
+        0.0f);
+      sMatrix.invert(sInverse);
 
-        mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
-        mappedRadii[1] = mappedRadii[0];
+      mappedRadii[0] = sInverse.mapRadius(computedCornerRadii[0]);
+      mappedRadii[1] = mappedRadii[0];
 
-        mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
-        mappedRadii[3] = mappedRadii[2];
+      mappedRadii[2] = sInverse.mapRadius(computedCornerRadii[1]);
+      mappedRadii[3] = mappedRadii[2];
 
-        mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
-        mappedRadii[5] = mappedRadii[4];
+      mappedRadii[4] = sInverse.mapRadius(computedCornerRadii[2]);
+      mappedRadii[5] = mappedRadii[4];
 
-        mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
-        mappedRadii[7] = mappedRadii[6];
+      mappedRadii[6] = sInverse.mapRadius(computedCornerRadii[3]);
+      mappedRadii[7] = mappedRadii[6];
     }
 
     @Override
@@ -118,9 +120,9 @@ public class ReactImageView extends GenericDraweeView {
 
       output.setHasAlpha(true);
       if (FloatUtil.floatsEqual(sComputedCornerRadii[0], 0f) &&
-          FloatUtil.floatsEqual(sComputedCornerRadii[1], 0f) &&
-          FloatUtil.floatsEqual(sComputedCornerRadii[2], 0f) &&
-          FloatUtil.floatsEqual(sComputedCornerRadii[3], 0f)) {
+        FloatUtil.floatsEqual(sComputedCornerRadii[1], 0f) &&
+        FloatUtil.floatsEqual(sComputedCornerRadii[2], 0f) &&
+        FloatUtil.floatsEqual(sComputedCornerRadii[3], 0f)) {
         super.process(output, source);
         return;
       }
@@ -136,9 +138,9 @@ public class ReactImageView extends GenericDraweeView {
       Path pathForBorderRadius = new Path();
 
       pathForBorderRadius.addRoundRect(
-          new RectF(0, 0, source.getWidth(), source.getHeight()),
-          radii,
-          Path.Direction.CW);
+        new RectF(0, 0, source.getWidth(), source.getHeight()),
+        radii,
+        Path.Direction.CW);
 
       canvas.drawPath(pathForBorderRadius, paint);
     }
@@ -183,6 +185,8 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable ImageSource mImageSource;
   private @Nullable ImageSource mCachedImageSource;
   private @Nullable Drawable mLoadingImageDrawable;
+  private @Nullable RoundedColorDrawable mBackgroundImageDrawable;
+  private int mBackgroundColor = 0x00000000;
   private int mBorderColor;
   private int mOverlayColor;
   private float mBorderWidth;
@@ -206,15 +210,15 @@ public class ReactImageView extends GenericDraweeView {
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
     return new GenericDraweeHierarchyBuilder(context.getResources())
-        .setRoundingParams(RoundingParams.fromCornersRadius(0))
-        .build();
+      .setRoundingParams(RoundingParams.fromCornersRadius(0))
+      .build();
   }
 
   public ReactImageView(
-      Context context,
-      AbstractDraweeControllerBuilder draweeControllerBuilder,
-      @Nullable GlobalImageLoadListener globalImageLoadListener,
-      @Nullable Object callerContext) {
+    Context context,
+    AbstractDraweeControllerBuilder draweeControllerBuilder,
+    @Nullable GlobalImageLoadListener globalImageLoadListener,
+    @Nullable Object callerContext) {
     super(context, buildHierarchy(context));
     mScaleType = ImageResizeMode.defaultValue();
     mDraweeControllerBuilder = draweeControllerBuilder;
@@ -230,20 +234,20 @@ public class ReactImageView extends GenericDraweeView {
       mControllerListener = null;
     } else {
       final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).
-          getNativeModule(UIManagerModule.class).getEventDispatcher();
+        getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override
         public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
-              new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_START));
         }
 
         @Override
         public void onFinalImageSet(
-            String id,
-            @Nullable final ImageInfo imageInfo,
-            @Nullable Animatable animatable) {
+          String id,
+          @Nullable final ImageInfo imageInfo,
+          @Nullable Animatable animatable) {
           if (imageInfo != null) {
             mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD,
@@ -274,6 +278,15 @@ public class ReactImageView extends GenericDraweeView {
       mIterativeBoxBlurPostProcessor = new IterativeBoxBlurPostProcessor(pixelBlurRadius);
     }
     mIsDirty = true;
+  }
+
+  @Override
+  public void setBackgroundColor(int backgroundColor) {
+    if(mBackgroundColor != backgroundColor) {
+      mBackgroundColor = backgroundColor;
+      mBackgroundImageDrawable = new RoundedColorDrawable(backgroundColor);
+      mIsDirty = true;
+    }
   }
 
   public void setBorderColor(int borderColor) {
@@ -342,10 +355,10 @@ public class ReactImageView extends GenericDraweeView {
           ReadableMap source = sources.getMap(idx);
           String uri = source.getString("uri");
           ImageSource imageSource = new ImageSource(
-              getContext(),
-              uri,
-              source.getDouble("width"),
-              source.getDouble("height"));
+            getContext(),
+            uri,
+            source.getDouble("width"),
+            source.getDouble("height"));
           mSources.add(imageSource);
           if (Uri.EMPTY.equals(imageSource.getUri())) {
             warnImageSource(uri);
@@ -359,7 +372,7 @@ public class ReactImageView extends GenericDraweeView {
   public void setLoadingIndicatorSource(@Nullable String name) {
     Drawable drawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
-        drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
+      drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
   }
 
@@ -420,31 +433,37 @@ public class ReactImageView extends GenericDraweeView {
     }
 
     boolean usePostprocessorScaling =
-        mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
+      mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
         mScaleType != ScalingUtils.ScaleType.FOCUS_CROP;
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
 
+    cornerRadii(sComputedCornerRadii);
+
+    roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
+
+    if (mBackgroundImageDrawable != null) {
+      mBackgroundImageDrawable.setBorder(mBorderColor, mBorderWidth);
+      mBackgroundImageDrawable.setRadii(roundingParams.getCornersRadii());
+      hierarchy.setBackgroundImage(mBackgroundImageDrawable);
+    }
+
     if (usePostprocessorScaling) {
       roundingParams.setCornersRadius(0);
-    } else {
-      cornerRadii(sComputedCornerRadii);
-
-      roundingParams.setCornersRadii(sComputedCornerRadii[0], sComputedCornerRadii[1], sComputedCornerRadii[2], sComputedCornerRadii[3]);
     }
 
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     if (mOverlayColor != Color.TRANSPARENT) {
-        roundingParams.setOverlayColor(mOverlayColor);
+      roundingParams.setOverlayColor(mOverlayColor);
     } else {
-        // make sure the default rounding method is used.
-        roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
+      // make sure the default rounding method is used.
+      roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
     }
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
-        mFadeDurationMs >= 0
-            ? mFadeDurationMs
-            : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
+      mFadeDurationMs >= 0
+        ? mFadeDurationMs
+        : mImageSource.isResource() ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
     List<Postprocessor> postprocessors = new LinkedList<>();
     if (usePostprocessorScaling) {
@@ -461,10 +480,10 @@ public class ReactImageView extends GenericDraweeView {
     ResizeOptions resizeOptions = doResize ? new ResizeOptions(getWidth(), getHeight()) : null;
 
     ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mImageSource.getUri())
-        .setPostprocessor(postprocessor)
-        .setResizeOptions(resizeOptions)
-        .setAutoRotateEnabled(true)
-        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
+      .setPostprocessor(postprocessor)
+      .setResizeOptions(resizeOptions)
+      .setAutoRotateEnabled(true)
+      .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled);
 
     ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
 
@@ -476,10 +495,10 @@ public class ReactImageView extends GenericDraweeView {
     mDraweeControllerBuilder.reset();
 
     mDraweeControllerBuilder
-        .setAutoPlayAnimations(true)
-        .setCallerContext(mCallerContext)
-        .setOldController(getController())
-        .setImageRequest(imageRequest);
+      .setAutoPlayAnimations(true)
+      .setCallerContext(mCallerContext)
+      .setOldController(getController())
+      .setImageRequest(imageRequest);
 
     if (mCachedImageSource != null) {
       ImageRequest cachedImageRequest =
@@ -566,7 +585,7 @@ public class ReactImageView extends GenericDraweeView {
     if (mResizeMethod == ImageResizeMethod.AUTO) {
       return
         UriUtil.isLocalContentUri(imageSource.getUri()) ||
-        UriUtil.isLocalFileUri(imageSource.getUri());
+          UriUtil.isLocalFileUri(imageSource.getUri());
     } else if (mResizeMethod == ImageResizeMethod.RESIZE) {
       return true;
     } else {
@@ -583,3 +602,4 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 }
+

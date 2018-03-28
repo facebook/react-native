@@ -258,6 +258,9 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 - (id)handleNetworkingResponse:(NSURLResponse *)response data:(NSData *)data
 {
+  // An empty body will have nil for data, in this case we need to return
+  // an empty blob as per the XMLHttpRequest spec.
+  data = data ?: [NSData new];
   return @{
     @"blobId": [self store:data],
     @"offset": @0,

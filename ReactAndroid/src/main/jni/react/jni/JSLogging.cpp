@@ -2,9 +2,8 @@
 
 #include "JSLogging.h"
 
-#include <android/log.h>
-#include <algorithm>
 #include <fb/log.h>
+#include <algorithm>
 
 #include <jschelpers/Value.h>
 
@@ -16,7 +15,8 @@ JSValueRef nativeLoggingHook(
     JSObjectRef function,
     JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
   android_LogPriority logLevel = ANDROID_LOG_DEBUG;
   if (argumentCount > 1) {
     int level = (int)Value(ctx, arguments[1]).asNumber();
@@ -28,9 +28,23 @@ JSValueRef nativeLoggingHook(
   }
   if (argumentCount > 0) {
     String message = Value(ctx, arguments[0]).toString();
-    FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
+    reactAndroidLoggingHook(message.str(), logLevel);
   }
   return Value::makeUndefined(ctx);
 }
 
-}};
+void reactAndroidLoggingHook(
+    const std::string& message,
+    android_LogPriority logLevel) {
+  FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.c_str());
+}
+
+void reactAndroidLoggingHook(
+    const std::string& message,
+    unsigned int logLevel) {
+  reactAndroidLoggingHook(
+      message, static_cast<android_LogPriority>(logLevel + ANDROID_LOG_DEBUG));
+}
+
+} // namespace react
+} // namespace facebook
