@@ -198,7 +198,7 @@ aliases:
 
   - &run-android-unit-tests
     name: Run Unit Tests
-    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
+    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./buck-out/test-results/all-results-raw.xml
 
   - &run-android-instrumentation-tests
     name: Run Instrumentation Tests
@@ -214,6 +214,7 @@ aliases:
       find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
       find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
       find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      cp ./buck-out/test-results/all-results-raw.xml ~/react-native/reports/junit/
     when: always
 
   - &setup-artifacts
@@ -542,7 +543,7 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
       
-      # post (always runs)
+      # Collect Results
       - run: *collect-android-test-results
       - store_test_results:
           path: ~/react-native/reports/junit
