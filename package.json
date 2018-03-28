@@ -87,17 +87,7 @@
       "fbjs",
       "sinon"
     ],
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "Libraries/**/*.js",
-      "local-cli/**/*.js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/__tests__/",
-      "/vendor/",
-      "<rootDir>/Libraries/react-native/",
-      "<rootDir>/local-cli/templates/"
-    ]
+    "testEnvironment": "node"
   },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
@@ -217,7 +207,6 @@
   },
   "devDependencies": {
     "babel-eslint": "8.2.1",
-    "coveralls": "^3.0.0",
     "eslint": "4.17.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
