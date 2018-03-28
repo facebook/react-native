@@ -9,10 +9,10 @@
 
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const View = require('View');
 
 class DummyDatePickerIOS extends React.Component {
   render() {
@@ -24,7 +24,7 @@ class DummyDatePickerIOS extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   dummyDatePickerIOS: {
     height: 100,
     width: 300,

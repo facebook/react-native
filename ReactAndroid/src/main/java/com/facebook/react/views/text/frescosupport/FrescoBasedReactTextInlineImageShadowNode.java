@@ -60,7 +60,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   }
 
   @Override
-  public FrescoBasedReactTextInlineImageShadowNode mutableCopy() {
+  protected FrescoBasedReactTextInlineImageShadowNode copy() {
     return new FrescoBasedReactTextInlineImageShadowNode(this);
   }
 

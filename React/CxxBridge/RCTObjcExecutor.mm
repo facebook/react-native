@@ -39,8 +39,8 @@ public:
                   std::shared_ptr<ExecutorDelegate> delegate)
     : m_jse(jse)
     , m_errorBlock(errorBlock)
-    , m_jsThread(std::move(jsThread))
     , m_delegate(std::move(delegate))
+    , m_jsThread(std::move(jsThread))
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {

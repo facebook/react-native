@@ -9,7 +9,7 @@
 
 NSString *const RCTTVNavigationEventNotification = @"RCTTVNavigationEventNotification";
 
-static NSString *const TVNavigationEventName = @"onTVNavEvent";
+static NSString *const TVNavigationEventName = @"onHWKeyEvent";
 
 @implementation RCTTVNavigationEventEmitter
 

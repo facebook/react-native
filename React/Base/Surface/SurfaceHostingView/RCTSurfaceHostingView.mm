@@ -13,7 +13,7 @@
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
 
-@interface RCTSurfaceHostingView () <RCTSurfaceDelegate>
+@interface RCTSurfaceHostingView ()
 
 @property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
 @property (nonatomic, assign) BOOL isSurfaceViewVisible;
@@ -33,23 +33,17 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTSurface *surface =
-    [[RCTSurface alloc] initWithBridge:bridge
-                            moduleName:moduleName
-                     initialProperties:initialProperties];
-
-  return [self initWithSurface:surface];
+  RCTSurface *surface = [self createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
-- (instancetype)initWithSurface:(RCTSurface *)surface
+- (instancetype)initWithSurface:(RCTSurface *)surface sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
-
-    _sizeMeasureMode =
-      RCTSurfaceSizeMeasureModeWidthAtMost |
-      RCTSurfaceSizeMeasureModeHeightAtMost;
+    _sizeMeasureMode = sizeMeasureMode;
 
     _surface.delegate = self;
     _stage = surface.stage;
@@ -57,6 +51,13 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   return self;
+}
+
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties
+{
+  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 - (void)setFrame:(CGRect)frame

@@ -47,10 +47,10 @@ struct YGNode {
       YGBaselineFunc baseline,
       YGDirtiedFunc dirtied,
       YGStyle style,
-      YGLayout layout,
+      const YGLayout& layout,
       uint32_t lineIndex,
       YGNodeRef parent,
-      YGVector children,
+      const YGVector& children,
       YGNodeRef nextChild,
       YGConfigRef config,
       bool isDirty,
@@ -80,23 +80,23 @@ struct YGNode {
   YGValue getResolvedDimension(int index);
 
   // Methods related to positions, margin, padding and border
-  float getLeadingPosition(const YGFlexDirection axis, const float axisSize);
-  bool isLeadingPositionDefined(const YGFlexDirection axis);
-  bool isTrailingPosDefined(const YGFlexDirection axis);
-  float getTrailingPosition(const YGFlexDirection axis, const float axisSize);
-  float getLeadingMargin(const YGFlexDirection axis, const float widthSize);
-  float getTrailingMargin(const YGFlexDirection axis, const float widthSize);
-  float getLeadingBorder(const YGFlexDirection flexDirection);
-  float getTrailingBorder(const YGFlexDirection flexDirection);
-  float getLeadingPadding(const YGFlexDirection axis, const float widthSize);
-  float getTrailingPadding(const YGFlexDirection axis, const float widthSize);
+  float getLeadingPosition(const YGFlexDirection axis, const float axisSize) const;
+  bool isLeadingPositionDefined(const YGFlexDirection axis) const;
+  bool isTrailingPosDefined(const YGFlexDirection axis) const;
+  float getTrailingPosition(const YGFlexDirection axis, const float axisSize) const;
+  float getLeadingMargin(const YGFlexDirection axis, const float widthSize) const;
+  float getTrailingMargin(const YGFlexDirection axis, const float widthSize) const;
+  float getLeadingBorder(const YGFlexDirection flexDirection) const;
+  float getTrailingBorder(const YGFlexDirection flexDirection) const;
+  float getLeadingPadding(const YGFlexDirection axis, const float widthSize) const;
+  float getTrailingPadding(const YGFlexDirection axis, const float widthSize) const;
   float getLeadingPaddingAndBorder(
       const YGFlexDirection axis,
-      const float widthSize);
+      const float widthSize) const;
   float getTrailingPaddingAndBorder(
       const YGFlexDirection axis,
-      const float widthSize);
-  float getMarginForAxis(const YGFlexDirection axis, const float widthSize);
+      const float widthSize) const;
+  float getMarginForAxis(const YGFlexDirection axis, const float widthSize) const;
   // Setters
 
   void setContext(void* context);
@@ -106,13 +106,13 @@ struct YGNode {
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setBaseLineFunc(YGBaselineFunc baseLineFunc);
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc);
-  void setStyle(YGStyle style);
+  void setStyle(const YGStyle& style);
   void setStyleFlexDirection(YGFlexDirection direction);
   void setStyleAlignContent(YGAlign alignContent);
-  void setLayout(YGLayout layout);
+  void setLayout(const YGLayout& layout);
   void setLineIndex(uint32_t lineIndex);
   void setParent(YGNodeRef parent);
-  void setChildren(YGVector children);
+  void setChildren(const YGVector& children);
   void setNextChild(YGNodeRef nextChild);
   void setConfig(YGConfigRef config);
   void setDirty(bool isDirty);

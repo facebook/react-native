@@ -9,9 +9,9 @@
 
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
+const React = require('React');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
 
 class DummyTab extends React.Component {
   render() {
@@ -26,7 +26,7 @@ class DummyTab extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tab: {
     // TODO(5405356): Implement overflow: visible so position: absolute isn't useless
     // position: 'absolute',

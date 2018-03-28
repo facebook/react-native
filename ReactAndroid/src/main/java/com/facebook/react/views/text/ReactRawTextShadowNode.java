@@ -30,7 +30,7 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
+  protected ReactShadowNodeImpl copy() {
     return new ReactRawTextShadowNode(this);
   }
 
@@ -49,5 +49,8 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
     return true;
   }
 
-
+  @Override
+  public String toString() {
+    return getViewClass() + " [text: " + mText + "]";
+  }
 }

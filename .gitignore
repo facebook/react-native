@@ -54,7 +54,8 @@ node_modules
 
 # TODO: Check in yarn.lock in open source. Right now we need to keep it out
 # from the GitHub repo as importing it might conflict with internal workspaces
-*/**/yarn.lock
+yarn.lock
+package-lock.json
 
 # OS X
 .DS_Store

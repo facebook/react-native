@@ -12,7 +12,15 @@
 @class RCTPackagerClientResponder;
 @class RCTReconnectingWebSocket;
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
+
+#if defined(__cplusplus)
+}
+#endif
 
 @protocol RCTPackagerClientMethod <NSObject>
 

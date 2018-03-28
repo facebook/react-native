@@ -21,6 +21,7 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+let RCTActivityIndicator;
 
 const GRAY = '#999999';
 
@@ -120,6 +121,14 @@ const ActivityIndicator = createReactClass({
   }
 });
 
+if (Platform.OS === 'ios') {
+  RCTActivityIndicator = requireNativeComponent(
+    'RCTActivityIndicatorView',
+    ActivityIndicator,
+    { nativeOnly: { activityIndicatorViewStyle: true } }
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -134,13 +143,5 @@ const styles = StyleSheet.create({
     height: 36,
   },
 });
-
-if (Platform.OS === 'ios') {
-  var RCTActivityIndicator = requireNativeComponent(
-    'RCTActivityIndicatorView',
-    ActivityIndicator,
-    { nativeOnly: { activityIndicatorViewStyle: true } }
-  );
-}
 
 module.exports = ActivityIndicator;

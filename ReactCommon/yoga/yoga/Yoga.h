@@ -84,6 +84,7 @@ WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(const YGNodeRef node);
+WIN_EXPORT void YGNodeSetChildren(YGNodeRef const parent, const YGNodeRef children[], const uint32_t count);
 
 WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
                                       const float availableWidth,
@@ -190,7 +191,6 @@ YG_NODE_STYLE_PROPERTY(YGPositionType, PositionType, positionType);
 YG_NODE_STYLE_PROPERTY(YGWrap, FlexWrap, flexWrap);
 YG_NODE_STYLE_PROPERTY(YGOverflow, Overflow, overflow);
 YG_NODE_STYLE_PROPERTY(YGDisplay, Display, display);
-
 YG_NODE_STYLE_PROPERTY(float, Flex, flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
@@ -232,6 +232,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
+bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if
@@ -249,10 +250,12 @@ WIN_EXPORT void YGAssertWithNode(const YGNodeRef node, const bool condition, con
 WIN_EXPORT void YGAssertWithConfig(const YGConfigRef config,
                                    const bool condition,
                                    const char *message);
-
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
+void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    const YGConfigRef config,
+    const bool shouldDiffLayout);
 
 // Yoga previously had an error where containers would take the maximum space possible instead of
 // the minimum
@@ -296,3 +299,15 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     const bool forceFloor);
 
 YG_EXTERN_C_END
+
+#ifdef __cplusplus
+
+#include <functional>
+#include <vector>
+
+// Calls f on each node in the tree including the given node argument.
+extern void YGTraversePreOrder(YGNodeRef const node, std::function<void(YGNodeRef node)>&& f);
+
+extern void YGNodeSetChildren(YGNodeRef const parent, const std::vector<YGNodeRef> &children);
+
+#endif

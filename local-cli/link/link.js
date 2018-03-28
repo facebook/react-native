@@ -37,7 +37,9 @@ log.heading = 'rnpm-link';
 
 const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
 
-const linkDependency = (platforms, project, dependency) => {
+const linkDependency = async (platforms, project, dependency) => {
+  const params = await pollParams(dependency.config.params);
+
   Object.keys(platforms || {})
     .forEach(platform => {
       if (!project[platform] || !dependency.config[platform]) {
@@ -49,25 +51,23 @@ const linkDependency = (platforms, project, dependency) => {
         return null;
       }
 
-      const isInstalled = linkConfig.isInstalled(project[platform], dependency.config[platform]);
+      const isInstalled = linkConfig.isInstalled(project[platform], dependency.name, dependency.config[platform]);
 
       if (isInstalled) {
         log.info(chalk.grey(`Platform '${platform}' module ${dependency.name} is already linked`));
         return null;
       }
 
-      return pollParams(dependency.config.params).then(params => {
-        log.info(`Linking ${dependency.name} ${platform} dependency`);
+      log.info(`Linking ${dependency.name} ${platform} dependency`);
 
-        linkConfig.register(
-          dependency.name,
-          dependency.config[platform],
-          params,
-          project[platform]
-        );
+      linkConfig.register(
+        dependency.name,
+        dependency.config[platform],
+        params,
+        project[platform]
+      );
 
-        log.info(`Platform '${platform}' module ${dependency.name} has been successfully linked`);
-      });
+      log.info(`Platform '${platform}' module ${dependency.name} has been successfully linked`);
     });
 };
 

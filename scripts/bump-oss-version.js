@@ -67,8 +67,8 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-  'React/Base/RCTVersion.h',
-  cat('scripts/versiontemplates/RCTVersion.h.template')
+  'React/Base/RCTVersion.m',
+  cat('scripts/versiontemplates/RCTVersion.m.template')
     .replace('${major}', `@(${major})`)
     .replace('${minor}', `@(${minor})`)
     .replace('${patch}', `@(${patch})`)

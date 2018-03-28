@@ -276,6 +276,7 @@ public class UIImplementation {
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
+    Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
     cssNode.setRootNode(rootNode);
@@ -800,6 +801,10 @@ public class UIImplementation {
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
     assertViewExists(reactTag, "showPopupMenu");
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
+  }
+
+  public void dismissPopupMenu() {
+    mOperationsQueue.enqueueDismissPopupMenu();
   }
 
   public void sendAccessibilityEvent(int tag, int eventType) {

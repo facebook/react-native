@@ -82,6 +82,7 @@ public class YogaNode implements Cloneable {
   private int mLayoutDirection = 0;
   @DoNotStrip
   private boolean mHasNewLayout = true;
+  @DoNotStrip private boolean mDoesLegacyStretchFlagAffectsLayout = false;
 
   private native long jni_YGNodeNew();
   public YogaNode() {
@@ -136,6 +137,7 @@ public class YogaNode implements Cloneable {
     mMeasureFunction = null;
     mBaselineFunction = null;
     mData = null;
+    mDoesLegacyStretchFlagAffectsLayout = false;
 
     jni_YGNodeReset(mNativePointer);
   }
@@ -571,6 +573,10 @@ public class YogaNode implements Cloneable {
 
   public float getLayoutHeight() {
     return mHeight;
+  }
+
+  public boolean getDoesLegacyStretchFlagAffectsLayout() {
+    return mDoesLegacyStretchFlagAffectsLayout;
   }
 
   public float getLayoutMargin(YogaEdge edge) {

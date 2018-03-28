@@ -14,6 +14,7 @@ cxx_library(
         "-Werror",
         "-std=c++11",
         "-fexceptions",
+        "-fno-data-sections",
     ],
     force_static = True,
     visibility = [

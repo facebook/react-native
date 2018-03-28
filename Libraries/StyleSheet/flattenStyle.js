@@ -6,13 +6,16 @@
  *
  * @providesModule flattenStyle
  * @flow
+ * @format
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
 var ReactNativePropRegistry;
 
-import type { StyleObj } from 'StyleSheetTypes';
+import type {
+  DangerouslyImpreciseStyle,
+  DangerouslyImpreciseStyleProp,
+} from 'StyleSheet';
 
 function getStyle(style) {
   if (ReactNativePropRegistry === undefined) {
@@ -24,11 +27,12 @@ function getStyle(style) {
   return style;
 }
 
-function flattenStyle(style: ?StyleObj): ?Object {
-  if (!style) {
+function flattenStyle(
+  style: ?DangerouslyImpreciseStyleProp,
+): ?DangerouslyImpreciseStyle {
+  if (style == null) {
     return undefined;
   }
-  invariant(style !== true, 'style may be false but not true');
 
   if (!Array.isArray(style)) {
     /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an

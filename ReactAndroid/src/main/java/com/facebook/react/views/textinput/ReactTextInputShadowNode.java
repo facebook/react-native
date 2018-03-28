@@ -61,7 +61,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   @Override
-  public ReactTextInputShadowNode mutableCopy() {
+  protected ReactTextInputShadowNode copy() {
     return new ReactTextInputShadowNode(this);
   }
 

@@ -77,7 +77,7 @@ if (Platform.OS === 'ios') {
       });
     }
   });
-} else if (Platform.OS === 'android' && UIManager.ViewManagerNames) {
+} else if (UIManager.ViewManagerNames) {
   UIManager.ViewManagerNames.forEach(viewManagerName => {
     defineLazyObjectProperty(UIManager, viewManagerName, {
       get: () => UIManager.getConstantsForViewManager(viewManagerName),

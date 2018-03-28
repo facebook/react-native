@@ -5,14 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+const normalizeProjectName = require('./normalizeProjectName');
+
 module.exports = function makeBuildPatch(name) {
+  const normalizedProjectName = normalizeProjectName(name);
   const installPattern = new RegExp(
-    `\\s{4}(compile)(\\(|\\s)(project)\\(\\\':${name}\\\'\\)(\\)|\\s)`
+    `\\s{4}(compile)(\\(|\\s)(project)\\(\\\':${normalizedProjectName}\\\'\\)(\\)|\\s)`
   );
 
   return {
     installPattern,
     pattern: /[^ \t]dependencies {\n/,
-    patch: `    compile project(':${name}')\n`
+    patch: `    compile project(':${normalizedProjectName}')\n`
   };
 };

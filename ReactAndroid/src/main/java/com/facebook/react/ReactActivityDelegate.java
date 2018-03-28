@@ -127,6 +127,16 @@ public class ReactActivityDelegate {
     }
   }
 
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (getReactNativeHost().hasInstance()
+      && getReactNativeHost().getUseDeveloperSupport()
+      && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      event.startTracking();
+      return true;
+    }
+    return false;
+  }
+
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
@@ -139,6 +149,16 @@ public class ReactActivityDelegate {
         getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
         return true;
       }
+    }
+    return false;
+  }
+
+  public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getUseDeveloperSupport()
+        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+      return true;
     }
     return false;
   }

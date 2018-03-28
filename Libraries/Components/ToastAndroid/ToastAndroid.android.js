@@ -10,7 +10,7 @@
 
 'use strict';
 
-var RCTToastAndroid = require('NativeModules').ToastAndroid;
+const RCTToastAndroid = require('NativeModules').ToastAndroid;
 
 /**
  * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
@@ -33,7 +33,7 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  * ```
  */
 
-var ToastAndroid = {
+const ToastAndroid = {
 
   // Toast duration constants
   SHORT: RCTToastAndroid.SHORT,

@@ -7,19 +7,28 @@
 
 #import "RCTFabricUIManagerWrapper.h"
 
-#include <fabric/FabricUIManager.h>
+#include <React/RCTCxxExceptionManager.h>
+#include <fabric/uimanager/FabricUIManager.h>
+#include <folly/dynamic.h>
+#include <folly/json.h>
+
+#import "RCTFabricPlatformUIOperationManager.h"
 
 // This file contains experimental placeholders, nothing is finalized.
 @implementation RCTFabricUIManagerWrapper
 {
   std::shared_ptr<FabricUIManager> _manager;
+  std::shared_ptr<ExceptionManager> _exceptionManager;
+  std::shared_ptr<IFabricPlatformUIOperationManager> _platformUIOperationManager;
 }
 
-- (instancetype)initWithManager:(std::shared_ptr<FabricUIManager>)manager
+- (instancetype)init
 {
   self = [super init];
   if (self) {
-    _manager = manager;
+    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
+    _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
+    _manager = std::make_shared<FabricUIManager>(_platformUIOperationManager);
   }
   return self;
 }
@@ -27,6 +36,11 @@
 - (std::shared_ptr<FabricUIManager>)manager
 {
   return _manager;
+}
+
+- (std::shared_ptr<ExceptionManager>)exceptionManager
+{
+  return _exceptionManager;
 }
 
 - (void)invalidate

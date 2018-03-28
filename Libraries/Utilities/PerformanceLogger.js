@@ -109,6 +109,9 @@ const PerformanceLogger = {
   clear() {
     timespans = {};
     extras = {};
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clear');
+    }
   },
 
   clearCompleted() {
@@ -118,6 +121,9 @@ const PerformanceLogger = {
       }
     }
     extras = {};
+    if (__DEV__ && PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clearCompleted');
+    }
   },
 
   clearExceptTimespans(keys: Array<string>) {
