@@ -34,11 +34,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-{{ arch }}-r10e-32-64
+      - v3-android-ndk-{{ arch }}-r10e
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v2-android-ndk-{{ arch }}-r10e-32-64
+    key: v3-android-ndk-{{ arch }}-r10e
 
   - &restore-cache-buck
     keys:
