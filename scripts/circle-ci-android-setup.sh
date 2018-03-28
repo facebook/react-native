@@ -41,14 +41,11 @@ function getAndroidNDK {
   if [ ! -e $DEPS ]; then
     cd $NDK_HOME
     echo "Downloading NDK..."
-    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86.zip
-    curl -o ndk_64.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
+    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip
     unzip -o -q ndk.zip
-    unzip -o -q ndk_64.zip
     echo "Installed Android NDK at $NDK_HOME"
     touch $DEPS
     rm ndk.zip
-    rm ndk_64.zip
   fi
 }
 
