@@ -10,13 +10,13 @@
  */
 'use strict';
 
-var Animated = require('Animated');
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var PropTypes = require('prop-types');
-var Touchable = require('Touchable');
+const Animated = require('Animated');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const createReactClass = require('create-react-class');
+const PropTypes = require('prop-types');
+const Touchable = require('Touchable');
 
 type Event = Object;
 
@@ -25,7 +25,7 @@ type State = {
   scale: Animated.Value,
 };
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Example of using the `TouchableMixin` to play well with other responder
@@ -34,7 +34,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
-var TouchableBounce = createReactClass({
+const TouchableBounce = createReactClass({
   displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
@@ -115,7 +115,7 @@ var TouchableBounce = createReactClass({
   },
 
   touchableHandlePress: function(e: Event) {
-    var onPressWithCompletion = this.props.onPressWithCompletion;
+    const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
         this.state.scale.setValue(0.93);

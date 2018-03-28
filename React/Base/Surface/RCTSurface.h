@@ -42,16 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
 
-@property (nonatomic, assign, readonly) BOOL fabric;
-
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-                        fabric:(BOOL)fabric NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
@@ -121,6 +114,19 @@ NS_ASSUME_NONNULL_BEGIN
  *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+
+#pragma mark - Mounting/Unmounting of React components
+
+/**
+ * Mount the React component specified by the given moduleName. This is typically
+ * calling runApplication.js from the native side.
+ */
+- (void)mountReactComponentWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params;
+
+/**
+ * Unmount the React component specified by the given rootViewTag, called from native.
+ */
+- (void)unmountReactComponentWithBridge:(RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag;
 
 @end
 

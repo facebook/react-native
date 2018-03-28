@@ -76,8 +76,18 @@ public abstract class ReactActivity extends Activity
   }
 
   @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    return mDelegate.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+  }
+
+  @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     return mDelegate.onKeyUp(keyCode, event) || super.onKeyUp(keyCode, event);
+  }
+
+  @Override
+  public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    return mDelegate.onKeyLongPress(keyCode, event) || super.onKeyLongPress(keyCode, event);
   }
 
   @Override

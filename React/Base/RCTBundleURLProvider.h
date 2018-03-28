@@ -7,9 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
 
 extern const NSUInteger kRCTBundleURLProviderDefaultPort;
+
+#if defined(__cplusplus)
+}
+#endif
 
 @interface RCTBundleURLProvider : NSObject
 

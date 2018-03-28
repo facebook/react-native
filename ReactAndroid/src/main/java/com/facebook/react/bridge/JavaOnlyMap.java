@@ -107,8 +107,8 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public JavaOnlyMap getMap(String name) {
-    return (JavaOnlyMap) mBackingMap.get(name);
+  public ReadableMap getMap(String name) {
+    return (ReadableMap) mBackingMap.get(name);
   }
 
   @Override

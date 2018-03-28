@@ -9,20 +9,20 @@
 
 'use strict';
 
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var UIManager = require('UIManager');
-var ViewPropTypes = require('ViewPropTypes');
-var ColorPropType = require('ColorPropType');
+const Image = require('Image');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const UIManager = require('UIManager');
+const ViewPropTypes = require('ViewPropTypes');
+const ColorPropType = require('ColorPropType');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
+const resolveAssetSource = require('resolveAssetSource');
 
-var optionalImageSource = PropTypes.oneOfType([
+const optionalImageSource = PropTypes.oneOfType([
   Image.propTypes.source,
   // Image.propTypes.source is required but we want it to be optional, so we OR
   // it with a nullable propType.
@@ -64,7 +64,7 @@ var optionalImageSource = PropTypes.oneOfType([
  *
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
-var ToolbarAndroid = createReactClass({
+const ToolbarAndroid = createReactClass({
   displayName: 'ToolbarAndroid',
   mixins: [NativeMethodsMixin],
 
@@ -162,7 +162,7 @@ var ToolbarAndroid = createReactClass({
   },
 
   render: function() {
-    var nativeProps = {
+    const nativeProps = {
       ...this.props,
     };
     if (this.props.logo) {
@@ -175,9 +175,9 @@ var ToolbarAndroid = createReactClass({
       nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
     }
     if (this.props.actions) {
-      var nativeActions = [];
-      for (var i = 0; i < this.props.actions.length; i++) {
-        var action = {
+      const nativeActions = [];
+      for (let i = 0; i < this.props.actions.length; i++) {
+        const action = {
           ...this.props.actions[i],
         };
         if (action.icon) {
@@ -195,7 +195,7 @@ var ToolbarAndroid = createReactClass({
   },
 
   _onSelect: function(event) {
-    var position = event.nativeEvent.position;
+    const position = event.nativeEvent.position;
     if (position === -1) {
       this.props.onIconClicked && this.props.onIconClicked();
     } else {
@@ -204,7 +204,7 @@ var ToolbarAndroid = createReactClass({
   },
 });
 
-var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
+const NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
   nativeOnly: {
     nativeActions: true,
   }

@@ -11,8 +11,8 @@ TEST_SRCS = [
 ]
 
 if not IS_OSS_BUILD:
+    load("@xplat//build_defs:fb_xplat_cxx.bzl", "cxx_test")
     load("@xplat//configurations/buck/android:jni_instrumentation_test", "jni_instrumentation_test_lib")
-    load("@xplat//configurations/buck:fb_xplat_cxx.bzl", "cxx_test")
     load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
     jni_instrumentation_test_lib(
         name = 'tests',

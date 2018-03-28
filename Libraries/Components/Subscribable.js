@@ -19,7 +19,7 @@ import type EventEmitter from 'EventEmitter';
  * React Core
  */
 
-var Subscribable = {};
+const Subscribable = {};
 
 Subscribable.Mixin = {
 

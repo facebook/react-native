@@ -53,6 +53,7 @@ class Button extends React.Component<{
   title: string,
   onPress: () => any,
   color?: ?string,
+  hasTVPreferredFocus?: ?boolean,
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
@@ -76,6 +77,10 @@ class Button extends React.Component<{
      */
     disabled: PropTypes.bool,
     /**
+     * TV preferred focus (see documentation for the View component).
+     */
+    hasTVPreferredFocus: PropTypes.bool,
+    /**
      * Handler to be called when the user taps the button
      */
     onPress: PropTypes.func.isRequired,
@@ -83,12 +88,6 @@ class Button extends React.Component<{
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
-    /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
-     */
-    hasTVPreferredFocus: PropTypes.bool,
   };
 
   render() {

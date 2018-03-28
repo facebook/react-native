@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const View = require('View');
 
 class DummySegmentedControlIOS extends React.Component {
   render() {
@@ -27,7 +27,7 @@ class DummySegmentedControlIOS extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   dummy: {
     width: 120,
     height: 50,

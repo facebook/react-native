@@ -74,11 +74,11 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   protected LayoutShadowNode(LayoutShadowNode node) {
     super(node);
-    mTempYogaValue = new MutableYogaValue(node.mTempYogaValue);
+    mTempYogaValue = new MutableYogaValue();
   }
 
   @Override
-  public LayoutShadowNode mutableCopy() {
+  protected LayoutShadowNode copy() {
     return new LayoutShadowNode(this);
   }
 

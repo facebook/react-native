@@ -10,19 +10,19 @@
 
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const TextStylePropTypes = require('TextStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var keyMirror = require('fbjs/lib/keyMirror');
-var processColor = require('processColor');
-var processTransform = require('processTransform');
-var sizesDiffer = require('sizesDiffer');
+const keyMirror = require('fbjs/lib/keyMirror');
+const processColor = require('processColor');
+const processTransform = require('processTransform');
+const sizesDiffer = require('sizesDiffer');
 
-var ReactNativeStyleAttributes = {
+const ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),
   ...keyMirror(TextStylePropTypes),
   ...keyMirror(ImageStylePropTypes),
@@ -31,7 +31,7 @@ var ReactNativeStyleAttributes = {
 ReactNativeStyleAttributes.transform = { process: processTransform };
 ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
 
-var colorAttributes = { process: processColor };
+const colorAttributes = { process: processColor };
 ReactNativeStyleAttributes.backgroundColor = colorAttributes;
 ReactNativeStyleAttributes.borderBottomColor = colorAttributes;
 ReactNativeStyleAttributes.borderColor = colorAttributes;

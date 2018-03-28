@@ -453,6 +453,9 @@ class TextExample extends React.Component<{}> {
           <Text ellipsizeMode="head" numberOfLines={1}>
             This very long text should be truncated with dots in the beginning.
           </Text>
+          <Text ellipsizeMode="clip" numberOfLines={1}>
+            This very long text should be clipped and this will not be visible.
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Include Font Padding">
           <View style={{flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10}}>

@@ -76,6 +76,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     filterText: '',
     logViewable: false,
     virtualized: true,
+    inverted: false,
   };
 
   _scrollPos = new Animated.Value(0);
@@ -125,6 +126,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
+            {renderSmallSwitchOption(this, 'inverted')}
             <Spindicator value={this._scrollPos} />
           </View>
           <View style={styles.scrollToRow}>
@@ -146,6 +148,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
             <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
           }
           debug={this.state.debug}
+          inverted={this.state.inverted}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
           onScroll={this._scrollSinkY}
@@ -232,6 +235,8 @@ const styles = StyleSheet.create({
   },
   optionSection: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   searchRow: {
     paddingHorizontal: 10,
