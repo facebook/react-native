@@ -270,7 +270,7 @@ public class FabricUIManager implements UIManager {
       mUIViewOperationQueue.dispatchViewUpdates(
         mCurrentBatch++, System.currentTimeMillis(), System.currentTimeMillis());
 
-      mRootShadowNodeRegistry.addNode(currentRootShadowNode);
+      mRootShadowNodeRegistry.replaceNode(currentRootShadowNode);
     } catch (Exception e) {
       handleException(getRootNode(rootTag), e);
     }
@@ -320,7 +320,7 @@ public class FabricUIManager implements UIManager {
   }
 
   @Override
-  public synchronized <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
     int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext themedRootContext =
@@ -332,7 +332,7 @@ public class FabricUIManager implements UIManager {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
 
-    mRootShadowNodeRegistry.addNode(rootShadowNode);
+    mRootShadowNodeRegistry.registerNode(rootShadowNode);
     mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
     return rootTag;
   }
