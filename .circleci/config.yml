@@ -141,6 +141,11 @@ aliases:
       fi
       cd ~/buck && ant
       buck --version
+      if [[ ! -e ~/okbuck ]]; then
+        git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+      fi
+      mkdir -p ~/react-native/tooling/junit
+      cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
 
   - &install-node
     name: Install Node
@@ -237,7 +242,7 @@ aliases:
 
   - &run-android-unit-tests
     name: Run Unit Tests
-    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/react-native/reports/junit/all-results-raw.xml
+    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/react-native/reports/buck/all-results-raw.xml
 
   - &run-android-instrumentation-tests
     name: Run Instrumentation Tests
@@ -250,15 +255,19 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/build/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/outputs/ \;
+      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/buck/ \;
+      ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
     when: always
 
   - &setup-artifacts
     name: Initial Setup
     command: | 
+      mkdir -p ~/react-native/reports/buck/
+      mkdir -p ~/react-native/reports/build/
       mkdir -p ~/react-native/reports/junit/
+      mkdir -p ~/react-native/reports/outputs/
   
   - &run-objc-ios-tests
     name: iOS Test Suite
