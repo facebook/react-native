@@ -36,24 +36,11 @@ public class ReactViewPager extends ViewPager {
     void addView(View child, int index) {
       mViews.add(index, child);
       notifyDataSetChanged();
-      // This will prevent view pager from detaching views for pages that are not currently selected
-      // We need to do that since {@link ViewPager} relies on layout passes to position those views
-      // in a right way (also thanks to {@link ReactViewPagerManager#needsCustomLayoutForChildren}
-      // returning {@code true}). Currently we only call {@link View#measure} and
-      // {@link View#layout} after yoga step.
-
-      // TODO(7323049): Remove this workaround once we figure out a way to re-layout some views on
-      // request
-      setOffscreenPageLimit(mViews.size());
     }
 
     void removeViewAt(int index) {
       mViews.remove(index);
       notifyDataSetChanged();
-
-      // TODO(7323049): Remove this workaround once we figure out a way to re-layout some views on
-      // request
-      setOffscreenPageLimit(mViews.size());
     }
 
     /**
@@ -102,6 +89,7 @@ public class ReactViewPager extends ViewPager {
     public Object instantiateItem(ViewGroup container, int position) {
       View view = mViews.get(position);
       container.addView(view, 0, generateDefaultLayoutParams());
+      post(measureAndLayout);
       return view;
     }
 
