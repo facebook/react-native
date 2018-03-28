@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport.interfaces;
@@ -32,6 +30,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void hideRedboxDialog();
   void showDevOptionsDialog();
   void setDevSupportEnabled(boolean isDevSupportEnabled);
+  void startInspector();
+  void stopInspector();
   boolean getDevSupportEnabled();
   DeveloperSettings getDevSettings();
   void onNewReactContextCreated(ReactContext reactContext);
@@ -50,4 +50,5 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
       final File outputFile);
   @Nullable String getLastErrorTitle();
   @Nullable StackFrame[] getLastErrorStack();
+  void registerErrorCustomizer(ErrorCustomizer errorCustomizer);
 }

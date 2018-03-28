@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule SectionListExample
@@ -68,7 +66,7 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
   </View>
 );
 
-class SectionListExample extends React.PureComponent {
+class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
   static title = '<SectionList>';
   static description = 'Performant, scrollable list of data.';
 
@@ -78,6 +76,7 @@ class SectionListExample extends React.PureComponent {
     filterText: '',
     logViewable: false,
     virtualized: true,
+    inverted: false,
   };
 
   _scrollPos = new Animated.Value(0);
@@ -127,6 +126,7 @@ class SectionListExample extends React.PureComponent {
             {renderSmallSwitchOption(this, 'virtualized')}
             {renderSmallSwitchOption(this, 'logViewable')}
             {renderSmallSwitchOption(this, 'debug')}
+            {renderSmallSwitchOption(this, 'inverted')}
             <Spindicator value={this._scrollPos} />
           </View>
           <View style={styles.scrollToRow}>
@@ -148,6 +148,7 @@ class SectionListExample extends React.PureComponent {
             <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
           }
           debug={this.state.debug}
+          inverted={this.state.inverted}
           enableVirtualization={this.state.virtualized}
           onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
           onScroll={this._scrollSinkY}
@@ -234,6 +235,8 @@ const styles = StyleSheet.create({
   },
   optionSection: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   searchRow: {
     paddingHorizontal: 10,

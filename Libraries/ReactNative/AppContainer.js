@@ -1,18 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AppContainer
+ * @format
  * @flow
  */
 
 'use strict';
 
 const EmitterSubscription = require('EmitterSubscription');
+const PropTypes = require('prop-types');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -22,26 +22,30 @@ const View = require('View');
 type Context = {
   rootTag: number,
 };
-type Props = {
+type Props = {|
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+   * suppresses an error when upgrading Flow's support for React. To see the
+   * error delete this comment and run Flow. */
   children?: React.Children,
+  fabric?: boolean,
   rootTag: number,
-};
+  WrapperComponent?: ?React.ComponentType<*>,
+|};
 type State = {
-  inspector: ?React.Element<*>,
+  inspector: ?React.Element<any>,
   mainKey: number,
 };
 
-class AppContainer extends React.Component {
-  props: Props;
+class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
   };
-  _mainRef: ?React.Element<*>;
+  _mainRef: ?React.Element<any>;
   _subscription: ?EmitterSubscription = null;
 
   static childContextTypes = {
-    rootTag: React.PropTypes.number,
+    rootTag: PropTypes.number,
   };
 
   getChildContext(): Context {
@@ -57,19 +61,20 @@ class AppContainer extends React.Component {
           'toggleElementInspector',
           () => {
             const Inspector = require('Inspector');
-            const inspector = this.state.inspector
-              ? null
-              : <Inspector
-                  inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                  onRequestRerenderApp={(updateInspectedViewTag) => {
-                    this.setState(
-                      (s) => ({mainKey: s.mainKey + 1}),
-                      () => updateInspectedViewTag(
-                        ReactNative.findNodeHandle(this._mainRef)
-                      )
-                    );
-                  }}
-                />;
+            const inspector = this.state.inspector ? null : (
+              <Inspector
+                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
+                onRequestRerenderApp={updateInspectedViewTag => {
+                  this.setState(
+                    s => ({mainKey: s.mainKey + 1}),
+                    () =>
+                      updateInspectedViewTag(
+                        ReactNative.findNodeHandle(this._mainRef),
+                      ),
+                  );
+                }}
+              />
+            );
             this.setState({inspector});
           },
         );
@@ -83,24 +88,39 @@ class AppContainer extends React.Component {
     }
   }
 
-  render(): React.Element<*> {
+  render(): React.Node {
     let yellowBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling) {
+      if (!global.__RCTProfileIsProfiling && !this.props.fabric) {
+        // TODO: Fabric doesn't support YellowBox.
         const YellowBox = require('YellowBox');
         yellowBox = <YellowBox />;
       }
     }
 
+    let innerView = (
+      <View
+        collapsable={!this.state.inspector}
+        key={this.state.mainKey}
+        pointerEvents="box-none"
+        style={styles.appContainer}
+        ref={ref => {
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */
+          this._mainRef = ref;
+        }}>
+        {this.props.children}
+      </View>
+    );
+
+    const Wrapper = this.props.WrapperComponent;
+    if (Wrapper) {
+      innerView = <Wrapper>{innerView}</Wrapper>;
+    }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">
-        <View
-          collapsable={!this.state.inspector}
-          key={this.state.mainKey}
-          pointerEvents="box-none"
-          style={styles.appContainer} ref={(ref) => {this._mainRef = ref;}}>
-          {this.props.children}
-        </View>
+        {innerView}
         {yellowBox}
         {this.state.inspector}
       </View>

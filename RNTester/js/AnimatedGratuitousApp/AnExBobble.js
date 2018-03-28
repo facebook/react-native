@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AnExBobble
  * @flow
@@ -30,9 +28,7 @@ var BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {  // static positions
   };
 });
 
-class AnExBobble extends React.Component {
-  state: any;
-
+class AnExBobble extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     this.state = {};
@@ -83,7 +79,7 @@ class AnExBobble extends React.Component {
     });
   }
 
-  render(): React.Element<any> {
+  render(): React.Node {
     return (
       <View style={styles.bobbleContainer}>
         {this.state.bobbles.map((_, i) => {

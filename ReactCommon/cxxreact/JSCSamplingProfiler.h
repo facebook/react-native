@@ -8,5 +8,5 @@ namespace facebook {
 namespace react {
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx);
-}
-}
+
+} }

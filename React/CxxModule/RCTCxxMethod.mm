@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTCxxMethod.h"
@@ -26,15 +24,29 @@ using namespace facebook::react;
   std::unique_ptr<CxxModule::Method> _method;
 }
 
-@synthesize JSMethodName = _JSMethodName;
-
 - (instancetype)initWithCxxMethod:(const CxxModule::Method &)method
 {
   if ((self = [super init])) {
-    _JSMethodName = @(method.name.c_str());
     _method = folly::make_unique<CxxModule::Method>(method);
   }
   return self;
+}
+
+- (const char *)JSMethodName
+{
+  return _method->name.c_str();
+}
+
+- (RCTFunctionType)functionType
+{
+  std::string type(_method->getType());
+  if (type == "sync") {
+    return RCTFunctionTypeSync;
+  } else if (type == "async") {
+    return RCTFunctionTypeNormal;
+  } else {
+    return RCTFunctionTypePromise;
+  }
 }
 
 - (id)invokeWithBridge:(RCTBridge *)bridge
@@ -52,7 +64,7 @@ using namespace facebook::react;
   CxxModule::Callback second;
 
   if (arguments.count < _method->callbacks) {
-    RCTLogError(@"Method %@.%s expects at least %lu arguments, but got %tu",
+    RCTLogError(@"Method %@.%s expects at least %zu arguments, but got %tu",
                 RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
                 _method->callbacks, arguments.count);
     return nil;
@@ -90,7 +102,7 @@ using namespace facebook::react;
     };
   }
 
-  folly::dynamic args = [RCTConvert folly_dynamic:arguments];
+  folly::dynamic args = convertIdToFollyDynamic(arguments);
   args.resize(args.size() - _method->callbacks);
 
   try {
@@ -110,16 +122,9 @@ using namespace facebook::react;
   }
 }
 
-- (RCTFunctionType)functionType
-{
-  // TODO: support promise-style APIs
-  return _method->syncFunc ? RCTFunctionTypeSync : RCTFunctionTypeNormal;
-}
-
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<%@: %p; name = %@>",
-          [self class], self, self.JSMethodName];
+  return [NSString stringWithFormat:@"<%@: %p; name = %s>", [self class], self, self.JSMethodName];
 }
 
 @end

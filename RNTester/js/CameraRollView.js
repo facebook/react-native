@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule CameraRollView
  * @flow
@@ -12,6 +10,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 var ReactNative = require('react-native');
 var {
@@ -71,8 +70,8 @@ var propTypes = {
 
 };
 
-var CameraRollView = React.createClass({
-  // $FlowFixMe(>=0.41.0)
+var CameraRollView = createReactClass({
+  displayName: 'CameraRollView',
   propTypes: propTypes,
 
   getDefaultProps: function(): Object {
@@ -124,7 +123,10 @@ var CameraRollView = React.createClass({
     this.fetch();
   },
 
-  componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
+  UNSAFE_componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }

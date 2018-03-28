@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NavigatorIOSColorsExample
  */
@@ -33,7 +31,7 @@ class EmptyPage extends React.Component {
 }
 
 class NavigatorIOSColors extends React.Component {
-  static title = '<NavigatorIOS> - Custom';
+  static title = '<NavigatorIOS> - Custom Colors';
   static description = 'iOS navigation with custom nav bar colors';
 
   render() {

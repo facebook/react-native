@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2013, Facebook, Inc.
- *  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -76,7 +74,7 @@ RCT_EXTERN NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *
  * conversion, with 1.0 being maximum quality. It has no effect for images
  * using PNG compression.
  */
-RCT_EXTERN NSData *__nullable RCTGetImageData(CGImageRef image, float quality);
+RCT_EXTERN NSData *__nullable RCTGetImageData(UIImage *image, float quality);
 
 /**
  * This function transforms an image. `destSize` is the size of the final image,

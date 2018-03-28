@@ -1,15 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTImageStoreManager.h"
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
@@ -32,7 +30,12 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
 RCT_EXPORT_MODULE()
 
-- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
+- (float)handlerPriority
+{
+    return 1;
+}
+
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)(void))block
 {
   dispatch_async(_methodQueue, ^{
     [self removeImageForTag:imageTag];
@@ -76,7 +79,7 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertParam(block);
   dispatch_async(_methodQueue, ^{
-    NSString *imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, 0.75)];
+    NSString *imageTag = [self _storeImageData:RCTGetImageData(image, 0.75)];
     dispatch_async(dispatch_get_main_queue(), ^{
       block(imageTag);
     });
@@ -137,14 +140,14 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block volatile uint32_t cancelled = 0;
+  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   void (^cancellationBlock)(void) = ^{
-    OSAtomicOr32Barrier(1, &cancelled);
+    atomic_store(&cancelled, YES);
   };
 
   // Dispatch async to give caller time to cancel the request
   dispatch_async(_methodQueue, ^{
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
 
@@ -197,7 +200,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   RCTLogWarn(@"RCTImageStoreManager.storeImage() is deprecated and has poor performance. Use an alternative method instead.");
   __block NSString *imageTag;
   dispatch_sync(_methodQueue, ^{
-    imageTag = [self _storeImageData:RCTGetImageData(image.CGImage, 0.75)];
+    imageTag = [self _storeImageData:RCTGetImageData(image, 0.75)];
   });
   return imageTag;
 }

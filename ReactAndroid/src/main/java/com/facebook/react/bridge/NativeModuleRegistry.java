@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -13,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
@@ -33,6 +32,21 @@ public class NativeModuleRegistry {
     mReactApplicationContext = reactApplicationContext;
     mModules = modules;
     mBatchCompleteListenerModules = batchCompleteListenerModules;
+  }
+
+  /**
+   * Private getters for combining NativeModuleRegistrys
+   */
+  private Map<Class<? extends NativeModule>, ModuleHolder> getModuleMap() {
+    return mModules;
+  }
+
+  private ReactApplicationContext getReactApplicationContext() {
+    return mReactApplicationContext;
+  }
+
+  private ArrayList<ModuleHolder> getBatchCompleteListenerModules() {
+    return mBatchCompleteListenerModules;
   }
 
   /* package */ Collection<JavaModuleWrapper> getJavaModules(
@@ -56,6 +70,29 @@ public class NativeModuleRegistry {
       }
     }
     return cxxModules;
+  }
+
+  /*
+  * Adds any new modules to the current module registry
+  */
+  /* package */ void registerModules(NativeModuleRegistry newRegister) {
+
+    Assertions.assertCondition(mReactApplicationContext.equals(newRegister.getReactApplicationContext()),
+      "Extending native modules with non-matching application contexts.");
+
+    Map<Class<? extends NativeModule>, ModuleHolder> newModules = newRegister.getModuleMap();
+    ArrayList<ModuleHolder> batchCompleteListeners = newRegister.getBatchCompleteListenerModules();
+
+    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : newModules.entrySet()) {
+      Class<? extends NativeModule> key = entry.getKey();
+      if (!mModules.containsKey(key)) {
+        ModuleHolder value = entry.getValue();
+        if (batchCompleteListeners.contains(value)) {
+          mBatchCompleteListenerModules.add(value);
+        }
+        mModules.put(key, value);
+      }
+    }
   }
 
   /* package */ void notifyJSInstanceDestroy() {
@@ -83,7 +120,7 @@ public class NativeModuleRegistry {
         "NativeModuleRegistry_notifyJSInstanceInitialized");
     try {
       for (ModuleHolder module : mModules.values()) {
-        module.initialize();
+        module.markInitializable();
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -93,7 +130,7 @@ public class NativeModuleRegistry {
 
   public void onBatchComplete() {
     for (ModuleHolder moduleHolder : mBatchCompleteListenerModules) {
-      if (moduleHolder.isInitialized()) {
+      if (moduleHolder.hasInstance()) {
         ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
       }
     }

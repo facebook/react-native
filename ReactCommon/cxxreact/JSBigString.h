@@ -112,20 +112,25 @@ public:
   : m_fd   {-1}
   , m_data {nullptr}
   {
-    folly::checkUnixError(
-                          m_fd = dup(fd),
-                          "Could not duplicate file descriptor");
+    folly::checkUnixError(m_fd = dup(fd),
+      "Could not duplicate file descriptor");
 
     // Offsets given to mmap must be page aligend. We abstract away that
     // restriction by sending a page aligned offset to mmap, and keeping track
     // of the offset within the page that we must alter the mmap pointer by to
     // get the final desired offset.
-    auto ps = getpagesize();
-    auto d  = lldiv(offset, ps);
+    if (offset != 0) {
+      const static auto ps = getpagesize();
+      auto d  = lldiv(offset, ps);
 
-    m_mapOff  = d.quot;
-    m_pageOff = d.rem;
-    m_size    = size + m_pageOff;
+      m_mapOff  = d.quot;
+      m_pageOff = d.rem;
+      m_size    = size + m_pageOff;
+    } else {
+      m_mapOff  = 0;
+      m_pageOff = 0;
+      m_size    = size;
+    }
   }
 
   ~JSBigFileString() {
@@ -141,7 +146,8 @@ public:
 
   const char *c_str() const override {
     if (!m_data) {
-      m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+      m_data =
+        (const char *)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
       CHECK(m_data != MAP_FAILED)
       << " fd: " << m_fd
       << " size: " << m_size

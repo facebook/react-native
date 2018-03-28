@@ -1,15 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.common;
 
 import javax.annotation.Nullable;
+
+import java.util.concurrent.TimeUnit;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,12 +22,17 @@ import com.facebook.infer.annotation.Assertions;
  * Listens for the user shaking their phone. Allocation-less once it starts listening.
  */
 public class ShakeDetector implements SensorEventListener {
+  // Collect sensor data in this interval (nanoseconds)
+  private static final long MIN_TIME_BETWEEN_SAMPLES_NS =
+    TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS);
+  // Number of nanoseconds to listen for and count shakes (nanoseconds)
+  private static final float SHAKING_WINDOW_NS =
+    TimeUnit.NANOSECONDS.convert(3, TimeUnit.SECONDS);
+  // Required force to constitute a rage shake. Need to multiply gravity by 1.33 because a rage
+  // shake in one direction should have more force than just the magnitude of free fall.
+  private static final float REQUIRED_FORCE = SensorManager.GRAVITY_EARTH * 1.33f;
 
-  private static final int MAX_SAMPLES = 25;
-  private static final int MIN_TIME_BETWEEN_SAMPLES_MS = 20;
-  private static final int VISIBLE_TIME_RANGE_MS = 500;
-  private static final int MAGNITUDE_THRESHOLD = 25;
-  private static final int PERCENT_OVER_THRESHOLD_FOR_SHAKE = 66;
+  private float mAccelerationX, mAccelerationY, mAccelerationZ;
 
   public static interface ShakeListener {
     void onShake();
@@ -37,12 +42,18 @@ public class ShakeDetector implements SensorEventListener {
 
   @Nullable private SensorManager mSensorManager;
   private long mLastTimestamp;
-  private int mCurrentIndex;
-  @Nullable private double[] mMagnitudes;
-  @Nullable private long[] mTimestamps;
+  private int mNumShakes;
+  private long mLastShakeTimestamp;
+  //number of shakes required to trigger onShake()
+  private int mMinNumShakes;
 
   public ShakeDetector(ShakeListener listener) {
+    this(listener, 1);
+  }
+
+  public ShakeDetector(ShakeListener listener, int minNumShakes) {
     mShakeListener = listener;
+    mMinNumShakes = minNumShakes;
   }
 
   /**
@@ -54,11 +65,9 @@ public class ShakeDetector implements SensorEventListener {
     if (accelerometer != null) {
       mSensorManager = manager;
       mLastTimestamp = -1;
-      mCurrentIndex = 0;
-      mMagnitudes = new double[MAX_SAMPLES];
-      mTimestamps = new long[MAX_SAMPLES];
-
       mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+      mLastShakeTimestamp = 0;
+      reset();
     }
   }
 
@@ -72,26 +81,60 @@ public class ShakeDetector implements SensorEventListener {
     }
   }
 
+  /**
+   * Reset all variables used to keep track of number of shakes recorded.
+   */
+  private void reset() {
+    mNumShakes = 0;
+    mAccelerationX = 0;
+    mAccelerationY = 0;
+    mAccelerationZ = 0;
+  }
+
+  /**
+   * Determine if acceleration applied to sensor is large enough to count as a rage shake.
+   *
+   * @param a acceleration in x, y, or z applied to the sensor
+   * @return true if the magnitude of the force exceeds the minimum required amount of force.
+   * false otherwise.
+   */
+  private boolean atLeastRequiredForce(float a) {
+    return Math.abs(a) > REQUIRED_FORCE;
+  }
+
+  /**
+   * Save data about last shake
+   * @param timestamp (ns) of last sensor event
+   */
+  private void recordShake(long timestamp) {
+    mLastShakeTimestamp = timestamp;
+    mNumShakes++;
+  }
+
   @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
-    if (sensorEvent.timestamp - mLastTimestamp < MIN_TIME_BETWEEN_SAMPLES_MS) {
+    if (sensorEvent.timestamp - mLastTimestamp < MIN_TIME_BETWEEN_SAMPLES_NS) {
       return;
     }
 
-    Assertions.assertNotNull(mTimestamps);
-    Assertions.assertNotNull(mMagnitudes);
-
     float ax = sensorEvent.values[0];
     float ay = sensorEvent.values[1];
-    float az = sensorEvent.values[2];
+    float az = sensorEvent.values[2] - SensorManager.GRAVITY_EARTH;
 
     mLastTimestamp = sensorEvent.timestamp;
-    mTimestamps[mCurrentIndex] = sensorEvent.timestamp;
-    mMagnitudes[mCurrentIndex] = Math.sqrt(ax * ax + ay * ay + az * az);
+
+    if (atLeastRequiredForce(ax) && ax * mAccelerationX <= 0) {
+      recordShake(sensorEvent.timestamp);
+      mAccelerationX = ax;
+    } else if (atLeastRequiredForce(ay) && ay * mAccelerationY <= 0) {
+      recordShake(sensorEvent.timestamp);
+      mAccelerationY = ay;
+    } else if (atLeastRequiredForce(az) && az * mAccelerationZ <= 0) {
+      recordShake(sensorEvent.timestamp);
+      mAccelerationZ = az;
+    }
 
     maybeDispatchShake(sensorEvent.timestamp);
-
-    mCurrentIndex = (mCurrentIndex + 1) % MAX_SAMPLES;
   }
 
   @Override
@@ -99,23 +142,13 @@ public class ShakeDetector implements SensorEventListener {
   }
 
   private void maybeDispatchShake(long currentTimestamp) {
-    Assertions.assertNotNull(mTimestamps);
-    Assertions.assertNotNull(mMagnitudes);
-
-    int numOverThreshold = 0;
-    int total = 0;
-    for (int i = 0; i < MAX_SAMPLES; i++) {
-      int index = (mCurrentIndex - i + MAX_SAMPLES) % MAX_SAMPLES;
-      if (currentTimestamp - mTimestamps[index] < VISIBLE_TIME_RANGE_MS) {
-        total++;
-        if (mMagnitudes[index] >= MAGNITUDE_THRESHOLD) {
-          numOverThreshold++;
-        }
-      }
+    if (mNumShakes >= 8 * mMinNumShakes) {
+      reset();
+      mShakeListener.onShake();
     }
 
-    if (((double) numOverThreshold) / total > PERCENT_OVER_THRESHOLD_FOR_SHAKE / 100.0) {
-      mShakeListener.onShake();
+    if (currentTimestamp - mLastShakeTimestamp > SHAKING_WINDOW_NS) {
+      reset();
     }
   }
 }

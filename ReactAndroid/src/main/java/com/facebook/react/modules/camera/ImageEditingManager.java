@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.camera;
@@ -28,8 +26,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapRegionDecoder;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -193,7 +193,9 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         error);
     if (options.hasKey("displaySize")) {
       ReadableMap targetSize = options.getMap("displaySize");
-      cropTask.setTargetSize(targetSize.getInt("width"), targetSize.getInt("height"));
+      cropTask.setTargetSize(
+        (int) targetSize.getDouble("width"),
+        (int) targetSize.getDouble("height"));
     }
     cropTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
@@ -296,17 +298,17 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
      */
     private Bitmap crop(BitmapFactory.Options outOptions) throws IOException {
       InputStream inputStream = openBitmapInputStream();
+      // Effeciently crops image without loading full resolution into memory
+      // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
+      BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
       try {
-        // This can use a lot of memory
-        Bitmap fullResolutionBitmap = BitmapFactory.decodeStream(inputStream, null, outOptions);
-        if (fullResolutionBitmap == null) {
-          throw new IOException("Cannot decode bitmap: " + mUri);
-        }
-        return Bitmap.createBitmap(fullResolutionBitmap, mX, mY, mWidth, mHeight);
+        Rect rect = new Rect(mX, mY, mX + mWidth, mY + mHeight);
+        return decoder.decodeRegion(rect, outOptions);
       } finally {
         if (inputStream != null) {
           inputStream.close();
         }
+        decoder.recycle();
       }
     }
 

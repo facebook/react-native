@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule StatusBarExample
@@ -19,6 +17,7 @@ const {
   Text,
   TouchableHighlight,
   View,
+  Modal,
 } = ReactNative;
 
 exports.framework = 'React';
@@ -29,6 +28,7 @@ const colors = [
   '#ff0000',
   '#00ff00',
   '#0000ff',
+  'rgba(0, 0, 0, 0.4)',
 ];
 
 const barStyles = [
@@ -45,7 +45,7 @@ function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
 }
 
-class StatusBarHiddenExample extends React.Component {
+class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animated: true,
     hidden: false,
@@ -101,12 +101,13 @@ class StatusBarHiddenExample extends React.Component {
             </Text>
           </View>
         </TouchableHighlight>
+        <ModalExample />
       </View>
     );
   }
 }
 
-class StatusBarStyleExample extends React.Component {
+class StatusBarStyleExample extends React.Component<{}, $FlowFixMeState> {
   _barStyleIndex = 0;
 
   _onChangeBarStyle = () => {
@@ -149,7 +150,7 @@ class StatusBarStyleExample extends React.Component {
   }
 }
 
-class StatusBarNetworkActivityExample extends React.Component {
+class StatusBarNetworkActivityExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     networkActivityIndicatorVisible: false,
   };
@@ -181,7 +182,7 @@ class StatusBarNetworkActivityExample extends React.Component {
   }
 }
 
-class StatusBarBackgroundColorExample extends React.Component {
+class StatusBarBackgroundColorExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     animated: true,
     backgroundColor: getValue(colors, 0),
@@ -224,7 +225,7 @@ class StatusBarBackgroundColorExample extends React.Component {
   }
 }
 
-class StatusBarTranslucentExample extends React.Component {
+class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     translucent: false,
   };
@@ -253,7 +254,7 @@ class StatusBarTranslucentExample extends React.Component {
   }
 }
 
-class StatusBarStaticIOSExample extends React.Component {
+class StatusBarStaticIOSExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -316,7 +317,7 @@ class StatusBarStaticIOSExample extends React.Component {
   }
 }
 
-class StatusBarStaticAndroidExample extends React.Component {
+class StatusBarStaticAndroidExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -381,6 +382,48 @@ class StatusBarStaticAndroidExample extends React.Component {
   }
 }
 
+
+class ModalExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    modalVisible: false,
+  };
+
+  _onChangeModalVisible = () => {
+    this.setState({modalVisible: !this.state.modalVisible});
+  };
+
+  render() {
+    return (
+      <View>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this._onChangeModalVisible}>
+          <View style={styles.button}>
+            <Text>modal visible: {this.state.hidden ? 'true' : 'false'}</Text>
+          </View>
+        </TouchableHighlight>
+        <Modal
+          visible={this.state.modalVisible}
+          transparent={true}
+          onRequestClose={this._onChangeModalVisible}>
+          <View style={[styles.container]}>
+            <View style={[styles.innerContainer]}>
+              <Text>This modal was presented!</Text>
+              <TouchableHighlight
+                onPress={this._onChangeModalVisible}
+                style={styles.modalButton}>
+                <View style={styles.button}>
+                  <Text>Close</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+}
+
 const examples = [{
   title: 'StatusBar hidden',
   render() {
@@ -405,7 +448,7 @@ const examples = [{
   },
   platform: 'android',
 }, {
-  title: 'StatusBar background color',
+  title: 'StatusBar translucent',
   render() {
     return <StatusBarTranslucentExample />;
   },
@@ -437,6 +480,16 @@ const examples = [{
 exports.examples = examples;
 
 var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f5fcff'
+  },
+  innerContainer: {
+    borderRadius: 10,
+    alignItems: 'center',
+  },
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,
@@ -450,5 +503,8 @@ var styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
     fontWeight: 'bold',
-  }
+  },
+  modalButton: {
+    marginTop: 10,
+  },
 });

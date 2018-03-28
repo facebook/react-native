@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTMultipartDataTask.h"
@@ -30,17 +28,21 @@ static BOOL isStreamTaskSupported() {
 @implementation RCTMultipartDataTask {
   NSURL *_url;
   RCTMultipartDataTaskCallback _partHandler;
+  RCTMultipartProgressCallback _progressHandler;
   NSInteger _statusCode;
   NSDictionary *_headers;
   NSString *_boundary;
   NSMutableData *_data;
 }
 
-- (instancetype)initWithURL:(NSURL *)url partHandler:(RCTMultipartDataTaskCallback)partHandler
+- (instancetype)initWithURL:(NSURL *)url
+                partHandler:(RCTMultipartDataTaskCallback)partHandler
+            progressHandler:(RCTMultipartProgressCallback)progressHandler
 {
   if (self = [super init]) {
     _url = url;
     _partHandler = [partHandler copy];
+    _progressHandler = [progressHandler copy];
   }
   return self;
 }
@@ -117,9 +119,9 @@ didBecomeInputStream:(NSInputStream *)inputStream
   _partHandler = nil;
   NSInteger statusCode = _statusCode;
 
-  BOOL completed = [reader readAllParts:^(NSDictionary *headers, NSData *content, BOOL done) {
+  BOOL completed = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
     partHandler(statusCode, headers, content, nil, done);
-  }];
+  } progressCallback:_progressHandler];
   if (!completed) {
     partHandler(statusCode, nil, nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:nil], YES);
   }

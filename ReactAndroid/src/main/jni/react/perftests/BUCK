@@ -1,0 +1,21 @@
+load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "ANDROID")
+
+rn_xplat_cxx_library(
+    name = "perftests",
+    srcs = ["OnLoad.cpp"],
+    compiler_flags = [
+        "-fexceptions",
+        "-std=c++1y",
+    ],
+    platforms = ANDROID,
+    soname = "libnativereactperftests.$(ext)",
+    visibility = [
+        "fbandroid//instrumentation_tests/com/facebook/react/...",
+    ],
+    deps = [
+        "fbandroid//native:base",
+        "fbandroid//native/fb:fb",
+        "xplat//folly:molly",
+        react_native_xplat_target("cxxreact:module"),
+    ],
+)

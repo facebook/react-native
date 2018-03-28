@@ -1,18 +1,16 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RNTesterPage
  * @flow
  */
 'use strict';
 
-var React = require('react');
 var PropTypes = require('prop-types');
+var React = require('react');
 var ReactNative = require('react-native');
 var {
   ScrollView,
@@ -22,12 +20,10 @@ var {
 
 var RNTesterTitle = require('./RNTesterTitle');
 
-class RNTesterPage extends React.Component {
-  props: {
-    noScroll?: boolean,
-    noSpacer?: boolean,
-  };
-
+class RNTesterPage extends React.Component<{
+  noScroll?: boolean,
+  noSpacer?: boolean,
+}> {
   static propTypes = {
     noScroll: PropTypes.bool,
     noSpacer: PropTypes.bool,
@@ -37,14 +33,17 @@ class RNTesterPage extends React.Component {
     var ContentWrapper;
     var wrapperProps = {};
     if (this.props.noScroll) {
-      ContentWrapper = (View: ReactClass<any>);
+      ContentWrapper = ((View: any): React.ComponentType<any>);
     } else {
-      ContentWrapper = (ScrollView: ReactClass<any>);
+      ContentWrapper = (ScrollView: React.ComponentType<any>);
       // $FlowFixMe found when converting React.createClass to ES6
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
       wrapperProps.keyboardShouldPersistTaps = 'handled';
       wrapperProps.keyboardDismissMode = 'interactive';
     }
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     var title = this.props.title ?
       <RNTesterTitle title={this.props.title} /> :
       null;

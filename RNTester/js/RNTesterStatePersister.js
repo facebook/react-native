@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule RNTesterStatePersister
@@ -30,15 +28,17 @@ export type PassProps<State> = {
  * usage.
  */
 function createContainer<Props: Object, State>(
-  Component: ReactClass<Props & {persister: PassProps<State>}>,
+  Component: React.ComponentType<Props & {persister: PassProps<State>}>,
   spec: {
     cacheKeySuffix: (props: Props) => string,
     getInitialState: (props: Props) => State,
     version?: string,
   },
-): ReactClass<Props> {
-  return class ComponentWithPersistedState extends React.Component {
-    props: Props;
+): React.ComponentType<Props> {
+  return class ComponentWithPersistedState extends React.Component<Props, $FlowFixMeState> {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     static displayName = `RNTesterStatePersister(${Component.displayName || Component.name})`;
     state = {value: spec.getInitialState(this.props)};
     _cacheKey = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(this.props)}`;
@@ -56,7 +56,7 @@ function createContainer<Props: Object, State>(
         return {value};
       });
     };
-    render(): React.Element<*> {
+    render(): React.Node {
       return (
         <Component
           {...this.props}

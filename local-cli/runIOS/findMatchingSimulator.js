@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.*
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -26,8 +24,8 @@ function findMatchingSimulator(simulators, simulatorName) {
   const devices = simulators.devices;
   var match;
   for (let version in devices) {
-    // Making sure the version of the simulator is an iOS (Removes Apple Watch, etc)
-    if (version.indexOf('iOS') !== 0) {
+    // Making sure the version of the simulator is an iOS or tvOS (Removes Apple Watch, etc)
+    if (!version.startsWith('iOS') && !version.startsWith('tvOS')) {
       continue;
     }
     for (let i in devices[version]) {
@@ -36,14 +34,12 @@ function findMatchingSimulator(simulators, simulatorName) {
       if (simulator.availability !== '(available)') {
         continue;
       }
-      // If there is a booted simulator, we'll use that as instruments will not boot a second simulator
-      if (simulator.state === 'Booted') {
-        if (simulatorName !== null) {
-          console.warn("We couldn't boot your defined simulator due to an already booted simulator. We are limited to one simulator launched at a time.");
-        }
+      let booted = simulator.state === 'Booted';
+      if (booted && simulatorName === null) {
         return {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }
@@ -51,6 +47,7 @@ function findMatchingSimulator(simulators, simulatorName) {
         match = {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }
@@ -59,6 +56,7 @@ function findMatchingSimulator(simulators, simulatorName) {
         match = {
           udid: simulator.udid,
           name: simulator.name,
+          booted,
           version
         };
       }

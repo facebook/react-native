@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTabBarItem.h"
@@ -42,6 +40,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   if ((self = [super initWithFrame:frame])) {
     _systemIcon = NSNotFound;
+#if TARGET_OS_TV
+    _wasSelectedInJS = NO;
+#endif
   }
   return self;
 }
@@ -53,6 +54,11 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
     _systemIcon = NSNotFound;
   }
   return _barItem;
+}
+
+- (void)setTestID:(NSString *)testID
+{
+  self.barItem.accessibilityIdentifier = testID;
 }
 
 - (void)setBadge:(id)badge
@@ -117,5 +123,17 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   return self.superview.reactViewController;
 }
+
+#if TARGET_OS_TV
+
+// On Apple TV, we let native control the tab bar selection after initial render
+- (void)setSelected:(BOOL)selected
+{
+  if (!_wasSelectedInJS) {
+    _selected = selected;
+  }
+}
+
+#endif
 
 @end

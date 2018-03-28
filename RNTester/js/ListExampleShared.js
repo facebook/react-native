@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ListExampleShared
@@ -44,15 +42,14 @@ function genItemData(count: number, start: number = 0): Array<Item> {
 const HORIZ_WIDTH = 200;
 const ITEM_HEIGHT = 72;
 
-class ItemComponent extends React.PureComponent {
-  props: {
-    fixedHeight?: ?boolean,
-    horizontal?: ?boolean,
-    item: Item,
-    onPress: (key: string) => void,
-    onShowUnderlay?: () => void,
-    onHideUnderlay?: () => void,
-  };
+class ItemComponent extends React.PureComponent<{
+  fixedHeight?: ?boolean,
+  horizontal?: ?boolean,
+  item: Item,
+  onPress: (key: string) => void,
+  onShowUnderlay?: () => void,
+  onHideUnderlay?: () => void,
+}> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
   };
@@ -65,6 +62,9 @@ class ItemComponent extends React.PureComponent {
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
+        tvParallaxProperties={{
+          pressMagnification: 1.1,
+        }}
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
@@ -91,7 +91,7 @@ const renderStackedItem = ({item}: {item: Item}) => {
   );
 };
 
-class FooterComponent extends React.PureComponent {
+class FooterComponent extends React.PureComponent<{}> {
   render() {
     return (
       <View style={styles.headerFooterContainer}>
@@ -104,7 +104,7 @@ class FooterComponent extends React.PureComponent {
   }
 }
 
-class HeaderComponent extends React.PureComponent {
+class HeaderComponent extends React.PureComponent<{}> {
   render() {
     return (
       <View style={styles.headerFooterContainer}>
@@ -117,13 +117,23 @@ class HeaderComponent extends React.PureComponent {
   }
 }
 
-class SeparatorComponent extends React.PureComponent {
+class ListEmptyComponent extends React.PureComponent<{}> {
+  render() {
+    return (
+      <View style={styles.listEmpty}>
+        <Text>The list is empty :o</Text>
+      </View>
+    );
+  }
+}
+
+class SeparatorComponent extends React.PureComponent<{}> {
   render() {
     return <View style={styles.separator} />;
   }
 }
 
-class ItemSeparatorComponent extends React.PureComponent {
+class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
   render() {
     const style = this.props.highlighted
       ? [styles.itemSeparator, {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'}]
@@ -132,7 +142,7 @@ class ItemSeparatorComponent extends React.PureComponent {
   }
 }
 
-class Spindicator extends React.PureComponent {
+class Spindicator extends React.PureComponent<$FlowFixMeProps> {
   render() {
     return (
       <Animated.View style={[styles.spindicator, {
@@ -202,6 +212,9 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
+  if (Platform.isTVOS) {
+    return null;
+  }
   return (
     <View style={styles.option}>
       <Text>{key}:</Text>
@@ -236,6 +249,11 @@ const styles = StyleSheet.create({
   },
   headerFooterContainer: {
     backgroundColor: 'rgb(239, 239, 244)',
+  },
+  listEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
   },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
@@ -314,6 +332,7 @@ const styles = StyleSheet.create({
 module.exports = {
   FooterComponent,
   HeaderComponent,
+  ListEmptyComponent,
   ItemComponent,
   ItemSeparatorComponent,
   PlainInput,

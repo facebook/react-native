@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule SwitchExample
@@ -20,7 +18,7 @@ var {
   View
 } = ReactNative;
 
-class BasicSwitchExample extends React.Component {
+class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
@@ -41,7 +39,7 @@ class BasicSwitchExample extends React.Component {
   }
 }
 
-class DisabledSwitchExample extends React.Component {
+class DisabledSwitchExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -57,7 +55,7 @@ class DisabledSwitchExample extends React.Component {
   }
 }
 
-class ColorSwitchExample extends React.Component {
+class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -84,7 +82,7 @@ class ColorSwitchExample extends React.Component {
   }
 }
 
-class EventSwitchExample extends React.Component {
+class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     eventSwitchIsOn: false,
     eventSwitchRegressionIsOn: true,

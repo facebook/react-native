@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule YellowBox
  * @flow
+ * @format
  */
 
 'use strict';
@@ -15,11 +14,14 @@
 const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const React = require('React');
+const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
+const RCTLog = require('RCTLog');
 
 const infoLog = require('infoLog');
 const openFileInEditor = require('openFileInEditor');
 const parseErrorStack = require('parseErrorStack');
+const stringifySafe = require('stringifySafe');
 const symbolicateStackTrace = require('symbolicateStackTrace');
 
 import type EmitterSubscription from 'EmitterSubscription';
@@ -66,26 +68,26 @@ if (__DEV__) {
   (console: any).error = function() {
     error.apply(console, arguments);
     // Show yellow box for the `warning` module.
-    if (typeof arguments[0] === 'string' &&
-        arguments[0].startsWith('Warning: ')) {
+    if (
+      typeof arguments[0] === 'string' &&
+      arguments[0].startsWith('Warning: ')
+    ) {
       updateWarningMap.apply(null, arguments);
     }
   };
 
   (console: any).warn = function() {
     warn.apply(console, arguments);
-
-    if (typeof arguments[0] === 'string' &&
-        arguments[0].startsWith('(ADVICE)')) {
-      return;
-    }
-
     updateWarningMap.apply(null, arguments);
   };
 
   if (Platform.isTesting) {
     (console: any).disableYellowBox = true;
   }
+
+  RCTLog.setWarningHandler((...args) => {
+    updateWarningMap.apply(null, args);
+  });
 }
 
 /**
@@ -102,18 +104,29 @@ function sprintf(format, ...args) {
   return format.replace(/%s/g, match => args[index++]);
 }
 
-function updateWarningMap(format, ...args): void {
+function updateWarningMap(...args): void {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   if (console.disableYellowBox) {
     return;
   }
-  const stringifySafe = require('stringifySafe');
 
-  format = String(format);
-  const argCount = (format.match(/%s/g) || []).length;
-  const warning = [
-    sprintf(format, ...args.slice(0, argCount)),
-    ...args.slice(argCount).map(stringifySafe),
-  ].join(' ');
+  let warning;
+  if (typeof args[0] === 'string') {
+    const [format, ...formatArgs] = args;
+    const argCount = (format.match(/%s/g) || []).length;
+    warning = [
+      sprintf(format, ...formatArgs.slice(0, argCount).map(stringifySafe)),
+      ...formatArgs.slice(argCount).map(stringifySafe),
+    ].join(' ');
+  } else {
+    warning = args.map(stringifySafe).join(' ');
+  }
+
+  if (warning.startsWith('(ADVICE)')) {
+    return;
+  }
 
   const warningInfo = _warningMap.get(warning);
   if (warningInfo) {
@@ -153,15 +166,14 @@ function ensureSymbolicatedWarning(warning: string): void {
         infoLog('Failed to symbolicate warning, "%s":', warning, error);
         _warningEmitter.emit('warning', _warningMap);
       }
-    }
+    },
   );
 }
 
 function isWarningIgnored(warning: string): boolean {
-  const isIgnored =
-    IGNORED_WARNINGS.some(
-      (ignoredWarning: string) => warning.startsWith(ignoredWarning)
-    );
+  const isIgnored = IGNORED_WARNINGS.some((ignoredWarning: string) =>
+    warning.startsWith(ignoredWarning),
+  );
 
   if (isIgnored) {
     return true;
@@ -169,9 +181,12 @@ function isWarningIgnored(warning: string): boolean {
 
   // DEPRECATED
   return (
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     Array.isArray(console.ignoredYellowBox) &&
-    console.ignoredYellowBox.some(
-      ignorePrefix => warning.startsWith(String(ignorePrefix))
+    console.ignoredYellowBox.some(ignorePrefix =>
+      warning.startsWith(String(ignorePrefix)),
     )
   );
 }
@@ -181,9 +196,10 @@ const WarningRow = ({count, warning, onPress}) => {
   const TouchableHighlight = require('TouchableHighlight');
   const View = require('View');
 
-  const countText = count > 1 ?
-    <Text style={styles.listRowCount}>{'(' + count + ') '}</Text> :
-    null;
+  const countText =
+    count > 1 ? (
+      <Text style={styles.listRowCount}>{'(' + count + ') '}</Text>
+    ) : null;
 
   return (
     <View style={styles.listRow}>
@@ -201,7 +217,7 @@ const WarningRow = ({count, warning, onPress}) => {
   );
 };
 
-type StackRowProps = { frame: StackFrame };
+type StackRowProps = {frame: StackFrame};
 const StackRow = ({frame}: StackRowProps) => {
   const Text = require('Text');
   const TouchableHighlight = require('TouchableHighlight');
@@ -256,57 +272,57 @@ const WarningInspector = ({
 
   return (
     <View style={styles.inspector}>
-      <View style={styles.inspectorCount}>
-        <Text style={styles.inspectorCountText}>{countSentence}</Text>
-        <TouchableHighlight onPress={toggleStacktrace} underlayColor="transparent">
-          <Text style={styles.inspectorButtonText}>
-            {stacktraceVisible ? '\u{25BC}' : '\u{25B6}'} Stacktrace
-          </Text>
-        </TouchableHighlight>
-      </View>
-      <ScrollView style={styles.inspectorWarning}>
-        {stacktraceList}
-        <Text style={styles.inspectorWarningText}>{warning}</Text>
-      </ScrollView>
-      <View style={styles.inspectorButtons}>
-        <TouchableHighlight
-          activeOpacity={0.5}
-          onPress={onMinimize}
-          style={styles.inspectorButton}
-          underlayColor="transparent">
-          <Text style={styles.inspectorButtonText}>
-            Minimize
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          activeOpacity={0.5}
-          onPress={onDismiss}
-          style={styles.inspectorButton}
-          underlayColor="transparent">
-          <Text style={styles.inspectorButtonText}>
-            Dismiss
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight
-          activeOpacity={0.5}
-          onPress={onDismissAll}
-          style={styles.inspectorButton}
-          underlayColor="transparent">
-          <Text style={styles.inspectorButtonText}>
-            Dismiss All
-          </Text>
-        </TouchableHighlight>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.inspectorCount}>
+          <Text style={styles.inspectorCountText}>{countSentence}</Text>
+          <TouchableHighlight
+            onPress={toggleStacktrace}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>
+              {stacktraceVisible ? '\u{25BC}' : '\u{25B6}'} Stacktrace
+            </Text>
+          </TouchableHighlight>
+        </View>
+        <ScrollView style={styles.inspectorWarning}>
+          {stacktraceList}
+          <Text style={styles.inspectorWarningText}>{warning}</Text>
+        </ScrollView>
+        <View style={styles.inspectorButtons}>
+          <TouchableHighlight
+            activeOpacity={0.5}
+            onPress={onMinimize}
+            style={styles.inspectorButton}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>Minimize</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            activeOpacity={0.5}
+            onPress={onDismiss}
+            style={styles.inspectorButton}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>Dismiss</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            activeOpacity={0.5}
+            onPress={onDismissAll}
+            style={styles.inspectorButton}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>Dismiss All</Text>
+          </TouchableHighlight>
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
 
-class YellowBox extends React.Component {
-  state: {
+class YellowBox extends React.Component<
+  mixed,
+  {
     stacktraceVisible: boolean,
     inspecting: ?string,
     warningMap: Map<any, any>,
-  };
+  },
+> {
   _listener: ?EmitterSubscription;
   dismissWarning: (warning: ?string) => void;
 
@@ -325,7 +341,7 @@ class YellowBox extends React.Component {
         warningMap.clear();
       }
       this.setState({
-        inspecting: (warning && inspecting !== warning) ? inspecting : null,
+        inspecting: warning && inspecting !== warning ? inspecting : null,
         warningMap,
       });
     };
@@ -344,12 +360,14 @@ class YellowBox extends React.Component {
     this._listener = _warningEmitter.addListener('warning', warningMap => {
       // Use `setImmediate` because warnings often happen during render, but
       // state cannot be set while rendering.
-      scheduled = scheduled || setImmediate(() => {
-        scheduled = null;
-        this.setState({
-          warningMap,
+      scheduled =
+        scheduled ||
+        setImmediate(() => {
+          scheduled = null;
+          this.setState({
+            warningMap,
+          });
         });
-      });
     });
   }
 
@@ -367,6 +385,9 @@ class YellowBox extends React.Component {
   }
 
   render() {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (console.disableYellowBox || this.state.warningMap.size === 0) {
       return null;
     }
@@ -374,17 +395,20 @@ class YellowBox extends React.Component {
     const View = require('View');
 
     const {inspecting, stacktraceVisible} = this.state;
-    const inspector = inspecting !== null ?
-      <WarningInspector
-        warningInfo={this.state.warningMap.get(inspecting)}
-        warning={inspecting}
-        stacktraceVisible={stacktraceVisible}
-        onDismiss={() => this.dismissWarning(inspecting)}
-        onDismissAll={() => this.dismissWarning(null)}
-        onMinimize={() => this.setState({inspecting: null})}
-        toggleStacktrace={() => this.setState({stacktraceVisible: !stacktraceVisible})}
-      /> :
-      null;
+    const inspector =
+      inspecting !== null ? (
+        <WarningInspector
+          warningInfo={this.state.warningMap.get(inspecting)}
+          warning={inspecting}
+          stacktraceVisible={stacktraceVisible}
+          onDismiss={() => this.dismissWarning(inspecting)}
+          onDismissAll={() => this.dismissWarning(null)}
+          onMinimize={() => this.setState({inspecting: null})}
+          toggleStacktrace={() =>
+            this.setState({stacktraceVisible: !stacktraceVisible})
+          }
+        />
+      ) : null;
 
     const rows = [];
     this.state.warningMap.forEach((warningInfo, warning) => {
@@ -396,7 +420,7 @@ class YellowBox extends React.Component {
             warning={warning}
             onPress={() => this.setState({inspecting: warning})}
             onDismiss={() => this.dismissWarning(warning)}
-          />
+          />,
         );
       }
     });
@@ -426,7 +450,8 @@ const rowHeight = 46;
 // hang on iOS (some sort of overflow maybe). Setting it to Number.MAX_SAFE_INTEGER fixes the iOS issue, but since
 // elevation is an android-only style property we might as well remove it altogether for iOS.
 // See: https://github.com/facebook/react-native/issues/12223
-const elevation = Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
+const elevation =
+  Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
 
 var styles = StyleSheet.create({
   fullScreen: {
@@ -439,7 +464,7 @@ var styles = StyleSheet.create({
     backgroundColor: backgroundColor(0.95),
     height: '100%',
     paddingTop: 5,
-    elevation:elevation
+    elevation: elevation,
   },
   inspectorButtons: {
     flexDirection: 'row',
@@ -448,6 +473,9 @@ var styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 22,
     backgroundColor: backgroundColor(1),
+  },
+  safeArea: {
+    flex: 1,
   },
   stacktraceList: {
     paddingBottom: 5,
@@ -487,7 +515,7 @@ var styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    elevation: elevation
+    elevation: elevation,
   },
   listRow: {
     backgroundColor: backgroundColor(0.95),

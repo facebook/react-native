@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -44,6 +42,8 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       // This also includes __tests__/index.*.js
       if (fileName === 'index.ios.js') { return; }
       if (fileName === 'index.android.js') { return; }
+      if (fileName === 'index.js') { return; }
+      if (fileName === 'App.js') { return; }
     }
 
     const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);
@@ -97,7 +97,7 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
  * behavior of automatically renaming .gitignore to .npmignore.
  */
 function dotFilePath(path) {
-  if (!path) return path;
+  if (!path) {return path;}
   return path
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')
@@ -135,7 +135,7 @@ function upgradeFileContentChangedCallback(
   } else if (contentChanged === 'identical') {
     return 'keep';
   } else {
-    throw new Error(`Unkown file changed state: ${relativeDestPath}, ${contentChanged}`);
+    throw new Error(`Unknown file changed state: ${relativeDestPath}, ${contentChanged}`);
   }
 }
 

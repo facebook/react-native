@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  */
@@ -15,7 +13,7 @@ const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from '../util/Config';
+import type {ConfigT} from 'metro';
 import type {Args as RunServerArgs} from './runServer';
 
 /**
@@ -27,14 +25,14 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
 
   const startedCallback = logReporter => {
     logReporter.update({
-      type: 'initialize_packager_started',
+      type: 'initialize_started',
       port: args.port,
       projectRoots: args.projectRoots,
     });
 
     process.on('uncaughtException', error => {
       logReporter.update({
-        type: 'initialize_packager_failed',
+        type: 'initialize_failed',
         port: args.port,
         error,
       });
@@ -45,12 +43,9 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
 
   const readyCallback = logReporter => {
     logReporter.update({
-      type: 'initialize_packager_done',
+      type: 'initialize_done',
     });
   };
-
-  /* $FlowFixMe: we would have either to invariant() everything, or to
-   * auto-generate CLI args Flow types. */
   const runServerArgs: RunServerArgs = args;
   /* $FlowFixMe: ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
@@ -63,7 +58,7 @@ module.exports = {
   description: 'starts the webserver',
   options: [{
     command: '--port [number]',
-    default: 8081,
+    default: process.env.RCT_METRO_PORT || 8081,
     parse: (val: string) => Number(val),
   }, {
     command: '--host [string]',
@@ -104,6 +99,12 @@ module.exports = {
       return null;
     },
   }, {
+    command: '--max-workers [number]',
+    description: 'Specifies the maximum number of workers the worker-pool ' +
+      'will spawn for transforming files. This defaults to the number of the ' +
+      'cores available on your machine.',
+    parse: (workers: string) => Number(workers),
+  }, {
     command: '--skipflow',
     description: 'Disable flow checks'
   }, {
@@ -121,5 +122,14 @@ module.exports = {
   }, {
     command: '--verbose',
     description: 'Enables logging',
+  }, {
+    command: '--https',
+    description: 'Enables https connections to the server',
+  }, {
+    command: '--key [path]',
+    description: 'Path to custom SSL key',
+  }, {
+    command: '--cert [path]',
+    description: 'Path to custom SSL cert',
   }],
 };

@@ -1,19 +1,17 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
+import javax.annotation.Nullable;
 
 /**
  * Helper class that sorts moveFrom/moveTo arrays in lockstep.
@@ -23,10 +21,10 @@ import com.facebook.react.uimanager.ReactShadowNode;
   private @Nullable ReadableArray mMoveTo;
   private int mSize;
   private int[] mMapping = new int[8];
-  private ReactShadowNode[] mChildren = new ReactShadowNode[4];
+  private ReactShadowNode[] mChildren = new ReactShadowNodeImpl[4];
 
   /**
-   * Retuns size of underlying moveTo/moveFrom arrays
+   * Returns size of underlying moveTo/moveFrom arrays
    */
   public int size() {
     return mSize;

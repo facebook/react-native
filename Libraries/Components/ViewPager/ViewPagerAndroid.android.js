@@ -1,26 +1,24 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ViewPagerAndroid
  * @flow
  */
 'use strict';
 
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var UIManager = require('UIManager');
-var ViewPropTypes = require('ViewPropTypes');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const UIManager = require('UIManager');
+const ViewPropTypes = require('ViewPropTypes');
 
-var dismissKeyboard = require('dismissKeyboard');
-var requireNativeComponent = require('requireNativeComponent');
+const dismissKeyboard = require('dismissKeyboard');
+const requireNativeComponent = require('requireNativeComponent');
 
-var VIEWPAGER_REF = 'viewPager';
+const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
 
@@ -37,7 +35,7 @@ export type ViewPagerScrollState = $Enum<{
  *
  * It is important all children are `<View>`s and not composite components.
  * You can set style properties like `padding` or `backgroundColor` for each
- * child.
+ * child. It is also important that each child have a `key` prop.
  *
  * Example:
  *
@@ -47,10 +45,10 @@ export type ViewPagerScrollState = $Enum<{
  *     <ViewPagerAndroid
  *       style={styles.viewPager}
  *       initialPage={0}>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="1">
  *         <Text>First page</Text>
  *       </View>
- *       <View style={styles.pageStyle}>
+ *       <View style={styles.pageStyle} key="2">
  *         <Text>Second page</Text>
  *       </View>
  *     </ViewPagerAndroid>
@@ -61,6 +59,9 @@ export type ViewPagerScrollState = $Enum<{
  *
  * var styles = {
  *   ...
+ *   viewPager: {
+ *     flex: 1
+ *   },
  *   pageStyle: {
  *     alignItems: 'center',
  *     padding: 20,
@@ -68,17 +69,16 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component {
-  props: {
-    initialPage?: number,
-    onPageScroll?: Function,
-    onPageScrollStateChanged?: Function,
-    onPageSelected?: Function,
-    pageMargin?: number,
-    keyboardDismissMode?: 'none' | 'on-drag',
-    scrollEnabled?: boolean,
-  };
-
+class ViewPagerAndroid extends React.Component<{
+  initialPage?: number,
+  onPageScroll?: Function,
+  onPageScrollStateChanged?: Function,
+  onPageSelected?: Function,
+  pageMargin?: number,
+  peekEnabled?: boolean,
+  keyboardDismissMode?: 'none' | 'on-drag',
+  scrollEnabled?: boolean,
+}> {
   static propTypes = {
     ...ViewPropTypes,
     /**
@@ -137,6 +137,12 @@ class ViewPagerAndroid extends React.Component {
     * The default value is true.
     */
     scrollEnabled: PropTypes.bool,
+
+    /**
+     * Whether enable showing peekFraction or not. If this is true, the preview of
+     * last and next page will show in current screen. Defaults to false.
+     */
+     peekEnabled: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -157,7 +163,7 @@ class ViewPagerAndroid extends React.Component {
       if (!child) {
         return null;
       }
-      var newProps = {
+      const newProps = {
         ...child.props,
         style: [child.props.style, {
           position: 'absolute',
@@ -240,6 +246,6 @@ class ViewPagerAndroid extends React.Component {
   }
 }
 
-var NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
+const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
 
 module.exports = ViewPagerAndroid;

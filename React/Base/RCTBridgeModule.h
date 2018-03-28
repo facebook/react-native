@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -47,7 +45,17 @@ typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError
  *
  * NOTE: RCTJSThread is not a real libdispatch queue
  */
-extern dispatch_queue_t RCTJSThread;
+RCT_EXTERN dispatch_queue_t RCTJSThread;
+
+RCT_EXTERN_C_BEGIN
+
+typedef struct RCTMethodInfo {
+  const char *const jsName;
+  const char *const objcName;
+  const BOOL isSync;
+} RCTMethodInfo;
+
+RCT_EXTERN_C_END
 
 /**
  * Provides the interface needed to register a bridge module.
@@ -75,6 +83,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
+ * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
 @property (nonatomic, weak, readonly) RCTBridge *bridge;
 
@@ -161,7 +170,11 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * is currently not supported.
  */
 #define RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(method) \
-  RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, method)
+  RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(id, method)
+
+#define RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(returnType, method) \
+  RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, returnType, method)
+
 
 /**
  * Similar to RCT_EXPORT_METHOD but lets you set the JS name of the exported
@@ -173,7 +186,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_METHOD(js_name, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
-  - (void)method;
+  - (void)method RCT_DYNAMIC;
 
 /**
  * Similar to RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD but lets you set
@@ -183,9 +196,9 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  *   executeQuery:(NSString *)query parameters:(NSDictionary *)parameters)
  * { ... }
  */
-#define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, method) \
+#define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (id)method;
+  - (returnType)method RCT_DYNAMIC;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically
@@ -248,10 +261,23 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * and also whether this method is synchronous.
  */
 #define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, \
-    RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
-    return @[@#js_name, @#method, @is_blocking_synchronous_method]; \
+  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
+    return &config; \
   }
+
+/**
+ * Most modules can be used from any thread. All of the modules exported non-sync method will be called on its
+ * methodQueue, and the module will be constructed lazily when its first invoked. Some modules have main need to access
+ * information that's main queue only (e.g. most UIKit classes). Since we don't want to dispatch synchronously to the
+ * main thread to this safely, we construct these moduels and export their constants ahead-of-time.
+ *
+ * Note that when set to false, the module constructor will be called from any thread.
+ *
+ * This requirement is currently inferred by checking if the module has a custom initializer or if there's exported
+ * constants. In the future, we'll stop automatically inferring this and instead only rely on this method.
+ */
++ (BOOL)requiresMainQueueSetup;
 
 /**
  * Injects methods into JS.  Entries in this array are used in addition to any
@@ -261,13 +287,15 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 - (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
 
 /**
- * Injects constants into JS. These constants are made accessible via
- * NativeModules.ModuleName.X.  It is only called once for the lifetime of the
- * bridge, so it is not suitable for returning dynamic values, but may be used
- * for long-lived values such as session keys, that are regenerated only as
- * part of a reload of the entire React application.
+ * Injects constants into JS. These constants are made accessible via NativeModules.ModuleName.X. It is only called once
+ * for the lifetime of the bridge, so it is not suitable for returning dynamic values, but may be used for long-lived
+ * values such as session keys, that are regenerated only as part of a reload of the entire React application.
+ *
+ * If you implement this method and do not implement `requiresMainThreadSetup`, you will trigger deprecated logic
+ * that eagerly initializes your module on bridge startup. In the future, this behaviour will be changed to default
+ * to initializing lazily, and even modules with constants will be initialized lazily.
  */
-- (NSDictionary<NSString *, id> *)constantsToExport;
+- (NSDictionary *)constantsToExport;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NativeModules
  * @flow
@@ -14,6 +12,8 @@
 const BatchedBridge = require('BatchedBridge');
 
 const invariant = require('fbjs/lib/invariant');
+
+import type {ExtendedError} from 'parseErrorStack';
 
 type ModuleConfig = [
   string, /* name */
@@ -113,13 +113,13 @@ function arrayContains<T>(array: Array<T>, value: T): boolean {
   return array.indexOf(value) !== -1;
 }
 
-function createErrorFromErrorData(errorData: {message: string}): Error {
+function createErrorFromErrorData(errorData: {message: string}): ExtendedError {
   const {
     message,
     ...extraErrorInfo
-  } = errorData;
-  const error = new Error(message);
-  (error:any).framesToPop = 1;
+  } = errorData || {};
+  const error : ExtendedError = new Error(message);
+  error.framesToPop = 1;
   return Object.assign(error, extraErrorInfo);
 }
 

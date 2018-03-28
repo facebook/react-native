@@ -1,21 +1,26 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ *
+ * @format
+ * @emails oncall+react_native
  */
 'use strict';
-
-jest.unmock('FillRateHelper');
 
 const FillRateHelper = require('FillRateHelper');
 
 let rowFramesGlobal;
-const dataGlobal =
-  [{key: 'header'}, {key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}, {key: 'footer'}];
+const dataGlobal = [
+  {key: 'header'},
+  {key: 'a'},
+  {key: 'b'},
+  {key: 'c'},
+  {key: 'd'},
+  {key: 'footer'},
+];
 function getFrameMetrics(index: number) {
   const frame = rowFramesGlobal[dataGlobal[index].key];
   return {length: frame.height, offset: frame.y, inLayout: frame.inLayout};
@@ -26,7 +31,7 @@ function computeResult({helper, props, state, scroll}): number {
   return helper.computeBlankness(
     {
       data: dataGlobal,
-      getItemCount: (data2) => data2.length,
+      getItemCount: data2 => data2.length,
       initialNumToRender: 10,
       ...(props || {}),
     },
@@ -93,8 +98,8 @@ describe('computeBlankness', function() {
 
   it('can handle multiple listeners and unsubscribe', function() {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
-    const subscriptions = listeners.map(
-      (listener) => FillRateHelper.addListener(listener)
+    const subscriptions = listeners.map(listener =>
+      FillRateHelper.addListener(listener),
     );
     subscriptions[1].remove();
     const helper = new FillRateHelper(getFrameMetrics);

@@ -1,6 +1,13 @@
-'use strict';
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @emails oncall+javascript_foundation
+ */
 
-jest.autoMockOff();
+'use strict';
 
 const getHeaderSearchPath = require('../../ios/getHeaderSearchPath');
 const path = require('path');

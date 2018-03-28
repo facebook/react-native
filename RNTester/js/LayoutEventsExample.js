@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule LayoutEventsExample
@@ -21,29 +19,18 @@ var {
   View,
 } = ReactNative;
 
-type Layout = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-type LayoutEvent = {
-  nativeEvent: {
-    layout: Layout,
-  };
-};
+import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type State = {
   containerStyle?: { width: number },
   extraText?: string,
-  imageLayout?: Layout,
-  textLayout?: Layout,
-  viewLayout?: Layout,
+  imageLayout?: ViewLayout,
+  textLayout?: ViewLayout,
+  viewLayout?: ViewLayout,
   viewStyle: { margin: number },
 };
 
-class LayoutEventExample extends React.Component {
+class LayoutEventExample extends React.Component<{}, State> {
   state: State = {
     viewStyle: {
       margin: 20,
@@ -76,17 +63,17 @@ class LayoutEventExample extends React.Component {
     this.setState({containerStyle: {width: 280}});
   };
 
-  onViewLayout = (e: LayoutEvent) => {
+  onViewLayout = (e: ViewLayoutEvent) => {
     console.log('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout});
   };
 
-  onTextLayout = (e: LayoutEvent) => {
+  onTextLayout = (e: ViewLayoutEvent) => {
     console.log('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout});
   };
 
-  onImageLayout = (e: LayoutEvent) => {
+  onImageLayout = (e: ViewLayoutEvent) => {
     console.log('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout});
   };

@@ -1,27 +1,25 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule TabBarItemIOS
  * @noflow
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var Image = require('Image');
-var React = require('React');
+const ColorPropType = require('ColorPropType');
+const Image = require('Image');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StaticContainer = require('StaticContainer.react');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const StaticContainer = require('StaticContainer.react');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
 const ViewPropTypes = require('ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
 class TabBarItemIOS extends React.Component {
   static propTypes = {
@@ -102,20 +100,20 @@ class TabBarItemIOS extends React.Component {
     hasBeenSelected: false,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.selected) {
       this.setState({hasBeenSelected: true});
     }
   }
 
-  componentWillReceiveProps(nextProps: { selected?: boolean }) {
+  UNSAFE_componentWillReceiveProps(nextProps: { selected?: boolean }) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
   }
 
   render() {
-    var {style, children, ...props} = this.props;
+    const {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
@@ -138,7 +136,7 @@ class TabBarItemIOS extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tab: {
     position: 'absolute',
     top: 0,
@@ -148,6 +146,6 @@ var styles = StyleSheet.create({
   }
 });
 
-var RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
+const RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
 
 module.exports = TabBarItemIOS;

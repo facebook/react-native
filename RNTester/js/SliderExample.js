@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule SliderExample
@@ -20,7 +18,7 @@ var {
   View,
 } = ReactNative;
 
-class SliderExample extends React.Component {
+class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
     value: 0,
   };
@@ -43,7 +41,7 @@ class SliderExample extends React.Component {
   }
 }
 
-class SlidingCompleteExample extends React.Component {
+class SlidingCompleteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     slideCompletionValue: 0,
     slideCompletionCount: 0,

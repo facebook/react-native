@@ -1,6 +1,6 @@
 FROM library/node:6.9.2
 
-ENV YARN_VERSION=0.19.1
+ENV YARN_VERSION=0.27.5
 
 # install dependencies
 RUN apt-get update && apt-get install ocaml libelf-dev -y

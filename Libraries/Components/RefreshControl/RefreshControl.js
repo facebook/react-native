@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RefreshControl
  * @flow
@@ -18,10 +16,15 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 if (Platform.OS === 'android') {
-  var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constants;
+  const AndroidSwipeRefreshLayout =
+    require('UIManager').AndroidSwipeRefreshLayout;
+  var RefreshLayoutConsts = AndroidSwipeRefreshLayout
+    ? AndroidSwipeRefreshLayout.Constants
+    : {SIZE: {}};
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
@@ -71,8 +74,8 @@ if (Platform.OS === 'android') {
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
-// $FlowFixMe(>=0.41.0)
-const RefreshControl = React.createClass({
+const RefreshControl = createReactClass({
+  displayName: 'RefreshControl',
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },

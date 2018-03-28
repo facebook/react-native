@@ -1,23 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
-import java.util.Map;
-
 import android.view.View;
-
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import org.junit.Test;
+import java.util.Map;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -69,55 +64,61 @@ public class ReactPropForShadowNodeSpecTest {
 
   @Test(expected = RuntimeException.class)
   public void testMethodWithWrongNumberOfParams() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactProp(name = "prop")
-      public void setterWithIncorrectNumberOfArgs(boolean value, int anotherValue) {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactProp(name = "prop")
+              public void setterWithIncorrectNumberOfArgs(boolean value, int anotherValue) {}
+            }.getClass())
+        .getNativeProps();
   }
 
   @Test(expected = RuntimeException.class)
   public void testMethodWithTooFewParams() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactProp(name = "prop")
-      public void setterWithNoArgs() {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactProp(name = "prop")
+              public void setterWithNoArgs() {}
+            }.getClass())
+        .getNativeProps();
   }
 
   @Test(expected = RuntimeException.class)
   public void testUnsupportedValueType() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactProp(name = "prop")
-      public void setterWithMap(Map value) {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactProp(name = "prop")
+              public void setterWithMap(Map value) {}
+            }.getClass())
+        .getNativeProps();
   }
 
   @Test(expected = RuntimeException.class)
   public void testGroupInvalidNumberOfParams() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithTooManyParams(int index, float value, boolean bool) {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactPropGroup(names = {"prop1", "prop2"})
+              public void setterWithTooManyParams(int index, float value, boolean bool) {}
+            }.getClass())
+        .getNativeProps();
   }
 
   @Test(expected = RuntimeException.class)
   public void testGroupTooFewParams() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithTooManyParams(int index) {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactPropGroup(names = {"prop1", "prop2"})
+              public void setterWithTooManyParams(int index) {}
+            }.getClass())
+        .getNativeProps();
   }
 
   @Test(expected = RuntimeException.class)
   public void testGroupNoIndexParam() {
-    new BaseViewManager(new ReactShadowNode() {
-      @ReactPropGroup(names = {"prop1", "prop2"})
-      public void setterWithTooManyParams(float value, boolean bool) {
-      }
-    }.getClass()).getNativeProps();
+    new BaseViewManager(
+            new ReactShadowNodeImpl() {
+              @ReactPropGroup(names = {"prop1", "prop2"})
+              public void setterWithTooManyParams(float value, boolean bool) {}
+            }.getClass())
+        .getNativeProps();
   }
 }

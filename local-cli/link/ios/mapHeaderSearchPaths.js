@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
  * Given Xcode project and path, iterate over all build configurations
  * and execute func with HEADER_SEARCH_PATHS from current section
  *
@@ -31,9 +38,11 @@ module.exports = function headerSearchPathIter(project, func) {
         .indexOf('"-lc++"') >= 0;
 
       if (shouldVisitBuildSettings) {
-        buildSettings.HEADER_SEARCH_PATHS = func(
-          buildSettings.HEADER_SEARCH_PATHS || defaultHeaderPaths
-        );
+        const searchPaths = buildSettings.HEADER_SEARCH_PATHS ?
+          [].concat(buildSettings.HEADER_SEARCH_PATHS) :
+          defaultHeaderPaths;
+
+        buildSettings.HEADER_SEARCH_PATHS = func(searchPaths);
       }
     });
 };

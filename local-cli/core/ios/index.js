@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
 const findProject = require('./findProject');
+const findPodfilePath = require('./findPodfilePath');
+const findPodspecName = require('./findPodspecName');
 const path = require('path');
 
 /**
@@ -44,6 +44,8 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
     sourceDir: path.dirname(projectPath),
     folder: folder,
     pbxprojPath: path.join(projectPath, 'project.pbxproj'),
+    podfile: findPodfilePath(projectPath),
+    podspec: findPodspecName(folder),
     projectPath: projectPath,
     projectName: path.basename(projectPath),
     libraryFolder: userConfig.libraryFolder || 'Libraries',
@@ -53,3 +55,5 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
 };
 
 exports.dependencyConfig = exports.projectConfig;
+
+exports.linkConfig = require('../../link/ios');

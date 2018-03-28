@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -20,8 +18,13 @@
  * --package - com.facebook.react.tests
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
-/*eslint-disable no-undef */
-require('shelljs/global');
+
+const {
+   echo,
+   exec,
+   exit,
+   ls,
+} = require('shelljs');
 
 const argv = require('yargs').argv;
 const numberOfRetries = argv.retries || 1;
@@ -62,5 +65,3 @@ testClasses.forEach((testClass) => {
 });
 
 exit(exitCode);
-
-/*eslint-enable no-undef */

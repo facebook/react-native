@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #if __OBJC__
@@ -16,8 +14,12 @@
  */
 #if defined(__cplusplus)
 #define RCT_EXTERN extern "C" __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN extern "C" {
+#define RCT_EXTERN_C_END }
 #else
 #define RCT_EXTERN extern __attribute__((visibility("default")))
+#define RCT_EXTERN_C_BEGIN
+#define RCT_EXTERN_C_END
 #endif
 
 /**
@@ -44,6 +46,22 @@
 #endif
 #endif
 
+#ifndef RCT_ENABLE_INSPECTOR
+#if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
+#define RCT_ENABLE_INSPECTOR 1
+#else
+#define RCT_ENABLE_INSPECTOR 0
+#endif
+#endif
+
+#ifndef ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>)
+#define ENABLE_PACKAGER_CONNECTION 1
+#else
+#define ENABLE_PACKAGER_CONNECTION 0
+#endif
+#endif
+
 #if RCT_DEV
 #define RCT_IF_DEV(...) __VA_ARGS__
 #else
@@ -52,6 +70,23 @@
 
 #ifndef RCT_PROFILE
 #define RCT_PROFILE RCT_DEV
+#endif
+
+/**
+ * Add the default Metro packager port number
+ */
+#ifndef RCT_METRO_PORT
+#define RCT_METRO_PORT 8081
+#else
+// test if RCT_METRO_PORT is empty
+#define RCT_METRO_PORT_DO_EXPAND(VAL)  VAL ## 1
+#define RCT_METRO_PORT_EXPAND(VAL)     RCT_METRO_PORT_DO_EXPAND(VAL)
+#if !defined(RCT_METRO_PORT) || (RCT_METRO_PORT_EXPAND(RCT_METRO_PORT) == 1)
+// Only here if RCT_METRO_PORT is not defined
+// OR RCT_METRO_PORT is the empty string
+#undef RCT_METRO_PORT
+#define RCT_METRO_PORT 8081
+#endif
 #endif
 
 /**
@@ -68,6 +103,17 @@
  */
 #define RCT_CONCAT2(A, B) A ## B
 #define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
+
+/**
+  * This attribute is used for static analysis.
+  */
+#if !defined RCT_DYNAMIC
+#if __has_attribute(objc_dynamic)
+#define RCT_DYNAMIC __attribute__((objc_dynamic))
+#else
+#define RCT_DYNAMIC
+#endif
+#endif
 
 /**
  * Throw an assertion for unimplemented methods.

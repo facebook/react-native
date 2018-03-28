@@ -1,15 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.timepicker;
-
-import javax.annotation.Nullable;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -31,6 +27,8 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 
+import javax.annotation.Nullable;
+
 /**
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
  * the user selects a time.
@@ -46,6 +44,7 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
   /* package */ static final String ARG_HOUR = "hour";
   /* package */ static final String ARG_MINUTE = "minute";
   /* package */ static final String ARG_IS24HOUR = "is24Hour";
+  /* package */ static final String ARG_MODE = "mode";
   /* package */ static final String ACTION_TIME_SET = "timeSetAction";
   /* package */ static final String ACTION_DISMISSED = "dismissedAction";
 
@@ -147,6 +146,9 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
     }
     if (options.hasKey(ARG_IS24HOUR) && !options.isNull(ARG_IS24HOUR)) {
       args.putBoolean(ARG_IS24HOUR, options.getBoolean(ARG_IS24HOUR));
+    }
+    if (options.hasKey(ARG_MODE) && !options.isNull(ARG_MODE)) {
+      args.putString(ARG_MODE, options.getString(ARG_MODE));
     }
     return args;
   }

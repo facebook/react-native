@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NativeIdTestModule
  * @flow
@@ -29,7 +27,7 @@ const View = require('View');
  * - The app renders fine
  * - The nativeID property is passed to the native views
  */
-class NativeIdTestApp extends React.Component {
+class NativeIdTestApp extends React.Component<{}> {
   render() {
     const uri = 'data:image/gif;base64,' +
         'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +

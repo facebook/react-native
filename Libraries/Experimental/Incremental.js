@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Incremental
  * @flow
@@ -32,7 +30,7 @@ const DEBUG = false;
  *
  * `<Incremental>` solves this by slicing up rendering into chunks that are
  * spread across multiple event loops. Expensive components can be sliced up
- * recursively by wrapping pieces of them and their decendents in
+ * recursively by wrapping pieces of them and their descendants in
  * `<Incremental>` components. `<IncrementalGroup>` can be used to make sure
  * everything in the group is rendered recursively before calling `onDone` and
  * moving on to another sibling group (e.g. render one row at a time, even if
@@ -83,7 +81,7 @@ const DEBUG = false;
  */
 export type Props = {
  /**
-  * Called when all the decendents have finished rendering and mounting
+  * Called when all the descendants have finished rendering and mounting
   * recursively.
   */
  onDone?: () => void,
@@ -99,7 +97,7 @@ type DefaultProps = {
 type State = {
   doIncrementalRender: boolean,
 };
-class Incremental extends React.Component<DefaultProps, Props, State> {
+class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;
   context: Context;
@@ -129,7 +127,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     return ctx.groupId + ':' + this._incrementId + '-' + this.props.name;
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const ctx = this.context.incrementalGroup;
     if (!ctx) {
       return;
@@ -154,7 +152,7 @@ class Incremental extends React.Component<DefaultProps, Props, State> {
     }).done();
   }
 
-  render(): ?React.Element<any> {
+  render(): React.Node {
     if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
         !this.context.incrementalGroupEnabled ||
         this.state.doIncrementalRender) {

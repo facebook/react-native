@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -29,7 +27,9 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
 
   const sourceDir = path.join(folder, src);
   const isFlat = sourceDir.indexOf('app') === -1;
-  const manifestPath = findManifest(sourceDir);
+  const manifestPath = userConfig.manifestPath
+    ? path.join(sourceDir, userConfig.manifestPath)
+    : findManifest(sourceDir);
 
   if (!manifestPath) {
     return null;
@@ -38,6 +38,11 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
   const manifest = readManifest(manifestPath);
 
   const packageName = userConfig.packageName || getPackageName(manifest);
+
+  if (!packageName) {
+    throw new Error(`Package name not found in ${manifestPath}`);
+  }
+
   const packageFolder = userConfig.packageFolder ||
     packageName.replace(/\./g, path.sep);
 
@@ -92,7 +97,9 @@ exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) 
   }
 
   const sourceDir = path.join(folder, src);
-  const manifestPath = findManifest(sourceDir);
+  const manifestPath = userConfig.manifestPath
+    ? path.join(sourceDir, userConfig.manifestPath)
+    : findManifest(sourceDir);
 
   if (!manifestPath) {
     return null;
@@ -117,3 +124,5 @@ exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) 
 
   return { sourceDir, folder, manifest, packageImportPath, packageInstance };
 };
+
+exports.linkConfig = require('../../link/android');

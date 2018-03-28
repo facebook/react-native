@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ScrollViewTestModule
  */
@@ -13,6 +11,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var View = require('View');
 var ScrollView = require('ScrollView');
 var Text = require('Text');
@@ -64,7 +63,8 @@ var onItemPress = function(itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
-var ScrollViewTestApp = React.createClass({
+var ScrollViewTestApp = createReactClass({
+  displayName: 'ScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,
@@ -90,7 +90,8 @@ var ScrollViewTestApp = React.createClass({
   },
 });
 
-var HorizontalScrollViewTestApp = React.createClass({
+var HorizontalScrollViewTestApp = createReactClass({
+  displayName: 'HorizontalScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,

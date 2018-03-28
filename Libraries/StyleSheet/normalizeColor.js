@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule normalizeColor
  * @flow
@@ -33,19 +31,19 @@ function normalizeColor(color: string | number): ?number {
 
   if ((match = matchers.rgb.exec(color))) {
     return (
+      (// b
       parse255(match[1]) << 24 | // r
       parse255(match[2]) << 16 | // g
-      parse255(match[3]) << 8 | // b
-      0x000000ff // a
+      parse255(match[3]) << 8 | 0x000000ff) // a
     ) >>> 0;
   }
 
   if ((match = matchers.rgba.exec(color))) {
     return (
+      (// b
       parse255(match[1]) << 24 | // r
       parse255(match[2]) << 16 | // g
-      parse255(match[3]) << 8 | // b
-      parse1(match[4]) // a
+      parse255(match[3]) << 8 | parse1(match[4])) // a
     ) >>> 0;
   }
 
@@ -76,23 +74,21 @@ function normalizeColor(color: string | number): ?number {
 
   if ((match = matchers.hsl.exec(color))) {
     return (
-      hslToRgb(
+      (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]) // l
-      ) |
-      0x000000ff // a
+      ) | 0x000000ff) // a
     ) >>> 0;
   }
 
   if ((match = matchers.hsla.exec(color))) {
     return (
-      hslToRgb(
+      (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]) // l
-      ) |
-      parse1(match[4]) // a
+      ) | parse1(match[4])) // a
     ) >>> 0;
   }
 

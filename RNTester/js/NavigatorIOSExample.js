@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule NavigatorIOSExample
@@ -27,7 +25,7 @@ const {
   View,
 } = ReactNative;
 
-class EmptyPage extends React.Component {
+class EmptyPage extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.emptyPage}>
@@ -39,7 +37,7 @@ class EmptyPage extends React.Component {
   }
 }
 
-class NavigatorIOSExamplePage extends React.Component {
+class NavigatorIOSExamplePage extends React.Component<$FlowFixMeProps> {
   render() {
     var recurseTitle = 'Recurse Navigation';
     if (!this.props.depth || this.props.depth === 1) {
@@ -230,7 +228,7 @@ class NavigatorIOSExamplePage extends React.Component {
   };
 }
 
-class NavigatorIOSExample extends React.Component {
+class NavigatorIOSExample extends React.Component<$FlowFixMeProps> {
   static title = '<NavigatorIOS>';
   static description = 'iOS navigation capabilities';
   static external = true;

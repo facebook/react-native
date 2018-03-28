@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ActionSheetIOSExample
@@ -31,7 +29,7 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
 
-class ActionSheetExample extends React.Component {
+class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     clicked: 'none',
   };
@@ -61,7 +59,7 @@ class ActionSheetExample extends React.Component {
   };
 }
 
-class ActionSheetTintExample extends React.Component {
+class ActionSheetTintExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     clicked: 'none',
   };
@@ -92,7 +90,7 @@ class ActionSheetTintExample extends React.Component {
   };
 }
 
-class ShareActionSheetExample extends React.Component {
+class ShareActionSheetExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     text: ''
   };
@@ -132,7 +130,7 @@ class ShareActionSheetExample extends React.Component {
   };
 }
 
-class ShareScreenshotExample extends React.Component {
+class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     text: ''
   };

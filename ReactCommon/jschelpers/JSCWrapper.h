@@ -1,25 +1,24 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <JavaScriptCore/JavaScript.h>
-
-#if WITH_FBJSCEXTENSIONS
-#include <jsc_stringref.h>
-#endif
 
 #if defined(JSCINTERNAL) || (!defined(__APPLE__))
 #define JSC_IMPORT extern "C"
 #else
 #define JSC_IMPORT extern
+#endif
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
 namespace facebook {
@@ -28,27 +27,41 @@ namespace react {
 }
 }
 
-JSC_IMPORT facebook::react::IInspector* JSInspectorGetInstance();
+JSC_IMPORT void JSGlobalContextEnableDebugger(
+    JSGlobalContextRef ctx,
+    facebook::react::IInspector &globalInspector,
+    const char *title,
+    const std::function<bool()> &checkIsInspectedRemote);
+JSC_IMPORT void JSGlobalContextDisableDebugger(
+    JSGlobalContextRef ctx,
+    facebook::react::IInspector &globalInspector);
 
 // This is used to substitute an alternate JSC implementation for
 // testing. These calls must all be ABI compatible with the standard JSC.
-JSC_IMPORT void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
 JSC_IMPORT JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef*);
 JSC_IMPORT bool JSSamplingProfilerEnabled();
 JSC_IMPORT void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
+#ifdef __cplusplus
+extern "C" {
+#endif
+JSC_IMPORT void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
+JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
+#ifdef __cplusplus
+}
+#endif
 
 #if defined(__APPLE__)
-#import <objc/objc.h>
-#import <JavaScriptCore/JSStringRefCF.h>
-#import <string>
+#include <objc/objc.h>
+#include <JavaScriptCore/JSStringRefCF.h>
+#include <string>
 
 /**
  * JSNoBytecodeFileFormatVersion
  *
  * Version number indicating that bytecode is not supported by this runtime.
  */
-__attribute__((visibility("default"))) extern const int32_t JSNoBytecodeFileFormatVersion;
+RN_EXPORT extern const int32_t JSNoBytecodeFileFormatVersion;
 
 namespace facebook {
 namespace react {
@@ -64,6 +77,7 @@ struct JSCWrapper {
   // JSContext
   JSC_WRAPPER_METHOD(JSContextGetGlobalContext);
   JSC_WRAPPER_METHOD(JSContextGetGlobalObject);
+  JSC_WRAPPER_METHOD(FBJSContextStartGCTimers);
 
   // JSEvaluate
   JSC_WRAPPER_METHOD(JSEvaluateScript);
@@ -97,6 +111,7 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSObjectIsFunction);
   JSC_WRAPPER_METHOD(JSObjectMake);
   JSC_WRAPPER_METHOD(JSObjectMakeArray);
+  JSC_WRAPPER_METHOD(JSObjectMakeDate);
   JSC_WRAPPER_METHOD(JSObjectMakeError);
   JSC_WRAPPER_METHOD(JSObjectMakeFunctionWithCallback);
   JSC_WRAPPER_METHOD(JSObjectSetPrivate);
@@ -124,13 +139,15 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToObject);
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
+  JSC_WRAPPER_METHOD(JSValueIsNull);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);
   JSC_WRAPPER_METHOD(JSPokeSamplingProfiler);
   JSC_WRAPPER_METHOD(JSStartSamplingProfilingOnMainJSCThread);
 
-  JSC_WRAPPER_METHOD(JSInspectorGetInstance);
+  JSC_WRAPPER_METHOD(JSGlobalContextEnableDebugger);
+  JSC_WRAPPER_METHOD(JSGlobalContextDisableDebugger);
 
   JSC_WRAPPER_METHOD(configureJSCForIOS);
 
@@ -146,12 +163,12 @@ bool isCustomJSCPtr(T *x) {
   return (uintptr_t)x & 0x1;
 }
 
-bool isCustomJSCWrapperSet();
-void setCustomJSCWrapper(const JSCWrapper* wrapper);
+RN_EXPORT bool isCustomJSCWrapperSet();
+RN_EXPORT void setCustomJSCWrapper(const JSCWrapper* wrapper);
 
 // This will return a single value for the whole life of the process.
-__attribute__((visibility("default"))) const JSCWrapper *systemJSCWrapper();
-__attribute__((visibility("default"))) const JSCWrapper *customJSCWrapper();
+RN_EXPORT const JSCWrapper *systemJSCWrapper();
+RN_EXPORT const JSCWrapper *customJSCWrapper();
 
 } }
 

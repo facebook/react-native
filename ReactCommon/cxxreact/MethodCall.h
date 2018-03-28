@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #include <folly/dynamic.h>
 
@@ -17,7 +17,7 @@ struct MethodCall {
   folly::dynamic arguments;
   int callId;
 
-  MethodCall(int mod, int meth, folly::dynamic args, int cid)
+  MethodCall(int mod, int meth, folly::dynamic&& args, int cid)
     : moduleId(mod)
     , methodId(meth)
     , arguments(std::move(args))

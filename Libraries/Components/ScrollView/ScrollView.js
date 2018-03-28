@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule ScrollView
  * @flow
  */
 'use strict';
 
-const Animated = require('Animated');
+const AnimatedImplementation = require('AnimatedImplementation');
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
@@ -27,11 +25,19 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const warning = require('fbjs/lib/warning');
+const resolveAssetSource = require('resolveAssetSource');
+
+import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -69,7 +75,8 @@ const requireNativeComponent = require('requireNativeComponent');
  * supports out of the box.
  */
 // $FlowFixMe(>=0.41.0)
-const ScrollView = React.createClass({
+const ScrollView = createReactClass({
+  displayName: 'ScrollView',
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -182,6 +189,11 @@ const ScrollView = React.createClass({
       'white',
     ]),
     /**
+     * If sticky headers should stick at the bottom instead of the top of the
+     * ScrollView. This is usually used with inverted ScrollViews.
+     */
+    invertStickyHeaders: PropTypes.bool,
+    /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
      * @platform ios
@@ -196,16 +208,21 @@ const ScrollView = React.createClass({
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *
+     * *Cross platform*
+     *
      *   - `'none'` (the default), drags do not dismiss the keyboard.
      *   - `'on-drag'`, the keyboard is dismissed when a drag begins.
+     *
+     * *iOS Only*
+     *
      *   - `'interactive'`, the keyboard is dismissed interactively with the drag and moves in
      *     synchrony with the touch; dragging upwards cancels the dismissal.
      *     On android this is not supported and it will have the same behavior as 'none'.
      */
     keyboardDismissMode: PropTypes.oneOf([
       'none', // default
-      'interactive',
-      'on-drag',
+      'on-drag', // Cross-platform
+      'interactive', // iOS-only
     ]),
     /**
      * Determines when the keyboard should stay visible after a tap.
@@ -221,6 +238,34 @@ const ScrollView = React.createClass({
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
+     * When set, the scroll view will adjust the scroll position so that the first child that is
+     * currently visible and at or beyond `minIndexForVisible` will not change position. This is
+     * useful for lists that are loading content in both directions, e.g. a chat thread, where new
+     * messages coming in might otherwise cause the scroll position to jump. A value of 0 is common,
+     * but other values such as 1 can be used to skip loading spinners or other content that should
+     * not maintain position.
+     *
+     * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
+     * to the top after making the adjustment if the user was within the threshold of the top before
+     * the adjustment was made. This is also useful for chat-like applications where you want to see
+     * new messages scroll into place, but not if the user has scrolled up a ways and it would be
+     * disruptive to scroll a bunch.
+     *
+     * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
+     * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
+     * don't re-order the content of any ScrollViews or Lists that use this feature.
+     *
+     * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
+     * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
+     * whether content is "visible" or not.
+     *
+     * @platform ios
+     */
+    maintainVisibleContentPosition: PropTypes.shape({
+      minIndexForVisible: PropTypes.number.isRequired,
+      autoscrollToTopThreshold: PropTypes.number,
+    }),
+    /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios
      */
@@ -230,16 +275,34 @@ const ScrollView = React.createClass({
      * @platform ios
      */
     minimumZoomScale: PropTypes.number,
+     /**
+     * Enables nested scrolling for Android API level 21+.
+     * Nested scrolling is supported by default on iOS
+     * @platform android
+     */
+    nestedScrollEnabled: PropTypes.bool,
+    /**
+     * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollBegin: PropTypes.func,
+    /**
+     * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
+     */
+    onMomentumScrollEnd: PropTypes.func,
     /**
      * Fires at most once per frame during scrolling. The frequency of the
      * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
     /**
-     * Called when a scrolling animation ends.
-     * @platform ios
+     * Called when the user begins to drag the scroll view.
      */
-    onScrollAnimationEnd: PropTypes.func,
+    onScrollBeginDrag: PropTypes.func,
+    /**
+     * Called when the user stops dragging the scroll view and it either stops
+     * or begins to glide.
+     */
+    onScrollEndDrag: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes.
      *
@@ -254,13 +317,21 @@ const ScrollView = React.createClass({
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
+     *
+     * Note: Vertical pagination is not supported on Android.
      */
     pagingEnabled: PropTypes.bool,
+    /**
+    * When true, ScrollView allows use of pinch gestures to zoom in and out.
+    * The default value is true.
+    * @platform ios
+    */
+    pinchGestureEnabled: PropTypes.bool,
     /**
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
-     * Note that the view can be always be scrolled by calling `scrollTo`.
+     * Note that the view can always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -307,13 +378,14 @@ const ScrollView = React.createClass({
      * with `horizontal={true}`.
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
-    style: StyleSheetPropType(ViewStylePropTypes),
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
-     * that have lengths smaller than the scroll view. Used in combination
-     * with `snapToAlignment`.
-     * @platform ios
+     * that have lengths smaller than the scroll view. Typically used in
+     * combination with `snapToAlignment` and `decelerationRate="fast"` on ios.
+     * Overrides less configurable `pagingEnabled` prop.
+     *
+     * Supported for horizontal scrollview on android.
      */
     snapToInterval: PropTypes.number,
     /**
@@ -343,7 +415,18 @@ const ScrollView = React.createClass({
      * @platform ios
      */
     zoomScale: PropTypes.number,
-
+    /**
+     * This property specifies how the safe area insets are used to modify the
+     * content area of the scroll view. The default value of this property is
+     * "never". Available on iOS 11 and later.
+     * @platform ios
+     */
+    contentInsetAdjustmentBehavior: PropTypes.oneOf([
+      'automatic',
+      'scrollableAxes',
+      'never', // default
+      'always',
+    ]),
     /**
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView. Only works for vertical ScrollViews
@@ -388,20 +471,52 @@ const ScrollView = React.createClass({
       'always',
       'never',
     ]),
+    /**
+     * When true, ScrollView will emit updateChildFrames data in scroll events,
+     * otherwise will not compute or emit child frame data.  This only exists
+     * to support legacy issues, `onLayout` should be used instead to retrieve
+     * frame data.
+     * The default value is false.
+     * @platform ios
+     */
+    DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
+    /**
+     * Optionally an image can be used for the scroll bar thumb. This will
+     * override the color. While the image is loading or the image fails to
+     * load the color will be used instead. Use an alpha of 0 in the color
+     * to avoid seeing it while the image is loading.
+     *
+     * - `uri` - a string representing the resource identifier for the image, which
+     * should be either a local file path or the name of a static image resource
+     * - `number` - Opaque type returned by something like
+     * `import IMAGE from './image.jpg'`.
+     * @platform vr
+     */
+     scrollBarThumbImage: PropTypes.oneOfType([
+       PropTypes.shape({
+         uri: PropTypes.string,
+       }),
+       // Opaque type returned by import IMAGE from './image.jpg'
+       PropTypes.number,
+     ]),
   },
 
   mixins: [ScrollResponder.Mixin],
 
-  _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
+  _scrollAnimatedValue: (new AnimatedImplementation.Value(0): AnimatedImplementation.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
   _headerLayoutYs: (new Map(): Map<string, number>),
   getInitialState: function() {
-    return this.scrollResponderMixinGetInitialState();
+    return {
+      ...this.scrollResponderMixinGetInitialState(),
+      layoutHeight: null,
+    };
   },
 
-  componentWillMount: function() {
-    this._scrollAnimatedValue = new Animated.Value(0);
+  UNSAFE_componentWillMount: function() {
+    this._scrollAnimatedValue = new AnimatedImplementation.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
+    this._scrollAnimatedValue.setOffset(this.props.contentInset ? this.props.contentInset.top : 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
   },
@@ -495,6 +610,15 @@ const ScrollView = React.createClass({
     this.scrollTo({x, y, animated: false});
   },
 
+  /**
+   * Displays the scroll indicators momentarily.
+   *
+   * @platform ios
+   */
+  flashScrollIndicators: function() {
+    this.getScrollResponder().scrollResponderFlashScrollIndicators();
+  },
+
   _getKeyForIndex: function(index, childArray) {
     const child = childArray[index];
     return child && child.key;
@@ -505,7 +629,7 @@ const ScrollView = React.createClass({
       this._scrollAnimatedValueAttachment.detach();
     }
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
-      this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
         this._scrollViewRef,
         'onScroll',
         [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
@@ -547,7 +671,7 @@ const ScrollView = React.createClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console-disallow
+        console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +
@@ -564,6 +688,15 @@ const ScrollView = React.createClass({
     this.scrollResponderHandleScroll(e);
   },
 
+  _handleLayout: function(e: Object) {
+    if (this.props.invertStickyHeaders) {
+      this.setState({ layoutHeight: e.nativeEvent.layout.height });
+    }
+    if (this.props.onLayout) {
+      this.props.onLayout(e);
+    }
+  },
+
   _handleContentOnLayout: function(e: Object) {
     const {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
@@ -574,24 +707,29 @@ const ScrollView = React.createClass({
     this._scrollViewRef = ref;
   },
 
-  _innerViewRef: (null: ?View),
-  _setInnerViewRef: function(ref: ?View) {
+  _innerViewRef: (null: ?NativeMethodsMixinType),
+  _setInnerViewRef: function(ref: ?NativeMethodsMixinType) {
     this._innerViewRef = ref;
   },
 
   render: function() {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
-    if (Platform.OS === 'ios') {
-      ScrollViewClass = RCTScrollView;
-      ScrollContentContainerViewClass = RCTScrollContentView;
-    } else if (Platform.OS === 'android') {
+    if (Platform.OS === 'android') {
       if (this.props.horizontal) {
         ScrollViewClass = AndroidHorizontalScrollView;
+        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
       } else {
         ScrollViewClass = AndroidScrollView;
+        ScrollContentContainerViewClass = View;
       }
-      ScrollContentContainerViewClass = View;
+    } else {
+      ScrollViewClass = RCTScrollView;
+      ScrollContentContainerViewClass = RCTScrollContentView;
+      warning(
+        !this.props.snapToInterval || !this.props.pagingEnabled,
+        'snapToInterval is currently ignored when pagingEnabled is true.'
+      );
     }
 
     invariant(
@@ -644,7 +782,9 @@ const ScrollView = React.createClass({
                 this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
               }
               onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
-              scrollAnimatedValue={this._scrollAnimatedValue}>
+              scrollAnimatedValue={this._scrollAnimatedValue}
+              inverted={this.props.invertStickyHeaders}
+              scrollViewHeight={this.state.layoutHeight}>
               {child}
             </ScrollViewStickyHeader>
           );
@@ -658,7 +798,13 @@ const ScrollView = React.createClass({
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
-        removeClippedSubviews={this.props.removeClippedSubviews}
+        removeClippedSubviews={
+          // Subview clipping causes issues with sticky headers on Android and
+          // would be hard to fix properly in a performant way.
+          Platform.OS === 'android' && hasStickyHeaders ?
+            false :
+            this.props.removeClippedSubviews
+        }
         collapsable={false}>
         {children}
       </ScrollContentContainerViewClass>;
@@ -673,6 +819,9 @@ const ScrollView = React.createClass({
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
 
+    const DEPRECATED_sendUpdatedChildFrames =
+      !!this.props.DEPRECATED_sendUpdatedChildFrames;
+
     const baseStyle = this.props.horizontal ? styles.baseHorizontal : styles.baseVertical;
     const props = {
       ...this.props,
@@ -682,6 +831,7 @@ const ScrollView = React.createClass({
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
+      onLayout: this._handleLayout,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
@@ -698,9 +848,12 @@ const ScrollView = React.createClass({
       onTouchEnd: this.scrollResponderHandleTouchEnd,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchStart: this.scrollResponderHandleTouchStart,
+      onTouchCancel: this.scrollResponderHandleTouchCancel,
+      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
+      DEPRECATED_sendUpdatedChildFrames,
     };
 
     const { decelerationRate } = this.props;
@@ -764,6 +917,7 @@ const styles = StyleSheet.create({
 
 let nativeOnlyProps,
   AndroidScrollView,
+  AndroidHorizontalScrollContentView,
   AndroidHorizontalScrollView,
   RCTScrollView,
   RCTScrollContentView;
@@ -775,13 +929,16 @@ if (Platform.OS === 'android') {
   };
   AndroidScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
+  );
+  AndroidHorizontalScrollContentView = requireNativeComponent(
+    'AndroidHorizontalScrollContentView'
   );
 } else if (Platform.OS === 'ios') {
   nativeOnlyProps = {
@@ -794,7 +951,18 @@ if (Platform.OS === 'android') {
   };
   RCTScrollView = requireNativeComponent(
     'RCTScrollView',
-    (ScrollView: ReactClass<any>),
+    (ScrollView: React.ComponentType<any>),
+    nativeOnlyProps,
+  );
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
+} else {
+  nativeOnlyProps = {
+    nativeOnly: {
+    }
+  };
+  RCTScrollView = requireNativeComponent(
+    'RCTScrollView',
+    null,
     nativeOnlyProps,
   );
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);

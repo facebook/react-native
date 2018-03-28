@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule SegmentedControlIOSExample
@@ -20,7 +18,7 @@ var {
   StyleSheet
 } = ReactNative;
 
-class BasicSegmentedControlExample extends React.Component {
+class BasicSegmentedControlExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -35,7 +33,7 @@ class BasicSegmentedControlExample extends React.Component {
   }
 }
 
-class PreSelectedSegmentedControlExample extends React.Component {
+class PreSelectedSegmentedControlExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -47,7 +45,7 @@ class PreSelectedSegmentedControlExample extends React.Component {
   }
 }
 
-class MomentarySegmentedControlExample extends React.Component {
+class MomentarySegmentedControlExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -59,7 +57,7 @@ class MomentarySegmentedControlExample extends React.Component {
   }
 }
 
-class DisabledSegmentedControlExample extends React.Component {
+class DisabledSegmentedControlExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -71,7 +69,7 @@ class DisabledSegmentedControlExample extends React.Component {
   }
 }
 
-class ColorSegmentedControlExample extends React.Component {
+class ColorSegmentedControlExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -86,7 +84,7 @@ class ColorSegmentedControlExample extends React.Component {
   }
 }
 
-class EventSegmentedControlExample extends React.Component {
+class EventSegmentedControlExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     values: ['One', 'Two', 'Three'],
     value: 'Not selected',

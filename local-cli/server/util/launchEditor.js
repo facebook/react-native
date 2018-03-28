@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -32,11 +30,13 @@ var COMMON_EDITORS = {
   '/Applications/Atom.app/Contents/MacOS/Atom': 'atom',
   '/Applications/Atom Beta.app/Contents/MacOS/Atom Beta':
     '/Applications/Atom Beta.app/Contents/MacOS/Atom Beta',
+  '/Applications/IntelliJ IDEA.app/Contents/MacOS/idea': 'idea',
   '/Applications/Sublime Text.app/Contents/MacOS/Sublime Text':
     '/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl',
   '/Applications/Sublime Text 2.app/Contents/MacOS/Sublime Text 2':
     '/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl',
   '/Applications/Visual Studio Code.app/Contents/MacOS/Electron': 'code',
+  '/Applications/WebStorm.app/Contents/MacOS/webstorm': 'webstorm',
 };
 
 function addWorkspaceToArgumentsIfExists(args, workspace) {
@@ -56,6 +56,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
     case 'Atom Beta':
     case 'subl':
     case 'sublime':
+    case 'webstorm':
     case 'wstorm':
     case 'appcode':
     case 'charm':
@@ -97,7 +98,7 @@ function guessEditor() {
           return [COMMON_EDITORS[processName]];
         }
       }
-    } catch(error) {
+    } catch (error) {
       // Ignore...
     }
   }

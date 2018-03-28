@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule XHRExampleDownload
@@ -32,7 +30,7 @@ function roundKilo(value: number): number {
   return Math.round(value / 1000);
 }
 
-class ProgressBar extends React.Component {
+class ProgressBar extends React.Component<$FlowFixMeProps> {
   render() {
     if (Platform.OS === 'android') {
       return (
@@ -51,7 +49,7 @@ class ProgressBar extends React.Component {
   }
 }
 
-class XHRExampleDownload extends React.Component {
+class XHRExampleDownload extends React.Component<{}, Object> {
   state: Object = {
     downloading: false,
     // set by onreadystatechange

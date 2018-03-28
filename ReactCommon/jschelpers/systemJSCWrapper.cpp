@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include <jschelpers/JSCWrapper.h>
@@ -29,9 +27,12 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStringCreateWithUTF8CStringExpectAscii)
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSPokeSamplingProfiler)
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSStartSamplingProfilingOnMainJSCThread)
 
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSInspectorGetInstance)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSGlobalContextEnableDebugger)
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSGlobalContextDisableDebugger)
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(configureJSCForIOS)
+
+UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FBJSContextStartGCTimers)
 
 bool JSSamplingProfilerEnabled() {
   return false;
@@ -56,6 +57,9 @@ const JSCWrapper* systemJSCWrapper() {
 
       .JSContextGetGlobalContext = JSContextGetGlobalContext,
       .JSContextGetGlobalObject = JSContextGetGlobalObject,
+      .FBJSContextStartGCTimers =
+        (decltype(&FBJSContextStartGCTimers))
+        Unimplemented_FBJSContextStartGCTimers,
 
       .JSEvaluateScript = JSEvaluateScript,
       .JSEvaluateBytecodeBundle =
@@ -89,6 +93,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSObjectIsFunction = JSObjectIsFunction,
       .JSObjectMake = JSObjectMake,
       .JSObjectMakeArray = JSObjectMakeArray,
+      .JSObjectMakeDate = JSObjectMakeDate,
       .JSObjectMakeError = JSObjectMakeError,
       .JSObjectMakeFunctionWithCallback = JSObjectMakeFunctionWithCallback,
       .JSObjectSetPrivate = JSObjectSetPrivate,
@@ -114,6 +119,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSValueToObject = JSValueToObject,
       .JSValueToStringCopy = JSValueToStringCopy,
       .JSValueUnprotect = JSValueUnprotect,
+      .JSValueIsNull = JSValueIsNull,
 
       .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
       .JSPokeSamplingProfiler =
@@ -123,9 +129,12 @@ const JSCWrapper* systemJSCWrapper() {
         (decltype(&JSStartSamplingProfilingOnMainJSCThread))
         Unimplemented_JSStartSamplingProfilingOnMainJSCThread,
 
-      .JSInspectorGetInstance =
-        (decltype(&JSInspectorGetInstance))
-        Unimplemented_JSInspectorGetInstance,
+      .JSGlobalContextEnableDebugger =
+        (decltype(&JSGlobalContextEnableDebugger))
+        Unimplemented_JSGlobalContextEnableDebugger,
+      .JSGlobalContextDisableDebugger =
+        (decltype(&JSGlobalContextDisableDebugger))
+        Unimplemented_JSGlobalContextDisableDebugger,
 
       .configureJSCForIOS =
         (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,

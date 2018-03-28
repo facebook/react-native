@@ -25,7 +25,7 @@ function create() {
     var echo = opts.echo;
     var masked = 'echo' in opts;
 
-    var fd = (process.platform === 'win32') ? 
+    var fd = (process.platform === 'win32') ?
       process.stdin.fd :
       fs.openSync('/dev/tty', 'rs');
 
@@ -51,15 +51,15 @@ function create() {
           str = str + buf.toString();
           str = str.replace(/\0/g, '');
           insert = str.length;
-          process.stdout.write('\u001b[2K\u001b[0G'+ ask + str);
-          process.stdout.write('\u001b[' + (insert+ask.length+1) + 'G');
+          process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
+          process.stdout.write('\u001b[' + (insert + ask.length + 1) + 'G');
           buf = new Buffer(3);
         }
         continue; // any other 3 character sequence is ignored
       }
 
       // if it is not a control character seq, assume only one character is read
-      character = buf[read-1];
+      character = buf[read - 1];
 
       // catch a ^C and return null
       if (character == 3){
@@ -77,28 +77,28 @@ function create() {
       }
 
       if (character == 127 || (process.platform == 'win32' && character == 8)) { //backspace
-        if (!insert) continue;
-        str = str.slice(0, insert-1) + str.slice(insert);
+        if (!insert) {continue;}
+        str = str.slice(0, insert - 1) + str.slice(insert);
         insert--;
         process.stdout.write('\u001b[2D');
       } else {
         if ((character < 32 ) || (character > 126))
-            continue;
+            {continue;}
         str = str.slice(0, insert) + String.fromCharCode(character) + str.slice(insert);
         insert++;
-      };
+      }
 
       if (masked) {
-          process.stdout.write('\u001b[2K\u001b[0G' + ask + Array(str.length+1).join(echo));
+          process.stdout.write('\u001b[2K\u001b[0G' + ask + Array(str.length + 1).join(echo));
       } else {
         process.stdout.write('\u001b[s');
         if (insert == str.length) {
-            process.stdout.write('\u001b[2K\u001b[0G'+ ask + str);
+            process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
         } else {
           if (ask) {
-            process.stdout.write('\u001b[2K\u001b[0G'+ ask + str);
+            process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
           } else {
-            process.stdout.write('\u001b[2K\u001b[0G'+ str + '\u001b[' + (str.length - insert) + 'D');
+            process.stdout.write('\u001b[2K\u001b[0G' + str + '\u001b[' + (str.length - insert) + 'D');
           }
         }
         process.stdout.write('\u001b[u');
@@ -106,13 +106,13 @@ function create() {
       }
 
     }
-    
-    process.stdout.write('\n')
+
+    process.stdout.write('\n');
 
     process.stdin.setRawMode(wasRaw);
-    
+
     return str || value || '';
-  };
-};
+  }
+}
 
 module.exports = create;

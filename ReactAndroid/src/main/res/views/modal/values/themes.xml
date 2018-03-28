@@ -19,13 +19,13 @@
   </style>
 
   <style name="DialogAnimationSlide">
-    <item name="android:windowEnterAnimation">@anim/slide_up</item>
-    <item name="android:windowExitAnimation">@anim/slide_down</item>
+    <item name="android:windowEnterAnimation">@anim/catalyst_slide_up</item>
+    <item name="android:windowExitAnimation">@anim/catalyst_slide_down</item>
   </style>
 
   <style name="DialogAnimationFade">
-    <item name="android:windowEnterAnimation">@anim/fade_in</item>
-    <item name="android:windowExitAnimation">@anim/fade_out</item>
+    <item name="android:windowEnterAnimation">@anim/catalyst_fade_in</item>
+    <item name="android:windowExitAnimation">@anim/catalyst_fade_out</item>
   </style>
 
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ListViewExample
@@ -12,6 +10,7 @@
 'use strict';
 
 var React = require('react');
+var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {
   Image,
@@ -24,7 +23,8 @@ var {
 
 var RNTesterPage = require('./RNTesterPage');
 
-var ListViewSimpleExample = React.createClass({
+var ListViewSimpleExample = createReactClass({
+  displayName: 'ListViewSimpleExample',
   statics: {
     title: '<ListView>',
     description: 'Performant, scrollable list of data.'
@@ -39,7 +39,7 @@ var ListViewSimpleExample = React.createClass({
 
   _pressData: ({}: {[key: number]: boolean}),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this._pressData = {};
   },
 

@@ -2,11 +2,9 @@
 
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,6 +23,9 @@
 //
 // The only reason to modify this file is to add more warnings and
 // troubleshooting information for the `react-native init` command.
+//
+// To allow for graceful failure on older node versions, this file should
+// retain ES5 compatibility.
 //
 // Do not make breaking changes! We absolutely don't want to have to
 // tell people to update their global version of react-native-cli.
@@ -266,9 +267,9 @@ function getInstallPackage(rnPackage) {
 }
 
 function run(root, projectName, options) {
-  const rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
-  const forceNpmClient = options.npm;
-  const yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
+  var rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
+  var forceNpmClient = options.npm;
+  var yarnVersion = (!forceNpmClient) && getYarnVersionIfAvailable();
   var installCommand;
   if (options.installCommand) {
     // In CI environments it can be useful to provide a custom command,

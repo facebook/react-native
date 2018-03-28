@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule BorderExample
  */
@@ -124,6 +122,44 @@ var styles = StyleSheet.create({
     borderBottomColor: 'transparent',
     borderLeftColor: 'red',
   },
+  border12: {
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 10,
+    borderRightWidth: 20,
+    borderBottomWidth: 30,
+    borderLeftWidth: 40,
+    borderRadius: 20,
+  },
+  border13: {
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 10,
+    borderRightWidth: 20,
+    borderBottomWidth: 30,
+    borderLeftWidth: 40,
+    borderTopColor: 'red',
+    borderRightColor: 'green',
+    borderBottomColor: 'blue',
+    borderLeftColor: 'magenta',
+    borderRadius: 20,
+  },
+  border14: {
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 10,
+    borderRightWidth: 20,
+    borderBottomWidth: 30,
+    borderLeftWidth: 40,
+    borderTopColor: 'red',
+    borderRightColor: 'green',
+    borderBottomColor: 'blue',
+    borderLeftColor: 'magenta',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 40,
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+  }
 });
 
 exports.title = 'Border';
@@ -228,4 +264,25 @@ exports.examples = [
       return <View style={[styles.border11]} />;
     }
   },
+  {
+    title: 'Curved border(Left|Right|Bottom|Top)Width',
+    description: 'Make a non-uniform width curved border',
+    render() {
+      return <View style={[styles.box, styles.border12]} />;
+    }
+  },
+  {
+    title: 'Curved border(Left|Right|Bottom|Top)Color',
+    description: 'Make a non-uniform color curved border',
+    render() {
+      return <View style={[styles.box, styles.border13]} />;
+    }
+  },
+  {
+    title: 'Curved border(Top|Bottom)(Left|Right)Radius',
+    description: 'Make a non-uniform radius curved border',
+    render() {
+      return <View style={[styles.box, styles.border14]} />;
+    }
+  }
 ];

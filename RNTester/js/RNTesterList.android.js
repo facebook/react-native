@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule RNTesterList
@@ -24,6 +22,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ButtonExample',
     module: require('./ButtonExample'),
+  },
+  {
+    key: 'CheckBoxExample',
+    module: require('./CheckBoxExample'),
   },
   {
     key: 'FlatListExample',
@@ -80,6 +82,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample')
   },
   {
     key: 'SwipeableListViewExample',
@@ -151,6 +157,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'DatePickerAndroidExample',
     module: require('./DatePickerAndroidExample'),
+  },
+  {
+    key: 'Dimensions',
+    module: require('./DimensionsExample'),
   },
   {
     key: 'GeolocationExample',

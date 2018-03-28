@@ -1,26 +1,45 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule WebSocket
  * @flow
  */
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const Platform = require('Platform');
-const RCTWebSocketModule = require('NativeModules').WebSocketModule;
-const WebSocketEvent = require('WebSocketEvent');
-const binaryToBase64 = require('binaryToBase64');
-
+const Blob = require('Blob');
 const EventTarget = require('event-target-shim');
+const NativeEventEmitter = require('NativeEventEmitter');
+const BlobManager = require('BlobManager');
+const NativeModules = require('NativeModules');
+const WebSocketEvent = require('WebSocketEvent');
+
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const base64 = require('base64-js');
+const binaryToBase64 = require('binaryToBase64');
+const invariant = require('fbjs/lib/invariant');
+
+const {WebSocketModule} = NativeModules;
 
 import type EventSubscription from 'EventSubscription';
+
+type ArrayBufferView =
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | DataView
+
+type BinaryType = 'blob' | 'arraybuffer'
 
 const CONNECTING = 0;
 const OPEN = 1;
@@ -58,33 +77,89 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   _socketId: number;
   _eventEmitter: NativeEventEmitter;
   _subscriptions: Array<EventSubscription>;
+  _binaryType: ?BinaryType;
 
   onclose: ?Function;
   onerror: ?Function;
   onmessage: ?Function;
   onopen: ?Function;
 
-  binaryType: ?string;
   bufferedAmount: number;
   extension: ?string;
   protocol: ?string;
   readyState: number = CONNECTING;
   url: ?string;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+  // This module depends on the native `WebSocketModule` module. If you don't include it,
+  // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
+  static isAvailable: boolean = !!WebSocketModule;
+
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{headers?: {origin?: string}}) {
     super();
     if (typeof protocols === 'string') {
       protocols = [protocols];
+    }
+
+    const {headers = {}, ...unrecognized} = options || {};
+
+    // Preserve deprecated backwards compatibility for the 'origin' option
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
+    if (unrecognized && typeof unrecognized.origin === 'string') {
+      console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
+      /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error found when Flow v0.54 was deployed. To see
+       * the error delete this comment and run Flow. */
+      headers.origin = unrecognized.origin;
+      /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
+       * comment suppresses an error found when Flow v0.54 was deployed. To see
+       * the error delete this comment and run Flow. */
+      delete unrecognized.origin;
+    }
+
+    // Warn about and discard anything else
+    if (Object.keys(unrecognized).length > 0) {
+      console.warn('Unrecognized WebSocket connection option(s) `' + Object.keys(unrecognized).join('`, `') + '`. '
+        + 'Did you mean to put these under `headers`?');
     }
 
     if (!Array.isArray(protocols)) {
       protocols = null;
     }
 
-    this._eventEmitter = new NativeEventEmitter(RCTWebSocketModule);
+    if (!WebSocket.isAvailable) {
+      throw new Error('Cannot initialize WebSocket module. ' +
+      'Native module WebSocketModule is missing.');
+    }
+
+    this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    RCTWebSocketModule.connect(url, protocols, options, this._socketId);
+    WebSocketModule.connect(url, protocols, { headers }, this._socketId);
+  }
+
+  get binaryType(): ?BinaryType {
+    return this._binaryType;
+  }
+
+  set binaryType(binaryType: BinaryType): void {
+    if (binaryType !== 'blob' && binaryType !== 'arraybuffer') {
+      throw new Error('binaryType must be either \'blob\' or \'arraybuffer\'');
+    }
+    if (this._binaryType === 'blob' || binaryType === 'blob') {
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      if (binaryType === 'blob') {
+        BlobManager.addWebSocketHandler(this._socketId);
+      } else {
+        BlobManager.removeWebSocketHandler(this._socketId);
+      }
+    }
+    this._binaryType = binaryType;
+  }
+
+  get binaryType(): ?BinaryType {
+    return this._binaryType;
   }
 
   close(code?: number, reason?: string): void {
@@ -97,18 +172,24 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._close(code, reason);
   }
 
-  send(data: string | ArrayBuffer | $ArrayBufferView): void {
+  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void {
     if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
+    if (data instanceof Blob) {
+      invariant(BlobManager.isAvailable, 'Native module BlobModule is required for blob support');
+      BlobManager.sendOverSocket(data, this._socketId);
+      return;
+    }
+
     if (typeof data === 'string') {
-      RCTWebSocketModule.send(data, this._socketId);
+      WebSocketModule.send(data, this._socketId);
       return;
     }
 
     if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
-      RCTWebSocketModule.sendBinary(binaryToBase64(data), this._socketId);
+      WebSocketModule.sendBinary(binaryToBase64(data), this._socketId);
       return;
     }
 
@@ -120,17 +201,21 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         throw new Error('INVALID_STATE_ERR');
     }
 
-    RCTWebSocketModule.ping(this._socketId);
+    WebSocketModule.ping(this._socketId);
   }
 
   _close(code?: number, reason?: string): void {
-    if (Platform.OS === 'android') {
+    if (WebSocketModule.close.length === 3) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       const closeReason = typeof reason === 'string' ? reason : '';
-      RCTWebSocketModule.close(statusCode, closeReason, this._socketId);
+      WebSocketModule.close(statusCode, closeReason, this._socketId);
     } else {
-      RCTWebSocketModule.close(this._socketId);
+      WebSocketModule.close(this._socketId);
+    }
+
+    if (BlobManager.isAvailable && this._binaryType === 'blob') {
+      BlobManager.removeWebSocketHandler(this._socketId);
     }
   }
 
@@ -145,9 +230,16 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
         if (ev.id !== this._socketId) {
           return;
         }
-        this.dispatchEvent(new WebSocketEvent('message', {
-          data: (ev.type === 'binary') ? base64.toByteArray(ev.data).buffer : ev.data
-        }));
+        let data = ev.data;
+        switch (ev.type) {
+          case 'binary':
+            data = base64.toByteArray(ev.data).buffer;
+            break;
+          case 'blob':
+            data = BlobManager.createFromOptions(ev.data);
+            break;
+        }
+        this.dispatchEvent(new WebSocketEvent('message', { data }));
       }),
       this._eventEmitter.addListener('websocketOpen', ev => {
         if (ev.id !== this._socketId) {

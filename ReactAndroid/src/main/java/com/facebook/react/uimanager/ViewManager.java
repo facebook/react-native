@@ -1,27 +1,23 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.view.View;
-
 import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
@@ -59,10 +55,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /**
    * This method should return a subclass of {@link ReactShadowNode} which will be then used for
-   * measuring position and size of the view. In mose of the cases this should just return an
+   * measuring position and size of the view. In most of the cases this should just return an
    * instance of {@link ReactShadowNode}
    */
-  public abstract C createShadowNodeInstance();
+  public C createShadowNodeInstance() {
+    throw new RuntimeException("ViewManager subclasses must implement createShadowNodeInstance()");
+  }
+
+  public C createShadowNodeInstance(ReactApplicationContext context) {
+    return createShadowNodeInstance();
+  }
 
   /**
    * This method should return {@link Class} instance that represent type of shadow node that this

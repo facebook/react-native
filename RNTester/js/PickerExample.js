@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule PickerExample
@@ -24,7 +22,7 @@ const {
 
 const Item = Picker.Item;
 
-class PickerExample extends React.Component {
+class PickerExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<Picker>';
   static description = 'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
 

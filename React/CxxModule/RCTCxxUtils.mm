@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTCxxUtils.h"
@@ -12,31 +10,12 @@
 #import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#include <cxxreact/CxxNativeModule.h>
-#include <jschelpers/Value.h>
+#import <cxxreact/CxxNativeModule.h>
+#import <jschelpers/Value.h>
 
 #import "DispatchMessageQueueThread.h"
 #import "RCTCxxModule.h"
 #import "RCTNativeModule.h"
-
-using namespace facebook::react;
-
-@implementation RCTConvert (folly)
-
-+ (folly::dynamic)folly_dynamic:(id)json;
-{
-  if (json == nil || json == (id)kCFNull) {
-    return nullptr;
-  } else {
-    folly::dynamic dyn = convertIdToFollyDynamic(json);
-     if (dyn == nil) {
-       RCTAssert(false, @"RCTConvert input json is of an impossible type");
-     }
-     return dyn;
-  }
-}
-
-@end
 
 namespace facebook {
 namespace react {
@@ -109,7 +88,8 @@ static NSError *errorWithException(const std::exception &e)
   return [NSError errorWithDomain:RCTErrorDomain code:1 userInfo:errorInfo];
 }
 
-NSError *tryAndReturnError(const std::function<void()>& func) {
+NSError *tryAndReturnError(const std::function<void()>& func)
+{
   try {
     @try {
       func();
@@ -131,6 +111,19 @@ NSError *tryAndReturnError(const std::function<void()>& func) {
     // 32-bit platforms, so we catch those with id exceptions above.
     return RCTErrorWithMessage(@"non-std C++ exception");
   }
+}
+
+NSString *deriveSourceURL(NSURL *url)
+{
+  NSString *sourceUrl;
+  if (url.isFileURL) {
+    // Url will contain only path to resource (i.g. file:// will be removed)
+    sourceUrl = url.path;
+  } else {
+    // Url will include protocol (e.g. http://)
+    sourceUrl = url.absoluteString;
+  }
+  return sourceUrl ?: @"";
 }
 
 } }

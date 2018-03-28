@@ -1,17 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.toolbar;
-
-import javax.annotation.Nullable;
-
-import java.util.Map;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -20,8 +14,6 @@ import android.graphics.Color;
 import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -32,6 +24,8 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of ReactToolbar.
@@ -39,6 +33,7 @@ import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   private static final String REACT_CLASS = "ToolbarAndroid";
+  private static final int COMMAND_DISMISS_POPUP_MENUS = 1;
 
   @Override
   public String getName() {
@@ -163,21 +158,44 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     return true;
   }
 
+  @Nullable
+  @Override
+  public Map<String, Integer> getCommandsMap() {
+    return MapBuilder.of("dismissPopupMenus", COMMAND_DISMISS_POPUP_MENUS);
+  }
+
+  @Override
+  public void receiveCommand(ReactToolbar view, int commandType, @Nullable ReadableArray args) {
+    switch (commandType) {
+      case COMMAND_DISMISS_POPUP_MENUS: {
+        view.dismissPopupMenus();
+        return;
+      }
+      default:
+        throw new IllegalArgumentException(String.format(
+          "Unsupported command %d received by %s.",
+          commandType,
+          getClass().getSimpleName()));
+    }
+  }
+
   private int[] getDefaultContentInsets(Context context) {
     Resources.Theme theme = context.getTheme();
     TypedArray toolbarStyle = null;
     TypedArray contentInsets = null;
 
     try {
-      toolbarStyle = theme
-              .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+      toolbarStyle =
+          theme.obtainStyledAttributes(new int[] {getIdentifier(context, "toolbarStyle")});
 
       int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
 
-      contentInsets = theme.obtainStyledAttributes(
-              toolbarStyleResId, new int[]{
-                      R.attr.contentInsetStart,
-                      R.attr.contentInsetEnd,
+      contentInsets =
+          theme.obtainStyledAttributes(
+              toolbarStyleResId,
+              new int[] {
+                getIdentifier(context, "contentInsetStart"),
+                getIdentifier(context, "contentInsetEnd"),
               });
 
       int contentInsetStart = contentInsets.getDimensionPixelSize(0, 0);
@@ -199,14 +217,18 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     TypedArray subtitleTextAppearance = null;
 
     try {
-      toolbarStyle = theme
-          .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+      toolbarStyle =
+          theme.obtainStyledAttributes(new int[] {getIdentifier(context, "toolbarStyle")});
+
       int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
-      textAppearances = theme.obtainStyledAttributes(
-          toolbarStyleResId, new int[]{
-              R.attr.titleTextAppearance,
-              R.attr.subtitleTextAppearance,
-          });
+      textAppearances =
+          theme.obtainStyledAttributes(
+              toolbarStyleResId,
+              new int[] {
+                getIdentifier(context, "titleTextAppearance"),
+                getIdentifier(context, "subtitleTextAppearance"),
+              });
+
       int titleTextAppearanceResId = textAppearances.getResourceId(0, 0);
       int subtitleTextAppearanceResId = textAppearances.getResourceId(1, 0);
 
@@ -231,6 +253,15 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     if (style != null) {
       style.recycle();
     }
+  }
+
+  /**
+   * The appcompat-v7 BUCK dep is listed as a provided_dep, which complains that
+   * com.facebook.react.R doesn't exist. Since the attributes provided from a parent, we can access
+   * those attributes dynamically.
+   */
+  private static int getIdentifier(Context context, String name) {
+    return context.getResources().getIdentifier(name, "attr", context.getPackageName());
   }
 
 }

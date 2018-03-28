@@ -1,27 +1,27 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule LazyRenderer
  */
 'use strict';
 
-var React = require('React');
-var PropTypes = require('prop-types');
-var TimerMixin = require('react-timer-mixin');
+const React = require('React');
+const createReactClass = require('create-react-class');
+const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
 
-var LazyRenderer = React.createClass({
+const LazyRenderer = createReactClass({
+  displayName: 'LazyRenderer',
   mixin: [TimerMixin],
 
   propTypes: {
     render: PropTypes.func.isRequired,
   },
 
-  componentWillMount: function(): void {
+  UNSAFE_componentWillMount: function(): void {
     this.setState({
       _lazyRender : true,
     });

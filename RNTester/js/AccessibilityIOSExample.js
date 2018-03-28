@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule AccessibilityIOSExample
@@ -19,7 +17,7 @@ var {
   View,
 } = ReactNative;
 
-class AccessibilityIOSExample extends React.Component {
+class AccessibilityIOSExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -48,12 +46,22 @@ class AccessibilityIOSExample extends React.Component {
             Accessibility traits example
           </Text>
         </View>
+        <Text>
+          Text's accessibilityLabel is the raw text itself unless it is set explicitly.
+        </Text>
+        <Text accessibilityLabel="Test of accessibilityLabel"
+          accessible={true}>
+          This text component's accessibilityLabel is set explicitly.
+        </Text>
+        <View accessibilityElementsHidden={true}>
+          <Text>This view's children are hidden from the accessibility tree</Text>
+        </View>
       </View>
     );
   }
 }
 
-class ScreenReaderStatusExample extends React.Component {
+class ScreenReaderStatusExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     screenReaderEnabled: false,
   }

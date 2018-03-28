@@ -1,15 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
 
 typedef void (^RCTMultipartCallback)(NSDictionary *headers, NSData *content, BOOL done);
+typedef void (^RCTMultipartProgressCallback)(NSDictionary *headers, NSNumber *loaded, NSNumber *total);
 
 
 // RCTMultipartStreamReader can be used to parse responses with Content-Type: multipart/mixed
@@ -17,6 +16,7 @@ typedef void (^RCTMultipartCallback)(NSDictionary *headers, NSData *content, BOO
 @interface RCTMultipartStreamReader : NSObject
 
 - (instancetype)initWithInputStream:(NSInputStream *)stream boundary:(NSString *)boundary;
-- (BOOL)readAllParts:(RCTMultipartCallback)callback;
+- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
+                          progressCallback:(RCTMultipartProgressCallback)progressCallback;
 
 @end

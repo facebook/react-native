@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -31,12 +29,12 @@
   NSInputStream *inputStream = [NSInputStream inputStreamWithData:[response dataUsingEncoding:NSUTF8StringEncoding]];
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:@"sample_boundary"];
   __block NSInteger count = 0;
-  BOOL success = [reader readAllParts:^(NSDictionary *headers, NSData *content, BOOL done) {
+  BOOL success = [reader readAllPartsWithCompletionCallback:^(NSDictionary *headers, NSData *content, BOOL done) {
     XCTAssertTrue(done);
     XCTAssertEqualObjects(headers[@"Content-Type"], @"application/json; charset=utf-8");
     XCTAssertEqualObjects([[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding], @"{}");
     count++;
-  }];
+  } progressCallback: nil];
   XCTAssertTrue(success);
   XCTAssertEqual(count, 1);
 }
@@ -56,13 +54,13 @@
   NSInputStream *inputStream = [NSInputStream inputStreamWithData:[response dataUsingEncoding:NSUTF8StringEncoding]];
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:@"sample_boundary"];
   __block NSInteger count = 0;
-  BOOL success = [reader readAllParts:^(__unused NSDictionary *headers, NSData *content, BOOL done) {
+  BOOL success = [reader readAllPartsWithCompletionCallback:^(__unused NSDictionary *headers, NSData *content, BOOL done) {
     count++;
     XCTAssertEqual(done, count == 3);
     NSString *expectedBody = [NSString stringWithFormat:@"%ld", (long)count];
     NSString *actualBody = [[NSString alloc] initWithData:content encoding:NSUTF8StringEncoding];
     XCTAssertEqualObjects(actualBody, expectedBody);
-  }];
+  } progressCallback:nil];
   XCTAssertTrue(success);
   XCTAssertEqual(count, 3);
 }
@@ -73,9 +71,9 @@
   NSInputStream *inputStream = [NSInputStream inputStreamWithData:[response dataUsingEncoding:NSUTF8StringEncoding]];
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:@"sample_boundary"];
   __block NSInteger count = 0;
-  BOOL success = [reader readAllParts:^(__unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
+  BOOL success = [reader readAllPartsWithCompletionCallback:^(__unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
     count++;
-  }];
+  } progressCallback:nil];
   XCTAssertFalse(success);
   XCTAssertEqual(count, 0);
 }
@@ -93,9 +91,9 @@
   NSInputStream *inputStream = [NSInputStream inputStreamWithData:[response dataUsingEncoding:NSUTF8StringEncoding]];
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:@"sample_boundary"];
   __block NSInteger count = 0;
-  BOOL success = [reader readAllParts:^(__unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
+  BOOL success = [reader readAllPartsWithCompletionCallback:^(__unused NSDictionary *headers, __unused NSData *content, __unused BOOL done) {
     count++;
-  }];
+  } progressCallback:nil];
   XCTAssertFalse(success);
   XCTAssertEqual(count, 1);
 }

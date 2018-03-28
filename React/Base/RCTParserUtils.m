@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTParserUtils.h"
@@ -51,7 +49,32 @@ static BOOL RCTIsIdentifierTail(const char c)
   return isalnum(c) || c == '_';
 }
 
-BOOL RCTParseIdentifier(const char **input, NSString **string)
+BOOL RCTParseArgumentIdentifier(const char **input, NSString **string)
+{
+  const char *start = *input;
+
+  do {
+    if (!RCTIsIdentifierHead(**input)) {
+      return NO;
+    }
+    (*input)++;
+
+    while (RCTIsIdentifierTail(**input)) {
+      (*input)++;
+    }
+
+  // allow namespace resolution operator
+  } while (RCTReadString(input, "::"));
+
+  if (string) {
+    *string = [[NSString alloc] initWithBytes:start
+                                       length:(NSInteger)(*input - start)
+                                     encoding:NSASCIIStringEncoding];
+  }
+  return YES;
+}
+
+BOOL RCTParseSelectorIdentifier(const char **input, NSString **string)
 {
   const char *start = *input;
   if (!RCTIsIdentifierHead(**input)) {
@@ -83,7 +106,7 @@ static BOOL RCTIsCollectionType(NSString *type)
 NSString *RCTParseType(const char **input)
 {
   NSString *type;
-  RCTParseIdentifier(input, &type);
+  RCTParseArgumentIdentifier(input, &type);
   RCTSkipWhitespace(input);
   if (RCTReadChar(input, '<')) {
     RCTSkipWhitespace(input);
@@ -111,7 +134,9 @@ NSString *RCTParseType(const char **input)
     RCTReadChar(input, '>');
   }
   RCTSkipWhitespace(input);
-  RCTReadChar(input, '*');
+  if (!RCTReadChar(input, '*')) {
+    RCTReadChar(input, '&');
+  }
   return type;
 }
 

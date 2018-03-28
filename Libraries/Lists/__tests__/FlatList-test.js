@@ -1,15 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ *
+ * @format
+ * @emails oncall+react_native
  */
 'use strict';
-
-jest.disableAutomock();
 
 const React = require('React');
 const ReactTestRenderer = require('react-test-renderer');
@@ -22,16 +21,13 @@ describe('FlatList', () => {
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
-      />
+      />,
     );
     expect(component).toMatchSnapshot();
   });
   it('renders empty list', () => {
     const component = ReactTestRenderer.create(
-      <FlatList
-        data={[]}
-        renderItem={({item}) => <item value={item.key} />}
-      />
+      <FlatList data={[]} renderItem={({item}) => <item value={item.key} />} />,
     );
     expect(component).toMatchSnapshot();
   });
@@ -40,7 +36,7 @@ describe('FlatList', () => {
       <FlatList
         data={undefined}
         renderItem={({item}) => <item value={item.key} />}
-      />
+      />,
     );
     expect(component).toMatchSnapshot();
   });
@@ -58,7 +54,7 @@ describe('FlatList', () => {
         refreshing={false}
         onRefresh={jest.fn()}
         renderItem={({item}) => <item value={item.id} />}
-      />
+      />,
     );
     expect(component).toMatchSnapshot();
   });

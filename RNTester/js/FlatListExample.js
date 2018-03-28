@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule FlatListExample
@@ -29,6 +27,7 @@ const {
   FooterComponent,
   HeaderComponent,
   ItemComponent,
+  ListEmptyComponent,
   ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
@@ -47,7 +46,7 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-class FlatListExample extends React.PureComponent {
+class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
   static title = '<FlatList>';
   static description = 'Performant, scrollable list of data.';
 
@@ -55,10 +54,12 @@ class FlatListExample extends React.PureComponent {
     data: genItemData(100),
     debug: false,
     horizontal: false,
+    inverted: false,
     filterText: '',
     fixedHeight: true,
     logViewable: false,
     virtualized: true,
+    empty: false,
   };
 
   _onChangeFilterText = (filterText) => {
@@ -110,7 +111,9 @@ class FlatListExample extends React.PureComponent {
               {renderSmallSwitchOption(this, 'virtualized')}
               {renderSmallSwitchOption(this, 'horizontal')}
               {renderSmallSwitchOption(this, 'fixedHeight')}
-              {renderSmallSwitchOption(this, 'logViewable')}
+              {renderSmallSwitchOption(this, 'log')}
+              {renderSmallSwitchOption(this, 'inverted')}
+              {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               <Spindicator value={this._scrollPos} />
             </View>
@@ -120,7 +123,8 @@ class FlatListExample extends React.PureComponent {
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}
-            data={filteredData}
+            ListEmptyComponent={ListEmptyComponent}
+            data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
             getItemLayout={this.state.fixedHeight ?
@@ -128,6 +132,7 @@ class FlatListExample extends React.PureComponent {
               undefined
             }
             horizontal={this.state.horizontal}
+            inverted={this.state.inverted}
             key={(this.state.horizontal ? 'h' : 'v') +
               (this.state.fixedHeight ? 'f' : 'd')
             }
@@ -209,6 +214,7 @@ const styles = StyleSheet.create({
   },
   list: {
     backgroundColor: 'white',
+    flexGrow: 1,
   },
   options: {
     flexDirection: 'row',

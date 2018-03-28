@@ -152,7 +152,10 @@
 				0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */,
 				0CF68AC21AF0540F00FF9E5C /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		0CF68AC21AF0540F00FF9E5C /* Products */ = {
 			isa = PBXGroup;

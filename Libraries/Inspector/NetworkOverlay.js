@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule NetworkOverlay
  * @flow
@@ -50,7 +48,11 @@ type NetworkRequestInfo = {
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component {
+class NetworkOverlay extends React.Component<Object, {
+  dataSource: ListView.DataSource,
+  newDetailInfo: bool,
+  detailRowID: ?number,
+}> {
   _requests: Array<NetworkRequestInfo>;
   _listViewDataSource: ListView.DataSource;
   _listView: ?ListView;
@@ -72,12 +74,6 @@ class NetworkOverlay extends React.Component {
   _socketIdMap: Object;
   // Map of `xhr._index` -> `index in `_requests``.
   _xhrIdMap: {[key: number]: number};
-
-  state: {
-    dataSource: ListView.DataSource,
-    newDetailInfo: bool,
-    detailRowID: ?number,
-  };
 
   constructor(props: Object) {
     super(props);

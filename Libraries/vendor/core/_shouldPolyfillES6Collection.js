@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule _shouldPolyfillES6Collection
  * @preventMunge
@@ -16,7 +14,7 @@
  * Checks whether a collection name (e.g. "Map" or "Set") has a native polyfill
  * that is safe to be used.
  */
-function shouldPolyfillES6Collection(collectionName: string): boolean {
+function _shouldActuallyPolyfillES6Collection(collectionName: string): boolean {
   var Collection = global[collectionName];
   if (Collection == null) {
     return true;
@@ -43,4 +41,23 @@ function shouldPolyfillES6Collection(collectionName: string): boolean {
     typeof proto.forEach !== 'function';
 }
 
-module.exports = shouldPolyfillES6Collection;
+const cache: { [name: string]: bool } = {};
+
+  /**
+   * Checks whether a collection name (e.g. "Map" or "Set") has a native polyfill
+   * that is safe to be used and caches this result.
+   * Make sure to make a first call to this function before a corresponding
+   * property on global was overriden in any way.
+   */
+function _shouldPolyfillES6Collection(collectionName: string) {
+    let result = cache[collectionName];
+    if (result !== undefined) {
+      return result;
+    }
+
+    result = _shouldActuallyPolyfillES6Collection(collectionName);
+    cache[collectionName] = result;
+    return result;
+}
+
+module.exports = _shouldPolyfillES6Collection;

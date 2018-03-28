@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @providesModule ShareExample
@@ -31,11 +29,10 @@ exports.examples = [{
   }
 }];
 
-class ShareMessageExample extends React.Component {
+class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;
-  state: any;
 
   constructor(props) {
     super(props);
@@ -83,6 +80,7 @@ class ShareMessageExample extends React.Component {
       url: 'http://facebook.github.io/react-native/',
       title: 'React Native'
     }, {
+      subject: 'A subject to go in the email heading',
       dialogTitle: 'Share React Native website',
       excludedActivityTypes: [
         'com.apple.UIKit.activity.PostToTwitter'
@@ -104,7 +102,6 @@ class ShareMessageExample extends React.Component {
       this.setState({result: 'dismissed'});
     }
   }
-
 }
 
 

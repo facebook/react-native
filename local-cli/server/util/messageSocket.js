@@ -1,16 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
 const url = require('url');
 const WebSocketServer = require('ws').Server;
 const PROTOCOL_VERSION = 2;
+const notifier = require('node-notifier');
 
 function parseMessage(data, binary) {
   if (binary) {
@@ -76,6 +75,14 @@ function attachToServer(server, path) {
       method: message.method,
       params: message.params,
     };
+    if (clients.size === 0) {
+      notifier.notify({
+        'title': 'React Native: No apps connected',
+        'message': `Sending '${message.method}' to all React Native apps ` +
+                  'failed. Make sure your app is running in the simulator ' +
+                  'or on a phone connected via USB.'
+      });
+    }
     for (const [otherId, otherWs] of clients) {
       if (otherId !== broadcasterId) {
         try {
@@ -135,7 +142,7 @@ function attachToServer(server, path) {
           });
           break;
         default:
-          throw `unkown method: ${message.method}`;
+          throw `unknown method: ${message.method}`;
       }
 
       clientWs.send(JSON.stringify({

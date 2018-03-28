@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.flat;
@@ -22,12 +20,11 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaDirection;
-
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * FlatUIImplementation builds on top of UIImplementation and allows pre-creating everything
@@ -54,7 +51,7 @@ public class FlatUIImplementation extends UIImplementation {
 
   /**
    * Build the map of view managers, checking that the managers FlatUI requires are correctly
-   * overriden.
+   * overridden.
    */
   private static Map<String, ViewManager> buildViewManagerMap(List<ViewManager> viewManagers) {
     Map<String, ViewManager> viewManagerMap = new HashMap<>();
@@ -88,7 +85,8 @@ public class FlatUIImplementation extends UIImplementation {
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers,
       EventDispatcher eventDispatcher,
-      boolean memoryImprovementEnabled) {
+      boolean memoryImprovementEnabled,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
 
     Map<String, ViewManager> viewManagerMap = buildViewManagerMap(viewManagers);
 
@@ -107,9 +105,9 @@ public class FlatUIImplementation extends UIImplementation {
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagerMap);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(
       viewManagerRegistry);
-    FlatUIViewOperationQueue operationsQueue = new FlatUIViewOperationQueue(
-      reactContext,
-      nativeViewHierarchyManager);
+    FlatUIViewOperationQueue operationsQueue =
+        new FlatUIViewOperationQueue(
+            reactContext, nativeViewHierarchyManager, minTimeLeftInFrameForNonBatchedOperationMs);
     return new FlatUIImplementation(
       reactContext,
       imageViewManager,
@@ -149,7 +147,7 @@ public class FlatUIImplementation extends UIImplementation {
     if (mRCTImageViewManager != null) {
       // This is not the best place to initialize DraweeRequestHelper, but order of module
       // initialization is undefined, and this is pretty much the earliest when we are guarantied
-      // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
+      // that Fresco is initialized and DraweeControllerBuilder can be queried. This also happens
       // relatively rarely to have any performance considerations.
       mReactContext.getNativeModule(FrescoModule.class); // initialize Fresco
       DraweeRequestHelper.setDraweeControllerBuilder(

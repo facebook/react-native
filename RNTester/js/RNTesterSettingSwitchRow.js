@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RNTesterSettingSwitchRow
  * @flow
@@ -18,8 +16,8 @@ const Text = require('Text');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
-class RNTesterSettingSwitchRow extends React.Component {
-  componentWillReceiveProps(newProps) {
+class RNTesterSettingSwitchRow extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  UNSAFE_componentWillReceiveProps(newProps) {
     const {onEnable, onDisable, persister} = this.props;
     if (newProps.persister.state !== persister.state) {
       newProps.persister.state ? onEnable() : onDisable();

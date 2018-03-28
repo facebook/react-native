@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AnExSet
  * @flow
@@ -26,9 +24,7 @@ var AnExChained = require('./AnExChained');
 var AnExScroll = require('./AnExScroll');
 var AnExTilt = require('./AnExTilt');
 
-class AnExSet extends React.Component {
-  state: any;
-
+class AnExSet extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     function randColor() {
@@ -40,7 +36,7 @@ class AnExSet extends React.Component {
       openColor: randColor(),
     };
   }
-  render(): React.Element<any> {
+  render(): React.Node {
     var backgroundColor = this.props.openVal ?
       this.props.openVal.interpolate({
         inputRange: [0, 1],
@@ -77,7 +73,7 @@ class AnExSet extends React.Component {
     );
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.state.dismissY = new Animated.Value(0);
     this.state.dismissResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => this.props.isActive,

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.art;
@@ -63,5 +61,13 @@ public class ARTSurfaceViewManager extends
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
     root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
+  }
+
+  @Override
+  public void setBackgroundColor(ARTSurfaceView view, int backgroundColor) {
+    // As of Android N TextureView does not support calling setBackground on it.
+    // It will also throw an exception when target SDK is set to N or higher.
+
+    // Setting the background color for this view is handled in the shadow node.
   }
 }
