@@ -362,10 +362,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     @Override
     public void handleException(Throwable t) {
-      
-      
-      
-      .handleException(new RuntimeException(t));
+      getReactContext().handleException(new RuntimeException(t));
     }
 
     private ReactContext getReactContext() {
