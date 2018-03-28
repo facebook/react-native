@@ -469,8 +469,6 @@ jobs:
       - run: *gradle-download-deps
       - save-cache: *save-cache-gradle-downloads
 
-      - run: *install-node
-      - run: *install-yarn
       - restore-cache: *restore-cache-yarn
       - run: *yarn
       - save-cache: *save-cache-yarn
@@ -541,7 +539,6 @@ jobs:
       - run: *compile-native-libs
 
       # Build JavaScript Bundle for instrumentation tests
-      - run: *install-node
       - run: *build-js-bundle
 
       # Wait for AVD to finish booting before running tests
@@ -555,7 +552,6 @@ jobs:
       - run: *collect-android-test-results
       - store_test_results:
           path: ~/react-native/reports/junit
-
 
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
