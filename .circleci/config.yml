@@ -56,20 +56,21 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      - v2-android-ndk-{{ arch }}-r10e-32-64-
+      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v3-android-ndk-{{ arch }}-r10e-
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-buck
     keys:
-      - v2-buck-{{ arch }}-v2018.02.16.01
+      - v3-buck-{{ arch }}-v2018.02.16.01
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v2-buck-{{ arch }}-v2018.02.16.01
+      - ~/okbuck
+    key: v3-buck-{{ arch }}-v2018.02.16.01
 
   - &restore-cache-watchman
     keys:
@@ -141,6 +142,13 @@ aliases:
       fi
       cd ~/buck && ant
       buck --version
+      # Install related tooling
+      if [[ ! -e ~/okbuck ]]; then
+        git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+      fi
+      mkdir -p ~/react-native/tooling/junit
+      cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
+
 
   - &install-node
     name: Install Node
@@ -237,7 +245,7 @@ aliases:
 
   - &run-android-unit-tests
     name: Run Unit Tests
-    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
+    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/react-native/reports/buck/all-results-raw.xml
 
   - &run-android-instrumentation-tests
     name: Run Instrumentation Tests
@@ -250,15 +258,19 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/build/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/outputs/ \;
+      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/buck/ \;
+      ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
     when: always
 
   - &setup-artifacts
     name: Initial Setup
     command: | 
+      mkdir -p ~/react-native/reports/buck/
+      mkdir -p ~/react-native/reports/build/
       mkdir -p ~/react-native/reports/junit/
+      mkdir -p ~/react-native/reports/outputs/
   
   - &run-objc-ios-tests
     name: iOS Test Suite
@@ -289,7 +301,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-26-alpha
+    - image: circleci/android:api-26-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
@@ -457,8 +469,6 @@ jobs:
       - run: *gradle-download-deps
       - save-cache: *save-cache-gradle-downloads
 
-      - run: *install-node
-      - run: *install-yarn
       - restore-cache: *restore-cache-yarn
       - run: *yarn
       - save-cache: *save-cache-yarn
@@ -529,7 +539,6 @@ jobs:
       - run: *compile-native-libs
 
       # Build JavaScript Bundle for instrumentation tests
-      - run: *install-node
       - run: *build-js-bundle
 
       # Wait for AVD to finish booting before running tests
@@ -539,11 +548,10 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
       
-      # post (always runs)
+      # Collect Results
       - run: *collect-android-test-results
       - store_test_results:
           path: ~/react-native/reports/junit
-
 
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
