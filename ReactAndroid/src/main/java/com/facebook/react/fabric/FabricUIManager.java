@@ -77,7 +77,7 @@ public class FabricUIManager implements UIManager {
       ViewManager viewManager = mViewManagerRegistry.get(viewName);
       ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
       ReactShadowNode rootNode = getRootNode(rootTag);
-      node.setRootNode(rootNode);
+      node.setRootTag(rootNode.getReactTag());
       node.setViewClassName(viewName);
       node.setReactTag(reactTag);
       node.setThemedContext(rootNode.getThemedContext());
