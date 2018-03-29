@@ -327,6 +327,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
+    private boolean hasAdjustedSize = false;
+    private int viewWidth;
+    private int viewHeight;
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
@@ -337,7 +340,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     @Override
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
+      viewWidth = w;
+      viewHeight = h;
+      updateFirstChildView();
+    }
+
+    private void updateFirstChildView() {
       if (getChildCount() > 0) {
+        hasAdjustedSize = false;
         final int viewTag = getChildAt(0).getId();
         ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
@@ -345,9 +355,19 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             @Override
             public void runGuarded() {
               (getReactContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(viewTag, w, h);
+                .updateNodeSize(viewTag, viewWidth, viewHeight);
             }
           });
+      } else {
+        hasAdjustedSize = true;
+      }
+    }
+
+    @Override
+    public void addView(View child, int index, LayoutParams params) {
+      super.addView(child, index, params);
+      if (hasAdjustedSize) {
+        updateFirstChildView();
       }
     }
 
