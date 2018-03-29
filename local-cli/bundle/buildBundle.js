@@ -13,7 +13,6 @@ const log = require('../util/log').out('bundle');
 /* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 const {Terminal} = require('metro-core');
-/* $FlowFixMe(site=react_native_oss) */
 const TerminalReporter = require('metro/src/lib/TerminalReporter');
 /* $FlowFixMe(site=react_native_oss) */
 const TransformCaching = require('metro/src/lib/TransformCaching');
