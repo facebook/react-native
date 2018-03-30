@@ -1,28 +1,26 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule Slider
  * @flow
  */
 'use strict';
 
-var Image = require('Image');
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var Platform = require('Platform');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const Image = require('Image');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const Platform = require('Platform');
+const React = require('React');
+const PropTypes = require('prop-types');
+const StyleSheet = require('StyleSheet');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
@@ -86,7 +84,7 @@ type Event = Object;
  *```
  *
  */
-var Slider = createReactClass({
+const Slider = createReactClass({
   displayName: 'Slider',
   mixins: [NativeMethodsMixin],
 

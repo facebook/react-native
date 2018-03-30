@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule MessageQueue
  * @flow
@@ -46,8 +44,8 @@ let JSTimers = null;
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [number[], number[], any[], number];
-  _successCallbacks: (?Function)[];
-  _failureCallbacks: (?Function)[];
+  _successCallbacks: {[key: number]: ?Function};
+  _failureCallbacks: {[key: number]: ?Function};
   _callID: number;
   _inCall: number;
   _lastFlush: number;
@@ -64,8 +62,8 @@ class MessageQueue {
   constructor(shouldUninstallGlobalErrorHandler: boolean = false) {
     this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
-    this._successCallbacks = [];
-    this._failureCallbacks = [];
+    this._successCallbacks = {};
+    this._failureCallbacks = {};
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
@@ -396,7 +394,8 @@ class MessageQueue {
       return;
     }
 
-    this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
+    delete this._successCallbacks[callID];
+    delete this._failureCallbacks[callID];
     callback(...args);
 
     if (__DEV__) {

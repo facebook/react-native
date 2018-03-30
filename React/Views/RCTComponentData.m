@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTComponentData.h"
@@ -37,7 +35,6 @@ static SEL selectorForType(NSString *type)
   id<RCTComponent> _defaultView; // Only needed for RCT_CUSTOM_VIEW_PROPERTY
   RCTPropBlockDictionary *_viewPropBlocks;
   RCTPropBlockDictionary *_shadowPropBlocks;
-  BOOL _implementsUIBlockToAmendWithShadowViewRegistry;
   __weak RCTBridge *_bridge;
 }
 
@@ -53,14 +50,6 @@ static SEL selectorForType(NSString *type)
     _shadowPropBlocks = [NSMutableDictionary new];
 
     _name = moduleNameForClass(managerClass);
-
-    _implementsUIBlockToAmendWithShadowViewRegistry = NO;
-    Class cls = _managerClass;
-    while (cls != [RCTViewManager class]) {
-      _implementsUIBlockToAmendWithShadowViewRegistry = _implementsUIBlockToAmendWithShadowViewRegistry ||
-      RCTClassOverridesInstanceMethod(cls, @selector(uiBlockToAmendWithShadowViewRegistry:));
-      cls = [cls superclass];
-    }
   }
   return self;
 }
@@ -435,14 +424,6 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     @"bubblingEvents": bubblingEvents,
     @"baseModuleName": superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
   };
-}
-
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry
-{
-  if (_implementsUIBlockToAmendWithShadowViewRegistry) {
-    return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
-  }
-  return nil;
 }
 
 static NSString *moduleNameForClass(Class managerClass)

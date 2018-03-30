@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule AnimatedImplementation
  * @flow
@@ -41,7 +39,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
 
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
@@ -523,7 +521,7 @@ module.exports = {
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See https://facebook.github.io/react-native/releases/next/docs/animatedvaluexy.html
+   * See https://facebook.github.io/react-native/docs/animatedvaluexy.html
    */
   ValueXY: AnimatedValueXY,
   /**

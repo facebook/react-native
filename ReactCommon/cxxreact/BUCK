@@ -1,15 +1,16 @@
-include_defs("xplat//configurations/buck/apple/flag_defs.bzl")
-
-include_defs("//ReactCommon/DEFS")
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "ANDROID_INSPECTOR_FLAGS", "APPLE_INSPECTOR_FLAGS", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "react_native_xplat_target")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
     "-Wall",
 ]
 
-if THIS_IS_FBOBJC:
-  inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS
-  CXX_LIBRARY_COMPILER_FLAGS += flags.get_flag_value(inherited_buck_flags, 'compiler_flags')
+APPLE_COMPILER_FLAGS = []
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_static_library_ios_flags", "flags")
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
 
 rn_xplat_cxx_library(
     name = "module",
@@ -23,6 +24,7 @@ rn_xplat_cxx_library(
         prefix = "cxxreact",
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     force_static = True,
     visibility = [
         "PUBLIC",
@@ -46,12 +48,15 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     force_static = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        "xplat//folly:memory",
         "xplat//folly:molly",
+        "xplat//folly:scope_guard",
     ],
 )
 
@@ -64,12 +69,15 @@ rn_xplat_cxx_library(
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        "xplat//folly:memory",
         "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
         ":module",
     ],
 )
@@ -120,32 +128,40 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
-    fbandroid_preprocessor_flags = [
+    fbandroid_deps = ANDROID_JSC_DEPS,
+    fbandroid_preprocessor_flags = ANDROID_INSPECTOR_FLAGS + [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_deps = APPLE_JSC_DEPS,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
-    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS,
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
     force_static = True,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
-    ] + INSPECTOR_FLAGS,
+    ],
     tests = [
         react_native_xplat_target("cxxreact/tests:tests"),
     ],
     visibility = ["PUBLIC"],
     deps = [
-        ":module",
-        ":jsbigstring",
         "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
         "xplat//folly:molly",
+        ":jsbigstring",
+        ":module",
         react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
-    ] + JSC_DEPS,
+        "xplat//folly:optional",
+        "xplat//third-party/glog:glog",
+        react_native_xplat_target("jschelpers:jscinternalhelpers"),
+        react_native_xplat_target("privatedata:privatedata"),
+    ],
 )

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.scroll;
@@ -16,10 +14,14 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
+import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -30,6 +32,7 @@ import javax.annotation.Nullable;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
+@TargetApi(16)
 public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 
@@ -138,12 +141,19 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       return false;
     }
 
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-      mDragging = true;
-      enableFpsListener();
-      return true;
+    try {
+      if (super.onInterceptTouchEvent(ev)) {
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+        mDragging = true;
+        enableFpsListener();
+        return true;
+      }
+    } catch (IllegalArgumentException e) {
+      // Log and ignore the error. This seems to be a bug in the android SDK and
+      // this is the commonly accepted workaround.
+      // https://tinyurl.com/mw6qkod (Stack Overflow)
+      Log.w(ReactConstants.TAG, "Error intercepting touch event.", e);
     }
 
     return false;
@@ -158,14 +168,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      float velocityX = mVelocityHelper.getXVelocity();
+      float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(
         this,
-        mVelocityHelper.getXVelocity(),
-        mVelocityHelper.getYVelocity());
+        velocityX,
+        velocityY);
       mDragging = false;
       // After the touch finishes, we may need to do some scrolling afterwards either as a result
       // of a fling or because we need to page align the content
-      handlePostTouchScrolling();
+      handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
     }
 
     return super.onTouchEvent(ev);
@@ -178,7 +190,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else {
       super.fling(velocityX);
     }
-    handlePostTouchScrolling();
+    handlePostTouchScrolling(velocityX, 0);
   }
 
   @Override
@@ -269,8 +281,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
    * don't get any events from Android about this lifecycle, we do all our detection by creating a
    * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
    */
-  @TargetApi(16)
-  private void handlePostTouchScrolling() {
+  private void handlePostTouchScrolling(int velocityX, int velocityY) {
     // If we aren't going to do anything (send events or snap to page), we can early out.
     if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
       return;
@@ -283,7 +294,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
 
     if (mSendMomentumEvents) {
-      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, velocityX, velocityY);
     }
 
     mActivelyScrolling = false;
@@ -296,14 +307,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
         if (mActivelyScrolling) {
           // We are still scrolling so we just post to check again a frame later
           mActivelyScrolling = false;
-          ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          ViewCompat.postOnAnimationDelayed(ReactHorizontalScrollView.this,
+            this,
+            ReactScrollViewHelper.MOMENTUM_DELAY);
         } else {
           if (mPagingEnabled && !mSnappingToPage) {
             // Only if we have pagingEnabled and we have not snapped to the page do we
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
             smoothScrollToPage(0);
-            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+            ViewCompat.postOnAnimationDelayed(ReactHorizontalScrollView.this,
+              this,
+              ReactScrollViewHelper.MOMENTUM_DELAY);
           } else {
             if (mSendMomentumEvents) {
               ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
@@ -314,7 +329,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
         }
       }
     };
-    postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
+    ViewCompat.postOnAnimationDelayed(ReactHorizontalScrollView.this,
+      mPostTouchRunnable,
+      ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
   /**

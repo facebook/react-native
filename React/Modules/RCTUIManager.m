@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUIManager.h"
@@ -419,6 +417,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     }
 
     shadowView.intrinsicContentSize = intrinsicContentSize;
+    [self setNeedsLayout];
   } forTag:view.reactTag];
 }
 
@@ -478,14 +477,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 {
   RCTAssertUIManagerQueue();
 
-  // This is nuanced. In the JS thread, we create a new update buffer
-  // `frameTags`/`frames` that is created/mutated in the JS thread. We access
-  // these structures in the UI-thread block. `NSMutableArray` is not thread
-  // safe so we rely on the fact that we never mutate it after it's passed to
-  // the main thread.
-  NSSet<RCTShadowView *> *viewsWithNewFrames = [rootShadowView collectViewsWithUpdatedFrames];
+  NSHashTable<RCTShadowView *> *affectedShadowViews = [NSHashTable weakObjectsHashTable];
+  [rootShadowView layoutWithAffectedShadowViews:affectedShadowViews];
 
-  if (!viewsWithNewFrames.count) {
+  if (!affectedShadowViews.count) {
     // no frame change results in no UI update block
     return nil;
   }
@@ -495,48 +490,36 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     UIUserInterfaceLayoutDirection layoutDirection;
     BOOL isNew;
     BOOL parentIsNew;
-    BOOL isHidden;
   } RCTFrameData;
 
   // Construct arrays then hand off to main thread
-  NSUInteger count = viewsWithNewFrames.count;
+  NSUInteger count = affectedShadowViews.count;
   NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
   NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
   {
     NSUInteger index = 0;
     RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
-    for (RCTShadowView *shadowView in viewsWithNewFrames) {
+    for (RCTShadowView *shadowView in affectedShadowViews) {
       reactTags[index] = shadowView.reactTag;
+      RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
       frameDataArray[index++] = (RCTFrameData){
-        shadowView.frame,
-        shadowView.layoutDirection,
+        layoutMetrics.frame,
+        layoutMetrics.layoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
-        shadowView.isHidden,
       };
     }
   }
 
-  // These are blocks to be executed on each view, immediately after
-  // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
-  // these won't be called either, so this is not a suitable place to update
-  // properties that aren't related to layout.
-  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
-  [NSMutableDictionary new];
-  for (RCTShadowView *shadowView in viewsWithNewFrames) {
+  for (RCTShadowView *shadowView in affectedShadowViews) {
 
     // We have to do this after we build the parentsAreNew array.
     shadowView.newView = NO;
 
     NSNumber *reactTag = shadowView.reactTag;
-    RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
-    RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
-    if (block) {
-      updateBlocks[reactTag] = block;
-    }
 
     if (shadowView.onLayout) {
-      CGRect frame = shadowView.frame;
+      CGRect frame = shadowView.layoutMetrics.frame;
       shadowView.onLayout(@{
         @"layout": @{
           @"x": @(frame.origin.x),
@@ -547,8 +530,11 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       });
     }
 
-    if (RCTIsReactRootView(reactTag)) {
-      CGSize contentSize = shadowView.frame.size;
+    if (
+        RCTIsReactRootView(reactTag) &&
+        [shadowView isKindOfClass:[RCTRootShadowView class]]
+    ) {
+      CGSize contentSize = shadowView.layoutMetrics.frame.size;
 
       RCTExecuteOnMainQueue(^{
         UIView *view = self->_viewRegistry[reactTag];
@@ -577,7 +563,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       UIView *view = viewRegistry[reactTag];
       CGRect frame = frameData.frame;
 
-      BOOL isHidden = frameData.isHidden;
       UIUserInterfaceLayoutDirection layoutDirection = frameData.layoutDirection;
       BOOL isNew = frameData.isNew;
       RCTLayoutAnimation *updatingLayoutAnimation = isNew ? nil : layoutAnimationGroup.updatingLayoutAnimation;
@@ -595,15 +580,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         }
       };
 
-      if (view.isHidden != isHidden) {
-        view.hidden = isHidden;
-      }
-
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
       }
 
-      RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
       if (creatingLayoutAnimation) {
 
         // Animate view creation
@@ -628,9 +608,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
           } else if ([property isEqualToString:@"opacity"]) {
             view.layer.opacity = finalOpacity;
           }
-          if (updateBlock) {
-            updateBlock(self, viewRegistry);
-          }
         } withCompletionBlock:completion];
 
       } else if (updatingLayoutAnimation) {
@@ -638,18 +615,12 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         // Animate view update
         [updatingLayoutAnimation performAnimations:^{
           [view reactSetFrame:frame];
-          if (updateBlock) {
-            updateBlock(self, viewRegistry);
-          }
         } withCompletionBlock:completion];
 
       } else {
 
         // Update without animation
         [view reactSetFrame:frame];
-        if (updateBlock) {
-          updateBlock(self, viewRegistry);
-        }
         completion(YES);
       }
     }
@@ -657,20 +628,6 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     // Clean up
     uiManager->_layoutAnimationGroup = nil;
   };
-}
-
-- (void)_amendPendingUIBlocksWithStylePropagationUpdateForShadowView:(RCTShadowView *)topView
-{
-  NSMutableSet<RCTApplierBlock> *applierBlocks = [NSMutableSet setWithCapacity:1];
-  [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
-
-  if (applierBlocks.count) {
-    [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-      for (RCTApplierBlock block in applierBlocks) {
-        block(viewRegistry);
-      }
-    }];
-  }
 }
 
 /**
@@ -773,7 +730,7 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     NSUInteger originalIndex = [originalSuperview.subviews indexOfObjectIdenticalTo:removedChild];
     [container removeReactSubview:removedChild];
     // Disable user interaction while the view is animating
-    // since the view is (conseptually) deleted and not supposed to be interactive.
+    // since the view is (conceptually) deleted and not supposed to be interactive.
     removedChild.userInteractionEnabled = NO;
     [originalSuperview insertSubview:removedChild atIndex:originalIndex];
 
@@ -966,21 +923,36 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Dispatch view creation directly to the main thread instead of adding to
   // UIBlocks array. This way, it doesn't get deferred until after layout.
-  __weak RCTUIManager *weakManager = self;
-  RCTExecuteOnMainQueue(^{
-    RCTUIManager *uiManager = weakManager;
-    if (!uiManager) {
+  __block UIView *preliminaryCreatedView = nil;
+
+  void (^createViewBlock)(void) = ^{
+    // Do nothing on the second run.
+    if (preliminaryCreatedView) {
       return;
     }
-    UIView *view = [componentData createViewWithTag:reactTag];
-    if (view) {
-      uiManager->_viewRegistry[reactTag] = view;
-    }
-  });
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    UIView *view = viewRegistry[reactTag];
-    [componentData setProps:props forView:view];
+    preliminaryCreatedView = [componentData createViewWithTag:reactTag];
+
+    if (preliminaryCreatedView) {
+      self->_viewRegistry[reactTag] = preliminaryCreatedView;
+    }
+  };
+
+  // We cannot guarantee that asynchronously scheduled block will be executed
+  // *before* a block is added to the regular mounting process (simply because
+  // mounting process can be managed externally while the main queue is
+  // locked).
+  // So, we positively dispatch it asynchronously and double check inside
+  // the regular mounting block.
+
+  RCTExecuteOnMainQueue(createViewBlock);
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    createViewBlock();
+
+    if (preliminaryCreatedView) {
+      [componentData setProps:props forView:preliminaryCreatedView];
+    }
   }];
 
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
@@ -1074,13 +1046,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
  */
 - (void)_layoutAndMount
 {
-  // Gather blocks to be executed now that all view hierarchy manipulations have
-  // been completed (note that these may still take place before layout has finished)
-  for (RCTComponentData *componentData in _componentDataByName.allValues) {
-    RCTViewManagerUIBlock uiBlock = [componentData uiBlockToAmendWithShadowViewRegistry:_shadowViewRegistry];
-    [self addUIBlock:uiBlock];
-  }
-
   [self _dispatchPropsDidChangeEvents];
   [self _dispatchChildrenDidChangeEvents];
 
@@ -1093,12 +1058,6 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   }
 
   [_observerCoordinator uiManagerDidPerformLayout:self];
-
-  // Properies propagation
-  for (NSNumber *reactTag in _rootViewTags) {
-    RCTRootShadowView *rootView = (RCTRootShadowView *)_shadowViewRegistry[reactTag];
-    [self _amendPendingUIBlocksWithStylePropagationUpdateForShadowView:rootView];
-  }
 
   [_observerCoordinator uiManagerWillPerformMounting:self];
 
@@ -1122,6 +1081,26 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     return;
   }
 
+  __weak typeof(self) weakSelf = self;
+
+   void (^mountingBlock)(void) = ^{
+    typeof(self) strongSelf = weakSelf;
+
+    @try {
+      for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
+        block(strongSelf, strongSelf->_viewRegistry);
+      }
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
+    }
+  };
+
+  if ([self.observerCoordinator uiManager:self performMountingWithBlock:mountingBlock]) {
+    completion();
+    return;
+  }
+
   // Execute the previously queued UI blocks
   RCTProfileBeginFlowEvent();
   RCTExecuteOnMainQueue(^{
@@ -1129,14 +1108,9 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[UIManager flushUIBlocks]", (@{
       @"count": [@(previousPendingUIBlocks.count) stringValue],
     }));
-    @try {
-      for (RCTViewManagerUIBlock block in previousPendingUIBlocks) {
-        block(self, self->_viewRegistry);
-      }
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
-    }
+
+    mountingBlock();
+
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
     RCTExecuteOnUIManagerQueue(completion);
@@ -1146,7 +1120,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 - (void)setNeedsLayout
 {
   // If there is an active batch layout will happen when batch finished, so we will wait for that.
-  // Otherwise we immidiately trigger layout.
+  // Otherwise we immediately trigger layout.
   if (![_bridge isBatchActive] && ![_bridge isLoading]) {
     [self _layoutAndMount];
   }

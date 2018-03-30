@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTViewManager.h"
@@ -96,16 +94,6 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
-{
-  return nil;
-}
-
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
-{
-  return nil;
-}
-
 #pragma mark - View properties
 
 #if TARGET_OS_TV
@@ -123,6 +111,7 @@ RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessib
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityTraits, reactAccessibilityElement.accessibilityTraits, UIAccessibilityTraits)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
+RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityAction, reactAccessibilityElement.onAccessibilityAction, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onAccessibilityTap, reactAccessibilityElement.onAccessibilityTap, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(onMagicTap, reactAccessibilityElement.onMagicTap, RCTDirectEventBlock)

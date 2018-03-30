@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTNativeAnimatedNodesManager.h"
@@ -27,6 +25,7 @@
 #import "RCTStyleAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
+#import "RCTTrackingAnimatedNode.h"
 
 @implementation RCTNativeAnimatedNodesManager
 {
@@ -67,7 +66,8 @@
             @"division" : [RCTDivisionAnimatedNode class],
             @"multiplication" : [RCTMultiplicationAnimatedNode class],
             @"modulus" : [RCTModuloAnimatedNode class],
-            @"transform" : [RCTTransformAnimatedNode class]};
+            @"transform" : [RCTTransformAnimatedNode class],
+            @"tracking" : [RCTTrackingAnimatedNode class]};
   });
 
   NSString *nodeType = [RCTConvert NSString:config[@"type"]];
@@ -79,6 +79,7 @@
   }
 
   RCTAnimatedNode *node = [[nodeClass alloc] initWithTag:tag config:config];
+  node.manager = self;
   _animationNodes[tag] = node;
   [node setNeedsUpdate];
 }
@@ -222,6 +223,15 @@
                     config:(NSDictionary<NSString *, id> *)config
                endCallback:(RCTResponseSenderBlock)callBack
 {
+  // check if the animation has already started
+  for (id<RCTAnimationDriver> driver in _activeAnimations) {
+    if ([driver.animationId isEqual:animationId]) {
+      // if the animation is running, we restart it with an updated configuration
+      [driver resetAnimationConfig:config];
+      return;
+    }
+  }
+
   RCTValueAnimatedNode *valueNode = (RCTValueAnimatedNode *)_animationNodes[nodeTag];
 
   NSString *type = config[@"type"];

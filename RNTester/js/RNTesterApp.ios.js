@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule RNTesterApp
  * @flow
@@ -57,7 +55,7 @@ const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 
@@ -146,9 +144,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#96969A',
     backgroundColor: '#F5F5F6',
   },
-  header: { 
-    height: 40, 
-    flexDirection: 'row' 
+  header: {
+    height: 40,
+    flexDirection: 'row'
   },
   headerLeft: {
   },

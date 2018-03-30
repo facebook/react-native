@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @providesModule StatusBar
  * @flow
@@ -315,7 +313,7 @@ class StatusBar extends React.Component<{
     // Every time a StatusBar component is mounted, we push it's prop to a stack
     // and always update the native status bar with the props from the top of then
     // stack. This allows having multiple StatusBar components and the one that is
-    // added last or is deeper in the view hierachy will have priority.
+    // added last or is deeper in the view hierarchy will have priority.
     this._stackEntry = createStackEntry(this.props);
     StatusBar._propsStack.push(this._stackEntry);
     this._updatePropsStack();

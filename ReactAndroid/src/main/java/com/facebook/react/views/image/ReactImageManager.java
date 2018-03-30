@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.image;
@@ -141,6 +139,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = ViewProps.RESIZE_MODE)
   public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
     view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+    view.setTileMode(ImageResizeMode.toTileMode(resizeMode));
   }
 
   @ReactProp(name = ViewProps.RESIZE_METHOD)

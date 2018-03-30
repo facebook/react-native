@@ -5,12 +5,13 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTInspectorPackagerConnection.h>
 
 #if RCT_DEV
 
 @interface RCTInspectorDevServerHelper : NSObject
 
-+ (void)connectWithBundleURL:(NSURL *)bundleURL;
++ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL;
 + (void)disableDebugger;
 + (void)attachDebugger:(NSString *)owner
          withBundleURL:(NSURL *)bundleURL

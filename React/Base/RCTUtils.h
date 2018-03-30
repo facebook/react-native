@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <tgmath.h>
@@ -30,7 +28,7 @@ RCT_EXTERN id RCTJSONClean(id object);
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
 // Check if we are currently on the main queue (not to be confused with
-// the main thread, which is not neccesarily the same thing)
+// the main thread, which is not necessarily the same thing)
 // https://twitter.com/olebegemann/status/738656134731599872
 RCT_EXTERN BOOL RCTIsMainQueue(void);
 

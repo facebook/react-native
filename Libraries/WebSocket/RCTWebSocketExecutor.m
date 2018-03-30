@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTWebSocketExecutor.h"
@@ -54,7 +52,7 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: 8081;
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
     NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
     NSString *URLString = [NSString stringWithFormat:@"http://%@:%lld/debugger-proxy?role=client", host, (long long)port];
     _url = [RCTConvert NSURL:URLString];
@@ -105,7 +103,7 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15));
   return connected == 0 && _socket.readyState == RCTSR_OPEN;
 }
 
@@ -117,7 +115,7 @@ RCT_EXPORT_MODULE()
     initError = error;
     dispatch_semaphore_signal(s);
   }];
-  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5));
+  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
   if (initError) {
     RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
   }

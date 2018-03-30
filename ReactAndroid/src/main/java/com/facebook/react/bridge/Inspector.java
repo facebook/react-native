@@ -51,6 +51,7 @@ public class Inspector {
   public static class Page {
     private final int mId;
     private final String mTitle;
+    private final String mVM;
 
     public int getId() {
       return mId;
@@ -58,6 +59,10 @@ public class Inspector {
 
     public String getTitle() {
       return mTitle;
+    }
+
+    public String getVM() {
+      return mVM;
     }
 
     @Override
@@ -69,9 +74,10 @@ public class Inspector {
     }
 
     @DoNotStrip
-    private Page(int id, String title) {
+    private Page(int id, String title, String vm) {
       mId = id;
       mTitle = title;
+      mVM = vm;
     }
   }
 
