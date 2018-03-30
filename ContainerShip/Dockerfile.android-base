@@ -2,10 +2,10 @@ FROM library/ubuntu:16.04
 
 # set default build arguments
 ARG ANDROID_TOOLS_VERSION=25.2.5
-ARG BUCK_VERSION=v2017.11.16.01
+ARG BUCK_VERSION=v2018.02.16.01
 ARG NDK_VERSION=10e
-ARG NODE_VERSION=6.2.0
-ARG WATCHMAN_VERSION=4.7.0
+ARG NODE_VERSION=8.10.0
+ARG WATCHMAN_VERSION=4.9.0
 
 # set default environment variables
 ENV ADB_INSTALL_TIMEOUT=10
@@ -33,17 +33,6 @@ WORKDIR /opt/buck
 
 # build buck
 RUN ant
-
-# download watchman
-RUN git clone https://github.com/facebook/watchman.git /opt/watchman
-WORKDIR /opt/watchman
-RUN git checkout v$WATCHMAN_VERSION
-
-# build watchman
-RUN ./autogen.sh
-RUN ./configure
-RUN make
-RUN make install
 
 # Full reference at https://dl.google.com/android/repository/repository2-1.xml
 # download and unpack android

@@ -78,7 +78,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   private int mReactTag;
   private @Nullable String mViewClassName;
-  private @Nullable ReactShadowNodeImpl mRootNode;
   private int mRootTag;
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
@@ -118,7 +117,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mReactTag = original.mReactTag;
     mRootTag = original.mRootTag;
     mViewClassName = original.mViewClassName;
-    mRootNode = original.mRootNode;
     mThemedContext = original.mThemedContext;
     mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
     mNodeUpdated = original.mNodeUpdated;
@@ -493,13 +491,14 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public final ReactShadowNodeImpl getRootNode() {
-    return Assertions.assertNotNull(mRootNode);
+  public final int getRootTag() {
+    Assertions.assertCondition(mRootTag != 0);
+    return mRootTag;
   }
 
   @Override
-  public final void setRootNode(ReactShadowNodeImpl rootNode) {
-    mRootNode = rootNode;
+  public final void setRootTag(int rootTag) {
+    mRootTag = rootTag;
   }
 
   @Override

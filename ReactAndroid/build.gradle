@@ -13,7 +13,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
-def downloadsDir = new File("$buildDir/downloads")
+def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
@@ -143,6 +144,16 @@ task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
         filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
         into "$thirdPartyNdkDir/jsc";
     }
+}
+
+task downloadNdkBuildDependencies {
+  if (!boostPath) {
+    dependsOn downloadBoost
+  }
+  dependsOn downloadDoubleConversion
+  dependsOn downloadFolly
+  dependsOn downloadGlog
+  dependsOn downloadJSCHeaders
 }
 
 def getNdkBuildName() {
@@ -287,7 +298,7 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.8.0'
-    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"
@@ -297,7 +308,7 @@ dependencies {
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
-    
+
     androidTestCompile fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
     androidTestCompile 'com.android.support.test:runner:0.3'
     androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
