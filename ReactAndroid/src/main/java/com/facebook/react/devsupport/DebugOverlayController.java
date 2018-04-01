@@ -99,12 +99,12 @@ import javax.annotation.Nullable;
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        if (!permissionCheck(mReactContext)) {
-          FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
+        if (mFPSDebugViewContainer != null) {
           return;
         }
 
-        if (mFPSDebugViewContainer != null) {
+        if (!permissionCheck(mReactContext)) {
+          FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
           return;
         }
 
