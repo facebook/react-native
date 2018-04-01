@@ -215,7 +215,7 @@ void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNo
   }
 
   yogaNode.setChildren(yogaNodeChildren);
-  yogaNode.setDirty(true);
+  yogaNode.markDirtyAndPropogate();
 }
 
 } // namespace react
