@@ -96,9 +96,6 @@ public class FabricReconciler {
       indicesToRemove.add(0, j);
       if (!addedTags.contains(nodeToRemove.getReactTag())) {
         tagsToDelete.add(nodeToRemove.getReactTag());
-        // TODO: T26729293 since we are not cloning ReactShadowNode's we need to "manually" remove
-        // from the ReactShadowTree when one of the nodes is deleted in JS.
-        nodeToRemove.getParent().removeChildAt(j);
       }
     }
 

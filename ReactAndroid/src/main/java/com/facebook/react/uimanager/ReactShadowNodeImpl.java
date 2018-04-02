@@ -150,9 +150,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopy() {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode;
-    // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //copy.mYogaNode = mYogaNode.clone();
+    copy.mYogaNode = mYogaNode.clone();
     copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
     copy.mTotalNativeChildren = mTotalNativeChildren;
     copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
@@ -170,9 +168,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopyWithNewChildren() {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode;
-    // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //copy.mYogaNode = mYogaNode.clone();
+    copy.mYogaNode = mYogaNode.cloneWithNewChildren();
     copy.mNativeChildren = null;
     copy.mChildren = null;
     copy.mTotalNativeChildren = 0;
