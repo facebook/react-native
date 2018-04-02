@@ -30,7 +30,7 @@ public class YogaNode implements Cloneable {
   static native int jni_YGNodeGetInstanceCount();
 
   private YogaNode mOwner;
-  private List<YogaNode> mChildren;
+  @Nullable private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
@@ -147,6 +147,9 @@ public class YogaNode implements Cloneable {
   }
 
   public YogaNode getChildAt(int i) {
+    if (mChildren == null) {
+      throw new IllegalStateException("YogaNode does not have children");
+    }
     return mChildren.get(i);
   }
 
@@ -164,21 +167,62 @@ public class YogaNode implements Cloneable {
     jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
   }
 
+  private native void jni_YGNodeInsertSharedChild(long nativePointer, long childPointer, int index);
+
+  public void addSharedChildAt(YogaNode child, int i) {
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
+    mChildren.add(i, child);
+    child.mOwner = null;
+    jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
+  }
+
   private native long jni_YGNodeClone(long nativePointer, Object newNode);
 
   @Override
-  public YogaNode clone() throws CloneNotSupportedException {
-    YogaNode clonedYogaNode = (YogaNode) super.clone();
-    long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
-    clonedYogaNode.mNativePointer = clonedNativePointer;
-    clonedYogaNode.mChildren =
-        mChildren != null ? (List<YogaNode>) ((ArrayList) mChildren).clone() : null;
-    return clonedYogaNode;
+  public YogaNode clone() {
+    try {
+      YogaNode clonedYogaNode = (YogaNode) super.clone();
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mChildren =
+          mChildren != null ? (List<YogaNode>) ((ArrayList) mChildren).clone() : null;
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public YogaNode cloneWithNewChildren() {
+    try {
+      YogaNode clonedYogaNode = (YogaNode) super.clone();
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      clonedYogaNode.clearChildren();
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
+  }
+
+  private native void jni_YGNodeClearChildren(long nativePointer);
+
+  private void clearChildren() {
+    mChildren = null;
+    jni_YGNodeClearChildren(mNativePointer);
   }
 
   private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
   public YogaNode removeChildAt(int i) {
-
+    if (mChildren == null) {
+      throw new IllegalStateException(
+          "Trying to remove a child of a YogaNode that does not have children");
+    }
     final YogaNode child = mChildren.remove(i);
     child.mOwner = null;
     jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
@@ -715,8 +759,12 @@ public class YogaNode implements Cloneable {
    */
   @DoNotStrip
   private final long replaceChild(YogaNode newNode, int childIndex) {
+    if (mChildren == null) {
+      throw new IllegalStateException("Cannot replace child. YogaNode does not have children");
+    }
     mChildren.remove(childIndex);
     mChildren.add(childIndex, newNode);
+    newNode.mOwner = this;
     return newNode.mNativePointer;
   }
 }

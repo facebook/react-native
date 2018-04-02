@@ -391,16 +391,27 @@ void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
 void YGNodeInsertChild(const YGNodeRef node, const YGNodeRef child, const uint32_t index) {
   YGAssertWithNode(
       node,
-      child->getOwner() == nullptr,
-      "Child already has a owner, it must be removed first.");
-  YGAssertWithNode(
-      node,
       node->getMeasure() == nullptr,
       "Cannot add child: Nodes with measure functions cannot have children.");
 
   node->cloneChildrenIfNeeded();
   node->insertChild(child, index);
-  child->setOwner(node);
+  YGNodeRef owner = child->getOwner() ? nullptr : node;
+  child->setOwner(owner);
+  node->markDirtyAndPropogate();
+}
+
+void YGNodeInsertSharedChild(
+    const YGNodeRef node,
+    const YGNodeRef child,
+    const uint32_t index) {
+  YGAssertWithNode(
+      node,
+      node->getMeasure() == nullptr,
+      "Cannot add child: Nodes with measure functions cannot have children.");
+
+  node->insertChild(child, index);
+  child->setOwner(nullptr);
   node->markDirtyAndPropogate();
 }
 

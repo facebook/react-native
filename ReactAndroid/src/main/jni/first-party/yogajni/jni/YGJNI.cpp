@@ -284,6 +284,11 @@ void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
   YGNodeFree(node);
 }
 
+void jni_YGNodeClearChildren(alias_ref<jobject> thiz, jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  node->clearChildren();
+}
+
 void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   void* context = node->getContext();
@@ -301,6 +306,15 @@ void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
 
 void jni_YGNodeInsertChild(alias_ref<jobject>, jlong nativePointer, jlong childPointer, jint index) {
   YGNodeInsertChild(_jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
+}
+
+void jni_YGNodeInsertSharedChild(
+    alias_ref<jobject>,
+    jlong nativePointer,
+    jlong childPointer,
+    jint index) {
+  YGNodeInsertSharedChild(
+      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
 
 void jni_YGNodeRemoveChild(alias_ref<jobject>, jlong nativePointer, jlong childPointer) {
@@ -577,7 +591,9 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGNodeNewWithConfig),
             YGMakeNativeMethod(jni_YGNodeFree),
             YGMakeNativeMethod(jni_YGNodeReset),
+            YGMakeNativeMethod(jni_YGNodeClearChildren),
             YGMakeNativeMethod(jni_YGNodeInsertChild),
+            YGMakeNativeMethod(jni_YGNodeInsertSharedChild),
             YGMakeNativeMethod(jni_YGNodeRemoveChild),
             YGMakeNativeMethod(jni_YGNodeCalculateLayout),
             YGMakeNativeMethod(jni_YGNodeMarkDirty),

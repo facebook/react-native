@@ -62,9 +62,8 @@ typedef int (*YGLogger)(const YGConfigRef config,
                         YGLogLevel level,
                         const char *format,
                         va_list args);
-typedef YGNodeRef (*YGCloneNodeFunc)(YGNodeRef oldNode,
-                                 YGNodeRef parent,
-                                 int childIndex);
+typedef YGNodeRef (
+    *YGCloneNodeFunc)(YGNodeRef oldNode, YGNodeRef owner, int childIndex);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
@@ -78,12 +77,26 @@ WIN_EXPORT int32_t YGNodeGetInstanceCount(void);
 WIN_EXPORT void YGNodeInsertChild(const YGNodeRef node,
                                   const YGNodeRef child,
                                   const uint32_t index);
+
+// This function inserts the child YGNodeRef as a children of the node received
+// by parameter and set the Owner of the child object to null. This function is
+// expected to be called when using Yoga in persistent mode in order to share a
+// YGNodeRef object as a child of two different Yoga trees. The child YGNodeRef
+// is expected to be referenced from its original owner and from a clone of its
+// original owner.
+WIN_EXPORT void YGNodeInsertSharedChild(
+    const YGNodeRef node,
+    const YGNodeRef child,
+    const uint32_t index);
 WIN_EXPORT void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetOwner(const YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(const YGNodeRef node);
-WIN_EXPORT void YGNodeSetChildren(YGNodeRef const parent, const YGNodeRef children[], const uint32_t count);
+WIN_EXPORT void YGNodeSetChildren(
+    YGNodeRef const owner,
+    const YGNodeRef children[],
+    const uint32_t count);
 
 WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
                                       const float availableWidth,
@@ -307,6 +320,8 @@ YG_EXTERN_C_END
 // Calls f on each node in the tree including the given node argument.
 extern void YGTraversePreOrder(YGNodeRef const node, std::function<void(YGNodeRef node)>&& f);
 
-extern void YGNodeSetChildren(YGNodeRef const parent, const std::vector<YGNodeRef> &children);
+extern void YGNodeSetChildren(
+    YGNodeRef const owner,
+    const std::vector<YGNodeRef>& children);
 
 #endif
