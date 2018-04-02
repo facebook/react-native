@@ -97,6 +97,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public void setSnapInterval(int snapInterval) {
     mSnapInterval = snapInterval;
+    if(snapInterval != 0) {
+      mPagingEnabled = true;
+    }
   }
 
   public void setSnapAlignment(String snapAlignment) {
