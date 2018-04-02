@@ -18,7 +18,7 @@ const getPackageName = (manifest) => manifest.attr.package;
  * Gets android project config by analyzing given folder and taking some
  * defaults specified by user into consideration
  */
-exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
+exports.projectConfig = function projectConfigAndroid(folder, userConfig = {}) {
   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
 
   if (!src) {
@@ -89,7 +89,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
  * Same as projectConfigAndroid except it returns
  * different config that applies to packages only
  */
-exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig) {
+exports.dependencyConfig = function dependencyConfigAndroid(folder, userConfig = {}) {
   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
 
   if (!src) {
