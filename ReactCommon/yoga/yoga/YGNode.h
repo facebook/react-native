@@ -23,7 +23,7 @@ struct YGNode {
   YGStyle style_;
   YGLayout layout_;
   uint32_t lineIndex_;
-  YGNodeRef parent_;
+  YGNodeRef owner_;
   YGVector children_;
   YGNodeRef nextChild_;
   YGConfigRef config_;
@@ -49,7 +49,7 @@ struct YGNode {
       YGStyle style,
       const YGLayout& layout,
       uint32_t lineIndex,
-      YGNodeRef parent,
+      YGNodeRef owner,
       const YGVector& children,
       YGNodeRef nextChild,
       YGConfigRef config,
@@ -69,7 +69,12 @@ struct YGNode {
   // For Performance reasons passing as reference.
   YGLayout& getLayout();
   uint32_t getLineIndex() const;
-  YGNodeRef getParent() const;
+  // returns the YGNodeRef that owns this YGNode. An owner is used to identify
+  // the YogaTree that a YGNode belongs to.
+  // This method will return the parent of the YGNode when a YGNode only belongs
+  // to one YogaTree or nullptr when the YGNode is shared between two or more
+  // YogaTrees.
+  YGNodeRef getOwner() const;
   YGVector getChildren() const;
   uint32_t getChildrenCount() const;
   YGNodeRef getChild(uint32_t index) const;
@@ -111,12 +116,12 @@ struct YGNode {
   void setStyleAlignContent(YGAlign alignContent);
   void setLayout(const YGLayout& layout);
   void setLineIndex(uint32_t lineIndex);
-  void setParent(YGNodeRef parent);
+  void setOwner(YGNodeRef owner);
   void setChildren(const YGVector& children);
   void setNextChild(YGNodeRef nextChild);
   void setConfig(YGConfigRef config);
   void setDirty(bool isDirty);
-  void setLayoutLastParentDirection(YGDirection direction);
+  void setLayoutLastOwnerDirection(YGDirection direction);
   void setLayoutComputedFlexBasis(float computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
@@ -132,7 +137,7 @@ struct YGNode {
       const YGDirection direction,
       const float mainSize,
       const float crossSize,
-      const float parentWidth);
+      const float ownerWidth);
   void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
   void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
   void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
@@ -143,7 +148,7 @@ struct YGNode {
   YGValue marginTrailingValue(const YGFlexDirection axis) const;
   YGValue resolveFlexBasisPtr() const;
   void resolveDimension();
-  YGDirection resolveDirection(const YGDirection parentDirection);
+  YGDirection resolveDirection(const YGDirection ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
   void replaceChild(YGNodeRef oldChild, YGNodeRef newChild);

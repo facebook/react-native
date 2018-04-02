@@ -23,7 +23,7 @@ struct YGLayout {
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
   uint32_t generationCount;
-  YGDirection lastParentDirection;
+  YGDirection lastOwnerDirection;
 
   uint32_t nextCachedMeasurementsIndex;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>

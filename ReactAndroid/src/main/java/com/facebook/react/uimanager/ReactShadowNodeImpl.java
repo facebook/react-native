@@ -301,7 +301,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
                 + "')");
       }
       // TODO: T26729293 This is a temporary code that will be replaced as part of T26729293.
-      YogaNode parent = childYogaNode.getParent();
+      YogaNode parent = childYogaNode.getOwner();
       if (parent != null) {
         for (int k = 0; k < parent.getChildCount(); k++) {
           if (parent.getChildAt(k) == childYogaNode) {

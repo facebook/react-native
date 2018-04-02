@@ -152,7 +152,7 @@ static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
 
 static YGNodeRef YGJNIOnNodeClonedFunc(
     YGNodeRef oldNode,
-    YGNodeRef parent,
+    YGNodeRef owner,
     int childIndex) {
   auto config = oldNode->getConfig();
   if (!config) {
@@ -171,7 +171,7 @@ static YGNodeRef YGJNIOnNodeClonedFunc(
   auto newNode = onNodeClonedFunc(
       javaConfig->get(),
       YGNodeJobject(oldNode)->lockLocal(),
-      YGNodeJobject(parent)->lockLocal(),
+      YGNodeJobject(owner)->lockLocal(),
       childIndex);
 
   static auto replaceChild = findClassStatic("com/facebook/yoga/YogaNode")
@@ -180,7 +180,7 @@ static YGNodeRef YGJNIOnNodeClonedFunc(
                                          jint)>("replaceChild");
 
   jlong newNodeNativePointer = replaceChild(
-      YGNodeJobject(parent)->lockLocal(),
+      YGNodeJobject(owner)->lockLocal(),
       newNode,
       childIndex);
 

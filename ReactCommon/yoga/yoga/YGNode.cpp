@@ -49,8 +49,8 @@ uint32_t YGNode::getLineIndex() const {
   return lineIndex_;
 }
 
-YGNodeRef YGNode::getParent() const {
-  return parent_;
+YGNodeRef YGNode::getOwner() const {
+  return owner_;
 }
 
 YGVector YGNode::getChildren() const {
@@ -237,8 +237,8 @@ void YGNode::setLineIndex(uint32_t lineIndex) {
   lineIndex_ = lineIndex;
 }
 
-void YGNode::setParent(YGNodeRef parent) {
-  parent_ = parent;
+void YGNode::setOwner(YGNodeRef owner) {
+  owner_ = owner;
 }
 
 void YGNode::setChildren(const YGVector& children) {
@@ -305,8 +305,8 @@ void YGNode::setLayoutPadding(float padding, int index) {
   layout_.padding[index] = padding;
 }
 
-void YGNode::setLayoutLastParentDirection(YGDirection direction) {
-  layout_.lastParentDirection = direction;
+void YGNode::setLayoutLastOwnerDirection(YGDirection direction) {
+  layout_.lastOwnerDirection = direction;
 }
 
 void YGNode::setLayoutComputedFlexBasis(float computedFlexBasis) {
@@ -347,11 +347,11 @@ void YGNode::setPosition(
     const YGDirection direction,
     const float mainSize,
     const float crossSize,
-    const float parentWidth) {
+    const float ownerWidth) {
   /* Root nodes should be always layouted as LTR, so we don't return negative
    * values. */
   const YGDirection directionRespectingRoot =
-      parent_ != nullptr ? direction : YGDirectionLTR;
+      owner_ != nullptr ? direction : YGDirectionLTR;
   const YGFlexDirection mainAxis =
       YGResolveFlexDirection(style_.flexDirection, directionRespectingRoot);
   const YGFlexDirection crossAxis =
@@ -361,16 +361,16 @@ void YGNode::setPosition(
   const float relativePositionCross = relativePosition(crossAxis, crossSize);
 
   setLayoutPosition(
-      getLeadingMargin(mainAxis, parentWidth) + relativePositionMain,
+      getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain,
       leading[mainAxis]);
   setLayoutPosition(
-      getTrailingMargin(mainAxis, parentWidth) + relativePositionMain,
+      getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain,
       trailing[mainAxis]);
   setLayoutPosition(
-      getLeadingMargin(crossAxis, parentWidth) + relativePositionCross,
+      getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross,
       leading[crossAxis]);
   setLayoutPosition(
-      getTrailingMargin(crossAxis, parentWidth) + relativePositionCross,
+      getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross,
       trailing[crossAxis]);
 }
 
@@ -385,7 +385,7 @@ YGNode::YGNode()
       style_(YGStyle()),
       layout_(YGLayout()),
       lineIndex_(0),
-      parent_(nullptr),
+      owner_(nullptr),
       children_(YGVector()),
       nextChild_(nullptr),
       config_(nullptr),
@@ -403,7 +403,7 @@ YGNode::YGNode(const YGNode& node)
       style_(node.style_),
       layout_(node.layout_),
       lineIndex_(node.lineIndex_),
-      parent_(node.parent_),
+      owner_(node.owner_),
       children_(node.children_),
       nextChild_(node.nextChild_),
       config_(node.config_),
@@ -425,7 +425,7 @@ YGNode::YGNode(
     YGStyle style,
     const YGLayout& layout,
     uint32_t lineIndex,
-    YGNodeRef parent,
+    YGNodeRef owner,
     const YGVector& children,
     YGNodeRef nextChild,
     YGConfigRef config,
@@ -441,7 +441,7 @@ YGNode::YGNode(
       style_(style),
       layout_(layout),
       lineIndex_(lineIndex),
-      parent_(parent),
+      owner_(owner),
       children_(children),
       nextChild_(nextChild),
       config_(config),
@@ -467,7 +467,7 @@ YGNode& YGNode::operator=(const YGNode& node) {
   style_ = node.style_;
   layout_ = node.layout_;
   lineIndex_ = node.getLineIndex();
-  parent_ = node.getParent();
+  owner_ = node.getOwner();
   children_ = node.getChildren();
   nextChild_ = node.getNextChild();
   config_ = node.getConfig();
@@ -518,9 +518,9 @@ void YGNode::resolveDimension() {
   }
 }
 
-YGDirection YGNode::resolveDirection(const YGDirection parentDirection) {
+YGDirection YGNode::resolveDirection(const YGDirection ownerDirection) {
   if (style_.direction == YGDirectionInherit) {
-    return parentDirection > YGDirectionInherit ? parentDirection
+    return ownerDirection > YGDirectionInherit ? ownerDirection
                                                 : YGDirectionLTR;
   } else {
     return style_.direction;
@@ -550,10 +550,10 @@ void YGNode::cloneChildrenIfNeeded() {
   }
 
   const YGNodeRef firstChild = children_.front();
-  if (firstChild->getParent() == this) {
-    // If the first child has this node as its parent, we assume that it is
+  if (firstChild->getOwner() == this) {
+    // If the first child has this node as its owner, we assume that it is
     // already unique. We can do this because if we have it has a child, that
-    // means that its parent was at some point cloned which made that subtree
+    // means that its owner was at some point cloned which made that subtree
     // immutable. We also assume that all its sibling are cloned as well.
     return;
   }
@@ -569,7 +569,7 @@ void YGNode::cloneChildrenIfNeeded() {
       newChild = YGNodeClone(oldChild);
     }
     replaceChild(newChild, i);
-    newChild->setParent(this);
+    newChild->setOwner(this);
   }
 }
 
@@ -577,8 +577,8 @@ void YGNode::markDirtyAndPropogate() {
   if (!isDirty_) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGUndefined);
-    if (parent_) {
-      parent_->markDirtyAndPropogate();
+    if (owner_) {
+      owner_->markDirtyAndPropogate();
     }
   }
 }
@@ -592,7 +592,7 @@ void YGNode::markDirtyAndPropogateDownwards() {
 
 float YGNode::resolveFlexGrow() {
   // Root nodes flexGrow should always be 0
-  if (parent_ == nullptr) {
+  if (owner_ == nullptr) {
     return 0.0;
   }
   if (!style_.flexGrow.isUndefined()) {
@@ -605,7 +605,7 @@ float YGNode::resolveFlexGrow() {
 }
 
 float YGNode::resolveFlexShrink() {
-  if (parent_ == nullptr) {
+  if (owner_ == nullptr) {
     return 0.0;
   }
   if (!style_.flexShrink.isUndefined()) {

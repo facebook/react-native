@@ -22,7 +22,7 @@ YGLayout::YGLayout()
       computedFlexBasis(YGUndefined),
       hadOverflow(false),
       generationCount(0),
-      lastParentDirection((YGDirection)-1),
+      lastOwnerDirection((YGDirection)-1),
       nextCachedMeasurementsIndex(0),
       cachedMeasurements(),
       measuredDimensions(kYGDefaultDimensionValues),
@@ -37,7 +37,7 @@ bool YGLayout::operator==(YGLayout layout) const {
       YGFloatArrayEqual(border, layout.border) &&
       YGFloatArrayEqual(padding, layout.padding) &&
       direction == layout.direction && hadOverflow == layout.hadOverflow &&
-      lastParentDirection == layout.lastParentDirection &&
+      lastOwnerDirection == layout.lastOwnerDirection &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
       cachedLayout == layout.cachedLayout;
 

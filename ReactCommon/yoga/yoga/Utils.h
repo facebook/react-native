@@ -45,7 +45,7 @@ struct YGCollectFlexItemsRowValues {
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin
   // and border of flex items. This is used to calculate maxLineDim after going
-  // through all the rows to decide on the main axis size of parent.
+  // through all the rows to decide on the main axis size of owner.
   float mainDim;
   // The size of the crossDim for the row after considering size, padding,
   // margin and border of flex items. Used for calculating containers crossSize.
@@ -109,7 +109,7 @@ inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-inline YGFloatOptional YGResolveValue(const YGValue value, const float parentSize) {
+inline YGFloatOptional YGResolveValue(const YGValue value, const float ownerSize) {
   switch (value.unit) {
     case YGUnitUndefined:
     case YGUnitAuto:
@@ -118,7 +118,7 @@ inline YGFloatOptional YGResolveValue(const YGValue value, const float parentSiz
       return YGFloatOptional(value.value);
     case YGUnitPercent:
       return YGFloatOptional(
-          static_cast<float>(value.value * parentSize * 0.01));
+          static_cast<float>(value.value * ownerSize * 0.01));
   }
   return YGFloatOptional();
 }
@@ -144,6 +144,6 @@ inline YGFlexDirection YGResolveFlexDirection(
 
 static inline float YGResolveValueMargin(
     const YGValue value,
-    const float parentSize) {
-  return value.unit == YGUnitAuto ? 0 : YGUnwrapFloatOptional(YGResolveValue(value, parentSize));
+    const float ownerSize) {
+  return value.unit == YGUnitAuto ? 0 : YGUnwrapFloatOptional(YGResolveValue(value, ownerSize));
 }

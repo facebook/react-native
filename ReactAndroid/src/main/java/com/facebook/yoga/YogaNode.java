@@ -29,7 +29,7 @@ public class YogaNode implements Cloneable {
    */
   static native int jni_YGNodeGetInstanceCount();
 
-  private YogaNode mParent;
+  private YogaNode mOwner;
   private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
@@ -152,7 +152,7 @@ public class YogaNode implements Cloneable {
 
   private native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
   public void addChildAt(YogaNode child, int i) {
-    if (child.mParent != null) {
+    if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
@@ -160,7 +160,7 @@ public class YogaNode implements Cloneable {
       mChildren = new ArrayList<>(4);
     }
     mChildren.add(i, child);
-    child.mParent = this;
+    child.mOwner = this;
     jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
   }
 
@@ -180,15 +180,23 @@ public class YogaNode implements Cloneable {
   public YogaNode removeChildAt(int i) {
 
     final YogaNode child = mChildren.remove(i);
-    child.mParent = null;
+    child.mOwner = null;
     jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
   }
 
+  /**
+   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
+   * to.
+   * This method will return the parent of the {@link YogaNode} when the
+   * {@link YogaNode} only belongs to one YogaTree or null when the
+   * {@link YogaNode} is shared between two or more YogaTrees.
+   */
   @Nullable
   public
-  YogaNode getParent() {
-    return mParent;
+  YogaNode getOwner() {
+    return mOwner;
   }
 
   public int indexOf(YogaNode child) {
