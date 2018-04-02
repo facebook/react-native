@@ -62,8 +62,7 @@ typedef int (*YGLogger)(const YGConfigRef config,
                         YGLogLevel level,
                         const char *format,
                         va_list args);
-typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
-                                 YGNodeRef newNode,
+typedef YGNodeRef (*YGCloneNodeFunc)(YGNodeRef oldNode,
                                  YGNodeRef parent,
                                  int childIndex);
 
@@ -283,8 +282,8 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
 WIN_EXPORT void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled);
 WIN_EXPORT bool YGConfigGetUseWebDefaults(const YGConfigRef config);
 
-WIN_EXPORT void YGConfigSetNodeClonedFunc(const YGConfigRef config,
-                                          const YGNodeClonedFunc callback);
+WIN_EXPORT void YGConfigSetCloneNodeFunc(const YGConfigRef config,
+                                          const YGCloneNodeFunc callback);
 
 // Export only for C#
 WIN_EXPORT YGConfigRef YGConfigGetDefault(void);

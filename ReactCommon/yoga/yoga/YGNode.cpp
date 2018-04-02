@@ -558,15 +558,18 @@ void YGNode::cloneChildrenIfNeeded() {
     return;
   }
 
-  const YGNodeClonedFunc cloneNodeCallback = config_->cloneNodeCallback;
+  const YGCloneNodeFunc cloneNodeCallback = config_->cloneNodeCallback;
   for (uint32_t i = 0; i < childCount; ++i) {
     const YGNodeRef oldChild = children_[i];
-    const YGNodeRef newChild = YGNodeClone(oldChild);
+    YGNodeRef newChild = nullptr;
+    if (cloneNodeCallback) {
+      newChild = cloneNodeCallback(oldChild, this, i);
+    }
+    if (newChild == nullptr) {
+      newChild = YGNodeClone(oldChild);
+    }
     replaceChild(newChild, i);
     newChild->setParent(this);
-    if (cloneNodeCallback) {
-      cloneNodeCallback(oldChild, newChild, this, i);
-    }
   }
 }
 

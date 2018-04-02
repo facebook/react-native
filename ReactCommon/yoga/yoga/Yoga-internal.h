@@ -94,7 +94,7 @@ struct YGConfig {
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour;
   float pointScaleFactor;
   YGLogger logger;
-  YGNodeClonedFunc cloneNodeCallback;
+  YGCloneNodeFunc cloneNodeCallback;
   void* context;
 };
 

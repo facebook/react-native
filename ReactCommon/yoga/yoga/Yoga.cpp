@@ -428,7 +428,7 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
   // Otherwise we have to clone the node list except for the child we're trying to delete.
   // We don't want to simply clone all children, because then the host will need to free
   // the clone of the child that was just deleted.
-  const YGNodeClonedFunc cloneNodeCallback =
+  const YGCloneNodeFunc cloneNodeCallback =
       parent->getConfig()->cloneNodeCallback;
   uint32_t nextInsertIndex = 0;
   for (uint32_t i = 0; i < childCount; i++) {
@@ -440,12 +440,16 @@ void YGNodeRemoveChild(const YGNodeRef parent, const YGNodeRef excludedChild) {
       parent->markDirtyAndPropogate();
       continue;
     }
-    const YGNodeRef newChild = YGNodeClone(oldChild);
+    YGNodeRef newChild = nullptr;
+    if (cloneNodeCallback) {
+      newChild = cloneNodeCallback(oldChild, parent, nextInsertIndex);
+    }
+    if (newChild == nullptr) {
+      newChild = YGNodeClone(oldChild);
+    }
     parent->replaceChild(newChild, nextInsertIndex);
     newChild->setParent(parent);
-    if (cloneNodeCallback) {
-      cloneNodeCallback(oldChild, newChild, parent, nextInsertIndex);
-    }
+
     nextInsertIndex++;
   }
   while (nextInsertIndex < childCount) {
@@ -3964,7 +3968,7 @@ void *YGConfigGetContext(const YGConfigRef config) {
   return config->context;
 }
 
-void YGConfigSetNodeClonedFunc(const YGConfigRef config, const YGNodeClonedFunc callback) {
+void YGConfigSetCloneNodeFunc(const YGConfigRef config, const YGCloneNodeFunc callback) {
   config->cloneNodeCallback = callback;
 }
 

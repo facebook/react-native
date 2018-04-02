@@ -142,31 +142,49 @@ static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   }
 }
 
-static void YGJNIOnNodeClonedFunc(
+static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
+  return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
+}
+
+static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
+  return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
+}
+
+static YGNodeRef YGJNIOnNodeClonedFunc(
     YGNodeRef oldNode,
-    YGNodeRef newNode,
     YGNodeRef parent,
     int childIndex) {
   auto config = oldNode->getConfig();
   if (!config) {
-    return;
+    return nullptr;
   }
+
   static auto onNodeClonedFunc = findClassStatic("com/facebook/yoga/YogaConfig")
-                                     ->getMethod<void(
+                                     ->getMethod<alias_ref<JYogaNode>(
                                          local_ref<JYogaNode>,
                                          local_ref<JYogaNode>,
-                                         local_ref<JYogaNode>,
-                                         jint)>("onNodeCloned");
+                                         jint)>("cloneNode");
 
   auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
   auto javaConfig = context->config;
 
-  onNodeClonedFunc(
+  auto newNode = onNodeClonedFunc(
       javaConfig->get(),
       YGNodeJobject(oldNode)->lockLocal(),
-      YGNodeJobject(newNode)->lockLocal(),
       YGNodeJobject(parent)->lockLocal(),
       childIndex);
+
+  static auto replaceChild = findClassStatic("com/facebook/yoga/YogaNode")
+                                     ->getMethod<jlong(
+                                         local_ref<JYogaNode>,
+                                         jint)>("replaceChild");
+
+  jlong newNodeNativePointer = replaceChild(
+      YGNodeJobject(parent)->lockLocal(),
+      newNode,
+      childIndex);
+
+  return _jlong2YGNodeRef(newNodeNativePointer);
 }
 
 static YGSize YGJNIMeasureFunc(
@@ -232,14 +250,6 @@ static int YGJNILogFunc(const YGConfigRef config,
   }
 
   return result;
-}
-
-static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
-  return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
-}
-
-static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
-  return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
 }
 
 jlong jni_YGNodeNew(alias_ref<jobject> thiz) {
@@ -506,10 +516,10 @@ void jni_YGConfigSetUseLegacyStretchBehaviour(alias_ref<jobject>,
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
 }
 
-void jni_YGConfigSetHasNodeClonedFunc(
+void jni_YGConfigSetHasCloneNodeFunc(
     alias_ref<jobject> thiz,
     jlong nativePointer,
-    jboolean hasNodeClonedFunc) {
+    jboolean hasCloneNodeFunc) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
   auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
   if (context && context->config) {
@@ -517,15 +527,15 @@ void jni_YGConfigSetHasNodeClonedFunc(
     context->config = nullptr;
   }
 
-  if (hasNodeClonedFunc) {
+  if (hasCloneNodeFunc) {
     if (!context) {
       context = new YGConfigContext();
       YGConfigSetContext(config, context);
     }
     context->config = new global_ref<jobject>(make_global(thiz));
-    YGConfigSetNodeClonedFunc(config, YGJNIOnNodeClonedFunc);
+    YGConfigSetCloneNodeFunc(config, YGJNIOnNodeClonedFunc);
   } else {
-    YGConfigSetNodeClonedFunc(config, nullptr);
+    YGConfigSetCloneNodeFunc(config, nullptr);
   }
 }
 
@@ -652,7 +662,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
             YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
             YGMakeNativeMethod(jni_YGConfigSetLogger),
-            YGMakeNativeMethod(jni_YGConfigSetHasNodeClonedFunc),
+            YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),
             YGMakeNativeMethod(
                 jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
         });

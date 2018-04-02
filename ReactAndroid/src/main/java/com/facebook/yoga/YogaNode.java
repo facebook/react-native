@@ -697,4 +697,18 @@ public class YogaNode implements Cloneable {
   public void print() {
     jni_YGNodePrint(mNativePointer);
   }
+
+  /**
+   * This method replaces the child at childIndex position with the newNode received by parameter.
+   * This is different than calling removeChildAt and addChildAt because this method ONLY replaces
+   * the child in the mChildren datastructure. @DoNotStrip: called from JNI
+   *
+   * @return the nativePointer of the newNode {@linl YogaNode}
+   */
+  @DoNotStrip
+  private final long replaceChild(YogaNode newNode, int childIndex) {
+    mChildren.remove(childIndex);
+    mChildren.add(childIndex, newNode);
+    return newNode.mNativePointer;
+  }
 }

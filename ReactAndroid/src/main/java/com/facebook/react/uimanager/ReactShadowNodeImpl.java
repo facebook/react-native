@@ -10,6 +10,7 @@ import static java.lang.System.arraycopy;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.yoga.YogaNodeCloneFunction;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
@@ -21,7 +22,6 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeClonedFunction;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
@@ -61,17 +61,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private static final YogaConfig sYogaConfig;
   static {
     sYogaConfig = ReactYogaConfigProvider.get();
-    sYogaConfig.setOnNodeCloned(new YogaNodeClonedFunction() {
+    sYogaConfig.setOnCloneNode(new YogaNodeCloneFunction() {
       @Override
-      public void onNodeCloned(YogaNode oldYogaNode,
-          YogaNode newYogaNode,
+      public YogaNode cloneNode(YogaNode oldYogaNode,
           YogaNode parent,
           int childIndex) {
-        ReactShadowNode parentReactShadowNode = (ReactShadowNode) parent.getData();
+        ReactShadowNodeImpl parentReactShadowNode = (ReactShadowNodeImpl) parent.getData();
         Assertions.assertNotNull(parentReactShadowNode);
-
-        ReactShadowNode newReactShadowNode = (ReactShadowNode) newYogaNode.getData();
+        ReactShadowNodeImpl newReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
         Assertions.assertNotNull(newReactShadowNode);
+
+        ReactShadowNodeImpl newNode = newReactShadowNode.mutableCopy();
+        parentReactShadowNode.replaceChild(newNode, childIndex);
+        return newNode.mYogaNode;
       }
     });
   }
@@ -133,6 +135,11 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mOriginalReactShadowNode = original;
   }
 
+  private void replaceChild(ReactShadowNodeImpl newNode, int childIndex) {
+    mChildren.remove(childIndex);
+    mChildren.add(childIndex, newNode);
+  }
+
   /**
    * @return a copy of this object (no including copy of its children or the underlying yogaNode).
    */
@@ -145,7 +152,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     ReactShadowNodeImpl copy = copy();
     copy.mYogaNode = mYogaNode;
     // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //mYogaNode = original.mYogaNode.clone();
+    //copy.mYogaNode = mYogaNode.clone();
     copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
     copy.mTotalNativeChildren = mTotalNativeChildren;
     copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
@@ -165,7 +172,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     ReactShadowNodeImpl copy = copy();
     copy.mYogaNode = mYogaNode;
     // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //mYogaNode = original.mYogaNode.cloneWithNewChildren();
+    //copy.mYogaNode = mYogaNode.clone();
     copy.mNativeChildren = null;
     copy.mChildren = null;
     copy.mTotalNativeChildren = 0;
