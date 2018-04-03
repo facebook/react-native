@@ -144,12 +144,13 @@ float YGNode::getLeadingMargin(
     const float widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
-    return YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize);
+    return YGUnwrapFloatOptional(
+        YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize));
   }
 
-  return YGResolveValueMargin(
+  return YGUnwrapFloatOptional(YGResolveValueMargin(
       *YGComputedEdgeValue(style_.margin, leading[axis], &YGValueZero),
-      widthSize);
+      widthSize));
 }
 
 float YGNode::getTrailingMargin(
@@ -157,12 +158,13 @@ float YGNode::getTrailingMargin(
     const float widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
-    return YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize);
+    return YGUnwrapFloatOptional(
+        YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize));
   }
 
-  return YGResolveValueMargin(
+  return YGUnwrapFloatOptional(YGResolveValueMargin(
       *YGComputedEdgeValue(style_.margin, trailing[axis], &YGValueZero),
-      widthSize);
+      widthSize));
 }
 
 float YGNode::getMarginForAxis(

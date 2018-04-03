@@ -136,8 +136,9 @@ inline YGFlexDirection YGResolveFlexDirection(
   return flexDirection;
 }
 
-static inline float YGResolveValueMargin(
+static inline YGFloatOptional YGResolveValueMargin(
     const YGValue value,
     const float ownerSize) {
-  return value.unit == YGUnitAuto ? 0 : YGUnwrapFloatOptional(YGResolveValue(value, ownerSize));
+  return value.unit == YGUnitAuto ? YGFloatOptional(0)
+                                  : YGResolveValue(value, ownerSize);
 }
