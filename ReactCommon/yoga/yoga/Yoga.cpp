@@ -930,16 +930,30 @@ float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
   return node->getStyle().border[edge].value;
 }
 
+// Yoga specific properties, not compatible with flexbox specification
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
+  const YGFloatOptional op = node->getStyle().aspectRatio;
+  return op.isUndefined() ? YGUndefined : op.getValue();
+}
+
+// TODO(T26792433): Change the API to accept YGFloatOptional.
+void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
+  if (!YGFloatOptionalFloatEquals(node->getStyle().aspectRatio, aspectRatio)) {
+    YGStyle style = node->getStyle();
+    style.aspectRatio = YGFloatOptional(aspectRatio);
+    node->setStyle(style);
+    node->markDirtyAndPropogate();
+  }
+}
+
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Width, width, dimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(YGValue, Height, height, dimensions[YGDimensionHeight]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MinWidth, minWidth, minDimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MinHeight, minHeight, minDimensions[YGDimensionHeight]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MaxWidth, maxWidth, maxDimensions[YGDimensionWidth]);
 YG_NODE_STYLE_PROPERTY_UNIT_IMPL(YGValue, MaxHeight, maxHeight, maxDimensions[YGDimensionHeight]);
-
-// Yoga specific properties, not compatible with flexbox specification
-YG_NODE_STYLE_PROPERTY_IMPL(float, AspectRatio, aspectRatio, aspectRatio);
-
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight]);
@@ -1278,14 +1292,15 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
       }
     }
 
-    if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
+    if (!child->getStyle().aspectRatio.isUndefined()) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
         childHeight = marginColumn +
-            (childWidth - marginRow) / child->getStyle().aspectRatio;
+            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
         childHeightMeasureMode = YGMeasureModeExactly;
       } else if (isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
         childWidth = marginRow +
-            (childHeight - marginColumn) * child->getStyle().aspectRatio;
+            (childHeight - marginColumn) *
+                child->getStyle().aspectRatio.getValue();
         childWidthMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1300,8 +1315,9 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
     if (!isMainAxisRow && !isRowStyleDimDefined && hasExactWidth && childWidthStretch) {
       childWidth = width;
       childWidthMeasureMode = YGMeasureModeExactly;
-      if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
-        childHeight = (childWidth - marginRow) / child->getStyle().aspectRatio;
+      if (!child->getStyle().aspectRatio.isUndefined()) {
+        childHeight =
+            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
         childHeightMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1313,9 +1329,9 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
       childHeight = height;
       childHeightMeasureMode = YGMeasureModeExactly;
 
-      if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
-        childWidth =
-            (childHeight - marginColumn) * child->getStyle().aspectRatio;
+      if (!child->getStyle().aspectRatio.isUndefined()) {
+        childWidth = (childHeight - marginColumn) *
+            child->getStyle().aspectRatio.getValue();
         childWidthMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1411,13 +1427,14 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
   // Exactly one dimension needs to be defined for us to be able to do aspect ratio
   // calculation. One dimension being the anchor and the other being flexible.
   if (YGFloatIsUndefined(childWidth) ^ YGFloatIsUndefined(childHeight)) {
-    if (!YGFloatIsUndefined(child->getStyle().aspectRatio)) {
+    if (!child->getStyle().aspectRatio.isUndefined()) {
       if (YGFloatIsUndefined(childWidth)) {
         childWidth = marginRow +
-            (childHeight - marginColumn) * child->getStyle().aspectRatio;
+            (childHeight - marginColumn) *
+                child->getStyle().aspectRatio.getValue();
       } else if (YGFloatIsUndefined(childHeight)) {
         childHeight = marginColumn +
-            (childWidth - marginRow) / child->getStyle().aspectRatio;
+            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
       }
     }
   }
@@ -1997,11 +2014,11 @@ static float YGDistributeFreeSpaceSecondPass(
     YGMeasureMode childCrossMeasureMode;
     YGMeasureMode childMainMeasureMode = YGMeasureModeExactly;
 
-    if (!YGFloatIsUndefined(currentRelativeChild->getStyle().aspectRatio)) {
+    if (!currentRelativeChild->getStyle().aspectRatio.isUndefined()) {
       childCrossSize = isMainAxisRow ? (childMainSize - marginMain) /
-              currentRelativeChild->getStyle().aspectRatio
+              currentRelativeChild->getStyle().aspectRatio.getValue()
                                      : (childMainSize - marginMain) *
-              currentRelativeChild->getStyle().aspectRatio;
+              currentRelativeChild->getStyle().aspectRatio.getValue();
       childCrossMeasureMode = YGMeasureModeExactly;
 
       childCrossSize += marginCross;
@@ -2889,11 +2906,12 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               float childMainSize =
                   child->getLayout().measuredDimensions[dim[mainAxis]];
               float childCrossSize =
-                  !YGFloatIsUndefined(child->getStyle().aspectRatio)
+                  !child->getStyle().aspectRatio.isUndefined()
                   ? ((child->getMarginForAxis(crossAxis, availableInnerWidth) +
-                      (isMainAxisRow
-                           ? childMainSize / child->getStyle().aspectRatio
-                           : childMainSize * child->getStyle().aspectRatio)))
+                      (isMainAxisRow ? childMainSize /
+                               child->getStyle().aspectRatio.getValue()
+                                     : childMainSize *
+                               child->getStyle().aspectRatio.getValue())))
                   : collectedFlexItemsValues.crossDim;
 
               childMainSize +=

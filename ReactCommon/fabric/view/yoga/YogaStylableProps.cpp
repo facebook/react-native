@@ -95,7 +95,7 @@ void YogaStylableProps::apply(const RawProps &rawProps) {
     YOGA_STYLE_PREFIXED_EDGE_PROPERTY(padding)
     YOGA_STYLE_PREFIXED_EDGE_PROPERTY(border)
 
-    YOGA_STYLE_SIMPLE_FLOAT_PROPERTY(aspectRatio)
+    YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(aspectRatio)
   }
 }
 
@@ -139,7 +139,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
   YOGA_STYLE_PROPS_ADD_TO_SET(minSize, minDimensions, , stringFromYogaStyleDimensions)
   YOGA_STYLE_PROPS_ADD_TO_SET(maxSize, maxDimensions, , stringFromYogaStyleDimensions)
 
-  YOGA_STYLE_PROPS_ADD_TO_SET(aspectRatio, aspectRatio, , folly::to<std::string>)
+  YOGA_STYLE_PROPS_ADD_TO_SET(aspectRatio, aspectRatio, , stringFromYogaStyleOptionalFloat)
 
   return list;
 }

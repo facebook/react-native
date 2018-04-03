@@ -50,7 +50,7 @@ YGStyle::YGStyle()
       dimensions(kYGDefaultDimensionValuesAutoUnit),
       minDimensions(kYGDefaultDimensionValuesUnit),
       maxDimensions(kYGDefaultDimensionValuesUnit),
-      aspectRatio(YGUndefined) {}
+      aspectRatio(YGFloatOptional()) {}
 
 // Yoga specific properties, not compatible with flexbox specification
 bool YGStyle::operator==(const YGStyle& style) {
@@ -91,10 +91,9 @@ bool YGStyle::operator==(const YGStyle& style) {
         flexShrink.getValue() == style.flexShrink.getValue();
   }
 
-  if (!(YGFloatIsUndefined(aspectRatio) &&
-        YGFloatIsUndefined(style.aspectRatio))) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
+  if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual &&
+        aspectRatio.getValue() == style.aspectRatio.getValue();
   }
 
   return areNonFloatValuesEqual;
