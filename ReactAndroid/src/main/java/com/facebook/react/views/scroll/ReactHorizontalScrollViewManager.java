@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
+import android.util.DisplayMetrics;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -112,6 +114,12 @@ public class ReactHorizontalScrollViewManager
   public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
+  @ReactProp(name = "snapToInterval")
+   public void setSnapToInterval(ReactHorizontalScrollView view, int snapToInterval) {
+            view.setPagingEnabled(snapToInterval > 0);
+            DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+            view.setSnapInterval((int)(snapToInterval * screenDisplayMetrics.density));
+    }
 
   @Override
   public void receiveCommand(

@@ -24,6 +24,8 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.Map;
 import javax.annotation.Nullable;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
+import android.util.DisplayMetrics;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -60,6 +62,13 @@ public class ReactScrollViewManager
   @Override
   public ReactScrollView createViewInstance(ThemedReactContext context) {
     return new ReactScrollView(context, mFpsListener);
+  }
+
+
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactScrollView view, int snapToInterval) {
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    view.setSnapInterval((int)(snapToInterval * screenDisplayMetrics.density));
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
