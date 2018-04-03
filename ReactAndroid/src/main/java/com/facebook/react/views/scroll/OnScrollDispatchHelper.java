@@ -24,6 +24,7 @@ public class OnScrollDispatchHelper {
   private int mPrevY = Integer.MIN_VALUE;
   private float mXFlingVelocity = 0;
   private float mYFlingVelocity = 0;
+  private static final float THRESHOLD = 0.1f; // Threshold for end fling
 
   private long mLastScrollEventTimeMs = -(MIN_EVENT_SEPARATION_MS + 1);
 
@@ -37,6 +38,11 @@ public class OnScrollDispatchHelper {
         eventTime - mLastScrollEventTimeMs > MIN_EVENT_SEPARATION_MS ||
             mPrevX != x ||
             mPrevY != y;
+
+    // Skip the first calculation in each scroll
+    if(Math.abs(mXFlingVelocity) < THRESHOLD && Math.abs(mYFlingVelocity) < THRESHOLD) {
+      shouldDispatch = false;
+    }
 
     if (eventTime - mLastScrollEventTimeMs != 0) {
       mXFlingVelocity = (float) (x - mPrevX) / (eventTime - mLastScrollEventTimeMs);
