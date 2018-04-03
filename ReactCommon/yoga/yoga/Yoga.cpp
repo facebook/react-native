@@ -801,7 +801,7 @@ YG_NODE_STYLE_PROPERTY_IMPL(YGDisplay, Display, display, display);
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
-  if (!YGFloatOptionalFloatEquals(node->getStyle().flex, flex)) {
+  if (node->getStyle().flex != flex) {
     YGStyle style = node->getStyle();
     if (YGFloatIsUndefined(flex)) {
       style.flex = YGFloatOptional();
@@ -821,7 +821,7 @@ float YGNodeStyleGetFlex(const YGNodeRef node) {
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
-  if (!YGFloatOptionalFloatEquals(node->getStyle().flexGrow, flexGrow)) {
+  if (node->getStyle().flexGrow != flexGrow) {
     YGStyle style = node->getStyle();
     if (YGFloatIsUndefined(flexGrow)) {
       style.flexGrow = YGFloatOptional();
@@ -835,7 +835,7 @@ void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
-  if (!YGFloatOptionalFloatEquals(node->getStyle().flexShrink, flexShrink)) {
+  if (node->getStyle().flexShrink != flexShrink) {
     YGStyle style = node->getStyle();
     if (YGFloatIsUndefined(flexShrink)) {
       style.flexShrink = YGFloatOptional();
@@ -940,7 +940,7 @@ float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
-  if (!YGFloatOptionalFloatEquals(node->getStyle().aspectRatio, aspectRatio)) {
+  if (node->getStyle().aspectRatio != aspectRatio) {
     YGStyle style = node->getStyle();
     style.aspectRatio = YGFloatOptional(aspectRatio);
     node->setStyle(style);

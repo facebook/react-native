@@ -23,4 +23,10 @@ struct YGFloatOptional {
   void setValue(const float& val);
 
   bool isUndefined() const;
+
+  bool operator==(const YGFloatOptional& op) const;
+  bool operator!=(const YGFloatOptional& op) const;
+
+  bool operator==(const float& val) const;
+  bool operator!=(const float& val) const;
 };
