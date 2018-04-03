@@ -9,7 +9,7 @@
 
 const YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
-const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
+const YGValue kYGValueAuto = {0, YGUnitAuto};
 
 const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
     {kYGValueUndefined,
@@ -42,7 +42,7 @@ YGStyle::YGStyle()
       flex(YGFloatOptional()),
       flexGrow(YGFloatOptional()),
       flexShrink(YGFloatOptional()),
-      flexBasis({0, YGUnitAuto}),
+      flexBasis(kYGValueAuto),
       margin(kYGDefaultEdgeValuesUnit),
       position(kYGDefaultEdgeValuesUnit),
       padding(kYGDefaultEdgeValuesUnit),

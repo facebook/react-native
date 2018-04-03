@@ -629,7 +629,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
     type, name, paramName, instanceName)                                       \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {      \
     YGValue value = {                                                          \
-        .value = paramName,                                                    \
+        .value = YGFloatSanitize(paramName),                                   \
         .unit = YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint, \
     };                                                                         \
     if ((node->getStyle().instanceName.value != value.value &&                 \
@@ -644,10 +644,10 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
                                                                                \
   void YGNodeStyleSet##name##Percent(                                          \
       const YGNodeRef node, const type paramName) {                            \
-    if (node->getStyle().instanceName.value != paramName ||                    \
+    if (node->getStyle().instanceName.value != YGFloatSanitize(paramName) ||   \
         node->getStyle().instanceName.unit != YGUnitPercent) {                 \
       YGStyle style = node->getStyle();                                        \
-      style.instanceName.value = paramName;                                    \
+      style.instanceName.value = YGFloatSanitize(paramName);                   \
       style.instanceName.unit =                                                \
           YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;          \
       node->setStyle(style);                                                   \
@@ -658,7 +658,7 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
   void YGNodeStyleSet##name##Auto(const YGNodeRef node) {                      \
     if (node->getStyle().instanceName.unit != YGUnitAuto) {                    \
       YGStyle style = node->getStyle();                                        \
-      style.instanceName.value = YGUndefined;                                  \
+      style.instanceName.value = 0;                                            \
       style.instanceName.unit = YGUnitAuto;                                    \
       node->setStyle(style);                                                   \
       node->markDirtyAndPropogate();                                           \
@@ -678,19 +678,23 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
                                                                               \
   type YGNodeStyleGet##name(const YGNodeRef node) {                           \
     YGValue value = node->getStyle().instanceName;                            \
-    if (value.unit == YGUndefined || value.unit == YGUnitAuto) {              \
+    if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {          \
       value.value = YGUndefined;                                              \
     }                                                                         \
     return value;                                                             \
   }
 
-#define YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(      \
-    type, name, paramName, instanceName)            \
-  YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(     \
-      float, name, paramName, instanceName)         \
-                                                    \
-  type YGNodeStyleGet##name(const YGNodeRef node) { \
-    return node->getStyle().instanceName;           \
+#define YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(                       \
+    type, name, paramName, instanceName)                             \
+  YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(                      \
+      float, name, paramName, instanceName)                          \
+                                                                     \
+  type YGNodeStyleGet##name(const YGNodeRef node) {                  \
+    YGValue value = node->getStyle().instanceName;                   \
+    if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) { \
+      value.value = YGUndefined;                                     \
+    }                                                                \
+    return value;                                                    \
   }
 
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(type, name, instanceName) \
