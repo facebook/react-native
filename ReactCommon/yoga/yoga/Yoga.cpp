@@ -2577,13 +2577,17 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           node->getLeadingPadding(flexRowDirection, ownerWidth)),
       YGEdgeStart);
   node->setLayoutPadding(
-      node->getTrailingPadding(flexRowDirection, ownerWidth), YGEdgeEnd);
+      YGUnwrapFloatOptional(
+          node->getTrailingPadding(flexRowDirection, ownerWidth)),
+      YGEdgeEnd);
   node->setLayoutPadding(
       YGUnwrapFloatOptional(
           node->getLeadingPadding(flexColumnDirection, ownerWidth)),
       YGEdgeTop);
   node->setLayoutPadding(
-      node->getTrailingPadding(flexColumnDirection, ownerWidth), YGEdgeBottom);
+      YGUnwrapFloatOptional(
+          node->getTrailingPadding(flexColumnDirection, ownerWidth)),
+      YGEdgeBottom);
 
   if (node->getMeasure() != nullptr) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(node,

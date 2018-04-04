@@ -671,22 +671,21 @@ YGFloatOptional YGNode::getLeadingPadding(
   return YGFloatOptionalMax(resolvedValue, YGFloatOptional(0.0f));
 }
 
-float YGNode::getTrailingPadding(
-    const YGFlexDirection axis,
-    const float widthSize) const {
+YGFloatOptional YGNode::getTrailingPadding(
+    const YGFlexDirection& axis,
+    const float& widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
       !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined() &&
-      YGUnwrapFloatOptional(
-          YGResolveValue(style_.padding[YGEdgeEnd], widthSize)) >= 0.0f) {
-    return YGUnwrapFloatOptional(YGResolveValue(style_.padding[YGEdgeEnd], widthSize));
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize).getValue() >= 0.0f) {
+    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
   }
 
-  float resolvedValue = YGUnwrapFloatOptional(YGResolveValue(
+  YGFloatOptional resolvedValue = YGResolveValue(
       *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
-      widthSize));
+      widthSize);
 
-  return YGFloatMax(resolvedValue, 0.0f);
+  return YGFloatOptionalMax(resolvedValue, YGFloatOptional(0.0f));
 }
 
 float YGNode::getLeadingPaddingAndBorder(
@@ -699,7 +698,8 @@ float YGNode::getLeadingPaddingAndBorder(
 float YGNode::getTrailingPaddingAndBorder(
     const YGFlexDirection axis,
     const float widthSize) const {
-  return getTrailingPadding(axis, widthSize) + getTrailingBorder(axis);
+  return YGUnwrapFloatOptional(getTrailingPadding(axis, widthSize)) +
+      getTrailingBorder(axis);
 }
 
 bool YGNode::didUseLegacyFlag() {
