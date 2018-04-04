@@ -5,14 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#pragma once
+
 struct YGFloatOptional {
  private:
   float value_;
   bool isUndefined_;
 
  public:
-  YGFloatOptional(const float& value);
-  YGFloatOptional();
+  explicit YGFloatOptional(const float& value);
+  explicit YGFloatOptional();
 
   // Program will terminate if the value of an undefined is accessed. Please
   // make sure to check if the optional is defined before calling this function.

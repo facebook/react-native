@@ -1220,35 +1220,41 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
   YGMeasureMode childWidthMeasureMode;
   YGMeasureMode childHeightMeasureMode;
 
-  const float resolvedFlexBasis =
-      YGUnwrapFloatOptional(YGResolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize));
+  const YGFloatOptional resolvedFlexBasis =
+      YGResolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize);
   const bool isRowStyleDimDefined = YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, ownerWidth);
   const bool isColumnStyleDimDefined =
       YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn, ownerHeight);
 
-  if (!YGFloatIsUndefined(resolvedFlexBasis) && !YGFloatIsUndefined(mainAxisSize)) {
-    if (YGFloatIsUndefined(child->getLayout().computedFlexBasis) ||
+  if (!resolvedFlexBasis.isUndefined() && !YGFloatIsUndefined(mainAxisSize)) {
+    if (child->getLayout().computedFlexBasis.isUndefined() ||
         (YGConfigIsExperimentalFeatureEnabled(
              child->getConfig(), YGExperimentalFeatureWebFlexBasis) &&
          child->getLayout().computedFlexBasisGeneration !=
              gCurrentGenerationCount)) {
-      child->setLayoutComputedFlexBasis(YGFloatMax(
-          resolvedFlexBasis,
-          YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth)));
+      const YGFloatOptional& paddingAndBorder = YGFloatOptional(
+          YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth));
+      child->setLayoutComputedFlexBasis(
+          YGFloatOptionalMax(resolvedFlexBasis, paddingAndBorder));
     }
   } else if (isMainAxisRow && isRowStyleDimDefined) {
     // The width is definite, so use that as the flex basis.
-    child->setLayoutComputedFlexBasis(YGFloatMax(
-        YGUnwrapFloatOptional(YGResolveValue(
-            child->getResolvedDimension(YGDimensionWidth), ownerWidth)),
-        YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, ownerWidth)));
+    const YGFloatOptional& paddingAndBorder = YGFloatOptional(
+        YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, ownerWidth));
+
+    child->setLayoutComputedFlexBasis(YGFloatOptionalMax(
+        YGResolveValue(
+            child->getResolvedDimension(YGDimensionWidth), ownerWidth),
+        paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
-    child->setLayoutComputedFlexBasis(YGFloatMax(
-        YGUnwrapFloatOptional(YGResolveValue(
-            child->getResolvedDimension(YGDimensionHeight), ownerHeight)),
-        YGNodePaddingAndBorderForAxis(
-            child, YGFlexDirectionColumn, ownerWidth)));
+    const YGFloatOptional& paddingAndBorder =
+        YGFloatOptional(YGNodePaddingAndBorderForAxis(
+            child, YGFlexDirectionColumn, ownerWidth));
+    child->setLayoutComputedFlexBasis(YGFloatOptionalMax(
+        YGResolveValue(
+            child->getResolvedDimension(YGDimensionHeight), ownerHeight),
+        paddingAndBorder));
   } else {
     // Compute the flex basis and hypothetical main size (i.e. the clamped
     // flex basis).
@@ -1361,9 +1367,9 @@ static void YGNodeComputeFlexBasisForChild(const YGNodeRef node,
                          "measure",
                          config);
 
-    child->setLayoutComputedFlexBasis(YGFloatMax(
+    child->setLayoutComputedFlexBasis(YGFloatOptional(YGFloatMax(
         child->getLayout().measuredDimensions[dim[mainAxis]],
-        YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth)));
+        YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth))));
   }
   child->setLayoutComputedFlexBasisGeneration(gCurrentGenerationCount);
 }
@@ -1825,7 +1831,7 @@ static void YGNodeComputeFlexBasisForChildren(
     }
     if (child == singleFlexChild) {
       child->setLayoutComputedFlexBasisGeneration(gCurrentGenerationCount);
-      child->setLayoutComputedFlexBasis(0);
+      child->setLayoutComputedFlexBasis(YGFloatOptional(0));
     } else {
       YGNodeComputeFlexBasisForChild(
           node,
@@ -1840,7 +1846,8 @@ static void YGNodeComputeFlexBasisForChildren(
           config);
     }
 
-    totalOuterFlexBasis += child->getLayout().computedFlexBasis +
+    totalOuterFlexBasis +=
+        YGUnwrapFloatOptional(child->getLayout().computedFlexBasis) +
         child->getMarginForAxis(mainAxis, availableInnerWidth);
   }
 }
@@ -1880,7 +1887,7 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
         YGUnwrapFloatOptional(YGNodeBoundAxisWithinMinAndMax(
             child,
             mainAxis,
-            child->getLayout().computedFlexBasis,
+            YGUnwrapFloatOptional(child->getLayout().computedFlexBasis),
             mainAxisownerSize));
 
     // If this is a multi-line flow and this item pushes us over the
@@ -1906,7 +1913,8 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
       // Unlike the grow factor, the shrink factor is scaled relative to the
       // child dimension.
       flexAlgoRowMeasurement.totalFlexShrinkScaledFactors +=
-          -child->resolveFlexShrink() * child->getLayout().computedFlexBasis;
+          -child->resolveFlexShrink() *
+          YGUnwrapFloatOptional(child->getLayout().computedFlexBasis);
     }
 
     flexAlgoRowMeasurement.relativeChildren.push_back(child);
@@ -1956,7 +1964,8 @@ static float YGDistributeFreeSpaceSecondPass(
     childFlexBasis = YGUnwrapFloatOptional(YGNodeBoundAxisWithinMinAndMax(
         currentRelativeChild,
         mainAxis,
-        currentRelativeChild->getLayout().computedFlexBasis,
+        YGUnwrapFloatOptional(
+            currentRelativeChild->getLayout().computedFlexBasis),
         mainAxisownerSize));
     float updatedMainSize = childFlexBasis;
 
@@ -2131,7 +2140,8 @@ static void YGDistributeFreeSpaceFirstPass(
     float childFlexBasis = YGUnwrapFloatOptional(YGNodeBoundAxisWithinMinAndMax(
         currentRelativeChild,
         mainAxis,
-        currentRelativeChild->getLayout().computedFlexBasis,
+        YGUnwrapFloatOptional(
+            currentRelativeChild->getLayout().computedFlexBasis),
         mainAxisownerSize));
 
     if (collectedFlexItemsValues.remainingFreeSpace < 0) {
@@ -2417,7 +2427,7 @@ static void YGJustifyMainAxis(
           // YGNodeDimWithMargin.
           collectedFlexItemsValues.mainDim += betweenMainDim +
               child->getMarginForAxis(mainAxis, availableInnerWidth) +
-              childLayout.computedFlexBasis;
+              YGUnwrapFloatOptional(childLayout.computedFlexBasis);
           collectedFlexItemsValues.crossDim = availableInnerCrossDim;
         } else {
           // The main dimension is the sum of all the elements dimension plus

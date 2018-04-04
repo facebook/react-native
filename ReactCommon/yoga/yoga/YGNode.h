@@ -126,7 +126,7 @@ struct YGNode {
   void setConfig(YGConfigRef config);
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
-  void setLayoutComputedFlexBasis(float computedFlexBasis);
+  void setLayoutComputedFlexBasis(const YGFloatOptional& computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, int index);

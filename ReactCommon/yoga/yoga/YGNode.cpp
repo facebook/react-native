@@ -312,7 +312,8 @@ void YGNode::setLayoutLastOwnerDirection(YGDirection direction) {
   layout_.lastOwnerDirection = direction;
 }
 
-void YGNode::setLayoutComputedFlexBasis(float computedFlexBasis) {
+void YGNode::setLayoutComputedFlexBasis(
+    const YGFloatOptional& computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
@@ -579,7 +580,7 @@ void YGNode::cloneChildrenIfNeeded() {
 void YGNode::markDirtyAndPropogate() {
   if (!isDirty_) {
     setDirty(true);
-    setLayoutComputedFlexBasis(YGUndefined);
+    setLayoutComputedFlexBasis(YGFloatOptional());
     if (owner_) {
       owner_->markDirtyAndPropogate();
     }

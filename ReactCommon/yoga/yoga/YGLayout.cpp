@@ -19,7 +19,7 @@ YGLayout::YGLayout()
       padding(),
       direction(YGDirectionInherit),
       computedFlexBasisGeneration(0),
-      computedFlexBasis(YGUndefined),
+      computedFlexBasis(YGFloatOptional()),
       hadOverflow(false),
       generationCount(0),
       lastOwnerDirection((YGDirection)-1),
@@ -39,16 +39,13 @@ bool YGLayout::operator==(YGLayout layout) const {
       direction == layout.direction && hadOverflow == layout.hadOverflow &&
       lastOwnerDirection == layout.lastOwnerDirection &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
-      cachedLayout == layout.cachedLayout;
+      cachedLayout == layout.cachedLayout &&
+      computedFlexBasis == layout.computedFlexBasis;
 
   for (uint32_t i = 0; i < YG_MAX_CACHED_RESULT_COUNT && isEqual; ++i) {
     isEqual = isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
   }
 
-  if (!YGFloatIsUndefined(computedFlexBasis) ||
-      !YGFloatIsUndefined(layout.computedFlexBasis)) {
-    isEqual = isEqual && (computedFlexBasis == layout.computedFlexBasis);
-  }
   if (!YGFloatIsUndefined(measuredDimensions[0]) ||
       !YGFloatIsUndefined(layout.measuredDimensions[0])) {
     isEqual =

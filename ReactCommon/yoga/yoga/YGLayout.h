@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
 struct YGLayout {
@@ -17,7 +18,7 @@ struct YGLayout {
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
-  float computedFlexBasis;
+  YGFloatOptional computedFlexBasis;
   bool hadOverflow;
 
   // Instead of recomputing the entire layout every single time, we
