@@ -68,3 +68,25 @@ YGFloatOptional YGFloatOptional::operator+(const YGFloatOptional& op) {
   }
   return YGFloatOptional();
 }
+
+bool YGFloatOptional::operator>(const YGFloatOptional& op) const {
+  if (isUndefined_ || op.isUndefined_) {
+    return false;
+  }
+  return value_ > op.value_;
+}
+
+bool YGFloatOptional::operator<(const YGFloatOptional& op) const {
+  if (isUndefined_ || op.isUndefined_) {
+    return false;
+  }
+  return value_ < op.value_;
+}
+
+bool YGFloatOptional::operator>=(const YGFloatOptional& op) const {
+  return *this == op ? true : *this > op;
+}
+
+bool YGFloatOptional::operator<=(const YGFloatOptional& op) const {
+  return *this == op ? true : *this < op;
+}
