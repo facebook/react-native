@@ -65,6 +65,10 @@ bool YGFloatsEqual(const float a, const float b);
 // compiler flag.
 float YGFloatMax(const float a, const float b);
 
+YGFloatOptional YGFloatOptionalMax(
+    const YGFloatOptional& op1,
+    const YGFloatOptional& op2);
+
 // We need custom min function, since we want that, if one argument is
 // YGUndefined then the min funtion should return the other argument as the min
 // value. We wouldn't have needed a custom min function if YGUndefined was NAN
