@@ -52,6 +52,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
   private int mSnapInterval = 0;
+  private String mSnapAlignment = "start";
   private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactHorizontalScrollView(Context context) {
@@ -96,6 +97,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public void setSnapInterval(int snapInterval) {
     mSnapInterval = snapInterval;
+    if(snapInterval != 0) {
+      mPagingEnabled = true;
+    }
+  }
+
+  public void setSnapAlignment(String snapAlignment) {
+    mSnapAlignment = snapAlignment;
   }
 
   public void flashScrollIndicators() {
@@ -236,6 +244,17 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     return getWidth();
   }
 
+  private int getAlignmentOffset() {
+    int width = getWidth();
+    int snapInterval = getSnapInterval();
+    if (mSnapAlignment.equals("center")) {
+      return (width - snapInterval)/2;
+    } else if(mSnapAlignment.equals("end")) {
+      return (width - snapInterval);
+    }
+    return 0;
+  }
+
   public void setEndFillColor(int color) {
     if (color != mEndFillColor) {
       mEndFillColor = color;
@@ -349,7 +368,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     if (predictedX > page * width + width / 2) {
       page = page + 1;
     }
-    smoothScrollTo(page * width, getScrollY());
+    smoothScrollTo(page * width - getAlignmentOffset(), getScrollY());
   }
 
   @Override
