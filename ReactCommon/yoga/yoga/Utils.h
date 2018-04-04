@@ -40,7 +40,7 @@ struct YGCollectFlexItemsRowValues {
   float sizeConsumedOnCurrentLine;
   float totalFlexGrowFactors;
   float totalFlexShrinkScaledFactors;
-  float endOfLineIndex;
+  uint32_t endOfLineIndex;
   std::vector<YGNodeRef> relativeChildren;
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin
