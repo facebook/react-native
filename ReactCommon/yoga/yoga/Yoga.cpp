@@ -1408,9 +1408,9 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
       childWidth = node->getLayout().measuredDimensions[YGDimensionWidth] -
           (node->getLeadingBorder(YGFlexDirectionRow) +
            node->getTrailingBorder(YGFlexDirectionRow)) -
-          (YGUnwrapFloatOptional(
-               child->getLeadingPosition(YGFlexDirectionRow, width)) +
-           child->getTrailingPosition(YGFlexDirectionRow, width));
+          YGUnwrapFloatOptional(
+                       child->getLeadingPosition(YGFlexDirectionRow, width) +
+                       child->getTrailingPosition(YGFlexDirectionRow, width));
       childWidth = YGNodeBoundAxis(child, YGFlexDirectionRow, childWidth, width, width);
     }
   }
@@ -1425,12 +1425,13 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
     // offsets if they're defined.
     if (child->isLeadingPositionDefined(YGFlexDirectionColumn) &&
         child->isTrailingPosDefined(YGFlexDirectionColumn)) {
-      childHeight = node->getLayout().measuredDimensions[YGDimensionHeight] -
+      childHeight =
+          node->getLayout().measuredDimensions[YGDimensionHeight] -
           (node->getLeadingBorder(YGFlexDirectionColumn) +
            node->getTrailingBorder(YGFlexDirectionColumn)) -
-          (YGUnwrapFloatOptional(
-               child->getLeadingPosition(YGFlexDirectionColumn, height)) +
-           child->getTrailingPosition(YGFlexDirectionColumn, height));
+          YGUnwrapFloatOptional(
+              child->getLeadingPosition(YGFlexDirectionColumn, height) +
+              child->getTrailingPosition(YGFlexDirectionColumn, height));
       childHeight = YGNodeBoundAxis(child, YGFlexDirectionColumn, childHeight, height, width);
     }
   }
@@ -1503,8 +1504,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
             child->getLayout().measuredDimensions[dim[mainAxis]] -
             node->getTrailingBorder(mainAxis) -
             child->getTrailingMargin(mainAxis, width) -
-            child->getTrailingPosition(
-                mainAxis, isMainAxisRow ? width : height),
+            YGUnwrapFloatOptional(child->getTrailingPosition(
+                mainAxis, isMainAxisRow ? width : height)),
         leading[mainAxis]);
   } else if (
       !child->isLeadingPositionDefined(mainAxis) &&
@@ -1530,8 +1531,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
             child->getLayout().measuredDimensions[dim[crossAxis]] -
             node->getTrailingBorder(crossAxis) -
             child->getTrailingMargin(crossAxis, width) -
-            child->getTrailingPosition(
-                crossAxis, isMainAxisRow ? height : width),
+            YGUnwrapFloatOptional(child->getTrailingPosition(
+                crossAxis, isMainAxisRow ? height : width)),
         leading[crossAxis]);
 
   } else if (

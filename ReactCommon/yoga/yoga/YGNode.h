@@ -89,7 +89,9 @@ struct YGNode {
       const float& axisSize) const;
   bool isLeadingPositionDefined(const YGFlexDirection axis) const;
   bool isTrailingPosDefined(const YGFlexDirection axis) const;
-  float getTrailingPosition(const YGFlexDirection axis, const float axisSize) const;
+  YGFloatOptional getTrailingPosition(
+      const YGFlexDirection& axis,
+      const float& axisSize) const;
   float getLeadingMargin(const YGFlexDirection axis, const float widthSize) const;
   float getTrailingMargin(const YGFlexDirection axis, const float widthSize) const;
   float getLeadingBorder(const YGFlexDirection& flexDirection) const;

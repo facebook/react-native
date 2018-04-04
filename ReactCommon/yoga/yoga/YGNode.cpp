@@ -104,14 +104,14 @@ YGFloatOptional YGNode::getLeadingPosition(
       : YGResolveValue(*leadingPosition, axisSize);
 }
 
-float YGNode::getTrailingPosition(
-    const YGFlexDirection axis,
-    const float axisSize) const {
+YGFloatOptional YGNode::getTrailingPosition(
+    const YGFlexDirection& axis,
+    const float& axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
     const YGValue* trailingPosition =
         YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined);
     if (trailingPosition->unit != YGUnitUndefined) {
-      return YGUnwrapFloatOptional(YGResolveValue(*trailingPosition, axisSize));
+      return YGResolveValue(*trailingPosition, axisSize);
     }
   }
 
@@ -119,8 +119,8 @@ float YGNode::getTrailingPosition(
       YGComputedEdgeValue(style_.position, trailing[axis], &YGValueUndefined);
 
   return trailingPosition->unit == YGUnitUndefined
-      ? 0.0f
-      : YGUnwrapFloatOptional(YGResolveValue(*trailingPosition, axisSize));
+      ? YGFloatOptional(0)
+      : YGResolveValue(*trailingPosition, axisSize);
 }
 
 bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) const {
@@ -345,7 +345,7 @@ float YGNode::relativePosition(
     const float axisSize) {
   return isLeadingPositionDefined(axis)
       ? YGUnwrapFloatOptional(getLeadingPosition(axis, axisSize))
-      : -getTrailingPosition(axis, axisSize);
+      : -YGUnwrapFloatOptional(getTrailingPosition(axis, axisSize));
 }
 
 void YGNode::setPosition(
