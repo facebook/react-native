@@ -123,7 +123,7 @@ YGFloatOptional YGNode::getTrailingPosition(
       : YGResolveValue(*trailingPosition, axisSize);
 }
 
-bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) const {
+bool YGNode::isLeadingPositionDefined(const YGFlexDirection& axis) const {
   return (YGFlexDirectionIsRow(axis) &&
           YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined)
                   ->unit != YGUnitUndefined) ||
@@ -131,7 +131,7 @@ bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) const {
           ->unit != YGUnitUndefined;
 }
 
-bool YGNode::isTrailingPosDefined(const YGFlexDirection axis) const {
+bool YGNode::isTrailingPosDefined(const YGFlexDirection& axis) const {
   return (YGFlexDirectionIsRow(axis) &&
           YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined)
                   ->unit != YGUnitUndefined) ||
@@ -340,12 +340,18 @@ void YGNode::setLayoutDimension(float dimension, int index) {
 
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
-float YGNode::relativePosition(
-    const YGFlexDirection axis,
-    const float axisSize) {
-  return isLeadingPositionDefined(axis)
-      ? YGUnwrapFloatOptional(getLeadingPosition(axis, axisSize))
-      : -YGUnwrapFloatOptional(getTrailingPosition(axis, axisSize));
+YGFloatOptional YGNode::relativePosition(
+    const YGFlexDirection& axis,
+    const float& axisSize) const {
+  if (isLeadingPositionDefined(axis)) {
+    return getLeadingPosition(axis, axisSize);
+  }
+
+  YGFloatOptional trailingPosition = getTrailingPosition(axis, axisSize);
+  if (!trailingPosition.isUndefined()) {
+    trailingPosition.setValue(-1 * trailingPosition.getValue());
+  }
+  return trailingPosition;
 }
 
 void YGNode::setPosition(
@@ -362,20 +368,26 @@ void YGNode::setPosition(
   const YGFlexDirection crossAxis =
       YGFlexDirectionCross(mainAxis, directionRespectingRoot);
 
-  const float relativePositionMain = relativePosition(mainAxis, mainSize);
-  const float relativePositionCross = relativePosition(crossAxis, crossSize);
+  const YGFloatOptional relativePositionMain =
+      relativePosition(mainAxis, mainSize);
+  const YGFloatOptional relativePositionCross =
+      relativePosition(crossAxis, crossSize);
 
   setLayoutPosition(
-      getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain,
+      getLeadingMargin(mainAxis, ownerWidth) +
+          YGUnwrapFloatOptional(relativePositionMain),
       leading[mainAxis]);
   setLayoutPosition(
-      getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain,
+      getTrailingMargin(mainAxis, ownerWidth) +
+          YGUnwrapFloatOptional(relativePositionMain),
       trailing[mainAxis]);
   setLayoutPosition(
-      getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross,
+      getLeadingMargin(crossAxis, ownerWidth) +
+          YGUnwrapFloatOptional(relativePositionCross),
       leading[crossAxis]);
   setLayoutPosition(
-      getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross,
+      getTrailingMargin(crossAxis, ownerWidth) +
+          YGUnwrapFloatOptional(relativePositionCross),
       trailing[crossAxis]);
 }
 

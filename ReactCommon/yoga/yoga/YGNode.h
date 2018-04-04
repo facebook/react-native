@@ -30,7 +30,9 @@ struct YGNode {
   bool isDirty_;
   std::array<YGValue, 2> resolvedDimensions_;
 
-  float relativePosition(const YGFlexDirection axis, const float axisSize);
+  YGFloatOptional relativePosition(
+      const YGFlexDirection& axis,
+      const float& axisSize) const;
 
  public:
   YGNode();
@@ -87,8 +89,8 @@ struct YGNode {
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(const YGFlexDirection& axis,
       const float& axisSize) const;
-  bool isLeadingPositionDefined(const YGFlexDirection axis) const;
-  bool isTrailingPosDefined(const YGFlexDirection axis) const;
+  bool isLeadingPositionDefined(const YGFlexDirection& axis) const;
+  bool isTrailingPosDefined(const YGFlexDirection& axis) const;
   YGFloatOptional getTrailingPosition(
       const YGFlexDirection& axis,
       const float& axisSize) const;
