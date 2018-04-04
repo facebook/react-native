@@ -152,26 +152,25 @@ YGFloatOptional YGNode::getLeadingMargin(
       widthSize);
 }
 
-float YGNode::getTrailingMargin(
-    const YGFlexDirection axis,
-    const float widthSize) const {
+YGFloatOptional YGNode::getTrailingMargin(
+    const YGFlexDirection& axis,
+    const float& widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
-    return YGUnwrapFloatOptional(
-        YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize));
+    return YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize);
   }
 
-  return YGUnwrapFloatOptional(YGResolveValueMargin(
+  return YGResolveValueMargin(
       *YGComputedEdgeValue(style_.margin, trailing[axis], &YGValueZero),
-      widthSize));
+      widthSize);
 }
 
 // TODO: Make its return type to YGFloatOptional
 float YGNode::getMarginForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
-  return YGUnwrapFloatOptional(getLeadingMargin(axis, widthSize)) +
-      getTrailingMargin(axis, widthSize);
+  return YGUnwrapFloatOptional(
+      getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize));
 }
 
 // Setters
@@ -378,16 +377,16 @@ void YGNode::setPosition(
           getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
       leading[mainAxis]);
   setLayoutPosition(
-      getTrailingMargin(mainAxis, ownerWidth) +
-          YGUnwrapFloatOptional(relativePositionMain),
+      YGUnwrapFloatOptional(
+          getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain),
       trailing[mainAxis]);
   setLayoutPosition(
       YGUnwrapFloatOptional(
           getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
       leading[crossAxis]);
   setLayoutPosition(
-      getTrailingMargin(crossAxis, ownerWidth) +
-          YGUnwrapFloatOptional(relativePositionCross),
+      YGUnwrapFloatOptional(
+          getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross),
       trailing[crossAxis]);
 }
 

@@ -97,7 +97,9 @@ struct YGNode {
   YGFloatOptional getLeadingMargin(
       const YGFlexDirection& axis,
       const float& widthSize) const;
-  float getTrailingMargin(const YGFlexDirection axis, const float widthSize) const;
+  YGFloatOptional getTrailingMargin(
+      const YGFlexDirection& axis,
+      const float& widthSize) const;
   float getLeadingBorder(const YGFlexDirection& flexDirection) const;
   float getTrailingBorder(const YGFlexDirection& flexDirection) const;
   YGFloatOptional getLeadingPadding(
