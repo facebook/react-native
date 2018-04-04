@@ -1093,7 +1093,7 @@ static inline float YGNodeDimWithMargin(const YGNodeRef node,
                                         const YGFlexDirection axis,
                                         const float widthSize) {
   return node->getLayout().measuredDimensions[dim[axis]] +
-      node->getLeadingMargin(axis, widthSize) +
+      YGUnwrapFloatOptional(node->getLeadingMargin(axis, widthSize)) +
       node->getTrailingMargin(axis, widthSize);
 }
 
@@ -2396,7 +2396,8 @@ static void YGJustifyMainAxis(
             YGUnwrapFloatOptional(
                 child->getLeadingPosition(mainAxis, availableInnerMainDim)) +
                 node->getLeadingBorder(mainAxis) +
-                child->getLeadingMargin(mainAxis, availableInnerWidth),
+                YGUnwrapFloatOptional(
+                    child->getLeadingMargin(mainAxis, availableInnerWidth)),
             pos[mainAxis]);
       }
     } else {
@@ -2573,11 +2574,15 @@ static void YGNodelayoutImpl(const YGNodeRef node,
       YGResolveFlexDirection(YGFlexDirectionColumn, direction);
 
   node->setLayoutMargin(
-      node->getLeadingMargin(flexRowDirection, ownerWidth), YGEdgeStart);
+      YGUnwrapFloatOptional(
+          node->getLeadingMargin(flexRowDirection, ownerWidth)),
+      YGEdgeStart);
   node->setLayoutMargin(
       node->getTrailingMargin(flexRowDirection, ownerWidth), YGEdgeEnd);
   node->setLayoutMargin(
-      node->getLeadingMargin(flexColumnDirection, ownerWidth), YGEdgeTop);
+      YGUnwrapFloatOptional(
+          node->getLeadingMargin(flexColumnDirection, ownerWidth)),
+      YGEdgeTop);
   node->setLayoutMargin(
       node->getTrailingMargin(flexColumnDirection, ownerWidth), YGEdgeBottom);
 
@@ -2900,7 +2905,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
                 YGUnwrapFloatOptional(child->getLeadingPosition(
                     crossAxis, availableInnerCrossDim)) +
                     node->getLeadingBorder(crossAxis) +
-                    child->getLeadingMargin(crossAxis, availableInnerWidth),
+                    YGUnwrapFloatOptional(child->getLeadingMargin(
+                        crossAxis, availableInnerWidth)),
                 pos[crossAxis]);
           }
           // If leading position is not defined or calculations result in Nan, default to border + margin
@@ -2908,7 +2914,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               YGFloatIsUndefined(child->getLayout().position[pos[crossAxis]])) {
             child->setLayoutPosition(
                 node->getLeadingBorder(crossAxis) +
-                    child->getLeadingMargin(crossAxis, availableInnerWidth),
+                    YGUnwrapFloatOptional(child->getLeadingMargin(
+                        crossAxis, availableInnerWidth)),
                 pos[crossAxis]);
           }
         } else {
@@ -3083,8 +3090,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
           }
           if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
             const float ascent = YGBaseline(child) +
-                child->getLeadingMargin(
-                    YGFlexDirectionColumn, availableInnerWidth);
+                YGUnwrapFloatOptional(child->getLeadingMargin(
+                    YGFlexDirectionColumn, availableInnerWidth));
             const float descent =
                 child->getLayout().measuredDimensions[YGDimensionHeight] +
                 child->getMarginForAxis(
@@ -3113,7 +3120,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignFlexStart: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getLeadingMargin(crossAxis, availableInnerWidth),
+                        YGUnwrapFloatOptional(child->getLeadingMargin(
+                            crossAxis, availableInnerWidth)),
                     pos[crossAxis]);
                 break;
               }
@@ -3138,7 +3146,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignStretch: {
                 child->setLayoutPosition(
                     currentLead +
-                        child->getLeadingMargin(crossAxis, availableInnerWidth),
+                        YGUnwrapFloatOptional(child->getLeadingMargin(
+                            crossAxis, availableInnerWidth)),
                     pos[crossAxis]);
 
                 // Remeasure child with the line height as it as been only measured with the

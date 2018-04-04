@@ -139,18 +139,17 @@ bool YGNode::isTrailingPosDefined(const YGFlexDirection& axis) const {
           ->unit != YGUnitUndefined;
 }
 
-float YGNode::getLeadingMargin(
-    const YGFlexDirection axis,
-    const float widthSize) const {
+YGFloatOptional YGNode::getLeadingMargin(
+    const YGFlexDirection& axis,
+    const float& widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
-    return YGUnwrapFloatOptional(
-        YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize));
+    return YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize);
   }
 
-  return YGUnwrapFloatOptional(YGResolveValueMargin(
+  return YGResolveValueMargin(
       *YGComputedEdgeValue(style_.margin, leading[axis], &YGValueZero),
-      widthSize));
+      widthSize);
 }
 
 float YGNode::getTrailingMargin(
@@ -171,7 +170,8 @@ float YGNode::getTrailingMargin(
 float YGNode::getMarginForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
-  return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
+  return YGUnwrapFloatOptional(getLeadingMargin(axis, widthSize)) +
+      getTrailingMargin(axis, widthSize);
 }
 
 // Setters
@@ -374,16 +374,16 @@ void YGNode::setPosition(
       relativePosition(crossAxis, crossSize);
 
   setLayoutPosition(
-      getLeadingMargin(mainAxis, ownerWidth) +
-          YGUnwrapFloatOptional(relativePositionMain),
+      YGUnwrapFloatOptional(
+          getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
       leading[mainAxis]);
   setLayoutPosition(
       getTrailingMargin(mainAxis, ownerWidth) +
           YGUnwrapFloatOptional(relativePositionMain),
       trailing[mainAxis]);
   setLayoutPosition(
-      getLeadingMargin(crossAxis, ownerWidth) +
-          YGUnwrapFloatOptional(relativePositionCross),
+      YGUnwrapFloatOptional(
+          getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
       leading[crossAxis]);
   setLayoutPosition(
       getTrailingMargin(crossAxis, ownerWidth) +
