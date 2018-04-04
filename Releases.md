@@ -74,7 +74,6 @@ Go to [Circle CI](https://circleci.com/gh/facebook/react-native) and look for th
 
 Write the release notes, or post in [React Native Core Contributors](https://www.facebook.com/groups/reactnativeoss/) that the RC is ready to find a voluteer. You can also use [react-native-release-notes](https://github.com/knowbody/react-native-release-notes) to generate a draft of release notes.
 
-
 To go through all the commits that went into a release, one way is to use the GitHub compare view:
 
 ```
