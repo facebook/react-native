@@ -14,7 +14,7 @@ YGFloatOptional::YGFloatOptional(const float& value)
     : value_(value), isUndefined_(false) {}
 YGFloatOptional::YGFloatOptional() : value_(0), isUndefined_(true) {}
 
-float YGFloatOptional::getValue() const {
+const float& YGFloatOptional::getValue() const {
   if (isUndefined_) {
     // Abort, accessing a value of an undefined float optional
     std::cerr << "Tried to get value of an undefined YGFloatOptional\n";
@@ -28,7 +28,7 @@ void YGFloatOptional::setValue(const float& val) {
   isUndefined_ = false;
 }
 
-bool YGFloatOptional::isUndefined() const {
+const bool& YGFloatOptional::isUndefined() const {
   return isUndefined_;
 }
 
