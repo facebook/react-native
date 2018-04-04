@@ -60,7 +60,7 @@ import com.android.build.OutputFile
 project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "../../../../",
+    root: "../../../",
     inputExcludes: ["android/**", "./**"]
 ]
 
