@@ -91,20 +91,20 @@ struct YGNode {
   float getTrailingPosition(const YGFlexDirection axis, const float axisSize) const;
   float getLeadingMargin(const YGFlexDirection axis, const float widthSize) const;
   float getTrailingMargin(const YGFlexDirection axis, const float widthSize) const;
-  float getLeadingBorder(const YGFlexDirection flexDirection) const;
-  float getTrailingBorder(const YGFlexDirection flexDirection) const;
+  float getLeadingBorder(const YGFlexDirection& flexDirection) const;
+  float getTrailingBorder(const YGFlexDirection& flexDirection) const;
   YGFloatOptional getLeadingPadding(
       const YGFlexDirection& axis,
       const float& widthSize) const;
   YGFloatOptional getTrailingPadding(
       const YGFlexDirection& axis,
       const float& widthSize) const;
-  float getLeadingPaddingAndBorder(
-      const YGFlexDirection axis,
-      const float widthSize) const;
-  float getTrailingPaddingAndBorder(
-      const YGFlexDirection axis,
-      const float widthSize) const;
+  YGFloatOptional getLeadingPaddingAndBorder(
+      const YGFlexDirection& axis,
+      const float& widthSize) const;
+  YGFloatOptional getTrailingPaddingAndBorder(
+      const YGFlexDirection& axis,
+      const float& widthSize) const;
   float getMarginForAxis(const YGFlexDirection axis, const float widthSize) const;
   // Setters
 

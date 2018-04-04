@@ -1014,8 +1014,9 @@ static const std::array<YGDimension, 4> dim = {
 static inline float YGNodePaddingAndBorderForAxis(const YGNodeRef node,
                                                   const YGFlexDirection axis,
                                                   const float widthSize) {
-  return node->getLeadingPaddingAndBorder(axis, widthSize) +
-      node->getTrailingPaddingAndBorder(axis, widthSize);
+  return YGUnwrapFloatOptional(
+      node->getLeadingPaddingAndBorder(axis, widthSize) +
+      node->getTrailingPaddingAndBorder(axis, widthSize));
 }
 
 static inline YGAlign YGNodeAlignItem(const YGNodeRef node, const YGNodeRef child) {
@@ -2357,8 +2358,8 @@ static void YGJustifyMainAxis(
     }
   }
 
-  const float leadingPaddingAndBorderMain =
-      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth);
+  const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
+      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
   collectedFlexItemsValues.mainDim =
       leadingPaddingAndBorderMain + leadingMainDim;
   collectedFlexItemsValues.crossDim = 0;
@@ -2438,8 +2439,8 @@ static void YGJustifyMainAxis(
       }
     }
   }
-  collectedFlexItemsValues.mainDim +=
-      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth);
+  collectedFlexItemsValues.mainDim += YGUnwrapFloatOptional(
+      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth));
 }
 
 //
@@ -2639,8 +2640,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
   const float crossAxisownerSize = isMainAxisRow ? ownerHeight : ownerWidth;
 
-  const float leadingPaddingAndBorderCross =
-      node->getLeadingPaddingAndBorder(crossAxis, ownerWidth);
+  const float leadingPaddingAndBorderCross = YGUnwrapFloatOptional(
+      node->getLeadingPaddingAndBorder(crossAxis, ownerWidth));
   const float paddingAndBorderAxisMain = YGNodePaddingAndBorderForAxis(node, mainAxis, ownerWidth);
   const float paddingAndBorderAxisCross =
       YGNodePaddingAndBorderForAxis(node, crossAxis, ownerWidth);
