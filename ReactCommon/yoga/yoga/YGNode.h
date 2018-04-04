@@ -114,7 +114,9 @@ struct YGNode {
   YGFloatOptional getTrailingPaddingAndBorder(
       const YGFlexDirection& axis,
       const float& widthSize) const;
-  float getMarginForAxis(const YGFlexDirection axis, const float widthSize) const;
+  YGFloatOptional getMarginForAxis(
+      const YGFlexDirection& axis,
+      const float& widthSize) const;
   // Setters
 
   void setContext(void* context);

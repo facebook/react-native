@@ -165,12 +165,10 @@ YGFloatOptional YGNode::getTrailingMargin(
       widthSize);
 }
 
-// TODO: Make its return type to YGFloatOptional
-float YGNode::getMarginForAxis(
-    const YGFlexDirection axis,
-    const float widthSize) const {
-  return YGUnwrapFloatOptional(
-      getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize));
+YGFloatOptional YGNode::getMarginForAxis(
+    const YGFlexDirection& axis,
+    const float& widthSize) const {
+  return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
 // Setters
