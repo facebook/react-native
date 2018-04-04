@@ -1408,7 +1408,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
       childWidth = node->getLayout().measuredDimensions[YGDimensionWidth] -
           (node->getLeadingBorder(YGFlexDirectionRow) +
            node->getTrailingBorder(YGFlexDirectionRow)) -
-          (child->getLeadingPosition(YGFlexDirectionRow, width) +
+          (YGUnwrapFloatOptional(
+               child->getLeadingPosition(YGFlexDirectionRow, width)) +
            child->getTrailingPosition(YGFlexDirectionRow, width));
       childWidth = YGNodeBoundAxis(child, YGFlexDirectionRow, childWidth, width, width);
     }
@@ -1427,7 +1428,8 @@ static void YGNodeAbsoluteLayoutChild(const YGNodeRef node,
       childHeight = node->getLayout().measuredDimensions[YGDimensionHeight] -
           (node->getLeadingBorder(YGFlexDirectionColumn) +
            node->getTrailingBorder(YGFlexDirectionColumn)) -
-          (child->getLeadingPosition(YGFlexDirectionColumn, height) +
+          (YGUnwrapFloatOptional(
+               child->getLeadingPosition(YGFlexDirectionColumn, height)) +
            child->getTrailingPosition(YGFlexDirectionColumn, height));
       childHeight = YGNodeBoundAxis(child, YGFlexDirectionColumn, childHeight, height, width);
     }
@@ -2390,7 +2392,8 @@ static void YGJustifyMainAxis(
         // defined, we override the position to whatever the user said
         // (and margin/border).
         child->setLayoutPosition(
-            child->getLeadingPosition(mainAxis, availableInnerMainDim) +
+            YGUnwrapFloatOptional(
+                child->getLeadingPosition(mainAxis, availableInnerMainDim)) +
                 node->getLeadingBorder(mainAxis) +
                 child->getLeadingMargin(mainAxis, availableInnerWidth),
             pos[mainAxis]);
@@ -2893,7 +2896,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               child->isLeadingPositionDefined(crossAxis);
           if (isChildLeadingPosDefined) {
             child->setLayoutPosition(
-                child->getLeadingPosition(crossAxis, availableInnerCrossDim) +
+                YGUnwrapFloatOptional(child->getLeadingPosition(
+                    crossAxis, availableInnerCrossDim)) +
                     node->getLeadingBorder(crossAxis) +
                     child->getLeadingMargin(crossAxis, availableInnerWidth),
                 pos[crossAxis]);
@@ -3178,8 +3182,8 @@ static void YGNodelayoutImpl(const YGNodeRef node,
               case YGAlignBaseline: {
                 child->setLayoutPosition(
                     currentLead + maxAscentForCurrentLine - YGBaseline(child) +
-                        child->getLeadingPosition(
-                            YGFlexDirectionColumn, availableInnerCrossDim),
+                        YGUnwrapFloatOptional(child->getLeadingPosition(
+                            YGFlexDirectionColumn, availableInnerCrossDim)),
                     YGEdgeTop);
 
                 break;

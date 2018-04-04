@@ -85,14 +85,14 @@ std::array<YGValue, 2> YGNode::getResolvedDimensions() const {
   return resolvedDimensions_;
 }
 
-float YGNode::getLeadingPosition(
-    const YGFlexDirection axis,
-    const float axisSize) const {
+YGFloatOptional YGNode::getLeadingPosition(
+    const YGFlexDirection& axis,
+    const float& axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
     const YGValue* leadingPosition =
         YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined);
     if (leadingPosition->unit != YGUnitUndefined) {
-      return YGUnwrapFloatOptional(YGResolveValue(*leadingPosition, axisSize));
+      return YGResolveValue(*leadingPosition, axisSize);
     }
   }
 
@@ -100,8 +100,8 @@ float YGNode::getLeadingPosition(
       YGComputedEdgeValue(style_.position, leading[axis], &YGValueUndefined);
 
   return leadingPosition->unit == YGUnitUndefined
-      ? 0.0f
-      : YGUnwrapFloatOptional(YGResolveValue(*leadingPosition, axisSize));
+      ? YGFloatOptional(0)
+      : YGResolveValue(*leadingPosition, axisSize);
 }
 
 float YGNode::getTrailingPosition(
@@ -343,8 +343,9 @@ void YGNode::setLayoutDimension(float dimension, int index) {
 float YGNode::relativePosition(
     const YGFlexDirection axis,
     const float axisSize) {
-  return isLeadingPositionDefined(axis) ? getLeadingPosition(axis, axisSize)
-                                        : -getTrailingPosition(axis, axisSize);
+  return isLeadingPositionDefined(axis)
+      ? YGUnwrapFloatOptional(getLeadingPosition(axis, axisSize))
+      : -getTrailingPosition(axis, axisSize);
 }
 
 void YGNode::setPosition(
