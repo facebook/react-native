@@ -87,16 +87,6 @@ struct YGCachedMeasurement {
 // layouts should not require more than 16 entries to fit within the cache.
 #define YG_MAX_CACHED_RESULT_COUNT 16
 
-struct YGConfig {
-  bool experimentalFeatures[YGExperimentalFeatureCount + 1];
-  bool useWebDefaults;
-  bool useLegacyStretchBehaviour;
-  bool shouldDiffLayoutWithoutLegacyStretchBehaviour;
-  float pointScaleFactor;
-  YGLogger logger;
-  YGCloneNodeFunc cloneNodeCallback;
-  void* context;
-};
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
