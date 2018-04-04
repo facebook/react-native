@@ -1178,19 +1178,21 @@ static void YGConstrainMaxSizeForMode(const YGNodeRef node,
                                       const float ownerWidth,
                                       YGMeasureMode *mode,
                                       float *size) {
-  const float maxSize =
-      YGUnwrapFloatOptional(YGResolveValue(
-          node->getStyle().maxDimensions[dim[axis]], ownerAxisSize)) +
-      node->getMarginForAxis(axis, ownerWidth);
+  const YGFloatOptional maxSize =
+      YGResolveValue(
+          node->getStyle().maxDimensions[dim[axis]], ownerAxisSize) +
+      YGFloatOptional(node->getMarginForAxis(axis, ownerWidth));
   switch (*mode) {
     case YGMeasureModeExactly:
     case YGMeasureModeAtMost:
-      *size = (YGFloatIsUndefined(maxSize) || *size < maxSize) ? *size : maxSize;
+      *size = (maxSize.isUndefined() || *size < maxSize.getValue())
+          ? *size
+          : maxSize.getValue();
       break;
     case YGMeasureModeUndefined:
-      if (!YGFloatIsUndefined(maxSize)) {
+      if (!maxSize.isUndefined()) {
         *mode = YGMeasureModeAtMost;
-        *size = maxSize;
+        *size = maxSize.getValue();
       }
       break;
   }

@@ -24,6 +24,7 @@ struct YGFloatOptional {
 
   const bool& isUndefined() const;
 
+  YGFloatOptional operator+(const YGFloatOptional& op);
   bool operator==(const YGFloatOptional& op) const;
   bool operator!=(const YGFloatOptional& op) const;
 

@@ -10,8 +10,16 @@
 #include <iostream>
 #include "Yoga.h"
 
-YGFloatOptional::YGFloatOptional(const float& value)
-    : value_(value), isUndefined_(false) {}
+YGFloatOptional::YGFloatOptional(const float& value) {
+  if (YGFloatIsUndefined(value)) {
+    isUndefined_ = true;
+    value_ = 0;
+  } else {
+    value_ = value;
+    isUndefined_ = false;
+  }
+}
+
 YGFloatOptional::YGFloatOptional() : value_(0), isUndefined_(true) {}
 
 const float& YGFloatOptional::getValue() const {
@@ -52,4 +60,11 @@ bool YGFloatOptional::operator==(const float& val) const {
 
 bool YGFloatOptional::operator!=(const float& val) const {
   return !(*this == val);
+}
+
+YGFloatOptional YGFloatOptional::operator+(const YGFloatOptional& op) {
+  if (!isUndefined_ && !op.isUndefined_) {
+    return YGFloatOptional(value_ + op.value_);
+  }
+  return YGFloatOptional();
 }

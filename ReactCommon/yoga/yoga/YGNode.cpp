@@ -167,6 +167,7 @@ float YGNode::getTrailingMargin(
       widthSize));
 }
 
+// TODO: Make its return type to YGFloatOptional
 float YGNode::getMarginForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
