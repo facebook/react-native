@@ -99,7 +99,8 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
 }
 
 function runOnSimulator(xcodeProject, args, scheme) {
-  return new Promise((resolve) => {
+  return Promise.resolve()
+  .then(() => {
     try {
       var simulators = JSON.parse(
       child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -142,8 +143,8 @@ function runOnSimulator(xcodeProject, args, scheme) {
       }
     }
 
-    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose, args.port)
-      .then((appName) => resolve({ udid: selectedSimulator.udid, appName }));
+    return buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose, args.port)
+      .then((appName) => ({ udid: selectedSimulator.udid, appName }));
   })
   .then(({udid, appName}) => {
     if (!appName) {
@@ -213,12 +214,16 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
         console.log(data.toString());
       }
     });
+    const errOutputChunks = [];
     buildProcess.stderr.on('data', function(data) {
-      console.error(data.toString());
+      errOutputChunks.push(data.toString());
     });
-    buildProcess.on('close', function(code) {
+    buildProcess.on('close', function(exitCode) {
       if (xcpretty) {
         xcpretty.stdin.end();
+      }
+      if (exitCode !== 0) {
+        return reject(errOutputChunks.join('\n'));
       }
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
       let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/m.exec(buildOutput);
