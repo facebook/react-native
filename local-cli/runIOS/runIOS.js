@@ -24,7 +24,7 @@ const getBuildPath = function (configuration = 'Debug', appName, isDevice) {
     device = 'iphonesimulator';
   }
 
-  return `Build/Products/${configuration}-${device}/${appName}.app`;
+  return `build/Build/Products/${configuration}-${device}/${appName}.app`;
 };
 const xcprettyAvailable = function() {
   try {
