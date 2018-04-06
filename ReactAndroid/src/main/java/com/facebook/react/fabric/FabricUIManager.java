@@ -256,20 +256,12 @@ public class FabricUIManager implements UIManager {
           currentRootShadowNode,
           "Root view with tag " + rootTag + " must be added before completeRoot is called");
 
-
       currentRootShadowNode = calculateDiffingAndCreateNewRootNode(currentRootShadowNode, childList);
-
-      if (DEBUG) {
-        Log.d(TAG, "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
-      }
-
-      notifyOnBeforeLayoutRecursive(currentRootShadowNode);
-      currentRootShadowNode.calculateLayout();
 
       if (DEBUG) {
         Log.d(
           TAG,
-          "ReactShadowNodeHierarchy after calculate Layout: " + currentRootShadowNode.getHierarchyInfo());
+          "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
       }
 
       applyUpdatesRecursive(currentRootShadowNode, 0, 0);
@@ -299,6 +291,21 @@ public class FabricUIManager implements UIManager {
       appendChild(newRootShadowNode, child);
     }
 
+    if (DEBUG) {
+      Log.d(
+        TAG,
+        "ReactShadowNodeHierarchy before calculateLayout: " + newRootShadowNode.getHierarchyInfo());
+    }
+
+    notifyOnBeforeLayoutRecursive(newRootShadowNode);
+    newRootShadowNode.calculateLayout();
+
+    if (DEBUG) {
+      Log.d(
+        TAG,
+        "ReactShadowNodeHierarchy after calculateLayout: " + newRootShadowNode.getHierarchyInfo());
+    }
+    
     mFabricReconciler.manageChildren(currentRootShadowNode, newRootShadowNode);
     return newRootShadowNode;
   }
