@@ -112,6 +112,24 @@ function runOnSimulator(xcodeProject, args, scheme) {
     if (!selectedSimulator) {
       throw new Error(`Could not find ${args.simulator} simulator`);
     }
+    
+    /**
+		 * Booting simulator through `xcrun simctl boot` will boot it in the `headless` mode
+		 * (running in the background).
+		 *
+		 * In order for user to see the app and the simulator itself, we have to make sure
+		 * that the Simulator.app is running.
+		 *
+		 * We also pass it `-CurrentDeviceUDID` so that when we launch it for the first time,
+		 * it will not boot the "default" device, but the one we set. If the app is already running,
+		 * this flag has no effect.
+		 */
+		child_process.execFileSync('open', [
+			'/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app',
+			'--args',
+			'-CurrentDeviceUDID',
+			selectedSimulator.udid
+		]);
 
     if (!selectedSimulator.booted) {
       const simulatorFullName = formattedDeviceName(selectedSimulator);
