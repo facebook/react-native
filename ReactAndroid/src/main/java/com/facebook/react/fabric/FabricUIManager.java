@@ -329,6 +329,9 @@ public class FabricUIManager implements UIManager {
       boolean frameDidChange =
           node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
     }
+    // Set the reference to the OriginalReactShadowNode to NULL, as the tree is already committed
+    // and we do not need to hold references to the previous tree anymore
+    node.setOriginalReactShadowNode(null);
     node.markUpdateSeen();
   }
 

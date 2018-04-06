@@ -131,13 +131,16 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mViewClassName = original.mViewClassName;
     mThemedContext = original.mThemedContext;
     mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
-    mNodeUpdated = original.mNodeUpdated;
     mIsLayoutOnly = original.mIsLayoutOnly;
     mNativeParent = original.mNativeParent;
-    mScreenX = original.mScreenX;
-    mScreenY = original.mScreenY;
-    mScreenWidth = original.mScreenWidth;
-    mScreenHeight = original.mScreenHeight;
+    // Cloned nodes should be always updated.
+    mNodeUpdated = true;
+    // "cached" screen coordinates are not cloned because FabricJS not always clone the last
+    // ReactShadowNode that was rendered in the screen.
+    mScreenX = 0;
+    mScreenY = 0;
+    mScreenWidth = 0;
+    mScreenHeight = 0;
     arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
     arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
     mNewProps = null;
@@ -148,6 +151,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private void replaceChild(ReactShadowNodeImpl newNode, int childIndex) {
     mChildren.remove(childIndex);
     mChildren.add(childIndex, newNode);
+    newNode.mParent = this;
   }
 
   /**
@@ -164,14 +168,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
     copy.mTotalNativeChildren = mTotalNativeChildren;
     copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
-    copy.mYogaNode.setData(this);
-    if (mChildren != null) {
-      for (ReactShadowNode child : mChildren) {
-        if (child.getOriginalReactShadowNode() == null) {
-          child.setOriginalReactShadowNode(child);
-        }
-      }
-    }
+    copy.mYogaNode.setData(copy);
     return copy;
   }
 
@@ -182,7 +179,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     copy.mNativeChildren = null;
     copy.mChildren = null;
     copy.mTotalNativeChildren = 0;
-    copy.mYogaNode.setData(this);
+    copy.mYogaNode.setData(copy);
     return copy;
   }
 
@@ -305,16 +302,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
                 + "' to a '"
                 + toString()
                 + "')");
-      }
-      // TODO: T26729293 This is a temporary code that will be replaced as part of T26729293.
-      YogaNode parent = childYogaNode.getOwner();
-      if (parent != null) {
-        for (int k = 0; k < parent.getChildCount(); k++) {
-          if (parent.getChildAt(k) == childYogaNode) {
-            parent.removeChildAt(k);
-            break;
-          }
-        }
       }
       mYogaNode.addChildAt(childYogaNode, i);
     }
