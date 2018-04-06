@@ -28,6 +28,6 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceSizeMeasureMode) {
 RCT_EXTERN void RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
   CGSize size,
   RCTSurfaceSizeMeasureMode sizeMeasureMode,
-  CGSize &minimumSize,
-  CGSize &maximumSize
+  CGSize *minimumSize,
+  CGSize *maximumSize
 );
