@@ -11,6 +11,8 @@
 		001BFCD01D8381DE008E587E /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
 		008341F61D1DB34400876D9A /* RCTJSStackFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 008341F41D1DB34400876D9A /* RCTJSStackFrame.m */; };
+		086EAE7520771408001C89CD /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 086EAE7320771408001C89CD /* YGConfig.cpp */; };
+		086EAE7620771408001C89CD /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 086EAE7420771408001C89CD /* YGConfig.h */; };
 		130443A11E3FEAA900D93A67 /* RCTFollyConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304439F1E3FEAA900D93A67 /* RCTFollyConvert.h */; };
 		130443A21E3FEAA900D93A67 /* RCTFollyConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = 130443A01E3FEAA900D93A67 /* RCTFollyConvert.mm */; };
 		130443A31E3FEAAE00D93A67 /* RCTFollyConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = 1304439F1E3FEAA900D93A67 /* RCTFollyConvert.h */; };
@@ -1852,6 +1854,8 @@
 		006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMultipartDataTask.m; sourceTree = "<group>"; };
 		008341F41D1DB34400876D9A /* RCTJSStackFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSStackFrame.m; sourceTree = "<group>"; };
 		008341F51D1DB34400876D9A /* RCTJSStackFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJSStackFrame.h; sourceTree = "<group>"; };
+		086EAE7320771408001C89CD /* YGConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGConfig.cpp; sourceTree = "<group>"; };
+		086EAE7420771408001C89CD /* YGConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGConfig.h; sourceTree = "<group>"; };
 		1304439F1E3FEAA900D93A67 /* RCTFollyConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTFollyConvert.h; path = CxxUtils/RCTFollyConvert.h; sourceTree = "<group>"; };
 		130443A01E3FEAA900D93A67 /* RCTFollyConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RCTFollyConvert.mm; path = CxxUtils/RCTFollyConvert.mm; sourceTree = "<group>"; };
 		130443C31E401A8C00D93A67 /* RCTConvert+Transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+Transform.h"; sourceTree = "<group>"; };
@@ -2355,6 +2359,8 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				086EAE7320771408001C89CD /* YGConfig.cpp */,
+				086EAE7420771408001C89CD /* YGConfig.h */,
 				53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */,
 				53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */,
 				5343895E203905B6008E0CB3 /* YGLayout.cpp */,
@@ -3387,6 +3393,7 @@
 				53756E3C2004FFFC00FBBD99 /* Utils.h in Headers */,
 				5376C5E61FC6DDC10083513D /* YGNodePrint.h in Headers */,
 				133957891DF76D3500EC27BE /* YGMacros.h in Headers */,
+				086EAE7620771408001C89CD /* YGConfig.h in Headers */,
 				53438964203905BF008E0CB3 /* YGLayout.h in Headers */,
 				53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */,
 			);
@@ -4336,6 +4343,7 @@
 				53756E3B2004FFFA00FBBD99 /* Utils.cpp in Sources */,
 				53438962203905BB008E0CB3 /* YGLayout.cpp in Sources */,
 				5376C5E41FC6DDBC0083513D /* YGNodePrint.cpp in Sources */,
+				086EAE7520771408001C89CD /* YGConfig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
