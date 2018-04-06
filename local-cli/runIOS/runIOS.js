@@ -124,10 +124,10 @@ function runOnSimulator(xcodeProject, args, scheme) {
       }
     }
 
-    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
-      .then((appName) => resolve(selectedSimulator.udid, appName));
+    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose, args.port)
+      .then((appName) => resolve({ udid: selectedSimulator.udid, appName }));
   })
-  .then((udid, appName) => {
+  .then(({udid, appName}) => {
     if (!appName) {
       appName = scheme;
     }
