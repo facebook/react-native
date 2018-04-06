@@ -1198,107 +1198,152 @@ function createPortal(children, containerInfo, implementation) {
   };
 }
 var TouchHistoryMath = {
-    centroidDimension: function(
-      touchHistory,
-      touchesChangedAfter,
-      isXAxis,
-      ofCurrent
-    ) {
-      var touchBank = touchHistory.touchBank,
-        total = 0,
-        count = 0;
-      touchHistory =
-        1 === touchHistory.numberActiveTouches
-          ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch]
-          : null;
-      if (null !== touchHistory)
-        touchHistory.touchActive &&
-          touchHistory.currentTimeStamp > touchesChangedAfter &&
+  centroidDimension: function(
+    touchHistory,
+    touchesChangedAfter,
+    isXAxis,
+    ofCurrent
+  ) {
+    var touchBank = touchHistory.touchBank,
+      total = 0,
+      count = 0;
+    touchHistory =
+      1 === touchHistory.numberActiveTouches
+        ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch]
+        : null;
+    if (null !== touchHistory)
+      touchHistory.touchActive &&
+        touchHistory.currentTimeStamp > touchesChangedAfter &&
+        ((total +=
+          ofCurrent && isXAxis
+            ? touchHistory.currentPageX
+            : ofCurrent && !isXAxis
+              ? touchHistory.currentPageY
+              : !ofCurrent && isXAxis
+                ? touchHistory.previousPageX
+                : touchHistory.previousPageY),
+        (count = 1));
+    else
+      for (touchHistory = 0; touchHistory < touchBank.length; touchHistory++) {
+        var touchTrack = touchBank[touchHistory];
+        null !== touchTrack &&
+          void 0 !== touchTrack &&
+          touchTrack.touchActive &&
+          touchTrack.currentTimeStamp >= touchesChangedAfter &&
           ((total +=
             ofCurrent && isXAxis
-              ? touchHistory.currentPageX
+              ? touchTrack.currentPageX
               : ofCurrent && !isXAxis
-                ? touchHistory.currentPageY
+                ? touchTrack.currentPageY
                 : !ofCurrent && isXAxis
-                  ? touchHistory.previousPageX
-                  : touchHistory.previousPageY),
-          (count = 1));
-      else
-        for (
-          touchHistory = 0;
-          touchHistory < touchBank.length;
-          touchHistory++
-        ) {
-          var touchTrack = touchBank[touchHistory];
-          null !== touchTrack &&
-            void 0 !== touchTrack &&
-            touchTrack.touchActive &&
-            touchTrack.currentTimeStamp >= touchesChangedAfter &&
-            ((total +=
-              ofCurrent && isXAxis
-                ? touchTrack.currentPageX
-                : ofCurrent && !isXAxis
-                  ? touchTrack.currentPageY
-                  : !ofCurrent && isXAxis
-                    ? touchTrack.previousPageX
-                    : touchTrack.previousPageY),
-            count++);
-        }
-      return 0 < count ? total / count : TouchHistoryMath.noCentroid;
-    },
-    currentCentroidXOfTouchesChangedAfter: function(
-      touchHistory,
-      touchesChangedAfter
-    ) {
-      return TouchHistoryMath.centroidDimension(
-        touchHistory,
-        touchesChangedAfter,
-        !0,
-        !0
-      );
-    },
-    currentCentroidYOfTouchesChangedAfter: function(
-      touchHistory,
-      touchesChangedAfter
-    ) {
-      return TouchHistoryMath.centroidDimension(
-        touchHistory,
-        touchesChangedAfter,
-        !1,
-        !0
-      );
-    },
-    previousCentroidXOfTouchesChangedAfter: function(
-      touchHistory,
-      touchesChangedAfter
-    ) {
-      return TouchHistoryMath.centroidDimension(
-        touchHistory,
-        touchesChangedAfter,
-        !0,
-        !1
-      );
-    },
-    previousCentroidYOfTouchesChangedAfter: function(
-      touchHistory,
-      touchesChangedAfter
-    ) {
-      return TouchHistoryMath.centroidDimension(
-        touchHistory,
-        touchesChangedAfter,
-        !1,
-        !1
-      );
-    },
-    currentCentroidX: function(touchHistory) {
-      return TouchHistoryMath.centroidDimension(touchHistory, 0, !0, !0);
-    },
-    currentCentroidY: function(touchHistory) {
-      return TouchHistoryMath.centroidDimension(touchHistory, 0, !1, !0);
-    },
-    noCentroid: -1
+                  ? touchTrack.previousPageX
+                  : touchTrack.previousPageY),
+          count++);
+      }
+    return 0 < count ? total / count : TouchHistoryMath.noCentroid;
   },
-  objects = {},
+  currentCentroidXOfTouchesChangedAfter: function(
+    touchHistory,
+    touchesChangedAfter
+  ) {
+    return TouchHistoryMath.centroidDimension(
+      touchHistory,
+      touchesChangedAfter,
+      !0,
+      !0
+    );
+  },
+  currentCentroidYOfTouchesChangedAfter: function(
+    touchHistory,
+    touchesChangedAfter
+  ) {
+    return TouchHistoryMath.centroidDimension(
+      touchHistory,
+      touchesChangedAfter,
+      !1,
+      !0
+    );
+  },
+  previousCentroidXOfTouchesChangedAfter: function(
+    touchHistory,
+    touchesChangedAfter
+  ) {
+    return TouchHistoryMath.centroidDimension(
+      touchHistory,
+      touchesChangedAfter,
+      !0,
+      !1
+    );
+  },
+  previousCentroidYOfTouchesChangedAfter: function(
+    touchHistory,
+    touchesChangedAfter
+  ) {
+    return TouchHistoryMath.centroidDimension(
+      touchHistory,
+      touchesChangedAfter,
+      !1,
+      !1
+    );
+  },
+  currentCentroidX: function(touchHistory) {
+    return TouchHistoryMath.centroidDimension(touchHistory, 0, !0, !0);
+  },
+  currentCentroidY: function(touchHistory) {
+    return TouchHistoryMath.centroidDimension(touchHistory, 0, !1, !0);
+  },
+  noCentroid: -1
+};
+function getComponentName(fiber) {
+  fiber = fiber.type;
+  if ("function" === typeof fiber) return fiber.displayName || fiber.name;
+  if ("string" === typeof fiber) return fiber;
+  switch (fiber) {
+    case REACT_FRAGMENT_TYPE:
+      return "ReactFragment";
+    case REACT_PORTAL_TYPE:
+      return "ReactPortal";
+    case REACT_CALL_TYPE:
+      return "ReactCall";
+    case REACT_RETURN_TYPE:
+      return "ReactReturn";
+  }
+  return null;
+}
+function getStackAddendumByWorkInProgressFiber(workInProgress) {
+  var info = "";
+  do {
+    a: switch (workInProgress.tag) {
+      case 0:
+      case 1:
+      case 2:
+      case 5:
+        var owner = workInProgress._debugOwner,
+          source = workInProgress._debugSource;
+        var JSCompiler_inline_result = getComponentName(workInProgress);
+        var ownerName = null;
+        owner && (ownerName = getComponentName(owner));
+        owner = source;
+        JSCompiler_inline_result =
+          "\n    in " +
+          (JSCompiler_inline_result || "Unknown") +
+          (owner
+            ? " (at " +
+              owner.fileName.replace(/^.*[\\\/]/, "") +
+              ":" +
+              owner.lineNumber +
+              ")"
+            : ownerName ? " (created by " + ownerName + ")" : "");
+        break a;
+      default:
+        JSCompiler_inline_result = "";
+    }
+    info += JSCompiler_inline_result;
+    workInProgress = workInProgress["return"];
+  } while (workInProgress);
+  return info;
+}
+var objects = {},
   uniqueID = 1,
   emptyObject$2 = {},
   ReactNativePropRegistry = (function() {
@@ -1561,22 +1606,6 @@ function mountSafeCallback(context, callback) {
 }
 var ReactCurrentOwner =
   React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner;
-function getComponentName(fiber) {
-  fiber = fiber.type;
-  if ("function" === typeof fiber) return fiber.displayName || fiber.name;
-  if ("string" === typeof fiber) return fiber;
-  switch (fiber) {
-    case REACT_FRAGMENT_TYPE:
-      return "ReactFragment";
-    case REACT_PORTAL_TYPE:
-      return "ReactPortal";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
-  }
-  return null;
-}
 function findHostInstance() {
   return null;
 }
@@ -1987,39 +2016,6 @@ function onCommitRoot(root) {
 }
 function onCommitUnmount(fiber) {
   "function" === typeof onCommitFiberUnmount && onCommitFiberUnmount(fiber);
-}
-function getStackAddendumByWorkInProgressFiber(workInProgress) {
-  var info = "";
-  do {
-    a: switch (workInProgress.tag) {
-      case 0:
-      case 1:
-      case 2:
-      case 5:
-        var owner = workInProgress._debugOwner,
-          source = workInProgress._debugSource;
-        var JSCompiler_inline_result = getComponentName(workInProgress);
-        var ownerName = null;
-        owner && (ownerName = getComponentName(owner));
-        owner = source;
-        JSCompiler_inline_result =
-          "\n    in " +
-          (JSCompiler_inline_result || "Unknown") +
-          (owner
-            ? " (at " +
-              owner.fileName.replace(/^.*[\\\/]/, "") +
-              ":" +
-              owner.lineNumber +
-              ")"
-            : ownerName ? " (created by " + ownerName + ")" : "");
-        break a;
-      default:
-        JSCompiler_inline_result = "";
-    }
-    info += JSCompiler_inline_result;
-    workInProgress = workInProgress["return"];
-  } while (workInProgress);
-  return info;
 }
 var _require = require("ReactFeatureFlags"),
   enableGetDerivedStateFromCatch = _require.enableGetDerivedStateFromCatch,
@@ -3926,33 +3922,40 @@ function ReactFiberBeginWork(
             renderExpirationTime
           );
         case 12:
-          fn = workInProgress.type;
-          unmaskedContext = workInProgress.pendingProps;
-          var oldProps = workInProgress.memoizedProps;
-          props = fn._currentValue;
-          updateQueue = fn._changedBits;
-          if (
-            hasLegacyContextChanged() ||
-            0 !== updateQueue ||
-            oldProps !== unmaskedContext
-          ) {
-            workInProgress.memoizedProps = unmaskedContext;
-            oldProps = unmaskedContext.unstable_observedBits;
-            if (void 0 === oldProps || null === oldProps) oldProps = 1073741823;
-            workInProgress.stateNode = oldProps;
-            0 !== (updateQueue & oldProps) &&
-              propagateContextChange(
-                workInProgress,
-                fn,
-                updateQueue,
-                renderExpirationTime
-              );
-            renderExpirationTime = unmaskedContext.children;
-            renderExpirationTime = renderExpirationTime(props);
-            reconcileChildren(current, workInProgress, renderExpirationTime);
-            current = workInProgress.child;
-          } else
-            current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+          a: {
+            fn = workInProgress.type;
+            unmaskedContext = workInProgress.pendingProps;
+            updateQueue = workInProgress.memoizedProps;
+            props = fn._currentValue;
+            var changedBits = fn._changedBits;
+            if (
+              hasLegacyContextChanged() ||
+              0 !== changedBits ||
+              updateQueue !== unmaskedContext
+            ) {
+              workInProgress.memoizedProps = unmaskedContext;
+              var observedBits = unmaskedContext.unstable_observedBits;
+              if (void 0 === observedBits || null === observedBits)
+                observedBits = 1073741823;
+              workInProgress.stateNode = observedBits;
+              if (0 !== (changedBits & observedBits))
+                propagateContextChange(
+                  workInProgress,
+                  fn,
+                  changedBits,
+                  renderExpirationTime
+                );
+              else if (updateQueue === unmaskedContext) {
+                current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+                break a;
+              }
+              renderExpirationTime = unmaskedContext.children;
+              renderExpirationTime = renderExpirationTime(props);
+              reconcileChildren(current, workInProgress, renderExpirationTime);
+              current = workInProgress.child;
+            } else
+              current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+          }
           return current;
         default:
           invariant(
@@ -6554,6 +6557,11 @@ var roots = new Map(),
           "window" !== view &&
           (view = findNumericNodeHandleFiber(view) || "window");
         return UIManager.__takeSnapshot(view, options);
+      },
+      computeComponentStackForErrorReporting: function(reactTag) {
+        return (reactTag = getInstanceFromTag(reactTag))
+          ? getStackAddendumByWorkInProgressFiber(reactTag)
+          : "";
       }
     }
   };

@@ -2995,6 +2995,75 @@ var TouchHistoryMath = {
 
 var ReactVersion = "16.3.1";
 
+var describeComponentFrame = function(name, source, ownerName) {
+  return (
+    "\n    in " +
+    (name || "Unknown") +
+    (source
+      ? " (at " +
+        source.fileName.replace(/^.*[\\\/]/, "") +
+        ":" +
+        source.lineNumber +
+        ")"
+      : ownerName ? " (created by " + ownerName + ")" : "")
+  );
+};
+
+function getComponentName(fiber) {
+  var type = fiber.type;
+
+  if (typeof type === "function") {
+    return type.displayName || type.name;
+  }
+  if (typeof type === "string") {
+    return type;
+  }
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return "ReactFragment";
+    case REACT_PORTAL_TYPE:
+      return "ReactPortal";
+    case REACT_CALL_TYPE:
+      return "ReactCall";
+    case REACT_RETURN_TYPE:
+      return "ReactReturn";
+  }
+  return null;
+}
+
+function describeFiber(fiber) {
+  switch (fiber.tag) {
+    case IndeterminateComponent:
+    case FunctionalComponent:
+    case ClassComponent:
+    case HostComponent:
+      var owner = fiber._debugOwner;
+      var source = fiber._debugSource;
+      var name = getComponentName(fiber);
+      var ownerName = null;
+      if (owner) {
+        ownerName = getComponentName(owner);
+      }
+      return describeComponentFrame(name, source, ownerName);
+    default:
+      return "";
+  }
+}
+
+// This function can only be called with a work-in-progress fiber and
+// only during begin or complete phase. Do not call it under any other
+// circumstances.
+function getStackAddendumByWorkInProgressFiber(workInProgress) {
+  var info = "";
+  var node = workInProgress;
+  do {
+    info += describeFiber(node);
+    // Otherwise this return pointer might point to the wrong tree:
+    node = node["return"];
+  } while (node);
+  return info;
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -3588,28 +3657,6 @@ var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 
 var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
 var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
-
-function getComponentName(fiber) {
-  var type = fiber.type;
-
-  if (typeof type === "function") {
-    return type.displayName || type.name;
-  }
-  if (typeof type === "string") {
-    return type;
-  }
-  switch (type) {
-    case REACT_FRAGMENT_TYPE:
-      return "ReactFragment";
-    case REACT_PORTAL_TYPE:
-      return "ReactPortal";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
-  }
-  return null;
-}
 
 // TODO: Share this module between Fabric and React Native renderers
 // so that both can be used in the same tree.
@@ -4878,53 +4925,6 @@ function onCommitUnmount(fiber) {
   }
 }
 
-var describeComponentFrame = function(name, source, ownerName) {
-  return (
-    "\n    in " +
-    (name || "Unknown") +
-    (source
-      ? " (at " +
-        source.fileName.replace(/^.*[\\\/]/, "") +
-        ":" +
-        source.lineNumber +
-        ")"
-      : ownerName ? " (created by " + ownerName + ")" : "")
-  );
-};
-
-function describeFiber(fiber) {
-  switch (fiber.tag) {
-    case IndeterminateComponent:
-    case FunctionalComponent:
-    case ClassComponent:
-    case HostComponent:
-      var owner = fiber._debugOwner;
-      var source = fiber._debugSource;
-      var name = getComponentName(fiber);
-      var ownerName = null;
-      if (owner) {
-        ownerName = getComponentName(owner);
-      }
-      return describeComponentFrame(name, source, ownerName);
-    default:
-      return "";
-  }
-}
-
-// This function can only be called with a work-in-progress fiber and
-// only during begin or complete phase. Do not call it under any other
-// circumstances.
-function getStackAddendumByWorkInProgressFiber(workInProgress) {
-  var info = "";
-  var node = workInProgress;
-  do {
-    info += describeFiber(node);
-    // Otherwise this return pointer might point to the wrong tree:
-    node = node["return"];
-  } while (node);
-  return info;
-}
-
 /**
  * Forked from fbjs/warning:
  * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
@@ -5019,6 +5019,14 @@ var ReactStrictModeWarnings = {
   var didWarnAboutDeprecatedLifecycles = new Set();
   var didWarnAboutUnsafeLifecycles = new Set();
 
+  var setToSortedString = function(set) {
+    var array = [];
+    set.forEach(function(value) {
+      array.push(value);
+    });
+    return array.sort().join(", ");
+  };
+
   ReactStrictModeWarnings.discardPendingWarnings = function() {
     pendingComponentWillMountWarnings = [];
     pendingComponentWillReceivePropsWarnings = [];
@@ -5044,9 +5052,7 @@ var ReactStrictModeWarnings = {
 
           var formatted = lifecycle.replace("UNSAFE_", "");
           var suggestion = LIFECYCLE_SUGGESTIONS[lifecycle];
-          var sortedComponentNames = Array.from(componentNames)
-            .sort()
-            .join(", ");
+          var sortedComponentNames = setToSortedString(componentNames);
 
           lifecyclesWarningMesages.push(
             formatted +
@@ -5098,9 +5104,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var sortedNames = Array.from(uniqueNames)
-        .sort()
-        .join(", ");
+      var sortedNames = setToSortedString(uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -5123,9 +5127,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames = Array.from(_uniqueNames)
-        .sort()
-        .join(", ");
+      var _sortedNames = setToSortedString(_uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -5147,9 +5149,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames2 = Array.from(_uniqueNames2)
-        .sort()
-        .join(", ");
+      var _sortedNames2 = setToSortedString(_uniqueNames2);
 
       lowPriorityWarning$1(
         false,
@@ -6474,7 +6474,6 @@ var ReactFiberClassComponent = function(
 
       if (
         typeof instance.getSnapshotBeforeUpdate === "function" &&
-        typeof instance.componentDidUpdate !== "function" &&
         typeof instance.componentDidUpdate !== "function" &&
         !didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(type)
       ) {
@@ -9457,6 +9456,10 @@ var ReactFiberBeginWork = function(
         changedBits,
         renderExpirationTime
       );
+    } else if (oldProps === newProps) {
+      // Skip over a memoized parent with a bitmask bailout even
+      // if we began working on it because of a deeper matching child.
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
     // There is no bailout on `children` equality because we expect people
     // to often pass a bound method as a child, but it may reference
@@ -14707,6 +14710,14 @@ injectFindHostInstance(NativeRenderer.findHostInstance);
 
 injection$2.injectRenderer(NativeRenderer);
 
+function computeComponentStackForErrorReporting(reactTag) {
+  var fiber = getInstanceFromTag(reactTag);
+  if (!fiber) {
+    return "";
+  }
+  return getStackAddendumByWorkInProgressFiber(fiber);
+}
+
 var roots = new Map();
 
 var ReactNativeRenderer = {
@@ -14762,7 +14773,8 @@ var ReactNativeRenderer = {
     ReactNativePropRegistry: ReactNativePropRegistry, // flattenStyle, Stylesheet
     TouchHistoryMath: TouchHistoryMath, // PanResponder
     createReactNativeComponentClass: createReactNativeComponentClass, // RCTText, RCTView, ReactNativeART
-    takeSnapshot: takeSnapshot
+    takeSnapshot: takeSnapshot, // react-native-implementation
+    computeComponentStackForErrorReporting: computeComponentStackForErrorReporting
   }
 };
 

@@ -4765,6 +4765,14 @@ var ReactStrictModeWarnings = {
   var didWarnAboutDeprecatedLifecycles = new Set();
   var didWarnAboutUnsafeLifecycles = new Set();
 
+  var setToSortedString = function(set) {
+    var array = [];
+    set.forEach(function(value) {
+      array.push(value);
+    });
+    return array.sort().join(", ");
+  };
+
   ReactStrictModeWarnings.discardPendingWarnings = function() {
     pendingComponentWillMountWarnings = [];
     pendingComponentWillReceivePropsWarnings = [];
@@ -4790,9 +4798,7 @@ var ReactStrictModeWarnings = {
 
           var formatted = lifecycle.replace("UNSAFE_", "");
           var suggestion = LIFECYCLE_SUGGESTIONS[lifecycle];
-          var sortedComponentNames = Array.from(componentNames)
-            .sort()
-            .join(", ");
+          var sortedComponentNames = setToSortedString(componentNames);
 
           lifecyclesWarningMesages.push(
             formatted +
@@ -4844,9 +4850,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var sortedNames = Array.from(uniqueNames)
-        .sort()
-        .join(", ");
+      var sortedNames = setToSortedString(uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -4869,9 +4873,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames = Array.from(_uniqueNames)
-        .sort()
-        .join(", ");
+      var _sortedNames = setToSortedString(_uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -4893,9 +4895,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames2 = Array.from(_uniqueNames2)
-        .sort()
-        .join(", ");
+      var _sortedNames2 = setToSortedString(_uniqueNames2);
 
       lowPriorityWarning$1(
         false,
@@ -6216,7 +6216,6 @@ var ReactFiberClassComponent = function(
 
       if (
         typeof instance.getSnapshotBeforeUpdate === "function" &&
-        typeof instance.componentDidUpdate !== "function" &&
         typeof instance.componentDidUpdate !== "function" &&
         !didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(type)
       ) {
@@ -9199,6 +9198,10 @@ var ReactFiberBeginWork = function(
         changedBits,
         renderExpirationTime
       );
+    } else if (oldProps === newProps) {
+      // Skip over a memoized parent with a bitmask bailout even
+      // if we began working on it because of a deeper matching child.
+      return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
     // There is no bailout on `children` equality because we expect people
     // to often pass a bound method as a child, but it may reference

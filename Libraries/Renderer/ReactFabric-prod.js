@@ -3656,33 +3656,40 @@ function ReactFiberBeginWork(
             renderExpirationTime
           );
         case 12:
-          fn = workInProgress.type;
-          unmaskedContext = workInProgress.pendingProps;
-          var oldProps = workInProgress.memoizedProps;
-          props = fn._currentValue;
-          updateQueue = fn._changedBits;
-          if (
-            hasLegacyContextChanged() ||
-            0 !== updateQueue ||
-            oldProps !== unmaskedContext
-          ) {
-            workInProgress.memoizedProps = unmaskedContext;
-            oldProps = unmaskedContext.unstable_observedBits;
-            if (void 0 === oldProps || null === oldProps) oldProps = 1073741823;
-            workInProgress.stateNode = oldProps;
-            0 !== (updateQueue & oldProps) &&
-              propagateContextChange(
-                workInProgress,
-                fn,
-                updateQueue,
-                renderExpirationTime
-              );
-            renderExpirationTime = unmaskedContext.children;
-            renderExpirationTime = renderExpirationTime(props);
-            reconcileChildren(current, workInProgress, renderExpirationTime);
-            current = workInProgress.child;
-          } else
-            current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+          a: {
+            fn = workInProgress.type;
+            unmaskedContext = workInProgress.pendingProps;
+            updateQueue = workInProgress.memoizedProps;
+            props = fn._currentValue;
+            var changedBits = fn._changedBits;
+            if (
+              hasLegacyContextChanged() ||
+              0 !== changedBits ||
+              updateQueue !== unmaskedContext
+            ) {
+              workInProgress.memoizedProps = unmaskedContext;
+              var observedBits = unmaskedContext.unstable_observedBits;
+              if (void 0 === observedBits || null === observedBits)
+                observedBits = 1073741823;
+              workInProgress.stateNode = observedBits;
+              if (0 !== (changedBits & observedBits))
+                propagateContextChange(
+                  workInProgress,
+                  fn,
+                  changedBits,
+                  renderExpirationTime
+                );
+              else if (updateQueue === unmaskedContext) {
+                current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+                break a;
+              }
+              renderExpirationTime = unmaskedContext.children;
+              renderExpirationTime = renderExpirationTime(props);
+              reconcileChildren(current, workInProgress, renderExpirationTime);
+              current = workInProgress.child;
+            } else
+              current = bailoutOnAlreadyFinishedWork(current, workInProgress);
+          }
           return current;
         default:
           invariant(
