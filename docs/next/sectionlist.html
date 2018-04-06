@@ -18,20 +18,9 @@
 <li>Scroll loading.</li>
 </ul>
 <p>If you don't need section support and want a simpler interface, use <a href="/react-native/docs/next/flatlist.html"><code>&lt;FlatList&gt;</code></a>.</p>
-<p>Simple Examples:</p>
-<pre><code class="hljs">// Example 1 (Homogeneous Rendering)
-&lt;SectionList
-  renderItem={({ item, index, section }) =&gt; &lt;Text key={index}&gt;{item}&lt;/Text&gt;}
-  renderSectionHeader={({ section: { title } }) =&gt; &lt;Text style={{ fontWeight: 'bold' }}&gt;{title}&lt;/Text&gt;}
-  sections={[
-    { title: 'Title1', data: ['item1', 'item2'] },
-    { title: 'Title2', data: ['item3', 'item4'] },
-    { title: 'Title3', data: ['item5', 'item6'] },
-  ]}
-  keyExtractor={(item, index) =&gt; item + index}
-/&gt;
-
-// Example 2 (Heterogeneous Rendering / No Section Headers)
+<p>Simple Examples:
+// Example 1 (Homogeneous Rendering) &lt;SectionList renderItem={({ item, index, section }) =&gt; <Text key={index}>{item}</Text>} renderSectionHeader={({ section: { title } }) =&gt; &lt;Text style={{ fontWeight: 'bold' }}&gt;{title}</Text>} sections={[ { title: 'Title1', data: ['item1', 'item2'] }, { title: 'Title2', data: ['item3', 'item4'] }, { title: 'Title3', data: ['item5', 'item6'] }, ]} keyExtractor={(item, index) =&gt; item + index} /&gt;</p>
+<pre><code class="hljs">// Example 2 (Heterogeneous Rendering / No Section Headers)
 const overrideRenderItem = ({ item, index, section: { title, data } }) =&gt; &lt;Text key={index}&gt;Override{item}&lt;/Text&gt;
 
 &lt;SectionList
