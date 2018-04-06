@@ -216,6 +216,12 @@ public class FabricUIManager implements UIManager {
       Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
     }
     try {
+      // If the child to append is shared with another tree (child.getParent() != null),
+      // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
+      //TODO: T27926878 avoid cloning shared child
+      if (child.getParent() != null) {
+        child = child.mutableCopy();
+      }
       parent.addChildAt(child, parent.getChildCount());
     } catch (Throwable t) {
       handleException(parent, t);
