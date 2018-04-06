@@ -44,7 +44,7 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   if (cxxModules) {
     for (const auto& cm : *cxxModules) {
       modules.emplace_back(folly::make_unique<CxxNativeModule>(
-                             winstance, cm->getName(), cm->getProvider(), moduleMessageQueue));
+                             winstance, cm->getName(), false, cm->getProvider(), moduleMessageQueue));
     }
   }
   return modules;
