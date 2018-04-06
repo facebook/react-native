@@ -305,7 +305,7 @@ public class FabricUIManager implements UIManager {
         TAG,
         "ReactShadowNodeHierarchy after calculateLayout: " + newRootShadowNode.getHierarchyInfo());
     }
-    
+
     mFabricReconciler.manageChildren(currentRootShadowNode, newRootShadowNode);
     return newRootShadowNode;
   }

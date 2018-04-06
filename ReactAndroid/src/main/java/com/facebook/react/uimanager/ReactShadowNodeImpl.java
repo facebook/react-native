@@ -8,6 +8,7 @@ package com.facebook.react.uimanager;
 
 import static java.lang.System.arraycopy;
 
+import android.util.Log;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaNodeCloneFunction;
@@ -58,6 +59,8 @@ import javax.annotation.Nullable;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
+  private static final boolean DEBUG = true;
+  private static final String TAG = ReactShadowNodeImpl.class.getSimpleName();
   private static final YogaConfig sYogaConfig;
   static {
     sYogaConfig = ReactYogaConfigProvider.get();
@@ -68,10 +71,17 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
           int childIndex) {
         ReactShadowNodeImpl parentReactShadowNode = (ReactShadowNodeImpl) parent.getData();
         Assertions.assertNotNull(parentReactShadowNode);
-        ReactShadowNodeImpl newReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
-        Assertions.assertNotNull(newReactShadowNode);
+        ReactShadowNodeImpl oldReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
+        Assertions.assertNotNull(oldReactShadowNode);
 
-        ReactShadowNodeImpl newNode = newReactShadowNode.mutableCopy();
+        if (DEBUG) {
+          Log.d(
+            TAG,
+            "YogaNode started cloning: oldYogaNode: " + oldReactShadowNode + " - parent: "
+              + parentReactShadowNode + " index: " + childIndex);
+        }
+
+        ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy();
         parentReactShadowNode.replaceChild(newNode, childIndex);
         return newNode.mYogaNode;
       }
@@ -1044,17 +1054,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private void getHierarchyInfoWithIndentation(StringBuilder result, int level) {
     // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
     for (int i = 0; i < level; ++i) {
-      result.append("__");
+      result.append("  ");
     }
 
-    result.append(getClass().getSimpleName()).append(" ").append(getReactTag()).append(" ");
+    result.append("<").append(getClass().getSimpleName()).append(" tag=").append(getReactTag()).append(" hash=")
+      .append(hashCode());
     if (mYogaNode != null) {
-      result.append(getScreenX()).append(";").append(getScreenY()).append(";")
-        .append(getLayoutWidth()).append(";").append(getLayoutHeight());
+      result.append(" layout='x:").append(getScreenX())
+        .append(" y:").append(getScreenY()).append(" w:").append(getLayoutWidth()).append(" h:")
+        .append(getLayoutHeight()).append("'");
     } else {
       result.append("(virtual node)");
     }
-    result.append("\n");
+    result.append(">\n");
 
     if (getChildCount() == 0) {
       return;
