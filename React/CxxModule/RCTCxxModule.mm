@@ -31,6 +31,11 @@ using namespace facebook::react;
   return NO;
 }
 
++ (BOOL)requiresImmediateCxxNativeModuleSetup
+{
+  return NO;
+}
+
 - (void)lazyInit
 {
   if (!_module) {

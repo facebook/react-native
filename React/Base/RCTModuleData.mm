@@ -67,6 +67,13 @@
         "on a background thread unless explicitly opted-out of.", _moduleClass, methodName);
     }
   }
+    
+  const BOOL implementsRequiresImmediateCxxNativeModuleSetup = [_moduleClass respondsToSelector:@selector(requiresImmediateCxxNativeModuleSetup)];
+  if (implementsRequiresImmediateCxxNativeModuleSetup) {
+    _requiresImmediateCxxNativeModuleSetup = [_moduleClass requiresImmediateCxxNativeModuleSetup];
+  } else {
+    _requiresImmediateCxxNativeModuleSetup = NO;
+  }
 }
 
 - (instancetype)initWithModuleClass:(Class)moduleClass

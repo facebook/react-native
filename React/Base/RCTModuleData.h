@@ -60,6 +60,11 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
 @property (nonatomic, assign) BOOL requiresMainQueueSetup;
 
 /**
+ * Returns YES if Cxx native module instance must be created at startup.
+ */
+@property (nonatomic, assign) BOOL requiresImmediateCxxNativeModuleSetup;
+
+/**
  * Returns YES if module has constants to export.
  */
 @property (nonatomic, assign, readonly) BOOL hasConstantsToExport;

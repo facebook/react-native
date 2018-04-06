@@ -22,12 +22,17 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
 public:
   CxxNativeModule(std::weak_ptr<Instance> instance,
                   std::string name,
+                  bool requiresImmediateInit,
                   xplat::module::CxxModule::Provider provider,
                   std::shared_ptr<MessageQueueThread> messageQueueThread)
   : instance_(instance)
   , name_(std::move(name))
   , provider_(provider)
-  , messageQueueThread_(messageQueueThread) {}
+  , messageQueueThread_(messageQueueThread) {
+      if (requiresImmediateInit) {
+          lazyInit();
+      }
+  }
 
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;

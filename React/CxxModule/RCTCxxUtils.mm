@@ -28,6 +28,7 @@ std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<RCTModule
       nativeModules.emplace_back(std::make_unique<CxxNativeModule>(
         instance,
         [moduleData.name UTF8String],
+        [moduleData requiresImmediateCxxNativeModuleSetup],
         [moduleData] { return [(RCTCxxModule *)(moduleData.instance) createModule]; },
         std::make_shared<DispatchMessageQueueThread>(moduleData)));
     } else {
