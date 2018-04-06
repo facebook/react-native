@@ -1147,6 +1147,8 @@
 		59EDBCC61FDF4E55003573DE /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		59EDBCC71FDF4E55003573DE /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
 		59EDBCC81FDF4E55003573DE /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
+		5CE2080220772F7D009A43B3 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
+		5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		657734841EE834C900A0E9EA /* RCTInspectorDevServerHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */; };
 		657734851EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */; };
 		657734861EE834D900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */; };
@@ -2237,6 +2239,8 @@
 		59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollView.m; sourceTree = "<group>"; };
 		59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollViewManager.h; sourceTree = "<group>"; };
 		59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollViewManager.m; sourceTree = "<group>"; };
+		5CE2080020772F7C009A43B3 /* YGConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGConfig.cpp; sourceTree = "<group>"; };
+		5CE2080120772F7C009A43B3 /* YGConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGConfig.h; sourceTree = "<group>"; };
 		657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTInspectorDevServerHelper.h; sourceTree = "<group>"; };
 		657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTInspectorDevServerHelper.mm; sourceTree = "<group>"; };
 		6577348A1EE8354A00A0E9EA /* RCTInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTInspector.h; path = Inspector/RCTInspector.h; sourceTree = "<group>"; };
@@ -2355,6 +2359,8 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				5CE2080020772F7C009A43B3 /* YGConfig.cpp */,
+				5CE2080120772F7C009A43B3 /* YGConfig.h */,
 				53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */,
 				53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */,
 				5343895E203905B6008E0CB3 /* YGLayout.cpp */,
@@ -3561,6 +3567,7 @@
 				59EDBCAD1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */,
 				59EDBCA71FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
 				591F78DC202ADB22004A668C /* RCTLayout.h in Headers */,
+				5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */,
 				3D80DA631DF820620028D040 /* RCTBorderDrawing.h in Headers */,
 				3D80DA641DF820620028D040 /* RCTBorderStyle.h in Headers */,
 				3D80DA651DF820620028D040 /* RCTComponent.h in Headers */,
@@ -4538,6 +4545,7 @@
 				13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */,
 				83CBBA531A601E3B00E9B192 /* RCTUtils.m in Sources */,
 				130443C61E401A8C00D93A67 /* RCTConvert+Transform.m in Sources */,
+				5CE2080220772F7D009A43B3 /* YGConfig.cpp in Sources */,
 				191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */,
 				3DCE532B1FEAB23100613583 /* RCTDatePickerManager.m in Sources */,
 				13C156051AB1A2840079392D /* RCTWebView.m in Sources */,
