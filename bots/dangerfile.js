@@ -11,19 +11,11 @@ const fs = require('fs');
 const includes = require('lodash.includes');
 const minimatch = require('minimatch');
 
-import { danger, fail, markdown, message, warn } from 'danger';
+const { danger, fail, markdown, message, warn } = require('danger');
 
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
   fail(':grey_question: This pull request needs a description.');
-}
-
-// Warns if the PR title contains [WIP]
-const isWIP = includes(danger.github.pr.title, '[WIP]');
-if (isWIP) {
-  const title = ':construction_worker: Work In Progress';
-  const idea = 'This PR appears to be a work in progress, and may not be ready to be merged yet.';
-  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
@@ -44,10 +36,9 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\]\s*?\[(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
+const releaseNotesRegex = /\[\s?(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\s?\]\s*?\[\s?(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\s?\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
 const includesReleaseNotes = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('release notes');
 const correctlyFormattedReleaseNotes = releaseNotesRegex.test(danger.github.pr.body);
-const releaseNotesCaptureGroups = releaseNotesRegex.exec(danger.github.pr.body);
 
 if (!includesReleaseNotes) {
   const title = ':clipboard: Release Notes';
@@ -57,21 +48,6 @@ if (!includesReleaseNotes) {
   const title = ':clipboard: Release Notes';
   const idea = 'This PR may have incorrectly formatted Release Notes.';
   warn(`${title} - <i>${idea}</i>`);
-} else if (releaseNotesCaptureGroups) {
-  const category = releaseNotesCaptureGroups[1].toLowerCase();
-
-  // Use Release Notes to Tag PRs appropriately
-  if (category === 'ios' || category === 'tvos') {
-    message('Suggested label: iOS');
-  }
-
-  if (category === 'android') {
-    message('Suggested label: Android');
-  }
-
-  if (category === 'cli') {
-    message('Suggested label: Tooling');
-  }
 }
 
 // Tags big PRs

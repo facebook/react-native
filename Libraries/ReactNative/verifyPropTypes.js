@@ -17,7 +17,7 @@ export type ComponentInterface =
   | {
       name?: string,
       displayName?: string,
-      propTypes: Object,
+      propTypes?: Object,
     };
 
 function verifyPropTypes(
@@ -41,7 +41,7 @@ function verifyPropTypes(
     componentInterface.propTypes;
 
   if (!propTypes) {
-    throw new Error('`' + componentName + '` has no propTypes defined`');
+    return;
   }
 
   var nativeProps = viewConfig.NativeProps;

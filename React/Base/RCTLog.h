@@ -121,6 +121,13 @@ RCT_EXTERN void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFuncti
 RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
 
 /**
+ * This method computes the current call stack, useful for error reporting.
+ */
+RCT_EXTERN NSArray<NSDictionary *> *RCTGetCallStack(const char *fileName, int lineNumber);
+
+#define RCT_CALLSTACK RCTGetCallStack(__FILE__, __LINE__)
+
+/**
  * Private logging function - ignore this.
  */
 #if RCTLOG_ENABLED

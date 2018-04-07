@@ -13,7 +13,6 @@ const log = require('../util/log').out('bundle');
 /* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 const {Terminal} = require('metro-core');
-/* $FlowFixMe(site=react_native_oss) */
 const TerminalReporter = require('metro/src/lib/TerminalReporter');
 /* $FlowFixMe(site=react_native_oss) */
 const TransformCaching = require('metro/src/lib/TransformCaching');
@@ -89,18 +88,19 @@ async function buildBundle(
     extraNodeModules: config.extraNodeModules,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
+    getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
     globalTransformCache: null,
     hasteImplModulePath: config.hasteImplModulePath,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(platforms),
     postMinifyProcess: config.postMinifyProcess,
-    postProcessModules: config.postProcessModules,
     postProcessBundleSourcemap: config.postProcessBundleSourcemap,
     projectRoots: config.getProjectRoots(),
     providesModuleNodeModules: providesModuleNodeModules,
-    resetCache: args.resetCache,
     reporter: new TerminalReporter(terminal),
+    resetCache: args.resetCache,
+    resolveRequest: config.resolveRequest,
     sourceExts: sourceExts.concat(defaultSourceExts),
     transformCache: TransformCaching.useTempDir(),
     transformModulePath: transformModulePath,

@@ -18,11 +18,11 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
 class TabBarIOS extends React.Component<ViewProps & {
-  style?: StyleObj,
+  style?: DangerouslyImpreciseStyleProp,
   unselectedTintColor?: string,
   tintColor?: string,
   unselectedItemTintColor?: string,

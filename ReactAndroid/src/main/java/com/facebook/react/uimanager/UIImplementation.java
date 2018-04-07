@@ -276,9 +276,10 @@ public class UIImplementation {
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
+    Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
-    cssNode.setRootNode(rootNode);
+    cssNode.setRootTag(rootNode.getReactTag());
     cssNode.setThemedContext(rootNode.getThemedContext());
 
     mShadowNodeRegistry.addNode(cssNode);
@@ -802,6 +803,10 @@ public class UIImplementation {
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
   }
 
+  public void dismissPopupMenu() {
+    mOperationsQueue.enqueueDismissPopupMenu();
+  }
+
   public void sendAccessibilityEvent(int tag, int eventType) {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
   }
@@ -1003,7 +1008,7 @@ public class UIImplementation {
     ReactShadowNode node = resolveShadowNode(reactTag);
     int rootTag = 0;
     if (node != null) {
-      rootTag = node.getRootNode().getReactTag();
+      rootTag = node.getRootTag();
     } else {
       FLog.w(
         ReactConstants.TAG,

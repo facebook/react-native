@@ -142,6 +142,9 @@ class SwipeableListView extends React.Component<Props, State> {
    * (from high 20s to almost consistently 60 fps)
    */
   _setListViewScrollable(value: boolean): void {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this._listViewRef && typeof this._listViewRef.setNativeProps === 'function') {
       this._listViewRef.setNativeProps({
         scrollEnabled: value,
@@ -151,6 +154,9 @@ class SwipeableListView extends React.Component<Props, State> {
 
   // Passing through ListView's getScrollResponder() function
   getScrollResponder(): ?Object {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this._listViewRef && typeof this._listViewRef.getScrollResponder === 'function') {
       return this._listViewRef.getScrollResponder();
     }

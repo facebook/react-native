@@ -34,7 +34,7 @@ function renderFabricSurface<Props: Object>(
       fabric={true}
       rootTag={rootTag}
       WrapperComponent={WrapperComponent}>
-      <RootComponent {...initialProps} rootTag={rootTag} />
+      <RootComponent {...initialProps} rootTag={rootTag} fabric={true} />
     </AppContainer>
   );
 
@@ -42,6 +42,9 @@ function renderFabricSurface<Props: Object>(
   // to be async also. To do this, wrap AppContainer with an async marker.
   // For more info see https://fb.me/is-component-async
   if (
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     RootComponent.prototype != null &&
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {

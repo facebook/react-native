@@ -284,6 +284,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     return;
   }
 
+  YGNodeSetHasNewLayout(yogaNode, false);
+
   RCTLayoutMetrics layoutMetrics = RCTLayoutMetricsFromYogaNode(yogaNode);
 
   layoutContext.absolutePosition.x += layoutMetrics.frame.origin.x;
@@ -320,6 +322,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     if (!YGNodeGetHasNewLayout(childYogaNode)) {
       continue;
     }
+
+    YGNodeSetHasNewLayout(childYogaNode, false);
 
     RCTLayoutMetrics childLayoutMetrics = RCTLayoutMetricsFromYogaNode(childYogaNode);
 

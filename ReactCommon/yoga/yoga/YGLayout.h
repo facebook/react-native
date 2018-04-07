@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
 struct YGLayout {
@@ -17,13 +18,13 @@ struct YGLayout {
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
-  float computedFlexBasis;
+  YGFloatOptional computedFlexBasis;
   bool hadOverflow;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
   uint32_t generationCount;
-  YGDirection lastParentDirection;
+  YGDirection lastOwnerDirection;
 
   uint32_t nextCachedMeasurementsIndex;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>

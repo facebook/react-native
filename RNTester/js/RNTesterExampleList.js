@@ -20,15 +20,9 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
-import type {
-  RNTesterExample,
-} from './RNTesterList.ios';
-import type {
-  PassProps,
-} from './RNTesterStatePersister';
-import type {
-  StyleObj,
-} from 'StyleSheetTypes';
+import type {RNTesterExample} from './RNTesterList.ios';
+import type {PassProps} from './RNTesterStatePersister';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 type Props = {
   onNavigate: Function,
@@ -37,8 +31,8 @@ type Props = {
     APIExamples: Array<RNTesterExample>,
   },
   persister: PassProps<*>,
-  searchTextInputStyle: StyleObj,
-  style?: ?StyleObj,
+  searchTextInputStyle: DangerouslyImpreciseStyleProp,
+  style?: ?DangerouslyImpreciseStyleProp,
 };
 
 class RowComponent extends React.PureComponent<{
@@ -82,6 +76,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
     const filter = (example) =>
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       this.props.disableSearch ||
         filterRegex.test(example.module.title) &&
         (!Platform.isTVOS || example.supportsTVOS);
@@ -134,6 +131,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   );
 
   _renderTitleRow(): ?React.Element<any> {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (!this.props.displayTitleRow) {
       return null;
     }
@@ -152,6 +152,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   }
 
   _renderTextInput(): ?React.Element<any> {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this.props.disableSearch) {
       return null;
     }

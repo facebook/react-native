@@ -213,7 +213,7 @@ RCT_EXTERN_C_END
 #endif
 
 #define RCT_RETAINED_ARG_BLOCK(_logic) \
-[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+[argumentBlocks addObject:^(__unused __weak RCTBridge *bridge, NSUInteger index, id json) { \
   _logic                                                                             \
   [invocation setArgument:&value atIndex:(index) + 2];                               \
   if (value) {                                                                       \

@@ -47,7 +47,7 @@ function server(argv: mixed, config: RNConfig, allArgs: Object) {
     });
   };
   const runServerArgs: RunServerArgs = args;
-  /* $FlowFixMe: ConfigT shouldn't be extendable. */
+  /* $FlowFixMe(site=react_native_fb) ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
   runServer(runServerArgs, configT, startedCallback, readyCallback);
 }

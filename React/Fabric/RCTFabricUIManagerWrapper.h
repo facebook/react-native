@@ -17,9 +17,10 @@ namespace facebook {
 namespace react {
 
 class FabricUIManager;
+class ExceptionManager;
 
-}
-}
+} // namespace react
+} // namespace facebook
 
 using namespace facebook::react;
 
@@ -28,8 +29,8 @@ using namespace facebook::react;
  */
 @interface RCTFabricUIManagerWrapper : NSObject <RCTInvalidating>
 
-- (instancetype)initWithManager:(std::shared_ptr<FabricUIManager>)manager;
 - (std::shared_ptr<FabricUIManager>)manager;
+- (std::shared_ptr<ExceptionManager>)exceptionManager;
 
 @end
 
