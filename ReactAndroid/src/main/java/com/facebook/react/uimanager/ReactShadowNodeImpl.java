@@ -164,22 +164,32 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopy() {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode.clone();
+    if (mYogaNode != null) {
+      copy.mYogaNode = mYogaNode.clone();
+      copy.mYogaNode.setData(copy);
+    } else {
+      // Virtual ReactShadowNode do not have a YogaNode associated
+      copy.mYogaNode = null;
+    }
     copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
     copy.mTotalNativeChildren = mTotalNativeChildren;
     copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
-    copy.mYogaNode.setData(copy);
     return copy;
   }
 
   @Override
   public ReactShadowNodeImpl mutableCopyWithNewChildren() {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode.cloneWithNewChildren();
+    if (mYogaNode != null) {
+      copy.mYogaNode = mYogaNode.cloneWithNewChildren();
+      copy.mYogaNode.setData(copy);
+    } else {
+      // Virtual ReactShadowNode do not have a YogaNode associated
+      copy.mYogaNode = null;
+    }
     copy.mNativeChildren = null;
     copy.mChildren = null;
     copy.mTotalNativeChildren = 0;
-    copy.mYogaNode.setData(copy);
     return copy;
   }
 
