@@ -111,6 +111,7 @@
 		2D3B5EFE1D9B0B4800451313 /* RCTStyleAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E31D07A6C9005F35D8 /* RCTStyleAnimatedNode.m */; };
 		2D3B5EFF1D9B0B4800451313 /* RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E51D07A6C9005F35D8 /* RCTTransformAnimatedNode.m */; };
 		2D3B5F001D9B0B4800451313 /* RCTValueAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E501E71D07A6C9005F35D8 /* RCTValueAnimatedNode.m */; };
+		2D65C80020732E4700C62FDF /* RCTSubtractionAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EC00630206EA19300586E91 /* RCTSubtractionAnimatedNode.m */; };
 		2EC00631206EA19300586E91 /* RCTSubtractionAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EC00630206EA19300586E91 /* RCTSubtractionAnimatedNode.m */; };
 		44DB7D942024F74200588FCD /* RCTTrackingAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 44DB7D932024F74200588FCD /* RCTTrackingAnimatedNode.h */; };
 		44DB7D952024F74200588FCD /* RCTTrackingAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 44DB7D932024F74200588FCD /* RCTTrackingAnimatedNode.h */; };
@@ -462,6 +463,7 @@
 				944244D11DB962DC0032A02B /* RCTSpringAnimation.m in Sources */,
 				9476E8EC1DC9232D005D5CD1 /* RCTNativeAnimatedNodesManager.m in Sources */,
 				194804F21E977DDB00623005 /* RCTDecayAnimation.m in Sources */,
+				2D65C80020732E4700C62FDF /* RCTSubtractionAnimatedNode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,7 +24,7 @@ SharedYogaConfig YogaLayoutableShadowNode::suitableYogaConfig() {
 
   if (!sharedYogaConfig) {
     sharedYogaConfig = std::make_shared<YGConfig>(YGConfig({
-      .cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector
+      // .cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector
     }));
   }
 
@@ -54,7 +54,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 ) {
   auto yogaNode = std::make_shared<YGNode>(*shadowNode->yogaNode_);
   yogaNode->setContext(this);
-  yogaNode->setParent(nullptr);
+  yogaNode->setOwner(nullptr);
 
   if (props) {
     yogaNode->setStyle(props->getYogaStyle());

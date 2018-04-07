@@ -84,7 +84,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mRootViewTag;
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
-  private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+  private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -183,6 +183,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
+      return;
+    }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
       .getEventDispatcher();
@@ -262,6 +268,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       FLog.w(
         ReactConstants.TAG,
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      return;
+    }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -414,6 +426,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   public void onAttachedToReactInstance() {
+    // Create the touch dispatcher here instead of having it always available, to make sure
+    // that all touch events are only passed to JS after React/JS side is ready to consume
+    // them. Otherwise, these events might break the states expected by JS.
+    // Note that this callback was invoked from within the UI thread.
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -582,7 +599,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
   }
-  
+
   /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.getCurrentReactContext()

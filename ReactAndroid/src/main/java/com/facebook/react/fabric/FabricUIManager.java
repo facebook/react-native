@@ -216,6 +216,12 @@ public class FabricUIManager implements UIManager {
       Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
     }
     try {
+      // If the child to append is shared with another tree (child.getParent() != null),
+      // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
+      //TODO: T27926878 avoid cloning shared child
+      if (child.getParent() != null) {
+        child = child.mutableCopy();
+      }
       parent.addChildAt(child, parent.getChildCount());
     } catch (Throwable t) {
       handleException(parent, t);
@@ -250,20 +256,12 @@ public class FabricUIManager implements UIManager {
           currentRootShadowNode,
           "Root view with tag " + rootTag + " must be added before completeRoot is called");
 
-
       currentRootShadowNode = calculateDiffingAndCreateNewRootNode(currentRootShadowNode, childList);
-
-      if (DEBUG) {
-        Log.d(TAG, "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
-      }
-
-      notifyOnBeforeLayoutRecursive(currentRootShadowNode);
-      currentRootShadowNode.calculateLayout();
 
       if (DEBUG) {
         Log.d(
           TAG,
-          "ReactShadowNodeHierarchy after calculate Layout: " + currentRootShadowNode.getHierarchyInfo());
+          "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
       }
 
       applyUpdatesRecursive(currentRootShadowNode, 0, 0);
@@ -293,6 +291,21 @@ public class FabricUIManager implements UIManager {
       appendChild(newRootShadowNode, child);
     }
 
+    if (DEBUG) {
+      Log.d(
+        TAG,
+        "ReactShadowNodeHierarchy before calculateLayout: " + newRootShadowNode.getHierarchyInfo());
+    }
+
+    notifyOnBeforeLayoutRecursive(newRootShadowNode);
+    newRootShadowNode.calculateLayout();
+
+    if (DEBUG) {
+      Log.d(
+        TAG,
+        "ReactShadowNodeHierarchy after calculateLayout: " + newRootShadowNode.getHierarchyInfo());
+    }
+
     mFabricReconciler.manageChildren(currentRootShadowNode, newRootShadowNode);
     return newRootShadowNode;
   }
@@ -316,6 +329,9 @@ public class FabricUIManager implements UIManager {
       boolean frameDidChange =
           node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
     }
+    // Set the reference to the OriginalReactShadowNode to NULL, as the tree is already committed
+    // and we do not need to hold references to the previous tree anymore
+    node.setOriginalReactShadowNode(null);
     node.markUpdateSeen();
   }
 

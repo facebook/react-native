@@ -80,6 +80,11 @@ public class ReactHorizontalScrollViewManager
     view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
   }
 
+  @ReactProp(name = "snapToAlignment")
+  public void setSnapToAlignment(ReactHorizontalScrollView view, String snapToAlignment) {
+    view.setSnapAlignment(snapToAlignment);
+  }
+
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);

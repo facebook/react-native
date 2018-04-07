@@ -202,6 +202,7 @@ function getPackagerServer(args, config, reporter) {
     providesModuleNodeModules: providesModuleNodeModules,
     reporter,
     resetCache: args.resetCache,
+    resolveRequest: config.resolveRequest,
     sourceExts: args.sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
     transformCache: TransformCaching.useTempDir(),

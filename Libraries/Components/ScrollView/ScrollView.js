@@ -746,10 +746,9 @@ const ScrollView = createReactClass({
       this.props.horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
-    let style, childLayoutProps;
     if (__DEV__ && this.props.style) {
-      style = flattenStyle(this.props.style);
-      childLayoutProps = ['alignItems', 'justifyContent']
+      const style = flattenStyle(this.props.style);
+      const childLayoutProps = ['alignItems', 'justifyContent']
         .filter((prop) => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,

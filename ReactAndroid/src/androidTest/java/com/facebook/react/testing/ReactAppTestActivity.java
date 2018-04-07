@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -180,17 +181,32 @@ public class ReactAppTestActivity extends FragmentActivity
     renderComponent(appKey, initialProps);
   }
 
-  public void renderComponent(String appKey, @Nullable Bundle initialProps) {
+  public void renderComponent(String appKey) {
+    renderComponent(appKey, null);
+  }
+
+  public void renderComponent(final String appKey, final @Nullable Bundle initialProps) {
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
-    Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
-        new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            currentLayoutEvent.countDown();
-          }
-        });
-    Assertions.assertNotNull(mReactRootView)
-        .startReactApplication(mReactInstanceManager, appKey, initialProps);
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                currentLayoutEvent.countDown();
+              }
+            });
+        Assertions.assertNotNull(mReactRootView)
+            .startReactApplication(mReactInstanceManager, appKey, initialProps);
+      }
+    });
+    try {
+      waitForBridgeAndUIIdle();
+      waitForLayout(5000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException("Layout never occurred for component " + appKey, e);
+    }
   }
 
   public void loadBundle(
@@ -208,7 +224,7 @@ public class ReactAppTestActivity extends FragmentActivity
 
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
-    ReactInstanceManagerBuilder builder =
+    final ReactInstanceManagerBuilder builder =
         ReactTestHelper.getReactTestFactory()
             .getReactInstanceManagerBuilder()
             .setApplication(getApplication())
@@ -259,8 +275,21 @@ public class ReactAppTestActivity extends FragmentActivity
               }})
         .setUIImplementationProvider(uiImplementationProvider);
 
-    mReactInstanceManager = builder.build();
-    mReactInstanceManager.onHostResume(this, this);
+    final CountDownLatch latch = new CountDownLatch(1);
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        mReactInstanceManager = builder.build();
+        mReactInstanceManager.onHostResume(ReactAppTestActivity.this, ReactAppTestActivity.this);
+        latch.countDown();
+      }
+    });
+    try {
+      latch.await(1000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(
+          "ReactInstanceManager never finished initializing " + bundleName, e);
+    }
   }
 
   private ReactInstanceManager getReactInstanceManager() {

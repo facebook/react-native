@@ -10,8 +10,8 @@ package com.facebook.yoga;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
-public interface YogaNodeClonedFunction {
+public interface YogaNodeCloneFunction {
 
   @DoNotStrip
-  void onNodeCloned(YogaNode oldNode, YogaNode newNode, YogaNode parent, int childIndex);
+  YogaNode cloneNode(YogaNode oldNode, YogaNode parent, int childIndex);
 }

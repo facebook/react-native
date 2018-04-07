@@ -11,7 +11,7 @@
 
 'use strict';
 
-import AnimatedNode from 'AnimatedNode';
+const AnimatedNode = require('AnimatedNode');
 
 export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
 
