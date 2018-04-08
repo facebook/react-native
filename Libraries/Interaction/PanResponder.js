@@ -10,7 +10,7 @@
 'use strict';
 
 const InteractionManager = require('./InteractionManager');
-const TouchHistoryMath = require('TouchHistoryMath');
+const TouchHistoryMath = require('./TouchHistoryMath');
 
 const currentCentroidXOfTouchesChangedAfter = TouchHistoryMath.currentCentroidXOfTouchesChangedAfter;
 const currentCentroidYOfTouchesChangedAfter = TouchHistoryMath.currentCentroidYOfTouchesChangedAfter;
