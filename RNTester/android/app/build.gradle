@@ -58,9 +58,10 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
+    cliPath: "$rootDir/local-cli/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "../../../",
+    root: "$rootDir",
     inputExcludes: ["android/**", "./**"]
 ]
 
