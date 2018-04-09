@@ -741,6 +741,9 @@ const TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
+        if (Platform.OS === 'android') {
+          this._playTouchSound();
+        }
         this.touchableHandlePress(e);
       }
     }
@@ -748,7 +751,11 @@ const TouchableMixin = {
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.touchableDelayTimeout = null;
   },
-
+  
+  _playTouchSound: function() {
+    UIManager.playTouchSound();
+  },
+  
   _startHighlight: function(e) {
     this._savePressInLocation(e);
     this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
