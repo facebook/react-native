@@ -58,9 +58,10 @@
 <p>Animations can also be chained together simply by setting the <code>toValue</code> of one animation to be another <code>Animated.Value</code>. See <a href="/react-native/docs/next/animations.html#tracking-dynamic-values">Tracking dynamic values</a> in the Animations guide.</p>
 <p>By default, if one animation is stopped or interrupted, then all other animations in the group are also stopped.</p>
 <h3><a class="anchor" aria-hidden="true" id="combining-animated-values"></a><a href="#combining-animated-values" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Combining animated values</h3>
-<p>You can combine two animated values via addition, multiplication, division, or modulo to make a new animated value:</p>
+<p>You can combine two animated values via addition, subtraction, multiplication, division, or modulo to make a new animated value:</p>
 <ul>
 <li><a href="/react-native/docs/next/animated.html#add"><code>Animated.add()</code></a></li>
+<li><a href="/react-native/docs/next/animated.html#subtract"><code>Animated.subtract()</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#divide"><code>Animated.divide()</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#modulo"><code>Animated.modulo()</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#multiply"><code>Animated.multiply()</code></a></li>
@@ -93,6 +94,7 @@
 <li><a href="/react-native/docs/next/animated.html#timing"><code>timing</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#spring"><code>spring</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#add"><code>add</code></a></li>
+<li><a href="/react-native/docs/next/animated.html#subtract"><code>subtract</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#divide"><code>divide</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#multiply"><code>multiply</code></a></li>
 <li><a href="/react-native/docs/next/animated.html#modulo"><code>modulo</code></a></li>
@@ -178,6 +180,11 @@
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> add(a, b)
 </code></pre>
 <p>Creates a new Animated value composed from two Animated values added together.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="subtract"></a><a href="#subtract" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>subtract()</code></h3>
+<pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> subtract(a, b)
+</code></pre>
+<p>Creates a new Animated value composed by subtracting the second Animated value from the first Animated value.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="divide"></a><a href="#divide" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>divide()</code></h3>
 <pre><code class="hljs css javascript"><span class="hljs-keyword">static</span> divide(a, b)
