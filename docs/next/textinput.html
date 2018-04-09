@@ -131,6 +131,7 @@ AppRegistry.registerComponent(
 <li><a href="/react-native/docs/next/textinput.html#selectionstate"><code>selectionState</code></a></li>
 <li><a href="/react-native/docs/next/textinput.html#selecttextonfocus"><code>selectTextOnFocus</code></a></li>
 <li><a href="/react-native/docs/next/textinput.html#spellcheck"><code>spellCheck</code></a></li>
+<li><a href="/react-native/docs/next/textinput.html#textcontenttype"><code>textContentType</code></a></li>
 <li><a href="/react-native/docs/next/textinput.html#style"><code>style</code></a></li>
 <li><a href="/react-native/docs/next/textinput.html#textbreakstrategy"><code>textBreakStrategy</code></a></li>
 <li><a href="/react-native/docs/next/textinput.html#underlinecolorandroid"><code>underlineColorAndroid</code></a></li>
@@ -682,6 +683,48 @@ AppRegistry.registerComponent(
 </thead>
 <tbody>
 <tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="textcontenttype"></a><a href="#textcontenttype" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>textContentType</code></h3>
+<p>Give the keyboard and the system information about the expected semantic meaning for the content that users enter.</p>
+<p>For iOS 11+ you can set <code>textContentType</code> to <code>username</code> or <code>password</code> to enable autofill of login details from the device keychain.</p>
+<p>To disable autofill, set <code>textContentType</code> to <code>none</code>.</p>
+<p>Possible values for <code>textContentType</code> are:</p>
+<ul>
+<li><code>none</code></li>
+<li><code>URL</code></li>
+<li><code>addressCity</code></li>
+<li><code>addressCityAndState</code></li>
+<li><code>addressState</code></li>
+<li><code>countryName</code></li>
+<li><code>creditCardNumber</code></li>
+<li><code>emailAddress</code></li>
+<li><code>familyName</code></li>
+<li><code>fullStreetAddress</code></li>
+<li><code>givenName</code></li>
+<li><code>jobTitle</code></li>
+<li><code>location</code></li>
+<li><code>middleName</code></li>
+<li><code>name</code></li>
+<li><code>namePrefix</code></li>
+<li><code>nameSuffix</code></li>
+<li><code>nickname</code></li>
+<li><code>organizationName</code></li>
+<li><code>postalCode</code></li>
+<li><code>streetAddressLine1</code></li>
+<li><code>streetAddressLine2</code></li>
+<li><code>sublocality</code></li>
+<li><code>telephoneNumber</code></li>
+<li><code>username</code></li>
+<li><code>password</code></li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('none', 'URL', 'addressCity', 'addressCityAndState', 'addressState', 'countryName', 'creditCardNumber', 'emailAddress', 'familyName', 'fullStreetAddress', 'givenName', 'jobTitle', 'location', 'middleName', 'name', 'namePrefix', 'nameSuffix', 'nickname', 'organizationName', 'postalCode', 'streetAddressLine1', 'streetAddressLine2', 'sublocality', 'telephoneNumber', 'username', 'password')</td><td>No</td><td>iOS</td></tr>
 </tbody>
 </table>
 <hr>
