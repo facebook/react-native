@@ -97,9 +97,17 @@ SharedLayoutableShadowNode ViewShadowNode::cloneAndReplaceChild(const SharedLayo
   auto viewShadowNodeChildClone = std::make_shared<const ViewShadowNode>(viewShadowNodeChild);
   ShadowNode::replaceChild(viewShadowNodeChild, viewShadowNodeChildClone);
   return std::static_pointer_cast<const LayoutableShadowNode>(viewShadowNodeChildClone);
+}
 
+#pragma mark - Equality
 
+bool ViewShadowNode::operator==(const ShadowNode& rhs) const {
+  if (!ShadowNode::operator==(rhs)) {
+    return false;
+  }
 
+  auto &&other = static_cast<const ViewShadowNode&>(rhs);
+  return getLayoutMetrics() == other.getLayoutMetrics();
 }
 
 #pragma mark - DebugStringConvertible

@@ -48,6 +48,10 @@ public:
 
   void appendChild(const SharedShadowNode &child);
 
+#pragma mark - Equality
+
+  bool operator==(const ShadowNode& rhs) const override;
+
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
