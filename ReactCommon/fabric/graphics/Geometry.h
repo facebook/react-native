@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <tuple>
+
 #include <CoreGraphics/CGBase.h>
 
 namespace facebook {
