@@ -60,7 +60,7 @@ private:
 
 #pragma mark - LayoutableShadowNode
 
-  SharedLayoutableShadowNodeList getChildren() const override;
+  SharedLayoutableShadowNodeList getLayoutableChildNodes() const override;
   SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) override;
 };
 

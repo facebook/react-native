@@ -88,7 +88,7 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual SharedLayoutableShadowNodeList getChildren() const = 0;
+  virtual SharedLayoutableShadowNodeList getLayoutableChildNodes() const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,

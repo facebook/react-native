@@ -64,7 +64,7 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
   layoutChildren(layoutContext);
 
-  for (auto child : getChildren()) {
+  for (auto child : getLayoutableChildNodes()) {
     if (!child->getHasNewLayout()) {
       continue;
     }

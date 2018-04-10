@@ -75,7 +75,7 @@ void ViewShadowNode::appendChild(const SharedShadowNode &child) {
 
 #pragma mark - YogaLayoutableShadowNode
 
-SharedLayoutableShadowNodeList ViewShadowNode::getChildren() const {
+SharedLayoutableShadowNodeList ViewShadowNode::getLayoutableChildNodes() const {
   SharedLayoutableShadowNodeList sharedLayoutableShadowNodeList = {};
   for (auto child : *children_) {
     const SharedLayoutableShadowNode layoutableShadowNode = std::dynamic_pointer_cast<const LayoutableShadowNode>(child);

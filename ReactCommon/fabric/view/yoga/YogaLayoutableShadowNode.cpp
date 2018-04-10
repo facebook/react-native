@@ -114,7 +114,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 }
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
-  for (auto child : getChildren()) {
+  for (auto child : getLayoutableChildNodes()) {
     auto yogaLayoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child);
     if (!yogaLayoutableChild) {
       continue;
@@ -183,7 +183,7 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYoga
   //  * Create a new `shared_ptr` with empty deleter.
   //  * Using `childIndex` to find exact node.
   SharedLayoutableShadowNode oldShadowNode = nullptr;
-  for (auto child : parentShadowNodeRawPtr->getChildren()) {
+  for (auto child : parentShadowNodeRawPtr->getLayoutableChildNodes()) {
     if (child.get() == oldShadowNodeRawPtr) {
       oldShadowNode = child;
       break;
