@@ -67,6 +67,18 @@ public:
   void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
   void clearSourceNode();
 
+#pragma mark - Equality
+
+  /*
+   * Equality operators.
+   * Use this to compare `ShadowNode`s values for equality (and non-equality).
+   * Same values indicates that nodes must not produce mutation instructions
+   * during tree diffing process.
+   * Child nodes are not considered as part of the value.
+   */
+  virtual bool operator==(const ShadowNode& rhs) const;
+  virtual bool operator!=(const ShadowNode& rhs) const;
+
 #pragma mark - DebugStringConvertible
 
   std::string getDebugName() const override;
