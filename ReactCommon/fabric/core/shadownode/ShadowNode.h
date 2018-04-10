@@ -81,7 +81,15 @@ protected:
   SharedProps props_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
-  int revision_;
+
+private:
+
+  /*
+   * A number of the generation of the ShadowNode instance;
+   * is used and useful for debug-printing purposes *only*.
+   * Do not access this value in any circumstances.
+   */
+  const int revision_;
 };
 
 } // namespace react
