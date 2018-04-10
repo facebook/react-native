@@ -38,7 +38,6 @@ void calculateMutationInstructions(
   TreeMutationInstructionList downwardInstructions = {};
 
   // Stage 1: Collectings Updates
-
   for (index = 0; index < oldChildNodes->size() && index < newChildNodes->size(); index++) {
     SharedShadowNode oldChildNode = oldChildNodes->at(index);
     SharedShadowNode newChildNode = newChildNodes->at(index);
@@ -76,7 +75,7 @@ void calculateMutationInstructions(
     insertInstructions.push_back(
       TreeMutationInstruction::Insert(
         parentNode,
-        newChildNodes->at(index),
+        newChildNode,
         index
       )
     );
@@ -99,20 +98,20 @@ void calculateMutationInstructions(
   for (index = lastIndexAfterFirstStage; index < oldChildNodes->size(); index++) {
     SharedShadowNode oldChildNode = oldChildNodes->at(index);
 
+    // Even if the old node was (re)inserted, we have to generate `remove`
+    // instruction.
+    removeInstructions.push_back(
+      TreeMutationInstruction::Remove(
+        parentNode,
+        oldChildNode,
+        index
+      )
+    );
+
     auto numberOfRemovedTags = insertedTags.erase(oldChildNode->getTag());
     assert(numberOfRemovedTags == 0 || numberOfRemovedTags == 1);
 
-    if (numberOfRemovedTags != 0) {
-      // The old node *was* (re)inserted,
-      // so we have to generate `remove` instruction.
-      removeInstructions.push_back(
-        TreeMutationInstruction::Remove(
-          parentNode,
-          oldChildNode,
-          index
-        )
-      );
-    } else {
+    if (numberOfRemovedTags == 0) {
       // The old node was *not* (re)inserted,
       // so we have to generate `delete` instruction and apply the algorithm
       // recursively.
