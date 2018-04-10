@@ -11,34 +11,43 @@
 
 #include <folly/dynamic.h>
 
-#include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
+#include <fabric/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
 namespace react {
 
-class IFabricPlatformUIOperationManager;
-class ComponentDescriptorRegistry;
-
 class FabricUIManager {
-
 public:
-  FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager);
 
-  SharedShadowNode createNode(int reactTag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle);
+#pragma mark - Native-facing Interface
+
+  FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry);
+
+  /*
+   * Sets and gets the UIManager's delegate.
+   * The delegate is stored as a raw pointer, so the owner must null
+   * the pointer before being destroyed.
+   */
+  void setDelegate(UIManagerDelegate *delegate);
+  UIManagerDelegate *getDelegate();
+
+#pragma mark - JavaScript/React-facing Interface
+
+  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, void *instanceHandle);
   SharedShadowNode cloneNode(const SharedShadowNode &node);
   SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node);
   SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props);
   SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps);
   void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
-  SharedShadowNodeUnsharedList createChildSet(int rootTag);
+  SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
-  void completeRoot(int rootTag, const SharedShadowNodeUnsharedList &childSet);
+  void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
 
 private:
-  ComponentDescriptorRegistry _registry;
-  std::shared_ptr<IFabricPlatformUIOperationManager> platformUIOperationManager_;
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  UIManagerDelegate *delegate_;
 };
 
 } // namespace react
