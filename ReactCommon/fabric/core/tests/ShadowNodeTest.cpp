@@ -41,14 +41,11 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getSourceNode(), nullptr);
   ASSERT_EQ(node->getChildren()->size(), 0);
 
-  // TODO(#27369757): getProps() doesn't work
-  // ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());
-
-  // TODO(#27369757): verify Props are also sealed.
-  // ASSERT_TRUE(node->getProps()->getSealed());
+  ASSERT_TRUE(node->getProps()->getSealed());
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
