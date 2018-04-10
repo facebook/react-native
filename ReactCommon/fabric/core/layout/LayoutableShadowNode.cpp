@@ -69,7 +69,7 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
       continue;
     }
 
-    ensureUnsealed();
+    child->ensureUnsealed();
 
     // The assumption:
     // All `sealed` children were replaced with not-yet-sealed clones
