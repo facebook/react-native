@@ -79,7 +79,7 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     nonConstChild->setHasNewLayout(false);
 
     const LayoutMetrics childLayoutMetrics = nonConstChild->getLayoutMetrics();
-    if (childLayoutMetrics.displayType == None) {
+    if (childLayoutMetrics.displayType == DisplayType::None) {
       continue;
     }
 

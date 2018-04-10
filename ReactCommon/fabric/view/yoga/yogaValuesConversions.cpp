@@ -77,10 +77,10 @@ LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   };
 
   layoutMetrics.displayType =
-    yogaNode.getStyle().display == YGDisplayNone ? None : Flex;
+    yogaNode.getStyle().display == YGDisplayNone ? DisplayType::None : DisplayType::Flex;
 
   layoutMetrics.layoutDirection =
-    layout.direction == YGDirectionRTL ? RightToLeft : LeftToRight;
+    layout.direction == YGDirectionRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   return layoutMetrics;
 }
