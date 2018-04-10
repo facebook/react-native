@@ -82,4 +82,11 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
                                           }];
 }
 
+RCT_EXPORT_METHOD(queryCache:(NSArray *)requests
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve([self.bridge.imageLoader getImageCacheStatus:requests]);
+}
+
 @end
