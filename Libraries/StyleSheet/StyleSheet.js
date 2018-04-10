@@ -366,7 +366,9 @@ module.exports = {
     if (__DEV__) {
       for (const key in obj) {
         StyleSheetValidation.validateStyle(key, obj);
-        Object.freeze(obj[key]);
+        if (obj[key]) {
+          Object.freeze(obj[key]);
+        }
       }
     }
     return obj;
