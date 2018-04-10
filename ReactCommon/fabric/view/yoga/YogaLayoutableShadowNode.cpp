@@ -97,6 +97,11 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
   auto nonConstYogaNode = std::const_pointer_cast<YGNode>(yogaNode_);
   auto nonConstChildYogaNode = std::const_pointer_cast<YGNode>(child->yogaNode_);
   nonConstYogaNode->insertChild(nonConstChildYogaNode.get(), nonConstYogaNode->getChildrenCount());
+
+  if (nonConstChildYogaNode->getParent() == nullptr) {
+    child->ensureUnsealed();
+    nonConstChildYogaNode->setParent(nonConstYogaNode.get());
+  }
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
@@ -211,7 +216,14 @@ void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNo
       continue;
     }
 
-    yogaNodeChildren.push_back((YGNode *)yogaLayoutableShadowNode->yogaNode_.get());
+    YGNode *yogaNodeChild = (YGNode *)yogaLayoutableShadowNode->yogaNode_.get();
+
+    yogaNodeChildren.push_back(yogaNodeChild);
+
+    if (yogaNodeChild->getParent() == nullptr) {
+      yogaLayoutableShadowNode->ensureUnsealed();
+      yogaNodeChild->setParent(&yogaNode);
+    }
   }
 
   yogaNode.setChildren(yogaNodeChildren);
