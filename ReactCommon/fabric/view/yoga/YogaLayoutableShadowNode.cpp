@@ -42,7 +42,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode->setConfig(suitableYogaConfig().get());
   yogaNode->setStyle(props->getYogaStyle());
   yogaNode->setContext(this);
-  yogaNode->markDirtyAndPropogate();
+  yogaNode->setDirty(true);
   YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(*yogaNode, children);
   yogaNode_ = yogaNode;
 }
@@ -53,8 +53,10 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   const SharedShadowNodeSharedList &children
 ) {
   auto yogaNode = std::make_shared<YGNode>(*shadowNode->yogaNode_);
+  yogaNode->setConfig(suitableYogaConfig().get());
   yogaNode->setContext(this);
   yogaNode->setOwner(nullptr);
+  yogaNode->setDirty(true);
 
   if (props) {
     yogaNode->setStyle(props->getYogaStyle());
@@ -63,8 +65,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   if (children) {
     YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(*yogaNode, children);
   }
-
-  yogaNode->markDirtyAndPropogate();
 
   yogaNode_ = yogaNode;
 }
@@ -98,9 +98,9 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
   auto nonConstChildYogaNode = std::const_pointer_cast<YGNode>(child->yogaNode_);
   nonConstYogaNode->insertChild(nonConstChildYogaNode.get(), nonConstYogaNode->getChildrenCount());
 
-  if (nonConstChildYogaNode->getParent() == nullptr) {
+  if (nonConstChildYogaNode->getOwner() == nullptr) {
     child->ensureUnsealed();
-    nonConstChildYogaNode->setParent(nonConstYogaNode.get());
+    nonConstChildYogaNode->setOwner(nonConstYogaNode.get());
   }
 }
 
@@ -220,14 +220,13 @@ void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNo
 
     yogaNodeChildren.push_back(yogaNodeChild);
 
-    if (yogaNodeChild->getParent() == nullptr) {
+    if (yogaNodeChild->getOwner() == nullptr) {
       yogaLayoutableShadowNode->ensureUnsealed();
-      yogaNodeChild->setParent(&yogaNode);
+      yogaNodeChild->setOwner(&yogaNode);
     }
   }
 
   yogaNode.setChildren(yogaNodeChildren);
-  yogaNode.markDirtyAndPropogate();
 }
 
 } // namespace react
