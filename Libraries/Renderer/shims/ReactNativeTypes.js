@@ -69,19 +69,9 @@ export type NativeMethodsMixinType = {
   setNativeProps(nativeProps: Object): void,
 };
 
-type ReactNativeBridgeEventPlugin = {
-  processEventTypes(viewConfig: ReactNativeBaseComponentViewConfig): void,
-};
-
 type SecretInternalsType = {
   NativeMethodsMixin: NativeMethodsMixinType,
-  createReactNativeComponentClass(
-    name: string,
-    callback: ViewConfigGetter,
-  ): any,
-  ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin,
   ReactNativeComponentTree: any,
-  ReactNativePropRegistry: any,
   // TODO (bvaughn) Decide which additional types to expose here?
   // And how much information to fill in for the above types.
 };
@@ -101,6 +91,19 @@ export type ReactNativeType = {
   unmountComponentAtNode(containerTag: number): any,
   unmountComponentAtNodeAndRemoveContainer(containerTag: number): any,
   unstable_batchedUpdates: any, // TODO (bvaughn) Add types
+
+  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
+};
+
+export type ReactFabricType = {
+  NativeComponent: any,
+  findNodeHandle(componentOrHandle: any): ?number,
+  render(
+    element: React$Element<any>,
+    containerTag: any,
+    callback: ?Function,
+  ): any,
+  unmountComponentAtNode(containerTag: number): any,
 
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: SecretInternalsType,
 };
