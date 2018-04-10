@@ -109,7 +109,11 @@ void ShadowNode::clearSourceNode() {
 }
 
 void ShadowNode::shallowSourceNode() {
-  sourceNode_ = sourceNode_.lock()->getSourceNode();
+  ensureUnsealed();
+
+  auto sourceNode = sourceNode_.lock();
+  assert(sourceNode);
+  sourceNode_ = sourceNode->getSourceNode();
 }
 
 #pragma mark - Equality

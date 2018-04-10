@@ -58,7 +58,15 @@ public:
   Tag getTag() const;
   Tag getRootTag() const;
   InstanceHandle getInstanceHandle() const;
+
+  /*
+   * Returns the node which was used as a prototype in clone constructor.
+   * The node is held as a weak reference so that the method may return
+   * `nullptr` in cases where the node was constructed using the explicit
+   * constructor or the node was already deallocated.
+   */
   SharedShadowNode getSourceNode() const;
+
   void sealRecursive() const;
 
 #pragma mark - Mutating Methods

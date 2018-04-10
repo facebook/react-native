@@ -94,3 +94,27 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   node5->clearSourceNode();
   ASSERT_EQ(node5->getSourceNode(), nullptr);
 }
+
+TEST(ShadowNodeTest, handleSourceNode) {
+  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration);
+  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration);
+  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration);
+
+  // Ensure established shource nodes structure.
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeThirdGeneration);
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Shallow source node for the forth generation node.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeSecondGeneration);
+
+  // Shallow it one more time.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Ensure that 3th and 2nd were not affected.
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+}
