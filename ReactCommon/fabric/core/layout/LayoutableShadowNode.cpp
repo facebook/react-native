@@ -23,6 +23,8 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
     return false;
   }
 
+  ensureUnsealed();
+
   layoutMetrics_ = layoutMetrics;
   return true;
 }
@@ -60,14 +62,14 @@ Float LayoutableShadowNode::lastBaseline(Size size) const {
 }
 
 void LayoutableShadowNode::layout(LayoutContext layoutContext) {
-  ensureUnsealed();
-
   layoutChildren(layoutContext);
 
   for (auto child : getChildren()) {
     if (!child->getHasNewLayout()) {
       continue;
     }
+
+    ensureUnsealed();
 
     // The assumption:
     // All `sealed` children were replaced with not-yet-sealed clones
@@ -89,7 +91,6 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
 }
 
 void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
-  ensureUnsealed();
   // Default implementation does nothing.
 }
 
