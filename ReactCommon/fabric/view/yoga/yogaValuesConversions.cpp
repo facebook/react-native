@@ -16,14 +16,14 @@ namespace react {
 
 Float fabricFloatFromYogaFloat(float value) {
   if (value == YGUndefined) {
-    return Undefined;
+    return kFloatUndefined;
   }
 
   return (Float)value;
 }
 
 float yogaFloatFromFabricFloat(Float value) {
-  if (value == Undefined) {
+  if (value == kFloatUndefined) {
     return YGUndefined;
   }
 
