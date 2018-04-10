@@ -12,6 +12,34 @@
 namespace facebook {
 namespace react {
 
+const TreeMutationInstruction TreeMutationInstruction::Create(
+  SharedShadowNode node
+) {
+  assert(node);
+
+  return TreeMutationInstruction(
+    Creation,
+    nullptr,
+    nullptr,
+    node,
+    -1
+  );
+}
+
+const TreeMutationInstruction TreeMutationInstruction::Delete(
+  SharedShadowNode node
+) {
+  assert(node);
+
+  return TreeMutationInstruction(
+    Deletion,
+    nullptr,
+    node,
+    nullptr,
+    -1
+  );
+}
+
 const TreeMutationInstruction TreeMutationInstruction::Insert(
   SharedShadowNode parentNode,
   SharedShadowNode childNode,
@@ -22,7 +50,7 @@ const TreeMutationInstruction TreeMutationInstruction::Insert(
   assert(index != -1);
 
   return TreeMutationInstruction(
-    Inserting,
+    Insertion,
     parentNode,
     nullptr,
     childNode,
@@ -30,7 +58,7 @@ const TreeMutationInstruction TreeMutationInstruction::Insert(
   );
 }
 
-const TreeMutationInstruction TreeMutationInstruction::Delete(
+const TreeMutationInstruction TreeMutationInstruction::Remove(
   SharedShadowNode parentNode,
   SharedShadowNode childNode,
   int index
@@ -40,7 +68,7 @@ const TreeMutationInstruction TreeMutationInstruction::Delete(
   assert(index != -1);
 
   return TreeMutationInstruction(
-    Deleting,
+    Removal,
     parentNode,
     childNode,
     nullptr,
@@ -48,7 +76,7 @@ const TreeMutationInstruction TreeMutationInstruction::Delete(
   );
 }
 
-const TreeMutationInstruction TreeMutationInstruction::Update(
+const TreeMutationInstruction TreeMutationInstruction::Replace(
   SharedShadowNode parentNode,
   SharedShadowNode oldChildNode,
   SharedShadowNode newChildNode,
@@ -60,7 +88,7 @@ const TreeMutationInstruction TreeMutationInstruction::Update(
   assert(index != -1);
 
   return TreeMutationInstruction(
-    Updating,
+    Replacement,
     parentNode,
     oldChildNode,
     newChildNode,
@@ -111,12 +139,16 @@ int TreeMutationInstruction::getIndex() const {
 
 std::string TreeMutationInstruction::getDebugName() const {
   switch (type_) {
-    case Inserting:
-      return "Insert";
-    case Deleting:
+    case Creation:
+      return "Create";
+    case Deletion:
       return "Delete";
-    case Updating:
-      return "Update";
+    case Insertion:
+      return "Insert";
+    case Removal:
+      return "Remove";
+    case Replacement:
+      return "Replace";
   }
 };
 
@@ -124,19 +156,27 @@ SharedDebugStringConvertibleList TreeMutationInstruction::getDebugProps() const 
   DebugStringConvertibleOptions options = {.maximumDepth = 1, .format = false};
 
   switch (type_) {
-    case Inserting:
+    case Creation:
+      return SharedDebugStringConvertibleList {
+        std::make_shared<DebugStringConvertibleItem>("node", newChildNode_->getDebugDescription(options)),
+      };
+    case Deletion:
+      return SharedDebugStringConvertibleList {
+        std::make_shared<DebugStringConvertibleItem>("node", oldChildNode_->getDebugDescription(options)),
+      };
+    case Insertion:
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("childNode", newChildNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("index", std::to_string(index_))
       };
-    case Deleting:
+    case Removal:
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("childNode", oldChildNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("index", std::to_string(index_))
       };
-    case Updating:
+    case Replacement:
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("oldChildNode", oldChildNode_->getDebugDescription(options)),
