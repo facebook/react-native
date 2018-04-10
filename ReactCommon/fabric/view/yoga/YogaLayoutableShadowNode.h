@@ -85,7 +85,7 @@ private:
 
   static SharedYogaConfig suitableYogaConfig();
   static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children);
-  static void yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *newYogaNode, YGNode *parentYogaNode, int childIndex);
+  static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
 };
 
 } // namespace react

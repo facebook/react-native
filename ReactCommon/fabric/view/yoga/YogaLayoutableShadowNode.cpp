@@ -23,9 +23,8 @@ SharedYogaConfig YogaLayoutableShadowNode::suitableYogaConfig() {
   static SharedYogaConfig sharedYogaConfig;
 
   if (!sharedYogaConfig) {
-    sharedYogaConfig = std::make_shared<YGConfig>(YGConfig({
-      // .cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector
-    }));
+    sharedYogaConfig = std::shared_ptr<YGConfig>(YGConfigNew());
+    sharedYogaConfig->cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
   }
 
   return sharedYogaConfig;
@@ -169,7 +168,7 @@ SharedDebugStringConvertibleList YogaLayoutableShadowNode::getDebugProps() const
 
 #pragma mark - Yoga Connectors
 
-void YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *newYogaNode, YGNode *parentYogaNode, int childIndex) {
+YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex) {
   // We have only raw pointer to the parent shadow node, but that's enough for now.
   YogaLayoutableShadowNode *parentShadowNodeRawPtr = (YogaLayoutableShadowNode *)parentYogaNode->getContext();
   assert(parentShadowNodeRawPtr);
@@ -198,9 +197,7 @@ void YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNod
     std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(parentShadowNodeRawPtr->cloneAndReplaceChild(oldShadowNode));
   assert(newShadowNode);
 
-  // And finally, we have to replace underline yoga node with the new one provided by Yoga.
-  newYogaNode->setContext((void *)newShadowNode.get());
-  newShadowNode->yogaNode_ = std::shared_ptr<YGNode>(newYogaNode);
+  return newShadowNode->yogaNode_.get();
 }
 
 void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children) {
