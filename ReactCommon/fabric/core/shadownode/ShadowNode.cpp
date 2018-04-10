@@ -108,6 +108,10 @@ void ShadowNode::clearSourceNode() {
   sourceNode_.reset();
 }
 
+void ShadowNode::shallowSourceNode() {
+  sourceNode_ = sourceNode_.lock()->getSourceNode();
+}
+
 #pragma mark - Equality
 
 bool ShadowNode::operator==(const ShadowNode& rhs) const {

@@ -67,6 +67,14 @@ public:
   void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
   void clearSourceNode();
 
+  /*
+   * Replaces the current source node with its source node.
+   * This method might be used for illuminating side-effects caused by the last
+   * cloning operation which are not desirable from the diffing algorithm
+   * perspective.
+   */
+  void shallowSourceNode();
+
 #pragma mark - Equality
 
   /*
