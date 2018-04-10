@@ -105,9 +105,8 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
-  ensureUnsealed();
-
   if (!getIsLayoutClean()) {
+    ensureUnsealed();
     YGNode *yogaNode = const_cast<YGNode *>(yogaNode_.get());
     YGNodeCalculateLayout(yogaNode, YGUndefined, YGUndefined, YGDirectionInherit);
   }
@@ -116,8 +115,6 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 }
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
-  ensureUnsealed();
-
   for (auto child : getChildren()) {
     auto yogaLayoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child);
     if (!yogaLayoutableChild) {
