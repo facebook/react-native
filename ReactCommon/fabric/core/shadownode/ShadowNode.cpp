@@ -31,7 +31,7 @@ ShadowNode::ShadowNode(
   rootTag_(rootTag),
   instanceHandle_(instanceHandle),
   props_(props),
-  children_(children),
+  children_(std::make_shared<SharedShadowNodeList>(*children)),
   revision_(1) {}
 
 ShadowNode::ShadowNode(
@@ -43,7 +43,7 @@ ShadowNode::ShadowNode(
   rootTag_(shadowNode->rootTag_),
   instanceHandle_(shadowNode->instanceHandle_),
   props_(props ? props : shadowNode->props_),
-  children_(children ? children : shadowNode->children_),
+  children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
   sourceNode_(shadowNode),
   revision_(shadowNode->revision_ + 1) {}
 
@@ -92,23 +92,15 @@ void ShadowNode::sealRecursive() const {
 void ShadowNode::appendChild(const SharedShadowNode &child) {
   ensureUnsealed();
 
-  // We cannot mutate `children_` in place here because it is a *shared*
-  // data structure which means other `ShadowNodes` might refer to its old value.
-  // So, we have to clone this and only then mutate.
-  auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
-  nonConstChildrenCopy.push_back(child);
-  children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+  auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
+  nonConstChildren->push_back(child);
 }
 
 void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild) {
   ensureUnsealed();
 
-  // We cannot mutate `children_` in place here because it is a *shared*
-  // data structure which means other `ShadowNodes` might refer to its old value.
-  // So, we have to clone this and only then mutate.
-  auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
-  std::replace(nonConstChildrenCopy.begin(), nonConstChildrenCopy.end(), oldChild, newChild);
-  children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+  auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
+  std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
 }
 
 void ShadowNode::clearSourceNode() {
