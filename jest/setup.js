@@ -324,11 +324,7 @@ Object.keys(mockNativeModules).forEach(module => {
 });
 
 jest
-  .doMock('NativeModules', () => mockNativeModules)
-  .doMock('ReactNativePropRegistry', () => ({
-    register: id => id,
-    getByID: () => mockEmptyObject,
-  }));
+  .doMock('NativeModules', () => mockNativeModules);
 
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
