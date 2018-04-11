@@ -8,55 +8,37 @@
 'use strict';
 
 const defaultPlugins = [
-  [require('@babel/plugin-transform-block-scoping')],
-  // the flow strip types plugin must go BEFORE class properties!
-  // there'll be a test case that fails if you don't.
-  [require('@babel/plugin-transform-flow-strip-types')],
+  [require('babel-plugin-syntax-class-properties')],
+  [require('babel-plugin-syntax-trailing-function-commas')],
+  [require('babel-plugin-transform-class-properties')],
+  [require('babel-plugin-transform-es2015-block-scoping')],
+  [require('babel-plugin-transform-es2015-computed-properties')],
+  [require('babel-plugin-transform-es2015-destructuring')],
+  [require('babel-plugin-transform-es2015-function-name')],
+  [require('babel-plugin-transform-es2015-literals')],
+  [require('babel-plugin-transform-es2015-parameters')],
+  [require('babel-plugin-transform-es2015-shorthand-properties')],
+  [require('babel-plugin-transform-flow-strip-types')],
+  [require('babel-plugin-transform-react-jsx')],
+  [require('babel-plugin-transform-regenerator')],
   [
-    require('@babel/plugin-proposal-class-properties'),
-    // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-    // (Makes the properties enumerable)
-    {loose: true},
-  ],
-  [require('@babel/plugin-transform-computed-properties')],
-  [require('@babel/plugin-transform-destructuring')],
-  [require('@babel/plugin-transform-function-name')],
-  [require('@babel/plugin-transform-literals')],
-  [require('@babel/plugin-transform-parameters')],
-  [require('@babel/plugin-transform-shorthand-properties')],
-  [require('@babel/plugin-transform-react-jsx')],
-  [require('@babel/plugin-transform-regenerator')],
-  [require('@babel/plugin-transform-sticky-regex')],
-  [require('@babel/plugin-transform-unicode-regex')],
-  [
-    require('@babel/plugin-transform-modules-commonjs'),
-    {
-      strict: false,
-      strictMode : false, // prevent "use strict" injections
-      allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
-    },
+    require('babel-plugin-transform-es2015-modules-commonjs'),
+    {strict: false, allowTopLevelThis: true},
   ],
 ];
 
-const es2015ArrowFunctions = [
-  require('@babel/plugin-transform-arrow-functions'),
-];
-const es2015Classes = [require('@babel/plugin-transform-classes')];
-const es2015ForOf = [require('@babel/plugin-transform-for-of'), {loose: true}];
-const es2015Spread = [require('@babel/plugin-transform-spread')];
-const es2015TemplateLiterals = [
-  require('@babel/plugin-transform-template-literals'),
-  {loose: true}, // dont 'a'.concat('b'), just use 'a'+'b'
-];
-const exponentiationOperator = [
-  require('@babel/plugin-transform-exponentiation-operator'),
-];
-const objectAssign = [require('@babel/plugin-transform-object-assign')];
-const objectRestSpread = [require('@babel/plugin-proposal-object-rest-spread')];
-const reactDisplayName = [
-  require('@babel/plugin-transform-react-display-name'),
-];
-const reactJsxSource = [require('@babel/plugin-transform-react-jsx-source')];
+const checkES2015Constants = [require('babel-plugin-check-es2015-constants')];
+const es2015ArrowFunctions = [require('babel-plugin-transform-es2015-arrow-functions')];
+const es2015Classes = [require('babel-plugin-transform-es2015-classes')];
+const es2015ForOf = [require('babel-plugin-transform-es2015-for-of'), {loose: true}];
+const es2015Spread = [require('babel-plugin-transform-es2015-spread')];
+const es2015TemplateLiterals = [require('babel-plugin-transform-es2015-template-literals')];
+const asyncFunctions = [require('babel-plugin-syntax-async-functions')];
+const exponentiationOperator = [require('babel-plugin-transform-exponentiation-operator')];
+const objectAssign = [require('babel-plugin-transform-object-assign')];
+const objectRestSpread = [require('babel-plugin-transform-object-rest-spread')];
+const reactDisplayName = [require('babel-plugin-transform-react-display-name')];
+const reactJsxSource = [require('babel-plugin-transform-react-jsx-source')];
 const symbolMember = [require('../transforms/transform-symbol-member')];
 
 const getPreset = (src, options) => {
@@ -67,11 +49,17 @@ const getPreset = (src, options) => {
 
   const extraPlugins = [];
 
+  if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
+    extraPlugins.push(asyncFunctions);
+  }
   if (hasClass) {
     extraPlugins.push(es2015Classes);
   }
   if (isNull || src.indexOf('=>') !== -1) {
     extraPlugins.push(es2015ArrowFunctions);
+  }
+  if (isNull || src.indexOf('const') !== -1) {
+    extraPlugins.push(checkES2015Constants);
   }
   if (isNull || hasClass || src.indexOf('...') !== -1) {
     extraPlugins.push(es2015Spread);
