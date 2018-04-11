@@ -271,7 +271,7 @@ aliases:
       mkdir -p ~/react-native/reports/build/
       mkdir -p ~/react-native/reports/junit/
       mkdir -p ~/react-native/reports/outputs/
-  
+
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
@@ -289,8 +289,8 @@ aliases:
     command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &build-objc-ios-cocoapods-install
-  name: Test Cocoapods
-  command: ./scripts/objc-test-ios-cocoapods-install.sh
+    name: Test Cocoapods
+    command: ./scripts/objc-test-ios-cocoapods-install.sh
 
   - &build-objc-ios-cocoapods-test-app
     name: Build Objective-C iOS Test App
