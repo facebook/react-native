@@ -33,6 +33,7 @@ export type Props = ViewProps;
  * @see http://facebook.github.io/react-native/docs/view.html
  */
 class View extends ReactNative.NativeComponent<Props> {
+  static displayName = 'View';
   static propTypes = ViewPropTypes;
   static childContextTypes = ViewContextTypes;
 
