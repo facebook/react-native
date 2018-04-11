@@ -410,7 +410,7 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Runs unit tests on iOS devices - cocoapods flavour
-  test_objc_ios_cocoapods:
+  test_ios_cocoapods:
     <<: *macos_defaults
     dependencies:
       pre:
@@ -666,6 +666,7 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
       - test_tvos:
           filters: *filter-ignore-gh-pages
           requires:
@@ -673,6 +674,12 @@ workflows:
 
       # End-to-end tests
       - test_ios_e2e:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
+            # End-to-end tests
+      - test_ios_cocoapods:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
