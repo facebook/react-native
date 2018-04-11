@@ -888,6 +888,12 @@ exports.examples = [
               capitalize each word
             </Text>
           </Text>
+          <Text>Should be "ABC":
+            <Text style={{ textTransform: 'uppercase' }}>a<Text>b</Text>c</Text>
+          </Text>
+          <Text>Should be "AbC":
+            <Text style={{ textTransform: 'uppercase' }}>a<Text style={{ textTransform: 'none' }}>b</Text>c</Text>
+          </Text>
         </View>
       );
     },
