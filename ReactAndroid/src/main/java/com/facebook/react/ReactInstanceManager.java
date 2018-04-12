@@ -1033,7 +1033,7 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     if (rootView.isFabric()) {
       catalystInstance.getJSModule(ReactFabric.class)
-        .unmountComponentAtNodeAndRemoveContainer(rootView.getId());
+        .unmountComponentAtNode(rootView.getId());
     } else {
       catalystInstance.getJSModule(AppRegistry.class)
         .unmountApplicationComponentAtRootTag(rootView.getId());
