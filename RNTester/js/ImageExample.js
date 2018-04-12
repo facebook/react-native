@@ -78,7 +78,7 @@ var NetworkImageCallbackExample = createReactClass({
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
                   Image.queryCache([IMAGE_PREFETCH_URL]).then((map) => {
-                    var result = map[IMAGE_PREFETCH_URL];
+                    var result = map.get(IMAGE_PREFETCH_URL);
                     if (result) {
                       this._loadEventFired(
                         `✔ queryCache "${result}" (+${new Date() - mountTime}ms)`,
