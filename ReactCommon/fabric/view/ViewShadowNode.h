@@ -48,6 +48,10 @@ public:
 
   void appendChild(const SharedShadowNode &child);
 
+#pragma mark - Equality
+
+  bool operator==(const ShadowNode& rhs) const override;
+
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
@@ -56,7 +60,7 @@ private:
 
 #pragma mark - LayoutableShadowNode
 
-  SharedLayoutableShadowNodeList getChildren() const override;
+  SharedLayoutableShadowNodeList getLayoutableChildNodes() const override;
   SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) override;
 };
 

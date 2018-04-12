@@ -13,7 +13,7 @@
 
 - (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
 {
-  return [[RCTFabricSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return (RCTSurface *)[[RCTFabricSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 @end

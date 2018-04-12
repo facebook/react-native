@@ -41,14 +41,11 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getSourceNode(), nullptr);
   ASSERT_EQ(node->getChildren()->size(), 0);
 
-  // TODO(#27369757): getProps() doesn't work
-  // ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());
-
-  // TODO(#27369757): verify Props are also sealed.
-  // ASSERT_TRUE(node->getProps()->getSealed());
+  ASSERT_TRUE(node->getProps()->getSealed());
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
@@ -93,4 +90,28 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto node5 = std::make_shared<TestShadowNode>(node4);
   node5->clearSourceNode();
   ASSERT_EQ(node5->getSourceNode(), nullptr);
+}
+
+TEST(ShadowNodeTest, handleSourceNode) {
+  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration);
+  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration);
+  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration);
+
+  // Ensure established shource nodes structure.
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeThirdGeneration);
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Shallow source node for the forth generation node.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeSecondGeneration);
+
+  // Shallow it one more time.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Ensure that 3th and 2nd were not affected.
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
 }

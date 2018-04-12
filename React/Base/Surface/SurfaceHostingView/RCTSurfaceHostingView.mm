@@ -70,8 +70,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
     self.bounds.size,
     _sizeMeasureMode,
-    minimumSize,
-    maximumSize
+    &minimumSize,
+    &maximumSize
   );
 
   [_surface setMinimumSize:minimumSize
@@ -107,8 +107,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
     size,
     _sizeMeasureMode,
-    minimumSize,
-    maximumSize
+    &minimumSize,
+    &maximumSize
   );
 
   return [_surface sizeThatFitsMinimumSize:minimumSize

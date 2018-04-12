@@ -400,7 +400,11 @@ struct RCTInstanceCallback : public InstanceCallback {
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
 
-    NSDictionary *userInfo = source ? @{ RCTBridgeDidDownloadScriptNotificationSourceKey: source } : nil;
+    NSDictionary *userInfo = @{
+      RCTBridgeDidDownloadScriptNotificationSourceKey: source ?: [NSNull null],
+      RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey: self->_bridgeDescription ?: [NSNull null],
+    };
+
     [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
     _onSourceLoad(error, source);

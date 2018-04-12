@@ -34,7 +34,7 @@ function renderFabricSurface<Props: Object>(
       fabric={true}
       rootTag={rootTag}
       WrapperComponent={WrapperComponent}>
-      <RootComponent {...initialProps} rootTag={rootTag} fabric={true} />
+      <RootComponent {...initialProps} rootTag={rootTag} />
     </AppContainer>
   );
 

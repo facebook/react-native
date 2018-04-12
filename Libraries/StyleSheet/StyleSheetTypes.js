@@ -13,8 +13,6 @@
 
 const AnimatedNode = require('AnimatedNode');
 
-export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
-
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
 
@@ -224,8 +222,6 @@ type GenericStyleProp<+T> =
   | null
   | void
   | T
-  | ____StyleSheetInternalStyleIdentifier_Internal
-  | number
   | false
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;

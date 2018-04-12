@@ -9,12 +9,13 @@
 
 #include <glog/logging.h>
 
+#include <fabric/core/componentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
-#include <fabric/view/ViewComponentDescriptor.h>
+#include <fabric/debug/DebugStringConvertible.h>
+#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/view/ViewcomponentDescriptor.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/ViewShadowNode.h>
-
-#include "IFabricPlatformUIOperationManager.h"
 
 namespace facebook {
 namespace react {
@@ -37,63 +38,83 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
   return result;
 }
 
-FabricUIManager::FabricUIManager(const std::shared_ptr<IFabricPlatformUIOperationManager> &platformUIOperationManager):
-  platformUIOperationManager_(platformUIOperationManager) {
+FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry) {
+  componentDescriptorRegistry_ = componentDescriptorRegistry;
+}
 
-  SharedComponentDescriptor viewComponentDescriptor = std::make_shared<ViewComponentDescriptor>();
-  _registry.registerComponentDescriptor(viewComponentDescriptor);
+void FabricUIManager::setDelegate(UIManagerDelegate *delegate) {
+  delegate_ = delegate;
+}
+
+UIManagerDelegate *FabricUIManager::getDelegate() {
+  return delegate_;
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle) {
   LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag" << rootTag << ", props: " << props << ")";
-  ComponentDescriptor &componentDescriptor = *_registry["View"];
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)["View"];
   RawProps rawProps = rawPropsFromDynamic(props);
-  SharedShadowNode shadowNode = componentDescriptor.createShadowNode(tag, rootTag, instanceHandle, rawProps);
+  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(tag, rootTag, instanceHandle, rawProps);
   LOG(INFO) << "FabricUIManager::createNode() -> " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
+
+  if (delegate_) {
+    delegate_->uiManagerDidCreateShadowNode(shadowNode);
+  }
+
   return shadowNode;
 }
 
 SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) {
   LOG(INFO) << "FabricUIManager::cloneNode(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
-  ComponentDescriptor &componentDescriptor = *_registry[shadowNode];
-  SharedShadowNode clonnedShadowNode = componentDescriptor.cloneShadowNode(shadowNode);
-  LOG(INFO) << "FabricUIManager::cloneNode() -> " << clonnedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
-  return clonnedShadowNode;
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(shadowNode);
+  LOG(INFO) << "FabricUIManager::cloneNode() -> " << clonedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
+  return clonedShadowNode;
 }
 
 SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNode &shadowNode) {
   LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildren(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   // Assuming semantic: Cloning with same props but empty children.
-  ComponentDescriptor &componentDescriptor = *_registry[shadowNode];
-  SharedShadowNode clonnedShadowNode = componentDescriptor.cloneShadowNode(shadowNode, nullptr, ShadowNode::emptySharedShadowNodeSharedList());
-  LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildren() -> " << clonnedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
-  return clonnedShadowNode;
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(shadowNode, nullptr, ShadowNode::emptySharedShadowNodeSharedList());
+  LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildren() -> " << clonedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
+  return clonedShadowNode;
 }
 
 SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &shadowNode, folly::dynamic props) {
   LOG(INFO) << "FabricUIManager::cloneNodeWithNewProps(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", props: " << props << ")";
   // Assuming semantic: Cloning with same children and specified props.
-  ComponentDescriptor &componentDescriptor = *_registry[shadowNode];
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
   RawProps rawProps = rawPropsFromDynamic(props);
-  SharedShadowNode clonnedShadowNode = componentDescriptor.cloneShadowNode(shadowNode, std::make_shared<const RawProps>(rawProps), nullptr);
-  LOG(INFO) << "FabricUIManager::cloneNodeWithNewProps() -> " << clonnedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
-  return clonnedShadowNode;
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(shadowNode, std::make_shared<const RawProps>(rawProps), nullptr);
+  LOG(INFO) << "FabricUIManager::cloneNodeWithNewProps() -> " << clonedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
+  return clonedShadowNode;
 }
 
 SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedShadowNode &shadowNode, folly::dynamic props) {
   LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildrenAndProps(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", props: " << props << ")";
   // Assuming semantic: Cloning with empty children and specified props.
-  ComponentDescriptor &componentDescriptor = *_registry[shadowNode];
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
   RawProps rawProps = rawPropsFromDynamic(props);
-  SharedShadowNode clonnedShadowNode = componentDescriptor.cloneShadowNode(shadowNode, std::make_shared<const RawProps>(rawProps), ShadowNode::emptySharedShadowNodeSharedList());
-  LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildrenAndProps() -> " << clonnedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
-  return clonnedShadowNode;
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(shadowNode, std::make_shared<const RawProps>(rawProps), ShadowNode::emptySharedShadowNodeSharedList());
+  LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildrenAndProps() -> " << clonedShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false});
+  return clonedShadowNode;
 }
 
 void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, const SharedShadowNode &childShadowNode) {
   LOG(INFO) << "FabricUIManager::appendChild(parentShadowNode: " << parentShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", childShadowNode: " << childShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
-  ComponentDescriptor &componentDescriptor = *_registry[parentShadowNode];
-  componentDescriptor.appendChild(parentShadowNode, childShadowNode);
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[parentShadowNode];
+
+  // TODO: Remove this after we move this to JS side.
+  if (childShadowNode->getSealed()) {
+    auto clonedChildShadowNode = componentDescriptor->cloneShadowNode(childShadowNode);
+    auto nonConstClonedChildShadowNode = std::const_pointer_cast<ShadowNode>(clonedChildShadowNode);
+    nonConstClonedChildShadowNode->shallowSourceNode();
+    componentDescriptor->appendChild(parentShadowNode, clonedChildShadowNode);
+    return;
+  }
+
+  componentDescriptor->appendChild(parentShadowNode, childShadowNode);
 }
 
 SharedShadowNodeUnsharedList FabricUIManager::createChildSet(int rootTag) {
@@ -107,24 +128,11 @@ void FabricUIManager::appendChildToSet(const SharedShadowNodeUnsharedList &shado
 }
 
 void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedList &children) {
-  LOG(INFO) << "FabricUIManager::appendChildToSet(rootTag: " << rootTag << ", shadowNodeList: " << children << ")";
-  ComponentDescriptor &componentDescriptor = *_registry["View"];
-  SharedShadowNode previousRootShadowNode = componentDescriptor.createShadowNode(rootTag, rootTag, nullptr, {});
-  auto childrenCopy = std::make_shared<const SharedShadowNodeList>(SharedShadowNodeList(*children));
-  SharedShadowNode rootShadowNode = componentDescriptor.cloneShadowNode(previousRootShadowNode, nullptr, childrenCopy);
+  LOG(INFO) << "FabricUIManager::completeRoot(rootTag: " << rootTag << ", shadowNodeList: " << children << ")";
 
-  SharedViewShadowNode viewShadowNode = std::dynamic_pointer_cast<const ViewShadowNode>(rootShadowNode);
-  LayoutContext layoutContext = LayoutContext();
-  layoutContext.affectedShadowNodes = std::make_shared<std::unordered_set<SharedLayoutableShadowNode>>();
-
-  LOG(INFO) << "Shadow tree *before* layout: \n" << viewShadowNode->getDebugDescription() ;
-
-  auto nonConstViewShadowNode = std::const_pointer_cast<ViewShadowNode>(viewShadowNode);
-  nonConstViewShadowNode->layout(layoutContext);
-
-  rootShadowNode->sealRecursive();
-
-  LOG(INFO) << "Shadow tree *after* layout: \n" << nonConstViewShadowNode->getDebugDescription();
+  if (delegate_) {
+    delegate_->uiManagerDidFinishTransaction(rootTag, children);
+  }
 }
 
 } // namespace react

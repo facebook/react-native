@@ -13,6 +13,7 @@
 require("InitializeCore");
 var invariant = require("fbjs/lib/invariant"),
   emptyFunction = require("fbjs/lib/emptyFunction"),
+  ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry"),
   UIManager = require("UIManager"),
   RCTEventEmitter = require("RCTEventEmitter"),
   TextInputState = require("TextInputState"),
@@ -624,7 +625,7 @@ function changeResponder(nextResponderInst, blockHostResponder) {
       blockHostResponder
     );
 }
-var eventTypes = {
+var eventTypes$1 = {
     startShouldSetResponder: {
       phasedRegistrationNames: {
         bubbled: "onStartShouldSetResponder",
@@ -664,7 +665,7 @@ var eventTypes = {
     _getResponder: function() {
       return responderInst;
     },
-    eventTypes: eventTypes,
+    eventTypes: eventTypes$1,
     extractEvents: function(
       topLevelType,
       targetInst,
@@ -690,12 +691,12 @@ var eventTypes = {
           isMoveish(topLevelType))
       ) {
         var JSCompiler_temp = isStartish(topLevelType)
-          ? eventTypes.startShouldSetResponder
+          ? eventTypes$1.startShouldSetResponder
           : isMoveish(topLevelType)
-            ? eventTypes.moveShouldSetResponder
+            ? eventTypes$1.moveShouldSetResponder
             : "topSelectionChange" === topLevelType
-              ? eventTypes.selectionChangeShouldSetResponder
-              : eventTypes.scrollShouldSetResponder;
+              ? eventTypes$1.selectionChangeShouldSetResponder
+              : eventTypes$1.scrollShouldSetResponder;
         if (responderInst)
           b: {
             var JSCompiler_temp$jscomp$0 = responderInst;
@@ -781,7 +782,7 @@ var eventTypes = {
         JSCompiler_temp && JSCompiler_temp !== responderInst
           ? ((JSCompiler_temp$jscomp$0 = void 0),
             (targetInst = ResponderSyntheticEvent.getPooled(
-              eventTypes.responderGrant,
+              eventTypes$1.responderGrant,
               JSCompiler_temp,
               nativeEvent,
               nativeEventTarget
@@ -791,7 +792,7 @@ var eventTypes = {
             (depthA = !0 === executeDirectDispatch(targetInst)),
             responderInst
               ? ((tempA = ResponderSyntheticEvent.getPooled(
-                  eventTypes.responderTerminationRequest,
+                  eventTypes$1.responderTerminationRequest,
                   responderInst,
                   nativeEvent,
                   nativeEventTarget
@@ -803,7 +804,7 @@ var eventTypes = {
                 tempA.isPersistent() || tempA.constructor.release(tempA),
                 tempB
                   ? ((tempA = ResponderSyntheticEvent.getPooled(
-                      eventTypes.responderTerminate,
+                      eventTypes$1.responderTerminate,
                       responderInst,
                       nativeEvent,
                       nativeEventTarget
@@ -817,7 +818,7 @@ var eventTypes = {
                     )),
                     changeResponder(JSCompiler_temp, depthA))
                   : ((JSCompiler_temp = ResponderSyntheticEvent.getPooled(
-                      eventTypes.responderReject,
+                      eventTypes$1.responderReject,
                       JSCompiler_temp,
                       nativeEvent,
                       nativeEventTarget
@@ -845,10 +846,10 @@ var eventTypes = {
       depthA = responderInst && isEndish(topLevelType);
       if (
         (JSCompiler_temp$jscomp$0 = JSCompiler_temp$jscomp$0
-          ? eventTypes.responderStart
+          ? eventTypes$1.responderStart
           : targetInst
-            ? eventTypes.responderMove
-            : depthA ? eventTypes.responderEnd : null)
+            ? eventTypes$1.responderMove
+            : depthA ? eventTypes$1.responderEnd : null)
       )
         (JSCompiler_temp$jscomp$0 = ResponderSyntheticEvent.getPooled(
           JSCompiler_temp$jscomp$0,
@@ -899,8 +900,8 @@ var eventTypes = {
         }
       if (
         (topLevelType = JSCompiler_temp$jscomp$0
-          ? eventTypes.responderTerminate
-          : topLevelType ? eventTypes.responderRelease : null)
+          ? eventTypes$1.responderTerminate
+          : topLevelType ? eventTypes$1.responderRelease : null)
       )
         (nativeEvent = ResponderSyntheticEvent.getPooled(
           topLevelType,
@@ -932,10 +933,12 @@ var eventTypes = {
       }
     }
   },
-  customBubblingEventTypes = {},
-  customDirectEventTypes = {},
+  customBubblingEventTypes$1 =
+    ReactNativeViewConfigRegistry.customBubblingEventTypes,
+  customDirectEventTypes$1 =
+    ReactNativeViewConfigRegistry.customDirectEventTypes,
   ReactNativeBridgeEventPlugin = {
-    eventTypes: {},
+    eventTypes: ReactNativeViewConfigRegistry.eventTypes,
     extractEvents: function(
       topLevelType,
       targetInst,
@@ -943,8 +946,8 @@ var eventTypes = {
       nativeEventTarget
     ) {
       if (null == targetInst) return null;
-      var bubbleDispatchConfig = customBubblingEventTypes[topLevelType],
-        directDispatchConfig = customDirectEventTypes[topLevelType];
+      var bubbleDispatchConfig = customBubblingEventTypes$1[topLevelType],
+        directDispatchConfig = customDirectEventTypes$1[topLevelType];
       invariant(
         bubbleDispatchConfig || directDispatchConfig,
         'Unsupported top level event type "%s" dispatched',
@@ -962,24 +965,6 @@ var eventTypes = {
         forEachAccumulated(topLevelType, accumulateDirectDispatchesSingle);
       else return null;
       return topLevelType;
-    },
-    processEventTypes: function(viewConfig) {
-      var bubblingEventTypes = viewConfig.bubblingEventTypes;
-      viewConfig = viewConfig.directEventTypes;
-      if (null != bubblingEventTypes)
-        for (var _topLevelType in bubblingEventTypes)
-          null == customBubblingEventTypes[_topLevelType] &&
-            (ReactNativeBridgeEventPlugin.eventTypes[
-              _topLevelType
-            ] = customBubblingEventTypes[_topLevelType] =
-              bubblingEventTypes[_topLevelType]);
-      if (null != viewConfig)
-        for (var _topLevelType2 in viewConfig)
-          null == customDirectEventTypes[_topLevelType2] &&
-            (ReactNativeBridgeEventPlugin.eventTypes[
-              _topLevelType2
-            ] = customDirectEventTypes[_topLevelType2] =
-              viewConfig[_topLevelType2]);
     }
   },
   instanceCache = {},
@@ -1067,28 +1052,7 @@ function batchedUpdates(fn, bookkeeping) {
           restoreStateOfTarget(fn[bookkeeping]);
   }
 }
-var ReactNativeTagHandles = {
-    tagsStartAt: 1,
-    tagCount: 1,
-    allocateTag: function() {
-      for (; this.reactTagIsNativeTopRootID(ReactNativeTagHandles.tagCount); )
-        ReactNativeTagHandles.tagCount++;
-      var tag = ReactNativeTagHandles.tagCount;
-      ReactNativeTagHandles.tagCount++;
-      return tag;
-    },
-    assertRootTag: function(tag) {
-      invariant(
-        this.reactTagIsNativeTopRootID(tag),
-        "Expect a native root tag, instead got %s",
-        tag
-      );
-    },
-    reactTagIsNativeTopRootID: function(reactTag) {
-      return 1 === reactTag % 10;
-    }
-  },
-  EMPTY_NATIVE_EVENT = {};
+var EMPTY_NATIVE_EVENT = {};
 function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT,
     inst = getInstanceFromTag(rootNodeID);
@@ -1153,10 +1117,7 @@ var ReactNativeEventEmitter = Object.freeze({
       i.touches = touches;
       index = null;
       var target = i.target;
-      null === target ||
-        void 0 === target ||
-        target < ReactNativeTagHandles.tagsStartAt ||
-        (index = target);
+      null === target || void 0 === target || 1 > target || (index = target);
       _receiveRootNodeIDEvent(index, eventTopLevelType, i);
     }
   }
@@ -1197,103 +1158,6 @@ function createPortal(children, containerInfo, implementation) {
     implementation: implementation
   };
 }
-var TouchHistoryMath = {
-  centroidDimension: function(
-    touchHistory,
-    touchesChangedAfter,
-    isXAxis,
-    ofCurrent
-  ) {
-    var touchBank = touchHistory.touchBank,
-      total = 0,
-      count = 0;
-    touchHistory =
-      1 === touchHistory.numberActiveTouches
-        ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch]
-        : null;
-    if (null !== touchHistory)
-      touchHistory.touchActive &&
-        touchHistory.currentTimeStamp > touchesChangedAfter &&
-        ((total +=
-          ofCurrent && isXAxis
-            ? touchHistory.currentPageX
-            : ofCurrent && !isXAxis
-              ? touchHistory.currentPageY
-              : !ofCurrent && isXAxis
-                ? touchHistory.previousPageX
-                : touchHistory.previousPageY),
-        (count = 1));
-    else
-      for (touchHistory = 0; touchHistory < touchBank.length; touchHistory++) {
-        var touchTrack = touchBank[touchHistory];
-        null !== touchTrack &&
-          void 0 !== touchTrack &&
-          touchTrack.touchActive &&
-          touchTrack.currentTimeStamp >= touchesChangedAfter &&
-          ((total +=
-            ofCurrent && isXAxis
-              ? touchTrack.currentPageX
-              : ofCurrent && !isXAxis
-                ? touchTrack.currentPageY
-                : !ofCurrent && isXAxis
-                  ? touchTrack.previousPageX
-                  : touchTrack.previousPageY),
-          count++);
-      }
-    return 0 < count ? total / count : TouchHistoryMath.noCentroid;
-  },
-  currentCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      !0,
-      !0
-    );
-  },
-  currentCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      !1,
-      !0
-    );
-  },
-  previousCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      !0,
-      !1
-    );
-  },
-  previousCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      !1,
-      !1
-    );
-  },
-  currentCentroidX: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(touchHistory, 0, !0, !0);
-  },
-  currentCentroidY: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(touchHistory, 0, !1, !0);
-  },
-  noCentroid: -1
-};
 function getComponentName(fiber) {
   fiber = fiber.type;
   if ("function" === typeof fiber) return fiber.displayName || fiber.name;
@@ -1343,37 +1207,9 @@ function getStackAddendumByWorkInProgressFiber(workInProgress) {
   } while (workInProgress);
   return info;
 }
-var objects = {},
-  uniqueID = 1,
-  emptyObject$2 = {},
-  ReactNativePropRegistry = (function() {
-    function ReactNativePropRegistry() {
-      if (!(this instanceof ReactNativePropRegistry))
-        throw new TypeError("Cannot call a class as a function");
-    }
-    ReactNativePropRegistry.register = function(object) {
-      var id = ++uniqueID;
-      objects[id] = object;
-      return id;
-    };
-    ReactNativePropRegistry.getByID = function(id) {
-      if (!id) return emptyObject$2;
-      var object = objects[id];
-      return object
-        ? object
-        : (console.warn("Invalid style with id `" + id + "`. Skipping ..."),
-          emptyObject$2);
-    };
-    return ReactNativePropRegistry;
-  })(),
-  emptyObject$1 = {},
+var emptyObject$1 = {},
   removedKeys = null,
   removedKeyCount = 0;
-function resolveObject(idOrObject) {
-  return "number" === typeof idOrObject
-    ? ReactNativePropRegistry.getByID(idOrObject)
-    : idOrObject;
-}
 function restoreDeletedValuesInNestedArray(
   updatePayload,
   node,
@@ -1387,7 +1223,7 @@ function restoreDeletedValuesInNestedArray(
         validAttributes
       );
   else if (node && 0 < removedKeyCount)
-    for (i in ((node = resolveObject(node)), removedKeys))
+    for (i in removedKeys)
       if (removedKeys[i]) {
         var _nextProp = node[i];
         if (void 0 !== _nextProp) {
@@ -1426,12 +1262,7 @@ function diffNestedProperty(
         ? clearNestedProperty(updatePayload, prevProp, validAttributes)
         : updatePayload;
   if (!Array.isArray(prevProp) && !Array.isArray(nextProp))
-    return diffProperties(
-      updatePayload,
-      resolveObject(prevProp),
-      resolveObject(nextProp),
-      validAttributes
-    );
+    return diffProperties(updatePayload, prevProp, nextProp, validAttributes);
   if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
     var minLength =
         prevProp.length < nextProp.length ? prevProp.length : nextProp.length,
@@ -1461,12 +1292,12 @@ function diffNestedProperty(
     ? diffProperties(
         updatePayload,
         flattenStyle(prevProp),
-        resolveObject(nextProp),
+        nextProp,
         validAttributes
       )
     : diffProperties(
         updatePayload,
-        resolveObject(prevProp),
+        prevProp,
         flattenStyle(nextProp),
         validAttributes
       );
@@ -1474,9 +1305,11 @@ function diffNestedProperty(
 function addNestedProperty(updatePayload, nextProp, validAttributes) {
   if (!nextProp) return updatePayload;
   if (!Array.isArray(nextProp))
-    return (
-      (nextProp = resolveObject(nextProp)),
-      diffProperties(updatePayload, emptyObject$1, nextProp, validAttributes)
+    return diffProperties(
+      updatePayload,
+      emptyObject$1,
+      nextProp,
+      validAttributes
     );
   for (var i = 0; i < nextProp.length; i++)
     updatePayload = addNestedProperty(
@@ -1489,9 +1322,11 @@ function addNestedProperty(updatePayload, nextProp, validAttributes) {
 function clearNestedProperty(updatePayload, prevProp, validAttributes) {
   if (!prevProp) return updatePayload;
   if (!Array.isArray(prevProp))
-    return (
-      (prevProp = resolveObject(prevProp)),
-      diffProperties(updatePayload, prevProp, emptyObject$1, validAttributes)
+    return diffProperties(
+      updatePayload,
+      prevProp,
+      emptyObject$1,
+      validAttributes
     );
   for (var i = 0; i < prevProp.length; i++)
     updatePayload = clearNestedProperty(
@@ -1604,37 +1439,6 @@ function mountSafeCallback(context, callback) {
     }
   };
 }
-var ReactCurrentOwner =
-  React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner;
-function findHostInstance() {
-  return null;
-}
-function findNodeHandle(componentOrHandle) {
-  if (null == componentOrHandle) return null;
-  if ("number" === typeof componentOrHandle) return componentOrHandle;
-  var internalInstance = componentOrHandle._reactInternalFiber;
-  if (internalInstance) return findHostInstance(internalInstance) || null;
-  if (componentOrHandle) return componentOrHandle;
-  invariant(
-    ("object" === typeof componentOrHandle &&
-      "_nativeTag" in componentOrHandle) ||
-      (null != componentOrHandle.render &&
-        "function" === typeof componentOrHandle.render),
-    "findNodeHandle(...): Argument is not a component (type: %s, keys: %s)",
-    typeof componentOrHandle,
-    Object.keys(componentOrHandle)
-  );
-  invariant(
-    !1,
-    "findNodeHandle(...): Unable to find node handle for unmounted component."
-  );
-}
-function findNumericNodeHandleFiber(componentOrHandle) {
-  componentOrHandle = findNodeHandle(componentOrHandle);
-  return null == componentOrHandle || "number" === typeof componentOrHandle
-    ? componentOrHandle
-    : componentOrHandle._nativeTag;
-}
 function _inherits(subClass, superClass) {
   if ("function" !== typeof superClass && null !== superClass)
     throw new TypeError(
@@ -1654,74 +1458,8 @@ function _inherits(subClass, superClass) {
       ? Object.setPrototypeOf(subClass, superClass)
       : (subClass.__proto__ = superClass));
 }
-var ReactNativeComponent = (function(_React$Component) {
-  function ReactNativeComponent() {
-    if (!(this instanceof ReactNativeComponent))
-      throw new TypeError("Cannot call a class as a function");
-    var call = _React$Component.apply(this, arguments);
-    if (!this)
-      throw new ReferenceError(
-        "this hasn't been initialised - super() hasn't been called"
-      );
-    return !call || ("object" !== typeof call && "function" !== typeof call)
-      ? this
-      : call;
-  }
-  _inherits(ReactNativeComponent, _React$Component);
-  ReactNativeComponent.prototype.blur = function() {
-    TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
-  };
-  ReactNativeComponent.prototype.focus = function() {
-    TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-  };
-  ReactNativeComponent.prototype.measure = function(callback) {
-    UIManager.measure(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
-  ReactNativeComponent.prototype.measureInWindow = function(callback) {
-    UIManager.measureInWindow(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
-  ReactNativeComponent.prototype.measureLayout = function(
-    relativeToNativeNode,
-    onSuccess,
-    onFail
-  ) {
-    UIManager.measureLayout(
-      findNumericNodeHandleFiber(this),
-      relativeToNativeNode,
-      mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
-    );
-  };
-  ReactNativeComponent.prototype.setNativeProps = function(nativeProps) {
-    var maybeInstance = void 0;
-    try {
-      maybeInstance = findNodeHandle(this);
-    } catch (error) {}
-    if (null != maybeInstance) {
-      var viewConfig =
-        maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-      nativeProps = diffProperties(
-        null,
-        emptyObject$1,
-        nativeProps,
-        viewConfig.validAttributes
-      );
-      null != nativeProps &&
-        UIManager.updateView(
-          maybeInstance._nativeTag,
-          viewConfig.uiViewClassName,
-          nativeProps
-        );
-    }
-  };
-  return ReactNativeComponent;
-})(React.Component);
+var ReactCurrentOwner =
+  React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner;
 function isFiberMountedImpl(fiber) {
   var node = fiber;
   if (fiber.alternate) for (; node["return"]; ) node = node["return"];
@@ -6048,10 +5786,6 @@ function ReactFiberReconciler$1(config) {
     scheduleWork(currentTime, expirationTime);
     return expirationTime;
   }
-  function findHostInstance(fiber) {
-    fiber = findCurrentHostFiber(fiber);
-    return null === fiber ? null : fiber.stateNode;
-  }
   var getPublicInstance = config.getPublicInstance;
   config = ReactFiberScheduler(config);
   var recalculateCurrentTime = config.recalculateCurrentTime,
@@ -6130,7 +5864,19 @@ function ReactFiberReconciler$1(config) {
           return container.child.stateNode;
       }
     },
-    findHostInstance: findHostInstance,
+    findHostInstance: function(component) {
+      var fiber = component._reactInternalFiber;
+      void 0 === fiber &&
+        ("function" === typeof component.render
+          ? invariant(!1, "Unable to find node on an unmounted component.")
+          : invariant(
+              !1,
+              "Argument appears to not be a ReactComponent. Keys: %s",
+              Object.keys(component)
+            ));
+      component = findCurrentHostFiber(fiber);
+      return null === component ? null : component.stateNode;
+    },
     findHostInstanceWithNoPortals: function(fiber) {
       fiber = findCurrentHostFiberWithNoPortals(fiber);
       return null === fiber ? null : fiber.stateNode;
@@ -6140,7 +5886,8 @@ function ReactFiberReconciler$1(config) {
       return injectInternals(
         Object.assign({}, devToolsConfig, {
           findHostInstanceByFiber: function(fiber) {
-            return findHostInstance(fiber);
+            fiber = findCurrentHostFiber(fiber);
+            return null === fiber ? null : fiber.stateNode;
           },
           findFiberByHostInstance: function(instance) {
             return findFiberByHostInstance
@@ -6159,8 +5906,6 @@ var ReactFiberReconciler$2 = Object.freeze({ default: ReactFiberReconciler$1 }),
   reactReconciler = ReactFiberReconciler$3["default"]
     ? ReactFiberReconciler$3["default"]
     : ReactFiberReconciler$3,
-  viewConfigCallbacks = new Map(),
-  viewConfigs = new Map(),
   ReactNativeFiberHostComponent = (function() {
     function ReactNativeFiberHostComponent(tag, viewConfig) {
       if (!(this instanceof ReactNativeFiberHostComponent))
@@ -6238,6 +5983,13 @@ function setTimeoutCallback() {
   scheduledCallback = null;
   null !== callback && callback(frameDeadlineObject);
 }
+var nextReactTag = 3;
+function allocateTag() {
+  var tag = nextReactTag;
+  1 === tag % 10 && (tag += 2);
+  nextReactTag = tag + 2;
+  return tag;
+}
 function recursivelyUncacheFiberNode(node) {
   "number" === typeof node
     ? uncacheFiberNode(node)
@@ -6255,21 +6007,9 @@ var NativeRenderer = reactReconciler({
       hostContext,
       internalInstanceHandle
     ) {
-      hostContext = ReactNativeTagHandles.allocateTag();
-      if (viewConfigs.has(type)) var viewConfig = viewConfigs.get(type);
-      else
-        (viewConfig = viewConfigCallbacks.get(type)),
-          invariant(
-            "function" === typeof viewConfig,
-            "View config not found for name %s",
-            type
-          ),
-          viewConfigCallbacks.set(type, null),
-          (viewConfig = viewConfig()),
-          viewConfigs.set(type, viewConfig);
-      invariant(viewConfig, "View config not found for name %s", type);
-      type = viewConfig;
-      viewConfig = diffProperties(
+      hostContext = allocateTag();
+      type = ReactNativeViewConfigRegistry.get(type);
+      var updatePayload = diffProperties(
         null,
         emptyObject$1,
         props,
@@ -6279,7 +6019,7 @@ var NativeRenderer = reactReconciler({
         hostContext,
         type.uiViewClassName,
         rootContainerInstance,
-        viewConfig
+        updatePayload
       );
       rootContainerInstance = new ReactNativeFiberHostComponent(
         hostContext,
@@ -6295,7 +6035,7 @@ var NativeRenderer = reactReconciler({
       hostContext,
       internalInstanceHandle
     ) {
-      hostContext = ReactNativeTagHandles.allocateTag();
+      hostContext = allocateTag();
       UIManager.createView(hostContext, "RCTRawText", rootContainerInstance, {
         text: text
       });
@@ -6453,13 +6193,96 @@ var NativeRenderer = reactReconciler({
 getInspectorDataForViewTag = function() {
   invariant(!1, "getInspectorDataForViewTag() is not available in production");
 };
-findHostInstance = NativeRenderer.findHostInstance;
+var findHostInstance = NativeRenderer.findHostInstance;
+function findNodeHandle(componentOrHandle) {
+  if (null == componentOrHandle) return null;
+  if ("number" === typeof componentOrHandle) return componentOrHandle;
+  if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
+    return componentOrHandle.canonical._nativeTag;
+  componentOrHandle = findHostInstance(componentOrHandle);
+  return null == componentOrHandle
+    ? componentOrHandle
+    : componentOrHandle.canonical
+      ? componentOrHandle.canonical._nativeTag
+      : componentOrHandle._nativeTag;
+}
 _batchedUpdates = NativeRenderer.batchedUpdates;
 _flushInteractiveUpdates = NativeRenderer.flushInteractiveUpdates;
 var roots = new Map(),
   ReactNativeRenderer = {
-    NativeComponent: ReactNativeComponent,
-    findNodeHandle: findNumericNodeHandleFiber,
+    NativeComponent: (function(findNodeHandle, findHostInstance) {
+      return (function(_React$Component) {
+        function ReactNativeComponent() {
+          if (!(this instanceof ReactNativeComponent))
+            throw new TypeError("Cannot call a class as a function");
+          var call = _React$Component.apply(this, arguments);
+          if (!this)
+            throw new ReferenceError(
+              "this hasn't been initialised - super() hasn't been called"
+            );
+          return !call ||
+            ("object" !== typeof call && "function" !== typeof call)
+            ? this
+            : call;
+        }
+        _inherits(ReactNativeComponent, _React$Component);
+        ReactNativeComponent.prototype.blur = function() {
+          TextInputState.blurTextInput(findNodeHandle(this));
+        };
+        ReactNativeComponent.prototype.focus = function() {
+          TextInputState.focusTextInput(findNodeHandle(this));
+        };
+        ReactNativeComponent.prototype.measure = function(callback) {
+          UIManager.measure(
+            findNodeHandle(this),
+            mountSafeCallback(this, callback)
+          );
+        };
+        ReactNativeComponent.prototype.measureInWindow = function(callback) {
+          UIManager.measureInWindow(
+            findNodeHandle(this),
+            mountSafeCallback(this, callback)
+          );
+        };
+        ReactNativeComponent.prototype.measureLayout = function(
+          relativeToNativeNode,
+          onSuccess,
+          onFail
+        ) {
+          UIManager.measureLayout(
+            findNodeHandle(this),
+            relativeToNativeNode,
+            mountSafeCallback(this, onFail),
+            mountSafeCallback(this, onSuccess)
+          );
+        };
+        ReactNativeComponent.prototype.setNativeProps = function(nativeProps) {
+          var maybeInstance = void 0;
+          try {
+            maybeInstance = findHostInstance(this);
+          } catch (error) {}
+          if (null != maybeInstance) {
+            var viewConfig =
+              maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
+            nativeProps = diffProperties(
+              null,
+              emptyObject$1,
+              nativeProps,
+              viewConfig.validAttributes
+            );
+            null != nativeProps &&
+              UIManager.updateView(
+                maybeInstance._nativeTag,
+                viewConfig.uiViewClassName,
+                nativeProps
+              );
+          }
+        };
+        return ReactNativeComponent;
+      })(React.Component);
+    })(findNodeHandle, findHostInstance),
+    findNodeHandle: findNodeHandle,
     render: function(element, containerTag, callback) {
       var root = roots.get(containerTag);
       root ||
@@ -6488,76 +6311,59 @@ var roots = new Map(),
       );
     },
     unstable_batchedUpdates: batchedUpdates,
-    flushSync: NativeRenderer.flushSync,
     __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
-      NativeMethodsMixin: {
-        measure: function(callback) {
-          UIManager.measure(
-            findNumericNodeHandleFiber(this),
-            mountSafeCallback(this, callback)
-          );
-        },
-        measureInWindow: function(callback) {
-          UIManager.measureInWindow(
-            findNumericNodeHandleFiber(this),
-            mountSafeCallback(this, callback)
-          );
-        },
-        measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
-          UIManager.measureLayout(
-            findNumericNodeHandleFiber(this),
-            relativeToNativeNode,
-            mountSafeCallback(this, onFail),
-            mountSafeCallback(this, onSuccess)
-          );
-        },
-        setNativeProps: function(nativeProps) {
-          var maybeInstance = void 0;
-          try {
-            maybeInstance = findNodeHandle(this);
-          } catch (error) {}
-          if (null != maybeInstance) {
-            var viewConfig = maybeInstance.viewConfig;
-            nativeProps = diffProperties(
-              null,
-              emptyObject$1,
-              nativeProps,
-              viewConfig.validAttributes
+      NativeMethodsMixin: (function(findNodeHandle, findHostInstance) {
+        return {
+          measure: function(callback) {
+            UIManager.measure(
+              findNodeHandle(this),
+              mountSafeCallback(this, callback)
             );
-            null != nativeProps &&
-              UIManager.updateView(
-                maybeInstance._nativeTag,
-                viewConfig.uiViewClassName,
-                nativeProps
+          },
+          measureInWindow: function(callback) {
+            UIManager.measureInWindow(
+              findNodeHandle(this),
+              mountSafeCallback(this, callback)
+            );
+          },
+          measureLayout: function(relativeToNativeNode, onSuccess, onFail) {
+            UIManager.measureLayout(
+              findNodeHandle(this),
+              relativeToNativeNode,
+              mountSafeCallback(this, onFail),
+              mountSafeCallback(this, onSuccess)
+            );
+          },
+          setNativeProps: function(nativeProps) {
+            var maybeInstance = void 0;
+            try {
+              maybeInstance = findHostInstance(this);
+            } catch (error) {}
+            if (null != maybeInstance) {
+              var viewConfig = maybeInstance.viewConfig;
+              nativeProps = diffProperties(
+                null,
+                emptyObject$1,
+                nativeProps,
+                viewConfig.validAttributes
               );
+              null != nativeProps &&
+                UIManager.updateView(
+                  maybeInstance._nativeTag,
+                  viewConfig.uiViewClassName,
+                  nativeProps
+                );
+            }
+          },
+          focus: function() {
+            TextInputState.focusTextInput(findNodeHandle(this));
+          },
+          blur: function() {
+            TextInputState.blurTextInput(findNodeHandle(this));
           }
-        },
-        focus: function() {
-          TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-        },
-        blur: function() {
-          TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
-        }
-      },
-      ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin,
+        };
+      })(findNodeHandle, findHostInstance),
       ReactNativeComponentTree: ReactNativeComponentTree,
-      ReactNativePropRegistry: ReactNativePropRegistry,
-      TouchHistoryMath: TouchHistoryMath,
-      createReactNativeComponentClass: function(name, callback) {
-        invariant(
-          !viewConfigCallbacks.has(name),
-          "Tried to register two views with the same name %s",
-          name
-        );
-        viewConfigCallbacks.set(name, callback);
-        return name;
-      },
-      takeSnapshot: function(view, options) {
-        "number" !== typeof view &&
-          "window" !== view &&
-          (view = findNumericNodeHandleFiber(view) || "window");
-        return UIManager.__takeSnapshot(view, options);
-      },
       computeComponentStackForErrorReporting: function(reactTag) {
         return (reactTag = getInstanceFromTag(reactTag))
           ? getStackAddendumByWorkInProgressFiber(reactTag)

@@ -19,6 +19,7 @@ require("InitializeCore");
 var invariant = require("fbjs/lib/invariant");
 var warning = require("fbjs/lib/warning");
 var emptyFunction = require("fbjs/lib/emptyFunction");
+var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry");
 var UIManager = require("UIManager");
 var TextInputState = require("TextInputState");
 var deepDiffer = require("deepDiffer");
@@ -1294,7 +1295,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   return {
     configurable: true,
     set: set,
-    get: get
+    get: get$$1
   };
 
   function set(val) {
@@ -1303,7 +1304,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
     return val;
   }
 
-  function get() {
+  function get$$1() {
     var action = isFunction ? "accessing the method" : "accessing the property";
     var result = isFunction
       ? "This is a no-op function"
@@ -1620,7 +1621,7 @@ var changeResponder = function(nextResponderInst, blockHostResponder) {
   }
 };
 
-var eventTypes = {
+var eventTypes$1 = {
   /**
    * On a `touchStart`/`mouseDown`, is it desired that this element become the
    * responder?
@@ -1885,12 +1886,12 @@ function setResponderAndExtractTransfer(
   nativeEventTarget
 ) {
   var shouldSetEventType = isStartish(topLevelType)
-    ? eventTypes.startShouldSetResponder
+    ? eventTypes$1.startShouldSetResponder
     : isMoveish(topLevelType)
-      ? eventTypes.moveShouldSetResponder
+      ? eventTypes$1.moveShouldSetResponder
       : topLevelType === "topSelectionChange"
-        ? eventTypes.selectionChangeShouldSetResponder
-        : eventTypes.scrollShouldSetResponder;
+        ? eventTypes$1.selectionChangeShouldSetResponder
+        : eventTypes$1.scrollShouldSetResponder;
 
   // TODO: stop one short of the current responder.
   var bubbleShouldSetFrom = !responderInst
@@ -1924,7 +1925,7 @@ function setResponderAndExtractTransfer(
   }
   var extracted = void 0;
   var grantEvent = ResponderSyntheticEvent.getPooled(
-    eventTypes.responderGrant,
+    eventTypes$1.responderGrant,
     wantsResponderInst,
     nativeEvent,
     nativeEventTarget
@@ -1935,7 +1936,7 @@ function setResponderAndExtractTransfer(
   var blockHostResponder = executeDirectDispatch(grantEvent) === true;
   if (responderInst) {
     var terminationRequestEvent = ResponderSyntheticEvent.getPooled(
-      eventTypes.responderTerminationRequest,
+      eventTypes$1.responderTerminationRequest,
       responderInst,
       nativeEvent,
       nativeEventTarget
@@ -1952,7 +1953,7 @@ function setResponderAndExtractTransfer(
 
     if (shouldSwitch) {
       var terminateEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes.responderTerminate,
+        eventTypes$1.responderTerminate,
         responderInst,
         nativeEvent,
         nativeEventTarget
@@ -1963,7 +1964,7 @@ function setResponderAndExtractTransfer(
       changeResponder(wantsResponderInst, blockHostResponder);
     } else {
       var rejectEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes.responderReject,
+        eventTypes$1.responderReject,
         wantsResponderInst,
         nativeEvent,
         nativeEventTarget
@@ -2032,7 +2033,7 @@ var ResponderEventPlugin = {
     return responderInst;
   },
 
-  eventTypes: eventTypes,
+  eventTypes: eventTypes$1,
 
   /**
    * We must be resilient to `targetInst` being `null` on `touchMove` or
@@ -2082,10 +2083,10 @@ var ResponderEventPlugin = {
     var isResponderTouchMove = responderInst && isMoveish(topLevelType);
     var isResponderTouchEnd = responderInst && isEndish(topLevelType);
     var incrementalTouch = isResponderTouchStart
-      ? eventTypes.responderStart
+      ? eventTypes$1.responderStart
       : isResponderTouchMove
-        ? eventTypes.responderMove
-        : isResponderTouchEnd ? eventTypes.responderEnd : null;
+        ? eventTypes$1.responderMove
+        : isResponderTouchEnd ? eventTypes$1.responderEnd : null;
 
     if (incrementalTouch) {
       var gesture = ResponderSyntheticEvent.getPooled(
@@ -2107,8 +2108,8 @@ var ResponderEventPlugin = {
       isEndish(topLevelType) &&
       noResponderTouches(nativeEvent);
     var finalTouch = isResponderTerminate
-      ? eventTypes.responderTerminate
-      : isResponderRelease ? eventTypes.responderRelease : null;
+      ? eventTypes$1.responderTerminate
+      : isResponderRelease ? eventTypes$1.responderRelease : null;
     if (finalTouch) {
       var finalEvent = ResponderSyntheticEvent.getPooled(
         finalTouch,
@@ -2160,11 +2161,14 @@ var ResponderEventPlugin = {
   }
 };
 
-var customBubblingEventTypes = {};
-var customDirectEventTypes = {};
+var customBubblingEventTypes$1 =
+  ReactNativeViewConfigRegistry.customBubblingEventTypes;
+var customDirectEventTypes$1 =
+  ReactNativeViewConfigRegistry.customDirectEventTypes;
+var eventTypes$2 = ReactNativeViewConfigRegistry.eventTypes;
 
 var ReactNativeBridgeEventPlugin = {
-  eventTypes: {},
+  eventTypes: eventTypes$2,
 
   /**
    * @see {EventPluginHub.extractEvents}
@@ -2179,8 +2183,8 @@ var ReactNativeBridgeEventPlugin = {
       // Probably a node belonging to another renderer's tree.
       return null;
     }
-    var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
-    var directDispatchConfig = customDirectEventTypes[topLevelType];
+    var bubbleDispatchConfig = customBubblingEventTypes$1[topLevelType];
+    var directDispatchConfig = customDirectEventTypes$1[topLevelType];
     invariant(
       bubbleDispatchConfig || directDispatchConfig,
       'Unsupported top level event type "%s" dispatched',
@@ -2200,45 +2204,6 @@ var ReactNativeBridgeEventPlugin = {
       return null;
     }
     return event;
-  },
-
-  processEventTypes: function(viewConfig) {
-    var bubblingEventTypes = viewConfig.bubblingEventTypes,
-      directEventTypes = viewConfig.directEventTypes;
-
-    {
-      if (bubblingEventTypes != null && directEventTypes != null) {
-        for (var topLevelType in directEventTypes) {
-          invariant(
-            bubblingEventTypes[topLevelType] == null,
-            "Event cannot be both direct and bubbling: %s",
-            topLevelType
-          );
-        }
-      }
-    }
-
-    if (bubblingEventTypes != null) {
-      for (var _topLevelType in bubblingEventTypes) {
-        if (customBubblingEventTypes[_topLevelType] == null) {
-          ReactNativeBridgeEventPlugin.eventTypes[
-            _topLevelType
-          ] = customBubblingEventTypes[_topLevelType] =
-            bubblingEventTypes[_topLevelType];
-        }
-      }
-    }
-
-    if (directEventTypes != null) {
-      for (var _topLevelType2 in directEventTypes) {
-        if (customDirectEventTypes[_topLevelType2] == null) {
-          ReactNativeBridgeEventPlugin.eventTypes[
-            _topLevelType2
-          ] = customDirectEventTypes[_topLevelType2] =
-            directEventTypes[_topLevelType2];
-        }
-      }
-    }
   }
 };
 
@@ -2402,56 +2367,6 @@ function createPortal(
   };
 }
 
-// Use to restore controlled state after a change event has fired.
-
-var fiberHostComponent = null;
-
-var restoreTarget = null;
-var restoreQueue = null;
-
-function restoreStateOfTarget(target) {
-  // We perform this translation at the end of the event loop so that we
-  // always receive the correct fiber here
-  var internalInstance = getInstanceFromNode(target);
-  if (!internalInstance) {
-    // Unmounted
-    return;
-  }
-  invariant(
-    fiberHostComponent &&
-      typeof fiberHostComponent.restoreControlledState === "function",
-    "Fiber needs to be injected to handle a fiber target for controlled " +
-      "events. This error is likely caused by a bug in React. Please file an issue."
-  );
-  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
-  fiberHostComponent.restoreControlledState(
-    internalInstance.stateNode,
-    internalInstance.type,
-    props
-  );
-}
-
-function needsStateRestore() {
-  return restoreTarget !== null || restoreQueue !== null;
-}
-
-function restoreStateIfNeeded() {
-  if (!restoreTarget) {
-    return;
-  }
-  var target = restoreTarget;
-  var queuedTargets = restoreQueue;
-  restoreTarget = null;
-  restoreQueue = null;
-
-  restoreStateOfTarget(target);
-  if (queuedTargets) {
-    for (var i = 0; i < queuedTargets.length; i++) {
-      restoreStateOfTarget(queuedTargets[i]);
-    }
-  }
-}
-
 // Used as a way to call batchedUpdates when we don't have a reference to
 // the renderer. Such as when we're dispatching events or if third party
 // libraries need to call batchedUpdates. Eventually, this API will go away when
@@ -2467,33 +2382,6 @@ var _interactiveUpdates = function(fn, a, b) {
 };
 var _flushInteractiveUpdates = function() {};
 
-var isBatching = false;
-function batchedUpdates(fn, bookkeeping) {
-  if (isBatching) {
-    // If we are currently inside another batch, we need to wait until it
-    // fully completes before restoring state.
-    return fn(bookkeeping);
-  }
-  isBatching = true;
-  try {
-    return _batchedUpdates(fn, bookkeeping);
-  } finally {
-    // Here we wait until all updates have propagated, which is important
-    // when using controlled components within layers:
-    // https://github.com/facebook/react/issues/1698
-    // Then we restore state of any controlled component.
-    isBatching = false;
-    var controlledComponentsHavePendingUpdates = needsStateRestore();
-    if (controlledComponentsHavePendingUpdates) {
-      // If a controlled event was fired, we may need to restore the state of
-      // the DOM node back to the controlled value. This is necessary when React
-      // bails out of the update without touching the DOM.
-      _flushInteractiveUpdates();
-      restoreStateIfNeeded();
-    }
-  }
-}
-
 var injection$2 = {
   injectRenderer: function(renderer) {
     _batchedUpdates = renderer.batchedUpdates;
@@ -2502,194 +2390,9 @@ var injection$2 = {
   }
 };
 
-var TouchHistoryMath = {
-  /**
-   * This code is optimized and not intended to look beautiful. This allows
-   * computing of touch centroids that have moved after `touchesChangedAfter`
-   * timeStamp. You can compute the current centroid involving all touches
-   * moves after `touchesChangedAfter`, or you can compute the previous
-   * centroid of all touches that were moved after `touchesChangedAfter`.
-   *
-   * @param {TouchHistoryMath} touchHistory Standard Responder touch track
-   * data.
-   * @param {number} touchesChangedAfter timeStamp after which moved touches
-   * are considered "actively moving" - not just "active".
-   * @param {boolean} isXAxis Consider `x` dimension vs. `y` dimension.
-   * @param {boolean} ofCurrent Compute current centroid for actively moving
-   * touches vs. previous centroid of now actively moving touches.
-   * @return {number} value of centroid in specified dimension.
-   */
-  centroidDimension: function(
-    touchHistory,
-    touchesChangedAfter,
-    isXAxis,
-    ofCurrent
-  ) {
-    var touchBank = touchHistory.touchBank;
-    var total = 0;
-    var count = 0;
-
-    var oneTouchData =
-      touchHistory.numberActiveTouches === 1
-        ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch]
-        : null;
-
-    if (oneTouchData !== null) {
-      if (
-        oneTouchData.touchActive &&
-        oneTouchData.currentTimeStamp > touchesChangedAfter
-      ) {
-        total +=
-          ofCurrent && isXAxis
-            ? oneTouchData.currentPageX
-            : ofCurrent && !isXAxis
-              ? oneTouchData.currentPageY
-              : !ofCurrent && isXAxis
-                ? oneTouchData.previousPageX
-                : oneTouchData.previousPageY;
-        count = 1;
-      }
-    } else {
-      for (var i = 0; i < touchBank.length; i++) {
-        var touchTrack = touchBank[i];
-        if (
-          touchTrack !== null &&
-          touchTrack !== undefined &&
-          touchTrack.touchActive &&
-          touchTrack.currentTimeStamp >= touchesChangedAfter
-        ) {
-          var toAdd = void 0; // Yuck, program temporarily in invalid state.
-          if (ofCurrent && isXAxis) {
-            toAdd = touchTrack.currentPageX;
-          } else if (ofCurrent && !isXAxis) {
-            toAdd = touchTrack.currentPageY;
-          } else if (!ofCurrent && isXAxis) {
-            toAdd = touchTrack.previousPageX;
-          } else {
-            toAdd = touchTrack.previousPageY;
-          }
-          total += toAdd;
-          count++;
-        }
-      }
-    }
-    return count > 0 ? total / count : TouchHistoryMath.noCentroid;
-  },
-
-  currentCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      true, // isXAxis
-      true
-    );
-  },
-
-  currentCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      false, // isXAxis
-      true
-    );
-  },
-
-  previousCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      true, // isXAxis
-      false
-    );
-  },
-
-  previousCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      false, // isXAxis
-      false
-    );
-  },
-
-  currentCentroidX: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      0, // touchesChangedAfter
-      true, // isXAxis
-      true
-    );
-  },
-
-  currentCentroidY: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      0, // touchesChangedAfter
-      false, // isXAxis
-      true
-    );
-  },
-
-  noCentroid: -1
-};
-
 // TODO: this is special because it gets imported during build.
 
 var ReactVersion = "16.3.1";
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var objects = {};
-var uniqueID = 1;
-var emptyObject$2 = {};
-
-var ReactNativePropRegistry = (function() {
-  function ReactNativePropRegistry() {
-    _classCallCheck(this, ReactNativePropRegistry);
-  }
-
-  ReactNativePropRegistry.register = function register(object) {
-    var id = ++uniqueID;
-    {
-      Object.freeze(object);
-    }
-    objects[id] = object;
-    return id;
-  };
-
-  ReactNativePropRegistry.getByID = function getByID(id) {
-    if (!id) {
-      // Used in the style={[condition && id]} pattern,
-      // we want it to be a no-op when the value is false or null
-      return emptyObject$2;
-    }
-
-    var object = objects[id];
-    if (!object) {
-      console.warn("Invalid style with id `" + id + "`. Skipping ...");
-      return emptyObject$2;
-    }
-    return object;
-  };
-
-  return ReactNativePropRegistry;
-})();
 
 // Modules provided by RN:
 var emptyObject$1 = {};
@@ -2717,13 +2420,6 @@ function defaultDiffer(prevProp, nextProp) {
   }
 }
 
-function resolveObject(idOrObject) {
-  if (typeof idOrObject === "number") {
-    return ReactNativePropRegistry.getByID(idOrObject);
-  }
-  return idOrObject;
-}
-
 function restoreDeletedValuesInNestedArray(
   updatePayload,
   node,
@@ -2739,7 +2435,7 @@ function restoreDeletedValuesInNestedArray(
       );
     }
   } else if (node && removedKeyCount > 0) {
-    var obj = resolveObject(node);
+    var obj = node;
     for (var propKey in removedKeys) {
       if (!removedKeys[propKey]) {
         continue;
@@ -2843,12 +2539,7 @@ function diffNestedProperty(
 
   if (!Array.isArray(prevProp) && !Array.isArray(nextProp)) {
     // Both are leaves, we can diff the leaves.
-    return diffProperties(
-      updatePayload,
-      resolveObject(prevProp),
-      resolveObject(nextProp),
-      validAttributes
-    );
+    return diffProperties(updatePayload, prevProp, nextProp, validAttributes);
   }
 
   if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
@@ -2867,14 +2558,14 @@ function diffNestedProperty(
       // $FlowFixMe - We know that this is always an object when the input is.
       flattenStyle(prevProp),
       // $FlowFixMe - We know that this isn't an array because of above flow.
-      resolveObject(nextProp),
+      nextProp,
       validAttributes
     );
   }
 
   return diffProperties(
     updatePayload,
-    resolveObject(prevProp),
+    prevProp,
     // $FlowFixMe - We know that this is always an object when the input is.
     flattenStyle(nextProp),
     validAttributes
@@ -2893,11 +2584,7 @@ function addNestedProperty(updatePayload, nextProp, validAttributes) {
 
   if (!Array.isArray(nextProp)) {
     // Add each property of the leaf.
-    return addProperties(
-      updatePayload,
-      resolveObject(nextProp),
-      validAttributes
-    );
+    return addProperties(updatePayload, nextProp, validAttributes);
   }
 
   for (var i = 0; i < nextProp.length; i++) {
@@ -2923,11 +2610,7 @@ function clearNestedProperty(updatePayload, prevProp, validAttributes) {
 
   if (!Array.isArray(prevProp)) {
     // Add each property of the leaf.
-    return clearProperties(
-      updatePayload,
-      resolveObject(prevProp),
-      validAttributes
-    );
+    return clearProperties(updatePayload, prevProp, validAttributes);
   }
 
   for (var i = 0; i < prevProp.length; i++) {
@@ -3214,361 +2897,195 @@ function warnForStyleProps(props, validAttributes) {
   }
 }
 
-/**
- * `ReactInstanceMap` maintains a mapping from a public facing stateful
- * instance (key) and the internal representation (value). This allows public
- * methods to accept the user facing instance as an argument and map them back
- * to internal methods.
- *
- * Note that this module is currently shared and assumed to be stateless.
- * If this becomes an actual Map, that will break.
- */
-
-/**
- * This API should be called `delete` but we'd have to make sure to always
- * transform these to strings for IE support. When this transform is fully
- * supported we can rename it.
- */
-
-function get(key) {
-  return key._reactInternalFiber;
-}
-
-function set(key, value) {
-  key._reactInternalFiber = value;
-}
-
-var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-
-var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
-var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
-
-function getComponentName(fiber) {
-  var type = fiber.type;
-
-  if (typeof type === "function") {
-    return type.displayName || type.name;
-  }
-  if (typeof type === "string") {
-    return type;
-  }
-  switch (type) {
-    case REACT_FRAGMENT_TYPE:
-      return "ReactFragment";
-    case REACT_PORTAL_TYPE:
-      return "ReactPortal";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
-  }
-  return null;
-}
-
-// TODO: Share this module between Fabric and React Native renderers
-// so that both can be used in the same tree.
-
-var findHostInstance = function(fiber) {
-  return null;
-};
-
-var findHostInstanceFabric = function(fiber) {
-  return null;
-};
-
-function injectFindHostInstanceFabric(impl) {
-  findHostInstanceFabric = impl;
-}
-
-/**
- * ReactNative vs ReactWeb
- * -----------------------
- * React treats some pieces of data opaquely. This means that the information
- * is first class (it can be passed around), but cannot be inspected. This
- * allows us to build infrastructure that reasons about resources, without
- * making assumptions about the nature of those resources, and this allows that
- * infra to be shared across multiple platforms, where the resources are very
- * different. General infra (such as `ReactMultiChild`) reasons opaquely about
- * the data, but platform specific code (such as `ReactNativeBaseComponent`) can
- * make assumptions about the data.
- *
- *
- * `rootNodeID`, uniquely identifies a position in the generated native view
- * tree. Many layers of composite components (created with `React.createClass`)
- * can all share the same `rootNodeID`.
- *
- * `nodeHandle`: A sufficiently unambiguous way to refer to a lower level
- * resource (dom node, native view etc). The `rootNodeID` is sufficient for web
- * `nodeHandle`s, because the position in a tree is always enough to uniquely
- * identify a DOM node (we never have nodes in some bank outside of the
- * document). The same would be true for `ReactNative`, but we must maintain a
- * mapping that we can send efficiently serializable
- * strings across native boundaries.
- *
- * Opaque name      TodaysWebReact   FutureWebWorkerReact   ReactNative
- * ----------------------------------------------------------------------------
- * nodeHandle       N/A              rootNodeID             tag
- */
-
-// TODO (bvaughn) Rename the findNodeHandle module to something more descriptive
-// eg findInternalHostInstance. This will reduce the likelihood of someone
-// accidentally deep-requiring this version.
-function findNodeHandle(componentOrHandle) {
-  {
-    var owner = ReactCurrentOwner.current;
-    if (owner !== null && owner.stateNode !== null) {
-      !owner.stateNode._warnedAboutRefsInRender
-        ? warning(
-            false,
-            "%s is accessing findNodeHandle inside its render(). " +
-              "render() should be a pure function of props and state. It should " +
-              "never access something that requires stale data from the previous " +
-              "render, such as refs. Move this logic to componentDidMount and " +
-              "componentDidUpdate instead.",
-            getComponentName(owner) || "A component"
-          )
-        : void 0;
-
-      owner.stateNode._warnedAboutRefsInRender = true;
-    }
-  }
-  if (componentOrHandle == null) {
-    return null;
-  }
-  if (typeof componentOrHandle === "number") {
-    // Already a node handle
-    return componentOrHandle;
-  }
-
-  var component = componentOrHandle;
-
-  // TODO (balpert): Wrap iOS native components in a composite wrapper, then
-  // ReactInstanceMap.get here will always succeed for mounted components
-  var internalInstance = get(component);
-  if (internalInstance) {
-    return (
-      findHostInstance(internalInstance) ||
-      findHostInstanceFabric(internalInstance)
-    );
-  } else {
-    if (component) {
-      return component;
-    } else {
-      invariant(
-        // Native
-        (typeof component === "object" && "_nativeTag" in component) ||
-          // Composite
-          (component.render != null && typeof component.render === "function"),
-        "findNodeHandle(...): Argument is not a component " +
-          "(type: %s, keys: %s)",
-        typeof component,
-        Object.keys(component)
-      );
-      invariant(
-        false,
-        "findNodeHandle(...): Unable to find node handle for unmounted " +
-          "component."
-      );
-    }
-  }
-}
-
-/**
- * External users of findNodeHandle() expect the host tag number return type.
- * The injected findNodeHandle() strategy returns the instance wrapper though.
- * See NativeMethodsMixin#setNativeProps for more info on why this is done.
- */
-function findNumericNodeHandleFiber(componentOrHandle) {
-  var instance = findNodeHandle(componentOrHandle);
-  if (instance == null || typeof instance === "number") {
-    return instance;
-  }
-  return instance._nativeTag;
-}
-
 // Modules provided by RN:
-/**
- * `NativeMethodsMixin` provides methods to access the underlying native
- * component directly. This can be useful in cases when you want to focus
- * a view or measure its on-screen dimensions, for example.
- *
- * The methods described here are available on most of the default components
- * provided by React Native. Note, however, that they are *not* available on
- * composite components that aren't directly backed by a native view. This will
- * generally include most components that you define in your own app. For more
- * information, see [Direct
- * Manipulation](docs/direct-manipulation.html).
- *
- * Note the Flow $Exact<> syntax is required to support mixins.
- * React createClass mixins can only be used with exact types.
- */
-var NativeMethodsMixin = {
+var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
   /**
-   * Determines the location on screen, width, and height of the given view and
-   * returns the values via an async callback. If successful, the callback will
-   * be called with the following arguments:
+   * `NativeMethodsMixin` provides methods to access the underlying native
+   * component directly. This can be useful in cases when you want to focus
+   * a view or measure its on-screen dimensions, for example.
    *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *  - pageX
-   *  - pageY
+   * The methods described here are available on most of the default components
+   * provided by React Native. Note, however, that they are *not* available on
+   * composite components that aren't directly backed by a native view. This will
+   * generally include most components that you define in your own app. For more
+   * information, see [Direct
+   * Manipulation](docs/direct-manipulation.html).
    *
-   * Note that these measurements are not available until after the rendering
-   * has been completed in native. If you need the measurements as soon as
-   * possible, consider using the [`onLayout`
-   * prop](docs/view.html#onlayout) instead.
+   * Note the Flow $Exact<> syntax is required to support mixins.
+   * React createClass mixins can only be used with exact types.
    */
-  measure: function(callback) {
-    UIManager.measure(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  /**
-   * Determines the location of the given view in the window and returns the
-   * values via an async callback. If the React root view is embedded in
-   * another native view, this will give you the absolute coordinates. If
-   * successful, the callback will be called with the following
-   * arguments:
-   *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *
-   * Note that these measurements are not available until after the rendering
-   * has been completed in native.
-   */
-  measureInWindow: function(callback) {
-    UIManager.measureInWindow(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  /**
-   * Like [`measure()`](#measure), but measures the view relative an ancestor,
-   * specified as `relativeToNativeNode`. This means that the returned x, y
-   * are relative to the origin x, y of the ancestor view.
-   *
-   * As always, to obtain a native node handle for a component, you can use
-   * `findNumericNodeHandle(component)`.
-   */
-  measureLayout: function(
-    relativeToNativeNode,
-    onSuccess,
-    onFail /* currently unused */
-  ) {
-    UIManager.measureLayout(
-      findNumericNodeHandleFiber(this),
-      relativeToNativeNode,
-      mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
-    );
-  },
-
-  /**
-   * This function sends props straight to native. They will not participate in
-   * future diff process - this means that if you do not include them in the
-   * next render, they will remain active (see [Direct
-   * Manipulation](docs/direct-manipulation.html)).
-   */
-  setNativeProps: function(nativeProps) {
-    // Class components don't have viewConfig -> validateAttributes.
-    // Nor does it make sense to set native props on a non-native component.
-    // Instead, find the nearest host component and set props on it.
-    // Use findNodeHandle() rather than findNumericNodeHandle() because
-    // We want the instance/wrapper (not the native tag).
-    var maybeInstance = void 0;
-
-    // Fiber errors if findNodeHandle is called for an umounted component.
-    // Tests using ReactTestRenderer will trigger this case indirectly.
-    // Mimicking stack behavior, we should silently ignore this case.
-    // TODO Fix ReactTestRenderer so we can remove this try/catch.
-    try {
-      maybeInstance = findNodeHandle(this);
-    } catch (error) {}
-
-    // If there is no host component beneath this we should fail silently.
-    // This is not an error; it could mean a class component rendered null.
-    if (maybeInstance == null) {
-      return;
-    }
-
-    var viewConfig = maybeInstance.viewConfig;
-
-    {
-      warnForStyleProps(nativeProps, viewConfig.validAttributes);
-    }
-
-    var updatePayload = create(nativeProps, viewConfig.validAttributes);
-
-    // Avoid the overhead of bridge calls if there's no update.
-    // This is an expensive no-op for Android, and causes an unnecessary
-    // view invalidation for certain components (eg RCTTextInput) on iOS.
-    if (updatePayload != null) {
-      UIManager.updateView(
-        maybeInstance._nativeTag,
-        viewConfig.uiViewClassName,
-        updatePayload
+  var NativeMethodsMixin = {
+    /**
+     * Determines the location on screen, width, and height of the given view and
+     * returns the values via an async callback. If successful, the callback will
+     * be called with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *  - pageX
+     *  - pageY
+     *
+     * Note that these measurements are not available until after the rendering
+     * has been completed in native. If you need the measurements as soon as
+     * possible, consider using the [`onLayout`
+     * prop](docs/view.html#onlayout) instead.
+     */
+    measure: function(callback) {
+      UIManager.measure(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
       );
+    },
+
+    /**
+     * Determines the location of the given view in the window and returns the
+     * values via an async callback. If the React root view is embedded in
+     * another native view, this will give you the absolute coordinates. If
+     * successful, the callback will be called with the following
+     * arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *
+     * Note that these measurements are not available until after the rendering
+     * has been completed in native.
+     */
+    measureInWindow: function(callback) {
+      UIManager.measureInWindow(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    },
+
+    /**
+     * Like [`measure()`](#measure), but measures the view relative an ancestor,
+     * specified as `relativeToNativeNode`. This means that the returned x, y
+     * are relative to the origin x, y of the ancestor view.
+     *
+     * As always, to obtain a native node handle for a component, you can use
+     * `findNodeHandle(component)`.
+     */
+    measureLayout: function(
+      relativeToNativeNode,
+      onSuccess,
+      onFail /* currently unused */
+    ) {
+      UIManager.measureLayout(
+        findNodeHandle(this),
+        relativeToNativeNode,
+        mountSafeCallback(this, onFail),
+        mountSafeCallback(this, onSuccess)
+      );
+    },
+
+    /**
+     * This function sends props straight to native. They will not participate in
+     * future diff process - this means that if you do not include them in the
+     * next render, they will remain active (see [Direct
+     * Manipulation](docs/direct-manipulation.html)).
+     */
+    setNativeProps: function(nativeProps) {
+      // Class components don't have viewConfig -> validateAttributes.
+      // Nor does it make sense to set native props on a non-native component.
+      // Instead, find the nearest host component and set props on it.
+      // Use findNodeHandle() rather than findNodeHandle() because
+      // We want the instance/wrapper (not the native tag).
+      var maybeInstance = void 0;
+
+      // Fiber errors if findNodeHandle is called for an umounted component.
+      // Tests using ReactTestRenderer will trigger this case indirectly.
+      // Mimicking stack behavior, we should silently ignore this case.
+      // TODO Fix ReactTestRenderer so we can remove this try/catch.
+      try {
+        maybeInstance = findHostInstance(this);
+      } catch (error) {}
+
+      // If there is no host component beneath this we should fail silently.
+      // This is not an error; it could mean a class component rendered null.
+      if (maybeInstance == null) {
+        return;
+      }
+
+      var viewConfig = maybeInstance.viewConfig;
+
+      {
+        warnForStyleProps(nativeProps, viewConfig.validAttributes);
+      }
+
+      var updatePayload = create(nativeProps, viewConfig.validAttributes);
+
+      // Avoid the overhead of bridge calls if there's no update.
+      // This is an expensive no-op for Android, and causes an unnecessary
+      // view invalidation for certain components (eg RCTTextInput) on iOS.
+      if (updatePayload != null) {
+        UIManager.updateView(
+          maybeInstance._nativeTag,
+          viewConfig.uiViewClassName,
+          updatePayload
+        );
+      }
+    },
+
+    /**
+     * Requests focus for the given input or view. The exact behavior triggered
+     * will depend on the platform and type of view.
+     */
+    focus: function() {
+      TextInputState.focusTextInput(findNodeHandle(this));
+    },
+
+    /**
+     * Removes focus from an input or view. This is the opposite of `focus()`.
+     */
+    blur: function() {
+      TextInputState.blurTextInput(findNodeHandle(this));
     }
-  },
+  };
 
-  /**
-   * Requests focus for the given input or view. The exact behavior triggered
-   * will depend on the platform and type of view.
-   */
-  focus: function() {
-    TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-  },
+  {
+    // hide this from Flow since we can't define these properties outside of
+    // true without actually implementing them (setting them to undefined
+    // isn't allowed by ReactClass)
+    var NativeMethodsMixin_DEV = NativeMethodsMixin;
+    invariant(
+      !NativeMethodsMixin_DEV.componentWillMount &&
+        !NativeMethodsMixin_DEV.componentWillReceiveProps &&
+        !NativeMethodsMixin_DEV.UNSAFE_componentWillMount &&
+        !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps,
+      "Do not override existing functions."
+    );
+    // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
+    // Once these lifecycles have been remove from the reconciler.
+    NativeMethodsMixin_DEV.componentWillMount = function() {
+      throwOnStylesProp(this, this.props);
+    };
+    NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
+      throwOnStylesProp(this, newProps);
+    };
+    NativeMethodsMixin_DEV.UNSAFE_componentWillMount = function() {
+      throwOnStylesProp(this, this.props);
+    };
+    NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(
+      newProps
+    ) {
+      throwOnStylesProp(this, newProps);
+    };
 
-  /**
-   * Removes focus from an input or view. This is the opposite of `focus()`.
-   */
-  blur: function() {
-    TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
+    // React may warn about cWM/cWRP/cWU methods being deprecated.
+    // Add a flag to suppress these warnings for this special case.
+    // TODO (bvaughn) Remove this flag once the above methods have been removed.
+    NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
+    NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
   }
+
+  return NativeMethodsMixin;
 };
 
-{
-  // hide this from Flow since we can't define these properties outside of
-  // true without actually implementing them (setting them to undefined
-  // isn't allowed by ReactClass)
-  var NativeMethodsMixin_DEV = NativeMethodsMixin;
-  invariant(
-    !NativeMethodsMixin_DEV.componentWillMount &&
-      !NativeMethodsMixin_DEV.componentWillReceiveProps &&
-      !NativeMethodsMixin_DEV.UNSAFE_componentWillMount &&
-      !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps,
-    "Do not override existing functions."
-  );
-  // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
-  // Once these lifecycles have been remove from the reconciler.
-  NativeMethodsMixin_DEV.componentWillMount = function() {
-    throwOnStylesProp(this, this.props);
-  };
-  NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
-    throwOnStylesProp(this, newProps);
-  };
-  NativeMethodsMixin_DEV.UNSAFE_componentWillMount = function() {
-    throwOnStylesProp(this, this.props);
-  };
-  NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(newProps) {
-    throwOnStylesProp(this, newProps);
-  };
-
-  // React may warn about cWM/cWRP/cWU methods being deprecated.
-  // Add a flag to suppress these warnings for this special case.
-  // TODO (bvaughn) Remove this flag once the above methods have been removed.
-  NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
-  NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
-}
-
-function _classCallCheck$1(instance, Constructor) {
+function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
@@ -3607,166 +3124,171 @@ function _inherits(subClass, superClass) {
 }
 
 // Modules provided by RN:
-/**
- * Superclass that provides methods to access the underlying native component.
- * This can be useful when you want to focus a view or measure its dimensions.
- *
- * Methods implemented by this class are available on most default components
- * provided by React Native. However, they are *not* available on composite
- * components that are not directly backed by a native view. For more
- * information, see [Direct Manipulation](docs/direct-manipulation.html).
- *
- * @abstract
- */
-
-var ReactNativeComponent = (function(_React$Component) {
-  _inherits(ReactNativeComponent, _React$Component);
-
-  function ReactNativeComponent() {
-    _classCallCheck$1(this, ReactNativeComponent);
-
-    return _possibleConstructorReturn(
-      this,
-      _React$Component.apply(this, arguments)
-    );
-  }
-
+var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
   /**
-   * Removes focus. This is the opposite of `focus()`.
-   */
-
-  /**
-   * Due to bugs in Flow's handling of React.createClass, some fields already
-   * declared in the base class need to be redeclared below.
-   */
-  ReactNativeComponent.prototype.blur = function blur() {
-    TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
-  };
-
-  /**
-   * Requests focus. The exact behavior depends on the platform and view.
-   */
-
-  ReactNativeComponent.prototype.focus = function focus() {
-    TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-  };
-
-  /**
-   * Measures the on-screen location and dimensions. If successful, the callback
-   * will be called asynchronously with the following arguments:
+   * Superclass that provides methods to access the underlying native component.
+   * This can be useful when you want to focus a view or measure its dimensions.
    *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *  - pageX
-   *  - pageY
+   * Methods implemented by this class are available on most default components
+   * provided by React Native. However, they are *not* available on composite
+   * components that are not directly backed by a native view. For more
+   * information, see [Direct Manipulation](docs/direct-manipulation.html).
    *
-   * These values are not available until after natives rendering completes. If
-   * you need the measurements as soon as possible, consider using the
-   * [`onLayout` prop](docs/view.html#onlayout) instead.
+   * @abstract
    */
+  var ReactNativeComponent = (function(_React$Component) {
+    _inherits(ReactNativeComponent, _React$Component);
 
-  ReactNativeComponent.prototype.measure = function measure(callback) {
-    UIManager.measure(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
+    function ReactNativeComponent() {
+      _classCallCheck(this, ReactNativeComponent);
 
-  /**
-   * Measures the on-screen location and dimensions. Even if the React Native
-   * root view is embedded within another native view, this method will give you
-   * the absolute coordinates measured from the window. If successful, the
-   * callback will be called asynchronously with the following arguments:
-   *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *
-   * These values are not available until after natives rendering completes.
-   */
-
-  ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
-    callback
-  ) {
-    UIManager.measureInWindow(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
-
-  /**
-   * Similar to [`measure()`](#measure), but the resulting location will be
-   * relative to the supplied ancestor's location.
-   *
-   * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
-   */
-
-  ReactNativeComponent.prototype.measureLayout = function measureLayout(
-    relativeToNativeNode,
-    onSuccess,
-    onFail /* currently unused */
-  ) {
-    UIManager.measureLayout(
-      findNumericNodeHandleFiber(this),
-      relativeToNativeNode,
-      mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
-    );
-  };
-
-  /**
-   * This function sends props straight to native. They will not participate in
-   * future diff process - this means that if you do not include them in the
-   * next render, they will remain active (see [Direct
-   * Manipulation](docs/direct-manipulation.html)).
-   */
-
-  ReactNativeComponent.prototype.setNativeProps = function setNativeProps(
-    nativeProps
-  ) {
-    // Class components don't have viewConfig -> validateAttributes.
-    // Nor does it make sense to set native props on a non-native component.
-    // Instead, find the nearest host component and set props on it.
-    // Use findNodeHandle() rather than ReactNative.findNodeHandle() because
-    // We want the instance/wrapper (not the native tag).
-    var maybeInstance = void 0;
-
-    // Fiber errors if findNodeHandle is called for an umounted component.
-    // Tests using ReactTestRenderer will trigger this case indirectly.
-    // Mimicking stack behavior, we should silently ignore this case.
-    // TODO Fix ReactTestRenderer so we can remove this try/catch.
-    try {
-      maybeInstance = findNodeHandle(this);
-    } catch (error) {}
-
-    // If there is no host component beneath this we should fail silently.
-    // This is not an error; it could mean a class component rendered null.
-    if (maybeInstance == null) {
-      return;
-    }
-
-    var viewConfig =
-      maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-
-    var updatePayload = create(nativeProps, viewConfig.validAttributes);
-
-    // Avoid the overhead of bridge calls if there's no update.
-    // This is an expensive no-op for Android, and causes an unnecessary
-    // view invalidation for certain components (eg RCTTextInput) on iOS.
-    if (updatePayload != null) {
-      UIManager.updateView(
-        maybeInstance._nativeTag,
-        viewConfig.uiViewClassName,
-        updatePayload
+      return _possibleConstructorReturn(
+        this,
+        _React$Component.apply(this, arguments)
       );
     }
-  };
+
+    /**
+     * Removes focus. This is the opposite of `focus()`.
+     */
+
+    /**
+     * Due to bugs in Flow's handling of React.createClass, some fields already
+     * declared in the base class need to be redeclared below.
+     */
+    ReactNativeComponent.prototype.blur = function blur() {
+      TextInputState.blurTextInput(findNodeHandle(this));
+    };
+
+    /**
+     * Requests focus. The exact behavior depends on the platform and view.
+     */
+
+    ReactNativeComponent.prototype.focus = function focus() {
+      TextInputState.focusTextInput(findNodeHandle(this));
+    };
+
+    /**
+     * Measures the on-screen location and dimensions. If successful, the callback
+     * will be called asynchronously with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *  - pageX
+     *  - pageY
+     *
+     * These values are not available until after natives rendering completes. If
+     * you need the measurements as soon as possible, consider using the
+     * [`onLayout` prop](docs/view.html#onlayout) instead.
+     */
+
+    ReactNativeComponent.prototype.measure = function measure(callback) {
+      UIManager.measure(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    };
+
+    /**
+     * Measures the on-screen location and dimensions. Even if the React Native
+     * root view is embedded within another native view, this method will give you
+     * the absolute coordinates measured from the window. If successful, the
+     * callback will be called asynchronously with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *
+     * These values are not available until after natives rendering completes.
+     */
+
+    ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
+      callback
+    ) {
+      UIManager.measureInWindow(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    };
+
+    /**
+     * Similar to [`measure()`](#measure), but the resulting location will be
+     * relative to the supplied ancestor's location.
+     *
+     * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
+     */
+
+    ReactNativeComponent.prototype.measureLayout = function measureLayout(
+      relativeToNativeNode,
+      onSuccess,
+      onFail /* currently unused */
+    ) {
+      UIManager.measureLayout(
+        findNodeHandle(this),
+        relativeToNativeNode,
+        mountSafeCallback(this, onFail),
+        mountSafeCallback(this, onSuccess)
+      );
+    };
+
+    /**
+     * This function sends props straight to native. They will not participate in
+     * future diff process - this means that if you do not include them in the
+     * next render, they will remain active (see [Direct
+     * Manipulation](docs/direct-manipulation.html)).
+     */
+
+    ReactNativeComponent.prototype.setNativeProps = function setNativeProps(
+      nativeProps
+    ) {
+      // Class components don't have viewConfig -> validateAttributes.
+      // Nor does it make sense to set native props on a non-native component.
+      // Instead, find the nearest host component and set props on it.
+      // Use findNodeHandle() rather than ReactNative.findNodeHandle() because
+      // We want the instance/wrapper (not the native tag).
+      var maybeInstance = void 0;
+
+      // Fiber errors if findNodeHandle is called for an umounted component.
+      // Tests using ReactTestRenderer will trigger this case indirectly.
+      // Mimicking stack behavior, we should silently ignore this case.
+      // TODO Fix ReactTestRenderer so we can remove this try/catch.
+      try {
+        maybeInstance = findHostInstance(this);
+      } catch (error) {}
+
+      // If there is no host component beneath this we should fail silently.
+      // This is not an error; it could mean a class component rendered null.
+      if (maybeInstance == null) {
+        return;
+      }
+
+      var viewConfig =
+        maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
+
+      var updatePayload = create(nativeProps, viewConfig.validAttributes);
+
+      // Avoid the overhead of bridge calls if there's no update.
+      // This is an expensive no-op for Android, and causes an unnecessary
+      // view invalidation for certain components (eg RCTTextInput) on iOS.
+      if (updatePayload != null) {
+        UIManager.updateView(
+          maybeInstance._nativeTag,
+          viewConfig.uiViewClassName,
+          updatePayload
+        );
+      }
+    };
+
+    return ReactNativeComponent;
+  })(React.Component);
+
+  // eslint-disable-next-line no-unused-expressions
 
   return ReactNativeComponent;
-})(React.Component);
+};
 
 var hasNativePerformanceNow =
   typeof performance === "object" && typeof performance.now === "function";
@@ -3817,47 +3339,55 @@ function cancelDeferredCallback(callbackID) {
   clearTimeout(callbackID);
 }
 
-var viewConfigCallbacks = new Map();
-var viewConfigs = new Map();
+/**
+ * `ReactInstanceMap` maintains a mapping from a public facing stateful
+ * instance (key) and the internal representation (value). This allows public
+ * methods to accept the user facing instance as an argument and map them back
+ * to internal methods.
+ *
+ * Note that this module is currently shared and assumed to be stateless.
+ * If this becomes an actual Map, that will break.
+ */
 
 /**
- * Registers a native view/component by name.
- * A callback is provided to load the view config from UIManager.
- * The callback is deferred until the view is actually rendered.
- * This is done to avoid causing Prepack deopts.
+ * This API should be called `delete` but we'd have to make sure to always
+ * transform these to strings for IE support. When this transform is fully
+ * supported we can rename it.
  */
-function register(name, callback) {
-  invariant(
-    !viewConfigCallbacks.has(name),
-    "Tried to register two views with the same name %s",
-    name
-  );
-  viewConfigCallbacks.set(name, callback);
-  return name;
+
+function get$1(key) {
+  return key._reactInternalFiber;
 }
 
-/**
- * Retrieves a config for the specified view.
- * If this is the first time the view has been used,
- * This configuration will be lazy-loaded from UIManager.
- */
-function get$1(name) {
-  var viewConfig = void 0;
-  if (!viewConfigs.has(name)) {
-    var callback = viewConfigCallbacks.get(name);
-    invariant(
-      typeof callback === "function",
-      "View config not found for name %s",
-      name
-    );
-    viewConfigCallbacks.set(name, null);
-    viewConfig = callback();
-    viewConfigs.set(name, viewConfig);
-  } else {
-    viewConfig = viewConfigs.get(name);
+function set(key, value) {
+  key._reactInternalFiber = value;
+}
+
+var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+
+var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
+var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
+
+function getComponentName(fiber) {
+  var type = fiber.type;
+
+  if (typeof type === "function") {
+    return type.displayName || type.name;
   }
-  invariant(viewConfig, "View config not found for name %s", name);
-  return viewConfig;
+  if (typeof type === "string") {
+    return type;
+  }
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return "ReactFragment";
+    case REACT_PORTAL_TYPE:
+      return "ReactPortal";
+    case REACT_CALL_TYPE:
+      return "ReactCall";
+    case REACT_RETURN_TYPE:
+      return "ReactReturn";
+  }
+  return null;
 }
 
 // Don't change these two values. They're used by React Dev Tools.
@@ -3940,7 +3470,7 @@ function isMounted(component) {
     }
   }
 
-  var fiber = get(component);
+  var fiber = get$1(component);
   if (!fiber) {
     return false;
   }
@@ -5947,7 +5477,7 @@ var ReactFiberClassComponent = function(
   var updater = {
     isMounted: isMounted,
     enqueueSetState: function(instance, partialState, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "setState");
@@ -5966,7 +5496,7 @@ var ReactFiberClassComponent = function(
       scheduleWork(fiber, expirationTime);
     },
     enqueueReplaceState: function(instance, state, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "replaceState");
@@ -5985,7 +5515,7 @@ var ReactFiberClassComponent = function(
       scheduleWork(fiber, expirationTime);
     },
     enqueueForceUpdate: function(instance, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "forceUpdate");
@@ -9418,7 +8948,7 @@ var ReactFiberCompleteWork = function(
 
   function markUpdate(workInProgress) {
     // Tag the fiber with an update effect. This turns a Placement into
-    // an UpdateAndPlacement.
+    // a PlacementAndUpdate.
     workInProgress.effectTag |= Update;
   }
 
@@ -13584,7 +13114,7 @@ var ReactFiberReconciler$1 = function(config) {
       return emptyObject;
     }
 
-    var fiber = get(parentComponent);
+    var fiber = get$1(parentComponent);
     var parentContext = findCurrentUnmaskedContext(fiber);
     return isContextProvider(fiber)
       ? processChildContext(fiber, parentContext)
@@ -13682,7 +13212,19 @@ var ReactFiberReconciler$1 = function(config) {
     );
   }
 
-  function findHostInstance(fiber) {
+  function findHostInstance(component) {
+    var fiber = get$1(component);
+    if (fiber === undefined) {
+      if (typeof component.render === "function") {
+        invariant(false, "Unable to find node on an unmounted component.");
+      } else {
+        invariant(
+          false,
+          "Argument appears to not be a ReactComponent. Keys: %s",
+          Object.keys(component)
+        );
+      }
+    }
     var hostFiber = findCurrentHostFiber(fiber);
     if (hostFiber === null) {
       return null;
@@ -13775,7 +13317,11 @@ var ReactFiberReconciler$1 = function(config) {
       return injectInternals(
         Object.assign({}, devToolsConfig, {
           findHostInstanceByFiber: function(fiber) {
-            return findHostInstance(fiber);
+            var hostFiber = findCurrentHostFiber(fiber);
+            if (hostFiber === null) {
+              return null;
+            }
+            return hostFiber.stateNode;
           },
           findFiberByHostInstance: function(instance) {
             if (!findFiberByHostInstance) {
@@ -13805,62 +13351,26 @@ var reactReconciler = ReactFiberReconciler$3["default"]
   ? ReactFiberReconciler$3["default"]
   : ReactFiberReconciler$3;
 
-/**
- * Keeps track of allocating and associating native "tags" which are numeric,
- * unique view IDs. All the native tags are negative numbers, to avoid
- * collisions, but in the JS we keep track of them as positive integers to store
- * them effectively in Arrays. So we must refer to them as "inverses" of the
- * native tags (that are * normally negative).
- *
- * It *must* be the case that every `rootNodeID` always maps to the exact same
- * `tag` forever. The easiest way to accomplish this is to never delete
- * anything from this table.
- * Why: Because `dangerouslyReplaceNodeWithMarkupByID` relies on being able to
- * unmount a component with a `rootNodeID`, then mount a new one in its place,
- */
-var INITIAL_TAG_COUNT = 1;
-var ReactNativeTagHandles = {
-  tagsStartAt: INITIAL_TAG_COUNT,
-  tagCount: INITIAL_TAG_COUNT,
-
-  allocateTag: function() {
-    // Skip over root IDs as those are reserved for native
-    while (this.reactTagIsNativeTopRootID(ReactNativeTagHandles.tagCount)) {
-      ReactNativeTagHandles.tagCount++;
-    }
-    var tag = ReactNativeTagHandles.tagCount;
-    ReactNativeTagHandles.tagCount++;
-    return tag;
-  },
-
-  assertRootTag: function(tag) {
-    invariant(
-      this.reactTagIsNativeTopRootID(tag),
-      "Expect a native root tag, instead got %s",
-      tag
-    );
-  },
-
-  reactTagIsNativeTopRootID: function(reactTag) {
-    // We reserve all tags that are 1 mod 10 for native root views
-    return reactTag % 10 === 1;
-  }
-};
-
-function _classCallCheck$2(instance, Constructor) {
+function _classCallCheck$1(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
 
 // Modules provided by RN:
+// Counter for uniquely identifying views.
+// % 10 === 1 means it is a rootTag.
+// % 2 === 0 means it is a Fabric tag.
+// This means that they never overlap.
+var nextReactTag = 2;
+
 /**
  * This is used for refs on host components.
  */
 
 var ReactFabricHostComponent = (function() {
   function ReactFabricHostComponent(tag, viewConfig, props) {
-    _classCallCheck$2(this, ReactFabricHostComponent);
+    _classCallCheck$1(this, ReactFabricHostComponent);
 
     this._nativeTag = tag;
     this.viewConfig = viewConfig;
@@ -13936,8 +13446,10 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = ReactNativeTagHandles.allocateTag();
-    var viewConfig = get$1(type);
+    var tag = nextReactTag;
+    nextReactTag += 2;
+
+    var viewConfig = ReactNativeViewConfigRegistry.get(type);
 
     {
       for (var key in viewConfig.validAttributes) {
@@ -13970,7 +13482,8 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = ReactNativeTagHandles.allocateTag();
+    var tag = nextReactTag;
+    nextReactTag += 2;
 
     var node = FabricUIManager.createNode(
       tag, // reactTag
@@ -14190,56 +13703,59 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
-/**
- * Creates a renderable ReactNative host component.
- * Use this method for view configs that are loaded from UIManager.
- * Use createReactNativeComponentClass() for view configs defined within JavaScript.
- *
- * @param {string} config iOS View configuration.
- * @private
- */
-var createReactNativeComponentClass = function(name, callback) {
-  return register(name, callback);
-};
+var findHostInstance = ReactFabricRenderer.findHostInstance;
 
-// Module provided by RN:
-/**
- * Capture an image of the screen, window or an individual view. The image
- * will be stored in a temporary file that will only exist for as long as the
- * app is running.
- *
- * The `view` argument can be the literal string `window` if you want to
- * capture the entire window, or it can be a reference to a specific
- * React Native component.
- *
- * The `options` argument may include:
- * - width/height (number) - the width and height of the image to capture.
- * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
- * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
- *
- * Returns a Promise.
- * @platform ios
- */
-function takeSnapshot(view, options) {
-  if (typeof view !== "number" && view !== "window") {
-    view = findNumericNodeHandleFiber(view) || "window";
+function findNodeHandle(componentOrHandle) {
+  {
+    var owner = ReactCurrentOwner.current;
+    if (owner !== null && owner.stateNode !== null) {
+      !owner.stateNode._warnedAboutRefsInRender
+        ? warning(
+            false,
+            "%s is accessing findNodeHandle inside its render(). " +
+              "render() should be a pure function of props and state. It should " +
+              "never access something that requires stale data from the previous " +
+              "render, such as refs. Move this logic to componentDidMount and " +
+              "componentDidUpdate instead.",
+            getComponentName(owner) || "A component"
+          )
+        : void 0;
+
+      owner.stateNode._warnedAboutRefsInRender = true;
+    }
   }
-
-  // Call the hidden '__takeSnapshot' method; the main one throws an error to
-  // prevent accidental backwards-incompatible usage.
-  return UIManager.__takeSnapshot(view, options);
+  if (componentOrHandle == null) {
+    return null;
+  }
+  if (typeof componentOrHandle === "number") {
+    // Already a node handle
+    return componentOrHandle;
+  }
+  if (componentOrHandle._nativeTag) {
+    return componentOrHandle._nativeTag;
+  }
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag) {
+    return componentOrHandle.canonical._nativeTag;
+  }
+  var hostInstance = findHostInstance(componentOrHandle);
+  if (hostInstance == null) {
+    return hostInstance;
+  }
+  if (hostInstance.canonical) {
+    // Fabric
+    return hostInstance.canonical._nativeTag;
+  }
+  return hostInstance._nativeTag;
 }
-
-injectFindHostInstanceFabric(ReactFabricRenderer.findHostInstance);
 
 injection$2.injectRenderer(ReactFabricRenderer);
 
 var roots = new Map();
 
 var ReactFabric = {
-  NativeComponent: ReactNativeComponent,
+  NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
 
-  findNodeHandle: findNumericNodeHandleFiber,
+  findNodeHandle: findNodeHandle,
 
   render: function(element, containerTag, callback) {
     var root = roots.get(containerTag);
@@ -14263,9 +13779,6 @@ var ReactFabric = {
       });
     }
   },
-  unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
-    ReactFabric.unmountComponentAtNode(containerTag);
-  },
   createPortal: function(children, containerTag) {
     var key =
       arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -14273,20 +13786,11 @@ var ReactFabric = {
     return createPortal(children, containerTag, null, key);
   },
 
-  unstable_batchedUpdates: batchedUpdates,
-
-  flushSync: ReactFabricRenderer.flushSync,
-
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
     // Used as a mixin in many createClass-based components
-    NativeMethodsMixin: NativeMethodsMixin,
+    NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance),
     // Used by react-native-github/Libraries/ components
-    ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin, // requireNativeComponent
-    ReactNativeComponentTree: ReactNativeComponentTree, // ScrollResponder
-    ReactNativePropRegistry: ReactNativePropRegistry, // flattenStyle, Stylesheet
-    TouchHistoryMath: TouchHistoryMath, // PanResponder
-    createReactNativeComponentClass: createReactNativeComponentClass, // RCTText, RCTView, ReactNativeART
-    takeSnapshot: takeSnapshot
+    ReactNativeComponentTree: ReactNativeComponentTree
   }
 };
 

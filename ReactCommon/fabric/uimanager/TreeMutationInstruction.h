@@ -25,6 +25,7 @@ using TreeMutationInstructionList = std::vector<TreeMutationInstruction>;
  * final index of inserted or updated node.
  * The relationship between native view instances and shadow node instances is
  * defined by `tag` value.
+ * Use static methods to instantiate mutation instructions of different types.
  */
 class TreeMutationInstruction:
   public DebugStringConvertible {
@@ -33,10 +34,21 @@ public:
 #pragma mark - Designated Initializers
 
   /*
-   * Creates and returns an *Insert* instruction with following semantic:
-   *   1. Create a native view for the shadow node if needed;
-   *   2. Unmount the native view from a previous superview if needed;
-   *   3. Mount the native view to the new superview.
+   * Creates and returns an *Creation* instruction.
+   */
+  static const TreeMutationInstruction Create(
+    SharedShadowNode node
+  );
+
+  /*
+   * Creates and returns an *Deletion* instruction.
+   */
+  static const TreeMutationInstruction Delete(
+    SharedShadowNode node
+  );
+
+  /*
+   * Creates and returns an *Insertion* instruction.
    */
   static const TreeMutationInstruction Insert(
     SharedShadowNode parentNode,
@@ -45,23 +57,18 @@ public:
   );
 
   /*
-   * Creates and returns a *Delete* instruction with following semantic:
-   *   1. Unmount the native view from a previous superview if needed;
-   *   2. Destroy (or return to a recycle pool) the native view.
+   * Creates and returns a *Removal* instruction.
    */
-  static const TreeMutationInstruction Delete(
+  static const TreeMutationInstruction Remove(
     SharedShadowNode parentNode,
     SharedShadowNode childNode,
     int index
   );
   
   /*
-   * Creates and returns an *Update* instruction with following semantic:
-   *   1. Update the presentation of a native view based on the new shadow node;
-   *   2. The exact set of changes are not specified but might contain
-   *      new props and/or new layout (or might be empty).
+   * Creates and returns an *Replacement* instruction.
    */
-  static const TreeMutationInstruction Update(
+  static const TreeMutationInstruction Replace(
     SharedShadowNode parentNode,
     SharedShadowNode oldChildNode,
     SharedShadowNode newChildNode,
@@ -71,9 +78,11 @@ public:
 #pragma mark - Type
 
   enum Type {
-    Inserting,
-    Deleting,
-    Updating
+    Creation,
+    Deletion,
+    Insertion,
+    Removal,
+    Replacement
   };
 
 #pragma mark - Getters
@@ -98,7 +107,7 @@ private:
     int index
   );
 
-  Type type_ {Inserting};
+  Type type_ {Creation};
   SharedShadowNode parentNode_ {nullptr};
   SharedShadowNode oldChildNode_ {nullptr};
   SharedShadowNode newChildNode_ {nullptr};
