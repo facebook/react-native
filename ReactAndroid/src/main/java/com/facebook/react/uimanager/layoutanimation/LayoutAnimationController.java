@@ -5,6 +5,7 @@ package com.facebook.react.uimanager.layoutanimation;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -27,6 +28,7 @@ public class LayoutAnimationController {
   private final AbstractLayoutAnimation mLayoutCreateAnimation = new LayoutCreateAnimation();
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
   private final AbstractLayoutAnimation mLayoutDeleteAnimation = new LayoutDeleteAnimation();
+  private final SparseArray<LayoutHandlingAnimation> mLayoutHandlers = new SparseArray<>(0);
   private boolean mShouldAnimateLayout;
 
   public void initializeFromConfig(final @Nullable ReadableMap config) {
@@ -68,7 +70,10 @@ public class LayoutAnimationController {
   public boolean shouldAnimateLayout(View viewToAnimate) {
     // if view parent is null, skip animation: view have been clipped, we don't want animation to
     // resume when view is re-attached to parent, which is the standard android animation behavior.
-    return mShouldAnimateLayout && viewToAnimate.getParent() != null;
+    // If there's a layout handling animation going on, it should be animated nonetheless since the
+    // ongoing animation needs to be updated.
+    return (mShouldAnimateLayout && viewToAnimate.getParent() != null)
+      || mLayoutHandlers.get(viewToAnimate.getId()) != null;
   }
 
   /**
@@ -85,6 +90,16 @@ public class LayoutAnimationController {
   public void applyLayoutUpdate(View view, int x, int y, int width, int height) {
     UiThreadUtil.assertOnUiThread();
 
+    final int reactTag = view.getId();
+    LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
+
+    // Update an ongoing animation if possible, otherwise the layout update would be ignored as
+    // the existing animation would still animate to the old layout.
+    if (existingAnimation != null) {
+      existingAnimation.onLayoutUpdate(x, y, width, height);
+      return;
+    }
+
     // Determine which animation to use : if view is initially invisible, use create animation,
     // otherwise use update animation. This approach is easier than maintaining a list of tags
     // for recently created views.
@@ -93,9 +108,26 @@ public class LayoutAnimationController {
         mLayoutUpdateAnimation;
 
     Animation animation = layoutAnimation.createAnimation(view, x, y, width, height);
-    if (animation == null || !(animation instanceof HandleLayout)) {
+
+    if (animation instanceof LayoutHandlingAnimation) {
+      animation.setAnimationListener(new Animation.AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+          mLayoutHandlers.put(reactTag, (LayoutHandlingAnimation) animation);
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+          mLayoutHandlers.remove(reactTag);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {}
+      });
+    } else {
       view.layout(x, y, x + width, y + height);
     }
+
     if (animation != null) {
       view.startAnimation(animation);
     }

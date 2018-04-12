@@ -102,6 +102,57 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+class LayoutUpdateExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    width: 200,
+    height: 100,
+  };
+
+  timeout = null;
+
+  componentWillUnmount() {
+    this._clearTimeout();
+  }
+
+  _clearTimeout = () => {
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  }
+
+  _onPressToggle = () => {
+    this._clearTimeout();
+    this.setState({width: 150});
+
+    LayoutAnimation.configureNext({
+      duration: 1000,
+      update: {
+        type: LayoutAnimation.Types.linear,
+      },
+    });
+
+    this.timeout = setTimeout(() => this.setState({width: 100}), 500);
+  };
+
+  render() {
+    const {width, height} = this.state;
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this._onPressToggle}>
+          <View style={styles.button}>
+            <Text>Make box square</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={[styles.view, {width, height}]}>
+          <Text>{width}x{height}</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -155,5 +206,10 @@ exports.examples = [{
   title: 'Cross fade views',
   render(): React.Element<any> {
     return <CrossFadeExample />;
+  },
+}, {
+  title: 'Layout update during animation',
+  render(): React.Element<any> {
+    return <LayoutUpdateExample />;
   },
 }];
