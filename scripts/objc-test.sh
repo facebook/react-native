@@ -12,6 +12,12 @@ set -ex
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
 
+XCODE_PROJECT_PATH="RNTester/RNTester.xcodeproj"
+
+if [ "$2" = "workspace" ]; then
+  XCODE_PROJECT_PATH="RNTester/RNTester.xcodeproj"
+fi
+
 cd $ROOT
 
 # Create cleanup handler
@@ -74,7 +80,7 @@ rm temp.bundle
 
 # Run tests
 xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
+  -project $XCODE_PROJECT_PATH \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
@@ -85,7 +91,7 @@ else
 
 # Don't run tests. No need to pass -destination to xcodebuild.
 xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
+  -project $XCODE_PROJECT_PATH \
   -scheme $SCHEME \
   -sdk $SDK \
   build
