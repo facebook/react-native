@@ -376,7 +376,9 @@ async function run(requestedVersion, cliArgs) {
     } catch (err) {
       log.warn(
         'The upgrade process succeeded but there might be conflicts to be resolved. ' +
-        'See above for the list of files that have merge conflicts.');
+        'See above for the list of files that have merge conflicts. ' +
+        'If you don’t see the expected changes, try running:\n' +
+        `git apply --reject ${patchPath}`);
     } finally {
       log.info('Upgrade done');
       if (cliArgs.verbose) {
