@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
                               "React/Inspector/*",
                               "ReactCommon/yoga/*",
                               "React/Cxx*/*",
-                              "React/Fabric/*",
+                              "React/Fabric/**/*",
     ss.ios.exclude_files    = "React/**/RCTTV*.*"
     ss.tvos.exclude_files   = "React/Modules/RCTClipboard*",
                               "React/Views/RCTDatePicker*",
@@ -73,6 +73,13 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.private_header_files = "React/Cxx*/*.h"
     ss.source_files         = "React/Cxx*/*.{h,m,mm}"
+    ss.exclude_files        = "React/CxxExceptions/**/*"
+  end
+
+  s.subspec "CxxExceptions" do |ss|
+    ss.dependency             "React/CxxBridge"
+    ss.private_header_files = "React/CxxExceptions/*.h"
+    ss.source_files         = "React/CxxExceptions/*.{h,m,mm}"
   end
 
   s.subspec "DevSupport" do |ss|
