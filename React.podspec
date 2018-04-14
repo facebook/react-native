@@ -13,6 +13,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_version = '2016.10.31.00'
 
 Pod::Spec.new do |s|
   s.name                    = "React"
@@ -67,7 +68,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "CxxBridge" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", folly_version
     ss.dependency             "React/Core"
     ss.dependency             "React/cxxreact"
     ss.compiler_flags       = folly_compiler_flags
@@ -95,7 +96,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "jschelpers" do |ss|
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", folly_version
     ss.dependency             "React/PrivateDatabase"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
@@ -120,7 +121,7 @@ Pod::Spec.new do |s|
     ss.dependency             "React/jschelpers"
     ss.dependency             "React/jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
-    ss.dependency             "Folly", "2016.09.26.00"
+    ss.dependency             "Folly", folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"

@@ -1,7 +1,7 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.5)
-  - Folly (2016.09.26.00):
+  - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
@@ -11,12 +11,12 @@ PODS:
   - React/Core (1000.0.0):
     - yoga (= 1000.0.0.React)
   - React/CxxBridge (1000.0.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - React/Core
     - React/cxxreact
   - React/cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - React/jschelpers
     - React/jsinspector
   - React/DevSupport (1000.0.0):
@@ -24,7 +24,7 @@ PODS:
     - React/RCTWebSocket
   - React/fishhook (1000.0.0)
   - React/jschelpers (1000.0.0):
-    - Folly (= 2016.09.26.00)
+    - Folly (= 2016.10.31.00)
     - React/PrivateDatabase
   - React/jsinspector (1000.0.0)
   - React/PrivateDatabase (1000.0.0)
@@ -102,9 +102,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  Folly: 211775e49d8da0ca658aebc8eab89d642935755c
+  Folly: 9a8eea4725a0b6ba3256ebf206c21e352c23abf8
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  React: b5ea2f2f4800bbae06eaa2f11e5709fd1958f7bf
+  React: 4e8050da47914f710f7bf48d1aca39fd9afafe39
   yoga: bdd268c5812f00bdb52cc2b58f129797e97935eb
 
 PODFILE CHECKSUM: 2db1aae50ba1389ea02bbb867efcf85182b0336a
