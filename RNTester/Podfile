@@ -15,6 +15,7 @@ target 'RNTester' do
     'RCTAnimation',
     'RCTBlob',
     'RCTCameraRoll',
+    'RCTFabric',
     'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',

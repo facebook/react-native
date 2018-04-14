@@ -13,7 +13,7 @@
 #include <fabric/core/LayoutContext.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/ViewcomponentDescriptor.h>
+#include <fabric/view/ViewComponentDescriptor.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/ViewShadowNode.h>
 

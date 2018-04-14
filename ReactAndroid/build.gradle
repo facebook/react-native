@@ -70,17 +70,17 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2016.09.26.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2016.10.31.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2016.09.26.00.tar.gz');
+    dest new File(downloadsDir, 'folly-2016.10.31.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-2016.09.26.00/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-2016.09.26.00/")}
+    include 'folly-2016.10.31.00/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-2016.10.31.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
