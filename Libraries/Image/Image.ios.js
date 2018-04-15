@@ -53,14 +53,13 @@ const Image = createReactClass({
       success: (width: number, height: number) => void,
       failure?: (error: any) => void,
     ) {
-      ImageViewManager.getSize(
-        uri,
-        success,
-        failure ||
-          function() {
+      return ImageViewManager.getSize(uri)
+        .then(function(sizes) {
+          success(sizes.width, sizes.height);
+        })
+        .catch(failure || function() {
             console.warn('Failed to get size for image: ' + uri);
-          },
-      );
+        })
     },
     /**
      * Prefetches a remote image for later use by downloading it to the disk

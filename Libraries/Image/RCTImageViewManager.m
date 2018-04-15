@@ -50,16 +50,16 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
 }
 
 RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
-                  successBlock:(RCTResponseSenderBlock)successBlock
-                  errorBlock:(RCTResponseErrorBlock)errorBlock)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   [self.bridge.imageLoader getImageSizeForURLRequest:request
                                                block:^(NSError *error, CGSize size) {
-                                                 if (error) {
-                                                   errorBlock(error);
-                                                 } else {
-                                                   successBlock(@[@(size.width), @(size.height)]);
-                                                 }
+                                                if (error) {
+                                                  reject(@"E_PREFETCH_FAILURE", nil, error);
+                                                  return;
+                                                }
+                                                  resolve(@{@"width":@(size.width),@"height":@(size.height)});
                                                }];
 }
 
