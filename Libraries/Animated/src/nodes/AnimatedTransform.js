@@ -87,6 +87,22 @@ class AnimatedTransform extends AnimatedWithChildren {
     super.__detach();
   }
 
+  __transformDataType(value: any): number {
+    // Change the string array type to number array
+    // So we can reuse the same logic in iOS and Android platform
+    if (typeof value !== 'string') {
+      return value;
+    }
+    if (/deg$/.test(value)) {
+      const degrees = parseFloat(value) || 0;
+      const radians = degrees * Math.PI / 180.0;
+      return radians;
+    } else {
+      // Assume radians
+      return parseFloat(value) || 0;
+    }
+  }
+
   __getNativeConfig(): any {
     const transConfigs = [];
 
@@ -103,7 +119,7 @@ class AnimatedTransform extends AnimatedWithChildren {
           transConfigs.push({
             type: 'static',
             property: key,
-            value,
+            value: this.__transformDataType(value),
           });
         }
       }
