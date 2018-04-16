@@ -103,7 +103,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _previousSelectionRange = selectedTextRange;
     _textField.selectedTextRange = selectedTextRange;
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %ld events ahead of JS - try to make your JS faster.", self.text, (long)eventLag);
   }
 }
 
@@ -130,7 +130,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _textField.selectedTextRange = [_textField textRangeFromPosition:position toPosition:position];
     }
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", _textField.text, eventLag);
+    RCTLogWarn(@"Native TextInput(%@) is %ld events ahead of JS - try to make your JS faster.", _textField.text, (long)eventLag);
   }
 }
 
