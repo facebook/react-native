@@ -86,6 +86,8 @@ const KeyboardAvoidingView = createReactClass({
     };
   },
 
+  initialFrameHeight: 0,
+
   subscriptions: ([]: Array<EmitterSubscription>),
   frame: (null: ?ViewLayout),
 
@@ -129,15 +131,9 @@ const KeyboardAvoidingView = createReactClass({
 
   _onLayout(event: ViewLayoutEvent) {
     this.frame = event.nativeEvent.layout;
-  },
-
-  UNSAFE_componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
-    if (nextState.bottom === this.state.bottom &&
-        this.props.behavior === 'height' &&
-        nextProps.behavior === 'height') {
-      // If the component rerenders without an internal state change, e.g.
-      // triggered by parent component re-rendering, no need for bottom to change.
-      nextState.bottom = 0;
+    if (!this.initialFrameHeight){
+      // save the initial frame height, before the keyboard is visible
+      this.initialFrameHeight = this.frame.height;
     }
   },
 
@@ -165,12 +161,12 @@ const KeyboardAvoidingView = createReactClass({
     switch (behavior) {
       case 'height':
         let heightStyle;
-        if (this.frame) {
+        if (this.frame && this.state.bottom) {
           // Note that we only apply a height change when there is keyboard present,
           // i.e. this.state.bottom is greater than 0. If we remove that condition,
           // this.frame.height will never go back to its original value.
           // When height changes, we need to disable flex.
-          heightStyle = {height: this.frame.height - bottomHeight, flex: 0};
+          heightStyle = {height: this.initialFrameHeight - bottomHeight, flex: 0};
         }
         return (
           <View ref={viewRef} style={[style, heightStyle]} onLayout={this._onLayout} {...props}>
