@@ -26,9 +26,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
-
-  // TODO(#27369757): getProps() doesn't work
-  // ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "abc");
 }
 
 TEST(ComponentDescriptorTest, cloneShadowNode) {
@@ -44,9 +42,7 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   ASSERT_STREQ(cloned->getComponentName().c_str(), "Test");
   ASSERT_EQ(cloned->getTag(), 9);
   ASSERT_EQ(cloned->getRootTag(), 1);
-
-  // TODO(#27369757): getProps() doesn't work
-  // ASSERT_STREQ(cloned->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(cloned->getProps()->getNativeId().c_str(), "abc");
 }
 
 TEST(ComponentDescriptorTest, appendChild) {
