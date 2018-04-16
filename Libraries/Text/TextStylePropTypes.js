@@ -87,6 +87,12 @@ const TextStylePropTypes = {
   /**
    * @platform ios
    */
+  textTransform: ReactPropTypes.oneOf(
+    ['none' /*default*/, 'capitalize', 'uppercase', 'lowercase']
+  ),
+  /**
+   * @platform ios
+   */
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']
   ),

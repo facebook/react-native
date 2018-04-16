@@ -860,6 +860,42 @@ exports.examples = [
     title: 'Text `alignItems: \'baseline\'` style',
     render: function() {
       return <TextBaseLineLayoutExample />;
+    }
+  },
+  {
+    title: 'Transform',
+    render: function() {
+      return (
+        <View>
+          <Text style={{ textTransform: 'uppercase'}}>
+            This text should be uppercased.
+          </Text>
+          <Text style={{ textTransform: 'lowercase'}}>
+            This TEXT SHOULD be lowercased.
+          </Text>
+          <Text style={{ textTransform: 'capitalize'}}>
+            This text should be CAPITALIZED.
+          </Text>
+          <Text style={{ textTransform: 'capitalize'}}>
+            Mixed:{' '}
+            <Text style={{ textTransform: 'uppercase'}}>
+              uppercase{' '}
+            </Text>
+            <Text style={{ textTransform: 'lowercase'}}>
+              LoWeRcAsE{' '}
+            </Text>
+            <Text style={{ textTransform: 'capitalize'}}>
+              capitalize each word
+            </Text>
+          </Text>
+          <Text>Should be "ABC":
+            <Text style={{ textTransform: 'uppercase' }}>a<Text>b</Text>c</Text>
+          </Text>
+          <Text>Should be "AbC":
+            <Text style={{ textTransform: 'uppercase' }}>a<Text style={{ textTransform: 'none' }}>b</Text>c</Text>
+          </Text>
+        </View>
+      );
     },
   },
 ];
