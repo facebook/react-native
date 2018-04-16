@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -95,7 +96,8 @@ public class FabricUIManager implements UIManager {
     }
   }
 
-  private ReactShadowNode getRootNode(int rootTag) {
+  @VisibleForTesting
+  ReactShadowNode getRootNode(int rootTag) {
     return mRootShadowNodeRegistry.getNode(rootTag);
   }
 
