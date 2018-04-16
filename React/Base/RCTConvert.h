@@ -14,6 +14,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
+#import <React/RCTTextTransform.h>
 #import <yoga/Yoga.h>
 
 /**
@@ -124,6 +125,7 @@ typedef BOOL css_backface_visibility_t;
 + (RCTAnimationType)RCTAnimationType:(id)json;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
++ (RCTTextTransform)RCTTextTransform:(id)json;
 
 @end
 

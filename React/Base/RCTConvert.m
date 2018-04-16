@@ -316,6 +316,13 @@ RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
   @"underline line-through": @(RCTTextDecorationLineTypeUnderlineStrikethrough),
 }), RCTTextDecorationLineTypeNone, integerValue)
 
+RCT_ENUM_CONVERTER(RCTTextTransform, (@{
+  @"none": @(RCTTextTransformNone),
+  @"capitalize": @(RCTTextTransformCapitalize),
+  @"uppercase": @(RCTTextTransformUppercase),
+  @"lowercase": @(RCTTextTransformLowercase),
+}), RCTTextTransformNone, integerValue)
+
 RCT_ENUM_CONVERTER(NSWritingDirection, (@{
   @"auto": @(NSWritingDirectionNatural),
   @"ltr": @(NSWritingDirectionLeftToRight),
