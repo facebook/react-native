@@ -16,6 +16,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
+#import <React/RCTResizeMode.h>
 
 #import "RCTImageUtils.h"
 
@@ -24,8 +25,8 @@ static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode, NSString *responseDate)
 {
-    return [NSString stringWithFormat:@"%@|%g|%g|%g|%zd|%@",
-            imageTag, size.width, size.height, scale, resizeMode, responseDate];
+  return [NSString stringWithFormat:@"%@|%g|%g|%g|%ld|%@",
+          imageTag, size.width, size.height, scale, (long)resizeMode, responseDate];
 }
 
 @implementation RCTImageCache
