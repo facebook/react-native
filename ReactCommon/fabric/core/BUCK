@@ -35,14 +35,16 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
+    fbobjc_tests = [
+        ":tests",
+    ],
     force_static = True,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [
-        ":tests",
-    ],
+    macosx_tests_override = [],
+    tests = [],
     visibility = ["PUBLIC"],
     deps = [
         "xplat//fbsystrace:fbsystrace",
