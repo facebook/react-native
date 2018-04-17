@@ -183,7 +183,3 @@ def cxx_library(allow_jni_merging=None, **kwargs):
         if not (k.startswith("fbandroid_") or k.startswith("fbobjc_"))
     }
     native.cxx_library(**args)
-
-
-def fb_android_library(**kwargs):
-    native.android_library(**kwargs)
