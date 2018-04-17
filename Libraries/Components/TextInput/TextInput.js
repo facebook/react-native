@@ -192,10 +192,6 @@ const DataDetectorTypes = [
 
 const TextInput = createReactClass({
   displayName: 'TextInput',
-  statics: {
-    /* TODO(brentvatne) docs are needed for this */
-    State: TextInputState,
-  },
 
   propTypes: {
     ...ViewPropTypes,
@@ -667,24 +663,30 @@ const TextInput = createReactClass({
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
-    if (!this.context.focusEmitter) {
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      // tag is null only in unit tests
+      TextInputState.registerInput(tag);
+    }
+
+    if (this.context.focusEmitter) {
+      this._focusSubscription = this.context.focusEmitter.addListener(
+        'focus',
+        el => {
+          if (this === el) {
+            this.requestAnimationFrame(this.focus);
+          } else if (this.isFocused()) {
+            this.blur();
+          }
+        },
+      );
+      if (this.props.autoFocus) {
+        this.context.onFocusRequested(this);
+      }
+    } else {
       if (this.props.autoFocus) {
         this.requestAnimationFrame(this.focus);
       }
-      return;
-    }
-    this._focusSubscription = this.context.focusEmitter.addListener(
-      'focus',
-      el => {
-        if (this === el) {
-          this.requestAnimationFrame(this.focus);
-        } else if (this.isFocused()) {
-          this.blur();
-        }
-      },
-    );
-    if (this.props.autoFocus) {
-      this.context.onFocusRequested(this);
     }
   },
 
@@ -692,6 +694,10 @@ const TextInput = createReactClass({
     this._focusSubscription && this._focusSubscription.remove();
     if (this.isFocused()) {
       this.blur();
+    }
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      TextInputState.unregisterInput(tag);
     }
   },
 

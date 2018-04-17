@@ -93,6 +93,14 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     }
   }
 
+  public void startViewTransition(T parent, View view) {
+    parent.startViewTransition(view);
+  }
+
+  public void endViewTransition(T parent, View view) {
+    parent.endViewTransition(view);
+  }
+
   /**
    * Returns whether this View type needs to handle laying out its own children instead of
    * deferring to the standard css-layout algorithm.

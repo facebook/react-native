@@ -21,11 +21,11 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-  Tag tag,
-  Tag rootTag,
-  InstanceHandle instanceHandle,
-  SharedProps props,
-  SharedShadowNodeSharedList children
+  const Tag &tag,
+  const Tag &rootTag,
+  const InstanceHandle &instanceHandle,
+  const SharedProps &props,
+  const SharedShadowNodeSharedList &children
 ):
   tag_(tag),
   rootTag_(rootTag),
@@ -35,9 +35,9 @@ ShadowNode::ShadowNode(
   revision_(1) {}
 
 ShadowNode::ShadowNode(
-  SharedShadowNode shadowNode,
-  SharedProps props,
-  SharedShadowNodeSharedList children
+  const SharedShadowNode &shadowNode,
+  const SharedProps &props,
+  const SharedShadowNodeSharedList &children
 ):
   tag_(shadowNode->tag_),
   rootTag_(shadowNode->rootTag_),

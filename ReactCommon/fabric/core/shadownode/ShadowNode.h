@@ -35,17 +35,17 @@ public:
 #pragma mark - Constructors
 
   ShadowNode(
-    Tag tag,
-    Tag rootTag,
-    InstanceHandle instanceHandle,
-    SharedProps props = SharedProps(),
-    SharedShadowNodeSharedList children = SharedShadowNodeSharedList()
+    const Tag &tag,
+    const Tag &rootTag,
+    const InstanceHandle &instanceHandle,
+    const SharedProps &props = SharedProps(),
+    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList()
   );
 
   ShadowNode(
-    SharedShadowNode shadowNode,
-    SharedProps props = nullptr,
-    SharedShadowNodeSharedList children = nullptr
+    const SharedShadowNode &shadowNode,
+    const SharedProps &props = nullptr,
+    const SharedShadowNodeSharedList &children = nullptr
   );
 
 #pragma mark - Getters
