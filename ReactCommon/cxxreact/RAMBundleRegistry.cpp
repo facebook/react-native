@@ -3,6 +3,7 @@
 #include "RAMBundleRegistry.h"
 
 #include <folly/Memory.h>
+#include <folly/String.h>
 
 #include <libgen.h>
 
@@ -42,7 +43,14 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(uint32_t bundleId, uint32
     m_bundles.emplace(bundleId, m_factory(bundlePath->second));
   }
 
-  return getBundle(bundleId)->getModule(moduleId);
+  auto module = getBundle(bundleId)->getModule(moduleId);
+  if (bundleId == MAIN_BUNDLE_ID) {
+    return module;
+  }
+  return {
+    folly::to<std::string>("seg-", bundleId, '_', std::move(module.name)),
+    std::move(module.code),
+  };
 }
 
 JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
