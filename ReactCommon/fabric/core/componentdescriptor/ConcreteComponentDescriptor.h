@@ -26,6 +26,7 @@ class ConcreteComponentDescriptor: public ComponentDescriptor {
   static_assert(std::is_base_of<ShadowNode, ShadowNodeT>::value, "ShadowNodeT must be a descendant of ShadowNode");
 
   using SharedShadowNodeT = std::shared_ptr<const ShadowNodeT>;
+  using ConcreteProps = typename ShadowNodeT::ConcreteProps;
   using SharedConcreteProps = typename ShadowNodeT::SharedConcreteProps;
 
 public:
@@ -37,19 +38,17 @@ public:
     const Tag &tag,
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
-    const RawProps &rawProps
+    const SharedProps &props
   ) const override {
-    auto props = ShadowNodeT::Props(rawProps);
-    return std::make_shared<ShadowNodeT>(tag, rootTag, instanceHandle, props);
+    return std::make_shared<ShadowNodeT>(tag, rootTag, instanceHandle, std::static_pointer_cast<const ConcreteProps>(props));
   }
 
   SharedShadowNode cloneShadowNode(
     const SharedShadowNode &shadowNode,
-    const SharedRawProps &rawProps = nullptr,
+    const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const override {
-    const SharedConcreteProps props = rawProps ? ShadowNodeT::Props(*rawProps, shadowNode->getProps()) : nullptr;
-    return std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(shadowNode), props, children);
+    return std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(shadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
   }
 
   void appendChild(
@@ -60,6 +59,13 @@ public:
     auto concreteNonConstParentShadowNode = std::const_pointer_cast<ShadowNodeT>(concreteParentShadowNode);
     concreteNonConstParentShadowNode->appendChild(childShadowNode);
   }
+
+  virtual SharedProps cloneProps(
+    const SharedProps &props,
+    const RawProps &rawProps
+  ) const override {
+    return ShadowNodeT::Props(rawProps, props);
+  };
 
 };
 

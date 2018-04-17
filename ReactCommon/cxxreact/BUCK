@@ -141,6 +141,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
     force_static = True,
+    macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

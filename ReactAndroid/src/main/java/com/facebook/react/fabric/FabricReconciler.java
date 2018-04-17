@@ -61,7 +61,7 @@ public class FabricReconciler {
       }
       enqueueUpdateProperties(newNode);
       manageChildren(prevNode, prevNode.getChildrenList(), newNode.getChildrenList());
-      prevNode.setOriginalReactShadowNode(newNode);
+      newNode.setOriginalReactShadowNode(null);
     }
     int firstRemovedOrAddedViewIndex = sameReactTagIndex;
 
@@ -78,7 +78,7 @@ public class FabricReconciler {
       viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());
-      newNode.setOriginalReactShadowNode(newNode);
+      newNode.setOriginalReactShadowNode(null);
       addedTags.add(newNode.getReactTag());
     }
 

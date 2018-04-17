@@ -23,7 +23,6 @@ const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
 const { ScrollViewManager } = require('NativeModules');
-const { getInstanceFromNode } = require('ReactNativeComponentTree');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -114,15 +113,6 @@ type State = {
 };
 type Event = Object;
 
-function isTagInstanceOfTextInput(tag) {
-  const instance = getInstanceFromNode(tag);
-  return instance && instance.viewConfig && (
-    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
-    instance.viewConfig.uiViewClassName === 'RCTMultilineTextInputView' ||
-    instance.viewConfig.uiViewClassName === 'RCTSinglelineTextInputView'
-  );
-}
-
 const ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
   scrollResponderMixinGetInitialState: function(): State {
@@ -196,17 +186,27 @@ const ScrollResponderMixin = {
    * Invoke this from an `onStartShouldSetResponderCapture` event.
    */
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
-    // First see if we want to eat taps while the keyboard is up
+    // The scroll view should receive taps instead of its descendants if:
+    // * it is already animating/decelerating
+    if (this.scrollResponderIsAnimating()) {
+      return true;
+    }
+
+    // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
+    // and a new touch starts with a non-textinput target (in which case the
+    // first tap should be sent to the scroll view and dismiss the keyboard,
+    // then the second tap goes to the actual interior view)
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     const {keyboardShouldPersistTaps} = this.props;
     const keyboardNeverPersistTaps = !keyboardShouldPersistTaps ||
                                     keyboardShouldPersistTaps === 'never';
     if (keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null &&
-      !isTagInstanceOfTextInput(e.target)) {
+      currentlyFocusedTextInput != null
+      /* && !TextInputState.isTextInput(e.target) */) {
       return true;
     }
-    return this.scrollResponderIsAnimating();
+
+    return false;
   },
 
   /**
