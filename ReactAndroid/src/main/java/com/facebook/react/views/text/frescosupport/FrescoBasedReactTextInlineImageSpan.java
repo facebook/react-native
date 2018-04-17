@@ -9,6 +9,7 @@ package com.facebook.react.views.text.frescosupport;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import com.facebook.react.uimanager.PixelUtil;
 import javax.annotation.Nullable;
 
 import android.content.res.Resources;
@@ -70,12 +71,12 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     );
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
-
-    mHeight = height;
     mTintColor = tintColor;
-    mWidth = width;
     mUri = (uri != null) ? uri : Uri.EMPTY;
     mHeaders = headers;
+    mWidth = (int)(PixelUtil.toPixelFromDIP(width));
+    mHeight = (int)(PixelUtil.toPixelFromDIP(height));
+
   }
 
   /**
