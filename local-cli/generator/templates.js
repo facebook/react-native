@@ -99,6 +99,7 @@ function createFromBuiltInTemplate(templateName, destPath, newProjectName, yarnV
     newProjectName,
   );
   installTemplateDependencies(templatePath, yarnVersion);
+  installTemplateDevDependencies(templatePath, yarnVersion);
 }
 
 /**
@@ -143,6 +144,7 @@ function createFromRemoteTemplate(template, destPath, newProjectName, yarnVersio
       }
     );
     installTemplateDependencies(templatePath, yarnVersion);
+    installTemplateDevDependencies(templatePath, yarnVersion);
   } finally {
     // Clean up the temp files
     try {
@@ -194,6 +196,38 @@ function installTemplateDependencies(templatePath, yarnVersion) {
   }
   console.log('Linking native dependencies into the project\'s build files...');
   execSync('react-native link', {stdio: 'inherit'});
+}
+
+function installTemplateDevDependencies(templatePath, yarnVersion) {
+  // devDependencies.json is a special file that lists additional develop dependencies
+  // that are required by this template
+  const devDependenciesJsonPath = path.resolve(
+    templatePath, 'devDependencies.json'
+  );
+  console.log('Adding develop dependencies for the project...');
+  if (!fs.existsSync(devDependenciesJsonPath)) {
+    console.log('No additional develop dependencies.');
+    return;
+  }
+
+  let dependencies;
+  try {
+    dependencies = JSON.parse(fs.readFileSync(devDependenciesJsonPath));
+  } catch (err) {
+    throw new Error(
+      'Could not parse the template\'s devDependencies.json: ' + err.message
+    );
+  }
+  for (let depName in dependencies) {
+    const depVersion = dependencies[depName];
+    const depToInstall = depName + '@' + depVersion;
+    console.log('Adding ' + depToInstall + '...');
+    if (yarnVersion) {
+      execSync(`yarn add ${depToInstall} -D`, {stdio: 'inherit'});
+    } else {
+      execSync(`npm install ${depToInstall} --save-dev --save-exact`, {stdio: 'inherit'});
+    }
+  }
 }
 
 module.exports = {
