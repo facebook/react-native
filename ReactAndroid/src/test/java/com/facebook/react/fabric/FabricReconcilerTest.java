@@ -4,22 +4,21 @@ package com.facebook.react.fabric;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.common.ClearableSynchronizedPool;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.fabric.FabricReconciler;
-import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.react.uimanager.ReactYogaConfigProvider;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewAtIndex;
-import com.facebook.react.uimanager.YogaNodePool;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
-import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,34 +26,27 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link FabricReconciler} */
-@PrepareForTest({
-  ReactChoreographer.class,
-  ReactYogaConfigProvider.class,
-  YogaNodePool.class,
-})
 @RunWith(WithTestDefaultsRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class FabricReconcilerTest {
 
   private FabricReconciler mFabricReconciler;
+  private FabricUIManager mFabricUIManager;
   private MockUIViewOperationQueue mMockUIViewOperationQueue;
 
   @Before
   public void setUp() {
+    CatalystInstance catalystInstance = ReactTestHelper.createMockCatalystInstance();
     ReactApplicationContext reactContext =
         new ReactApplicationContext(RuntimeEnvironment.application);
+    reactContext.initializeWithInstance(catalystInstance);
+    List<ViewManager> viewManagers = new ArrayList<>();
+    ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
     mMockUIViewOperationQueue = new MockUIViewOperationQueue(reactContext);
     mFabricReconciler = new FabricReconciler(mMockUIViewOperationQueue);
-
-    setupHacks();
   }
 
   @Test
@@ -98,6 +90,12 @@ public class FabricReconcilerTest {
     assertThat(mMockUIViewOperationQueue.getOperations()).isEqualTo(expectedOperations);
   }
 
+  private void addChildren(ReactShadowNode parent, ReactShadowNode... children) {
+    for (ReactShadowNode child : children) {
+      mFabricUIManager.appendChild(parent, child);
+    }
+  }
+
   private static ReactShadowNode createNode(int tag) {
     return createNode(tag, false);
   }
@@ -114,20 +112,26 @@ public class FabricReconcilerTest {
       node = new ReactShadowNodeImpl();
     }
     node.setReactTag(tag);
+    node.setThemedContext(mock(ThemedReactContext.class));
     return node;
   }
 
   private static class VirtualReactShadowNode extends ReactShadowNodeImpl {
 
+    VirtualReactShadowNode() {}
+
+    VirtualReactShadowNode(VirtualReactShadowNode original) {
+      super(original);
+    }
+
     @Override
     public boolean isVirtual() {
       return true;
     }
-  }
 
-  private static void addChildren(ReactShadowNode parent, ReactShadowNode... children) {
-    for (ReactShadowNode child : children) {
-      parent.addChildAt(child, parent.getChildCount());
+    @Override
+    public ReactShadowNodeImpl copy() {
+      return new VirtualReactShadowNode(this);
     }
   }
 
@@ -192,33 +196,5 @@ public class FabricReconcilerTest {
     public List<ManageChildrenOperation> getOperations() {
       return Collections.unmodifiableList(mOperations);
     }
-  }
-
-  /** Hacks to get tests to start working end to end */
-  private void setupHacks() {
-    // Hack around Yoga by mocking it out until the UnsatisfiedLinkErrors are fixed t14964130
-    mockStatic(YogaNodePool.class, ReactYogaConfigProvider.class);
-    PowerMockito.when(YogaNodePool.get())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Exception {
-                ClearableSynchronizedPool<YogaNode> yogaPool =
-                    mock(ClearableSynchronizedPool.class);
-                YogaNode yogaNode = mock(YogaNode.class);
-                when(yogaNode.clone()).thenReturn(mock(YogaNode.class));
-                when(yogaNode.isMeasureDefined()).thenReturn(true);
-                when(yogaPool.acquire()).thenReturn(yogaNode);
-                return yogaPool;
-              }
-            });
-    PowerMockito.when(ReactYogaConfigProvider.get())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) {
-                return mock(YogaConfig.class);
-              }
-            });
   }
 }
