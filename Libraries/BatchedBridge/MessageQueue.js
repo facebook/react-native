@@ -63,6 +63,7 @@ class MessageQueue {
     this._successCallbacks = {};
     this._failureCallbacks = {};
     this._callID = 0;
+    this._inCall = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
 
