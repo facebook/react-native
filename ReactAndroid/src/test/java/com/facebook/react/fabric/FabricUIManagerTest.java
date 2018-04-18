@@ -24,7 +24,6 @@ import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,10 +36,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link FabricUIManager} */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class FabricUIManagerTest {
 
   private FabricUIManager mFabricUIManager;

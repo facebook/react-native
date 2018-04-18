@@ -13,8 +13,6 @@ rn_robolectric_test(
     ],
     deps = [
         "xplat//yoga/java:java",
-        react_native_dep("java/com/facebook/common/executors:executors"),
-        react_native_dep("java/com/facebook/testing/robolectric/v3:v3"),
         react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/fest:fest_android"),

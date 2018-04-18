@@ -18,7 +18,6 @@ import com.facebook.react.uimanager.ViewAtIndex;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,10 +25,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link FabricReconciler} */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class FabricReconcilerTest {
 
   private FabricReconciler mFabricReconciler;
