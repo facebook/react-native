@@ -16,20 +16,15 @@ import com.facebook.react.common.ClearableSynchronizedPool;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.react.uimanager.ReactYogaConfigProvider;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.YogaNodePool;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
-import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,16 +40,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link FabricUIManager} */
-@PrepareForTest({YogaNodePool.class, ReactYogaConfigProvider.class})
 @RunWith(WithTestDefaultsRunner.class)
 public class FabricUIManagerTest {
 
   private FabricUIManager mFabricUIManager;
   private ThemedReactContext mThemedReactContext;
   private int mNextReactTag;
-  private MockYogaNodePool mMockYogaNodePool;
-
-  private YogaMeasureFunction mLastYogaMeasureFunction;
 
   @Before
   public void setUp() throws Exception {
@@ -70,19 +61,6 @@ public class FabricUIManagerTest {
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
 
     mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
-
-    // Hack around Yoga until the UnsatisfiedLinkErrors are fixed t14964130
-    PowerMockito.mockStatic(YogaNodePool.class, ReactYogaConfigProvider.class);
-    mMockYogaNodePool = new MockYogaNodePool();
-    PowerMockito.when(YogaNodePool.get()).thenReturn(mMockYogaNodePool);
-    PowerMockito.when(ReactYogaConfigProvider.get())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) {
-                return mock(YogaConfig.class);
-              }
-            });
   }
 
   @Test
@@ -222,13 +200,7 @@ public class FabricUIManagerTest {
   }
 
   /**
-   * Tests that cloned text nodes will reassign their yoga nodes' measure functions.
-   *
-   * <p>TODO(T26729515): Currently this tests the wrong implementation. It assumes that yoga nodes
-   * are reused across clones and simply checks the most recently assigned measure functions of the
-   * shared yoga node. When yoga node cloning is implemented, this needs to be changed to mock each
-   * cloned shadow nodes' yoga nodes and make the same assertions on each of their measure
-   * functions.
+   * Tests that cloned text nodes will not share measure functions
    */
   @Test
   public void testTextMutableClone() {
@@ -236,39 +208,20 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
 
-    final YogaNode yogaNode = mock(YogaNode.class);
-
-    doAnswer(
-            new Answer() {
-              @Override
-              public Object answer(InvocationOnMock invocation) {
-                when(yogaNode.isMeasureDefined()).thenReturn(true);
-                when(yogaNode.clone()).thenReturn(yogaNode);
-                when(yogaNode.cloneWithNewChildren()).thenReturn(yogaNode);
-                mLastYogaMeasureFunction = (YogaMeasureFunction) invocation.getArguments()[0];
-                return null;
-              }
-            })
-        .when(yogaNode)
-        .setMeasureFunction(any(YogaMeasureFunction.class));
-
-    mMockYogaNodePool.add(yogaNode);
-
     ReactShadowNode text =
         mFabricUIManager.createNode(0, ReactTextViewManager.REACT_CLASS, rootTag, null);
-    YogaMeasureFunction textMeasureFunction = mLastYogaMeasureFunction;
     assertThat(text.isMeasureDefined()).isTrue();
 
     ReactShadowNode textCopy = text.mutableCopy();
-    YogaMeasureFunction textCopyMeasureFunction = mLastYogaMeasureFunction;
     assertThat(textCopy.isMeasureDefined()).isTrue();
-    assertThat(textCopyMeasureFunction).isNotSameAs(textMeasureFunction);
 
-    ReactShadowNode textCopyWithNewChildren = text.mutableCopyWithNewChildren();
-    YogaMeasureFunction textCopyWithNewChildrenMeasureFunction = mLastYogaMeasureFunction;
-    assertThat(textCopyWithNewChildren.isMeasureDefined()).isTrue();
-    assertThat(textCopyWithNewChildrenMeasureFunction).isNotSameAs(textMeasureFunction);
-    assertThat(textCopyWithNewChildrenMeasureFunction).isNotSameAs(textCopyMeasureFunction);
+    textCopy.setStyleWidth(200);
+    text.onBeforeLayout();
+    text.calculateLayout();
+    textCopy.onBeforeLayout();
+    textCopy.calculateLayout();
+
+    assertThat(text.getLayoutWidth()).isNotEqualTo(textCopy.getLayoutWidth());
   }
 
   /**
@@ -332,7 +285,6 @@ public class FabricUIManagerTest {
     assertThat(node1.getLayoutX()).isEqualTo(node2.getLayoutX());
     assertThat(node1.getLayoutY()).isEqualTo(node2.getLayoutY());
     for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
-      assertThat(node1.getPadding(spacingType)).isEqualTo(node2.getPadding(spacingType));
       assertThat(node1.getStylePadding(spacingType)).isEqualTo(node2.getStylePadding(spacingType));
     }
     assertThat(node1.getStyleWidth()).isEqualTo(node2.getStyleWidth());
@@ -344,44 +296,5 @@ public class FabricUIManagerTest {
     node.setViewClassName(ReactViewManager.REACT_CLASS);
     node.setThemedContext(mThemedReactContext);
     return node;
-  }
-
-  private static class MockYogaNodePool extends ClearableSynchronizedPool<YogaNode> {
-
-    private List<YogaNode> mMockYogaNodes;
-
-    public MockYogaNodePool() {
-      super(1024);
-      mMockYogaNodes = new LinkedList<>();
-    }
-
-    public void add(YogaNode... nodes) {
-      Collections.addAll(mMockYogaNodes, nodes);
-    }
-
-    @Override
-    public synchronized YogaNode acquire() {
-      if (!mMockYogaNodes.isEmpty()) {
-        return mMockYogaNodes.remove(0);
-      }
-      return createMockYogaNode();
-    }
-
-    private static YogaNode createMockYogaNode() {
-      final YogaNode yogaNode = mock(YogaNode.class);
-      when(yogaNode.clone()).thenReturn(yogaNode);
-      when(yogaNode.cloneWithNewChildren()).thenReturn(yogaNode);
-      doAnswer(
-              new Answer() {
-                @Override
-                public Object answer(InvocationOnMock invocation) {
-                  when(yogaNode.isMeasureDefined()).thenReturn(true);
-                  return null;
-                }
-              })
-          .when(yogaNode)
-          .setMeasureFunction(any(YogaMeasureFunction.class));
-      return yogaNode;
-    }
   }
 }
