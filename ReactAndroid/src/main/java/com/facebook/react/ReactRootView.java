@@ -42,11 +42,11 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import javax.annotation.Nullable;
@@ -572,18 +572,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   @Override
-  public void handleException(Throwable t) {
+  public void handleException(final Throwable t) {
     if (mReactInstanceManager == null
       || mReactInstanceManager.getCurrentReactContext() == null) {
         throw new RuntimeException(t);
     }
 
-    // Adding special exception management for StackOverflowError for logging purposes.
-    // This will be removed in the future.
-    Exception e = (t instanceof StackOverflowError) ?
-      new IllegalViewOperationException("StackOverflowException", this, t) :
-      t instanceof Exception ? (Exception) t : new RuntimeException(t);
-
+    Exception e = new IllegalViewOperationException(t.getMessage(), this, t);
     mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
