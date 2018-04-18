@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noflow
- * @providesModule ReactFabric-prod
  * @preventMunge
  */
 
@@ -1242,6 +1241,14 @@ function getComponentName(fiber) {
     case REACT_RETURN_TYPE:
       return "ReactReturn";
   }
+  if ("object" === typeof fiber && null !== fiber)
+    switch (fiber.$$typeof) {
+      case REACT_FORWARD_REF_TYPE:
+        return (
+          (fiber = fiber.render.displayName || fiber.render.name || ""),
+          "" !== fiber ? "ForwardRef(" + fiber + ")" : "ForwardRef"
+        );
+    }
   return null;
 }
 function isFiberMountedImpl(fiber) {
@@ -2753,15 +2760,17 @@ function ChildReconciler(shouldTrackSideEffects) {
               currentFirstChild,
               newChild,
               expirationTime
-            )))
+            )),
+            (currentFirstChild["return"] = returnFiber),
+            (returnFiber = currentFirstChild))
           : (deleteRemainingChildren(returnFiber, currentFirstChild),
             (currentFirstChild = createFiberFromText(
               newChild,
               returnFiber.mode,
               expirationTime
-            ))),
-        (currentFirstChild["return"] = returnFiber),
-        (returnFiber = currentFirstChild),
+            )),
+            (currentFirstChild["return"] = returnFiber),
+            (returnFiber = currentFirstChild)),
         placeSingleChild(returnFiber)
       );
     if (isArray$1(newChild))
@@ -4768,7 +4777,7 @@ function ReactFiberScheduler(config) {
           ? isCommitting ? 1 : nextRenderExpirationTime
           : fiber.mode & 1
             ? isBatchingInteractiveUpdates
-              ? 10 * ((((recalculateCurrentTime() + 50) / 10) | 0) + 1)
+              ? 10 * ((((recalculateCurrentTime() + 15) / 10) | 0) + 1)
               : 25 * ((((recalculateCurrentTime() + 500) / 25) | 0) + 1)
             : 1;
     isBatchingInteractiveUpdates &&
@@ -5856,7 +5865,7 @@ ReactFabricRenderer.injectIntoDevTools({
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 0,
-  version: "16.3.1",
+  version: "16.3.2",
   rendererPackageName: "react-native-renderer"
 });
 var ReactFabric$2 = Object.freeze({ default: ReactFabric }),

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noflow
- * @providesModule ReactFabric-dev
+ * @providesModule ReactNativeRenderer-dev
  * @preventMunge
  */
 
@@ -21,15 +21,16 @@ var warning = require("fbjs/lib/warning");
 var emptyFunction = require("fbjs/lib/emptyFunction");
 var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry");
 var UIManager = require("UIManager");
+var RCTEventEmitter = require("RCTEventEmitter");
 var TextInputState = require("TextInputState");
 var deepDiffer = require("deepDiffer");
 var flattenStyle = require("flattenStyle");
 var React = require("react");
 var emptyObject = require("fbjs/lib/emptyObject");
 var shallowEqual = require("fbjs/lib/shallowEqual");
+var ExceptionsManager = require("ExceptionsManager");
 var checkPropTypes = require("prop-types/checkPropTypes");
 var deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev");
-var FabricUIManager = require("FabricUIManager");
 
 var invokeGuardedCallback = function(name, func, context, a, b, c, d, e, f) {
   this._hasCaughtError = false;
@@ -559,8 +560,52 @@ var validateEventDispatches = void 0;
 }
 
 /**
+ * Dispatch the event to the listener.
+ * @param {SyntheticEvent} event SyntheticEvent to handle
+ * @param {boolean} simulated If the event is simulated (changes exn behavior)
+ * @param {function} listener Application-level callback
+ * @param {*} inst Internal component instance
+ */
+function executeDispatch(event, simulated, listener, inst) {
+  var type = event.type || "unknown-event";
+  event.currentTarget = getNodeFromInstance(inst);
+  ReactErrorUtils.invokeGuardedCallbackAndCatchFirstError(
+    type,
+    listener,
+    undefined,
+    event
+  );
+  event.currentTarget = null;
+}
+
+/**
  * Standard/simple iteration through an event's collected dispatches.
  */
+function executeDispatchesInOrder(event, simulated) {
+  var dispatchListeners = event._dispatchListeners;
+  var dispatchInstances = event._dispatchInstances;
+  {
+    validateEventDispatches(event);
+  }
+  if (Array.isArray(dispatchListeners)) {
+    for (var i = 0; i < dispatchListeners.length; i++) {
+      if (event.isPropagationStopped()) {
+        break;
+      }
+      // Listeners and Instances are two parallel arrays that are always in sync.
+      executeDispatch(
+        event,
+        simulated,
+        dispatchListeners[i],
+        dispatchInstances[i]
+      );
+    }
+  } else if (dispatchListeners) {
+    executeDispatch(event, simulated, dispatchListeners, dispatchInstances);
+  }
+  event._dispatchListeners = null;
+  event._dispatchInstances = null;
+}
 
 /**
  * Standard/simple iteration through an event's collected dispatches, but stops
@@ -699,6 +744,35 @@ function forEachAccumulated(arr, cb, scope) {
   }
 }
 
+/**
+ * Internal queue of events that have accumulated their dispatches and are
+ * waiting to have their dispatches executed.
+ */
+var eventQueue = null;
+
+/**
+ * Dispatches an event and releases it back into the pool, unless persistent.
+ *
+ * @param {?object} event Synthetic event to be dispatched.
+ * @param {boolean} simulated If the event is simulated (changes exn behavior)
+ * @private
+ */
+var executeDispatchesAndRelease = function(event, simulated) {
+  if (event) {
+    executeDispatchesInOrder(event, simulated);
+
+    if (!event.isPersistent()) {
+      event.constructor.release(event);
+    }
+  }
+};
+var executeDispatchesAndReleaseSimulated = function(e) {
+  return executeDispatchesAndRelease(e, true);
+};
+var executeDispatchesAndReleaseTopLevel = function(e) {
+  return executeDispatchesAndRelease(e, false);
+};
+
 function isInteractive(tag) {
   return (
     tag === "button" ||
@@ -796,6 +870,87 @@ function getListener(inst, registrationName) {
     typeof listener
   );
   return listener;
+}
+
+/**
+ * Allows registered plugins an opportunity to extract events from top-level
+ * native browser events.
+ *
+ * @return {*} An accumulation of synthetic events.
+ * @internal
+ */
+function extractEvents(
+  topLevelType,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget
+) {
+  var events = null;
+  for (var i = 0; i < plugins.length; i++) {
+    // Not every plugin in the ordering may be loaded at runtime.
+    var possiblePlugin = plugins[i];
+    if (possiblePlugin) {
+      var extractedEvents = possiblePlugin.extractEvents(
+        topLevelType,
+        targetInst,
+        nativeEvent,
+        nativeEventTarget
+      );
+      if (extractedEvents) {
+        events = accumulateInto(events, extractedEvents);
+      }
+    }
+  }
+  return events;
+}
+
+function runEventsInBatch(events, simulated) {
+  if (events !== null) {
+    eventQueue = accumulateInto(eventQueue, events);
+  }
+
+  // Set `eventQueue` to null before processing it so that we can tell if more
+  // events get enqueued while processing.
+  var processingEventQueue = eventQueue;
+  eventQueue = null;
+
+  if (!processingEventQueue) {
+    return;
+  }
+
+  if (simulated) {
+    forEachAccumulated(
+      processingEventQueue,
+      executeDispatchesAndReleaseSimulated
+    );
+  } else {
+    forEachAccumulated(
+      processingEventQueue,
+      executeDispatchesAndReleaseTopLevel
+    );
+  }
+  invariant(
+    !eventQueue,
+    "processEventQueue(): Additional events were enqueued while processing " +
+      "an event queue. Support for this has not yet been implemented."
+  );
+  // This would be a good time to rethrow if any of the event handlers threw.
+  ReactErrorUtils.rethrowCaughtError();
+}
+
+function runExtractedEventsInBatch(
+  topLevelType,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget
+) {
+  var events = extractEvents(
+    topLevelType,
+    targetInst,
+    nativeEvent,
+    nativeEventTarget
+  );
+  runEventsInBatch(events, false);
 }
 
 var IndeterminateComponent = 0; // Before we know whether it is functional or class
@@ -2298,18 +2453,267 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
-// TODO: The event emitter registration is interfering with the existing
-// ReactNative renderer. So disable it for Fabric for now.
+// Use to restore controlled state after a change event has fired.
 
-// import * as ReactNativeEventEmitter from './ReactNativeEventEmitter';
+var fiberHostComponent = null;
+
+var restoreTarget = null;
+var restoreQueue = null;
+
+function restoreStateOfTarget(target) {
+  // We perform this translation at the end of the event loop so that we
+  // always receive the correct fiber here
+  var internalInstance = getInstanceFromNode(target);
+  if (!internalInstance) {
+    // Unmounted
+    return;
+  }
+  invariant(
+    fiberHostComponent &&
+      typeof fiberHostComponent.restoreControlledState === "function",
+    "Fiber needs to be injected to handle a fiber target for controlled " +
+      "events. This error is likely caused by a bug in React. Please file an issue."
+  );
+  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
+  fiberHostComponent.restoreControlledState(
+    internalInstance.stateNode,
+    internalInstance.type,
+    props
+  );
+}
+
+function needsStateRestore() {
+  return restoreTarget !== null || restoreQueue !== null;
+}
+
+function restoreStateIfNeeded() {
+  if (!restoreTarget) {
+    return;
+  }
+  var target = restoreTarget;
+  var queuedTargets = restoreQueue;
+  restoreTarget = null;
+  restoreQueue = null;
+
+  restoreStateOfTarget(target);
+  if (queuedTargets) {
+    for (var i = 0; i < queuedTargets.length; i++) {
+      restoreStateOfTarget(queuedTargets[i]);
+    }
+  }
+}
+
+// Used as a way to call batchedUpdates when we don't have a reference to
+// the renderer. Such as when we're dispatching events or if third party
+// libraries need to call batchedUpdates. Eventually, this API will go away when
+// everything is batched by default. We'll then have a similar API to opt-out of
+// scheduled work and instead do synchronous work.
+
+// Defaults
+var _batchedUpdates = function(fn, bookkeeping) {
+  return fn(bookkeeping);
+};
+var _interactiveUpdates = function(fn, a, b) {
+  return fn(a, b);
+};
+var _flushInteractiveUpdates = function() {};
+
+var isBatching = false;
+function batchedUpdates(fn, bookkeeping) {
+  if (isBatching) {
+    // If we are currently inside another batch, we need to wait until it
+    // fully completes before restoring state.
+    return fn(bookkeeping);
+  }
+  isBatching = true;
+  try {
+    return _batchedUpdates(fn, bookkeeping);
+  } finally {
+    // Here we wait until all updates have propagated, which is important
+    // when using controlled components within layers:
+    // https://github.com/facebook/react/issues/1698
+    // Then we restore state of any controlled component.
+    isBatching = false;
+    var controlledComponentsHavePendingUpdates = needsStateRestore();
+    if (controlledComponentsHavePendingUpdates) {
+      // If a controlled event was fired, we may need to restore the state of
+      // the DOM node back to the controlled value. This is necessary when React
+      // bails out of the update without touching the DOM.
+      _flushInteractiveUpdates();
+      restoreStateIfNeeded();
+    }
+  }
+}
+
+var injection$2 = {
+  injectRenderer: function(renderer) {
+    _batchedUpdates = renderer.batchedUpdates;
+    _interactiveUpdates = renderer.interactiveUpdates;
+    _flushInteractiveUpdates = renderer.flushInteractiveUpdates;
+  }
+};
+
+/**
+ * Version of `ReactBrowserEventEmitter` that works on the receiving side of a
+ * serialized worker boundary.
+ */
+
+// Shared default empty native event - conserve memory.
+var EMPTY_NATIVE_EVENT = {};
+
+/**
+ * Selects a subsequence of `Touch`es, without destroying `touches`.
+ *
+ * @param {Array<Touch>} touches Deserialized touch objects.
+ * @param {Array<number>} indices Indices by which to pull subsequence.
+ * @return {Array<Touch>} Subsequence of touch objects.
+ */
+var touchSubsequence = function(touches, indices) {
+  var ret = [];
+  for (var i = 0; i < indices.length; i++) {
+    ret.push(touches[indices[i]]);
+  }
+  return ret;
+};
+
+/**
+ * TODO: Pool all of this.
+ *
+ * Destroys `touches` by removing touch objects at indices `indices`. This is
+ * to maintain compatibility with W3C touch "end" events, where the active
+ * touches don't include the set that has just been "ended".
+ *
+ * @param {Array<Touch>} touches Deserialized touch objects.
+ * @param {Array<number>} indices Indices to remove from `touches`.
+ * @return {Array<Touch>} Subsequence of removed touch objects.
+ */
+var removeTouchesAtIndices = function(touches, indices) {
+  var rippedOut = [];
+  // use an unsafe downcast to alias to nullable elements,
+  // so we can delete and then compact.
+  var temp = touches;
+  for (var i = 0; i < indices.length; i++) {
+    var index = indices[i];
+    rippedOut.push(touches[index]);
+    temp[index] = null;
+  }
+  var fillAt = 0;
+  for (var j = 0; j < temp.length; j++) {
+    var cur = temp[j];
+    if (cur !== null) {
+      temp[fillAt++] = cur;
+    }
+  }
+  temp.length = fillAt;
+  return rippedOut;
+};
+
+/**
+ * Internal version of `receiveEvent` in terms of normalized (non-tag)
+ * `rootNodeID`.
+ *
+ * @see receiveEvent.
+ *
+ * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
+ * @param {TopLevelType} topLevelType Top level type of event.
+ * @param {?object} nativeEventParam Object passed from native.
+ */
+function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
+  var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT;
+  var inst = getInstanceFromTag(rootNodeID);
+  batchedUpdates(function() {
+    runExtractedEventsInBatch(
+      topLevelType,
+      inst,
+      nativeEvent,
+      nativeEvent.target
+    );
+  });
+  // React Native doesn't use ReactControlledComponent but if it did, here's
+  // where it would do it.
+}
+
+/**
+ * Publicly exposed method on module for native objc to invoke when a top
+ * level event is extracted.
+ * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
+ * @param {TopLevelType} topLevelType Top level type of event.
+ * @param {object} nativeEventParam Object passed from native.
+ */
+function receiveEvent(rootNodeID, topLevelType, nativeEventParam) {
+  _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam);
+}
+
+/**
+ * Simple multi-wrapper around `receiveEvent` that is intended to receive an
+ * efficient representation of `Touch` objects, and other information that
+ * can be used to construct W3C compliant `Event` and `Touch` lists.
+ *
+ * This may create dispatch behavior that differs than web touch handling. We
+ * loop through each of the changed touches and receive it as a single event.
+ * So two `touchStart`/`touchMove`s that occur simultaneously are received as
+ * two separate touch event dispatches - when they arguably should be one.
+ *
+ * This implementation reuses the `Touch` objects themselves as the `Event`s
+ * since we dispatch an event for each touch (though that might not be spec
+ * compliant). The main purpose of reusing them is to save allocations.
+ *
+ * TODO: Dispatch multiple changed touches in one event. The bubble path
+ * could be the first common ancestor of all the `changedTouches`.
+ *
+ * One difference between this behavior and W3C spec: cancelled touches will
+ * not appear in `.touches`, or in any future `.touches`, though they may
+ * still be "actively touching the surface".
+ *
+ * Web desktop polyfills only need to construct a fake touch event with
+ * identifier 0, also abandoning traditional click handlers.
+ */
+function receiveTouches(eventTopLevelType, touches, changedIndices) {
+  var changedTouches =
+    eventTopLevelType === "topTouchEnd" ||
+    eventTopLevelType === "topTouchCancel"
+      ? removeTouchesAtIndices(touches, changedIndices)
+      : touchSubsequence(touches, changedIndices);
+
+  for (var jj = 0; jj < changedTouches.length; jj++) {
+    var touch = changedTouches[jj];
+    // Touch objects can fulfill the role of `DOM` `Event` objects if we set
+    // the `changedTouches`/`touches`. This saves allocations.
+    touch.changedTouches = changedTouches;
+    touch.touches = touches;
+    var nativeEvent = touch;
+    var rootNodeID = null;
+    var target = nativeEvent.target;
+    if (target !== null && target !== undefined) {
+      if (target < 1) {
+        {
+          warning(
+            false,
+            "A view is reporting that a touch occurred on tag zero."
+          );
+        }
+      } else {
+        rootNodeID = target;
+      }
+    }
+    // $FlowFixMe Shouldn't we *not* call it if rootNodeID is null?
+    _receiveRootNodeIDEvent(rootNodeID, eventTopLevelType, nativeEvent);
+  }
+}
+
+var ReactNativeEventEmitter = Object.freeze({
+  getListener: getListener,
+  registrationNames: registrationNameModules,
+  _receiveRootNodeIDEvent: _receiveRootNodeIDEvent,
+  receiveEvent: receiveEvent,
+  receiveTouches: receiveTouches
+});
 
 // Module provided by RN:
-// import RCTEventEmitter from 'RCTEventEmitter';
-
 /**
  * Register the event emitter with the native bridge
  */
-// RCTEventEmitter.register(ReactNativeEventEmitter);
+RCTEventEmitter.register(ReactNativeEventEmitter);
 
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
@@ -2367,32 +2771,87 @@ function createPortal(
   };
 }
 
-// Used as a way to call batchedUpdates when we don't have a reference to
-// the renderer. Such as when we're dispatching events or if third party
-// libraries need to call batchedUpdates. Eventually, this API will go away when
-// everything is batched by default. We'll then have a similar API to opt-out of
-// scheduled work and instead do synchronous work.
-
-// Defaults
-var _batchedUpdates = function(fn, bookkeeping) {
-  return fn(bookkeeping);
-};
-var _interactiveUpdates = function(fn, a, b) {
-  return fn(a, b);
-};
-var _flushInteractiveUpdates = function() {};
-
-var injection$2 = {
-  injectRenderer: function(renderer) {
-    _batchedUpdates = renderer.batchedUpdates;
-    _interactiveUpdates = renderer.interactiveUpdates;
-    _flushInteractiveUpdates = renderer.flushInteractiveUpdates;
-  }
-};
-
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.3.1";
+var ReactVersion = "16.3.2";
+
+var describeComponentFrame = function(name, source, ownerName) {
+  return (
+    "\n    in " +
+    (name || "Unknown") +
+    (source
+      ? " (at " +
+        source.fileName.replace(/^.*[\\\/]/, "") +
+        ":" +
+        source.lineNumber +
+        ")"
+      : ownerName ? " (created by " + ownerName + ")" : "")
+  );
+};
+
+function getComponentName(fiber) {
+  var type = fiber.type;
+
+  if (typeof type === "function") {
+    return type.displayName || type.name;
+  }
+  if (typeof type === "string") {
+    return type;
+  }
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return "ReactFragment";
+    case REACT_PORTAL_TYPE:
+      return "ReactPortal";
+    case REACT_CALL_TYPE:
+      return "ReactCall";
+    case REACT_RETURN_TYPE:
+      return "ReactReturn";
+  }
+  if (typeof type === "object" && type !== null) {
+    switch (type.$$typeof) {
+      case REACT_FORWARD_REF_TYPE:
+        var functionName = type.render.displayName || type.render.name || "";
+        return functionName !== ""
+          ? "ForwardRef(" + functionName + ")"
+          : "ForwardRef";
+    }
+  }
+  return null;
+}
+
+function describeFiber(fiber) {
+  switch (fiber.tag) {
+    case IndeterminateComponent:
+    case FunctionalComponent:
+    case ClassComponent:
+    case HostComponent:
+      var owner = fiber._debugOwner;
+      var source = fiber._debugSource;
+      var name = getComponentName(fiber);
+      var ownerName = null;
+      if (owner) {
+        ownerName = getComponentName(owner);
+      }
+      return describeComponentFrame(name, source, ownerName);
+    default:
+      return "";
+  }
+}
+
+// This function can only be called with a work-in-progress fiber and
+// only during begin or complete phase. Do not call it under any other
+// circumstances.
+function getStackAddendumByWorkInProgressFiber(workInProgress) {
+  var info = "";
+  var node = workInProgress;
+  do {
+    info += describeFiber(node);
+    // Otherwise this return pointer might point to the wrong tree:
+    node = node["return"];
+  } while (node);
+  return info;
+}
 
 // Modules provided by RN:
 var emptyObject$1 = {};
@@ -3290,55 +3749,6 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
   return ReactNativeComponent;
 };
 
-var hasNativePerformanceNow =
-  typeof performance === "object" && typeof performance.now === "function";
-
-var now = hasNativePerformanceNow
-  ? function() {
-      return performance.now();
-    }
-  : function() {
-      return Date.now();
-    };
-
-var scheduledCallback = null;
-var frameDeadline = 0;
-
-var frameDeadlineObject = {
-  timeRemaining: function() {
-    return frameDeadline - now();
-  },
-  didTimeout: false
-};
-
-function setTimeoutCallback() {
-  // TODO (bvaughn) Hard-coded 5ms unblocks initial async testing.
-  // React API probably changing to boolean rather than time remaining.
-  // Longer-term plan is to rewrite this using shared memory,
-  // And just return the value of the bit as the boolean.
-  frameDeadline = now() + 5;
-
-  var callback = scheduledCallback;
-  scheduledCallback = null;
-  if (callback !== null) {
-    callback(frameDeadlineObject);
-  }
-}
-
-// RN has a poor polyfill for requestIdleCallback so we aren't using it.
-// This implementation is only intended for short-term use anyway.
-// We also don't implement cancel functionality b'c Fiber doesn't currently need it.
-function scheduleDeferredCallback(callback) {
-  // We assume only one callback is scheduled at a time b'c that's how Fiber works.
-  scheduledCallback = callback;
-  return setTimeout(setTimeoutCallback, 1);
-}
-
-function cancelDeferredCallback(callbackID) {
-  scheduledCallback = null;
-  clearTimeout(callbackID);
-}
-
 /**
  * `ReactInstanceMap` maintains a mapping from a public facing stateful
  * instance (key) and the internal representation (value). This allows public
@@ -3367,28 +3777,6 @@ var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 
 var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
 var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
-
-function getComponentName(fiber) {
-  var type = fiber.type;
-
-  if (typeof type === "function") {
-    return type.displayName || type.name;
-  }
-  if (typeof type === "string") {
-    return type;
-  }
-  switch (type) {
-    case REACT_FRAGMENT_TYPE:
-      return "ReactFragment";
-    case REACT_PORTAL_TYPE:
-      return "ReactPortal";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
-  }
-  return null;
-}
 
 // Don't change these two values. They're used by React Dev Tools.
 var NoEffect = /*              */ 0;
@@ -4154,53 +4542,6 @@ function onCommitUnmount(fiber) {
   }
 }
 
-var describeComponentFrame = function(name, source, ownerName) {
-  return (
-    "\n    in " +
-    (name || "Unknown") +
-    (source
-      ? " (at " +
-        source.fileName.replace(/^.*[\\\/]/, "") +
-        ":" +
-        source.lineNumber +
-        ")"
-      : ownerName ? " (created by " + ownerName + ")" : "")
-  );
-};
-
-function describeFiber(fiber) {
-  switch (fiber.tag) {
-    case IndeterminateComponent:
-    case FunctionalComponent:
-    case ClassComponent:
-    case HostComponent:
-      var owner = fiber._debugOwner;
-      var source = fiber._debugSource;
-      var name = getComponentName(fiber);
-      var ownerName = null;
-      if (owner) {
-        ownerName = getComponentName(owner);
-      }
-      return describeComponentFrame(name, source, ownerName);
-    default:
-      return "";
-  }
-}
-
-// This function can only be called with a work-in-progress fiber and
-// only during begin or complete phase. Do not call it under any other
-// circumstances.
-function getStackAddendumByWorkInProgressFiber(workInProgress) {
-  var info = "";
-  var node = workInProgress;
-  do {
-    info += describeFiber(node);
-    // Otherwise this return pointer might point to the wrong tree:
-    node = node["return"];
-  } while (node);
-  return info;
-}
-
 /**
  * Forked from fbjs/warning:
  * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
@@ -4540,15 +4881,13 @@ var ReactStrictModeWarnings = {
 
 var debugRenderPhaseSideEffects = false;
 var debugRenderPhaseSideEffectsForStrictMode = false;
-var enableUserTimingAPI = true;
 var enableGetDerivedStateFromCatch = false;
-var warnAboutDeprecatedLifecycles = false;
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-
-// React Fabric uses persistent reconciler.
-var enableMutatingReconciler = false;
+var enableMutatingReconciler = true;
 var enableNoopReconciler = false;
-var enablePersistentReconciler = true;
+var enablePersistentReconciler = false;
+var enableUserTimingAPI = true;
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = false;
 
 // Only used in www builds.
 
@@ -4735,6 +5074,7 @@ var shouldIgnoreFiber = function(fiber) {
     case Fragment:
     case ContextProvider:
     case ContextConsumer:
+    case Mode:
       return true;
     default:
       return false;
@@ -9632,11 +9972,45 @@ var ReactFiberUnwindWork = function(
   };
 };
 
-// This module is forked in different environments.
-// By default, return `true` to log errors to the console.
-// Forks can return `false` if this isn't desirable.
+// Module provided by RN:
+/**
+ * Intercept lifecycle errors and ensure they are shown with the correct stack
+ * trace within the native redbox component.
+ */
 function showErrorDialog(capturedError) {
-  return true;
+  var componentStack = capturedError.componentStack,
+    error = capturedError.error;
+
+  var errorToHandle = void 0;
+
+  // Typically Errors are thrown but eg strings or null can be thrown as well.
+  if (error instanceof Error) {
+    var message = error.message,
+      name = error.name;
+
+    var summary = message ? name + ": " + message : name;
+
+    errorToHandle = error;
+
+    try {
+      errorToHandle.message =
+        summary + "\n\nThis error is located at:" + componentStack;
+    } catch (e) {}
+  } else if (typeof error === "string") {
+    errorToHandle = new Error(
+      error + "\n\nThis error is located at:" + componentStack
+    );
+  } else {
+    errorToHandle = new Error("Unspecified error at:" + componentStack);
+  }
+
+  ExceptionsManager.handleException(errorToHandle, false);
+
+  // Return false here to prevent ReactFiberErrorLogger default behavior of
+  // logging error details to console.error. Calls to console.error are
+  // automatically routed to the native redbox controller, which we've already
+  // done above by calling ExceptionsManager.
+  return false;
 }
 
 function logCapturedError(capturedError) {
@@ -12377,8 +12751,19 @@ var ReactFiberScheduler = function(config) {
   }
 
   function computeInteractiveExpiration(currentTime) {
-    // Should complete within ~500ms. 600ms max.
-    var expirationMs = 500;
+    var expirationMs = void 0;
+    // We intentionally set a higher expiration time for interactive updates in
+    // dev than in production.
+    // If the main thread is being blocked so long that you hit the expiration,
+    // it's a problem that could be solved with better scheduling.
+    // People will be more likely to notice this and fix it with the long
+    // expiration time in development.
+    // In production we opt for better UX at the risk of masking scheduling
+    // problems, by expiring fast.
+    {
+      // Should complete within ~500ms. 600ms max.
+      expirationMs = 500;
+    }
     var bucketSizeMs = 100;
     return computeExpirationBucket(currentTime, expirationMs, bucketSizeMs);
   }
@@ -13358,38 +13743,36 @@ function _classCallCheck$1(instance, Constructor) {
 }
 
 // Modules provided by RN:
-// Counter for uniquely identifying views.
-// % 10 === 1 means it is a rootTag.
-// % 2 === 0 means it is a Fabric tag.
-// This means that they never overlap.
-var nextReactTag = 2;
-
 /**
- * This is used for refs on host components.
+ * This component defines the same methods as NativeMethodsMixin but without the
+ * findNodeHandle wrapper. This wrapper is unnecessary for HostComponent views
+ * and would also result in a circular require.js dependency (since
+ * ReactNativeFiber depends on this component and NativeMethodsMixin depends on
+ * ReactNativeFiber).
  */
 
-var ReactFabricHostComponent = (function() {
-  function ReactFabricHostComponent(tag, viewConfig, props) {
-    _classCallCheck$1(this, ReactFabricHostComponent);
+var ReactNativeFiberHostComponent = (function() {
+  function ReactNativeFiberHostComponent(tag, viewConfig) {
+    _classCallCheck$1(this, ReactNativeFiberHostComponent);
 
     this._nativeTag = tag;
+    this._children = [];
     this.viewConfig = viewConfig;
-    this.currentProps = props;
   }
 
-  ReactFabricHostComponent.prototype.blur = function blur() {
+  ReactNativeFiberHostComponent.prototype.blur = function blur() {
     TextInputState.blurTextInput(this._nativeTag);
   };
 
-  ReactFabricHostComponent.prototype.focus = function focus() {
+  ReactNativeFiberHostComponent.prototype.focus = function focus() {
     TextInputState.focusTextInput(this._nativeTag);
   };
 
-  ReactFabricHostComponent.prototype.measure = function measure(callback) {
+  ReactNativeFiberHostComponent.prototype.measure = function measure(callback) {
     UIManager.measure(this._nativeTag, mountSafeCallback(this, callback));
   };
 
-  ReactFabricHostComponent.prototype.measureInWindow = function measureInWindow(
+  ReactNativeFiberHostComponent.prototype.measureInWindow = function measureInWindow(
     callback
   ) {
     UIManager.measureInWindow(
@@ -13398,7 +13781,7 @@ var ReactFabricHostComponent = (function() {
     );
   };
 
-  ReactFabricHostComponent.prototype.measureLayout = function measureLayout(
+  ReactNativeFiberHostComponent.prototype.measureLayout = function measureLayout(
     relativeToNativeNode,
     onSuccess,
     onFail /* currently unused */
@@ -13411,7 +13794,7 @@ var ReactFabricHostComponent = (function() {
     );
   };
 
-  ReactFabricHostComponent.prototype.setNativeProps = function setNativeProps(
+  ReactNativeFiberHostComponent.prototype.setNativeProps = function setNativeProps(
     nativeProps
   ) {
     {
@@ -13432,12 +13815,86 @@ var ReactFabricHostComponent = (function() {
     }
   };
 
-  return ReactFabricHostComponent;
+  return ReactNativeFiberHostComponent;
 })();
 
-var ReactFabricRenderer = reactReconciler({
+var hasNativePerformanceNow =
+  typeof performance === "object" && typeof performance.now === "function";
+
+var now = hasNativePerformanceNow
+  ? function() {
+      return performance.now();
+    }
+  : function() {
+      return Date.now();
+    };
+
+var scheduledCallback = null;
+var frameDeadline = 0;
+
+var frameDeadlineObject = {
+  timeRemaining: function() {
+    return frameDeadline - now();
+  },
+  didTimeout: false
+};
+
+function setTimeoutCallback() {
+  // TODO (bvaughn) Hard-coded 5ms unblocks initial async testing.
+  // React API probably changing to boolean rather than time remaining.
+  // Longer-term plan is to rewrite this using shared memory,
+  // And just return the value of the bit as the boolean.
+  frameDeadline = now() + 5;
+
+  var callback = scheduledCallback;
+  scheduledCallback = null;
+  if (callback !== null) {
+    callback(frameDeadlineObject);
+  }
+}
+
+// RN has a poor polyfill for requestIdleCallback so we aren't using it.
+// This implementation is only intended for short-term use anyway.
+// We also don't implement cancel functionality b'c Fiber doesn't currently need it.
+function scheduleDeferredCallback(callback) {
+  // We assume only one callback is scheduled at a time b'c that's how Fiber works.
+  scheduledCallback = callback;
+  return setTimeout(setTimeoutCallback, 1);
+}
+
+function cancelDeferredCallback(callbackID) {
+  scheduledCallback = null;
+  clearTimeout(callbackID);
+}
+
+// Modules provided by RN:
+// Counter for uniquely identifying views.
+// % 10 === 1 means it is a rootTag.
+// % 2 === 0 means it is a Fabric tag.
+var nextReactTag = 3;
+function allocateTag() {
+  var tag = nextReactTag;
+  if (tag % 10 === 1) {
+    tag += 2;
+  }
+  nextReactTag = tag + 2;
+  return tag;
+}
+
+function recursivelyUncacheFiberNode(node) {
+  if (typeof node === "number") {
+    // Leaf node (eg text)
+    uncacheFiberNode(node);
+  } else {
+    uncacheFiberNode(node._nativeTag);
+
+    node._children.forEach(recursivelyUncacheFiberNode);
+  }
+}
+
+var NativeRenderer = reactReconciler({
   appendInitialChild: function(parentInstance, child) {
-    FabricUIManager.appendChild(parentInstance.node, child.node);
+    parentInstance._children.push(child);
   },
   createInstance: function(
     type,
@@ -13446,9 +13903,7 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = nextReactTag;
-    nextReactTag += 2;
-
+    var tag = allocateTag();
     var viewConfig = ReactNativeViewConfigRegistry.get(type);
 
     {
@@ -13461,20 +13916,21 @@ var ReactFabricRenderer = reactReconciler({
 
     var updatePayload = create(props, viewConfig.validAttributes);
 
-    var node = FabricUIManager.createNode(
+    UIManager.createView(
       tag, // reactTag
       viewConfig.uiViewClassName, // viewName
       rootContainerInstance, // rootTag
-      updatePayload, // props
-      internalInstanceHandle
+      updatePayload
     );
 
-    var component = new ReactFabricHostComponent(tag, viewConfig, props);
+    var component = new ReactNativeFiberHostComponent(tag, viewConfig);
 
-    return {
-      node: node,
-      canonical: component
-    };
+    precacheFiberNode(internalInstanceHandle, tag);
+    updateFiberProps(tag, props);
+
+    // Not sure how to avoid this cast. Flow is okay if the component is defined
+    // in the same file but if it's external it can't see the types.
+    return component;
   },
   createTextInstance: function(
     text,
@@ -13482,20 +13938,18 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = nextReactTag;
-    nextReactTag += 2;
+    var tag = allocateTag();
 
-    var node = FabricUIManager.createNode(
+    UIManager.createView(
       tag, // reactTag
       "RCTRawText", // viewName
       rootContainerInstance, // rootTag
-      { text: text }, // props
-      internalInstanceHandle
+      { text: text }
     );
 
-    return {
-      node: node
-    };
+    precacheFiberNode(internalInstanceHandle, tag);
+
+    return tag;
   },
   finalizeInitialChildren: function(
     parentInstance,
@@ -13503,6 +13957,24 @@ var ReactFabricRenderer = reactReconciler({
     props,
     rootContainerInstance
   ) {
+    // Don't send a no-op message over the bridge.
+    if (parentInstance._children.length === 0) {
+      return false;
+    }
+
+    // Map from child objects to native tags.
+    // Either way we need to pass a copy of the Array to prevent it from being frozen.
+    var nativeTags = parentInstance._children.map(function(child) {
+      return typeof child === "number"
+        ? child // Leaf node (eg text)
+        : child._nativeTag;
+    });
+
+    UIManager.setChildren(
+      parentInstance._nativeTag, // containerTag
+      nativeTags
+    );
+
     return false;
   },
   getRootHostContext: function() {
@@ -13512,7 +13984,7 @@ var ReactFabricRenderer = reactReconciler({
     return emptyObject;
   },
   getPublicInstance: function(instance) {
-    return instance.canonical;
+    return instance;
   },
 
   now: now,
@@ -13528,11 +14000,7 @@ var ReactFabricRenderer = reactReconciler({
     rootContainerInstance,
     hostContext
   ) {
-    var viewConfig = instance.canonical.viewConfig;
-    var updatePayload = diff(oldProps, newProps, viewConfig.validAttributes);
-    // TODO: If the event handlers have changed, we need to update the current props
-    // in the commit phase but there is no host config hook to do it yet.
-    return updatePayload;
+    return emptyObject;
   },
   resetAfterCommit: function() {
     // Noop
@@ -13554,50 +14022,153 @@ var ReactFabricRenderer = reactReconciler({
     return false;
   },
 
-  persistence: {
-    cloneInstance: function(
+  mutation: {
+    appendChild: function(parentInstance, child) {
+      var childTag = typeof child === "number" ? child : child._nativeTag;
+      var children = parentInstance._children;
+      var index = children.indexOf(child);
+
+      if (index >= 0) {
+        children.splice(index, 1);
+        children.push(child);
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerTag
+          [index], // moveFromIndices
+          [children.length - 1], // moveToIndices
+          [], // addChildReactTags
+          [], // addAtIndices
+          []
+        );
+      } else {
+        children.push(child);
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerTag
+          [], // moveFromIndices
+          [], // moveToIndices
+          [childTag], // addChildReactTags
+          [children.length - 1], // addAtIndices
+          []
+        );
+      }
+    },
+    appendChildToContainer: function(parentInstance, child) {
+      var childTag = typeof child === "number" ? child : child._nativeTag;
+      UIManager.setChildren(
+        parentInstance, // containerTag
+        [childTag]
+      );
+    },
+    commitTextUpdate: function(textInstance, oldText, newText) {
+      UIManager.updateView(
+        textInstance, // reactTag
+        "RCTRawText", // viewName
+        { text: newText }
+      );
+    },
+    commitMount: function(instance, type, newProps, internalInstanceHandle) {
+      // Noop
+    },
+    commitUpdate: function(
       instance,
-      updatePayload,
+      updatePayloadTODO,
       type,
       oldProps,
       newProps,
-      internalInstanceHandle,
-      keepChildren,
-      recyclableInstance
+      internalInstanceHandle
     ) {
-      var node = instance.node;
-      var clone = void 0;
-      if (keepChildren) {
-        if (updatePayload !== null) {
-          clone = FabricUIManager.cloneNodeWithNewProps(node, updatePayload);
-        } else {
-          clone = FabricUIManager.cloneNode(node);
-        }
-      } else {
-        if (updatePayload !== null) {
-          clone = FabricUIManager.cloneNodeWithNewChildrenAndProps(
-            node,
-            updatePayload
-          );
-        } else {
-          clone = FabricUIManager.cloneNodeWithNewChildren(node);
-        }
+      var viewConfig = instance.viewConfig;
+
+      updateFiberProps(instance._nativeTag, newProps);
+
+      var updatePayload = diff(oldProps, newProps, viewConfig.validAttributes);
+
+      // Avoid the overhead of bridge calls if there's no update.
+      // This is an expensive no-op for Android, and causes an unnecessary
+      // view invalidation for certain components (eg RCTTextInput) on iOS.
+      if (updatePayload != null) {
+        UIManager.updateView(
+          instance._nativeTag, // reactTag
+          viewConfig.uiViewClassName, // viewName
+          updatePayload
+        );
       }
-      return {
-        node: clone,
-        canonical: instance.canonical
-      };
     },
-    createContainerChildSet: function(container) {
-      return FabricUIManager.createChildSet(container);
+    insertBefore: function(parentInstance, child, beforeChild) {
+      var children = parentInstance._children;
+      var index = children.indexOf(child);
+
+      // Move existing child or add new child?
+      if (index >= 0) {
+        children.splice(index, 1);
+        var beforeChildIndex = children.indexOf(beforeChild);
+        children.splice(beforeChildIndex, 0, child);
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerID
+          [index], // moveFromIndices
+          [beforeChildIndex], // moveToIndices
+          [], // addChildReactTags
+          [], // addAtIndices
+          []
+        );
+      } else {
+        var _beforeChildIndex = children.indexOf(beforeChild);
+        children.splice(_beforeChildIndex, 0, child);
+
+        var childTag = typeof child === "number" ? child : child._nativeTag;
+
+        UIManager.manageChildren(
+          parentInstance._nativeTag, // containerID
+          [], // moveFromIndices
+          [], // moveToIndices
+          [childTag], // addChildReactTags
+          [_beforeChildIndex], // addAtIndices
+          []
+        );
+      }
     },
-    appendChildToContainerChildSet: function(childSet, child) {
-      FabricUIManager.appendChildToSet(childSet, child.node);
+    insertInContainerBefore: function(parentInstance, child, beforeChild) {
+      // TODO (bvaughn): Remove this check when...
+      // We create a wrapper object for the container in ReactNative render()
+      // Or we refactor to remove wrapper objects entirely.
+      // For more info on pros/cons see PR #8560 description.
+      invariant(
+        typeof parentInstance !== "number",
+        "Container does not support insertBefore operation"
+      );
     },
-    finalizeContainerChildren: function(container, newChildren) {
-      FabricUIManager.completeRoot(container, newChildren);
+    removeChild: function(parentInstance, child) {
+      recursivelyUncacheFiberNode(child);
+      var children = parentInstance._children;
+      var index = children.indexOf(child);
+
+      children.splice(index, 1);
+
+      UIManager.manageChildren(
+        parentInstance._nativeTag, // containerID
+        [], // moveFromIndices
+        [], // moveToIndices
+        [], // addChildReactTags
+        [], // addAtIndices
+        [index]
+      );
     },
-    replaceContainerChildren: function(container, newChildren) {}
+    removeChildFromContainer: function(parentInstance, child) {
+      recursivelyUncacheFiberNode(child);
+      UIManager.manageChildren(
+        parentInstance, // containerID
+        [], // moveFromIndices
+        [], // moveToIndices
+        [], // addChildReactTags
+        [], // addAtIndices
+        [0]
+      );
+    },
+    resetTextContent: function(instance) {
+      // Noop
+    }
   }
 });
 
@@ -13703,7 +14274,8 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
-var findHostInstance = ReactFabricRenderer.findHostInstance;
+// Module provided by RN:
+var findHostInstance = NativeRenderer.findHostInstance;
 
 function findNodeHandle(componentOrHandle) {
   {
@@ -13748,11 +14320,19 @@ function findNodeHandle(componentOrHandle) {
   return hostInstance._nativeTag;
 }
 
-injection$2.injectRenderer(ReactFabricRenderer);
+injection$2.injectRenderer(NativeRenderer);
+
+function computeComponentStackForErrorReporting(reactTag) {
+  var fiber = getInstanceFromTag(reactTag);
+  if (!fiber) {
+    return "";
+  }
+  return getStackAddendumByWorkInProgressFiber(fiber);
+}
 
 var roots = new Map();
 
-var ReactFabric = {
+var ReactNativeRenderer = {
   NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
 
   findNodeHandle: findNodeHandle,
@@ -13763,21 +14343,27 @@ var ReactFabric = {
     if (!root) {
       // TODO (bvaughn): If we decide to keep the wrapper component,
       // We could create a wrapper for containerTag as well to reduce special casing.
-      root = ReactFabricRenderer.createContainer(containerTag, false, false);
+      root = NativeRenderer.createContainer(containerTag, false, false);
       roots.set(containerTag, root);
     }
-    ReactFabricRenderer.updateContainer(element, root, null, callback);
+    NativeRenderer.updateContainer(element, root, null, callback);
 
-    return ReactFabricRenderer.getPublicRootInstance(root);
+    return NativeRenderer.getPublicRootInstance(root);
   },
   unmountComponentAtNode: function(containerTag) {
     var root = roots.get(containerTag);
     if (root) {
       // TODO: Is it safe to reset this now or should I wait since this unmount could be deferred?
-      ReactFabricRenderer.updateContainer(null, root, null, function() {
+      NativeRenderer.updateContainer(null, root, null, function() {
         roots["delete"](containerTag);
       });
     }
+  },
+  unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
+    ReactNativeRenderer.unmountComponentAtNode(containerTag);
+
+    // Call back into native to remove all of the subviews from this container
+    UIManager.removeRootView(containerTag);
   },
   createPortal: function(children, containerTag) {
     var key =
@@ -13786,18 +14372,21 @@ var ReactFabric = {
     return createPortal(children, containerTag, null, key);
   },
 
+  unstable_batchedUpdates: batchedUpdates,
+
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
     // Used as a mixin in many createClass-based components
     NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance),
     // Used by react-native-github/Libraries/ components
-    ReactNativeComponentTree: ReactNativeComponentTree
+    ReactNativeComponentTree: ReactNativeComponentTree, // ScrollResponder
+    computeComponentStackForErrorReporting: computeComponentStackForErrorReporting
   }
 };
 
 {
   // $FlowFixMe
   Object.assign(
-    ReactFabric.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
+    ReactNativeRenderer.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
     {
       // TODO: none of these work since Fiber. Remove these dependencies.
       // Used by RCTRenderingPerf, Systrace:
@@ -13816,7 +14405,7 @@ var ReactFabric = {
   );
 }
 
-ReactFabricRenderer.injectIntoDevTools({
+NativeRenderer.injectIntoDevTools({
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 1,
@@ -13824,19 +14413,20 @@ ReactFabricRenderer.injectIntoDevTools({
   rendererPackageName: "react-native-renderer"
 });
 
-var ReactFabric$2 = Object.freeze({
-  default: ReactFabric
+var ReactNativeRenderer$2 = Object.freeze({
+  default: ReactNativeRenderer
 });
 
-var ReactFabric$3 = (ReactFabric$2 && ReactFabric) || ReactFabric$2;
+var ReactNativeRenderer$3 =
+  (ReactNativeRenderer$2 && ReactNativeRenderer) || ReactNativeRenderer$2;
 
 // TODO: decide on the top-level export form.
 // This is hacky but makes it work with both Rollup and Jest.
-var fabric = ReactFabric$3["default"]
-  ? ReactFabric$3["default"]
-  : ReactFabric$3;
+var reactNativeRenderer = ReactNativeRenderer$3["default"]
+  ? ReactNativeRenderer$3["default"]
+  : ReactNativeRenderer$3;
 
-module.exports = fabric;
+module.exports = reactNativeRenderer;
 
   })();
 }
