@@ -105,7 +105,7 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTV*.{h, m}"
+    ss.source_files         = "React/**/RCTTV*.{h,m}"
   end
 
   s.subspec "jschelpers" do |ss|
