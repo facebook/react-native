@@ -66,5 +66,8 @@ module.exports = [
     command: '--read-global-cache',
     description: 'Try to fetch transformed JS code from the global cache, if configured.',
     default: false,
+  }, {
+    command: '--cache-dir [string]',
+    description: 'Cache transformed JS code in the specified directory instead of a temporary.',
   },
 ];

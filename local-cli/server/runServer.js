@@ -63,6 +63,7 @@ export type Args = {|
   +resetCache: boolean,
   +sourceExts: $ReadOnlyArray<string>,
   +verbose: boolean,
+  +cacheDir: string,
 |};
 
 function runServer(
@@ -205,7 +206,7 @@ function getPackagerServer(args, config, reporter) {
     resolveRequest: config.resolveRequest,
     sourceExts: args.sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
-    transformCache: TransformCaching.useTempDir(),
+    transformCache: args.cacheDir || TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),
