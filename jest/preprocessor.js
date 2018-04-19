@@ -53,6 +53,7 @@ module.exports = {
         platform: '',
         projectRoot: '',
         retainLines: true,
+        sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },
       src,
       plugins: [
