@@ -192,7 +192,13 @@ const DataDetectorTypes = [
 
 const TextInput = createReactClass({
   displayName: 'TextInput',
-
+  statics: {
+    State: {
+      currentlyFocusedField: TextInputState.currentlyFocusedField,
+      focusTextInput: TextInputState.focusTextInput,
+      blurTextInput: TextInputState.blurTextInput,
+    },
+  },
   propTypes: {
     ...ViewPropTypes,
     /**

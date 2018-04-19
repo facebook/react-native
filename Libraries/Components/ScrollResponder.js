@@ -201,8 +201,10 @@ const ScrollResponderMixin = {
     const keyboardNeverPersistTaps = !keyboardShouldPersistTaps ||
                                     keyboardShouldPersistTaps === 'never';
     if (keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null
-      /* && !TextInputState.isTextInput(e.target) */) {
+      currentlyFocusedTextInput != null &&
+      // When tapping on another TextInput while one is already focused make
+      // sure it receives the touch event and that the keyboard is not dismissed.
+      !TextInputState.isTextInput(e.target)) {
       return true;
     }
 
