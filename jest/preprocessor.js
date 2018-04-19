@@ -33,7 +33,6 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 babelRegisterOnly([]);
 
 /* $FlowFixMe(site=react_native_oss) */
-process.env.BABEL_VERSION = '7'
 const transformer = require('metro/src/transformer.js');
 module.exports = {
   process(src/*: string*/, file/*: string*/) {
