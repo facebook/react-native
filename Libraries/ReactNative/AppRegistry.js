@@ -20,10 +20,6 @@ const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
 const renderApplication = require('renderApplication');
 
-// Renderer provider must be supplied by each app. If none, traditional
-// renderApplication() will be used.
-let fabricRendererProvider: ?() => typeof renderApplication = null;
-
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
 export type ComponentProvider = () => React$ComponentType<any>;
@@ -102,19 +98,12 @@ const AppRegistry = {
     runnables[appKey] = {
       componentProvider,
       run: appParameters => {
-        let renderFunc = renderApplication;
-        if (appParameters.fabric) {
-          invariant(
-            fabricRendererProvider != null,
-            'A Fabric renderer provider must be set to render Fabric components',
-          );
-          renderFunc = fabricRendererProvider();
-        }
-        renderFunc(
+        renderApplication(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
+          appParameters.fabric,
         );
       },
     };
@@ -248,10 +237,6 @@ const AppRegistry = {
         console.error(reason);
         NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
-  },
-
-  setFabricRendererProvider(provider: () => typeof renderApplication): void {
-    fabricRendererProvider = provider;
   },
 };
 
