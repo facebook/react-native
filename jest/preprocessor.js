@@ -46,6 +46,7 @@ module.exports = {
       localPath: file,
       options: {
         assetDataPlugins: [],
+        ast: true, // needed for open source (?) https://github.com/facebook/react-native/commit/f8d6b97140cffe8d18b2558f94570c8d1b410d5c#r28647044
         dev: true,
         inlineRequires: true,
         minify: false,
