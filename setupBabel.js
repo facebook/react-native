@@ -23,8 +23,8 @@ function buildRegExps(basePath, dirPaths) {
     folderPath =>
       folderPath === 'metro'
         // metro uses flow (for example) which needs to be stripped out w/babel.
-        // it'll resolve to .../metro/packages/metro/src/index.js we want root
-        ? path.resolve(require.resolve('metro'), '..', '..', '..', '..')
+        // it'll resolve to .../metro/src/index.js we want root
+        ? path.resolve(require.resolve('metro'), '..')
         // Babel `only` option works with forward slashes in the RegExp so replace
         // backslashes for Windows.
         : folderPath instanceof RegExp
