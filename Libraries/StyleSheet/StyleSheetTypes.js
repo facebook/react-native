@@ -103,14 +103,16 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
     | {|+translateX: number | AnimatedNode|}
     | {|+translateY: number | AnimatedNode|}
     | {|
-      +translate: [number | AnimatedNode, number | AnimatedNode] | AnimatedNode,
-    |}
+        +translate:
+          | [number | AnimatedNode, number | AnimatedNode]
+          | AnimatedNode,
+      |}
     | {|+skewX: string|}
     | {|+skewY: string|}
     // TODO: what is the actual type it expects?
     | {|
-      +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-    |},
+        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+      |},
   >,
 |}>;
 

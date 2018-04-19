@@ -209,7 +209,7 @@
     "flow-bin": "^0.70.0",
     "jest": "23.0.0-alpha.4",
     "jest-junit": "3.6.0",
-    "prettier": "1.9.1",
+    "prettier": "1.12.1",
     "react": "16.3.2",
     "react-test-renderer": "16.3.2",
     "shelljs": "^0.7.8",
