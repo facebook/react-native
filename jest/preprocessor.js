@@ -79,10 +79,7 @@ module.exports = {
         [require('@babel/plugin-transform-regenerator')],
         [require('@babel/plugin-transform-sticky-regex')],
         [require('@babel/plugin-transform-unicode-regex')],
-        [
-          require('@babel/plugin-transform-modules-commonjs'),
-          {strict: false, allowTopLevelThis: true},
-        ],
+        [require('@babel/plugin-transform-modules-commonjs')],
         [require('@babel/plugin-transform-classes')],
         [require('@babel/plugin-transform-arrow-functions')],
         [require('@babel/plugin-transform-spread')],

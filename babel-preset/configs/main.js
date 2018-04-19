@@ -27,14 +27,7 @@ const defaultPlugins = [
   [require('@babel/plugin-transform-regenerator')],
   [require('@babel/plugin-transform-sticky-regex')],
   [require('@babel/plugin-transform-unicode-regex')],
-  [
-    require('@babel/plugin-transform-modules-commonjs'),
-    {
-      strict: false,
-      strictMode : false, // prevent "use strict" injections
-      allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
-    },
-  ],
+  [require('@babel/plugin-transform-modules-commonjs')],
 ];
 
 const es2015ArrowFunctions = [
