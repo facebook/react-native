@@ -11,7 +11,6 @@
 'use strict';
 
 const Platform = require('Platform');
-const ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 
@@ -51,22 +50,21 @@ function requireNativeComponent(
   extraConfig?: ?{nativeOnly?: Object},
 ): React$ComponentType<any> | string {
   function attachDefaultEventTypes(viewConfig: any) {
-    if (Platform.OS === 'android') {
-      // This is supported on Android platform only,
-      // as lazy view managers discovery is Android-specific.
-      if (UIManager.ViewManagerNames) {
-        // Lazy view managers enabled.
-        viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
-      } else {
-        viewConfig.bubblingEventTypes = merge(
-          viewConfig.bubblingEventTypes,
-          UIManager.genericBubblingEventTypes,
-        );
-        viewConfig.directEventTypes = merge(
-          viewConfig.directEventTypes,
-          UIManager.genericDirectEventTypes,
-        );
-      }
+    // This is supported on UIManager platforms (ex: Android),
+    // as lazy view managers are not implemented for all platforms.
+    // See [UIManager] for details on constants and implementations.
+    if (UIManager.ViewManagerNames) {
+      // Lazy view managers enabled.
+      viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
+    } else {
+      viewConfig.bubblingEventTypes = merge(
+        viewConfig.bubblingEventTypes,
+        UIManager.genericBubblingEventTypes,
+      );
+      viewConfig.directEventTypes = merge(
+        viewConfig.directEventTypes,
+        UIManager.genericDirectEventTypes,
+      );
     }
   }
 
@@ -119,6 +117,9 @@ function requireNativeComponent(
     // TODO (bvaughn) Revert this particular change any time after April 1
     if (componentInterface) {
       viewConfig.propTypes =
+        /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.68 was deployed. To see the error delete
+         * this comment and run Flow. */
         typeof componentInterface.__propTypesSecretDontUseThesePlease ===
         'object'
           ? componentInterface.__propTypesSecretDontUseThesePlease
@@ -195,11 +196,6 @@ function requireNativeComponent(
       attachDefaultEventTypes(viewConfig);
       hasAttachedDefaultEventTypes = true;
     }
-
-    // Register this view's event types with the ReactNative renderer.
-    // This enables view managers to be initialized lazily, improving perf,
-    // While also enabling 3rd party components to define custom event types.
-    ReactNativeBridgeEventPlugin.processEventTypes(viewConfig);
 
     return viewConfig;
   }

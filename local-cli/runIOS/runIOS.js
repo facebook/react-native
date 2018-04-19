@@ -24,7 +24,7 @@ const getBuildPath = function (configuration = 'Debug', appName, isDevice) {
     device = 'iphonesimulator';
   }
 
-  return `Build/Products/${configuration}-${device}/${appName}.app`;
+  return `build/Build/Products/${configuration}-${device}/${appName}.app`;
 };
 const xcprettyAvailable = function() {
   try {
@@ -112,25 +112,40 @@ function runOnSimulator(xcodeProject, args, scheme) {
     if (!selectedSimulator) {
       throw new Error(`Could not find ${args.simulator} simulator`);
     }
+    
+    /**
+		 * Booting simulator through `xcrun simctl boot` will boot it in the `headless` mode
+		 * (running in the background).
+		 *
+		 * In order for user to see the app and the simulator itself, we have to make sure
+		 * that the Simulator.app is running.
+		 *
+		 * We also pass it `-CurrentDeviceUDID` so that when we launch it for the first time,
+		 * it will not boot the "default" device, but the one we set. If the app is already running,
+		 * this flag has no effect.
+		 */
+		child_process.execFileSync('open', [
+			'/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app',
+			'--args',
+			'-CurrentDeviceUDID',
+			selectedSimulator.udid
+		]);
 
     if (!selectedSimulator.booted) {
       const simulatorFullName = formattedDeviceName(selectedSimulator);
-      console.log(`Booting ${simulatorFullName}...`);
+      console.log(`Launching ${simulatorFullName}...`);
       try {
-        child_process.execFileSync('xcrun', ['simctl', 'boot', selectedSimulator.udid]);
+        child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
       } catch (e) {
-        throw new Error(
-`Could not boot ${args.simulator} simulator. Is there already a simulator running?
-Running multiple simulators is only supported from Xcode 9 and up.
-Try closing the simulator or run the command again without specifying a simulator.`
-        );
+        // instruments always fail with 255 because it expects more arguments,
+        // but we want it to only launch the simulator
       }
     }
 
-    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose)
-      .then((appName) => resolve(selectedSimulator.udid, appName));
+    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose, args.port)
+      .then((appName) => resolve({ udid: selectedSimulator.udid, appName }));
   })
-  .then((udid, appName) => {
+  .then(({udid, appName}) => {
     if (!appName) {
       appName = scheme;
     }

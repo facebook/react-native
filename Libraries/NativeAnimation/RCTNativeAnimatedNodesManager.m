@@ -23,6 +23,7 @@
 #import "RCTPropsAnimatedNode.h"
 #import "RCTSpringAnimation.h"
 #import "RCTStyleAnimatedNode.h"
+#import "RCTSubtractionAnimatedNode.h"
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
 #import "RCTTrackingAnimatedNode.h"
@@ -66,6 +67,7 @@
             @"division" : [RCTDivisionAnimatedNode class],
             @"multiplication" : [RCTMultiplicationAnimatedNode class],
             @"modulus" : [RCTModuloAnimatedNode class],
+            @"subtraction" : [RCTSubtractionAnimatedNode class],
             @"transform" : [RCTTransformAnimatedNode class],
             @"tracking" : [RCTTrackingAnimatedNode class]};
   });

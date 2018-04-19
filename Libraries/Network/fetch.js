@@ -12,7 +12,7 @@
 
 'use strict';
 
-import whatwg from 'whatwg-fetch';
+const whatwg = require('whatwg-fetch');
 
 if (whatwg && whatwg.fetch) {
   module.exports = whatwg;

@@ -64,7 +64,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
 
     @Override
-    public ReactSliderShadowNode mutableCopy() {
+    protected ReactSliderShadowNode copy() {
       return new ReactSliderShadowNode(this);
     }
 

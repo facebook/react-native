@@ -102,9 +102,18 @@ const Switch = createReactClass({
     props.onStartShouldSetResponder = () => true;
     props.onResponderTerminationRequest = () => false;
     if (Platform.OS === 'android') {
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.enabled = !this.props.disabled;
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.on = this.props.value;
       props.style = this.props.style;
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.trackTintColor = this.props.value ? this.props.onTintColor : this.props.tintColor;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];

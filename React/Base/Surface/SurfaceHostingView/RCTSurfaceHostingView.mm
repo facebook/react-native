@@ -33,20 +33,17 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   RCTSurface *surface = [self createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
-  return [self initWithSurface:surface];
-
+  return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
-- (instancetype)initWithSurface:(RCTSurface *)surface
+- (instancetype)initWithSurface:(RCTSurface *)surface sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
-
-    _sizeMeasureMode =
-      RCTSurfaceSizeMeasureModeWidthAtMost |
-      RCTSurfaceSizeMeasureModeHeightAtMost;
+    _sizeMeasureMode = sizeMeasureMode;
 
     _surface.delegate = self;
     _stage = surface.stage;
@@ -73,8 +70,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
     self.bounds.size,
     _sizeMeasureMode,
-    minimumSize,
-    maximumSize
+    &minimumSize,
+    &maximumSize
   );
 
   [_surface setMinimumSize:minimumSize
@@ -110,8 +107,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   RCTSurfaceMinimumSizeAndMaximumSizeFromSizeAndSizeMeasureMode(
     size,
     _sizeMeasureMode,
-    minimumSize,
-    maximumSize
+    &minimumSize,
+    &maximumSize
   );
 
   return [_surface sizeThatFitsMinimumSize:minimumSize

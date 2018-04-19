@@ -14,6 +14,7 @@ const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const BlobManager = require('BlobManager');
 const NativeModules = require('NativeModules');
+const Platform = require('Platform');
 const WebSocketEvent = require('WebSocketEvent');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -103,6 +104,9 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     const {headers = {}, ...unrecognized} = options || {};
 
     // Preserve deprecated backwards compatibility for the 'origin' option
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (unrecognized && typeof unrecognized.origin === 'string') {
       console.warn('Specifying `origin` as a WebSocket connection option is deprecated. Include it under `headers` instead.');
       /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
@@ -202,7 +206,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   }
 
   _close(code?: number, reason?: string): void {
-    if (WebSocketModule.close.length === 3) {
+    if (Platform.OS === 'android') {
       // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
       const closeReason = typeof reason === 'string' ? reason : '';

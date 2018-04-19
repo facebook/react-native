@@ -7,7 +7,12 @@
 
 #import "RCTFabricUIManagerWrapper.h"
 
-#include <fabric/FabricUIManager.h>
+#include <React/RCTCxxExceptionManager.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
+#include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/view/ViewComponentDescriptor.h>
+#include <folly/dynamic.h>
+#include <folly/json.h>
 
 #import "RCTFabricPlatformUIOperationManager.h"
 
@@ -15,6 +20,7 @@
 @implementation RCTFabricUIManagerWrapper
 {
   std::shared_ptr<FabricUIManager> _manager;
+  std::shared_ptr<ExceptionManager> _exceptionManager;
   std::shared_ptr<IFabricPlatformUIOperationManager> _platformUIOperationManager;
 }
 
@@ -22,8 +28,14 @@
 {
   self = [super init];
   if (self) {
+    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
     _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
-    _manager = std::make_shared<FabricUIManager>(_platformUIOperationManager);
+
+    auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
+    SharedComponentDescriptor viewComponentDescriptor = std::make_shared<ViewComponentDescriptor>();
+    componentDescriptorRegistry->registerComponentDescriptor(viewComponentDescriptor);
+
+    _manager = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   }
   return self;
 }
@@ -31,6 +43,11 @@
 - (std::shared_ptr<FabricUIManager>)manager
 {
   return _manager;
+}
+
+- (std::shared_ptr<ExceptionManager>)exceptionManager
+{
+  return _exceptionManager;
 }
 
 - (void)invalidate

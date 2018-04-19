@@ -79,7 +79,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
       @Override
       public boolean supports(Uri uri, String responseType) {
         String scheme = uri.getScheme();
-        boolean isRemote = scheme.equals("http") || scheme.equals("https");
+        boolean isRemote = "http".equals(scheme) || "https".equals(scheme);
 
         return (!isRemote && responseType.equals("blob"));
       }

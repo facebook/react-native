@@ -11,7 +11,7 @@ const fs = require('fs');
 const includes = require('lodash.includes');
 const minimatch = require('minimatch');
 
-import { danger, fail, markdown, message, warn } from 'danger';
+const { danger, fail, markdown, message, warn } = require('danger');
 
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {

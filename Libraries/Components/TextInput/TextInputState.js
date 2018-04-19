@@ -16,6 +16,8 @@
 const Platform = require('Platform');
 const UIManager = require('UIManager');
 
+const inputs = new Set();
+
 const TextInputState = {
    /**
    * Internal state
@@ -68,7 +70,19 @@ const TextInputState = {
         );
       }
     }
-  }
+  },
+
+  registerInput: function(textFieldID: number) {
+    inputs.add(textFieldID);
+  },
+
+  unregisterInput: function(textFieldID: number) {
+    inputs.delete(textFieldID);
+  },
+
+  isTextInput: function(textFieldID: number) {
+    return inputs.has(textFieldID);
+  },
 };
 
 module.exports = TextInputState;
