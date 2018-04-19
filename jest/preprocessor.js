@@ -62,7 +62,6 @@ module.exports = {
         [
           require('@babel/plugin-proposal-class-properties'),
           // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-          // (Makes the properties enumerable)
           {loose: true},
         ],
         [require('@babel/plugin-transform-computed-properties')],
