@@ -78,6 +78,7 @@ async function buildBundle(
   const terminal = new Terminal(process.stdout);
 
   const server = new Server({
+    asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),

@@ -176,6 +176,7 @@ function getPackagerServer(args, config, reporter) {
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
   return Metro.createServer({
+    asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(args.assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
