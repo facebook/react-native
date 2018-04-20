@@ -14,19 +14,15 @@
 const {
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
 } = require('ReactFabric');
+const createReactNativeComponentClass = require('createReactNativeComponentClass');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
-const {
-  NativeMethodsMixin,
-  ReactNativeBridgeEventPlugin,
-  createReactNativeComponentClass,
-} = __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+const {NativeMethodsMixin} = __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 
 module.exports = {
   NativeMethodsMixin: ((NativeMethodsMixin: any): $Exact<
     NativeMethodsMixinType,
   >),
-  ReactNativeBridgeEventPlugin,
   createReactNativeComponentClass,
 };

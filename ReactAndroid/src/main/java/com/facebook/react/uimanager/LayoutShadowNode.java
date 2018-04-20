@@ -315,6 +315,10 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         setFlexWrap(YogaWrap.WRAP);
         break;
       }
+      case "wrap-reverse": {
+        setFlexWrap(YogaWrap.WRAP_REVERSE);
+        break;
+      }
       default: {
         throw new JSApplicationIllegalArgumentException(
             "invalid value for flexWrap: " + flexWrap);

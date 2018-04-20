@@ -458,13 +458,16 @@ namespace facebook {
       m_bundleRegistry = std::move(bundleRegistry);
     }
 
-    void JSCExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+    void JSCExecutor::registerBundle(
+        uint32_t bundleId,
+        const std::string& bundlePath) {
       if (m_bundleRegistry) {
         m_bundleRegistry->registerBundle(bundleId, bundlePath);
       } else {
-        auto sourceUrl = String(m_context, bundlePath.c_str());
+        auto stPath = JSCExecutor::getSyntheticBundlePath(bundleId, bundlePath);
+        auto sourceUrlStr = String(m_context, stPath.c_str());
         auto source = adoptString(JSBigFileString::fromPath(bundlePath));
-        evaluateScript(m_context, source, sourceUrl);
+        evaluateScript(m_context, source, sourceUrlStr);
       }
     }
 

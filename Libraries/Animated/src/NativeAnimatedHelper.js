@@ -145,6 +145,15 @@ const API = {
 const STYLES_WHITELIST = {
   opacity: true,
   transform: true,
+  borderRadius: true,
+  borderBottomEndRadius: true,
+  borderBottomLeftRadius: true,
+  borderBottomRightRadius: true,
+  borderBottomStartRadius: true,
+  borderTopEndRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderTopStartRadius: true,
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,

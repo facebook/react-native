@@ -42,11 +42,11 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import javax.annotation.Nullable;
@@ -84,7 +84,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mRootViewTag;
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
-  private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+  private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -183,6 +183,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
+      return;
+    }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
     EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
       .getEventDispatcher();
@@ -262,6 +268,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       FLog.w(
         ReactConstants.TAG,
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      return;
+    }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
@@ -414,6 +426,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   public void onAttachedToReactInstance() {
+    // Create the touch dispatcher here instead of having it always available, to make sure
+    // that all touch events are only passed to JS after React/JS side is ready to consume
+    // them. Otherwise, these events might break the states expected by JS.
+    // Note that this callback was invoked from within the UI thread.
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -490,6 +507,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         if (appProperties != null) {
           appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
         }
+        if (isFabric()) {
+          appParams.putBoolean("fabric", true);
+        }
 
         mShouldLogContentAppeared = true;
 
@@ -552,18 +572,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   @Override
-  public void handleException(Throwable t) {
+  public void handleException(final Throwable t) {
     if (mReactInstanceManager == null
       || mReactInstanceManager.getCurrentReactContext() == null) {
         throw new RuntimeException(t);
     }
 
-    // Adding special exception management for StackOverflowError for logging purposes.
-    // This will be removed in the future.
-    Exception e = (t instanceof StackOverflowError) ?
-      new IllegalViewOperationException("StackOverflowException", this, t) :
-      t instanceof Exception ? (Exception) t : new RuntimeException(t);
-
+    Exception e = new IllegalViewOperationException(t.getMessage(), this, t);
     mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
@@ -579,7 +594,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
   }
-  
+
   /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.getCurrentReactContext()

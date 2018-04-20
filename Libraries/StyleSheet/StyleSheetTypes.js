@@ -11,14 +11,12 @@
 
 'use strict';
 
-import AnimatedNode from 'AnimatedNode';
-
-export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
+const AnimatedNode = require('AnimatedNode');
 
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
 
-export type LayoutStyle = $ReadOnly<{|
+export type ____LayoutStyle_Internal = $ReadOnly<{|
   display?: 'none' | 'flex',
   width?: DimensionValue,
   height?: DimensionValue,
@@ -59,7 +57,7 @@ export type LayoutStyle = $ReadOnly<{|
   borderTopWidth?: number,
   position?: 'absolute' | 'relative',
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
-  flexWrap?: 'wrap' | 'nowrap',
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse',
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -92,7 +90,7 @@ export type LayoutStyle = $ReadOnly<{|
   direction?: 'inherit' | 'ltr' | 'rtl',
 |}>;
 
-export type TransformStyle = $ReadOnly<{|
+export type ____TransformStyle_Internal = $ReadOnly<{|
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
     | {|+rotate: string|}
@@ -105,18 +103,20 @@ export type TransformStyle = $ReadOnly<{|
     | {|+translateX: number | AnimatedNode|}
     | {|+translateY: number | AnimatedNode|}
     | {|
-      +translate: [number | AnimatedNode, number | AnimatedNode] | AnimatedNode,
-    |}
+        +translate:
+          | [number | AnimatedNode, number | AnimatedNode]
+          | AnimatedNode,
+      |}
     | {|+skewX: string|}
     | {|+skewY: string|}
     // TODO: what is the actual type it expects?
     | {|
-      +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-    |},
+        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+      |},
   >,
 |}>;
 
-export type ShadowStyle = $ReadOnly<{|
+export type ____ShadowStyle_Internal = $ReadOnly<{|
   shadowColor?: ColorValue,
   shadowOffset?: $ReadOnly<{|
     width?: number,
@@ -126,10 +126,10 @@ export type ShadowStyle = $ReadOnly<{|
   shadowRadius?: number,
 |}>;
 
-export type ViewStyle = $ReadOnly<{|
-  ...$Exact<LayoutStyle>,
-  ...$Exact<ShadowStyle>,
-  ...$Exact<TransformStyle>,
+export type ____ViewStyle_Internal = $ReadOnly<{|
+  ...$Exact<____LayoutStyle_Internal>,
+  ...$Exact<____ShadowStyle_Internal>,
+  ...$Exact<____TransformStyle_Internal>,
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ColorValue,
   borderColor?: ColorValue,
@@ -160,8 +160,8 @@ export type ViewStyle = $ReadOnly<{|
   elevation?: number,
 |}>;
 
-export type TextStyle = $ReadOnly<{|
-  ...$Exact<ViewStyle>,
+export type ____TextStyle_Internal = $ReadOnly<{|
+  ...$Exact<____ViewStyle_Internal>,
   color?: ColorValue,
   fontFamily?: string,
   fontSize?: number,
@@ -203,18 +203,19 @@ export type TextStyle = $ReadOnly<{|
     | 'underline line-through',
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ColorValue,
+  textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 |}>;
 
-export type ImageStyle = $ReadOnly<{|
-  ...$Exact<ViewStyle>,
+export type ____ImageStyle_Internal = $ReadOnly<{|
+  ...$Exact<____ViewStyle_Internal>,
   resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   tintColor?: ColorValue,
   overlayColor?: string,
 |}>;
 
-export type DangerouslyImpreciseStyle = {
-  ...$Exact<TextStyle>,
+export type ____DangerouslyImpreciseStyle_Internal = {
+  ...$Exact<____TextStyle_Internal>,
   +resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
   +tintColor?: ColorValue,
   +overlayColor?: string,
@@ -224,44 +225,23 @@ type GenericStyleProp<+T> =
   | null
   | void
   | T
-  | ____StyleSheetInternalStyleIdentifier_Internal
-  | number
   | false
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
 export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
-  $Shape<DangerouslyImpreciseStyle>,
+  $Shape<____DangerouslyImpreciseStyle_Internal>,
 >;
 export type ____ViewStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<ViewStyle>>,
+  $ReadOnly<$Shape<____ViewStyle_Internal>>,
 >;
 export type ____TextStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<TextStyle>>,
+  $ReadOnly<$Shape<____TextStyle_Internal>>,
 >;
 export type ____ImageStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<ImageStyle>>,
+  $ReadOnly<$Shape<____ImageStyle_Internal>>,
 >;
 
 export type ____Styles_Internal = {
-  +[key: string]: $Shape<DangerouslyImpreciseStyle>,
+  +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
 };
-
-/*
-Utility type get non-nullable types for specific style keys.
-Useful when a component requires values for certain Style Keys.
-So Instead:
-```
-type Props = {position: string};
-```
-You should use:
-```
-type Props = {position: TypeForStyleKey<'position'>};
-```
-
-This will correctly give you the type 'absolute' | 'relative' instead of the
-weak type of just string;
-*/
-export type TypeForStyleKey<
-  +key: $Keys<DangerouslyImpreciseStyle>,
-> = $ElementType<DangerouslyImpreciseStyle, key>;

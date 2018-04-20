@@ -24,6 +24,7 @@ using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
+using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
 class ShadowNode:
   public virtual Sealable,
@@ -34,17 +35,17 @@ public:
 #pragma mark - Constructors
 
   ShadowNode(
-    Tag tag,
-    Tag rootTag,
-    InstanceHandle instanceHandle,
-    SharedProps props = SharedProps(),
-    SharedShadowNodeSharedList children = SharedShadowNodeSharedList()
+    const Tag &tag,
+    const Tag &rootTag,
+    const InstanceHandle &instanceHandle,
+    const SharedProps &props = SharedProps(),
+    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList()
   );
 
   ShadowNode(
-    SharedShadowNode shadowNode,
-    SharedProps props = nullptr,
-    SharedShadowNodeSharedList children = nullptr
+    const SharedShadowNode &shadowNode,
+    const SharedProps &props = nullptr,
+    const SharedShadowNodeSharedList &children = nullptr
   );
 
 #pragma mark - Getters
@@ -55,7 +56,17 @@ public:
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
   Tag getTag() const;
+  Tag getRootTag() const;
+  InstanceHandle getInstanceHandle() const;
+
+  /*
+   * Returns the node which was used as a prototype in clone constructor.
+   * The node is held as a weak reference so that the method may return
+   * `nullptr` in cases where the node was constructed using the explicit
+   * constructor or the node was already deallocated.
+   */
   SharedShadowNode getSourceNode() const;
+
   void sealRecursive() const;
 
 #pragma mark - Mutating Methods
@@ -63,6 +74,26 @@ public:
   void appendChild(const SharedShadowNode &child);
   void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
   void clearSourceNode();
+
+  /*
+   * Replaces the current source node with its source node.
+   * This method might be used for illuminating side-effects caused by the last
+   * cloning operation which are not desirable from the diffing algorithm
+   * perspective.
+   */
+  void shallowSourceNode();
+
+#pragma mark - Equality
+
+  /*
+   * Equality operators.
+   * Use this to compare `ShadowNode`s values for equality (and non-equality).
+   * Same values indicates that nodes must not produce mutation instructions
+   * during tree diffing process.
+   * Child nodes are not considered as part of the value.
+   */
+  virtual bool operator==(const ShadowNode& rhs) const;
+  virtual bool operator!=(const ShadowNode& rhs) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -77,7 +108,16 @@ protected:
   InstanceHandle instanceHandle_;
   SharedProps props_;
   SharedShadowNodeSharedList children_;
-  SharedShadowNode sourceNode_;
+  WeakShadowNode sourceNode_;
+
+private:
+
+  /*
+   * A number of the generation of the ShadowNode instance;
+   * is used and useful for debug-printing purposes *only*.
+   * Do not access this value in any circumstances.
+   */
+  const int revision_;
 };
 
 } // namespace react

@@ -150,7 +150,7 @@ describe('flattenStyle', () => {
   it('should ignore invalid class names', () => {
     var invalid = flattenStyle(1234, null);
 
-    expect(invalid).toEqual({});
+    expect(invalid).toEqual(undefined);
     // Invalid class name 1234 skipping ...
   });
 });

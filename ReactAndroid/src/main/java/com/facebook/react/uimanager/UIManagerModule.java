@@ -12,6 +12,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
+import android.content.Context;
+import android.media.AudioManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -583,6 +585,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+  }
+  
+  @ReactMethod
+  public void playTouchSound() {
+    AudioManager audioManager = (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager != null) {
+      audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+    }
   }
 
   /**

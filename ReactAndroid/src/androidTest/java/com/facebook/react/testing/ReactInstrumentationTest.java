@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.testing.fabric.FabricTestModule;
 import com.facebook.react.testing.idledetection.IdleWaiter;
 
 /**
@@ -38,37 +37,17 @@ public abstract class ReactInstrumentationTest extends
     intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
     setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.loadBundle(
-              createReactInstanceSpecForTest(),
-              getBundleName(),
-              getEnableDevSupport());
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to load react bundle " + getBundleName(), t);
-    }
+    activity.loadBundle(
+        createReactInstanceSpecForTest(),
+        getBundleName(),
+        getEnableDevSupport());
   }
 
   /**
    * Renders this component within this test's activity
    */
   public void renderComponent(final String componentName) throws Exception {
-    final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.renderComponent(componentName, null);
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to render component " + componentName, t);
-    }
-    assertTrue("Layout never occurred!", activity.waitForLayout(5000));
+    getActivity().renderComponent(componentName, null);
     waitForBridgeAndUIIdle();
   }
 
@@ -116,11 +95,7 @@ public abstract class ReactInstrumentationTest extends
    * Override this method to provide extra native modules to be loaded before the app starts
    */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    ReactInstanceSpecForTest instanceSpec = new ReactInstanceSpecForTest();
-    if (isFabricTest()) {
-      instanceSpec.addNativeModule(new FabricTestModule(isFabricTest()));
-    }
-    return instanceSpec;
+    return new ReactInstanceSpecForTest();
   }
 
   /**

@@ -45,6 +45,18 @@ void ViewProps::apply(const RawProps &rawProps) {
   }
 }
 
+#pragma mark - Getters
+
+SharedColor ViewProps::getForegroundColor() const {
+  return foregroundColor_;
+}
+
+SharedColor ViewProps::getBackgroundColor() const {
+  return backgroundColor_;
+}
+
+#pragma mark - DebugStringConvertible
+
 SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
   ViewProps defaultProps = {};
 
