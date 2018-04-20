@@ -72,17 +72,17 @@ AppRegistry.registerComponent(
 <p>You will need to add some optional modules in <code>android/app/build.gradle</code>, depending on the needs of your app.</p>
 <pre><code class="hljs"><span class="hljs-keyword">dependencies</span> {
   <span class="hljs-comment">// If your app supports Android versions before Ice Cream Sandwich (API level 14)</span>
-  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-base-support:1.8.1'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-base-support:1.3.0'</span>
 
   <span class="hljs-comment">// For animated GIF support</span>
-  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-gif:1.8.1'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-gif:1.3.0'</span>
 
   <span class="hljs-comment">// For WebP support, including animated WebP</span>
-  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-webp:1.8.1'</span>
-  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.8.1'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:animated-webp:1.3.0'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.3.0'</span>
 
   <span class="hljs-comment">// For WebP support, without animations</span>
-  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.8.1'</span>
+  <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.facebook.fresco:webpsupport:1.3.0'</span>
 }
 </code></pre>
 <p>Also, if you use GIF with ProGuard, you will need to add this rule in <code>proguard-rules.pro</code> :</p>
