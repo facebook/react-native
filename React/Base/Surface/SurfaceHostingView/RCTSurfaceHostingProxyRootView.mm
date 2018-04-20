@@ -130,11 +130,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super.surface setProperties:appProperties];
 }
 
-- (CGSize)intrinsicContentSize
-{
-  return super.surface.intrinsicSize;
-}
-
 - (UIView *)loadingView
 {
   return super.activityIndicatorViewFactory ? super.activityIndicatorViewFactory() : nil;

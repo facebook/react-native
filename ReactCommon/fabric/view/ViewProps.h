@@ -28,6 +28,11 @@ class ViewProps:
 public:
   void apply(const RawProps &rawProps) override;
 
+#pragma mark - Getters
+
+  SharedColor getForegroundColor() const;
+  SharedColor getBackgroundColor() const;
+
 private:
   int zIndex_ {0};
   float opacity_ {1.0};

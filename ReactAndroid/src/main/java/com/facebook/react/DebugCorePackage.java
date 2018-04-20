@@ -49,15 +49,6 @@ import javax.inject.Provider;
               }
             }));
     moduleSpecList.add(
-      ModuleSpec.nativeModuleSpec(
-        JSDevSupport.class,
-        new Provider<NativeModule>() {
-          @Override
-          public NativeModule get() {
-            return new JSDevSupport(reactContext);
-          }
-        }));
-    moduleSpecList.add(
         ModuleSpec.nativeModuleSpec(
             JSCSamplingProfiler.class,
             new Provider<NativeModule>() {

@@ -20,8 +20,8 @@ struct LayoutMetrics {
   Rect frame;
   EdgeInsets contentInsets {0};
   EdgeInsets borderWidth {0};
-  DisplayType displayType {Flex};
-  LayoutDirection layoutDirection {Undefined};
+  DisplayType displayType {DisplayType::Flex};
+  LayoutDirection layoutDirection {LayoutDirection::Undefined};
 
   bool operator ==(const LayoutMetrics& rhs) const {
     return

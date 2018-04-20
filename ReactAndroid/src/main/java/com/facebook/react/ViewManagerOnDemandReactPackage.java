@@ -16,17 +16,12 @@ public interface ViewManagerOnDemandReactPackage {
   /**
    * Provides a list of names of ViewManagers with which these modules can be accessed from JS.
    * Typically, this is ViewManager.getName().
-   *
-   * @param loadClasses defines if View Managers classes should be loaded or be avoided.
    */
-  @Nullable List<String> getViewManagerNames(ReactApplicationContext reactContext, boolean loadClasses);
+  @Nullable List<String> getViewManagerNames(ReactApplicationContext reactContext);
   /**
    * Creates and returns a ViewManager with a specific name {@param viewManagerName}. It's up to an
    * implementing package how to interpret the name.
-   *
-   * @param loadClasses defines if View Managers classes should be loaded or be avoided.
    */
   @Nullable
-  ViewManager createViewManager(
-      ReactApplicationContext reactContext, String viewManagerName, boolean loadClasses);
+  ViewManager createViewManager(ReactApplicationContext reactContext, String viewManagerName);
 }

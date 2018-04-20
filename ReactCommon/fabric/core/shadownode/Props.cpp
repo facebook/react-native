@@ -25,5 +25,9 @@ void Props::apply(const RawProps &rawProps) {
   }
 }
 
+const std::string &Props::getNativeId() const {
+  return nativeId_;
+}
+
 } // namespace react
 } // namespace facebook

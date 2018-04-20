@@ -7,6 +7,8 @@
 
 #include "ViewShadowNode.h"
 
+#include <algorithm>
+
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
@@ -73,7 +75,7 @@ void ViewShadowNode::appendChild(const SharedShadowNode &child) {
 
 #pragma mark - YogaLayoutableShadowNode
 
-SharedLayoutableShadowNodeList ViewShadowNode::getChildren() const {
+SharedLayoutableShadowNodeList ViewShadowNode::getLayoutableChildNodes() const {
   SharedLayoutableShadowNodeList sharedLayoutableShadowNodeList = {};
   for (auto child : *children_) {
     const SharedLayoutableShadowNode layoutableShadowNode = std::dynamic_pointer_cast<const LayoutableShadowNode>(child);
@@ -85,6 +87,41 @@ SharedLayoutableShadowNodeList ViewShadowNode::getChildren() const {
   }
 
   return sharedLayoutableShadowNodeList;
+}
+
+SharedLayoutableShadowNode ViewShadowNode::cloneAndReplaceChild(const SharedLayoutableShadowNode &child) {
+  ensureUnsealed();
+
+  auto viewShadowNodeChild = std::dynamic_pointer_cast<const ViewShadowNode>(child);
+  assert(viewShadowNodeChild);
+  auto viewShadowNodeChildClone = std::make_shared<ViewShadowNode>(viewShadowNodeChild);
+
+  // This is overloading of `SharedLayoutableShadowNode::cloneAndReplaceChild`,
+  // the method is used to clone some node as a preparation for future mutation
+  // caused by relayout.
+  // Because those changes are not requested by UIManager, they add a layer
+  // of node generation (between the committed stage and new proposed stage).
+  // That additional layer confuses the Diffing algorithm which uses
+  // `sourceNode` for referencing the previous (aka committed) stage
+  // of the tree to produce mutation instructions.
+  // In other words, if we don't compensate this change here,
+  // the Diffing algorithm will compare wrong trees
+  // ("new-but-not-laid-out-yet vs. new" instead of "committed vs. new").
+  viewShadowNodeChildClone->shallowSourceNode();
+
+  ShadowNode::replaceChild(viewShadowNodeChild, viewShadowNodeChildClone);
+  return std::static_pointer_cast<const LayoutableShadowNode>(viewShadowNodeChildClone);
+}
+
+#pragma mark - Equality
+
+bool ViewShadowNode::operator==(const ShadowNode& rhs) const {
+  if (!ShadowNode::operator==(rhs)) {
+    return false;
+  }
+
+  auto &&other = static_cast<const ViewShadowNode&>(rhs);
+  return getLayoutMetrics() == other.getLayoutMetrics();
 }
 
 #pragma mark - DebugStringConvertible

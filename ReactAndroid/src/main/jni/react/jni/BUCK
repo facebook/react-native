@@ -8,6 +8,7 @@ EXPORTED_HEADERS = [
     "JavaModuleWrapper.h",
     "JavaScriptExecutorHolder.h",
     "JSLoader.h",
+    "JSLogging.h",
     "MethodInvoker.h",
     "ModuleRegistryBuilder.h",
     "NativeArray.h",

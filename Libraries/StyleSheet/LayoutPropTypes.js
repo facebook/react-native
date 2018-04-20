@@ -432,7 +432,8 @@ var LayoutPropTypes = {
    */
   flexWrap: ReactPropTypes.oneOf([
     'wrap',
-    'nowrap'
+    'nowrap',
+    'wrap-reverse'
   ]),
 
   /** `justifyContent` aligns children in the main direction.

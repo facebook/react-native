@@ -40,6 +40,7 @@ rn_xplat_cxx_library(
     fbandroid_deps = ANDROID_JSC_INTERNAL_DEPS,
     fbobjc_deps = APPLE_JSC_INTERNAL_DEPS,
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],
@@ -64,6 +65,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_srcs = ["systemJSCWrapper.cpp"],
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],

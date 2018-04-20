@@ -20,26 +20,31 @@ namespace react {
 
 class RN_EXPORT RAMBundleRegistry : noncopyable {
 public:
-  using unique_ram_bundle = std::unique_ptr<JSModulesUnbundle>;
-  using bundle_path = std::string;
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
-  static std::unique_ptr<RAMBundleRegistry> singleBundleRegistry(unique_ram_bundle mainBundle);
-  static std::unique_ptr<RAMBundleRegistry> multipleBundlesRegistry(unique_ram_bundle mainBundle, std::function<unique_ram_bundle(bundle_path)> factory);
+  static std::unique_ptr<RAMBundleRegistry> singleBundleRegistry(
+      std::unique_ptr<JSModulesUnbundle> mainBundle);
+  static std::unique_ptr<RAMBundleRegistry> multipleBundlesRegistry(
+      std::unique_ptr<JSModulesUnbundle> mainBundle,
+      std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory);
+
+  explicit RAMBundleRegistry(
+      std::unique_ptr<JSModulesUnbundle> mainBundle,
+      std::function<
+        std::unique_ptr<JSModulesUnbundle>(std::string)> factory = nullptr);
 
   RAMBundleRegistry(RAMBundleRegistry&&) = default;
   RAMBundleRegistry& operator=(RAMBundleRegistry&&) = default;
 
-  void registerBundle(uint32_t bundleId, bundle_path bundlePath);
+  void registerBundle(uint32_t bundleId, std::string bundlePath);
   JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
   virtual ~RAMBundleRegistry() {};
 private:
-  explicit RAMBundleRegistry(unique_ram_bundle mainBundle, std::function<unique_ram_bundle(bundle_path)> factory = {});
-  JSModulesUnbundle *getBundle(uint32_t bundleId) const;
+  JSModulesUnbundle* getBundle(uint32_t bundleId) const;
 
-  std::function<unique_ram_bundle(bundle_path)> m_factory;
-  std::unordered_map<uint32_t, bundle_path> m_bundlePaths;
-  std::unordered_map<uint32_t, unique_ram_bundle> m_bundles;
+  std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> m_factory;
+  std::unordered_map<uint32_t, std::string> m_bundlePaths;
+  std::unordered_map<uint32_t, std::unique_ptr<JSModulesUnbundle>> m_bundles;
 };
 
 }  // namespace react
