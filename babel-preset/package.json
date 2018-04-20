@@ -40,6 +40,6 @@
     "@babel/plugin-transform-template-literals": "7.0.0-beta.40",
     "@babel/plugin-transform-unicode-regex": "7.0.0-beta.40",
     "@babel/template": "7.0.0-beta.40",
-    "metro-babel7-plugin-react-transform": "0.32.0"
+    "metro-babel7-plugin-react-transform": "0.34.0"
   }
 }
