@@ -75,8 +75,8 @@ var Image = createReactClass({
      */
     blurRadius: PropTypes.number,
     /**
-    * See https://facebook.github.io/react-native/docs/image.html#defaultsource
-    */
+     * See https://facebook.github.io/react-native/docs/image.html#defaultsource
+     */
     defaultSource: PropTypes.number,
     /**
      * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
@@ -123,7 +123,13 @@ var Image = createReactClass({
      *
      * See https://facebook.github.io/react-native/docs/image.html#resizemode
      */
-    resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch', 'repeat', 'center']),
+    resizeMode: PropTypes.oneOf([
+      'cover',
+      'contain',
+      'stretch',
+      'repeat',
+      'center',
+    ]),
   },
 
   statics: {
@@ -254,9 +260,7 @@ var Image = createReactClass({
         ),
         src: sources,
         headers: source.headers,
-        defaultSrc: defaultSource
-          ? defaultSource.uri
-          : null,
+        defaultSrc: defaultSource ? defaultSource.uri : null,
         loadingIndicatorSrc: loadingIndicatorSource
           ? loadingIndicatorSource.uri
           : null,

@@ -11,6 +11,8 @@
 
 'use strict';
 
+import type {AccessibilityTrait} from 'ViewAccessibility';
+
 import type {Node} from 'react';
 
 import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
@@ -28,6 +30,7 @@ type PressRetentionOffset = {
  */
 export type TextProps = $ReadOnly<{
   accessible?: ?boolean,
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   allowFontScaling?: ?boolean,
   children?: Node,
   ellipsizeMode?: 'clip' | 'head' | 'middle' | 'tail',

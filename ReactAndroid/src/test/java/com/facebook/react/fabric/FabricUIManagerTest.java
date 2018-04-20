@@ -24,12 +24,12 @@ import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import org.fest.assertions.data.Offset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +37,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link FabricUIManager} */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class FabricUIManagerTest {
 
   private FabricUIManager mFabricUIManager;
@@ -111,6 +112,18 @@ public class FabricUIManagerTest {
     assertSameFields(clonedNode, node);
     assertSameChildren(clonedNode, node);
     assertThat(clonedNode.getChildAt(0)).isEqualTo(child);
+  }
+
+  @Test
+  public void testDefaultSpacingCloning() {
+    ReactShadowNode node = createViewNode();
+    node.setDefaultPadding(Spacing.LEFT, 10);
+
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node);
+
+    node.setDefaultPadding(Spacing.LEFT, 20);
+    assertThat(clonedNode.getStylePadding(Spacing.LEFT).value).isEqualTo(10f, Offset.offset(0.01f));
+    assertThat(node.getStylePadding(Spacing.LEFT).value).isEqualTo(20f, Offset.offset(0.01f));
   }
 
   @Test
