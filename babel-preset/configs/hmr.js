@@ -24,7 +24,7 @@ module.exports = function(options, filename) {
   return {
     plugins: [
       [
-        require('metro-babel7-plugin-react-transform').default,
+        require('metro-babel7-plugin-react-transform'),
         {
           transforms: [{
             transform: transform,

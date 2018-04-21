@@ -78,6 +78,7 @@ async function buildBundle(
   const terminal = new Terminal(process.stdout);
 
   const server = new Server({
+    asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
@@ -90,7 +91,6 @@ async function buildBundle(
     getPolyfills: config.getPolyfills,
     getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
-    globalTransformCache: null,
     hasteImplModulePath: config.hasteImplModulePath,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(platforms),
