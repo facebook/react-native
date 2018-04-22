@@ -75,7 +75,13 @@ function createFromRemoteTemplate(
     templateName = template.substr(template.lastIndexOf('/') + 1);
   } else {
     // e.g 'demo'
-    installPackage = 'react-native-template-' + template;
+    let scope = ''
+    if(template[0] === '@' && template.length > 3 && template.includes('/', 2)) {
+      [scope, ...template] = template.split('/')
+      scope += '/'
+      template = template.join('/')
+    }
+    installPackage = `${scope}react-native-template-${template}`;
     templateName = installPackage;
   }
 
