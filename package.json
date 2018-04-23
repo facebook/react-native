@@ -198,6 +198,7 @@
     "yargs": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/core": "7.0.0-beta.40",
     "babel-eslint": "8.2.1",
     "eslint": "4.17.0",
     "eslint-config-fb-strict": "22.1.0",
