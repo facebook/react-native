@@ -7,7 +7,7 @@
 
 'use strict';
 
-const babelRegisterOnly = require('metro/src/babelRegisterOnly');
+const babelRegisterOnly = require('metro-babel-register');
 const escapeRegExp = require('lodash/escapeRegExp');
 const path = require('path');
 

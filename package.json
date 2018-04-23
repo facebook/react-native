@@ -167,6 +167,7 @@
     "inquirer": "^3.0.6",
     "lodash": "^4.17.5",
     "metro": "^0.34.0",
+    "metro-babel-register": "^0.34.1",
     "metro-core": "^0.34.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
