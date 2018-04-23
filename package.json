@@ -199,7 +199,9 @@
   },
   "devDependencies": {
     "@babel/core": "7.0.0-beta.40",
+    "async": "^2.4.0",
     "babel-eslint": "8.2.1",
+    "babel-generator": "^6.26.0",
     "eslint": "4.17.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
