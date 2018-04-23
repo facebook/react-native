@@ -37,6 +37,7 @@
     ],
     "haste": {
       "defaultPlatform": "ios",
+      "hasteImplModulePath": "<rootDir>/jest/hasteImpl.js",
       "providesModuleNodeModules": [
         "react-native"
       ],
