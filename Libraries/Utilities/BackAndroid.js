@@ -7,7 +7,6 @@
  * BackAndroid has been moved to BackHandler.  This stub calls BackHandler methods
  * after generating a warning to remind users to move to the new BackHandler module.
  *
- * @providesModule BackAndroid
  */
 
 'use strict';
