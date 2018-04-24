@@ -68,6 +68,8 @@ const pluginPlatforms = plugins
 
 const defaultRNConfig = {
 
+  hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
+
   getProjectCommands(): Array<CommandT> {
     const commands = plugins
       .commands
