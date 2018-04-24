@@ -67,7 +67,7 @@ public class FabricUIManager implements UIManager {
   /** Creates a new {@link ReactShadowNode} */
   @Nullable
   public ReactShadowNode createNode(
-      int reactTag, String viewName, int rootTag, ReadableNativeMap props) {
+      int reactTag, String viewName, int rootTag, ReadableNativeMap props, int instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "createNode \n\ttag: " + reactTag +
           "\n\tviewName: " + viewName +

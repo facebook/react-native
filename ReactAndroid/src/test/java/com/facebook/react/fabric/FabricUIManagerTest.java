@@ -47,6 +47,7 @@ public class FabricUIManagerTest {
   private FabricUIManager mFabricUIManager;
   private ThemedReactContext mThemedReactContext;
   private int mNextReactTag;
+  private int mNextInstanceHandle;
 
   @Before
   public void setUp() throws Exception {
@@ -70,8 +71,10 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
     int reactTag = mNextReactTag++;
+    int instanceHandle = mNextInstanceHandle++;
     String viewClass = ReactViewManager.REACT_CLASS;
-    ReactShadowNode node = mFabricUIManager.createNode(reactTag, viewClass, rootTag, null);
+    ReactShadowNode node =
+        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, instanceHandle);
 
     assertThat(reactTag).isEqualTo(node.getReactTag());
     assertThat(viewClass).isEqualTo(node.getViewClass());
@@ -89,8 +92,10 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
     int reactTag = mNextReactTag++;
+    int instanceHandle = mNextInstanceHandle++;
     String viewClass = ReactViewManager.REACT_CLASS;
-    ReactShadowNode node = mFabricUIManager.createNode(reactTag, viewClass, rootTag, null);
+    ReactShadowNode node =
+        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, instanceHandle);
 
     List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
     mFabricUIManager.appendChildToSet(childSet, node);
@@ -220,9 +225,8 @@ public class FabricUIManagerTest {
     ReactRootView rootView =
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
-
     ReactShadowNode text =
-        mFabricUIManager.createNode(0, ReactTextViewManager.REACT_CLASS, rootTag, null);
+        mFabricUIManager.createNode(0, ReactTextViewManager.REACT_CLASS, rootTag, null, mNextInstanceHandle++);
     assertThat(text.isMeasureDefined()).isTrue();
 
     ReactShadowNode textCopy = text.mutableCopy();
@@ -248,13 +252,13 @@ public class FabricUIManagerTest {
     int rootTag = mFabricUIManager.addRootView(rootView);
     String viewClass = ReactViewManager.REACT_CLASS;
 
-    ReactShadowNode aa = mFabricUIManager.createNode(2, viewClass, rootTag, null);
-    ReactShadowNode a = mFabricUIManager.createNode(3, viewClass, rootTag, null);
+    ReactShadowNode aa = mFabricUIManager.createNode(2, viewClass, rootTag, null, mNextInstanceHandle++);
+    ReactShadowNode a = mFabricUIManager.createNode(3, viewClass, rootTag, null, mNextInstanceHandle++);
     mFabricUIManager.appendChild(a, aa);
-    ReactShadowNode bb = mFabricUIManager.createNode(4, viewClass, rootTag, null);
-    ReactShadowNode b = mFabricUIManager.createNode(5, viewClass, rootTag, null);
+    ReactShadowNode bb = mFabricUIManager.createNode(4, viewClass, rootTag, null, mNextInstanceHandle++);
+    ReactShadowNode b = mFabricUIManager.createNode(5, viewClass, rootTag, null, mNextInstanceHandle++);
     mFabricUIManager.appendChild(b, bb);
-    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null);
+    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null, mNextInstanceHandle++);
     mFabricUIManager.appendChild(container, a);
     mFabricUIManager.appendChild(container, b);
     List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
