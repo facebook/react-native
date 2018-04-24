@@ -333,6 +333,38 @@ describe('Native Animated', () => {
         .toBeCalledWith(additionCall[1].input[1], {type: 'value', value: 2, offset: 0});
     });
 
+    it('sends a valid graph description for Animated.subtract nodes', () => {
+      const first = new Animated.Value(2);
+      const second = new Animated.Value(1);
+      first.__makeNative();
+      second.__makeNative();
+
+      createAndMountComponent(Animated.View, {
+        style: {
+          opacity: Animated.subtract(first, second),
+        },
+      });
+
+      expect(nativeAnimatedModule.createAnimatedNode).toBeCalledWith(
+        expect.any(Number),
+        {type: 'subtraction', input: expect.any(Array)},
+      );
+      const subtractionCalls = nativeAnimatedModule.createAnimatedNode.mock.calls.filter(
+        (call) => call[1].type === 'subtraction'
+      );
+      expect(subtractionCalls.length).toBe(1);
+      const subtractionCall = subtractionCalls[0];
+      const subtractionNodeTag = subtractionCall[0];
+      const subtractionConnectionCalls = nativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
+        (call) => call[1] === subtractionNodeTag
+      );
+      expect(subtractionConnectionCalls.length).toBe(2);
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(subtractionCall[1].input[0], {type: 'value', value: 2, offset: 0});
+      expect(nativeAnimatedModule.createAnimatedNode)
+        .toBeCalledWith(subtractionCall[1].input[1], {type: 'value', value: 1, offset: 0});
+    });
+
     it('sends a valid graph description for Animated.multiply nodes', () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);

@@ -11,9 +11,7 @@
 
 'use strict';
 
-import AnimatedNode from 'AnimatedNode';
-
-export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
+const AnimatedNode = require('AnimatedNode');
 
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
@@ -59,7 +57,7 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number,
   position?: 'absolute' | 'relative',
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
-  flexWrap?: 'wrap' | 'nowrap',
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse',
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -105,14 +103,16 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
     | {|+translateX: number | AnimatedNode|}
     | {|+translateY: number | AnimatedNode|}
     | {|
-      +translate: [number | AnimatedNode, number | AnimatedNode] | AnimatedNode,
-    |}
+        +translate:
+          | [number | AnimatedNode, number | AnimatedNode]
+          | AnimatedNode,
+      |}
     | {|+skewX: string|}
     | {|+skewY: string|}
     // TODO: what is the actual type it expects?
     | {|
-      +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-    |},
+        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+      |},
   >,
 |}>;
 
@@ -203,6 +203,7 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'underline line-through',
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ColorValue,
+  textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 |}>;
 
@@ -224,8 +225,6 @@ type GenericStyleProp<+T> =
   | null
   | void
   | T
-  | ____StyleSheetInternalStyleIdentifier_Internal
-  | number
   | false
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;

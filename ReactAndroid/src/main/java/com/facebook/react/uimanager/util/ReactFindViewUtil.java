@@ -129,19 +129,11 @@ public class ReactFindViewUtil {
       }
     }
 
-    Iterator<Map.Entry<OnMultipleViewsFoundListener, Set<String>>>
-        viewIterator = mOnMultipleViewsFoundListener.entrySet().iterator();
-    while (viewIterator.hasNext()) {
-      Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry =
-          viewIterator.next();
-      Set<String> nativeIds = entry.getValue();
-      if (nativeIds.contains(nativeId)) {
-        entry.getKey().onViewFound(view, nativeId);
-        nativeIds.remove(nativeId); // remove it from list of NativeIds to search for.
-      }
-      if (nativeIds.isEmpty()) {
-        viewIterator.remove();
-      }
+    for (Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry : mOnMultipleViewsFoundListener.entrySet()) {
+       Set<String> nativeIds = entry.getValue();
+       if (nativeIds != null && nativeIds.contains(nativeId)) {
+            entry.getKey().onViewFound(view, nativeId);
+       }
     }
   }
 

@@ -430,6 +430,48 @@ exports.examples = [
     },
   },
   {
+    title: 'Multistage With Subtract',
+    render: function() {
+      return (
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                  ],
+                  opacity: Animated.subtract(
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 1],
+                    }),
+                    anim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 0.5, 0],
+                    }),
+                  ),
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
     title: 'Scale interpolation with clamping',
     render: function() {
       return (

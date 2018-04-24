@@ -76,7 +76,7 @@ public:
     return typeid(*this).hash_code();
   }
 
-  const SharedConcreteProps &getProps() const {
+  const SharedConcreteProps getProps() const {
     return std::static_pointer_cast<const PropsT>(props_);
   }
 

@@ -17,6 +17,7 @@ LOCAL_SRC_FILES := \
   JSCSamplingProfiler.cpp \
   JSCTracing.cpp \
   JSCUtils.cpp \
+	JSExecutor.cpp \
   JSIndexedRAMBundle.cpp \
   MethodCall.cpp \
   ModuleRegistry.cpp \

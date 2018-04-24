@@ -125,59 +125,27 @@ describe('MessageQueue', function() {
     expect(factory).toHaveBeenCalledTimes(1);
   });
 
-  it('should catch all exceptions if the global error handler is installed', () => {
-    const errorMessage = 'intentional error';
-    const errorModule = {
-      explode: function() {
-        throw new Error(errorMessage);
-      },
+  it('should check if the global error handler is not overriden by the DebuggerInternal object', () => {
+    const dummyModule = {
+      dummy: function() {},
     };
-    const name = 'errorModuleName';
-    const factory = jest.fn(() => errorModule);
-    queue.__guardSafe = jest.fn(() => {});
-    queue.__guardUnsafe = jest.fn(() => {});
-    queue.installGlobalErrorHandler();
+    const name = 'emptyModuleName';
+    const factory = jest.fn(() => dummyModule);
+    queue.__shouldPauseOnThrow = jest.fn(() => false);
     queue.registerLazyCallableModule(name, factory);
-    queue.callFunctionReturnFlushedQueue(name, 'explode', []);
-    expect(queue.__guardUnsafe).toHaveBeenCalledTimes(0);
-    expect(queue.__guardSafe).toHaveBeenCalledTimes(2);
+    queue.callFunctionReturnFlushedQueue(name, 'dummy', []);
+    expect(queue.__shouldPauseOnThrow).toHaveBeenCalledTimes(2);
   });
 
-  it('should propagate exceptions if the global error handler is uninstalled', () => {
-    queue.uninstallGlobalErrorHandler();
-    const errorMessage = 'intentional error';
-    const errorModule = {
-      explode: function() {
-        throw new Error(errorMessage);
-      },
+  it('should check if the global error handler is overriden by the DebuggerInternal object', () => {
+    const dummyModule = {
+      dummy: function() {},
     };
-    const name = 'errorModuleName';
-    const factory = jest.fn(() => errorModule);
-    queue.__guardUnsafe = jest.fn(() => {});
-    queue.__guardSafe = jest.fn(() => {});
+    const name = 'emptyModuleName';
+    const factory = jest.fn(() => dummyModule);
+    queue.__shouldPauseOnThrow = jest.fn(() => true);
     queue.registerLazyCallableModule(name, factory);
-    queue.uninstallGlobalErrorHandler();
-    queue.callFunctionReturnFlushedQueue(name, 'explode');
-    expect(queue.__guardUnsafe).toHaveBeenCalledTimes(2);
-    expect(queue.__guardSafe).toHaveBeenCalledTimes(0);
-  });
-
-  it('should catch all exceptions if the global error handler is re-installed', () => {
-    const errorMessage = 'intentional error';
-    const errorModule = {
-      explode: function() {
-        throw new Error(errorMessage);
-      },
-    };
-    const name = 'errorModuleName';
-    const factory = jest.fn(() => errorModule);
-    queue.__guardUnsafe = jest.fn(() => {});
-    queue.__guardSafe = jest.fn(() => {});
-    queue.registerLazyCallableModule(name, factory);
-    queue.uninstallGlobalErrorHandler();
-    queue.installGlobalErrorHandler();
-    queue.callFunctionReturnFlushedQueue(name, 'explode');
-    expect(queue.__guardUnsafe).toHaveBeenCalledTimes(0);
-    expect(queue.__guardSafe).toHaveBeenCalledTimes(2);
+    queue.callFunctionReturnFlushedQueue(name, 'dummy', []);
+    expect(queue.__shouldPauseOnThrow).toHaveBeenCalledTimes(2);
   });
 });

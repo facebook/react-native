@@ -16,14 +16,14 @@ namespace react {
 
 Float fabricFloatFromYogaFloat(float value) {
   if (value == YGUndefined) {
-    return Undefined;
+    return kFloatUndefined;
   }
 
   return (Float)value;
 }
 
 float yogaFloatFromFabricFloat(Float value) {
-  if (value == Undefined) {
+  if (value == kFloatUndefined) {
     return YGUndefined;
   }
 
@@ -77,10 +77,10 @@ LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   };
 
   layoutMetrics.displayType =
-    yogaNode.getStyle().display == YGDisplayNone ? None : Flex;
+    yogaNode.getStyle().display == YGDisplayNone ? DisplayType::None : DisplayType::Flex;
 
   layoutMetrics.layoutDirection =
-    layout.direction == YGDirectionRTL ? RightToLeft : LeftToRight;
+    layout.direction == YGDirectionRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   return layoutMetrics;
 }

@@ -172,7 +172,7 @@ function ensureSymbolicatedWarning(warning: string): void {
 
 function isWarningIgnored(warning: string): boolean {
   const isIgnored = IGNORED_WARNINGS.some((ignoredWarning: string) =>
-    warning.startsWith(ignoredWarning),
+    warning.includes(ignoredWarning),
   );
 
   if (isIgnored) {

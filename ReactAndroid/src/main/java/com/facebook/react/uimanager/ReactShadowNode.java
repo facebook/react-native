@@ -139,9 +139,9 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void setReactTag(int reactTag);
 
-  T getRootNode();
+  int getRootTag();
 
-  void setRootNode(T rootNode);
+  void setRootTag(int rootTag);
 
   void setViewClassName(String viewClassName);
 

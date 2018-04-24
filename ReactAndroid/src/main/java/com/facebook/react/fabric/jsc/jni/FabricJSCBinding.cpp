@@ -83,17 +83,16 @@ JSValueRef createNode(JSContextRef ctx, JSObjectRef function, JSObjectRef thisOb
 
   static auto createNode =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(jint, jstring, jint, ReadableNativeMap::javaobject)>("createNode");
+      ->getMethod<alias_ref<JShadowNode>(jint, jstring, jint, ReadableNativeMap::javaobject, jint)>("createNode");
 
   int reactTag = (int)JSC_JSValueToNumber(ctx, arguments[0], NULL);
   auto viewName = JSValueToJString(ctx, arguments[1]);
   int rootTag = (int)JSC_JSValueToNumber(ctx, arguments[2], NULL);
   auto props = JSC_JSValueIsNull(ctx, arguments[3]) ? local_ref<ReadableNativeMap::jhybridobject>(nullptr) :
                JSValueToReadableMapViaJSON(ctx, arguments[3]);;
+  int instanceHandle = (int)JSC_JSValueToNumber(ctx, arguments[4], NULL);
 
-  // TODO: Retain object in arguments[4] using a weak ref.
-
-  auto node = createNode(manager, reactTag, viewName.get(), rootTag, props.get());
+  auto node = createNode(manager, reactTag, viewName.get(), rootTag, props.get(), instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(node.get()));
 }

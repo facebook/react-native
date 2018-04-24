@@ -1,60 +1,76 @@
 aliases:
   # Cache Management
-  - &restore-yarn-cache
+  - &restore-cache-yarn
     keys:
-      - v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
-      # Fallback in case checksum fails
-      - v1-yarn-{{ arch }}-{{ .Branch }}-
-      # Fallback in case this is a first-time run on a fork
-      - v1-yarn-{{ arch }}-master-
-  - &save-yarn-cache
+      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+      - v1-yarn-{{ arch }}-
+  - &save-cache-yarn
     paths:
       - node_modules
       - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-      # Fallback in case checksum fails
-      - v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-
-      # Fallback in case this is a first-time run on a fork
-      - v1-analysis-dependencies-{{ arch }}-master-
+      - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+      - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
       - bots/node_modules
       - node_modules
-    key: v1-analysis-dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
+    key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      # Fallback in case checksum fails
-      - v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-
-      # Fallback in case this is a first-time run on a fork
-      - v1-android-sdkmanager-packages-{{ arch }}-master-api-26-alpha-
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-{{ .Branch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+
+  - &restore-cache-gradle
+    keys:
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+      # Fallback in case checksum fails
+      - v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-
+      - v1-gradle-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-gradle-{{ arch }}-master-
+  - &save-cache-gradle
+    paths:
+      - ~/.gradle
+    key: v1-gradle-{{ arch }}-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+
+  - &restore-cache-apt
+    keys:
+      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
+      # Fallback in case checksum fails
+      - v1-apt-{{ arch }}-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v1-apt-{{ arch }}-master-
+  - &save-cache-apt
+    paths:
+      - ~/vendor/apt
+    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      # Fallback in case checksum fails
-      - v2-android-ndk-{{ arch }}-r10e-32-64-
+      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v3-android-ndk-{{ arch }}-r10e-
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v2-android-ndk-{{ arch }}-r10e-32-64-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
 
   - &restore-cache-buck
     keys:
-      - v2-buck-{{ arch }}-v2018.02.16.01
+      - v3-buck-{{ arch }}-v2018.02.16.01
   - &save-cache-buck
     paths:
       - ~/buck
-    key: v2-buck-{{ arch }}-v2018.02.16.01
+      - ~/okbuck
+    key: v3-buck-{{ arch }}-v2018.02.16.01
 
   - &restore-cache-watchman
     keys:
@@ -63,6 +79,17 @@ aliases:
     paths:
       - ~/watchman
     key: v1-watchman-{{ arch }}-v4.9.0
+
+  - &restore-cache-gradle-downloads
+    keys:
+      - v1-gradle-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+      - v1-gradle-{{ arch }}-
+  - &save-cache-gradle-downloads
+    paths:
+      - ~/.gradle
+      - ReactAndroid/build/downloads
+      - ReactAndroid/build/third-party-ndk
+    key: v1-gradle-{{ arch }}-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
 
   # Branch Filtering
   - &filter-only-master-stable
@@ -97,7 +124,8 @@ aliases:
       yarn install --non-interactive --cache-folder ~/.cache/yarn
 
   - &install-yarn
-    |
+    name: Install Yarn
+    command: |
       curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
@@ -107,15 +135,24 @@ aliases:
       npm install --no-package-lock --no-spin --no-progress
 
   - &install-buck
-    |
+    name: Install BUCK
+    command: |
       if [[ ! -e ~/buck ]]; then
         git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
+      # Install related tooling
+      if [[ ! -e ~/okbuck ]]; then
+        git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+      fi
+      mkdir -p ~/react-native/tooling/junit
+      cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
+
 
   - &install-node
-    |
+    name: Install Node
+    command: |
       curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
       sudo apt-get install -y nodejs
 
@@ -141,9 +178,7 @@ aliases:
 
   - &install-android-build-dependencies
     name: Install Android Build Dependencies
-    command: |
-      sudo apt-get update -y
-      sudo apt-get install ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6  make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+    command: ./scripts/circleci/apt-get-android-deps.sh
 
   - &validate-android-sdk
     name: Validate Android SDK Install
@@ -175,6 +210,10 @@ aliases:
       ./scripts/circleci/check_license.sh
       ./scripts/circleci/check_cache.sh
     when: always
+
+  - &gradle-download-deps
+    name: Download C++ Dependencies
+    command: ./scripts/circleci/gradle_download_deps.sh
     
   - &build-android-app
     name: Build Android App
@@ -206,7 +245,7 @@ aliases:
 
   - &run-android-unit-tests
     name: Run Unit Tests
-    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS
+    command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ~/react-native/reports/buck/all-results-raw.xml
 
   - &run-android-instrumentation-tests
     name: Run Instrumentation Tests
@@ -219,15 +258,19 @@ aliases:
   - &collect-android-test-results
     name: Collect Test Results
     command: |
-      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
-      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/junit/ \;
+      find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ~/react-native/reports/build/ \;
+      find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ~/react-native/reports/outputs/ \;
+      find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/buck/ \;
+      ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
     when: always
 
   - &setup-artifacts
     name: Initial Setup
     command: | 
+      mkdir -p ~/react-native/reports/buck/
+      mkdir -p ~/react-native/reports/build/
       mkdir -p ~/react-native/reports/junit/
+      mkdir -p ~/react-native/reports/outputs/
   
   - &run-objc-ios-tests
     name: iOS Test Suite
@@ -258,7 +301,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-26-alpha
+    - image: circleci/android:api-26-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
@@ -283,9 +326,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -331,9 +374,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
 
       - run: *run-js-tests
 
@@ -400,6 +443,7 @@ jobs:
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
+
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -420,13 +464,14 @@ jobs:
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
-      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
-      - run: *install-node
-      - run: *install-yarn
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-gradle-downloads
+      - run: *gradle-download-deps
+      - save-cache: *save-cache-gradle-downloads
+
+      - restore-cache: *restore-cache-yarn
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save-cache: *save-cache-yarn
       
       - run:
           name: Publish React Native Package
@@ -450,7 +495,10 @@ jobs:
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
+      - restore-cache: *restore-cache-apt
       - run: *install-android-build-dependencies
+      - save-cache: *save-cache-apt
+
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
       - save-cache: *save-cache-android-packages
@@ -481,14 +529,16 @@ jobs:
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
       - run: buck fetch ReactAndroid/src/test/...
       - run: buck fetch ReactAndroid/src/androidTest/...
-      - run: ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+
+      - restore-cache: *restore-cache-gradle-downloads
+      - run: *gradle-download-deps
+      - save-cache: *save-cache-gradle-downloads
 
       # Build and compile
       - run: *build-android-app
       - run: *compile-native-libs
 
       # Build JavaScript Bundle for instrumentation tests
-      - run: *install-node
       - run: *build-js-bundle
 
       # Wait for AVD to finish booting before running tests
@@ -498,11 +548,10 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
       
-      # post (always runs)
+      # Collect Results
       - run: *collect-android-test-results
       - store_test_results:
           path: ~/react-native/reports/junit
-
 
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.

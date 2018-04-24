@@ -297,6 +297,7 @@ const mockNativeModules = {
   BlobModule: {
     BLOB_URI_SCHEME: 'content',
     BLOB_URI_HOST: null,
+    addNetworkingHandler: jest.fn(),
     enableBlobSupport: jest.fn(),
     disableBlobSupport: jest.fn(),
     createFromParts: jest.fn(),
@@ -323,11 +324,7 @@ Object.keys(mockNativeModules).forEach(module => {
 });
 
 jest
-  .doMock('NativeModules', () => mockNativeModules)
-  .doMock('ReactNativePropRegistry', () => ({
-    register: id => id,
-    getByID: () => mockEmptyObject,
-  }));
+  .doMock('NativeModules', () => mockNativeModules);
 
 jest.doMock('requireNativeComponent', () => {
   const React = require('react');
