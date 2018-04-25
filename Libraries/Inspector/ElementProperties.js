@@ -75,11 +75,10 @@ class ElementProperties extends React.Component<{
               this.props.hierarchy,
               (hierarchyItem, i) => (
                 <TouchableHighlight
-                  key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
-                  <Text style={styles.breadItemText}>
+                  <Text key={'item-' + i} style={styles.breadItemText}>
                     {hierarchyItem.name}
                   </Text>
                 </TouchableHighlight>
