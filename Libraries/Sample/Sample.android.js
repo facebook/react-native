@@ -1,7 +1,6 @@
 /**
  * Stub of Sample for Android.
  *
- * @providesModule Sample
  * @flow
  */
 'use strict';

@@ -3,7 +3,6 @@
  * https://github.com/gre/bezier-easing
  *
  * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
- * @providesModule bezier
  * @noflow
  */
 'use strict';
