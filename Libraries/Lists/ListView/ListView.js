@@ -645,7 +645,10 @@ var ListView = createReactClass({
       },
       () => {
         this._measureAndUpdateScrollProps();
-        this._prevRenderedRowsCount = this.state.curRenderedRowsCount;
+        this._prevRenderedRowsCount =
+          (this.props.dataSource.getRowCount() === this.state.curRenderedRowsCount
+            ? 0
+            : this.state.curRenderedRowsCount);
       },
     );
   },
