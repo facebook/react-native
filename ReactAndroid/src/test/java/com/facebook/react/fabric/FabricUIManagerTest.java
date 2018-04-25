@@ -2,41 +2,29 @@
 package com.facebook.react.fabric;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.common.ClearableSynchronizedPool;
-import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.views.progressbar.ProgressBarShadowNode;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import org.fest.assertions.data.Offset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -52,11 +40,10 @@ public class FabricUIManagerTest {
   @Before
   public void setUp() throws Exception {
     mNextReactTag = 2;
-    mThemedReactContext = mock(ThemedReactContext.class);
-    CatalystInstance catalystInstance = ReactTestHelper.createMockCatalystInstance();
-    ReactApplicationContext reactContext =
-        new ReactApplicationContext(RuntimeEnvironment.application);
-    reactContext.initializeWithInstance(catalystInstance);
+    ReactApplicationContext reactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    reactContext.initializeWithInstance(ReactTestHelper.createMockCatalystInstance());
+    mThemedReactContext = new ThemedReactContext(reactContext, reactContext);
+
     List<ViewManager> viewManagers =
         Arrays.<ViewManager>asList(
             new ReactViewManager(), new ReactTextViewManager(), new ReactRawTextManager());
@@ -141,6 +128,14 @@ public class FabricUIManagerTest {
 
     assertThat(clonedNode.getText()).isEqualTo("test");
     assertThat(clonedNode).isNotEqualTo(node);
+  }
+
+  @Test
+  public void testLayoutProgressBarAfterClonning() {
+    ProgressBarShadowNode node = new ProgressBarShadowNode();
+    node.setThemedContext(mThemedReactContext);
+    ProgressBarShadowNode clone = (ProgressBarShadowNode) node.mutableCopy();
+    clone.calculateLayout();
   }
 
   @Test

@@ -34,6 +34,7 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/views/progressbar:progressbar"),
         react_native_tests_target("java/com/facebook/react/bridge:testhelpers"),
     ],
 )
