@@ -14,10 +14,12 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import android.util.Log;
 import android.view.View;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -33,6 +35,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -248,11 +251,12 @@ public class FabricUIManager implements UIManager {
     childList.add(child);
   }
 
-  public synchronized void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    if (DEBUG) {
-      Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
-    }
+  public synchronized void completeRoot(int rootTag, @Nullable List<ReactShadowNode> childList) {
     try {
+      childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
+      if (DEBUG) {
+        Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
+      }
       ReactShadowNode currentRootShadowNode = getRootNode(rootTag);
       Assertions.assertNotNull(
           currentRootShadowNode,
@@ -340,7 +344,7 @@ public class FabricUIManager implements UIManager {
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
-    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext themedRootContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
 
@@ -350,9 +354,37 @@ public class FabricUIManager implements UIManager {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
 
+    rootView.setOnSizeChangedListener(
+      new SizeMonitoringFrameLayout.OnSizeChangedListener() {
+        @Override
+        public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
+          updateRootSize(rootTag, width, height);
+        }
+      });
+
     mRootShadowNodeRegistry.registerNode(rootShadowNode);
     mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
     return rootTag;
+  }
+
+  /**
+   * Updates the root view size and re-render the RN surface.
+   *
+   * //TODO: change synchronization to integrate with new #render loop.
+   */
+  private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
+    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
+    if (rootNode == null) {
+      Log.w(
+        ReactConstants.TAG,
+        "Tried to update size of non-existent tag: " + rootTag);
+      return;
+    }
+    int newWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
+    int newHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
+    updateRootView(rootNode, newWidthSpec, newHeightSpec);
+
+    completeRoot(rootTag, rootNode.getChildrenList());
   }
 
   public void removeRootView(int rootTag) {
