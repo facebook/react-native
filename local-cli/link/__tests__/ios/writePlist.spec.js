@@ -26,6 +26,9 @@ const infoPlistPath = path.join(__dirname, '../../__fixtures__/Info.plist');
 
 fs.readFileSync = jest.fn(() => readFileSync(projectPath).toString());
 
+const {writeFileSync} = fs;
+fs.writeFileSync = jest.fn(writeFileSync);
+
 const project = xcode.project('/Basic/project.pbxproj');
 
 const plist = {
