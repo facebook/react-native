@@ -46,7 +46,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
         0 : Layout.BREAK_STRATEGY_SIMPLE;
 
-    setMeasureFunction(this);
+    initMeasureFunction();
   }
 
   private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
@@ -64,7 +64,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @Override
   public ReactTextInputShadowNode mutableCopy() {
     ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy();
-    node.setMeasureFunction(this);
+    node.initMeasureFunction();
     ThemedReactContext themedContext = getThemedContext();
     if (themedContext != null) {
       node.setThemedContext(themedContext);
@@ -72,10 +72,14 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     return node;
   }
 
+  private void initMeasureFunction() {
+    setMeasureFunction(this);
+  }
+
   @Override
   public ReactTextInputShadowNode mutableCopyWithNewChildren() {
     ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren();
-    node.setMeasureFunction(this);
+    node.initMeasureFunction();
     ThemedReactContext themedContext = getThemedContext();
     if (themedContext != null) {
       node.setThemedContext(themedContext);

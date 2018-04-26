@@ -7,7 +7,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule websocket_integration_test_server
  */
 'use strict';
 

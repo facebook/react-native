@@ -7,7 +7,6 @@
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
  *
- * @providesModule BackHandler
  */
 
 'use strict';
