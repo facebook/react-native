@@ -38,6 +38,16 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
   return result;
 }
 
+static const std::string componentNameByReactViewName(std::string viewName) {
+  std::string rctPrefix("RCT");
+  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin()).first == rctPrefix.end()) {
+    // If `viewName` has "RCT" prefix, remove it.
+    viewName.erase(0, 3);
+  }
+
+  return viewName;
+}
+
 FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
@@ -52,7 +62,9 @@ UIManagerDelegate *FabricUIManager::getDelegate() {
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle) {
   LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag" << rootTag << ", props: " << props << ")";
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)["View"];
+
+  ComponentName componentName = componentNameByReactViewName(viewName);
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);
 
   SharedShadowNode shadowNode =
