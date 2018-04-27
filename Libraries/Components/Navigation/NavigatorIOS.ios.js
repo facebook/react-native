@@ -95,16 +95,14 @@ type OptionalRouteParams = {
   wrapperStyle?: any,
 };
 
-type Route = {
+type Route = OptionalRouteParams & {
   component: Function,
   title: string,
-  ...OptionalRouteParams,
 };
 
-type UpdateRoute = {
+type UpdateRoute = OptionalRouteParams & {
   component?: Function,
   title?: string,
-  ...OptionalRouteParams,
 };
 
 type State = {
@@ -861,7 +859,8 @@ const NavigatorIOS = createReactClass({
     // I don't believe we need to lock for a replace since there's no
     // navigation actually happening
     const nextRouteStack = this.state.routeStack.slice();
-    nextRouteStack[index] = { ...this.state.routeStack[index], ...route };
+    const nextRoute: Route = { ...this.state.routeStack[index], ...route };
+    nextRouteStack[index] = nextRoute;
 
     this.setState({
       routeStack: nextRouteStack,
