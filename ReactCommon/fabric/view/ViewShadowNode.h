@@ -7,12 +7,10 @@
 
 #pragma once
 
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/LayoutableShadowNode.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/view/AccessibleShadowNode.h>
+#include <memory>
+
 #include <fabric/view/ViewProps.h>
-#include <fabric/view/YogaLayoutableShadowNode.h>
+#include <fabric/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -21,48 +19,14 @@ class ViewShadowNode;
 
 using SharedViewShadowNode = std::shared_ptr<const ViewShadowNode>;
 
-class ViewShadowNode:
-  public ConcreteShadowNode<ViewProps>,
-  public AccessibleShadowNode,
-  public YogaLayoutableShadowNode {
-
-  static_assert(std::is_base_of<YogaStylableProps, ViewProps>::value, "ViewProps must be a descendant of YogaStylableProps");
-  static_assert(std::is_base_of<AccessibilityProps, ViewProps>::value, "ViewProps must be a descendant of AccessibilityProps");
+class ViewShadowNode final:
+  public ConcreteViewShadowNode<ViewProps> {
 
 public:
-  ViewShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
-    const SharedViewProps &props = ViewShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
-    const ShadowNodeCloneFunction &cloneFunction = nullptr
-  );
 
-  ViewShadowNode(
-    const SharedViewShadowNode &shadowNode,
-    const SharedViewProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
-  );
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   ComponentName getComponentName() const override;
-
-  void appendChild(const SharedShadowNode &child);
-
-#pragma mark - Equality
-
-  bool operator==(const ShadowNode& rhs) const override;
-
-#pragma mark - DebugStringConvertible
-
-  SharedDebugStringConvertibleList getDebugProps() const override;
-
-private:
-
-#pragma mark - LayoutableShadowNode
-
-  SharedLayoutableShadowNodeList getLayoutableChildNodes() const override;
-  SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) override;
 };
 
 } // namespace react
