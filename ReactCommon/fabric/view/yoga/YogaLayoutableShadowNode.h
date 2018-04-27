@@ -76,10 +76,6 @@ public:
   
   void layoutChildren(LayoutContext layoutContext) override;
 
-#pragma mark - DebugStringConvertible
-
-  SharedDebugStringConvertibleList getDebugProps() const override;
-
 private:
   mutable SharedYogaNode yogaNode_;
 

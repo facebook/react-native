@@ -138,7 +138,7 @@ public:
     auto basePropsList = ShadowNode::getDebugProps();
     std::move(basePropsList.begin(), basePropsList.end(), std::back_inserter(list));
 
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("layout", "", YogaLayoutableShadowNode::getDebugProps()));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("layout", "", LayoutableShadowNode::getDebugProps()));
 
     return list;
   }

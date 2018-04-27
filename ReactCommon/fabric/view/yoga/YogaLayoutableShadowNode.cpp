@@ -130,42 +130,6 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-#pragma mark - DebugStringConvertible
-
-SharedDebugStringConvertibleList YogaLayoutableShadowNode::getDebugProps() const {
-  // TODO: Move to the base class and return `layoutMetrics` instead.
-
-  SharedDebugStringConvertibleList list = {};
-
-  if (getHasNewLayout()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
-  }
-
-  YGLayout defaultYogaLayout = YGLayout();
-  defaultYogaLayout.direction = YGDirectionLTR;
-  YGLayout currentYogaLayout = std::const_pointer_cast<YGNode>(yogaNode_)->getLayout();
-
-#define YOGA_LAYOUT_PROPS_ADD_TO_SET(stringName, propertyName, accessor, convertor) \
-  { \
-    auto currentValueString = convertor(currentYogaLayout.propertyName accessor); \
-    auto defaultValueString = convertor(defaultYogaLayout.propertyName accessor); \
-    if (currentValueString != defaultValueString) { \
-      list.push_back(std::make_shared<DebugStringConvertibleItem>(#stringName, currentValueString)); \
-    } \
-  }
-
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(position, position, , stringFromYogaPosition)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(dimensions, dimensions, , stringFromYogaDimensions)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(margin, margin, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(border, border, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(padding, padding, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(direction, direction, , stringFromYogaStyleDirection)
-
-  return list;
-}
-
-#pragma mark - Helpers
-
 #pragma mark - Yoga Connectors
 
 YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex) {
