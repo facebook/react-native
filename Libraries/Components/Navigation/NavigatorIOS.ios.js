@@ -79,9 +79,7 @@ const SystemIcons = keyMirror(SystemIconLabels);
 
 type SystemButtonType = $Enum<typeof SystemIconLabels>;
 
-type Route = {
-  component: Function,
-  title: string,
+type OptionalRouteParams = {
   titleImage?: Object,
   passProps?: Object,
   backButtonTitle?: string,
@@ -95,6 +93,18 @@ type Route = {
   rightButtonSystemIcon?: SystemButtonType,
   onRightButtonPress?: Function,
   wrapperStyle?: any,
+};
+
+type Route = {
+  component: Function,
+  title: string,
+  ...OptionalRouteParams,
+};
+
+type UpdateRoute = {
+  component?: Function,
+  title?: string,
+  ...OptionalRouteParams,
 };
 
 type State = {
@@ -526,6 +536,8 @@ const NavigatorIOS = createReactClass({
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
+      updateAtIndex: this.updateAtIndex,
+      update: this.update,
     };
   },
 
@@ -826,6 +838,45 @@ const NavigatorIOS = createReactClass({
     }
     this.replaceAtIndex(route, 0);
     this.popToRoute(route);
+  },
+
+  /**
+   * Updates the route at the index. See `updateRoute`
+   * @param routeParams params to merge into the route.
+   * @param index The route into the stack that should be replaced.
+   *    If it is negative, it counts from the back of the stack.
+   */
+  updateAtIndex(route: UpdateRoute, index: number) {
+    invariant(!!route, 'Must supply route to replace');
+    invariant(!route.component, 'Cannot update component');
+
+    if (index < 0) {
+      index += this.state.routeStack.length;
+    }
+
+    if (this.state.routeStack.length <= index) {
+      return;
+    }
+
+    // I don't believe we need to lock for a replace since there's no
+    // navigation actually happening
+    const nextRouteStack = this.state.routeStack.slice();
+    nextRouteStack[index] = { ...this.state.routeStack[index], ...route };
+
+    this.setState({
+      routeStack: nextRouteStack,
+      makingNavigatorRequest: false,
+      updatingAllIndicesAtOrBeyond: index,
+    });
+  },
+
+  /**
+   * Updates the current route. Can be used to change the bar colour, title, etc. Merges the new
+   * route params with the existing route.
+   * @param routeParams params to merge into the route.
+   */
+  update(route: UpdateRoute) {
+    this.updateAtIndex(route, -1);
   },
 
   _handleNavigationComplete: function(e: Event) {

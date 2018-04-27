@@ -13,6 +13,40 @@
 @synthesize leftButtonItem = _leftButtonItem;
 @synthesize rightButtonItem = _rightButtonItem;
 
+- (id)propertiesChanged
+{
+  return nil;
+}
+
++ (NSSet *)keyPathsForValuesAffectingPropertiesChanged
+{
+  // all properties that effects the navigation bar
+  NSString * const properties[] = {
+    @"navigationBarHidden",
+    @"shadowHidden",
+    @"tintColor",
+    @"barTintColor",
+    @"barStyle",
+    @"translucent",
+    @"title",
+    @"titleTextColor",
+    @"titleImage",
+    @"backButtonIcon",
+    @"backButtonTitle",
+    @"leftButtonTitle",
+    @"leftButtonIcon",
+    @"leftButtonSystemIcon",
+    @"rightButtonIcon",
+    @"rightButtonTitle",
+    @"rightButtonSystemIcon",
+    @"onLeftButtonPress",
+    @"onRightButtonPress",
+  };
+
+  NSUInteger numProps = (NSUInteger) (sizeof(properties) / sizeof(NSString*));
+  return [NSSet setWithObjects:properties count:numProps];
+}
+
 - (UIImageView *)titleImageView
 {
   if (_titleImage) {

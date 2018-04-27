@@ -147,6 +147,12 @@ class NavigatorIOSExamplePage extends React.Component<$FlowFixMeProps> {
           {this._renderRow('Pop to top', () => {
             this.props.navigator.popToTop();
           })}
+          {this._renderRow('Change Title', () => {
+            this.props.navigator.update({ title: 'Title Changed!' });
+          })}
+          {this._renderRow('Change First Page Title', () => {
+            this.props.navigator.updateAtIndex({ title: 'First Page' }, 0);
+          })}
           {this._renderReplace()}
           {this._renderReplacePrevious()}
           {this._renderReplacePreviousAndPop()}
