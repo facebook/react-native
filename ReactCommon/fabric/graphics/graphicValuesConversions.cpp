@@ -7,10 +7,12 @@
 
 #include "graphicValuesConversions.h"
 
+#include <folly/Conv.h>
+
 namespace facebook {
 namespace react {
 
-SharedColor colorFromDynamic(folly::dynamic value) {
+SharedColor colorFromDynamic(const folly::dynamic &value) {
   float red;
   float green;
   float blue;
@@ -37,7 +39,7 @@ SharedColor colorFromDynamic(folly::dynamic value) {
   return colorFromComponents(red, green, blue, alpha);
 }
 
-std::string colorNameFromColor(SharedColor value) {
+std::string colorNameFromColor(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
   const float ratio = 256;
   return "rgba(" +
@@ -45,6 +47,26 @@ std::string colorNameFromColor(SharedColor value) {
     folly::to<std::string>(round(components.green * ratio)) + ", " +
     folly::to<std::string>(round(components.blue * ratio)) + ", " +
     folly::to<std::string>(round(components.alpha * ratio)) + ")";
+}
+
+std::string stringFromPoint(const Point &point) {
+  return "{" + folly::to<std::string>(point.x) + ", " + folly::to<std::string>(point.y) + "}";
+}
+
+std::string stringFromSize(const Size &size) {
+  return "{" + folly::to<std::string>(size.width) + ", " + folly::to<std::string>(size.height) + "}";
+}
+
+std::string stringFromRect(const Rect &rect) {
+  return "{" + stringFromPoint(rect.origin) + ", " + stringFromSize(rect.size) + "}";
+}
+
+std::string stringFromEdgeInsets(const EdgeInsets &edgeInsets) {
+  return "{" +
+    folly::to<std::string>(edgeInsets.left) + ", " +
+    folly::to<std::string>(edgeInsets.top) + ", " +
+    folly::to<std::string>(edgeInsets.right) + ", " +
+    folly::to<std::string>(edgeInsets.bottom) + "}";
 }
 
 } // namespace react

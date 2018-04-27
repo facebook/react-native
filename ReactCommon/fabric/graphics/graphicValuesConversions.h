@@ -9,12 +9,22 @@
 
 #include <folly/dynamic.h>
 #include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
 
-SharedColor colorFromDynamic(folly::dynamic value);
-std::string colorNameFromColor(SharedColor value);
+#pragma mark - Color
+
+SharedColor colorFromDynamic(const folly::dynamic &value);
+std::string colorNameFromColor(const SharedColor &value);
+
+#pragma mark - Geometry
+
+std::string stringFromPoint(const Point &point);
+std::string stringFromSize(const Size &size);
+std::string stringFromRect(const Rect &rect);
+std::string stringFromEdgeInsets(const EdgeInsets &edgeInsets);
 
 } // namespace react
 } // namespace facebook
