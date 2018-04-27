@@ -76,7 +76,11 @@ static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
+  [self updateScrollViewInsets];
+}
 
+- (void)updateScrollViewInsets
+{
   if (_previousTopLayoutLength != _currentTopLayoutGuide.length ||
       _previousBottomLayoutLength != _currentBottomLayoutGuide.length) {
     RCTFindScrollViewAndRefreshContentInsetInView(_contentView);
@@ -172,6 +176,8 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
 {
   if (object == _navItem) {
     [self updateNavigationBar:false];
+    // In case the navigation bar was hidden
+    [self updateScrollViewInsets];
   }
 }
 
