@@ -25,13 +25,15 @@ ShadowNode::ShadowNode(
   const Tag &rootTag,
   const InstanceHandle &instanceHandle,
   const SharedProps &props,
-  const SharedShadowNodeSharedList &children
+  const SharedShadowNodeSharedList &children,
+  const ShadowNodeCloneFunction &cloneFunction
 ):
   tag_(tag),
   rootTag_(rootTag),
   instanceHandle_(instanceHandle),
   props_(props),
   children_(std::make_shared<SharedShadowNodeList>(*children)),
+  cloneFunction_(cloneFunction),
   revision_(1) {}
 
 ShadowNode::ShadowNode(
@@ -45,7 +47,16 @@ ShadowNode::ShadowNode(
   props_(props ? props : shadowNode->props_),
   children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
   sourceNode_(shadowNode),
+  cloneFunction_(shadowNode->cloneFunction_),
   revision_(shadowNode->revision_ + 1) {}
+
+SharedShadowNode ShadowNode::clone(
+  const SharedProps &props,
+  const SharedShadowNodeSharedList &children
+) const {
+  assert(cloneFunction_);
+  return cloneFunction_(shared_from_this(), props_, children_);
+}
 
 #pragma mark - Getters
 

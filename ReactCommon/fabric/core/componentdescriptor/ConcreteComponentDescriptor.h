@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/Props.h>
@@ -40,7 +41,14 @@ public:
     const InstanceHandle &instanceHandle,
     const SharedProps &props
   ) const override {
-    return std::make_shared<ShadowNodeT>(tag, rootTag, instanceHandle, std::static_pointer_cast<const ConcreteProps>(props));
+    return std::make_shared<ShadowNodeT>(
+      tag,
+      rootTag,
+      instanceHandle,
+      std::static_pointer_cast<const ConcreteProps>(props),
+      ShadowNode::emptySharedShadowNodeSharedList(),
+      getCloneFunction()
+    );
   }
 
   SharedShadowNode cloneShadowNode(
@@ -67,6 +75,18 @@ public:
     return ShadowNodeT::Props(rawProps, props);
   };
 
+private:
+  mutable ShadowNodeCloneFunction cloneFunction_;
+
+  ShadowNodeCloneFunction getCloneFunction() const {
+    if (!cloneFunction_) {
+      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedShadowNodeSharedList &children) {
+        return this->cloneShadowNode(shadowNode, props, children);
+      };
+    }
+
+    return cloneFunction_;
+  }
 };
 
 } // namespace react

@@ -21,14 +21,16 @@ ViewShadowNode::ViewShadowNode(
   const Tag &rootTag,
   const InstanceHandle &instanceHandle,
   const SharedViewProps &props,
-  const SharedShadowNodeSharedList &children
+  const SharedShadowNodeSharedList &children,
+  const ShadowNodeCloneFunction &cloneFunction
 ):
   ConcreteShadowNode(
     tag,
     rootTag,
     instanceHandle,
     props,
-    children
+    children,
+    cloneFunction
   ),
   AccessibleShadowNode(
     props
@@ -92,9 +94,9 @@ SharedLayoutableShadowNodeList ViewShadowNode::getLayoutableChildNodes() const {
 SharedLayoutableShadowNode ViewShadowNode::cloneAndReplaceChild(const SharedLayoutableShadowNode &child) {
   ensureUnsealed();
 
-  auto viewShadowNodeChild = std::dynamic_pointer_cast<const ViewShadowNode>(child);
-  assert(viewShadowNodeChild);
-  auto viewShadowNodeChildClone = std::make_shared<ViewShadowNode>(viewShadowNodeChild);
+  auto childShadowNode = std::dynamic_pointer_cast<const ShadowNode>(child);
+  assert(childShadowNode);
+  auto childShadowNodeClone = childShadowNode->clone();
 
   // This is overloading of `SharedLayoutableShadowNode::cloneAndReplaceChild`,
   // the method is used to clone some node as a preparation for future mutation
@@ -107,10 +109,11 @@ SharedLayoutableShadowNode ViewShadowNode::cloneAndReplaceChild(const SharedLayo
   // In other words, if we don't compensate this change here,
   // the Diffing algorithm will compare wrong trees
   // ("new-but-not-laid-out-yet vs. new" instead of "committed vs. new").
-  viewShadowNodeChildClone->shallowSourceNode();
+  auto nonConstChildShadowNodeClone = std::const_pointer_cast<ShadowNode>(childShadowNodeClone);
+  nonConstChildShadowNodeClone->shallowSourceNode();
 
-  ShadowNode::replaceChild(viewShadowNodeChild, viewShadowNodeChildClone);
-  return std::static_pointer_cast<const LayoutableShadowNode>(viewShadowNodeChildClone);
+  ShadowNode::replaceChild(childShadowNode, childShadowNodeClone);
+  return std::dynamic_pointer_cast<const LayoutableShadowNode>(childShadowNodeClone);
 }
 
 #pragma mark - Equality

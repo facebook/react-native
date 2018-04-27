@@ -35,7 +35,8 @@ public:
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedViewProps &props = ViewShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList()
+    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
+    const ShadowNodeCloneFunction &cloneFunction = nullptr
   );
 
   ViewShadowNode(

@@ -51,14 +51,16 @@ public:
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedConcreteProps &props = ConcreteShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList()
+    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
+    const ShadowNodeCloneFunction &cloneFunction = nullptr
   ):
     ShadowNode(
       tag,
       rootTag,
       instanceHandle,
       (SharedProps)props,
-      children
+      children,
+      cloneFunction
     ) {};
 
   ConcreteShadowNode(

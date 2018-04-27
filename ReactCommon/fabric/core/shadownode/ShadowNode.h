@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <vector>
 
 #include <fabric/core/Props.h>
@@ -26,9 +27,12 @@ using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
+using ShadowNodeCloneFunction = std::function<SharedShadowNode(SharedShadowNode shadowNode, SharedProps props, SharedShadowNodeSharedList children)>;
+
 class ShadowNode:
   public virtual Sealable,
-  public virtual DebugStringConvertible {
+  public virtual DebugStringConvertible,
+  public std::enable_shared_from_this<ShadowNode> {
 public:
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
@@ -39,7 +43,8 @@ public:
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedProps &props = SharedProps(),
-    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList()
+    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList(),
+    const ShadowNodeCloneFunction &cloneFunction = nullptr
   );
 
   ShadowNode(
@@ -47,6 +52,14 @@ public:
     const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   );
+
+  /*
+   * Clones the shadow node using stored `cloneFunction`.
+   */
+  SharedShadowNode clone(
+    const SharedProps &props = nullptr,
+    const SharedShadowNodeSharedList &children = nullptr
+  ) const;
 
 #pragma mark - Getters
 
@@ -111,6 +124,12 @@ protected:
   WeakShadowNode sourceNode_;
 
 private:
+
+  /*
+   * A reference to a cloning function that understands how to clone
+   * the specific type of ShadowNode.
+   */
+  ShadowNodeCloneFunction cloneFunction_;
 
   /*
    * A number of the generation of the ShadowNode instance;
