@@ -81,6 +81,7 @@ private:
   ShadowNodeCloneFunction getCloneFunction() const {
     if (!cloneFunction_) {
       cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedShadowNodeSharedList &children) {
+        assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
         return this->cloneShadowNode(shadowNode, props, children);
       };
     }
