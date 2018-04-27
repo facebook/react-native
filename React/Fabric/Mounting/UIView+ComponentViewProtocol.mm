@@ -30,6 +30,12 @@
   // Default implementation does nothing.
 }
 
+- (void)updateLocalData:(facebook::react::SharedLocalData)localData
+           oldLocalData:(facebook::react::SharedLocalData)oldLocalData
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics
 {
