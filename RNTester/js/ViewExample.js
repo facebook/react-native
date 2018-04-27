@@ -27,6 +27,12 @@ var styles = StyleSheet.create({
     height: 50,
     marginTop: -10,
   },
+  alphaCompositing: {
+    justifyContent: 'space-around',
+    width: 100,
+    height: 50,
+    borderRadius: 100,
+  },
 });
 
 class ViewBorderStyleExample extends React.Component<{}, $FlowFixMeState> {
@@ -112,6 +118,52 @@ class ZIndexExample extends React.Component<{}, $FlowFixMeState> {
 
   _handlePress = () => {
     this.setState({flipped: !this.state.flipped});
+  };
+}
+
+class OffscreenAlphaCompositing extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    active: false
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this._handlePress} >
+        <View>
+          <Text style={{paddingBottom: 10}}>Blobs</Text>
+          <View style={{opacity: 1.0, paddingBottom: 30}} needsOffscreenAlphaCompositing={this.state.active} >
+            <View style={[
+              styles.alphaCompositing,
+              {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'}
+            ]}>
+            </View>
+            <View style={[
+              styles.alphaCompositing,
+              {marginTop: -50, marginLeft: 50, backgroundColor: '#F7CB15'}
+            ]}>
+            </View>
+          </View>
+          <Text style={{paddingBottom: 10}}>Same blobs, but their shared container have 0.5 opacity</Text>
+          <Text style={{paddingBottom: 10}}>Tap to {this.state.active ? "activate" : "deactivate"} needsOffscreenAlphaCompositing</Text>
+          <View style={{opacity: 0.8}} needsOffscreenAlphaCompositing={this.state.active} >
+            <View style={[
+              styles.alphaCompositing,
+              {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'}
+            ]}>
+            </View>
+            <View style={[
+              styles.alphaCompositing,
+              {marginTop: -50, marginLeft: 50, backgroundColor: '#F7CB15'}
+            ]}>
+            </View>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  _handlePress = () => {
+    this.setState({active: !this.state.active});
   };
 }
 
@@ -250,6 +302,12 @@ exports.examples = [
           </View>
         </View>
       );
+    },
+  },
+  {
+    title: 'Offscreen Alpha Compositing',
+    render: function() {
+      return <OffscreenAlphaCompositing />;
     },
   },
   {
