@@ -23,6 +23,7 @@ namespace react {
 class ShadowNode;
 
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
+using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;

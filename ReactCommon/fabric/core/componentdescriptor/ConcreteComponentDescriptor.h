@@ -41,7 +41,7 @@ public:
     const InstanceHandle &instanceHandle,
     const SharedProps &props
   ) const override {
-    return std::make_shared<ShadowNodeT>(
+    UnsharedShadowNode shadowNode = std::make_shared<ShadowNodeT>(
       tag,
       rootTag,
       instanceHandle,
@@ -49,14 +49,19 @@ public:
       ShadowNode::emptySharedShadowNodeSharedList(),
       getCloneFunction()
     );
+    adopt(shadowNode);
+    return shadowNode;
   }
 
   SharedShadowNode cloneShadowNode(
-    const SharedShadowNode &shadowNode,
+    const SharedShadowNode &sourceShadowNode,
     const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const override {
-    return std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(shadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
+    assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
+    UnsharedShadowNode shadowNode = std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
+    adopt(shadowNode);
+    return shadowNode;
   }
 
   void appendChild(
@@ -75,7 +80,14 @@ public:
     return ShadowNodeT::Props(rawProps, props);
   };
 
+protected:
+
+  virtual void adopt(UnsharedShadowNode shadowNode) const {
+    // Default implementation does nothing.
+  }
+
 private:
+
   mutable ShadowNodeCloneFunction cloneFunction_;
 
   ShadowNodeCloneFunction getCloneFunction() const {

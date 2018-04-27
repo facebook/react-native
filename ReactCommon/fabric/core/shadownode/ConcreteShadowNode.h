@@ -36,6 +36,7 @@ public:
     }
 
     auto concreteBaseProps = std::dynamic_pointer_cast<const PropsT>(baseProps);
+    assert(concreteBaseProps);
     auto props = std::make_shared<PropsT>(*concreteBaseProps);
     props->apply(rawProps);
     return props;
@@ -79,6 +80,8 @@ public:
   }
 
   const SharedConcreteProps getProps() const {
+    assert(std::dynamic_pointer_cast<const PropsT>(props_));
+
     return std::static_pointer_cast<const PropsT>(props_);
   }
 
