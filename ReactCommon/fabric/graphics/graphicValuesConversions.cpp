@@ -69,5 +69,23 @@ std::string stringFromEdgeInsets(const EdgeInsets &edgeInsets) {
     folly::to<std::string>(edgeInsets.bottom) + "}";
 }
 
+Float floatFromDynamic(const folly::dynamic &value) {
+  return value.asDouble();
+}
+
+Point pointFromDynamic(const folly::dynamic &value) {
+  if (value.isArray()) {
+    return Point {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+  }
+  abort();
+}
+
+Size sizeFromDynamic(const folly::dynamic &value) {
+  if (value.isArray()) {
+    return Size {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+  }
+  abort();
+}
+
 } // namespace react
 } // namespace facebook

@@ -26,5 +26,9 @@ std::string stringFromSize(const Size &size);
 std::string stringFromRect(const Rect &rect);
 std::string stringFromEdgeInsets(const EdgeInsets &edgeInsets);
 
+Float floatFromDynamic(const folly::dynamic &value);
+Point pointFromDynamic(const folly::dynamic &value);
+Size sizeFromDynamic(const folly::dynamic &value);
+
 } // namespace react
 } // namespace facebook
