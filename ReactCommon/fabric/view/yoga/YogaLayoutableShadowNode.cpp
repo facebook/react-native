@@ -12,6 +12,7 @@
 
 #include <yoga/Yoga.h>
 #include <fabric/core/LayoutContext.h>
+#include <fabric/core/LayoutConstraints.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 #include "yogaValuesConversions.h"
@@ -90,6 +91,12 @@ void YogaLayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
 
 #pragma mark - Mutating Methods
 
+void YogaLayoutableShadowNode::enableMeasurement() {
+  ensureUnsealed();
+
+  yogaNode_->setMeasureFunc(YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+}
+
 void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child) {
   ensureUnsealed();
 
@@ -162,6 +169,45 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYoga
   assert(newShadowNode);
 
   return newShadowNode->yogaNode_.get();
+}
+
+YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode) {
+  YogaLayoutableShadowNode *shadowNodeRawPtr = (YogaLayoutableShadowNode *)yogaNode->getContext();
+  assert(shadowNodeRawPtr);
+
+  Size minimumSize = Size {0, 0};
+  Size maximumSize = Size {kFloatMax, kFloatMax};
+
+  switch (widthMode) {
+    case YGMeasureModeUndefined:
+      break;
+    case YGMeasureModeExactly:
+      minimumSize.width = fabricFloatFromYogaFloat(width);
+      maximumSize.width = fabricFloatFromYogaFloat(width);
+      break;
+    case YGMeasureModeAtMost:
+      maximumSize.width = fabricFloatFromYogaFloat(width);
+      break;
+  }
+
+  switch (heightMode) {
+    case YGMeasureModeUndefined:
+      break;
+    case YGMeasureModeExactly:
+      minimumSize.height = fabricFloatFromYogaFloat(height);
+      maximumSize.height = fabricFloatFromYogaFloat(height);
+      break;
+    case YGMeasureModeAtMost:
+      maximumSize.height = fabricFloatFromYogaFloat(height);
+      break;
+  }
+
+  Size size = shadowNodeRawPtr->measure(LayoutConstraints {minimumSize, maximumSize});
+
+  return YGSize {
+    yogaFloatFromFabricFloat(size.width),
+    yogaFloatFromFabricFloat(size.height)
+  };
 }
 
 void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children) {

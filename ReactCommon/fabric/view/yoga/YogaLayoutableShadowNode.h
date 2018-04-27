@@ -55,6 +55,12 @@ public:
 #pragma mark - Mutating Methods
 
   /*
+   * Connects `measureFunc` function of Yoga node with
+   * `LayoutableShadowNode::measure()` method.
+   */
+  void enableMeasurement();
+
+  /*
    * Appends `child`'s Yoga node to the own Yoga node.
    * So, it complements `ShadowNode::appendChild(...)` functionality from Yoga
    * perspective.
@@ -82,6 +88,7 @@ private:
   static SharedYogaConfig suitableYogaConfig();
   static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children);
   static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
+  static YGSize yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
 };
 
 } // namespace react

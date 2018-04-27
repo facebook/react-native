@@ -20,6 +20,9 @@ using Float = CGFloat;
  */
 const Float kFloatUndefined = CGFLOAT_MAX;
 
+const Float kFloatMax = CGFLOAT_MAX;
+const Float kFloatMin = CGFLOAT_MIN;
+
 /*
  * Point
  */
