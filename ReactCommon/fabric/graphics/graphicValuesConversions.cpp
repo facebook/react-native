@@ -36,7 +36,7 @@ SharedColor colorFromDynamic(const folly::dynamic &value) {
     abort();
   }
 
-  return colorFromComponents(red, green, blue, alpha);
+  return colorFromComponents({red, green, blue, alpha});
 }
 
 std::string colorNameFromColor(const SharedColor &value) {
