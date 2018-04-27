@@ -11,9 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
-#include <fabric/core/Sealable.h>
 #include <fabric/core/ReactPrimitives.h>
+#include <fabric/core/Sealable.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -80,6 +81,14 @@ public:
    */
   SharedShadowNode getSourceNode() const;
 
+  /*
+   * Returns a local data associated with the node.
+   * `LocalData` object might be used for data exchange between native view and
+   * shadow node instances.
+   * Concrete type of the object depends on concrete type of the `ShadowNode`.
+   */
+  SharedLocalData getLocalData() const;
+
   void sealRecursive() const;
 
 #pragma mark - Mutating Methods
@@ -89,10 +98,17 @@ public:
   void clearSourceNode();
 
   /*
+   * Sets local data assosiated with the node.
+   * The node must be unsealed at this point.
+   */
+  void setLocalData(const SharedLocalData &localData);
+
+  /*
    * Replaces the current source node with its source node.
    * This method might be used for illuminating side-effects caused by the last
    * cloning operation which are not desirable from the diffing algorithm
    * perspective.
+   * The node must be unsealed at this point.
    */
   void shallowSourceNode();
 
@@ -122,6 +138,7 @@ protected:
   SharedProps props_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
+  SharedLocalData localData_;
 
 private:
 

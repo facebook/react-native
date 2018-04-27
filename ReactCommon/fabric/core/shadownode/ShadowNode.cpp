@@ -47,6 +47,7 @@ ShadowNode::ShadowNode(
   props_(props ? props : shadowNode->props_),
   children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
   sourceNode_(shadowNode),
+  localData_(shadowNode->localData_),
   cloneFunction_(shadowNode->cloneFunction_),
   revision_(shadowNode->revision_ + 1) {}
 
@@ -84,6 +85,10 @@ SharedShadowNode ShadowNode::getSourceNode() const {
   return sourceNode_.lock();
 }
 
+SharedLocalData ShadowNode::getLocalData() const {
+  return localData_;
+}
+
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
     return;
@@ -119,6 +124,11 @@ void ShadowNode::clearSourceNode() {
   sourceNode_.reset();
 }
 
+void ShadowNode::setLocalData(const SharedLocalData &localData) {
+  ensureUnsealed();
+  localData_ = localData;
+}
+
 void ShadowNode::shallowSourceNode() {
   ensureUnsealed();
 
@@ -135,7 +145,8 @@ bool ShadowNode::operator==(const ShadowNode& rhs) const {
   return
     tag_ == rhs.tag_ &&
     rootTag_ == rhs.rootTag_ &&
-    props_ == rhs.props_;
+    props_ == rhs.props_ &&
+    localData_ == rhs.localData_;
 }
 
 bool ShadowNode::operator!=(const ShadowNode& rhs) const {

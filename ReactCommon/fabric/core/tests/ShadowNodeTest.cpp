@@ -150,3 +150,32 @@ TEST(ShadowNodeTest, handleCloneFunction) {
   ASSERT_EQ(secondNode->getRootTag(), secondNodeClone->getRootTag());
   ASSERT_EQ(secondNode->getProps(), secondNodeClone->getProps());
 }
+
+TEST(ShadowNodeTest, handleLocalData) {
+  auto localData42 = std::make_shared<TestLocalData>();
+  localData42->setNumber(42);
+
+  auto anotherLocalData42 = std::make_shared<TestLocalData>();
+  anotherLocalData42->setNumber(42);
+
+  auto localDataOver9000 = std::make_shared<TestLocalData>();
+  localDataOver9000->setNumber(9001);
+
+  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto secondNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto thirdNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+
+  firstNode->setLocalData(localData42);
+  secondNode->setLocalData(localData42);
+  thirdNode->setLocalData(localDataOver9000);
+
+  // LocalData object are compared by pointer, not by value.
+  ASSERT_EQ(*firstNode, *secondNode);
+  ASSERT_NE(*firstNode, *thirdNode);
+  secondNode->setLocalData(anotherLocalData42);
+  ASSERT_NE(*firstNode, *secondNode);
+
+  // LocalData cannot be changed for sealed shadow node.
+  secondNode->sealRecursive();
+  ASSERT_ANY_THROW(secondNode->setLocalData(localDataOver9000));
+}
