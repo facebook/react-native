@@ -11,6 +11,7 @@
 
 #include <fabric/core/ConcreteComponentDescriptor.h>
 #include <fabric/core/ConcreteShadowNode.h>
+#include <fabric/core/LocalData.h>
 #include <fabric/core/ShadowNode.h>
 
 using namespace facebook::react;
@@ -19,6 +20,20 @@ using namespace facebook::react;
  * This defines a set of TestComponent classes: Props, ShadowNode, ComponentDescriptor.
  * To be used for testing purpose.
  */
+
+class TestLocalData: public LocalData {
+public:
+  void setNumber(const int &number) {
+    number_ = number;
+  }
+
+  int getNumber() const {
+    return number_;
+  }
+
+private:
+  int number_ {0};
+};
 
 class TestProps : public Props {
 public:

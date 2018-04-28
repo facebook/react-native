@@ -9,6 +9,7 @@
 
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <fabric/graphics/graphicValuesConversions.h>
+#include <fabric/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -17,32 +18,10 @@ void ViewProps::apply(const RawProps &rawProps) {
   Props::apply(rawProps);
   YogaStylableProps::apply(rawProps);
 
-  for (auto const &pair : rawProps) {
-    auto const &name = pair.first;
-    auto const &value = pair.second;
-
-    #pragma mark View Specific Properties
-
-    if (name == "zIndex") {
-      zIndex_ = value.asInt();
-      continue;
-    }
-
-    if (name == "opacity") {
-      opacity_ = value.asDouble();
-      continue;
-    }
-
-    if (name == "color") {
-      foregroundColor_ = colorFromDynamic(value);
-      continue;
-    }
-
-    if (name == "backgroundColor") {
-      backgroundColor_ = colorFromDynamic(value);
-      continue;
-    }
-  }
+  applyRawProp(rawProps, "zIndex", zIndex_);
+  applyRawProp(rawProps, "opacity", opacity_);
+  applyRawProp(rawProps, "color", foregroundColor_);
+  applyRawProp(rawProps, "backgroundColor", backgroundColor_);
 }
 
 #pragma mark - Getters

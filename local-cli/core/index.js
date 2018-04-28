@@ -77,9 +77,7 @@ const defaultRNConfig = {
         const name = pathToCommands.split(path.sep)[0];
 
         return attachPackage(
-          // $FlowFixMe non-literal require
           require(path.join(appRoot, 'node_modules', pathToCommands)),
-          // $FlowFixMe non-literal require
           require(path.join(appRoot, 'node_modules', name, 'package.json'))
         );
       });

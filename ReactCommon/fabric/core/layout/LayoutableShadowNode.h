@@ -13,6 +13,7 @@
 
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -101,6 +102,10 @@ protected:
    * Returns true if the metrics are different from previous ones.
    */
   virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+#pragma mark - DebugStringConvertible
+
+  SharedDebugStringConvertibleList getDebugProps() const;
 
 private:
   LayoutMetrics layoutMetrics_ {};

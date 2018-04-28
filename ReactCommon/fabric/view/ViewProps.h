@@ -33,19 +33,19 @@ public:
   SharedColor getForegroundColor() const;
   SharedColor getBackgroundColor() const;
 
+#pragma mark - DebugStringConvertible
+
+  SharedDebugStringConvertibleList getDebugProps() const override;
+
 private:
   int zIndex_ {0};
-  float opacity_ {1.0};
+  Float opacity_ {1.0};
 
   SharedColor foregroundColor_ {nullptr};
   SharedColor backgroundColor_ {nullptr};
 
   SharedColor shadowColor_ {nullptr};
   Point shadowOffset_ {0, 0};
-
-#pragma mark - DebugStringConvertible
-
-  SharedDebugStringConvertibleList getDebugProps() const override;
 };
 
 } // namespace react

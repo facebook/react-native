@@ -12,6 +12,7 @@
 
 #include <yoga/Yoga.h>
 #include <fabric/core/LayoutContext.h>
+#include <fabric/core/LayoutConstraints.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 #include "yogaValuesConversions.h"
@@ -90,6 +91,12 @@ void YogaLayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
 
 #pragma mark - Mutating Methods
 
+void YogaLayoutableShadowNode::enableMeasurement() {
+  ensureUnsealed();
+
+  yogaNode_->setMeasureFunc(YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
+}
+
 void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child) {
   ensureUnsealed();
 
@@ -130,42 +137,6 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-#pragma mark - DebugStringConvertible
-
-SharedDebugStringConvertibleList YogaLayoutableShadowNode::getDebugProps() const {
-  // TODO: Move to the base class and return `layoutMetrics` instead.
-
-  SharedDebugStringConvertibleList list = {};
-
-  if (getHasNewLayout()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
-  }
-
-  YGLayout defaultYogaLayout = YGLayout();
-  defaultYogaLayout.direction = YGDirectionLTR;
-  YGLayout currentYogaLayout = std::const_pointer_cast<YGNode>(yogaNode_)->getLayout();
-
-#define YOGA_LAYOUT_PROPS_ADD_TO_SET(stringName, propertyName, accessor, convertor) \
-  { \
-    auto currentValueString = convertor(currentYogaLayout.propertyName accessor); \
-    auto defaultValueString = convertor(defaultYogaLayout.propertyName accessor); \
-    if (currentValueString != defaultValueString) { \
-      list.push_back(std::make_shared<DebugStringConvertibleItem>(#stringName, currentValueString)); \
-    } \
-  }
-
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(position, position, , stringFromYogaPosition)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(dimensions, dimensions, , stringFromYogaDimensions)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(margin, margin, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(border, border, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(padding, padding, , stringFromYogaEdges)
-  YOGA_LAYOUT_PROPS_ADD_TO_SET(direction, direction, , stringFromYogaStyleDirection)
-
-  return list;
-}
-
-#pragma mark - Helpers
-
 #pragma mark - Yoga Connectors
 
 YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex) {
@@ -198,6 +169,45 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYoga
   assert(newShadowNode);
 
   return newShadowNode->yogaNode_.get();
+}
+
+YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode) {
+  YogaLayoutableShadowNode *shadowNodeRawPtr = (YogaLayoutableShadowNode *)yogaNode->getContext();
+  assert(shadowNodeRawPtr);
+
+  Size minimumSize = Size {0, 0};
+  Size maximumSize = Size {kFloatMax, kFloatMax};
+
+  switch (widthMode) {
+    case YGMeasureModeUndefined:
+      break;
+    case YGMeasureModeExactly:
+      minimumSize.width = fabricFloatFromYogaFloat(width);
+      maximumSize.width = fabricFloatFromYogaFloat(width);
+      break;
+    case YGMeasureModeAtMost:
+      maximumSize.width = fabricFloatFromYogaFloat(width);
+      break;
+  }
+
+  switch (heightMode) {
+    case YGMeasureModeUndefined:
+      break;
+    case YGMeasureModeExactly:
+      minimumSize.height = fabricFloatFromYogaFloat(height);
+      maximumSize.height = fabricFloatFromYogaFloat(height);
+      break;
+    case YGMeasureModeAtMost:
+      maximumSize.height = fabricFloatFromYogaFloat(height);
+      break;
+  }
+
+  Size size = shadowNodeRawPtr->measure(LayoutConstraints {minimumSize, maximumSize});
+
+  return YGSize {
+    yogaFloatFromFabricFloat(size.width),
+    yogaFloatFromFabricFloat(size.height)
+  };
 }
 
 void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children) {
