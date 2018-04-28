@@ -90,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1057,9 +1058,11 @@ public class ReactInstanceManager {
     }
 
     synchronized (mAttachedRootViews) {
-      for (ReactRootView rootView : mAttachedRootViews) {
+      for (Iterator iterator = mAttachedRootViews.iterator(); iterator.hasNext();) {
+        ReactRootView rootView = (ReactRootView) iterator.next();
         rootView.removeAllViews();
         rootView.setId(View.NO_ID);
+        iterator.remove();
       }
     }
 
