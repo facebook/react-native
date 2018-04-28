@@ -10,13 +10,40 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+/**
+* The RegEx used to parse Error.stack.
+*
+* JavaScriptCore has the following format:
+*
+*   Exception: Error: argh
+*     func1@/path/to/file.js:2:18
+*     func2@/path/to/file.js:6:8
+*     eval@[native code]
+*     global code@/path/to/file.js:13:5
+*
+* Another supported format:
+*
+*  Error: argh
+*   at func1 (/path/to/file.js:2:18)
+*   at func2 (/path/to/file.js:6:8)
+*   at eval (native)
+*   at global (/path/to/file.js:13:5)
+*/
 static NSRegularExpression *RCTJSStackFrameRegex()
 {
   static dispatch_once_t onceToken;
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
+    NSString *pattern =
+      @"\\s*(?:at)?\\s*" // Skip leading "at" and whitespace, noncapturing
+      @"(.+?)"           // Capture the function name (group 1)
+      @"\\s*[@(]"        // Skip whitespace, then @ or (
+      @"(.*):"           // Capture the file name (group 2), then colon
+      @"(\\d+):(\\d+)"   // Line and column number (groups 3 and 4)
+      @"\\)?$"           // Optional closing paren and EOL
+    ;
     NSError *regexError;
-    _regex = [NSRegularExpression regularExpressionWithPattern:@"^(?:([^@]+)@)?(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
+    _regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&regexError];
     if (regexError) {
       RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
     }

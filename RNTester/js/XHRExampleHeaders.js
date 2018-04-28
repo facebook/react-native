@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noflow
- * @providesModule XHRExampleHeaders
  */
 'use strict';
 

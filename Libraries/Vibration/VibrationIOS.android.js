@@ -6,7 +6,6 @@
  *
  * Stub of VibrationIOS for Android.
  *
- * @providesModule VibrationIOS
  */
 'use strict';
 

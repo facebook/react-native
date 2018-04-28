@@ -17,6 +17,7 @@ import android.widget.SeekBar;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -61,6 +62,20 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
     private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopy() {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
     }
 
     @Override

@@ -106,7 +106,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private int mScreenY;
   private int mScreenWidth;
   private int mScreenHeight;
-  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mDefaultPadding;
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private YogaNode mYogaNode;
@@ -115,6 +115,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private @Nullable ReactStylesDiffMap mNewProps;
 
   public ReactShadowNodeImpl() {
+    mDefaultPadding = new Spacing(0);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? new YogaNode(sYogaConfig) : node;
@@ -133,6 +134,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
     mIsLayoutOnly = original.mIsLayoutOnly;
     mNativeParent = original.mNativeParent;
+    mDefaultPadding = new Spacing(original.mDefaultPadding);
     // Cloned nodes should be always updated.
     mNodeUpdated = true;
     // "cached" screen coordinates are not cloned because FabricJS not always clone the last

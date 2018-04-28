@@ -90,9 +90,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
+  private @Nullable Path mCenterDrawPath;
   private @Nullable RectF mInnerClipTempRectForBorderRadius;
   private @Nullable RectF mOuterClipTempRectForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadiusOutline;
+  private @Nullable RectF mTempRectForCenterDrawPath;
   private @Nullable PointF mInnerTopLeftCorner;
   private @Nullable PointF mInnerTopRightCorner;
   private @Nullable PointF mInnerBottomRightCorner;
@@ -355,7 +357,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
           mPaint.setColor(ColorUtil.multiplyColorAlpha(borderColor, mAlpha));
           mPaint.setStyle(Paint.Style.STROKE);
           mPaint.setStrokeWidth(fullBorderWidth);
-          canvas.drawPath(mInnerClipPathForBorderRadius, mPaint);
+          canvas.drawPath(mCenterDrawPath, mPaint);
         }
       }
       //In the case of uneven border widths/colors draw quadrilateral in each direction
@@ -469,6 +471,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
         }
       }
     }
+
     canvas.restore();
   }
 
@@ -491,6 +494,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mPathForBorderRadiusOutline = new Path();
     }
 
+    if (mCenterDrawPath == null) {
+      mCenterDrawPath = new Path();
+    }
+
     if (mInnerClipTempRectForBorderRadius == null) {
       mInnerClipTempRectForBorderRadius = new RectF();
     }
@@ -503,13 +510,24 @@ public class ReactViewBackgroundDrawable extends Drawable {
       mTempRectForBorderRadiusOutline = new RectF();
     }
 
+    if (mTempRectForCenterDrawPath == null) {
+      mTempRectForCenterDrawPath = new RectF();
+    }
+
     mInnerClipPathForBorderRadius.reset();
     mOuterClipPathForBorderRadius.reset();
     mPathForBorderRadiusOutline.reset();
+    mCenterDrawPath.reset();
 
     mInnerClipTempRectForBorderRadius.set(getBounds());
     mOuterClipTempRectForBorderRadius.set(getBounds());
     mTempRectForBorderRadiusOutline.set(getBounds());
+    mTempRectForCenterDrawPath.set(getBounds());
+
+    float fullBorderWidth = getFullBorderWidth();
+    if (fullBorderWidth > 0) {
+      mTempRectForCenterDrawPath.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
+    }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
 
@@ -639,6 +657,20 @@ public class ReactViewBackgroundDrawable extends Drawable {
         bottomRightRadius + extraRadiusForOutline,
         bottomLeftRadius + extraRadiusForOutline,
         bottomLeftRadius + extraRadiusForOutline
+      },
+      Path.Direction.CW);
+
+    mCenterDrawPath.addRoundRect(
+      mTempRectForCenterDrawPath,
+      new float[] {
+        innerTopLeftRadiusX + extraRadiusForOutline,
+        innerTopLeftRadiusY + extraRadiusForOutline,
+        innerTopRightRadiusX + extraRadiusForOutline,
+        innerTopRightRadiusY + extraRadiusForOutline,
+        innerBottomRightRadiusX + extraRadiusForOutline,
+        innerBottomRightRadiusY + extraRadiusForOutline,
+        innerBottomLeftRadiusX + extraRadiusForOutline,
+        innerBottomLeftRadiusY + extraRadiusForOutline
       },
       Path.Direction.CW);
 

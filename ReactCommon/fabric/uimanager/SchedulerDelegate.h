@@ -16,6 +16,9 @@ namespace react {
  */
 class SchedulerDelegate {
 public:
+
+  virtual ~SchedulerDelegate() = default;
+
   /*
    * Called right after Scheduler computed (and laid out) a new updated version
    * of the tree and calculated a set of mutation instructions which are

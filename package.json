@@ -37,6 +37,7 @@
     ],
     "haste": {
       "defaultPlatform": "ios",
+      "hasteImplModulePath": "<rootDir>/jest/hasteImpl.js",
       "providesModuleNodeModules": [
         "react-native"
       ],
@@ -142,7 +143,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.3.1"
+    "react": "16.3.2"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -165,8 +166,10 @@
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
     "lodash": "^4.17.5",
-    "metro": "^0.32.0",
-    "metro-core": "^0.32.0",
+    "metro": "^0.36.1",
+    "metro-babel-register": "^0.36.1",
+    "metro-core": "^0.36.1",
+    "metro-memory-fs": "^0.36.1",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -196,7 +199,10 @@
     "yargs": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/core": "7.0.0-beta.40",
+    "async": "^2.4.0",
     "babel-eslint": "8.2.1",
+    "babel-generator": "^6.26.0",
     "eslint": "4.17.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
@@ -206,12 +212,12 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.6.1",
     "eslint-plugin-react-native": "^3.2.1",
-    "flow-bin": "^0.70.0",
-    "jest": "23.0.0-alpha.4",
-    "jest-junit": "3.6.0",
-    "prettier": "1.9.1",
-    "react": "16.3.1",
-    "react-test-renderer": "16.3.1",
+    "flow-bin": "^0.71.0",
+    "jest": "23.0.0-beta.2",
+    "jest-junit": "3.7.0",
+    "prettier": "1.12.1",
+    "react": "16.3.2",
+    "react-test-renderer": "16.3.2",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }

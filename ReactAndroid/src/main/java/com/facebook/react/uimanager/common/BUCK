@@ -3,6 +3,10 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_
 rn_android_library(
     name = "common",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
+    ],
     visibility = [
         "PUBLIC",
     ],

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppContainer
  * @format
  * @flow
  */
@@ -27,7 +26,6 @@ type Props = {|
    * suppresses an error when upgrading Flow's support for React. To see the
    * error delete this comment and run Flow. */
   children?: React.Children,
-  fabric?: boolean,
   rootTag: number,
   WrapperComponent?: ?React.ComponentType<*>,
 |};
@@ -91,8 +89,7 @@ class AppContainer extends React.Component<Props, State> {
   render(): React.Node {
     let yellowBox = null;
     if (__DEV__) {
-      if (!global.__RCTProfileIsProfiling && !this.props.fabric) {
-        // TODO: Fabric doesn't support YellowBox.
+      if (!global.__RCTProfileIsProfiling) {
         const YellowBox = require('YellowBox');
         yellowBox = <YellowBox />;
       }

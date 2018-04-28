@@ -7,6 +7,7 @@
 
 package com.facebook.react.devsupport;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -33,6 +34,7 @@ import javax.annotation.Nullable;
 /**
  * Controller to display loading messages on top of the screen. All methods are thread safe.
  */
+@TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class DevLoadingViewController {
   private static final int COLOR_DARK_GREEN = Color.parseColor("#035900");
 
@@ -158,18 +160,16 @@ public class DevLoadingViewController {
       topOffset = rectangle.top;
     }
 
-    mDevLoadingPopup = new PopupWindow(
-            mDevLoadingView,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
+    mDevLoadingPopup = new PopupWindow(currentActivity);
     mDevLoadingPopup.setTouchable(false);
+    mDevLoadingPopup.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+    mDevLoadingPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
 
     mDevLoadingPopup.showAtLocation(
-            currentActivity.getWindow().getDecorView(),
-            Gravity.NO_GRAVITY,
-
-            0,
-            topOffset);
+      currentActivity.getWindow().getDecorView(),
+      Gravity.NO_GRAVITY,
+      0,
+      topOffset);
   }
 
   private void hideInternal() {

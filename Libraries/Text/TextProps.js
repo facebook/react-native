@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextProps
  * @flow
  * @format
  */
 
 'use strict';
+
+import type {AccessibilityTrait} from 'ViewAccessibility';
 
 import type {Node} from 'react';
 
@@ -28,6 +29,7 @@ type PressRetentionOffset = {
  */
 export type TextProps = $ReadOnly<{
   accessible?: ?boolean,
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   allowFontScaling?: ?boolean,
   children?: Node,
   ellipsizeMode?: 'clip' | 'head' | 'middle' | 'tail',

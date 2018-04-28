@@ -1,5 +1,4 @@
 /**
- * @providesModule Sample
  * @flow
  */
 'use strict';

@@ -29,7 +29,7 @@ class Scheduler:
 
 public:
   Scheduler();
-  ~Scheduler();
+  virtual ~Scheduler();
 
 #pragma mark - Root Nodes Managerment
 

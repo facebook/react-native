@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInput
  * @flow
  * @format
  */
@@ -638,6 +637,7 @@ const TextInput = createReactClass({
   getDefaultProps(): Object {
     return {
       allowFontScaling: true,
+      underlineColorAndroid: 'transparent',
     };
   },
   /**
