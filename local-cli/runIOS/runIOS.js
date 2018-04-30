@@ -297,7 +297,7 @@ module.exports = {
   ],
   options: [{
     command: '--simulator [string]',
-    description: 'Explicitly set simulator to use',
+    description: 'Explicitly set simulator to use. Optionally include iOS version between parenthesis at the end to match an exact version.',
     default: 'iPhone 6',
   } , {
     command: '--configuration [string]',
