@@ -64,7 +64,7 @@ TEST(parseMethodCalls, InvalidReturnFormat) {
   }
 }
 
-TEST(parseMethodCalls, NumberReturn) {
+TEST(parseMethodCalls, StringReturn) {
   auto jsText = "[[0],[0],[[\"foobar\"]]]";
   auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
@@ -74,7 +74,7 @@ TEST(parseMethodCalls, NumberReturn) {
   ASSERT_EQ("foobar", returnedCall.arguments[0].asString());
 }
 
-TEST(parseMethodCalls, StringReturn) {
+TEST(parseMethodCalls, NumberReturn) {
   auto jsText = "[[0],[0],[[42.16]]]";
   auto returnedCalls = parseMethodCalls(folly::parseJson(jsText));
   ASSERT_EQ(1, returnedCalls.size());
