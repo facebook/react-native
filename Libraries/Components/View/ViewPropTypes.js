@@ -73,8 +73,6 @@ export type ViewProps = {
 } & TVViewProps;
 
 module.exports = {
-  ...PlatformViewPropTypes,
-
   /**
    * When `true`, indicates that the view is an accessibility element.
    * By default, all the touchable elements are accessible.
@@ -427,4 +425,9 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
+  
+  /**
+   * Any additional platform-specific view prop types, or prop type overrides.
+   */
+  ...PlatformViewPropTypes,
 };
