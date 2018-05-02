@@ -384,6 +384,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
 
+    setGeolocationEnabled(webView, false);
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
@@ -536,6 +537,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     if (client != null && urlPrefixesForDefaultIntent != null) {
       client.setUrlPrefixesForDefaultIntent(urlPrefixesForDefaultIntent);
     }
+  }
+
+  @ReactProp(name = "geolocationEnabled")
+  public void setGeolocationEnabled(
+    WebView view,
+    @Nullable Boolean isGeolocationEnabled) {
+    view.getSettings().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
   }
 
   @Override

@@ -139,6 +139,12 @@ class WebView extends React.Component {
     domStorageEnabled: PropTypes.bool,
 
     /**
+     * Sets whether Geolocation is enabled. The default is false.
+     * @platform android
+     */
+    geolocationEnabled: PropTypes.bool,
+
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
@@ -310,6 +316,7 @@ class WebView extends React.Component {
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        geolocationEnabled={this.props.geolocationEnabled}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
