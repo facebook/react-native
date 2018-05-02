@@ -229,6 +229,12 @@ class WebView extends React.Component {
      * @platform android
      */
     urlPrefixesForDefaultIntent: PropTypes.arrayOf(PropTypes.string),
+    /**
+     * Used on Android only, a function that is called whenever the WebView's
+     * scroll position changes.
+     * @platform android
+     */
+    onScrollChanged: PropTypes.func,
   };
 
   static defaultProps = {
@@ -315,6 +321,7 @@ class WebView extends React.Component {
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
         urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}
+        onScrollChanged={this.props.onScrollChanged}
         {...nativeConfig.props}
       />;
 
