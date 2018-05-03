@@ -47,6 +47,7 @@ public class BundleDownloader {
   private @Nullable Call mDownloadBundleFromURLCall;
 
   public static class BundleInfo {
+    private @Nullable String mDeltaClientName;
     private @Nullable String mUrl;
     private int mFilesChangedCount;
 
@@ -59,6 +60,7 @@ public class BundleDownloader {
 
       try {
         JSONObject obj = new JSONObject(jsonStr);
+        info.mDeltaClientName = obj.getString("deltaClient");
         info.mUrl = obj.getString("url");
         info.mFilesChangedCount = obj.getInt("filesChangedCount");
       } catch (JSONException e) {
@@ -73,6 +75,7 @@ public class BundleDownloader {
       JSONObject obj = new JSONObject();
 
       try {
+        obj.put("deltaClient", mDeltaClientName);
         obj.put("url", mUrl);
         obj.put("filesChangedCount", mFilesChangedCount);
       } catch (JSONException e) {
@@ -81,6 +84,10 @@ public class BundleDownloader {
       }
 
       return obj.toString();
+    }
+
+    public @Nullable String getDeltaClient() {
+      return mDeltaClientName;
     }
 
     public String getUrl() {
@@ -281,7 +288,7 @@ public class BundleDownloader {
     }
 
     if (bundleInfo != null) {
-      populateBundleInfo(url, headers, bundleInfo);
+      populateBundleInfo(url, headers, clientType, bundleInfo);
     }
 
     File tmpFile = new File(outputFile.getPath() + ".tmp");
@@ -333,7 +340,8 @@ public class BundleDownloader {
     return true;
   }
 
-  private static void populateBundleInfo(String url, Headers headers, BundleInfo bundleInfo) {
+  private static void populateBundleInfo(String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
+    bundleInfo.mDeltaClientName = clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");
