@@ -375,7 +375,17 @@ public class DevServerHelper {
   public void downloadBundleFromURL(
     DevBundleDownloadListener callback,
     File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
-    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+  }
+
+  private BundleDeltaClient.ClientType getDeltaClientType() {
+    if (mSettings.isBundleDeltasCppEnabled()) {
+      return BundleDeltaClient.ClientType.NATIVE;
+    } else if (mSettings.isBundleDeltasEnabled()) {
+      return BundleDeltaClient.ClientType.DEV_SUPPORT;
+    } else {
+      return BundleDeltaClient.ClientType.NONE;
+    }
   }
 
   /**
