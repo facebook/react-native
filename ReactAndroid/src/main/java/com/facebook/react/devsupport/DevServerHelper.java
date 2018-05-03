@@ -479,10 +479,11 @@ public class DevServerHelper {
               callback.onPackagerStatusFetched(false);
               return;
             }
-            if (!PACKAGER_OK_STATUS.equals(body.string())) {
+            String bodyString = body.string(); // cannot call body.string() twice, stored it into variable. https://github.com/square/okhttp/issues/1240#issuecomment-68142603
+            if (!PACKAGER_OK_STATUS.equals(bodyString)) {
               FLog.e(
                   ReactConstants.TAG,
-                  "Got unexpected response from packager when requesting status: " + body.string());
+                  "Got unexpected response from packager when requesting status: " + bodyString);
               callback.onPackagerStatusFetched(false);
               return;
             }
