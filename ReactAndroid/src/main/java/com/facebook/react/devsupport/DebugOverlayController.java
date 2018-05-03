@@ -21,7 +21,6 @@ import android.widget.FrameLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
 import javax.annotation.Nullable;
@@ -96,43 +95,33 @@ import javax.annotation.Nullable;
   }
 
   private void showFpsDebugView() {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mFPSDebugViewContainer != null) {
-          return;
-        }
+    if (mFPSDebugViewContainer != null) {
+      return;
+    }
 
-        if (!permissionCheck(mReactContext)) {
-          FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
-          return;
-        }
+    if (!permissionCheck(mReactContext)) {
+      FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
+      return;
+    }
 
-        mFPSDebugViewContainer = new FpsView(mReactContext);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
-          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-              | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-          PixelFormat.TRANSLUCENT);
-        mWindowManager.addView(mFPSDebugViewContainer, params);
-      }
-    });
+    mFPSDebugViewContainer = new FpsView(mReactContext);
+    WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+      WindowManager.LayoutParams.MATCH_PARENT,
+      WindowManager.LayoutParams.MATCH_PARENT,
+      WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
+      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+      PixelFormat.TRANSLUCENT);
+    mWindowManager.addView(mFPSDebugViewContainer, params);
   }
 
   private void hideFpsDebugView() {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mFPSDebugViewContainer == null) {
-          return;
-        }
-        mFPSDebugViewContainer.removeAllViews();
-        mWindowManager.removeView(mFPSDebugViewContainer);
-        mFPSDebugViewContainer = null;
-      }
-    });
+    if (mFPSDebugViewContainer == null) {
+      return;
+    }
+    mFPSDebugViewContainer.removeAllViews();
+    mWindowManager.removeView(mFPSDebugViewContainer);
+    mFPSDebugViewContainer = null;
   }
 
   public void setFpsDebugViewVisible(boolean fpsDebugViewVisible) {
