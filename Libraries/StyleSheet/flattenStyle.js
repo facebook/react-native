@@ -4,41 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule flattenStyle
  * @flow
  * @format
  */
 'use strict';
-
-var ReactNativePropRegistry;
 
 import type {
   DangerouslyImpreciseStyle,
   DangerouslyImpreciseStyleProp,
 } from 'StyleSheet';
 
-function getStyle(style) {
-  if (ReactNativePropRegistry === undefined) {
-    ReactNativePropRegistry = require('ReactNativePropRegistry');
-  }
-  if (typeof style === 'number') {
-    return ReactNativePropRegistry.getByID(style);
-  }
-  return style;
-}
-
 function flattenStyle(
   style: ?DangerouslyImpreciseStyleProp,
 ): ?DangerouslyImpreciseStyle {
-  if (style == null) {
+  if (style === null || typeof style !== 'object') {
     return undefined;
   }
 
   if (!Array.isArray(style)) {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
-    return getStyle(style);
+    return style;
   }
 
   var result = {};

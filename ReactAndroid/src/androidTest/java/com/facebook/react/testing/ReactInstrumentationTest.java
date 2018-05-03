@@ -37,37 +37,17 @@ public abstract class ReactInstrumentationTest extends
     intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
     setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.loadBundle(
-              createReactInstanceSpecForTest(),
-              getBundleName(),
-              getEnableDevSupport());
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to load react bundle " + getBundleName(), t);
-    }
+    activity.loadBundle(
+        createReactInstanceSpecForTest(),
+        getBundleName(),
+        getEnableDevSupport());
   }
 
   /**
    * Renders this component within this test's activity
    */
   public void renderComponent(final String componentName) throws Exception {
-    final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.renderComponent(componentName, null);
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to render component " + componentName, t);
-    }
-    assertTrue("Layout never occurred!", activity.waitForLayout(5000));
+    getActivity().renderComponent(componentName, null);
     waitForBridgeAndUIIdle();
   }
 

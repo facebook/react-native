@@ -36,6 +36,7 @@ public:
     }
 
     auto concreteBaseProps = std::dynamic_pointer_cast<const PropsT>(baseProps);
+    assert(concreteBaseProps);
     auto props = std::make_shared<PropsT>(*concreteBaseProps);
     props->apply(rawProps);
     return props;
@@ -51,14 +52,16 @@ public:
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedConcreteProps &props = ConcreteShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList()
+    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
+    const ShadowNodeCloneFunction &cloneFunction = nullptr
   ):
     ShadowNode(
       tag,
       rootTag,
       instanceHandle,
       (SharedProps)props,
-      children
+      children,
+      cloneFunction
     ) {};
 
   ConcreteShadowNode(
@@ -76,7 +79,9 @@ public:
     return typeid(*this).hash_code();
   }
 
-  const SharedConcreteProps &getProps() const {
+  const SharedConcreteProps getProps() const {
+    assert(std::dynamic_pointer_cast<const PropsT>(props_));
+
     return std::static_pointer_cast<const PropsT>(props_);
   }
 

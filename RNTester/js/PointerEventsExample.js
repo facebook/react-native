@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule PointerEventsExample
  */
 'use strict';
 
@@ -251,4 +250,7 @@ exports.framework = 'React';
 exports.title = 'Pointer Events';
 exports.description = 'Demonstrates the use of the pointerEvents prop of a ' +
   'View to control how touches should be handled.';
+/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.70 was deployed. To see the error delete this comment
+ * and run Flow. */
 exports.examples = exampleClasses.map(infoToExample);

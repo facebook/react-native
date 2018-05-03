@@ -41,14 +41,11 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getSourceNode(), nullptr);
   ASSERT_EQ(node->getChildren()->size(), 0);
 
-  // TODO(#27369757): getProps() doesn't work
-  // ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());
-
-  // TODO(#27369757): verify Props are also sealed.
-  // ASSERT_TRUE(node->getProps()->getSealed());
+  ASSERT_TRUE(node->getProps()->getSealed());
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
@@ -93,4 +90,92 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto node5 = std::make_shared<TestShadowNode>(node4);
   node5->clearSourceNode();
   ASSERT_EQ(node5->getSourceNode(), nullptr);
+}
+
+TEST(ShadowNodeTest, handleSourceNode) {
+  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration);
+  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration);
+  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration);
+
+  // Ensure established shource nodes structure.
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeThirdGeneration);
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Shallow source node for the forth generation node.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeSecondGeneration);
+
+  // Shallow it one more time.
+  nodeForthGeneration->shallowSourceNode();
+  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeFirstGeneration);
+
+  // Ensure that 3th and 2nd were not affected.
+  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
+  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+}
+
+TEST(ShadowNodeTest, handleCloneFunction) {
+  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+
+  // The shadow node is not clonable if `cloneFunction` is not provided,
+  ASSERT_DEATH_IF_SUPPORTED(firstNode->clone(), "cloneFunction_");
+
+  auto secondNode = std::make_shared<TestShadowNode>(
+    9,
+    1,
+    (void *)NULL,
+    std::make_shared<const TestProps>(),
+    ShadowNode::emptySharedShadowNodeSharedList(),
+    [](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedShadowNodeSharedList &children) {
+      return std::make_shared<const TestShadowNode>(
+        std::static_pointer_cast<const TestShadowNode>(shadowNode),
+        props,
+        children
+      );
+    }
+  );
+
+  auto secondNodeClone = secondNode->clone();
+
+  // Those two nodes are *not* same.
+  ASSERT_NE(secondNode, secondNodeClone);
+
+  // `secondNodeClone` is an instance of `TestShadowNode`.
+  ASSERT_NE(std::dynamic_pointer_cast<const TestShadowNode>(secondNodeClone), nullptr);
+
+  // Both nodes have same content.
+  ASSERT_EQ(secondNode->getTag(), secondNodeClone->getTag());
+  ASSERT_EQ(secondNode->getRootTag(), secondNodeClone->getRootTag());
+  ASSERT_EQ(secondNode->getProps(), secondNodeClone->getProps());
+}
+
+TEST(ShadowNodeTest, handleLocalData) {
+  auto localData42 = std::make_shared<TestLocalData>();
+  localData42->setNumber(42);
+
+  auto anotherLocalData42 = std::make_shared<TestLocalData>();
+  anotherLocalData42->setNumber(42);
+
+  auto localDataOver9000 = std::make_shared<TestLocalData>();
+  localDataOver9000->setNumber(9001);
+
+  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto secondNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto thirdNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+
+  firstNode->setLocalData(localData42);
+  secondNode->setLocalData(localData42);
+  thirdNode->setLocalData(localDataOver9000);
+
+  // LocalData object are compared by pointer, not by value.
+  ASSERT_EQ(*firstNode, *secondNode);
+  ASSERT_NE(*firstNode, *thirdNode);
+  secondNode->setLocalData(anotherLocalData42);
+  ASSERT_NE(*firstNode, *secondNode);
+
+  // LocalData cannot be changed for sealed shadow node.
+  secondNode->sealRecursive();
+  ASSERT_ANY_THROW(secondNode->setLocalData(localDataOver9000));
 }

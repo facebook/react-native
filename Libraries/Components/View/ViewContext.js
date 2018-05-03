@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewContext
  * @flow
  * @format
  */
@@ -16,6 +15,8 @@ export type ViewChildContext = {|
   +isInAParentText: boolean,
 |};
 
-export const ViewContextTypes = {
-  isInAParentText: PropTypes.bool,
+module.exports = {
+  ViewContextTypes: {
+    isInAParentText: PropTypes.bool,
+  },
 };

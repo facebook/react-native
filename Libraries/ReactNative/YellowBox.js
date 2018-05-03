@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule YellowBox
  * @flow
  * @format
  */
@@ -172,7 +171,7 @@ function ensureSymbolicatedWarning(warning: string): void {
 
 function isWarningIgnored(warning: string): boolean {
   const isIgnored = IGNORED_WARNINGS.some((ignoredWarning: string) =>
-    warning.startsWith(ignoredWarning),
+    warning.includes(ignoredWarning),
   );
 
   if (isIgnored) {

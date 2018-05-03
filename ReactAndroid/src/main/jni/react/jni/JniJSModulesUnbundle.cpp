@@ -82,7 +82,7 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(uint32_t moduleId) con
     buffer = static_cast<const char *>(AAsset_getBuffer(asset.get()));
   }
   if (buffer == nullptr) {
-    throw ModuleNotFound("Module not found: " + sourceUrl);
+    throw ModuleNotFound(moduleId);
   }
   return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
 }

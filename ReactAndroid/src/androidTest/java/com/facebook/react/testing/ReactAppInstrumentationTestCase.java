@@ -37,21 +37,10 @@ public abstract class ReactAppInstrumentationTestCase extends
     intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
     setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.loadApp(
-              getReactApplicationKeyUnderTest(),
-              createReactInstanceSpecForTest(),
-              getEnableDevSupport());
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to load react app", t);
-    }
-    waitForBridgeAndUIIdle();
-    assertTrue("Layout never occurred!", activity.waitForLayout(5000));
+    activity.loadApp(
+        getReactApplicationKeyUnderTest(),
+        createReactInstanceSpecForTest(),
+        getEnableDevSupport());
     waitForBridgeAndUIIdle();
   }
 

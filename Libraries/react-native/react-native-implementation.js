@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule react-native-implementation
  * @flow
  */
 'use strict';
@@ -26,6 +25,7 @@ const ReactNative = {
   get ImageBackground() { return require('ImageBackground'); },
   get ImageEditor() { return require('ImageEditor'); },
   get ImageStore() { return require('ImageStore'); },
+  get InputAccessoryView() { return require('InputAccessoryView') },
   get KeyboardAvoidingView() { return require('KeyboardAvoidingView'); },
   get ListView() { return require('ListView'); },
   get MaskedViewIOS() { return require('MaskedViewIOS'); },

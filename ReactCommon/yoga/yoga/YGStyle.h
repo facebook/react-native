@@ -32,7 +32,7 @@ struct YGStyle {
   std::array<YGValue, 2> dimensions;
   std::array<YGValue, 2> minDimensions;
   std::array<YGValue, 2> maxDimensions;
-  float aspectRatio;
+  YGFloatOptional aspectRatio;
 
   YGStyle();
   // Yoga specific properties, not compatible with flexbox specification

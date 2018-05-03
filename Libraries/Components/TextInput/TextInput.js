@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInput
  * @flow
  * @format
  */
@@ -192,10 +191,6 @@ const DataDetectorTypes = [
 
 const TextInput = createReactClass({
   displayName: 'TextInput',
-  statics: {
-    /* TODO(brentvatne) docs are needed for this */
-    State: TextInputState,
-  },
 
   propTypes: {
     ...ViewPropTypes,
@@ -605,10 +600,44 @@ const TextInput = createReactClass({
      * @platform ios
      */
     inputAccessoryViewID: PropTypes.string,
+    /**
+     * Give the keyboard and the system information about the
+     * expected semantic meaning for the content that users enter.
+     * @platform ios
+     */
+    textContentType: PropTypes.oneOf([
+      'none',
+      'URL',
+      'addressCity',
+      'addressCityAndState',
+      'addressState',
+      'countryName',
+      'creditCardNumber',
+      'emailAddress',
+      'familyName',
+      'fullStreetAddress',
+      'givenName',
+      'jobTitle',
+      'location',
+      'middleName',
+      'name',
+      'namePrefix',
+      'nameSuffix',
+      'nickname',
+      'organizationName',
+      'postalCode',
+      'streetAddressLine1',
+      'streetAddressLine2',
+      'sublocality',
+      'telephoneNumber',
+      'username',
+      'password',
+    ]),
   },
   getDefaultProps(): Object {
     return {
       allowFontScaling: true,
+      underlineColorAndroid: 'transparent',
     };
   },
   /**
@@ -634,24 +663,30 @@ const TextInput = createReactClass({
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
-    if (!this.context.focusEmitter) {
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      // tag is null only in unit tests
+      TextInputState.registerInput(tag);
+    }
+
+    if (this.context.focusEmitter) {
+      this._focusSubscription = this.context.focusEmitter.addListener(
+        'focus',
+        el => {
+          if (this === el) {
+            this.requestAnimationFrame(this.focus);
+          } else if (this.isFocused()) {
+            this.blur();
+          }
+        },
+      );
+      if (this.props.autoFocus) {
+        this.context.onFocusRequested(this);
+      }
+    } else {
       if (this.props.autoFocus) {
         this.requestAnimationFrame(this.focus);
       }
-      return;
-    }
-    this._focusSubscription = this.context.focusEmitter.addListener(
-      'focus',
-      el => {
-        if (this === el) {
-          this.requestAnimationFrame(this.focus);
-        } else if (this.isFocused()) {
-          this.blur();
-        }
-      },
-    );
-    if (this.props.autoFocus) {
-      this.context.onFocusRequested(this);
     }
   },
 
@@ -659,6 +694,10 @@ const TextInput = createReactClass({
     this._focusSubscription && this._focusSubscription.remove();
     if (this.isFocused()) {
       this.blur();
+    }
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      TextInputState.unregisterInput(tag);
     }
   },
 

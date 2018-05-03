@@ -205,7 +205,12 @@ public class UIImplementation {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
-    mShadowNodeRegistry.addRootNode(rootCSSNode);
+    context.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mShadowNodeRegistry.addRootNode(rootCSSNode);
+      }
+    });
 
     // register it within NativeViewHierarchyManager
     mOperationsQueue.addRootView(tag, rootView, context);
@@ -279,7 +284,7 @@ public class UIImplementation {
     Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
-    cssNode.setRootNode(rootNode);
+    cssNode.setRootTag(rootNode.getReactTag());
     cssNode.setThemedContext(rootNode.getThemedContext());
 
     mShadowNodeRegistry.addNode(cssNode);
@@ -1008,7 +1013,7 @@ public class UIImplementation {
     ReactShadowNode node = resolveShadowNode(reactTag);
     int rootTag = 0;
     if (node != null) {
-      rootTag = node.getRootNode().getReactTag();
+      rootTag = node.getRootTag();
     } else {
       FLog.w(
         ReactConstants.TAG,

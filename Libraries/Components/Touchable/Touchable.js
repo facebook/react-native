@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Touchable
  */
 
 'use strict';
@@ -741,6 +740,9 @@ const TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
+        if (Platform.OS === 'android') {
+          this._playTouchSound();
+        }
         this.touchableHandlePress(e);
       }
     }
@@ -748,7 +750,11 @@ const TouchableMixin = {
     this.touchableDelayTimeout && clearTimeout(this.touchableDelayTimeout);
     this.touchableDelayTimeout = null;
   },
-
+  
+  _playTouchSound: function() {
+    UIManager.playTouchSound();
+  },
+  
   _startHighlight: function(e) {
     this._savePressInLocation(e);
     this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);

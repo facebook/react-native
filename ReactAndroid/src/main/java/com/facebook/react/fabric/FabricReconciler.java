@@ -61,7 +61,7 @@ public class FabricReconciler {
       }
       enqueueUpdateProperties(newNode);
       manageChildren(prevNode, prevNode.getChildrenList(), newNode.getChildrenList());
-      prevNode.setOriginalReactShadowNode(newNode);
+      newNode.setOriginalReactShadowNode(null);
     }
     int firstRemovedOrAddedViewIndex = sameReactTagIndex;
 
@@ -78,7 +78,7 @@ public class FabricReconciler {
       viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());
-      newNode.setOriginalReactShadowNode(newNode);
+      newNode.setOriginalReactShadowNode(null);
       addedTags.add(newNode.getReactTag());
     }
 
@@ -96,9 +96,6 @@ public class FabricReconciler {
       indicesToRemove.add(0, j);
       if (!addedTags.contains(nodeToRemove.getReactTag())) {
         tagsToDelete.add(nodeToRemove.getReactTag());
-        // TODO: T26729293 since we are not cloning ReactShadowNode's we need to "manually" remove
-        // from the ReactShadowTree when one of the nodes is deleted in JS.
-        nodeToRemove.getParent().removeChildAt(j);
       }
     }
 

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedImplementation
  * @flow
  * @format
  * @preventMunge
@@ -20,6 +19,7 @@ const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');
+const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
 const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
@@ -52,6 +52,13 @@ const add = function(
   b: AnimatedNode | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
+};
+
+const subtract = function(
+  a: AnimatedNode | number,
+  b: AnimatedNode | number,
+): AnimatedSubtraction {
+  return new AnimatedSubtraction(a, b);
 };
 
 const divide = function(
@@ -567,6 +574,14 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/animated.html#add
    */
   add,
+
+  /**
+   * Creates a new Animated value composed by subtracting the second Animated
+   * value from the first Animated value.
+   *
+   * See http://facebook.github.io/react-native/docs/animated.html#subtract
+   */
+  subtract,
 
   /**
    * Creates a new Animated value composed by dividing the first Animated value

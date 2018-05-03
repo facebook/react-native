@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WebView
  */
 'use strict';
 
@@ -138,6 +137,12 @@ class WebView extends React.Component {
      * @platform android
      */
     domStorageEnabled: PropTypes.bool,
+
+    /**
+     * Sets whether Geolocation is enabled. The default is false.
+     * @platform android
+     */
+    geolocationEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
@@ -311,6 +316,7 @@ class WebView extends React.Component {
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        geolocationEnabled={this.props.geolocationEnabled}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}

@@ -8,7 +8,9 @@
 #import "RCTFabricUIManagerWrapper.h"
 
 #include <React/RCTCxxExceptionManager.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/view/ViewComponentDescriptor.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
 
@@ -28,7 +30,12 @@
   if (self) {
     _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
     _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
-    _manager = std::make_shared<FabricUIManager>(_platformUIOperationManager);
+
+    auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
+    SharedComponentDescriptor viewComponentDescriptor = std::make_shared<ViewComponentDescriptor>();
+    componentDescriptorRegistry->registerComponentDescriptor(viewComponentDescriptor);
+
+    _manager = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   }
   return self;
 }

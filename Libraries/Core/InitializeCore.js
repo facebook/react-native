@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InitializeCore
  * @flow
  */
 
@@ -163,6 +162,7 @@ BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JS
 
 global.__fetchSegment = function(
   segmentId: number,
+  options: {|+otaBuildNumber: ?string|},
   callback: (?Error) => void,
 ) {
   const {SegmentFetcher} = require('NativeModules');
@@ -171,7 +171,7 @@ global.__fetchSegment = function(
       'included as a NativeModule.');
   }
 
-  SegmentFetcher.fetchSegment(segmentId, (errorObject: ?{message: string, code: string}) => {
+  SegmentFetcher.fetchSegment(segmentId, options, (errorObject: ?{message: string, code: string}) => {
     if (errorObject) {
       const error = new Error(errorObject.message);
       (error: any).code = errorObject.code;

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollView
  * @flow
  */
 'use strict';
@@ -681,7 +680,7 @@ const ScrollView = createReactClass({
       }
     }
     if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag') {
+      if (this.props.keyboardDismissMode === 'on-drag' && this.state.isTouching) {
         dismissKeyboard();
       }
     }
@@ -746,10 +745,9 @@ const ScrollView = createReactClass({
       this.props.horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
-    let style, childLayoutProps;
     if (__DEV__ && this.props.style) {
-      style = flattenStyle(this.props.style);
-      childLayoutProps = ['alignItems', 'justifyContent']
+      const style = flattenStyle(this.props.style);
+      const childLayoutProps = ['alignItems', 'justifyContent']
         .filter((prop) => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,

@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTConvert.h>
+#import <RCTText/RCTTextTransform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UITextAutocorrectionType)UITextAutocorrectionType:(nullable id)json;
 + (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
++ (RCTTextTransform)RCTTextTransform:(nullable id)json;
 
 @end
 

@@ -4,14 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule requireNativeComponent
  * @flow
  * @format
  */
 'use strict';
 
 const Platform = require('Platform');
-const ReactNativeBridgeEventPlugin = require('ReactNativeBridgeEventPlugin');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 
@@ -197,11 +195,6 @@ function requireNativeComponent(
       attachDefaultEventTypes(viewConfig);
       hasAttachedDefaultEventTypes = true;
     }
-
-    // Register this view's event types with the ReactNative renderer.
-    // This enables view managers to be initialized lazily, improving perf,
-    // While also enabling 3rd party components to define custom event types.
-    ReactNativeBridgeEventPlugin.processEventTypes(viewConfig);
 
     return viewConfig;
   }

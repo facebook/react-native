@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule NativeAnimationsExample
  */
 'use strict';
 
@@ -419,6 +418,48 @@ exports.examples = [
                     anim.interpolate({
                       inputRange: [0, 1],
                       outputRange: [0.25, 1],
+                    }),
+                  ),
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'Multistage With Subtract',
+    render: function() {
+      return (
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                  ],
+                  opacity: Animated.subtract(
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 1],
+                    }),
+                    anim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 0.5, 0],
                     }),
                   ),
                 },

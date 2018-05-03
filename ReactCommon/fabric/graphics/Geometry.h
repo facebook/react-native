@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <tuple>
+
 #include <CoreGraphics/CGBase.h>
 
 namespace facebook {
@@ -17,6 +19,9 @@ using Float = CGFloat;
  * Large positive number signifies that the `Float` values is `undefined`.
  */
 const Float kFloatUndefined = CGFLOAT_MAX;
+
+const Float kFloatMax = CGFLOAT_MAX;
+const Float kFloatMin = CGFLOAT_MIN;
 
 /*
  * Point

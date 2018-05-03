@@ -18,8 +18,6 @@ public class YogaConstants {
    */
   public static final float UNDEFINED = (float) (10E20);
 
-  public static boolean shouldUseFastMath = false;
-
   public static boolean isUndefined(float value) {
     // Value of a float in the case of it being not defined is 10.1E20. Earlier it used to be NAN,
     // the benefit of which

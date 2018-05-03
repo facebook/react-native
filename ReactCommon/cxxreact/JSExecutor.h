@@ -101,6 +101,10 @@ public:
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
+
+  static std::string getSyntheticBundlePath(
+      uint32_t bundleId,
+      const std::string& bundlePath);
 };
 
 } }

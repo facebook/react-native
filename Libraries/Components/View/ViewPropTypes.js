@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewPropTypes
  * @flow
  */
 'use strict';
@@ -74,8 +73,6 @@ export type ViewProps = {
 } & TVViewProps;
 
 module.exports = {
-  ...PlatformViewPropTypes,
-
   /**
    * When `true`, indicates that the view is an accessibility element.
    * By default, all the touchable elements are accessible.
@@ -428,4 +425,9 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
+  
+  /**
+   * Any additional platform-specific view prop types, or prop type overrides.
+   */
+  ...PlatformViewPropTypes,
 };
