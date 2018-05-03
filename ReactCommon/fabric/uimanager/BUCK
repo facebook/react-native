@@ -58,6 +58,7 @@ rn_xplat_cxx_library(
 
 if not IS_OSS_BUILD:
     load("@xplat//build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
+
     fb_xplat_cxx_test(
         name = "tests",
         srcs = glob(["tests/**/*.cpp"]),
