@@ -16,6 +16,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JCallback.h"
+#include "NativeDeltaClient.h"
 #include "ProxyExecutor.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
@@ -91,6 +92,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     CxxModuleWrapper::registerNatives();
     JCxxCallbackImpl::registerNatives();
     NativeArray::registerNatives();
+    NativeDeltaClient::registerNatives();
     ReadableNativeArray::registerNatives();
     WritableNativeArray::registerNatives();
     NativeMap::registerNatives();
