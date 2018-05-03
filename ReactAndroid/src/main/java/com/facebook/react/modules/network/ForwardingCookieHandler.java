@@ -126,6 +126,7 @@ public class ForwardingCookieHandler extends CookieHandler {
       for (String cookie : cookies) {
         addCookieAsync(url, cookie);
       }
+      getCookieManager().flush();
       mCookieSaver.onCookiesModified();
     }
   }
