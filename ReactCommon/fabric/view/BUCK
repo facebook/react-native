@@ -1,6 +1,5 @@
 load("//configurations/buck/apple:flag_defs.bzl", "get_application_ios_flags", "get_debug_preprocessor_flags", "OBJC_ARC_PREPROCESSOR_FLAGS")
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "get_apple_inspector_flags")
-load("//ReactNative:DEFS.bzl", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "get_apple_inspector_flags", "react_native_xplat_target", "ANDROID", "APPLE")
 
 APPLE_COMPILER_FLAGS = []
 
@@ -61,9 +60,8 @@ rn_xplat_cxx_library(
 )
 
 if not IS_OSS_BUILD:
-    load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
-
-    cxx_test(
+    load("@xplat//build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
+    fb_xplat_cxx_test(
         name = "tests",
         srcs = glob(["tests/**/*.cpp"]),
         headers = glob(["tests/**/*.h"]),
