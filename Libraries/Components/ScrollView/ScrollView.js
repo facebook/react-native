@@ -105,6 +105,15 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     bounces: PropTypes.bool,
+    
+     /**
+     * By default, ScrollView has an active pan responder that hijacks panresponders 
+     * deeper in the render tree in order to prevent accidental touches while scrolling.
+     * However, in certain occasions (such as when using snapToInterval) in a vertical scrollview
+     * You may want to disable this behavior in order to prevent the ScrollView from blocking touches 
+     */
+    disableScrollViewPanResponder: PropTypes.bool,
+    
     /**
      * When true, gestures can drive zoom past min/max and the zoom will animate
      * to the min/max value at gesture end, otherwise the zoom will not exceed
