@@ -185,6 +185,10 @@ const PerformanceLogger = {
   getExtras() {
     return extras;
   },
+
+  logExtras() {
+    infoLog(extras);
+  },
 };
 
 module.exports = PerformanceLogger;
