@@ -40,14 +40,29 @@ public class DevInternalSettings implements
   private final SharedPreferences mPreferences;
   private final Listener mListener;
   private final PackagerConnectionSettings mPackagerConnectionSettings;
+  private final boolean mSupportsNativeDeltaClients;
+
+  public static DevInternalSettings withoutNativeDeltaClient(
+      Context applicationContext,
+      Listener listener) {
+    return new DevInternalSettings(applicationContext, listener, false);
+  }
 
   public DevInternalSettings(
       Context applicationContext,
       Listener listener) {
+    this(applicationContext, listener, true);
+  }
+
+  private DevInternalSettings(
+      Context applicationContext,
+      Listener listener,
+      boolean supportsNativeDeltaClients) {
     mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
     mPackagerConnectionSettings = new PackagerConnectionSettings(applicationContext);
+    mSupportsNativeDeltaClients = supportsNativeDeltaClients;
   }
 
   public PackagerConnectionSettings getPackagerConnectionSettings() {
@@ -127,7 +142,7 @@ public class DevInternalSettings implements
 
   @SuppressLint("SharedPreferencesUse")
   public boolean isBundleDeltasCppEnabled() {
-    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
+    return mSupportsNativeDeltaClients && mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
   }
 
   @SuppressLint("SharedPreferencesUse")
