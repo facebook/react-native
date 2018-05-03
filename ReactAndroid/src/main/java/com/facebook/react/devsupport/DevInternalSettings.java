@@ -30,6 +30,7 @@ public class DevInternalSettings implements
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
   private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
   private static final String PREFS_JS_BUNDLE_DELTAS_KEY = "js_bundle_deltas";
+  private static final String PREFS_JS_BUNDLE_DELTAS_CPP_KEY = "js_bundle_deltas_cpp";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
@@ -83,6 +84,7 @@ public class DevInternalSettings implements
           || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key)
           || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)
           || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key)
+          || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key)
           || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
         mListener.onInternalSettingsChanged();
       }
@@ -121,6 +123,16 @@ public class DevInternalSettings implements
   @SuppressLint("SharedPreferencesUse")
   public void setBundleDeltasEnabled(boolean enabled) {
     mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, enabled).apply();
+  }
+
+  @SuppressLint("SharedPreferencesUse")
+  public boolean isBundleDeltasCppEnabled() {
+    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
+  }
+
+  @SuppressLint("SharedPreferencesUse")
+  public void setBundleDeltasCppEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, enabled).apply();
   }
 
   @Override
