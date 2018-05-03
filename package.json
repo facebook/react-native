@@ -213,7 +213,7 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.6.1",
     "flow-bin": "^0.71.0",
-    "jest": "23.0.0-beta.2",
+    "jest": "23.0.0-charlie.1",
     "jest-junit": "3.7.0",
     "prettier": "1.12.1",
     "react": "16.3.2",
