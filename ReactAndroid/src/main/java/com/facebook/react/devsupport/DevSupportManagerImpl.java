@@ -1073,7 +1073,7 @@ public class DevSupportManagerImpl implements
 
       // show the dev loading if it should be
       if (mDevLoadingViewVisible) {
-        mDevLoadingViewController.show();
+        mDevLoadingViewController.showMessage("Reloading...");
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);
