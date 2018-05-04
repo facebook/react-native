@@ -89,6 +89,7 @@ public class ForwardingCookieHandler extends CookieHandler {
       }.execute();
     } else {
       clearCookiesAsync(callback);
+      getCookieManager().flush();
     }
   }
 
@@ -107,6 +108,8 @@ public class ForwardingCookieHandler extends CookieHandler {
     if (USES_LEGACY_STORE) {
       getCookieManager().removeExpiredCookie();
       mCookieSaver.persistCookies();
+    } else {
+      getCookieManager().flush();
     }
   }
 
