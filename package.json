@@ -158,6 +158,7 @@
     "denodeify": "^1.2.1",
     "envinfo": "^3.0.0",
     "errorhandler": "^1.5.0",
+    "escape-string-regexp": "^1.0.5",
     "eslint-plugin-react-native": "^3.2.1",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.14",
