@@ -63,3 +63,8 @@ Object.assign = function(target, sources) {
 
   return target;
 };
+
+Object.is = function(x, y) {
+  /* eslint no-self-compare: "off" */
+  return x === y ? x !== 0 || 1 / x === 1 / y : x !== x && y !== y;
+};
