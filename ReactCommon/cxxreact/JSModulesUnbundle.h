@@ -6,6 +6,7 @@
 #include <string>
 #include <stdexcept>
 
+#include <folly/Conv.h>
 #include <jschelpers/noncopyable.h>
 
 namespace facebook {
@@ -21,7 +22,10 @@ class JSModulesUnbundle : noncopyable {
    */
 public:
   class ModuleNotFound : public std::out_of_range {
+  public:
     using std::out_of_range::out_of_range;
+    ModuleNotFound(uint32_t moduleId) : std::out_of_range::out_of_range(
+      folly::to<std::string>("Module not found: ", moduleId)) {}
   };
   struct Module {
     std::string name;

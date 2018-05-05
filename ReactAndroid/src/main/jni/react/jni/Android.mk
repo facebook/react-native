@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := \
   ModuleRegistryBuilder.cpp \
   NativeArray.cpp \
   NativeCommon.cpp \
+  NativeDeltaClient.cpp \
   NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \

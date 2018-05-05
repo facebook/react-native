@@ -98,4 +98,16 @@ describe('deepDiffer', function() {
     var obj = [1,[2,3]];
     expect(deepDiffer(obj, obj)).toBe(false);
   });
+  it('should respect maxDepth arg', () => {
+    expect(deepDiffer(
+      {a: {A: {aA: 1, bB: 1}}, b: 1},
+      {a: {A: {aA: 1, bB: 1}}, b: 1},
+      3
+    )).toBe(true);
+    expect(deepDiffer(
+      {a: {A: {aA: 1, bB: 1}}, b: 1},
+      {a: {A: {aA: 1, bB: 1}}, b: 1},
+      4
+    )).toBe(false);
+  });
 });
