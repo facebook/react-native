@@ -110,6 +110,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     protected boolean mLastLoadFailed = false;
     protected @Nullable ReadableArray mUrlPrefixesForDefaultIntent;
+    protected boolean handleIFrameLoadingEvent = false;
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -186,6 +187,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           webView,
           new TopLoadingErrorEvent(webView.getId(), eventData));
     }
+    
+    @Override
+    public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
+        super.doUpdateVisitedHistory(webView, url, isReload);
+
+        if (handleIFrameLoadingEvent)
+          dispatchEvent(
+              webView,
+              new TopLoadingStartEvent(
+                  webView.getId(),
+                  createWebViewEvent(webView, url)));
+      }
 
     protected void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
@@ -210,6 +223,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setUrlPrefixesForDefaultIntent(ReadableArray specialUrls) {
       mUrlPrefixesForDefaultIntent = specialUrls;
+    }
+    
+    public void setHandleIFrameLoadingEvent(boolean enabled) {
+      handleIFrameLoadingEvent = enabled;
     }
   }
 
@@ -396,7 +413,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setJavaScriptEnabled(WebView view, boolean enabled) {
     view.getSettings().setJavaScriptEnabled(enabled);
   }
-
+  
   @ReactProp(name = "thirdPartyCookiesEnabled")
   public void setThirdPartyCookiesEnabled(WebView view, boolean enabled) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -445,6 +462,14 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @ReactProp(name = "messagingEnabled")
   public void setMessagingEnabled(WebView view, boolean enabled) {
     ((ReactWebView) view).setMessagingEnabled(enabled);
+  }
+  
+  @ReactProp(name = "handleIFrameLoadingEvent")
+  public void setHandleIFrameLoadingEvent(WebView view, boolean enabled) {
+    ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
+    if (client != null) {
+      client.setHandleIFrameLoadingEvent(enabled);
+    }
   }
 
   @ReactProp(name = "source")
