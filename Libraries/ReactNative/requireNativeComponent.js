@@ -141,22 +141,12 @@ function requireNativeComponent(
     viewConfig.directEventTypes = directEventTypes;
 
     for (const key in nativeProps) {
-      let useAttribute = false;
-      const attribute = {};
+      const typeName = nativeProps[key];
+      const diff = getDifferForType(typeName);
+      const process = getProcessorForType(typeName);
 
-      const differ = TypeToDifferMap[nativeProps[key]];
-      if (differ) {
-        attribute.diff = differ;
-        useAttribute = true;
-      }
-
-      const processor = TypeToProcessorMap[nativeProps[key]];
-      if (processor) {
-        attribute.process = processor;
-        useAttribute = true;
-      }
-
-      viewConfig.validAttributes[key] = useAttribute ? attribute : true;
+      viewConfig.validAttributes[key] =
+        diff == null && process == null ? true : {diff, process};
     }
 
     // Unfortunately, the current set up puts the style properties on the top
@@ -186,32 +176,49 @@ function requireNativeComponent(
   return createReactNativeComponentClass(viewName, getViewConfig);
 }
 
-const TypeToDifferMap = {
-  // iOS Types
-  CATransform3D: matricesDiffer,
-  CGPoint: pointsDiffer,
-  CGSize: sizesDiffer,
-  UIEdgeInsets: insetsDiffer,
-  // Android Types
-  // (not yet implemented)
-};
-
-function processColorArray(colors: ?Array<any>): ?Array<?number> {
-  return colors && colors.map(processColor);
+function getDifferForType(
+  typeName: string,
+): ?(prevProp: any, nextProp: any) => boolean {
+  switch (typeName) {
+    // iOS Types
+    case 'CATransform3D':
+      return matricesDiffer;
+    case 'CGPoint':
+      return pointsDiffer;
+    case 'CGSize':
+      return sizesDiffer;
+    case 'UIEdgeInsets':
+      return insetsDiffer;
+    // Android Types
+    // (not yet implemented)
+  }
+  return null;
 }
 
-const TypeToProcessorMap = {
-  // iOS Types
-  CGColor: processColor,
-  CGColorArray: processColorArray,
-  UIColor: processColor,
-  UIColorArray: processColorArray,
-  CGImage: resolveAssetSource,
-  UIImage: resolveAssetSource,
-  RCTImageSource: resolveAssetSource,
-  // Android Types
-  Color: processColor,
-  ColorArray: processColorArray,
-};
+function getProcessorForType(typeName: string): ?(nextProp: any) => any {
+  switch (typeName) {
+    // iOS Types
+    case 'CGColor':
+    case 'UIColor':
+      return processColor;
+    case 'CGColorArray':
+    case 'UIColorArray':
+      return processColorArray;
+    case 'CGImage':
+    case 'UIImage':
+    case 'RCTImageSource':
+      return resolveAssetSource;
+    // Android Types
+    case 'Color':
+      return processColor;
+    case 'ColorArray':
+      return processColorArray;
+  }
+  return null;
+}
+
+function processColorArray(colors: ?Array<any>): ?Array<?number> {
+  return colors == null ? null : colors.map(processColor);
+}
 
 module.exports = requireNativeComponent;
