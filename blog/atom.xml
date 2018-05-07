@@ -2,11 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2018-04-09T06:00:00Z</updated>
+    <updated>2018-05-07T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Using TypeScript with React Native]]></title>
+        <id>https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native.html">
+        </link>
+        <updated>2018-05-07T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>JavaScript! We all love it. But some of us also love <a href="https://en.wikipedia.org/wiki/Data_type">types</a>. Luckily, options exist to add stronger types to JavaScript. My favourite is <a href="https://www.typescriptlang.org">TypeScript</a>, but React Native supports</p>
+]]></summary>
+        <author>
+            <name>Ash Furrow</name>
+            <uri>https://github.com/ashfurrow</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Built with React Native - The Build.com app]]></title>
         <id>https://facebook.github.io/react-native/blog/2018/04/09/build-com-app.html</id>
