@@ -425,7 +425,7 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
-  
+
   /**
    * Any additional platform-specific view prop types, or prop type overrides.
    */

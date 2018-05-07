@@ -4,73 +4,59 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  * @format
+ * @flow
  */
+
 'use strict';
 
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-
-export type ComponentInterface =
-  | React$ComponentType<any>
-  | {
-      name?: string,
-      displayName?: string,
-      propTypes?: Object,
-    };
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
 function verifyPropTypes(
-  componentInterface: ComponentInterface,
-  viewConfig: Object,
-  nativePropsToIgnore?: ?Object,
+  viewConfig: $ReadOnly<{
+    NativeProps: $ReadOnly<{
+      [propName: string]: mixed,
+    }>,
+    propTypes: ?$ReadOnly<{
+      [propName: string]: mixed,
+    }>,
+    uiViewClassName: string,
+  }>,
+  nativePropsToIgnore: ?$ReadOnly<{
+    [propName: string]: boolean,
+  }>,
 ) {
-  if (!viewConfig) {
-    return; // This happens for UnimplementedView.
-  }
-  var componentName =
-    componentInterface.displayName || componentInterface.name || 'unknown';
+  const {NativeProps, propTypes, uiViewClassName} = viewConfig;
 
-  var propTypes = componentInterface.propTypes;
-
-  if (!propTypes) {
+  if (propTypes == null) {
     return;
   }
 
-  var nativeProps = viewConfig.NativeProps;
-  for (var prop in nativeProps) {
+  for (const propName in NativeProps) {
     if (
-      !propTypes[prop] &&
-      !ReactNativeStyleAttributes[prop] &&
-      (!nativePropsToIgnore || !nativePropsToIgnore[prop])
+      propTypes[propName] ||
+      ReactNativeStyleAttributes[propName] ||
+      (nativePropsToIgnore && nativePropsToIgnore[propName])
     ) {
-      var message;
-      if (propTypes.hasOwnProperty(prop)) {
-        message =
-          '`' +
-          componentName +
-          '` has incorrectly defined propType for native prop `' +
-          viewConfig.uiViewClassName +
-          '.' +
-          prop +
-          '` of native type `' +
-          nativeProps[prop];
-      } else {
-        message =
-          '`' +
-          componentName +
-          '` has no propType for native prop `' +
-          viewConfig.uiViewClassName +
-          '.' +
-          prop +
-          '` of native type `' +
-          nativeProps[prop] +
-          '`';
-      }
-      message +=
-        "\nIf you haven't changed this prop yourself, this usually means that " +
-        'your versions of the native code and JavaScript code are out of sync. Updating both ' +
-        'should make this error go away.';
-      throw new Error(message);
+      continue;
+    }
+    const prettyName = `${uiViewClassName}.${propName}`;
+    const nativeType = String(NativeProps[propName]);
+    const suggestion =
+      '\n\nIf you have not changed this prop yourself, this usually means ' +
+      'that the versions of your native and JavaScript code are out of sync. ' +
+      'Updating both should make this error go away.';
+
+    if (propTypes.hasOwnProperty(propName)) {
+      console.error(
+        `Invalid propType to configure \`${prettyName}\` (${nativeType}).` +
+          suggestion,
+      );
+    } else {
+      console.error(
+        `Missing a propType to configure \`${prettyName}\` (${nativeType}).` +
+          suggestion,
+      );
     }
   }
 }

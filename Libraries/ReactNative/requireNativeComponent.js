@@ -25,7 +25,13 @@ const verifyPropTypes = require('verifyPropTypes');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
-import type {ComponentInterface} from 'verifyPropTypes';
+type ComponentInterface =
+  | React$ComponentType<any>
+  | $ReadOnly<{
+      propTypes?: $ReadOnly<{
+        [propName: string]: mixed,
+      }>,
+    }>;
 
 type ExtraOptions = $ReadOnly<{|
   nativeOnly?: $ReadOnly<{
@@ -115,13 +121,10 @@ const requireNativeComponent = (
     });
 
     if (__DEV__) {
-      if (componentInterface != null) {
-        verifyPropTypes(
-          componentInterface,
-          viewConfig,
-          extraConfig == null ? null : extraConfig.nativeOnly,
-        );
-      }
+      verifyPropTypes(
+        viewConfig,
+        extraConfig == null ? null : extraConfig.nativeOnly,
+      );
     }
 
     if (!hasAttachedDefaultEventTypes) {
