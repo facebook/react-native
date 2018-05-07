@@ -59,6 +59,8 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+  NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  imagePicker.mediaTypes = availableMediaTypes;
 
   if ([RCTConvert BOOL:config[@"videoMode"]]) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
