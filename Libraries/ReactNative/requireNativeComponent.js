@@ -108,24 +108,8 @@ function requireNativeComponent(
 
     viewConfig.uiViewClassName = viewName;
     viewConfig.validAttributes = {};
-
-    // ReactNative `View.propTypes` have been deprecated in favor of
-    // `ViewPropTypes`. In their place a temporary getter has been added with a
-    // deprecated warning message. Avoid triggering that warning here by using
-    // temporary workaround, __propTypesSecretDontUseThesePlease.
-    // TODO (bvaughn) Revert this particular change any time after April 1
-    if (componentInterface) {
-      viewConfig.propTypes =
-        /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.68 was deployed. To see the error delete
-         * this comment and run Flow. */
-        typeof componentInterface.__propTypesSecretDontUseThesePlease ===
-        'object'
-          ? componentInterface.__propTypesSecretDontUseThesePlease
-          : componentInterface.propTypes;
-    } else {
-      viewConfig.propTypes = null;
-    }
+    viewConfig.propTypes =
+      componentInterface == null ? null : componentInterface.propTypes;
 
     let baseModuleName = viewConfig.baseModuleName;
     let bubblingEventTypes = viewConfig.bubblingEventTypes;
