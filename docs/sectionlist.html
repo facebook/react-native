@@ -27,16 +27,19 @@
 </ul>
 <p>If you don't need section support and want a simpler interface, use <a href="/react-native/docs/flatlist.html"><code>&lt;FlatList&gt;</code></a>.</p>
 <p>Simple Examples:</p>
-<pre><code class="hljs css javascript"><span class="hljs-comment">// Example 1 (Homogeneous Rendering) </span>
- &lt;SectionList 
-  renderItem={({ item, index, section }) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{index}</span>&gt;</span>{item}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>} 
-  renderSectionHeader={({ <span class="hljs-attr">section</span>: { title } }) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">fontWeight:</span> '<span class="hljs-attr">bold</span>' }}&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>} 
-  sections={[ 
-   { <span class="hljs-attr">title</span>: <span class="hljs-string">'Title1'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item1'</span>, <span class="hljs-string">'item2'</span>] }, 
-   { <span class="hljs-attr">title</span>: <span class="hljs-string">'Title2'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item3'</span>, <span class="hljs-string">'item4'</span>] }, 
-   { <span class="hljs-attr">title</span>: <span class="hljs-string">'Title3'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item5'</span>, <span class="hljs-string">'item6'</span>] }, 
-   ]} 
-  keyExtractor={(item, index) =&gt; item + index} /&gt;
+<pre><code class="hljs css javascript"><span class="hljs-comment">// Example 1 (Homogeneous Rendering)</span>
+&lt;SectionList
+  renderItem={({item, index, section}) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{index}</span>&gt;</span>{item}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>}
+  renderSectionHeader={({<span class="hljs-attr">section</span>: {title}}) =&gt; (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontWeight:</span> '<span class="hljs-attr">bold</span>'}}&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>
+  )}
+  sections={[
+    {<span class="hljs-attr">title</span>: <span class="hljs-string">'Title1'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item1'</span>, <span class="hljs-string">'item2'</span>]},
+    {<span class="hljs-attr">title</span>: <span class="hljs-string">'Title2'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item3'</span>, <span class="hljs-string">'item4'</span>]},
+    {<span class="hljs-attr">title</span>: <span class="hljs-string">'Title3'</span>, <span class="hljs-attr">data</span>: [<span class="hljs-string">'item5'</span>, <span class="hljs-string">'item6'</span>]},
+  ]}
+  keyExtractor={(item, index) =&gt; item + index}
+/&gt;
 </code></pre>
 <pre><code class="hljs css javascript">// Example 2 (Heterogeneous Rendering / No Section Headers)
 const overrideRenderItem = ({ item, index, section: { title, data } }) =&gt; &lt;Text key={index}&gt;Override{item}&lt;/Text&gt;
