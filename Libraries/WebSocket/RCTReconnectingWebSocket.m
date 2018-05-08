@@ -11,7 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <fishhook/fishhook.h>
+#import <React/fishhook.h>
 
 #import "RCTSRWebSocket.h"
 
