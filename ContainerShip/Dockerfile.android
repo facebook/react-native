@@ -1,4 +1,4 @@
-FROM hramos/android-base:latest
+FROM reactnativeci/android-base:latest
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
