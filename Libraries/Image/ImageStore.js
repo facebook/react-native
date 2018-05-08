@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageStore
  * @flow
+ * @format
  */
 'use strict';
 
@@ -18,7 +16,7 @@ class ImageStore {
    * Check if the ImageStore contains image data for the specified URI.
    * @platform ios
    */
-  static hasImageForTag(uri: string, callback: (hasImage: bool) => void) {
+  static hasImageForTag(uri: string, callback: (hasImage: boolean) => void) {
     if (RCTImageStoreManager.hasImageForTag) {
       RCTImageStoreManager.hasImageForTag(uri, callback);
     } else {
@@ -56,7 +54,7 @@ class ImageStore {
   static addImageFromBase64(
     base64ImageData: string,
     success: (uri: string) => void,
-    failure: (error: any) => void
+    failure: (error: any) => void,
   ) {
     RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
   }
@@ -75,7 +73,7 @@ class ImageStore {
   static getBase64ForTag(
     uri: string,
     success: (base64ImageData: string) => void,
-    failure: (error: any) => void
+    failure: (error: any) => void,
   ) {
     RCTImageStoreManager.getBase64ForTag(uri, success, failure);
   }

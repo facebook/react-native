@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTPicker.h"
@@ -68,6 +66,10 @@ numberOfRowsInComponent:(__unused NSInteger)component
             forComponent:(__unused NSInteger)component
 {
   return [RCTConvert NSString:_items[row][@"label"]];
+}
+
+- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+  return _font.pointSize + 19;
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView

@@ -20,9 +20,14 @@
     android:minSdkVersion="16"
     android:targetSdkVersion="23" />
 
+  <!--
+  android:icon is used to display launcher icon on mobile devices.
+  android:banner is used to display a rectangular banned launcher icon on Android TV devices.
+  -->
   <application
       android:name=".RNTesterApplication"
       android:allowBackup="true"
+      android:banner="@drawable/tv_banner"
       android:icon="@drawable/launcher_icon"
       android:label="@string/app_name"
       android:theme="@style/Theme.ReactNative.AppCompat.Light" >
@@ -34,6 +39,8 @@
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
+        <!-- Needed to properly create a launch intent when running on Android TV -->
+        <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
       </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />

@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing.network;
@@ -24,7 +23,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and
- * returns reponse code and body that should be set with {@link #setResponse}
+ * returns response code and body that should be set with {@link #setResponse}
  */
 @ReactModule(name = "Networking", canOverrideExistingModule = true)
 public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
@@ -48,7 +47,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     mCompleteRequest = completeRequest;
   }
 
-  public static interface RequestListener {
+  public interface RequestListener {
     public void onRequest(String method, String url, ReadableArray header, ReadableMap data);
   }
 

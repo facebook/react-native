@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule NativeAnimationsExample
  */
 'use strict';
 
@@ -167,6 +164,9 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
           initialValue={false}
           label="Force JS Stalls"
           onEnable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
@@ -175,6 +175,9 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
             }, 300);
           }}
           onDisable={() => {
+            /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.63 was deployed. To see
+             * the error delete this comment and run Flow. */
             clearInterval(this._stallInterval || 0);
           }}
         />
@@ -249,6 +252,67 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+class TrackingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  state = {
+    native: new Animated.Value(0),
+    toNative: new Animated.Value(0),
+    js: new Animated.Value(0),
+    toJS: new Animated.Value(0),
+  };
+
+  componentDidMount() {
+    // we configure spring to take a bit of time to settle so that the user
+    // have time to click many times and see "toValue" getting updated and
+    const longSettlingSpring = {
+      tension: 20,
+      friction: 0.5,
+    };
+    Animated.spring(this.state.native, {
+      ...longSettlingSpring,
+      toValue: this.state.toNative,
+      useNativeDriver: true,
+    }).start();
+    Animated.spring(this.state.js, {
+      ...longSettlingSpring,
+      toValue: this.state.toJS,
+      useNativeDriver: false,
+    }).start();
+  }
+
+  onPress = () => {
+    // select next value to be tracked by random
+    const nextValue = Math.random() * 200;
+    this.state.toNative.setValue(nextValue);
+    this.state.toJS.setValue(nextValue);
+  };
+
+  renderBlock = (anim, dest) => [
+    <Animated.View key="line" style={[styles.line, { transform: [{ translateX: dest }]}]}/>,
+    <Animated.View key="block" style={[styles.block, { transform: [{ translateX: anim }]}]}/>,
+  ]
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this.onPress}>
+        <View>
+          <View>
+            <Text>Native:</Text>
+          </View>
+          <View style={styles.row}>
+            {this.renderBlock(this.state.native, this.state.toNative)}
+          </View>
+          <View>
+            <Text>JavaScript:</Text>
+          </View>
+          <View style={styles.row}>
+            {this.renderBlock(this.state.js, this.state.toJS)}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -258,6 +322,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     backgroundColor: 'blue',
+  },
+  line: {
+    position: 'absolute',
+    left: 35,
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: 'red',
   },
 });
 
@@ -357,6 +429,48 @@ exports.examples = [
     },
   },
   {
+    title: 'Multistage With Subtract',
+    render: function() {
+      return (
+        <Tester type="timing" config={{duration: 1000}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 200],
+                      }),
+                    },
+                    {
+                      translateY: anim.interpolate({
+                        inputRange: [0, 0.5, 1],
+                        outputRange: [0, 50, 0],
+                      }),
+                    },
+                  ],
+                  opacity: Animated.subtract(
+                    anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 1],
+                    }),
+                    anim.interpolate({
+                      inputRange: [0, 0.5, 1],
+                      outputRange: [0, 0.5, 0],
+                    }),
+                  ),
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
     title: 'Scale interpolation with clamping',
     render: function() {
       return (
@@ -429,10 +543,36 @@ exports.examples = [
     },
   },
   {
-    title: 'translateX => Animated.spring',
+    title: 'translateX => Animated.spring (bounciness/speed)',
     render: function() {
       return (
         <Tester type="spring" config={{bounciness: 0}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  transform: [
+                    {
+                      translateX: anim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 100],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'translateX => Animated.spring (stiffness/damping/mass)',
+    render: function() {
+      return (
+        <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3 }}>
           {anim => (
             <Animated.View
               style={[
@@ -506,6 +646,12 @@ exports.examples = [
     title: 'Animated events',
     render: function() {
       return <EventExample />;
+    },
+  },
+  {
+    title: 'Animated Tracking - tap me many times',
+    render: function() {
+      return <TrackingExample />;
     },
   },
   {

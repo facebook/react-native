@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TimePickerAndroid
  * @flow
  */
 'use strict';
@@ -44,6 +41,10 @@ class TimePickerAndroid {
    *   * `is24Hour` (boolean) - If `true`, the picker uses the 24-hour format. If `false`,
    *     the picker shows an AM/PM chooser. If undefined, the default for the current locale
    *     is used.
+   *   * `mode` (`enum('clock', 'spinner', 'default')`) - set the time picker mode
+   *     - 'clock': Show a time picker in clock mode.
+   *     - 'spinner': Show a time picker in spinner mode.
+   *     - 'default': Show a default time picker based on Android versions.
    *
    * Returns a Promise which will be invoked an object containing `action`, `hour` (0-23),
    * `minute` (0-59) if the user picked a time. If the user dismissed the dialog, the Promise will

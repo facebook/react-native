@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTModuleMethod.h"
@@ -23,6 +21,15 @@
 #import "RCTUtils.h"
 
 typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
+
+/**
+ * Get the converter function for the specified type
+ */
+static SEL selectorForType(NSString *type)
+{
+  const char *input = type.UTF8String;
+  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
+}
 
 @implementation RCTMethodArgument
 
@@ -120,8 +127,8 @@ static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke) {
 }
 #endif
 
-SEL RCTParseMethodSignature(const char *, NSArray<RCTMethodArgument *> **);
-SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
+extern NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments);
+NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
 {
   RCTSkipWhitespace(&input);
 
@@ -166,7 +173,7 @@ SEL RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **ar
   }
 
   *arguments = [args copy];
-  return NSSelectorFromString(selector);
+  return selector;
 }
 
 RCT_EXTERN_C_END
@@ -184,7 +191,7 @@ RCT_EXTERN_C_END
 - (void)processMethodSignature
 {
   NSArray<RCTMethodArgument *> *arguments;
-  _selector = RCTParseMethodSignature(_methodInfo->objcName, &arguments);
+  _selector = NSSelectorFromString(RCTParseMethodSignature(_methodInfo->objcName, &arguments));
   RCTAssert(_selector, @"%s is not a valid selector", _methodInfo->objcName);
 
   // Create method invocation
@@ -206,7 +213,7 @@ RCT_EXTERN_C_END
 #endif
 
 #define RCT_RETAINED_ARG_BLOCK(_logic) \
-[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+[argumentBlocks addObject:^(__unused __weak RCTBridge *bridge, NSUInteger index, id json) { \
   _logic                                                                             \
   [invocation setArgument:&value atIndex:(index) + 2];                               \
   if (value) {                                                                       \
@@ -257,7 +264,7 @@ RCT_EXTERN_C_END
     BOOL isNullableType = NO;
     RCTMethodArgument *argument = arguments[i - 2];
     NSString *typeName = argument.type;
-    SEL selector = RCTConvertSelectorForType(typeName);
+    SEL selector = selectorForType(typeName);
     if ([RCTConvert respondsToSelector:selector]) {
       switch (objcType[0]) {
         // Primitives
@@ -493,12 +500,12 @@ RCT_EXTERN_C_END
       expectedCount -= 2;
     }
 
-    RCTLogError(@"%@.%s was called with %zd arguments but expects %zd arguments. "
+    RCTLogError(@"%@.%s was called with %lld arguments but expects %lld arguments. "
                 @"If you haven\'t changed this method yourself, this usually means that "
                 @"your versions of the native code and JavaScript code are out of sync. "
                 @"Updating both should make this error go away.",
                 RCTBridgeModuleNameForClass(_moduleClass), self.JSMethodName,
-                actualCount, expectedCount);
+                (long long)actualCount, (long long)expectedCount);
     return nil;
   }
 #endif
@@ -516,7 +523,26 @@ RCT_EXTERN_C_END
   }
 
   // Invoke method
+#ifdef RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD
+  if (RCTIsMainQueue()) {
+    CFTimeInterval start = CACurrentMediaTime();
+    [_invocation invokeWithTarget:module];
+    CFTimeInterval duration = CACurrentMediaTime() - start;
+    if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
+      RCTLogWarn(
+                 @"Main Thread Watchdog: Invocation of %@ blocked the main thread for %dms. "
+                 "Consider using background-threaded modules and asynchronous calls "
+                 "to spend less time on the main thread and keep the app's UI responsive.",
+                 [self methodName],
+                 (int)(duration * 1000)
+                 );
+    }
+  } else {
+    [_invocation invokeWithTarget:module];
+  }
+#else
   [_invocation invokeWithTarget:module];
+#endif
 
   index = 2;
   [_retainedObjects removeAllObjects];

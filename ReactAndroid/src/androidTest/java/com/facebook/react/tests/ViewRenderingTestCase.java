@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.tests;
@@ -50,7 +49,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
 
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ReactViewManager());
     final UIManagerModule uiManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), false, 0);
+        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -62,7 +61,7 @@ public class ViewRenderingTestCase extends ReactIntegrationTestCase {
 
     mCatalystInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(uiManager)
-        .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AndroidInfoModule(getContext()))
         .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())

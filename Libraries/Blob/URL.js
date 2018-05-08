@@ -1,12 +1,10 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule URL
+ * @format
  * @flow
  */
 
@@ -14,11 +12,11 @@
 
 const Blob = require('Blob');
 
-const { BlobModule } = require('NativeModules');
+const {BlobModule} = require('NativeModules');
 
 let BLOB_URL_PREFIX = null;
 
-if (typeof BlobModule.BLOB_URI_SCHEME === 'string') {
+if (BlobModule && typeof BlobModule.BLOB_URI_SCHEME === 'string') {
   BLOB_URL_PREFIX = BlobModule.BLOB_URI_SCHEME + ':';
   if (typeof BlobModule.BLOB_URI_HOST === 'string') {
     BLOB_URL_PREFIX += `//${BlobModule.BLOB_URI_HOST}/`;
@@ -51,14 +49,16 @@ if (typeof BlobModule.BLOB_URI_SCHEME === 'string') {
  */
 class URL {
   constructor() {
-    throw new Error('Creating BlobURL objects is not supported yet.');
+    throw new Error('Creating URL objects is not supported yet.');
   }
 
   static createObjectURL(blob: Blob) {
     if (BLOB_URL_PREFIX === null) {
       throw new Error('Cannot create URL for blob!');
     }
-    return `${BLOB_URL_PREFIX}${blob.blobId}?offset=${blob.offset}&size=${blob.size}`;
+    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${
+      blob.data.offset
+    }&size=${blob.size}`;
   }
 
   static revokeObjectURL(url: string) {

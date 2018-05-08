@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule LayoutAnimationExample
  */
 'use strict';
 
@@ -26,7 +23,7 @@ class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
     views: [],
   };
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
 
@@ -104,6 +101,57 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+class LayoutUpdateExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    width: 200,
+    height: 100,
+  };
+
+  timeout = null;
+
+  componentWillUnmount() {
+    this._clearTimeout();
+  }
+
+  _clearTimeout = () => {
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  }
+
+  _onPressToggle = () => {
+    this._clearTimeout();
+    this.setState({width: 150});
+
+    LayoutAnimation.configureNext({
+      duration: 1000,
+      update: {
+        type: LayoutAnimation.Types.linear,
+      },
+    });
+
+    this.timeout = setTimeout(() => this.setState({width: 100}), 500);
+  };
+
+  render() {
+    const {width, height} = this.state;
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this._onPressToggle}>
+          <View style={styles.button}>
+            <Text>Make box square</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={[styles.view, {width, height}]}>
+          <Text>{width}x{height}</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -157,5 +205,10 @@ exports.examples = [{
   title: 'Cross fade views',
   render(): React.Element<any> {
     return <CrossFadeExample />;
+  },
+}, {
+  title: 'Layout update during animation',
+  render(): React.Element<any> {
+    return <LayoutUpdateExample />;
   },
 }];

@@ -1,24 +1,21 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-
 import com.facebook.react.common.SingleThreadAsserter;
 
 /**
  * Simple container class to keep track of {@link ReactShadowNode}s associated with a particular
  * UIManagerModule instance.
  */
-/*package*/ class ShadowNodeRegistry {
+public class ShadowNodeRegistry {
 
   private final SparseArray<ReactShadowNode> mTagsToCSSNodes;
   private final SparseBooleanArray mRootTags;
@@ -31,9 +28,7 @@ import com.facebook.react.common.SingleThreadAsserter;
   }
 
   public void addRootNode(ReactShadowNode node) {
-    // TODO(6242243): This should be asserted... but UIManagerModule is
-    // thread-unsafe and calls this on the wrong thread.
-    //mThreadAsserter.assertNow();
+    mThreadAsserter.assertNow();
     int tag = node.getReactTag();
     mTagsToCSSNodes.put(tag, node);
     mRootTags.put(tag, true);

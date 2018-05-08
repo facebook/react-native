@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule WebViewExample
  */
 'use strict';
 
@@ -30,6 +27,7 @@ var DISABLED_WASH = 'rgba(255,255,255,0.25)';
 var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
+const FILE_SYSTEM_ORIGIN_WHITE_LIST = ['file://*', 'http://*', 'https://*'];
 
 class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -244,6 +242,7 @@ class MessagingTest extends React.Component<{}, $FlowFixMeState> {
               backgroundColor: BGWASH,
               height: 100,
             }}
+            originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
             source={require('./messagingtest.html')}
             onMessage={this.onMessage}
           />
@@ -256,7 +255,7 @@ class MessagingTest extends React.Component<{}, $FlowFixMeState> {
 class InjectJS extends React.Component<{}> {
   webview = null;
   injectJS = () => {
-    const script = 'document.write("Injected JS ")';  // eslint-disable-line quotes
+    const script = 'document.write("Injected JS ")';
     if (this.webview) {
       this.webview.injectJavaScript(script);
     }
@@ -417,6 +416,7 @@ exports.examples = [
             backgroundColor: BGWASH,
             height: 100,
           }}
+          originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
           source={require('./helloworld.html')}
           scalesPageToFit={true}
         />

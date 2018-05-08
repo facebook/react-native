@@ -10,6 +10,7 @@
 #include "JMessageQueueThread.h"
 #include "JSLoader.h"
 #include "ModuleRegistryBuilder.h"
+#include "NativeDeltaClient.h"
 
 namespace facebook {
 namespace react {
@@ -40,15 +41,12 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 
   CatalystInstanceImpl();
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-
   void initializeBridge(
       jni::alias_ref<ReactCallback::javaobject> callback,
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
       jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> uiBackgroundQueue,
       jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
       jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules);
 
@@ -61,8 +59,15 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
    */
   void jniSetSourceURL(const std::string& sourceURL);
 
+  /**
+   * Registers the file path of an additional JS segment by its ID.
+   *
+   */
+  void jniRegisterSegment(int segmentId, const std::string& path);
+
   void jniLoadScriptFromAssets(jni::alias_ref<JAssetManager::javaobject> assetManager, const std::string& assetURL, bool loadSynchronously);
   void jniLoadScriptFromFile(const std::string& fileName, const std::string& sourceURL, bool loadSynchronously);
+  void jniLoadScriptFromDeltaBundle(const std::string& sourceURL, jni::alias_ref<NativeDeltaClient::jhybridobject> deltaClient, bool loadSynchronously);
   void jniCallJSFunction(std::string module, std::string method, NativeArray* arguments);
   void jniCallJSCallback(jint callbackId, NativeArray* arguments);
   void setGlobalVariable(std::string propName,
@@ -75,7 +80,6 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
-  std::shared_ptr<JMessageQueueThread> uiBackgroundMessageQueue_;
 };
 
 }}

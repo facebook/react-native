@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "YOGA_TARGET", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "toolbar",
     srcs = glob(["**/*.java"]),
     provided_deps = [
@@ -12,7 +12,6 @@ android_library(
     ],
     deps = [
         YOGA_TARGET,
-        react_native_dep("android_res/com/facebook/catalyst/appcompat:appcompat"),
         react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),

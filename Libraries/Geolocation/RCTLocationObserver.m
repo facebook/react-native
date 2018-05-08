@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTLocationObserver.h"
@@ -28,6 +26,10 @@ typedef NS_ENUM(NSInteger, RCTPositionErrorCode) {
 #define RCT_DEFAULT_LOCATION_ACCURACY kCLLocationAccuracyHundredMeters
 
 typedef struct {
+  BOOL skipPermissionRequests;
+} RCTLocationConfiguration;
+
+typedef struct {
   double timeout;
   double maximumAge;
   double accuracy;
@@ -36,6 +38,15 @@ typedef struct {
 } RCTLocationOptions;
 
 @implementation RCTConvert (RCTLocationOptions)
+
++ (RCTLocationConfiguration)RCTLocationConfiguration:(id)json
+{
+  NSDictionary<NSString *, id> *options = [RCTConvert NSDictionary:json];
+
+  return (RCTLocationConfiguration) {
+    .skipPermissionRequests = [RCTConvert BOOL:options[@"skipPermissionRequests"]]
+  };
+}
 
 + (RCTLocationOptions)RCTLocationOptions:(id)json
 {
@@ -111,6 +122,7 @@ static NSDictionary<NSString *, id> *RCTPositionError(RCTPositionErrorCode code,
   NSMutableArray<RCTLocationRequest *> *_pendingRequests;
   BOOL _observingLocation;
   BOOL _usingSignificantChanges;
+  RCTLocationConfiguration _locationConfiguration;
   RCTLocationOptions _observerOptions;
 }
 
@@ -141,7 +153,14 @@ RCT_EXPORT_MODULE()
 
 - (void)beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy distanceFilter:(CLLocationDistance)distanceFilter useSignificantChanges:(BOOL)useSignificantChanges
 {
-  [self requestAuthorization];
+  if (!_locationConfiguration.skipPermissionRequests) {
+    [self requestAuthorization];
+  }
+  
+  if (!_locationManager) {
+    _locationManager = [CLLocationManager new];
+    _locationManager.delegate = self;
+  }
 
   _locationManager.distanceFilter  = distanceFilter;
   _locationManager.desiredAccuracy = desiredAccuracy;
@@ -171,6 +190,11 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - Public API
+
+RCT_EXPORT_METHOD(setConfiguration:(RCTLocationConfiguration)config)
+{
+  _locationConfiguration = config;
+}
 
 RCT_EXPORT_METHOD(requestAuthorization)
 {

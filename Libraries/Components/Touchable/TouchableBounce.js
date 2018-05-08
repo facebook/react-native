@@ -1,23 +1,21 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableBounce
  * @flow
+ * @format
  */
 'use strict';
 
-var Animated = require('Animated');
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var PropTypes = require('prop-types');
-var Touchable = require('Touchable');
+const Animated = require('Animated');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const createReactClass = require('create-react-class');
+const PropTypes = require('prop-types');
+const Touchable = require('Touchable');
 
 type Event = Object;
 
@@ -26,7 +24,7 @@ type State = {
   scale: Animated.Value,
 };
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Example of using the `TouchableMixin` to play well with other responder
@@ -35,8 +33,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
-// $FlowFixMe(>=0.41.0)
-var TouchableBounce = createReactClass({
+const TouchableBounce = createReactClass({
   displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
@@ -73,6 +70,12 @@ var TouchableBounce = createReactClass({
      * views.
      */
     hitSlop: EdgeInsetsPropType,
+    releaseVelocity: PropTypes.number.isRequired,
+    releaseBounciness: PropTypes.number.isRequired,
+  },
+
+  getDefaultProps: function() {
+    return {releaseBounciness: 10, releaseVelocity: 10};
   },
 
   getInitialState: function(): State {
@@ -86,7 +89,7 @@ var TouchableBounce = createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function
+    callback?: ?Function,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -111,16 +114,26 @@ var TouchableBounce = createReactClass({
   },
 
   touchableHandlePress: function(e: Event) {
-    var onPressWithCompletion = this.props.onPressWithCompletion;
+    const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
         this.state.scale.setValue(0.93);
-        this.bounceTo(1, 10, 10, this.props.onPressAnimationComplete);
+        this.bounceTo(
+          1,
+          this.props.releaseVelocity,
+          this.props.releaseBounciness,
+          this.props.onPressAnimationComplete,
+        );
       });
       return;
     }
 
-    this.bounceTo(1, 10, 10, this.props.onPressAnimationComplete);
+    this.bounceTo(
+      1,
+      this.props.releaseVelocity,
+      this.props.releaseBounciness,
+      this.props.onPressAnimationComplete,
+    );
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -139,51 +152,51 @@ var TouchableBounce = createReactClass({
   render: function(): React.Element<any> {
     return (
       <Animated.View
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityLabel={this.props.accessibilityLabel}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityComponentType={this.props.accessibilityComponentType}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         accessibilityTraits={this.props.accessibilityTraits}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         nativeID={this.props.nativeID}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderTerminationRequest={
+          this.touchableHandleResponderTerminationRequest
+        }
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {
           // $FlowFixMe(>=0.41.0)
-          this.props.children}
-        {Touchable.renderDebugView({color: 'orange', hitSlop: this.props.hitSlop})}
+          this.props.children
+        }
+        {Touchable.renderDebugView({
+          color: 'orange',
+          hitSlop: this.props.hitSlop,
+        })}
       </Animated.View>
     );
-  }
+  },
 });
 
 module.exports = TouchableBounce;

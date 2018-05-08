@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Subscribable
  * @flow
  */
 'use strict';
@@ -21,16 +18,18 @@ import type EventEmitter from 'EventEmitter';
  * React Core
  */
 
-var Subscribable = {};
+const Subscribable = {};
 
 Subscribable.Mixin = {
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this._subscribableSubscriptions = [];
   },
 
   componentWillUnmount: function() {
-    this._subscribableSubscriptions.forEach(
+    // This null check is a fix for a broken version of uglify-es. Should be deleted eventually
+    // https://github.com/facebook/react-native/issues/17348
+    this._subscribableSubscriptions && this._subscribableSubscriptions.forEach(
       (subscription) => subscription.remove()
     );
     this._subscribableSubscriptions = null;

@@ -1,45 +1,58 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.JSIModule;
+import com.facebook.react.bridge.JSIModuleHolder;
+import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.jsc.FabricJSCBinding;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerRegistry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
-public class ReactAppTestActivity extends FragmentActivity implements
-    DefaultHardwareBackBtnHandler
-{
+public class ReactAppTestActivity extends FragmentActivity
+    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+
+  public static final String EXTRA_IS_FABRIC_TEST = "is_fabric_test";
 
   private static final String DEFAULT_BUNDLE_NAME = "AndroidTestBundle.js";
   private static final int ROOT_VIEW_ID = 8675309;
   // we need a bigger timeout for CI builds because they run on a slow emulator
-  private static final long IDLE_TIMEOUT_MS = 60000;
+  private static final long IDLE_TIMEOUT_MS = 120000;
 
   private CountDownLatch mLayoutEvent = new CountDownLatch(1);
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
@@ -65,6 +78,11 @@ public class ReactAppTestActivity extends FragmentActivity implements
     rootView.addView(mScreenshotingFrameLayout);
 
     mReactRootView = new ReactRootView(this);
+    Intent intent = getIntent();
+    if (intent != null && intent.getBooleanExtra(EXTRA_IS_FABRIC_TEST, false)) {
+      mReactRootView.setIsFabric(true);
+    }
+
     mScreenshotingFrameLayout.addView(mReactRootView);
   }
 
@@ -159,38 +177,123 @@ public class ReactAppTestActivity extends FragmentActivity implements
     String bundleName,
     boolean useDevSupport,
     UIImplementationProvider uiImplementationProvider) {
+    loadBundle(spec, bundleName, useDevSupport, uiImplementationProvider);
+    renderComponent(appKey, initialProps);
+  }
 
+  public void renderComponent(String appKey) {
+    renderComponent(appKey, null);
+  }
+
+  public void renderComponent(final String appKey, final @Nullable Bundle initialProps) {
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                currentLayoutEvent.countDown();
+              }
+            });
+        Assertions.assertNotNull(mReactRootView)
+            .startReactApplication(mReactInstanceManager, appKey, initialProps);
+      }
+    });
+    try {
+      waitForBridgeAndUIIdle();
+      waitForLayout(5000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException("Layout never occurred for component " + appKey, e);
+    }
+  }
+
+  public void loadBundle(
+      ReactInstanceSpecForTest spec,
+      String bundleName,
+      boolean useDevSupport) {
+    loadBundle(spec, bundleName, useDevSupport, null);
+  }
+
+  public void loadBundle(
+      ReactInstanceSpecForTest spec,
+      String bundleName,
+      boolean useDevSupport,
+      UIImplementationProvider uiImplementationProvider) {
+
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
-    ReactInstanceManagerBuilder builder =
-      ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
-        .setApplication(getApplication())
-        .setBundleAssetName(bundleName)
+    final ReactInstanceManagerBuilder builder =
+        ReactTestHelper.getReactTestFactory()
+            .getReactInstanceManagerBuilder()
+            .setApplication(getApplication())
+            .setBundleAssetName(bundleName);
+    if (!spec.getAlternativeReactPackagesForTest().isEmpty()) {
+      builder.addPackages(spec.getAlternativeReactPackagesForTest());
+    } else {
+      builder.addPackage(new MainReactPackage());
+    }
+    builder
+        .addPackage(new InstanceSpecForTestPackage(spec))
         // By not setting a JS module name, we force the bundle to be always loaded from
         // assets, not the devserver, even if dev mode is enabled (such as when testing redboxes).
         // This makes sense because we never run the devserver in tests.
         //.setJSMainModuleName()
-        .addPackage(spec.getAlternativeReactPackageForTest() != null ?
-            spec.getAlternativeReactPackageForTest() : new MainReactPackage())
-        .addPackage(new InstanceSpecForTestPackage(spec))
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
         .setInitialLifecycleState(mLifecycleState)
+        .setJSIModulesProvider(
+            new JSIModulesProvider() {
+              @Override
+              public List<JSIModuleHolder> getJSIModules(
+                  final ReactApplicationContext reactApplicationContext,
+                  final JavaScriptContextHolder jsContext) {
+
+                List<JSIModuleHolder> modules = new ArrayList<>();
+                modules.add(
+                    new JSIModuleHolder() {
+
+                      @Override
+                      public Class<? extends JSIModule> getJSIModuleClass() {
+                        return UIManager.class;
+                      }
+
+                      @Override
+                      public FabricUIManager getJSIModule() {
+                        List<ViewManager> viewManagers =
+                            getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext);
+                        FabricUIManager fabricUIManager =
+                            new FabricUIManager(
+                                reactApplicationContext, new ViewManagerRegistry(viewManagers));
+                        new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
+                        return fabricUIManager;
+                      }
+                    });
+
+                return modules;
+              }})
         .setUIImplementationProvider(uiImplementationProvider);
 
-    mReactInstanceManager = builder.build();
-    mReactInstanceManager.onHostResume(this, this);
+    final CountDownLatch latch = new CountDownLatch(1);
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        mReactInstanceManager = builder.build();
+        mReactInstanceManager.onHostResume(ReactAppTestActivity.this, ReactAppTestActivity.this);
+        latch.countDown();
+      }
+    });
+    try {
+      latch.await(1000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(
+          "ReactInstanceManager never finished initializing " + bundleName, e);
+    }
+  }
 
-    Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
-        new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            currentLayoutEvent.countDown();
-          }
-        });
-    Assertions.assertNotNull(mReactRootView)
-        .startReactApplication(mReactInstanceManager, appKey, initialProps);
+  private ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
   }
 
   public boolean waitForLayout(long millis) throws InterruptedException {
@@ -267,4 +370,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
       String[] permissions,
       int[] grantResults) {
   }
+
+  @Override
+  public void requestPermissions(
+      String[] permissions, int requestCode, PermissionListener listener) {}
 }

@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule TextInputExample
  */
 'use strict';
 
@@ -18,6 +15,8 @@ var {
   TextInput,
   View,
   StyleSheet,
+  Slider,
+  Switch,
 } = ReactNative;
 
 class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
@@ -25,6 +24,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
   updateText = (text) => {
@@ -33,6 +33,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   };
@@ -44,6 +45,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
           onChange={(event) => this.updateText(
@@ -58,35 +60,18 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onKeyPress={(event) => this.updateText(
+            'onKeyPress key: ' + event.nativeEvent.key
+          )}
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
-    );
-  }
-}
-
-class AutoExpandingTextInput extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      height: 0,
-    };
-  }
-  render() {
-    return (
-      <TextInput
-        {...this.props}
-        multiline={true}
-        onContentSizeChange={(event) => {
-          this.setState({height: event.nativeEvent.contentSize.height});
-        }}
-        style={[styles.default, {height: Math.min(200, Math.max(35, this.state.height))}]}
-      />
     );
   }
 }
@@ -330,12 +315,65 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 }
 
+class AutogrowingTextInputExample extends React.Component<{}> {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      width: 100,
+      multiline: true,
+      text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
+    };
+  }
+
+  UNSAFE_componentWillReceiveProps(props) {
+    this.setState({
+      multiline: props.multiline,
+    });
+  }
+
+  render() {
+    var {style, multiline, ...props} = this.props;
+    return (
+      <View>
+        <Text>Width:</Text>
+        <Slider
+          value={100}
+          minimumValue={0}
+          maximumValue={100}
+          step={10}
+          onValueChange={(value) => this.setState({width: value})}
+        />
+        <Text>Multiline:</Text>
+        <Switch
+          value={this.state.multiline}
+          onValueChange={(value) => this.setState({multiline: value})}
+        />
+        <Text>TextInput:</Text>
+        <TextInput
+          multiline={this.state.multiline}
+          style={[style, {width: this.state.width + '%'}]}
+          onChangeText={(value) => this.setState({text: value})}
+          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
+          {...props}
+        />
+        <Text>Plain text value representation:</Text>
+        <Text>{this.state.text}</Text>
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
+      </View>
+    );
+  }
+}
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
     fontSize: 16,
-    padding: 4,
-    marginBottom: 10,
   },
   eventLabel: {
     margin: 3,
@@ -343,7 +381,6 @@ var styles = StyleSheet.create({
   },
   singleLine: {
     fontSize: 16,
-    padding: 4,
   },
   singleLineWithHeightTextInput: {
     height: 30,
@@ -363,7 +400,8 @@ exports.examples = [
       return (
         <TextInput
           autoFocus={true}
-          style={styles.singleLine}
+          multiline={true}
+          style={styles.input}
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
@@ -487,8 +525,7 @@ exports.examples = [
           <TextInput
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
-            style={styles.singleLine}>
-          </TextInput>
+            style={styles.singleLine} />
         </View>
       );
     }
@@ -524,6 +561,31 @@ exports.examples = [
           <TextInput
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'letterSpacing',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 0}]}
+            placeholder="letterSpacing = 0"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 2}]}
+            placeholder="letterSpacing = 2"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 9}]}
+            placeholder="letterSpacing = 9"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: -1}]}
+            placeholder="letterSpacing = -1"
           />
         </View>
       );
@@ -613,12 +675,22 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <AutoExpandingTextInput
-            placeholder="height increases with content"
-            defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
+          <AutogrowingTextInputExample
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
-          />
+            multiline={true}
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}
+          >
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
         </View>
       );
     }
@@ -708,7 +780,7 @@ exports.examples = [
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );

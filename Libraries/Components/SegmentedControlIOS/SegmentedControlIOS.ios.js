@@ -1,31 +1,28 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SegmentedControlIOS
  * @flow
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const StyleSheet = require('StyleSheet');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
   values: Array<string>,
   enabled: boolean,
 };
 
-var SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
+const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
 
 type Event = Object;
 
@@ -35,7 +32,7 @@ type Event = Object;
  * #### Programmatically changing selected index
  *
  * The selected index can be changed on the fly by assigning the
- * selectIndex prop to a state variable, then changing that variable.
+ * selectedIndex prop to a state variable, then changing that variable.
  * Note that the state variable would need to be updated as the user
  * selects a value and changes the index, as shown in the example below.
  *
@@ -49,8 +46,7 @@ type Event = Object;
  * />
  * ````
  */
-// $FlowFixMe(>=0.41.0)
-var SegmentedControlIOS = createReactClass({
+const SegmentedControlIOS = createReactClass({
   displayName: 'SegmentedControlIOS',
   mixins: [NativeMethodsMixin],
 
@@ -120,13 +116,13 @@ var SegmentedControlIOS = createReactClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   segmentedControl: {
     height: 28,
   },
 });
 
-var RCTSegmentedControl = requireNativeComponent(
+const RCTSegmentedControl = requireNativeComponent(
   'RCTSegmentedControl',
   SegmentedControlIOS
 );

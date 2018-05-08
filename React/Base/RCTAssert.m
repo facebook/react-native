@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAssert.h"
@@ -131,7 +129,7 @@ void RCTFatal(NSError *error)
 #endif
       NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, error.localizedDescription];
       NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 75);
-      [NSException raise:name format:@"%@", message];
+      @throw [[NSException alloc]  initWithName:name reason:message userInfo:nil];
 #if DEBUG
     } @catch (NSException *e) {}
 #endif

@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
 import android.content.Context;
-
+import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 
 /**
@@ -39,7 +37,7 @@ public abstract class JSBundleLoader {
 
   /**
    * This loader loads bundle from file system. The bundle will be read in native code to save on
-   * passing large strings from java to native memorory.
+   * passing large strings from java to native memory.
    */
   public static JSBundleLoader createFileLoader(final String fileName) {
     return createFileLoader(fileName, fileName, false);
@@ -82,6 +80,28 @@ public abstract class JSBundleLoader {
   }
 
   /**
+   * This loader is used to load delta bundles from the dev server. We pass each delta message to
+   * the loader and process it in C++. Passing it as a string leads to inefficiencies due to memory
+   * copies, which will have to be addressed in a follow-up.
+   * @param nativeDeltaClient
+   */
+  public static JSBundleLoader createDeltaFromNetworkLoader(
+    final String sourceURL,
+    final NativeDeltaClient nativeDeltaClient) {
+    return new JSBundleLoader() {
+      @Override
+      public String loadScript(CatalystInstanceImpl instance) {
+        try {
+          instance.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
+          return sourceURL;
+        } catch (Exception e) {
+          throw DebugServerException.makeGeneric(e.getMessage(), e);
+        }
+      }
+    };
+  }
+
+  /**
    * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
    * the bundle from device as remote executor will have to do it anyway.
    */
@@ -97,8 +117,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * Loads the script, returning the URL of the source it loaded.
-   */
+  /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(CatalystInstanceImpl instance);
 }

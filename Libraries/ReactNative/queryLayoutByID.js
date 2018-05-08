@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule queryLayoutByID
  * @flow
+ * @format
  */
 'use strict';
 
@@ -19,11 +17,11 @@ type OnSuccessCallback = (
   width: number,
   height: number,
   pageX: number,
-  pageY: number
-) => void
+  pageY: number,
+) => void;
 
 // I don't know what type error is...
-type OnErrorCallback = (error: any) => void
+type OnErrorCallback = (error: any) => void;
 
 /**
  * Queries the layout of a view. The layout does not reflect the element as
@@ -47,16 +45,13 @@ type OnErrorCallback = (error: any) => void
 var queryLayoutByID = function(
   tag: ?number,
   onError: OnErrorCallback,
-  onSuccess: OnSuccessCallback
+  onSuccess: OnSuccessCallback,
 ): void {
   if (tag == null) {
     return;
   }
   // Native bridge doesn't *yet* surface errors.
-  UIManager.measure(
-    tag,
-    onSuccess
-  );
+  UIManager.measure(tag, onSuccess);
 };
 
 module.exports = queryLayoutByID;

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  */
@@ -29,7 +27,21 @@ function getAndroidAssetSuffix(scale: number): string {
   throw new Error('no such scale');
 }
 
-function getAndroidDrawableFolderName(asset: PackagerAsset, scale: number) {
+// See https://developer.android.com/guide/topics/resources/drawable-resource.html
+const drawableFileTypes = new Set([
+  'gif',
+  'jpeg',
+  'jpg',
+  'png',
+  'svg',
+  'webp',
+  'xml',
+]);
+
+function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
+  if (!drawableFileTypes.has(asset.type)) {
+    return 'raw';
+  }
   var suffix = getAndroidAssetSuffix(scale);
   if (!suffix) {
     throw new Error(
@@ -60,7 +72,7 @@ function getBasePath(asset: PackagerAsset) {
 
 module.exports = {
   getAndroidAssetSuffix: getAndroidAssetSuffix,
-  getAndroidDrawableFolderName: getAndroidDrawableFolderName,
+  getAndroidResourceFolderName: getAndroidResourceFolderName,
   getAndroidResourceIdentifier: getAndroidResourceIdentifier,
   getBasePath: getBasePath
 };

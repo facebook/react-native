@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppContainer
  * @format
  * @flow
  */
@@ -25,10 +22,9 @@ type Context = {
   rootTag: number,
 };
 type Props = {|
-  /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an error
-   * when upgrading Flow's support for React. Common errors found when
-   * upgrading Flow's React support are documented at
-   * https://fburl.com/eq7bs81w */
+  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+   * suppresses an error when upgrading Flow's support for React. To see the
+   * error delete this comment and run Flow. */
   children?: React.Children,
   rootTag: number,
   WrapperComponent?: ?React.ComponentType<*>,
@@ -63,20 +59,20 @@ class AppContainer extends React.Component<Props, State> {
           'toggleElementInspector',
           () => {
             const Inspector = require('Inspector');
-            const inspector = this.state.inspector
-              ? null
-              : <Inspector
-                  inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
-                  onRequestRerenderApp={updateInspectedViewTag => {
-                    this.setState(
-                      s => ({mainKey: s.mainKey + 1}),
-                      () =>
-                        updateInspectedViewTag(
-                          ReactNative.findNodeHandle(this._mainRef),
-                        ),
-                    );
-                  }}
-                />;
+            const inspector = this.state.inspector ? null : (
+              <Inspector
+                inspectedViewTag={ReactNative.findNodeHandle(this._mainRef)}
+                onRequestRerenderApp={updateInspectedViewTag => {
+                  this.setState(
+                    s => ({mainKey: s.mainKey + 1}),
+                    () =>
+                      updateInspectedViewTag(
+                        ReactNative.findNodeHandle(this._mainRef),
+                      ),
+                  );
+                }}
+              />
+            );
             this.setState({inspector});
           },
         );
@@ -106,10 +102,9 @@ class AppContainer extends React.Component<Props, State> {
         pointerEvents="box-none"
         style={styles.appContainer}
         ref={ref => {
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
-           * an error when upgrading Flow's support for React. Common errors
-           * found when upgrading Flow's React support are documented at
-           * https://fburl.com/eq7bs81w */
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */
           this._mainRef = ref;
         }}>
         {this.props.children}
@@ -118,11 +113,7 @@ class AppContainer extends React.Component<Props, State> {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper) {
-      innerView = (
-        <Wrapper>
-          {innerView}
-        </Wrapper>
-      );
+      innerView = <Wrapper>{innerView}</Wrapper>;
     }
     return (
       <View style={styles.appContainer} pointerEvents="box-none">

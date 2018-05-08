@@ -16,6 +16,7 @@ class JSExecutor;
 class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
+class RAMBundleRegistry;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -30,6 +31,8 @@ class ExecutorDelegate {
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
 };
+
+using NativeExtensionsProvider = std::function<folly::dynamic(const std::string&)>;
 
 class JSExecutorFactory {
 public:
@@ -48,9 +51,14 @@ public:
                                      std::string sourceURL) = 0;
 
   /**
-   * Add an application "unbundle" file
+   * Add an application "RAM" bundle registry
    */
-  virtual void setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle> bundle) = 0;
+  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
+
+  /**
+   * Register a file path for an additional "RAM" bundle
+   */
+  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
@@ -69,16 +77,34 @@ public:
 
   virtual void setGlobalVariable(std::string propName,
                                  std::unique_ptr<const JSBigString> jsonValue) = 0;
+
   virtual void* getJavaScriptContext() {
     return nullptr;
   }
 
-  #ifdef WITH_JSC_MEMORY_PRESSURE
+  /**
+   * Returns whether or not the underlying executor supports debugging via the
+   * Chrome remote debugging protocol.
+   */
+  virtual bool isInspectable() {
+    return false;
+  }
+
+  /**
+   * The description is displayed in the dev menu, if there is one in
+   * this build.  There is a default, but if this method returns a
+   * non-empty string, it will be used instead.
+   */
+  virtual std::string getDescription() = 0;
+
   virtual void handleMemoryPressure(int pressureLevel) {}
-  #endif
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
+
+  static std::string getSyntheticBundlePath(
+      uint32_t bundleId,
+      const std::string& bundlePath);
 };
 
 } }

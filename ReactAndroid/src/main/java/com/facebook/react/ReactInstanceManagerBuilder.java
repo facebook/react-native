@@ -2,10 +2,15 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
+
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSIModulesProvider;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LifecycleState;
@@ -34,18 +39,16 @@ public class ReactInstanceManagerBuilder {
   private @Nullable LifecycleState mInitialLifecycleState;
   private @Nullable UIImplementationProvider mUIImplementationProvider;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private JSCConfig mJSCConfig = JSCConfig.EMPTY;
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
-  private boolean mUseSeparateUIBackgroundThread;
+  private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
-  private boolean mEnableSplitPackage;
-  private boolean mUseOnlyDefaultPackages;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
+  private @Nullable JSIModulesProvider mJSIModulesProvider;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -57,6 +60,21 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setUIImplementationProvider(
     @Nullable UIImplementationProvider uiImplementationProvider) {
     mUIImplementationProvider = uiImplementationProvider;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setJSIModulesProvider(
+    @Nullable JSIModulesProvider jsiModulesProvider) {
+    mJSIModulesProvider = jsiModulesProvider;
+    return this;
+  }
+
+  /**
+   * Factory for desired implementation of JavaScriptExecutor.
+   */
+  public ReactInstanceManagerBuilder setJavaScriptExecutorFactory(
+    @Nullable JavaScriptExecutorFactory javaScriptExecutorFactory) {
+    mJavaScriptExecutorFactory = javaScriptExecutorFactory;
     return this;
   }
 
@@ -86,7 +104,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes
-   * prior invcations of {@link setJSBundleFile} and {@link setBundleAssetName}.
+   * prior invocations of {@link setJSBundleFile} and {@link setBundleAssetName}.
    *
    * Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
    */
@@ -111,6 +129,11 @@ public class ReactInstanceManagerBuilder {
 
   public ReactInstanceManagerBuilder addPackage(ReactPackage reactPackage) {
     mPackages.add(reactPackage);
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder addPackages(List<ReactPackage> reactPackages) {
+    mPackages.addAll(reactPackages);
     return this;
   }
 
@@ -170,11 +193,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setJSCConfig(JSCConfig jscConfig) {
-    mJSCConfig = jscConfig;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setRedBoxHandler(@Nullable RedBoxHandler redBoxHandler) {
     mRedBoxHandler = redBoxHandler;
     return this;
@@ -196,24 +214,8 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setUseSeparateUIBackgroundThread(
-    boolean useSeparateUIBackgroundThread) {
-    mUseSeparateUIBackgroundThread = useSeparateUIBackgroundThread;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setMinNumShakes(int minNumShakes) {
     mMinNumShakes = minNumShakes;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setEnableSplitPackage(boolean enableSplitPackage) {
-    mEnableSplitPackage = enableSplitPackage;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setUseOnlyDefaultPackages(boolean useOnlyDefaultPackages) {
-    mUseOnlyDefaultPackages = useOnlyDefaultPackages;
     return this;
   }
 
@@ -230,7 +232,7 @@ public class ReactInstanceManagerBuilder {
    * <li> {@link #setApplication}
    * <li> {@link #setCurrentActivity} if the activity has already resumed
    * <li> {@link #setDefaultHardwareBackBtnHandler} if the activity has already resumed
-   * <li> {@link #setJSBundleFile} or {@link #setJSMainModuleName}
+   * <li> {@link #setJSBundleFile} or {@link #setJSMainModulePath}
    * </ul>
    */
   public ReactInstanceManager build() {
@@ -251,10 +253,17 @@ public class ReactInstanceManagerBuilder {
       mUIImplementationProvider = new UIImplementationProvider();
     }
 
+    // We use the name of the device and the app for debugging & metrics
+    String appName = mApplication.getPackageName();
+    String deviceName = getFriendlyDeviceName();
+
     return new ReactInstanceManager(
         mApplication,
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
+        mJavaScriptExecutorFactory == null
+            ? new JSCJavaScriptExecutorFactory(appName, deviceName)
+            : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
                 mApplication, mJSBundleAssetUrl, false /*Asynchronous*/)
@@ -266,15 +275,12 @@ public class ReactInstanceManagerBuilder {
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mUIImplementationProvider,
         mNativeModuleCallExceptionHandler,
-        mJSCConfig,
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
         mDevBundleDownloadListener,
-        mUseSeparateUIBackgroundThread,
         mMinNumShakes,
-        mEnableSplitPackage,
-        mUseOnlyDefaultPackages,
-        mMinTimeLeftInFrameForNonBatchedOperationMs);
+        mMinTimeLeftInFrameForNonBatchedOperationMs,
+      mJSIModulesProvider);
   }
 }

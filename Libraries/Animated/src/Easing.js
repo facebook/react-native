@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Easing
  * @flow
  */
 'use strict';
@@ -62,14 +59,14 @@ class Easing {
   /**
    * A stepping function, returns 1 for any positive value of `n`.
    */
-  static step0(n) {
+  static step0(n: number) {
     return n > 0 ? 1 : 0;
   }
 
   /**
    * A stepping function, returns 1 if `n` is greater than or equal to 1.
    */
-  static step1(n) {
+  static step1(n: number) {
     return n >= 1 ? 1 : 0;
   }
 
@@ -79,7 +76,7 @@ class Easing {
    *
    * http://cubic-bezier.com/#0,0,1,1
    */
-  static linear(t) {
+  static linear(t: number) {
     return t;
   }
 
@@ -102,7 +99,7 @@ class Easing {
    *
    * http://easings.net/#easeInQuad
    */
-  static quad(t) {
+  static quad(t: number) {
     return t * t;
   }
 
@@ -112,7 +109,7 @@ class Easing {
    *
    * http://easings.net/#easeInCubic
    */
-  static cubic(t) {
+  static cubic(t: number) {
     return t * t * t;
   }
 
@@ -122,8 +119,8 @@ class Easing {
    * n = 4: http://easings.net/#easeInQuart
    * n = 5: http://easings.net/#easeInQuint
    */
-  static poly(n) {
-    return (t) => Math.pow(t, n);
+  static poly(n: number) {
+    return (t: number) => Math.pow(t, n);
   }
 
   /**
@@ -131,7 +128,7 @@ class Easing {
    *
    * http://easings.net/#easeInSine
    */
-  static sin(t) {
+  static sin(t: number) {
     return 1 - Math.cos(t * Math.PI / 2);
   }
 
@@ -140,7 +137,7 @@ class Easing {
    *
    * http://easings.net/#easeInCirc
    */
-  static circle(t) {
+  static circle(t: number) {
     return 1 - Math.sqrt(1 - t * t);
   }
 
@@ -149,7 +146,7 @@ class Easing {
    *
    * http://easings.net/#easeInExpo
    */
-  static exp(t) {
+  static exp(t: number) {
     return Math.pow(2, 10 * (t - 1));
   }
 
@@ -162,11 +159,6 @@ class Easing {
    * times.
    *
    * http://easings.net/#easeInElastic
-   *
-   * Wolfram Plots:
-   *
-   * - http://tiny.cc/elastic_b_1 (bounciness = 1, default)
-   * - http://tiny.cc/elastic_b_3 (bounciness = 3)
    */
   static elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;

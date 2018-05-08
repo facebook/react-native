@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule TextExample
  */
 'use strict';
 
@@ -231,6 +228,27 @@ class TextExample extends React.Component<{}> {
         <RNTesterBlock title="Nested">
           <Text onPress={() => console.log('1st')}>
             (Normal text,
+            <Text style={{color: 'red', fontWeight: 'bold'}}>
+              (R)red
+              <Text style={{color: 'green', fontWeight: 'normal'}}>
+                (G)green
+                <Text style={{color: 'blue', fontWeight: 'bold'}}>
+                  (B)blue
+                  <Text style={{color: 'cyan', fontWeight: 'normal'}}>
+                    (C)cyan
+                    <Text style={{color: 'magenta', fontWeight: 'bold'}}>
+                      (M)magenta
+                      <Text style={{color: 'yellow', fontWeight: 'normal'}}>
+                        (Y)yellow
+                        <Text style={{color: 'black', fontWeight: 'bold'}}>
+                          (K)black
+                        </Text>
+                      </Text>
+                    </Text>
+                  </Text>
+                </Text>
+              </Text>
+            </Text>
             <Text style={{fontWeight: 'bold'}} onPress={() => console.log('2nd')}>
               (and bold
               <Text style={{fontStyle: 'italic', fontSize: 11, color: '#527fe4'}} onPress={() => console.log('3rd')}>
@@ -322,6 +340,36 @@ class TextExample extends React.Component<{}> {
             Holisticly formulate inexpensive ideas before best-of-breed benefits. <Text style={{fontSize: 20}}>Continually</Text> expedite magnetic potentialities rather than client-focused interfaces.
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Letter Spacing">
+          <View>
+            <Text style={{letterSpacing: 0}}>
+              letterSpacing = 0
+            </Text>
+            <Text style={{letterSpacing: 2, marginTop: 5}}>
+              letterSpacing = 2
+            </Text>
+            <Text style={{letterSpacing: 9, marginTop: 5}}>
+              letterSpacing = 9
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 12, letterSpacing: 2, backgroundColor: 'fuchsia', marginTop: 5}}>
+                With size and background color
+              </Text>
+            </View>
+            <Text style={{letterSpacing: -1, marginTop: 5}}>
+              letterSpacing = -1
+            </Text>
+            <Text style={{letterSpacing: 3, backgroundColor: '#dddddd', marginTop: 5}}>
+              [letterSpacing = 3]
+              <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
+                [Nested letterSpacing = 0]
+              </Text>
+              <Text style={{letterSpacing: 6, backgroundColor: '#eeeeee'}}>
+                [Nested letterSpacing = 6]
+              </Text>
+            </Text>
+          </View>
+        </RNTesterBlock>
         <RNTesterBlock title="Empty Text">
           <Text />
         </RNTesterBlock>
@@ -403,6 +451,9 @@ class TextExample extends React.Component<{}> {
           </Text>
           <Text ellipsizeMode="head" numberOfLines={1}>
             This very long text should be truncated with dots in the beginning.
+          </Text>
+          <Text ellipsizeMode="clip" numberOfLines={1}>
+            This very long text should be clipped and this will not be visible.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Include Font Padding">

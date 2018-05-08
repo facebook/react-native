@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing;
@@ -30,7 +29,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.modules.core.ReactChoreographer;
 
@@ -73,7 +72,7 @@ public class ReactTestHelper {
         }
         JavaScriptExecutor executor = null;
         try {
-          executor = new JSCJavaScriptExecutor.Factory(new WritableNativeMap()).create();
+          executor = new JSCJavaScriptExecutorFactory("ReactTestHelperApp", "ReactTestHelperDevice").create();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }

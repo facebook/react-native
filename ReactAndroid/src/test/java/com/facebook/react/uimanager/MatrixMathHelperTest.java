@@ -131,7 +131,7 @@ public class MatrixMathHelperTest {
   @Test
   public void testDecomposingComplex4x4MatrixToProduceAccurateAngles() {
     verifyRotatedMatrix(10, -80, 0, 10, -80, 0);
-    // x and y will filp
+    // x and y will flip
     verifyRotatedMatrix(10, -95, 0, -170, -85, -180);
   }
 

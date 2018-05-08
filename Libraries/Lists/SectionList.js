@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SectionList
  * @flow
  * @format
  */
@@ -15,6 +12,7 @@
 const MetroListView = require('MetroListView');
 const Platform = require('Platform');
 const React = require('React');
+const ScrollView = require('ScrollView');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
 import type {ViewToken} from 'ViewabilityHelper';
@@ -22,7 +20,7 @@ import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList'
 
 type Item = any;
 
-type SectionBase<SectionItemT> = {
+export type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
    */
@@ -70,7 +68,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  renderItem: (info: {
+  renderItem?: (info: {
     item: Item,
     index: number,
     section: SectionT,
@@ -186,7 +184,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-type Props<SectionT> = RequiredProps<SectionT> &
+export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedSectionListProps<SectionT>;
 
@@ -219,7 +217,7 @@ type DefaultProps = typeof defaultProps;
  *     <SectionList
  *       renderItem={({item}) => <ListItem title={item} />}
  *       renderSectionHeader={({section}) => <Header title={section.title} />}
- *       sections={[ // homogenous rendering between sections
+ *       sections={[ // homogeneous rendering between sections
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
@@ -252,7 +250,10 @@ type DefaultProps = typeof defaultProps;
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
-class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<SectionT>, void> {
+class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
+  Props<SectionT>,
+  void,
+> {
   props: Props<SectionT>;
   static defaultProps: DefaultProps = defaultProps;
 
@@ -277,7 +278,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<
   }
 
   /**
-   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
    * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
    * taps on items or by navigation actions.
    */
@@ -299,7 +300,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder() {
+  getScrollResponder(): ?ScrollView {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollResponder();
@@ -324,15 +325,17 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<Props<
     const List = this.props.legacyImplementation
       ? MetroListView
       : VirtualizedSectionList;
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
     return <List {...this.props} ref={this._captureRef} />;
   }
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }

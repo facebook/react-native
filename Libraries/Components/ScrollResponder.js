@@ -1,31 +1,27 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollResponder
  * @flow
  */
 'use strict';
 
-var Dimensions = require('Dimensions');
-var FrameRateLogger = require('FrameRateLogger');
-var Keyboard = require('Keyboard');
-var ReactNative = require('ReactNative');
-var Subscribable = require('Subscribable');
-var TextInputState = require('TextInputState');
-var UIManager = require('UIManager');
+const Dimensions = require('Dimensions');
+const FrameRateLogger = require('FrameRateLogger');
+const Keyboard = require('Keyboard');
+const ReactNative = require('ReactNative');
+const Subscribable = require('Subscribable');
+const TextInputState = require('TextInputState');
+const UIManager = require('UIManager');
 
-var invariant = require('fbjs/lib/invariant');
-var nullthrows = require('fbjs/lib/nullthrows');
-var performanceNow = require('fbjs/lib/performanceNow');
-var warning = require('fbjs/lib/warning');
+const invariant = require('fbjs/lib/invariant');
+const nullthrows = require('fbjs/lib/nullthrows');
+const performanceNow = require('fbjs/lib/performanceNow');
+const warning = require('fbjs/lib/warning');
 
-var { ScrollViewManager } = require('NativeModules');
-var { getInstanceFromNode } = require('ReactNativeComponentTree');
+const { ScrollViewManager } = require('NativeModules');
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -105,7 +101,7 @@ var { getInstanceFromNode } = require('ReactNativeComponentTree');
  *   this.props.onKeyboardDidHide
  */
 
-var IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
+const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
 type State = {
     isTouching: boolean,
@@ -116,16 +112,7 @@ type State = {
 };
 type Event = Object;
 
-function isTagInstanceOfTextInput(tag) {
-  var instance = getInstanceFromNode(tag);
-  return instance && instance.viewConfig && (
-    instance.viewConfig.uiViewClassName === 'AndroidTextInput' ||
-    instance.viewConfig.uiViewClassName === 'RCTTextView' ||
-    instance.viewConfig.uiViewClassName === 'RCTTextField'
-  );
-}
-
-var ScrollResponderMixin = {
+const ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
   scrollResponderMixinGetInitialState: function(): State {
     return {
@@ -176,7 +163,7 @@ var ScrollResponderMixin = {
    *
    */
   scrollResponderHandleStartShouldSetResponder: function(e: Event): boolean {
-    var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
 
     if (this.props.keyboardShouldPersistTaps === 'handled' &&
       currentlyFocusedTextInput != null &&
@@ -198,17 +185,27 @@ var ScrollResponderMixin = {
    * Invoke this from an `onStartShouldSetResponderCapture` event.
    */
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
-    // First see if we want to eat taps while the keyboard is up
-    var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    var {keyboardShouldPersistTaps} = this.props;
-    var keyboardNeverPersistTaps = !keyboardShouldPersistTaps ||
-                                    keyboardShouldPersistTaps === 'never';
-    if (keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null &&
-      !isTagInstanceOfTextInput(e.target)) {
+    // The scroll view should receive taps instead of its descendants if:
+    // * it is already animating/decelerating
+    if (this.scrollResponderIsAnimating()) {
       return true;
     }
-    return this.scrollResponderIsAnimating();
+
+    // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
+    // and a new touch starts with a non-textinput target (in which case the
+    // first tap should be sent to the scroll view and dismiss the keyboard,
+    // then the second tap goes to the actual interior view)
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
+    const {keyboardShouldPersistTaps} = this.props;
+    const keyboardNeverPersistTaps = !keyboardShouldPersistTaps ||
+                                    keyboardShouldPersistTaps === 'never';
+    if (keyboardNeverPersistTaps &&
+      currentlyFocusedTextInput != null
+      /* && !TextInputState.isTextInput(e.target) */) {
+      return true;
+    }
+
+    return false;
   },
 
   /**
@@ -249,9 +246,19 @@ var ScrollResponderMixin = {
    * @param {SyntheticEvent} e Event.
    */
   scrollResponderHandleTouchEnd: function(e: Event) {
-    var nativeEvent = e.nativeEvent;
+    const nativeEvent = e.nativeEvent;
     this.state.isTouching = nativeEvent.touches.length !== 0;
     this.props.onTouchEnd && this.props.onTouchEnd(e);
+  },
+
+  /**
+   * Invoke this from an `onTouchCancel` event.
+   *
+   * @param {SyntheticEvent} e Event.
+   */
+  scrollResponderHandleTouchCancel: function(e: Event) {
+    this.state.isTouching = false;
+    this.props.onTouchCancel && this.props.onTouchCancel(e);
   },
 
   /**
@@ -262,7 +269,7 @@ var ScrollResponderMixin = {
 
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
-    var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
+    const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (this.props.keyboardShouldPersistTaps !== true &&
       this.props.keyboardShouldPersistTaps !== 'always' &&
       currentlyFocusedTextInput != null &&
@@ -372,9 +379,9 @@ var ScrollResponderMixin = {
    * a touch has just started or ended.
    */
   scrollResponderIsAnimating: function(): boolean {
-    var now = performanceNow();
-    var timeSinceLastMomentumScrollEnd = now - this.state.lastMomentumScrollEndTime;
-    var isAnimating = timeSinceLastMomentumScrollEnd < IS_ANIMATING_TOUCH_START_THRESHOLD_MS ||
+    const now = performanceNow();
+    const timeSinceLastMomentumScrollEnd = now - this.state.lastMomentumScrollEndTime;
+    const isAnimating = timeSinceLastMomentumScrollEnd < IS_ANIMATING_TOUCH_START_THRESHOLD_MS ||
       this.state.lastMomentumScrollEndTime < this.state.lastMomentumScrollBeginTime;
     return isAnimating;
   },
@@ -453,12 +460,13 @@ var ScrollResponderMixin = {
    * @platform ios
    */
   scrollResponderZoomTo: function(
-    rect: { x: number, y: number, width: number, height: number, animated?: boolean },
+    rect: {| x: number, y: number, width: number, height: number, animated?: boolean |},
     animated?: boolean // deprecated, put this inside the rect argument instead
   ) {
     invariant(ScrollViewManager && ScrollViewManager.zoomToRect, 'zoomToRect is not implemented');
     if ('animated' in rect) {
-      var { animated, ...rect } = rect;
+      animated = rect.animated;
+      delete rect.animated;
     } else if (typeof animated !== 'undefined') {
       console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
     }
@@ -467,12 +475,13 @@ var ScrollResponderMixin = {
 
   /**
    * Displays the scroll indicators momentarily.
-   *
-   * @platform ios
    */
   scrollResponderFlashScrollIndicators: function() {
-    invariant(ScrollViewManager && ScrollViewManager.flashScrollIndicators, 'flashScrollIndicators is not implemented');
-    ScrollViewManager.flashScrollIndicators(this.scrollResponderGetScrollableNode());
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      []
+    );
   },
 
   /**
@@ -507,11 +516,11 @@ var ScrollResponderMixin = {
    * @param {number} height Height of the text input.
    */
   scrollResponderInputMeasureAndScrollToKeyboard: function(left: number, top: number, width: number, height: number) {
-    var keyboardScreenY = Dimensions.get('window').height;
+    let keyboardScreenY = Dimensions.get('window').height;
     if (this.keyboardWillOpenTo) {
       keyboardScreenY = this.keyboardWillOpenTo.endCoordinates.screenY;
     }
-    var scrollOffsetY = top - keyboardScreenY + height + this.additionalScrollOffset;
+    let scrollOffsetY = top - keyboardScreenY + height + this.additionalScrollOffset;
 
     // By default, this can scroll with negative offset, pulling the content
     // down so that the target component's bottom meets the keyboard's top.
@@ -536,12 +545,12 @@ var ScrollResponderMixin = {
    *
    * The `keyboardWillShow` is called before input focus.
    */
-  componentWillMount: function() {
-    var {keyboardShouldPersistTaps} = this.props;
+  UNSAFE_componentWillMount: function() {
+    const {keyboardShouldPersistTaps} = this.props;
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',
       `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. `
-      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? "always" : "never"}"' instead`
+      + `Use 'keyboardShouldPersistTaps="${keyboardShouldPersistTaps ? 'always' : 'never'}"' instead`
     );
 
     this.keyboardWillOpenTo = null;
@@ -565,7 +574,7 @@ var ScrollResponderMixin = {
    * - willHide {startCoordinates, endCoordinates} several times
    * - didHide several times
    *
-   * The `ScrollResponder` providesModule callbacks for each of these events.
+   * The `ScrollResponder` module callbacks for each of these events.
    * Even though any user could have easily listened to keyboard events
    * themselves, using these `props` callbacks ensures that ordering of events
    * is consistent - and not dependent on the order that the keyboard events are
@@ -606,7 +615,7 @@ var ScrollResponderMixin = {
 
 };
 
-var ScrollResponder = {
+const ScrollResponder = {
   Mixin: ScrollResponderMixin,
 };
 

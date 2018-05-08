@@ -1,10 +1,8 @@
 /**
 * Copyright (c) 2015-present, Facebook, Inc.
-* All rights reserved.
 *
-* This source code is licensed under the BSD-style license found in the
-* LICENSE file in the root directory of this source tree. An additional grant
-* of patent rights can be found in the PATENTS file in the same directory.
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
 */
 'use strict';
 
@@ -15,8 +13,28 @@ const findXcodeProject = require('./findXcodeProject');
 const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
-  return `build/Build/Products/${configuration}-${isDevice ? 'iphoneos' : 'iphonesimulator'}/${appName}.app`;
+const getBuildPath = function (configuration = 'Debug', appName, isDevice) {
+  let device;
+
+  if (isDevice) {
+    device = 'iphoneos';
+  } else if (appName.toLowerCase().includes('tvos')) {
+    device = 'appletvsimulator';
+  } else {
+    device = 'iphonesimulator';
+  }
+
+  return `build/Build/Products/${configuration}-${device}/${appName}.app`;
+};
+const xcprettyAvailable = function() {
+  try {
+    child_process.execSync('xcpretty --version', {
+      stdio: [ 0, 'pipe', 'ignore', ]
+    });
+  } catch (error) {
+    return false;
+  }
+  return true;
 };
 
 function runIOS(argv, config, args) {
@@ -47,10 +65,10 @@ function runIOS(argv, config, args) {
   );
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
-    if (selectedDevice){
-      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
+    if (selectedDevice) {
+      return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose, args.port);
     } else {
-      if (devices){
+      if (devices && devices.length > 0) {
         console.log('Could not find device with the name: "' + args.device + '".');
         console.log('Choose one of the following:');
         printFoundDevices(devices);
@@ -67,10 +85,10 @@ function runIOS(argv, config, args) {
 
 function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, args.udid);
-  if (selectedDevice){
-    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager);
+  if (selectedDevice) {
+    return runOnDevice(selectedDevice, scheme, xcodeProject, args.configuration, args.packager, args.verbose, args.port);
   } else {
-    if (devices){
+    if (devices && devices.length > 0) {
       console.log('Could not find device with the udid: "' + args.udid + '".');
       console.log('Choose one of the following:');
       printFoundDevices(devices);
@@ -80,7 +98,7 @@ function runOnDeviceByUdid(args, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, scheme){
+function runOnSimulator(xcodeProject, args, scheme) {
   return new Promise((resolve) => {
     try {
       var simulators = JSON.parse(
@@ -94,25 +112,46 @@ function runOnSimulator(xcodeProject, args, scheme){
     if (!selectedSimulator) {
       throw new Error(`Could not find ${args.simulator} simulator`);
     }
+    
+    /**
+		 * Booting simulator through `xcrun simctl boot` will boot it in the `headless` mode
+		 * (running in the background).
+		 *
+		 * In order for user to see the app and the simulator itself, we have to make sure
+		 * that the Simulator.app is running.
+		 *
+		 * We also pass it `-CurrentDeviceUDID` so that when we launch it for the first time,
+		 * it will not boot the "default" device, but the one we set. If the app is already running,
+		 * this flag has no effect.
+		 */
+		child_process.execFileSync('open', [
+			'/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app',
+			'--args',
+			'-CurrentDeviceUDID',
+			selectedSimulator.udid
+		]);
 
-    const simulatorFullName = formattedDeviceName(selectedSimulator);
-    console.log(`Launching ${simulatorFullName}...`);
-    try {
-      child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
-    } catch (e) {
-      // instruments always fail with 255 because it expects more arguments,
-      // but we want it to only launch the simulator
+    if (!selectedSimulator.booted) {
+      const simulatorFullName = formattedDeviceName(selectedSimulator);
+      console.log(`Launching ${simulatorFullName}...`);
+      try {
+        child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
+      } catch (e) {
+        // instruments always fail with 255 because it expects more arguments,
+        // but we want it to only launch the simulator
+      }
     }
-    resolve(selectedSimulator.udid)
+
+    buildProject(xcodeProject, selectedSimulator.udid, scheme, args.configuration, args.packager, args.verbose, args.port)
+      .then((appName) => resolve({ udid: selectedSimulator.udid, appName }));
   })
-  .then((udid) => buildProject(xcodeProject, udid, scheme, args.configuration, args.packager))
-  .then((appName) => {
+  .then(({udid, appName}) => {
     if (!appName) {
       appName = scheme;
     }
     let appPath = getBuildPath(args.configuration, appName);
     console.log(`Installing ${appPath}`);
-    child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+    child_process.spawnSync('xcrun', ['simctl', 'install', udid, appPath], {stdio: 'inherit'});
 
     const bundleID = child_process.execFileSync(
       '/usr/libexec/PlistBuddy',
@@ -121,12 +160,12 @@ function runOnSimulator(xcodeProject, args, scheme){
     ).trim();
 
     console.log(`Launching ${bundleID}`);
-    child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
-  })
+    child_process.spawnSync('xcrun', ['simctl', 'launch', udid, bundleID], {stdio: 'inherit'});
+  });
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager) {
-  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, launchPackager)
+function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launchPackager, verbose, port) {
+  return buildProject(xcodeProject, selectedDevice.udid, scheme, configuration, launchPackager, verbose, port)
   .then((appName) => {
     if (!appName) {
       appName = scheme;
@@ -149,7 +188,7 @@ function runOnDevice(selectedDevice, scheme, xcodeProject, configuration, launch
   });
 }
 
-function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launchPackager = false) {
+function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launchPackager = false, verbose, port) {
   return new Promise((resolve,reject) =>
   {
      var xcodebuildArgs = [
@@ -160,22 +199,33 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
       '-derivedDataPath', 'build',
     ];
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager));
-    let buildOutput = "";
+    let xcpretty;
+    if (!verbose) {
+      xcpretty = xcprettyAvailable() && child_process.spawn('xcpretty', [], { stdio: ['pipe', process.stdout, process.stderr] });
+    }
+    const buildProcess = child_process.spawn('xcodebuild', xcodebuildArgs, getProcessOptions(launchPackager, port));
+    let buildOutput = '';
     buildProcess.stdout.on('data', function(data) {
-      console.log(data.toString());
       buildOutput += data.toString();
+      if (xcpretty) {
+        xcpretty.stdin.write(data);
+      } else {
+        console.log(data.toString());
+      }
     });
     buildProcess.stderr.on('data', function(data) {
       console.error(data.toString());
     });
     buildProcess.on('close', function(code) {
+      if (xcpretty) {
+        xcpretty.stdin.end();
+      }
       //FULL_PRODUCT_NAME is the actual file name of the app, which actually comes from the Product Name in the build config, which does not necessary match a scheme name,  example output line: export FULL_PRODUCT_NAME="Super App Dev.app"
       let productNameMatch = /export FULL_PRODUCT_NAME="?(.+).app"?$/m.exec(buildOutput);
       if (productNameMatch && productNameMatch.length && productNameMatch.length > 1) {
         return resolve(productNameMatch[1]);//0 is the full match, 1 is the app name
       }
-      return buildProcess.error? reject(buildProcess.error) : resolve();
+      return buildProcess.error ? reject(buildProcess.error) : resolve();
     });
   });
 }
@@ -183,7 +233,7 @@ function buildProject(xcodeProject, udid, scheme, configuration = 'Debug', launc
 function matchingDevice(devices, deviceName) {
   if (deviceName === true && devices.length === 1)
   {
-    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`)
+    console.log(`Using first available device ${devices[0].name} due to lack of name supplied.`);
     return devices[0];
   }
   for (let i = devices.length - 1; i >= 0; i--) {
@@ -205,19 +255,21 @@ function formattedDeviceName(simulator) {
   return `${simulator.name} (${simulator.version})`;
 }
 
-function printFoundDevices(devices){
+function printFoundDevices(devices) {
   for (let i = devices.length - 1; i >= 0; i--) {
     console.log(devices[i].name + ' Udid: ' + devices[i].udid);
   }
 }
 
-function getProcessOptions(launchPackager) {
+function getProcessOptions(launchPackager, port) {
   if (launchPackager) {
-    return {};
+    return {
+      env: { ...process.env, RCT_METRO_PORT: port }
+    };
   }
 
   return {
-    env: Object.assign({}, process.env, { RCT_NO_LAUNCH_PACKAGER: true }),
+    env: { ...process.env, RCT_NO_LAUNCH_PACKAGER: true },
   };
 }
 
@@ -238,6 +290,10 @@ module.exports = {
     desc: "Run on a connected device, e.g. Max's iPhone",
     cmd: 'react-native run-ios --device "Max\'s iPhone"',
   },
+  {
+    desc: 'Run on the AppleTV simulator',
+    cmd: 'react-native run-ios --simulator "Apple TV"  --scheme "helloworld-tvOS"',
+  }
   ],
   options: [{
     command: '--simulator [string]',
@@ -263,5 +319,12 @@ module.exports = {
   }, {
     command: '--no-packager',
     description: 'Do not launch packager while building',
+  }, {
+    command: '--verbose',
+    description: 'Do not use xcpretty even if installed',
+  },{
+    command: '--port [number]',
+    default: process.env.RCT_METRO_PORT || 8081,
+    parse: (val: string) => Number(val),
   }],
 };

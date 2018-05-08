@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule symbolicateStackTrace
  * @flow
  */
 'use strict';
@@ -16,7 +13,7 @@ const getDevServer = require('getDevServer');
 const {SourceCode} = require('NativeModules');
 
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
-let fetch; 
+let fetch;
 
 import type {StackFrame} from 'parseErrorStack';
 
@@ -25,13 +22,13 @@ function isSourcedFromDisk(sourcePath: string): boolean {
 }
 
 async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<StackFrame>> {
-  // RN currently lazy loads whatwg-fetch using a custom fetch module, which, 
+  // RN currently lazy loads whatwg-fetch using a custom fetch module, which,
   // when called for the first time, requires and re-exports 'whatwg-fetch'.
-  // However, when a dependency of the project tries to require whatwg-fetch 
-  // either directly or indirectly, whatwg-fetch is required before 
+  // However, when a dependency of the project tries to require whatwg-fetch
+  // either directly or indirectly, whatwg-fetch is required before
   // RN can lazy load whatwg-fetch. As whatwg-fetch checks
-  // for a fetch polyfill before loading, it will in turn try to load 
-  // RN's fetch module, which immediately tries to import whatwg-fetch AGAIN. 
+  // for a fetch polyfill before loading, it will in turn try to load
+  // RN's fetch module, which immediately tries to import whatwg-fetch AGAIN.
   // This causes a circular require which results in RN's fetch module
   // exporting fetch as 'undefined'.
   // The fix below postpones trying to load fetch until the first call to symbolicateStackTrace.

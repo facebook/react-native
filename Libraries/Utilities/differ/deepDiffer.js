@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule deepDiffer
  * @flow
  */
 'use strict';
@@ -14,7 +11,10 @@
 /*
  * @returns {bool} true if different, false if equal
  */
-var deepDiffer = function(one: any, two: any): bool {
+var deepDiffer = function(one: any, two: any, maxDepth: number = -1): bool {
+  if (maxDepth === 0) {
+    return true;
+  }
   if (one === two) {
     // Short circuit on identical object references instead of traversing them.
     return false;
@@ -42,13 +42,13 @@ var deepDiffer = function(one: any, two: any): bool {
       return true;
     }
     for (var ii = 0; ii < len; ii++) {
-      if (deepDiffer(one[ii], two[ii])) {
+      if (deepDiffer(one[ii], two[ii], maxDepth - 1)) {
         return true;
       }
     }
   } else {
     for (var key in one) {
-      if (deepDiffer(one[key], two[key])) {
+      if (deepDiffer(one[key], two[key], maxDepth - 1)) {
         return true;
       }
     }

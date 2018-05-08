@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableListView
  * @flow
  */
 'use strict';
@@ -105,7 +102,7 @@ class SwipeableListView extends React.Component<Props, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps: Props): void {
+  UNSAFE_componentWillReceiveProps(nextProps: Props): void {
     if (this.state.dataSource.getDataSource() !== nextProps.dataSource.getDataSource()) {
       this.setState({
         dataSource: nextProps.dataSource,
@@ -115,16 +112,9 @@ class SwipeableListView extends React.Component<Props, State> {
 
   render(): React.Node {
     return (
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.53 was deployed. To see the error delete this
-       * comment and run Flow. */
       <ListView
         {...this.props}
         ref={(ref) => {
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
-           * an error when upgrading Flow's support for React. Common errors
-           * found when upgrading Flow's React support are documented at
-           * https://fburl.com/eq7bs81w */
           this._listViewRef = ref;
         }}
         dataSource={this.state.dataSource.getDataSource()}
@@ -151,6 +141,9 @@ class SwipeableListView extends React.Component<Props, State> {
    * (from high 20s to almost consistently 60 fps)
    */
   _setListViewScrollable(value: boolean): void {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this._listViewRef && typeof this._listViewRef.setNativeProps === 'function') {
       this._listViewRef.setNativeProps({
         scrollEnabled: value,
@@ -160,6 +153,9 @@ class SwipeableListView extends React.Component<Props, State> {
 
   // Passing through ListView's getScrollResponder() function
   getScrollResponder(): ?Object {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this._listViewRef && typeof this._listViewRef.getScrollResponder === 'function') {
       return this._listViewRef.getScrollResponder();
     }

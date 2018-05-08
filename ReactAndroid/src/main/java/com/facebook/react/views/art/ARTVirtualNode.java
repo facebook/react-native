@@ -1,31 +1,27 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.art;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.ReactShadowNode;
+import javax.annotation.Nullable;
 
 /**
  * Base class for ARTView virtual nodes: {@link ARTGroupShadowNode}, {@link ARTShapeShadowNode} and
  * indirectly for {@link ARTTextShadowNode}.
  */
-public abstract class ARTVirtualNode extends ReactShadowNode {
+public abstract class ARTVirtualNode extends ReactShadowNodeImpl {
 
   protected static final float MIN_OPACITY_FOR_DRAW = 0.01f;
 
@@ -39,6 +35,13 @@ public abstract class ARTVirtualNode extends ReactShadowNode {
 
   public ARTVirtualNode() {
     mScale = DisplayMetricsHolder.getWindowDisplayMetrics().density;
+  }
+
+  protected ARTVirtualNode(ARTVirtualNode artVirtualNode) {
+    super(artVirtualNode);
+    mScale = artVirtualNode.mScale;
+    mOpacity = artVirtualNode.mOpacity;
+    mMatrix = new Matrix(artVirtualNode.mMatrix);
   }
 
   @Override

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTImageCache.h"
@@ -24,8 +22,8 @@ static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode, NSString *responseDate)
 {
-    return [NSString stringWithFormat:@"%@|%g|%g|%g|%zd|%@",
-            imageTag, size.width, size.height, scale, resizeMode, responseDate];
+    return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld|%@",
+            imageTag, size.width, size.height, scale, (long long)resizeMode, responseDate];
 }
 
 @implementation RCTImageCache

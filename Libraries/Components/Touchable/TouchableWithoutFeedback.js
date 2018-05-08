@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableWithoutFeedback
  * @flow
  */
 'use strict';
@@ -14,11 +11,17 @@
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const {
@@ -26,7 +29,7 @@ const {
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
-export type Event = Object;
+import type {PressEvent} from 'CoreEventTypes';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -96,7 +99,6 @@ const TouchableWithoutFeedback = createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    // $FlowFixMe: Expected a React PropType instead
     pressRetentionOffset: EdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
@@ -106,7 +108,6 @@ const TouchableWithoutFeedback = createReactClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
-    // $FlowFixMe: Expected a React PropType instead
     hitSlop: EdgeInsetsPropType,
   },
 
@@ -118,7 +119,7 @@ const TouchableWithoutFeedback = createReactClass({
     ensurePositiveDelayProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
     ensurePositiveDelayProps(nextProps);
   },
 
@@ -126,19 +127,19 @@ const TouchableWithoutFeedback = createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -182,13 +183,10 @@ const TouchableWithoutFeedback = createReactClass({
       child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
-      // $FlowFixMe(>=0.41.0)
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
-      // $FlowFixMe(>=0.41.0)
       nativeID: this.props.nativeID,
-      // $FlowFixMe(>=0.41.0)
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

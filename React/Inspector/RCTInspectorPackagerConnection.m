@@ -14,6 +14,9 @@
 
 const int RECONNECT_DELAY_MS = 2000;
 
+@implementation RCTBundleStatus
+@end
+
 @interface RCTInspectorPackagerConnection () <RCTSRWebSocketDelegate> {
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
@@ -21,6 +24,7 @@ const int RECONNECT_DELAY_MS = 2000;
   dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
+  RCTBundleStatusProvider _bundleStatusProvider;
 }
 @end
 
@@ -51,10 +55,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return self;
 }
 
-- (void)sendOpenEvent:(NSString *)pageId
+- (void)setBundleStatusProvider:(RCTBundleStatusProvider)bundleStatusProvider
 {
-  NSDictionary<NSString *, id> *payload = makePageIdPayload(pageId);
-  [self sendEvent:@"open" payload:payload];
+  _bundleStatusProvider = bundleStatusProvider;
 }
 
 - (void)handleProxyMessage:(NSDictionary<NSString *, id> *)message
@@ -128,7 +131,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSString *wrappedEvent = payload[@"wrappedEvent"];
   RCTInspectorLocalConnection *inspectorConnection = _inspectorConnections[pageId];
   if (!inspectorConnection) {
-    RCTLogError(@"Not connected: %@", pageId);
+    RCTLogWarn(
+      @"Not connected to page: %@ , failed trying to handle event: %@",
+      pageId,
+      wrappedEvent);
     return;
   }
   [inspectorConnection sendMessage:wrappedEvent];
@@ -138,11 +144,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   NSArray<RCTInspectorPage *> *pages = [RCTInspector pages];
   NSMutableArray *array = [NSMutableArray arrayWithCapacity:pages.count];
+
+  RCTBundleStatusProvider statusProvider = _bundleStatusProvider;
+  RCTBundleStatus *bundleStatus = statusProvider == nil
+    ? nil
+    : statusProvider();
+
   for (RCTInspectorPage *page in pages) {
     NSDictionary *jsonPage = @{
       @"id": [@(page.id) stringValue],
       @"title": page.title,
       @"app": [[NSBundle mainBundle] bundleIdentifier],
+      @"vm": page.vm,
+      @"isLastBundleDownloadSuccess": bundleStatus == nil
+        ? [NSNull null]
+        : @(bundleStatus.isLastBundleDownloadSuccess),
+      @"bundleUpdateTimestamp": bundleStatus == nil
+        ? [NSNull null]
+        : @((long)bundleStatus.bundleUpdateTimestamp * 1000),
     };
     [array addObject:jsonPage];
   }
@@ -278,7 +297,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)abort:(NSString *)message
     withCause:(NSError *)cause
 {
-  RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  // Don't log ECONNREFUSED at all; it's expected in cases where the server isn't listening.
+  if (![cause.domain isEqual:NSPOSIXErrorDomain] || cause.code != ECONNREFUSED) {
+    RCTLogInfo(@"Error occurred, shutting down websocket connection: %@ %@", message, cause);
+  }
 
   [self closeAllConnections];
   [self disposeWebSocket];

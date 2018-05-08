@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 'use strict';
 
@@ -47,20 +45,20 @@
  */
 
 /*eslint-disable no-undef */
-require(`shelljs/global`);
+require('shelljs/global');
 
 const buildBranch = process.env.CIRCLE_BRANCH;
 
 let branchVersion;
-if (buildBranch.indexOf(`-stable`) !== -1) {
-  branchVersion = buildBranch.slice(0, buildBranch.indexOf(`-stable`));
+if (buildBranch.indexOf('-stable') !== -1) {
+  branchVersion = buildBranch.slice(0, buildBranch.indexOf('-stable'));
 } else {
-  echo(`Error: We publish only from stable branches`);
+  echo('Error: We publish only from stable branches');
   exit(0);
 }
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = exec(`git rev-parse HEAD`, {silent: true}).stdout.trim();
+const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
 const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {silent: true})
   .stdout.split(/\s/)
@@ -69,14 +67,14 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {si
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
   .filter(version => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
-  .map(version => version.slice(`refs/tags/`.length));
+  .map(version => version.slice('refs/tags/'.length));
 
 if (tagsWithVersion.length === 0) {
-  echo(`Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit`);
+  echo('Error: Can\'t find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit');
   exit(1);
 }
 let releaseVersion;
-if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
+if (tagsWithVersion[0].indexOf('-rc') === -1) {
   // if first tag on this commit is non -rc then we are making a stable release
   // '0.33.0'
   releaseVersion = tagsWithVersion[0].slice(1);
@@ -87,33 +85,33 @@ if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
 }
 
 // -------- Generating Android Artifacts with JavaDoc
-if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
-  echo(`Couldn't generate artifacts`);
+if (exec('./gradlew :ReactAndroid:installArchives').code) {
+  echo('Couldn\'t generate artifacts');
   exit(1);
 }
 
 // undo uncommenting javadoc setting
-exec(`git checkout ReactAndroid/gradle.properties`);
+exec('git checkout ReactAndroid/gradle.properties');
 
-echo("Generated artifacts for Maven");
+echo('Generated artifacts for Maven');
 
 let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 
 artifacts.forEach((name) => {
-  if (!test(`-e`, `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
+  if (!test('-e', `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
     echo(`file ${name} was not generated`);
     exit(1);
   }
 });
 
-if (releaseVersion.indexOf(`-rc`) === -1) {
+if (releaseVersion.indexOf('-rc') === -1) {
   // release, package will be installed by default
-  exec(`npm publish`);
+  exec('npm publish');
 } else {
   // RC release, package will be installed only if users specifically do it
-  exec(`npm publish --tag next`);
+  exec('npm publish --tag next');
 }
 
 echo(`Published to npm ${releaseVersion}`);

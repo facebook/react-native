@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -23,6 +21,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -266,20 +265,30 @@ public class UIViewOperationQueue {
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
+    private final Callback mError;
     private final Callback mSuccess;
 
     public ShowPopupMenuOperation(
         int tag,
         ReadableArray items,
+        Callback error,
         Callback success) {
       super(tag);
       mItems = items;
+      mError = error;
       mSuccess = success;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess);
+      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
+    }
+  }
+
+  private final class DismissPopupMenuOperation implements UIOperation {
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dismissPopupMenu();
     }
   }
 
@@ -651,7 +660,11 @@ public class UIViewOperationQueue {
       ReadableArray items,
       Callback error,
       Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, success));
+    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
+  }
+
+  public void enqueueDismissPopupMenu() {
+    mOperations.add(new DismissPopupMenuOperation());
   }
 
   public void enqueueCreateView(
@@ -758,7 +771,11 @@ public class UIViewOperationQueue {
     mOperations.add(new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(
+  public void prependUIBlock(UIBlock block) {
+    mOperations.add(0, new UIBlockOperation(block));
+  }
+
+  public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -870,7 +887,7 @@ public class UIViewOperationQueue {
       }
 
       // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-      // destroyed. In this case it's no longer important to align to frames, but it is imporant to make
+      // destroyed. In this case it's no longer important to align to frames, but it is important to make
       // sure any late-arriving UI commands are executed.
       if (!mIsDispatchUIFrameCallbackEnqueued) {
         UiThreadUtil.runOnUiThread(
@@ -899,12 +916,12 @@ public class UIViewOperationQueue {
     flushPendingBatches();
   }
 
-  private boolean flushPendingBatches() {
+  private void flushPendingBatches() {
     if (mIsInIllegalUIState) {
       FLog.w(
         ReactConstants.TAG,
         "Not flushing pending UI operations because of previously thrown Exception");
-      return false;
+      return;
     }
 
     final ArrayList<Runnable> runnables;
@@ -913,18 +930,28 @@ public class UIViewOperationQueue {
         runnables = mDispatchUIRunnables;
         mDispatchUIRunnables = new ArrayList<>();
       } else {
-        runnables = null;
+        return;
       }
     }
 
-    if (runnables == null) {
-      return false;
-    }
-
+    final long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (Runnable runnable : runnables) {
       runnable.run();
     }
-    return true;
+
+    if (mIsProfilingNextBatch) {
+      mProfiledBatchBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
+      mIsProfilingNextBatch = false;
+
+      Systrace.beginAsyncSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "batchedExecutionTime",
+          0,
+          batchedExecutionStartTime * 1000000);
+      Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
+    }
+    mNonBatchedExecutionTotalTime = 0;
   }
 
   /**
@@ -969,23 +996,7 @@ public class UIViewOperationQueue {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
 
-      final long flushPendingBatchesStartTime = SystemClock.uptimeMillis();
-      if (flushPendingBatches()) {
-        if (mIsProfilingNextBatch) {
-          mProfiledBatchBatchedExecutionTime =
-              SystemClock.uptimeMillis() - flushPendingBatchesStartTime;
-          mProfiledBatchNonBatchedExecutionTime = mNonBatchedExecutionTotalTime;
-          mIsProfilingNextBatch = false;
-
-          Systrace.beginAsyncSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-              "batchedExecutionTime",
-              0,
-              flushPendingBatchesStartTime * 1000000);
-          Systrace.endAsyncSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "batchedExecutionTime", 0);
-        }
-        mNonBatchedExecutionTotalTime = 0;
-      }
+      flushPendingBatches();
 
       ReactChoreographer.getInstance().postFrameCallback(
         ReactChoreographer.CallbackType.DISPATCH_UI, this);

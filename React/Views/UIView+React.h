@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -61,15 +59,16 @@
 - (void)didUpdateReactSubviews;
 
 /**
+ * Called each time props have been set.
+ * The default implementation does nothing.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
+/**
  * Used by the UIIManager to set the view frame.
  * May be overriden to disable animation, etc.
  */
 - (void)reactSetFrame:(CGRect)frame;
-
-/**
- * Used to improve performance when compositing views with translucent content.
- */
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor;
 
 /**
  * This method finds and returns the containing view controller for the view.
@@ -107,15 +106,5 @@
  * Defaults to `self`.
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
-
-#if RCT_DEV
-
-/**
- Tools for debugging
- */
-
-@property (nonatomic, strong, setter=_DEBUG_setReactShadowView:) RCTShadowView *_DEBUG_reactShadowView;
-
-#endif
 
 @end

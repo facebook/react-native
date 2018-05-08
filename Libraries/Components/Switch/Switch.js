@@ -1,26 +1,23 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Switch
  * @flow
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var React = require('React');
+const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
+const StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
   value: boolean,
@@ -38,8 +35,7 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
-var Switch = createReactClass({
+const Switch = createReactClass({
   displayName: 'Switch',
   propTypes: {
     ...ViewPropTypes,
@@ -93,21 +89,30 @@ var Switch = createReactClass({
       this._rctSwitch.setNativeProps({value: this.props.value});
     }
     //Change the props after the native props are set in case the props change removes the component
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
   },
 
   render: function() {
-    var props = {...this.props};
+    const props = {...this.props};
     props.onStartShouldSetResponder = () => true;
     props.onResponderTerminationRequest = () => false;
     if (Platform.OS === 'android') {
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.enabled = !this.props.disabled;
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.on = this.props.value;
       props.style = this.props.style;
+      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.70 was deployed. To see the error delete
+       * this comment and run Flow. */
       props.trackTintColor = this.props.value ? this.props.onTintColor : this.props.tintColor;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
@@ -115,10 +120,9 @@ var Switch = createReactClass({
     return (
       <RCTSwitch
         {...props}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
+        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+         * comment suppresses an error when upgrading Flow's support for React.
+         * To see the error delete this comment and run Flow. */
         ref={(ref) => { this._rctSwitch = ref; }}
         onChange={this._onChange}
       />
@@ -126,7 +130,7 @@ var Switch = createReactClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   rctSwitchIOS: {
     height: 31,
     width: 51,

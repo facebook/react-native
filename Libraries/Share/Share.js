@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Share
  * @flow
  */
 'use strict';
@@ -22,7 +19,12 @@ const {
 } = require('NativeModules');
 
 type Content = { title?: string, message: string } | { title?: string, url: string };
-type Options = { dialogTitle?: string, excludeActivityTypes?: Array<string>, tintColor?: string };
+type Options = {
+  dialogTitle?: string,
+  excludedActivityTypes?: Array<string>,
+  tintColor?: string,
+  subject?: string
+};
 
 class Share {
 
@@ -50,12 +52,13 @@ class Share {
    *
    * #### iOS
    *
-   * - `excludedActivityTypes`
-   * - `tintColor`
+   *  - `subject` - a subject to share via email
+   *  - `excludedActivityTypes`
+   *  - `tintColor`
    *
    * #### Android
    *
-   * - `dialogTitle`
+   *  - `dialogTitle`
    *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
@@ -105,13 +108,13 @@ class Share {
   /**
    * The content was successfully shared.
    */
-  static get sharedAction() { return 'sharedAction'; }
+  static get sharedAction(): string { return 'sharedAction'; }
 
   /**
    * The dialog has been dismissed.
    * @platform ios
    */
-  static get dismissedAction() { return 'dismissedAction'; }
+  static get dismissedAction(): string { return 'dismissedAction'; }
 
 }
 

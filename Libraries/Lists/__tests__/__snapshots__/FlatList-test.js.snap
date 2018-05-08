@@ -31,6 +31,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   getItemLayout={[Function]}
   horizontal={false}
   initialNumToRender={10}
+  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   numColumns={2}
@@ -38,14 +39,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   onEndReachedThreshold={2}
   onLayout={[Function]}
   onMomentumScrollEnd={[Function]}
-  onRefresh={[Function]}
+  onRefresh={[MockFunction]}
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  onViewableItemsChanged={undefined}
   refreshControl={
     <RefreshControlMock
-      onRefresh={[Function]}
+      onRefresh={[MockFunction]}
       progressViewOffset={undefined}
       refreshing={false}
     />
@@ -55,6 +55,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
+  viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
   <RCTRefreshControl />
@@ -148,6 +149,7 @@ exports[`FlatList renders empty list 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
+  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   numColumns={1}
@@ -158,11 +160,11 @@ exports[`FlatList renders empty list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
+  viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
   <View />
@@ -177,6 +179,7 @@ exports[`FlatList renders null list 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
+  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   numColumns={1}
@@ -187,11 +190,11 @@ exports[`FlatList renders null list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
+  viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
   <View />
@@ -218,6 +221,7 @@ exports[`FlatList renders simple list 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
+  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   numColumns={1}
@@ -228,11 +232,11 @@ exports[`FlatList renders simple list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  onViewableItemsChanged={undefined}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
+  viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
   <View>

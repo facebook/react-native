@@ -74,7 +74,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
-  SystraceSection s("getConfig", "module", name);
+  SystraceSection s("ModuleRegistry::getConfig", "module", name);
 
   // Initialize modulesByName_
   if (modulesByName_.empty() && !modules_.empty()) {

@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ElementProperties
  * @flow
  */
 'use strict';
@@ -25,9 +22,11 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+
 class ElementProperties extends React.Component<{
   hierarchy: Array<$FlowFixMe>,
-  style?: Object | Array<$FlowFixMe> | number,
+  style?: DangerouslyImpreciseStyleProp,
   source?: {
     fileName?: string,
     lineNumber?: number,

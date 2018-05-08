@@ -2,6 +2,10 @@
 
 #include "JSCUtils.h"
 
+#include "RAMBundleRegistry.h"
+
+#include <folly/Conv.h>
+
 namespace facebook {
 namespace react {
 

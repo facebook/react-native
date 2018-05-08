@@ -84,10 +84,16 @@ void ProxyExecutor::loadApplicationScript(
   // we launch the application.
 }
 
-void ProxyExecutor::setJSModulesUnbundle(std::unique_ptr<JSModulesUnbundle>) {
+void ProxyExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) {
   jni::throwNewJavaException(
     "java/lang/UnsupportedOperationException",
-    "Loading application unbundles is not supported for proxy executors");
+    "Loading application RAM bundles is not supported for proxy executors");
+}
+
+void ProxyExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  jni::throwNewJavaException(
+    "java/lang/UnsupportedOperationException",
+    "Loading application RAM bundles is not supported for proxy executors");
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
@@ -112,6 +118,10 @@ void ProxyExecutor::setGlobalVariable(std::string propName,
     m_executor.get(),
     jni::make_jstring(propName).get(),
     jni::make_jstring(jsonValue->c_str()).get());
+}
+
+std::string ProxyExecutor::getDescription() {
+  return "Chrome";
 }
 
 } }

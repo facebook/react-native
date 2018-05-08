@@ -1,15 +1,12 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewRenderingTestModule
  */
 
-"use strict";
+'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
@@ -21,7 +18,7 @@ var renderApplication = require('renderApplication');
 var styles = StyleSheet.create({
   view: {
     opacity: 0.75,
-    backgroundColor: "rgb(255, 0, 0)",
+    backgroundColor: 'rgb(255, 0, 0)',
   },
 });
 
@@ -44,7 +41,7 @@ class MarginSampleApp extends React.Component {
     updateMargins = this.setState.bind(this, {margin: 15});
     return (
       <View style={{margin: this.state.margin, marginLeft: 20}} collapsable={false}/>
-    )
+    );
   }
 }
 

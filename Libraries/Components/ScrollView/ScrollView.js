@@ -1,17 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollView
  * @flow
  */
 'use strict';
 
-const Animated = require('Animated');
+const AnimatedImplementation = require('AnimatedImplementation');
 const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Platform = require('Platform');
@@ -33,7 +30,11 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const warning = require('fbjs/lib/warning');
+const resolveAssetSource = require('resolveAssetSource');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
@@ -187,6 +188,11 @@ const ScrollView = createReactClass({
       'white',
     ]),
     /**
+     * If sticky headers should stick at the bottom instead of the top of the
+     * ScrollView. This is usually used with inverted ScrollViews.
+     */
+    invertStickyHeaders: PropTypes.bool,
+    /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
      * @platform ios
@@ -231,6 +237,34 @@ const ScrollView = createReactClass({
      */
     keyboardShouldPersistTaps: PropTypes.oneOf(['always', 'never', 'handled', false, true]),
     /**
+     * When set, the scroll view will adjust the scroll position so that the first child that is
+     * currently visible and at or beyond `minIndexForVisible` will not change position. This is
+     * useful for lists that are loading content in both directions, e.g. a chat thread, where new
+     * messages coming in might otherwise cause the scroll position to jump. A value of 0 is common,
+     * but other values such as 1 can be used to skip loading spinners or other content that should
+     * not maintain position.
+     *
+     * The optional `autoscrollToTopThreshold` can be used to make the content automatically scroll
+     * to the top after making the adjustment if the user was within the threshold of the top before
+     * the adjustment was made. This is also useful for chat-like applications where you want to see
+     * new messages scroll into place, but not if the user has scrolled up a ways and it would be
+     * disruptive to scroll a bunch.
+     *
+     * Caveat 1: Reordering elements in the scrollview with this enabled will probably cause
+     * jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now,
+     * don't re-order the content of any ScrollViews or Lists that use this feature.
+     *
+     * Caveat 2: This simply uses `contentOffset` and `frame.origin` in native code to compute
+     * visibility. Occlusion, transforms, and other complexity won't be taken into account as to
+     * whether content is "visible" or not.
+     *
+     * @platform ios
+     */
+    maintainVisibleContentPosition: PropTypes.shape({
+      minIndexForVisible: PropTypes.number.isRequired,
+      autoscrollToTopThreshold: PropTypes.number,
+    }),
+    /**
      * The maximum allowed zoom scale. The default value is 1.0.
      * @platform ios
      */
@@ -240,6 +274,12 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     minimumZoomScale: PropTypes.number,
+     /**
+     * Enables nested scrolling for Android API level 21+.
+     * Nested scrolling is supported by default on iOS
+     * @platform android
+     */
+    nestedScrollEnabled: PropTypes.bool,
     /**
      * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
      */
@@ -253,6 +293,15 @@ const ScrollView = createReactClass({
      * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
+    /**
+     * Called when the user begins to drag the scroll view.
+     */
+    onScrollBeginDrag: PropTypes.func,
+    /**
+     * Called when the user stops dragging the scroll view and it either stops
+     * or begins to glide.
+     */
+    onScrollEndDrag: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes.
      *
@@ -281,7 +330,7 @@ const ScrollView = createReactClass({
      * When false, the view cannot be scrolled via touch interaction.
      * The default value is true.
      *
-     * Note that the view can be always be scrolled by calling `scrollTo`.
+     * Note that the view can always be scrolled by calling `scrollTo`.
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -328,15 +377,14 @@ const ScrollView = createReactClass({
      * with `horizontal={true}`.
      */
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
-    style: StyleSheetPropType(ViewStylePropTypes),
     /**
      * When set, causes the scroll view to stop at multiples of the value of
      * `snapToInterval`. This can be used for paginating through children
      * that have lengths smaller than the scroll view. Typically used in
-     * combination with `snapToAlignment` and `decelerationRate="fast"`.
+     * combination with `snapToAlignment` and `decelerationRate="fast"` on ios.
      * Overrides less configurable `pagingEnabled` prop.
      *
-     * @platform ios
+     * Supported for horizontal scrollview on android.
      */
     snapToInterval: PropTypes.number,
     /**
@@ -431,20 +479,43 @@ const ScrollView = createReactClass({
      * @platform ios
      */
     DEPRECATED_sendUpdatedChildFrames: PropTypes.bool,
+    /**
+     * Optionally an image can be used for the scroll bar thumb. This will
+     * override the color. While the image is loading or the image fails to
+     * load the color will be used instead. Use an alpha of 0 in the color
+     * to avoid seeing it while the image is loading.
+     *
+     * - `uri` - a string representing the resource identifier for the image, which
+     * should be either a local file path or the name of a static image resource
+     * - `number` - Opaque type returned by something like
+     * `import IMAGE from './image.jpg'`.
+     * @platform vr
+     */
+     scrollBarThumbImage: PropTypes.oneOfType([
+       PropTypes.shape({
+         uri: PropTypes.string,
+       }),
+       // Opaque type returned by import IMAGE from './image.jpg'
+       PropTypes.number,
+     ]),
   },
 
   mixins: [ScrollResponder.Mixin],
 
-  _scrollAnimatedValue: (new Animated.Value(0): Animated.Value),
+  _scrollAnimatedValue: (new AnimatedImplementation.Value(0): AnimatedImplementation.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
   _headerLayoutYs: (new Map(): Map<string, number>),
   getInitialState: function() {
-    return this.scrollResponderMixinGetInitialState();
+    return {
+      ...this.scrollResponderMixinGetInitialState(),
+      layoutHeight: null,
+    };
   },
 
-  componentWillMount: function() {
-    this._scrollAnimatedValue = new Animated.Value(0);
+  UNSAFE_componentWillMount: function() {
+    this._scrollAnimatedValue = new AnimatedImplementation.Value(this.props.contentOffset ? this.props.contentOffset.y : 0);
+    this._scrollAnimatedValue.setOffset(this.props.contentInset ? this.props.contentInset.top : 0);
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
   },
@@ -548,9 +619,6 @@ const ScrollView = createReactClass({
   },
 
   _getKeyForIndex: function(index, childArray) {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
     const child = childArray[index];
     return child && child.key;
   },
@@ -560,7 +628,7 @@ const ScrollView = createReactClass({
       this._scrollAnimatedValueAttachment.detach();
     }
     if (this.props.stickyHeaderIndices && this.props.stickyHeaderIndices.length > 0) {
-      this._scrollAnimatedValueAttachment = Animated.attachNativeEvent(
+      this._scrollAnimatedValueAttachment = AnimatedImplementation.attachNativeEvent(
         this._scrollViewRef,
         'onScroll',
         [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}]
@@ -580,9 +648,6 @@ const ScrollView = createReactClass({
     if (!this.props.stickyHeaderIndices) {
       return;
     }
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
     const childArray = React.Children.toArray(this.props.children);
     if (key !== this._getKeyForIndex(index, childArray)) {
       // ignore stale layout update
@@ -592,13 +657,7 @@ const ScrollView = createReactClass({
     const layoutY = event.nativeEvent.layout.y;
     this._headerLayoutYs.set(key, layoutY);
 
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
     const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
     const previousHeaderIndex = this.props.stickyHeaderIndices[indexOfIndex - 1];
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(
@@ -611,7 +670,7 @@ const ScrollView = createReactClass({
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && this.props.scrollEventThrottle == null && Platform.OS === 'ios') {
-        console.log( // eslint-disable-line no-console-disallow
+        console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
           'Using `16` you get all the events but be aware that it may ' +
@@ -621,11 +680,20 @@ const ScrollView = createReactClass({
       }
     }
     if (Platform.OS === 'android') {
-      if (this.props.keyboardDismissMode === 'on-drag') {
+      if (this.props.keyboardDismissMode === 'on-drag' && this.state.isTouching) {
         dismissKeyboard();
       }
     }
     this.scrollResponderHandleScroll(e);
+  },
+
+  _handleLayout: function(e: Object) {
+    if (this.props.invertStickyHeaders) {
+      this.setState({ layoutHeight: e.nativeEvent.layout.height });
+    }
+    if (this.props.onLayout) {
+      this.props.onLayout(e);
+    }
   },
 
   _handleContentOnLayout: function(e: Object) {
@@ -646,20 +714,21 @@ const ScrollView = createReactClass({
   render: function() {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'android') {
+      if (this.props.horizontal) {
+        ScrollViewClass = AndroidHorizontalScrollView;
+        ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
+      } else {
+        ScrollViewClass = AndroidScrollView;
+        ScrollContentContainerViewClass = View;
+      }
+    } else {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
       warning(
         !this.props.snapToInterval || !this.props.pagingEnabled,
         'snapToInterval is currently ignored when pagingEnabled is true.'
       );
-    } else if (Platform.OS === 'android') {
-      if (this.props.horizontal) {
-        ScrollViewClass = AndroidHorizontalScrollView;
-      } else {
-        ScrollViewClass = AndroidScrollView;
-      }
-      ScrollContentContainerViewClass = View;
     }
 
     invariant(
@@ -676,10 +745,9 @@ const ScrollView = createReactClass({
       this.props.horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
-    let style, childLayoutProps;
     if (__DEV__ && this.props.style) {
-      style = flattenStyle(this.props.style);
-      childLayoutProps = ['alignItems', 'justifyContent']
+      const style = flattenStyle(this.props.style);
+      const childLayoutProps = ['alignItems', 'justifyContent']
         .filter((prop) => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,
@@ -697,37 +765,24 @@ const ScrollView = createReactClass({
 
     const {stickyHeaderIndices} = this.props;
     const hasStickyHeaders = stickyHeaderIndices && stickyHeaderIndices.length > 0;
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.53 was deployed. To see the error delete this
-     * comment and run Flow. */
     const childArray = hasStickyHeaders && React.Children.toArray(this.props.children);
     const children = hasStickyHeaders ?
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.53 was deployed. To see the error delete this
-       * comment and run Flow. */
       childArray.map((child, index) => {
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.53 was deployed. To see the error delete
-         * this comment and run Flow. */
         const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
         if (indexOfIndex > -1) {
           const key = child.key;
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.53 was deployed. To see the error
-           * delete this comment and run Flow. */
           const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
           return (
             <ScrollViewStickyHeader
               key={key}
               ref={(ref) => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={
-                /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment
-                 * suppresses an error found when Flow v0.53 was deployed. To
-                 * see the error delete this comment and run Flow. */
                 this._headerLayoutYs.get(this._getKeyForIndex(nextIndex, childArray))
               }
               onLayout={(event) => this._onStickyHeaderLayout(index, event, key)}
-              scrollAnimatedValue={this._scrollAnimatedValue}>
+              scrollAnimatedValue={this._scrollAnimatedValue}
+              inverted={this.props.invertStickyHeaders}
+              scrollViewHeight={this.state.layoutHeight}>
               {child}
             </ScrollViewStickyHeader>
           );
@@ -735,17 +790,10 @@ const ScrollView = createReactClass({
           return child;
         }
       }) :
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.53 was deployed. To see the error delete this
-       * comment and run Flow. */
       this.props.children;
     const contentContainer =
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-         * error when upgrading Flow's support for React. Common errors found
-         * when upgrading Flow's React support are documented at
-         * https://fburl.com/eq7bs81w */
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
@@ -781,14 +829,12 @@ const ScrollView = createReactClass({
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
+      onLayout: this._handleLayout,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
       onResponderGrant: this.scrollResponderHandleResponderGrant,
       onResponderReject: this.scrollResponderHandleResponderReject,
       onResponderRelease: this.scrollResponderHandleResponderRelease,
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.53 was deployed. To see the error delete this
-       * comment and run Flow. */
       onResponderTerminate: this.scrollResponderHandleTerminate,
       onResponderTerminationRequest: this.scrollResponderHandleTerminationRequest,
       onScroll: this._handleScroll,
@@ -800,6 +846,8 @@ const ScrollView = createReactClass({
       onTouchEnd: this.scrollResponderHandleTouchEnd,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchStart: this.scrollResponderHandleTouchStart,
+      onTouchCancel: this.scrollResponderHandleTouchCancel,
+      scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders ? 1 : this.props.scrollEventThrottle,
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ?
         true : false,
@@ -818,10 +866,6 @@ const ScrollView = createReactClass({
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
-           * an error when upgrading Flow's support for React. Common errors
-           * found when upgrading Flow's React support are documented at
-           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
@@ -837,10 +881,6 @@ const ScrollView = createReactClass({
         return React.cloneElement(
           refreshControl,
           {style: props.style},
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses
-           * an error when upgrading Flow's support for React. Common errors
-           * found when upgrading Flow's React support are documented at
-           * https://fburl.com/eq7bs81w */
           <ScrollViewClass {...props} style={baseStyle} ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>
@@ -848,10 +888,6 @@ const ScrollView = createReactClass({
       }
     }
     return (
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-       * error when upgrading Flow's support for React. Common errors found
-       * when upgrading Flow's React support are documented at
-       * https://fburl.com/eq7bs81w */
       <ScrollViewClass {...props} ref={this._setScrollViewRef}>
         {contentContainer}
       </ScrollViewClass>
@@ -879,6 +915,7 @@ const styles = StyleSheet.create({
 
 let nativeOnlyProps,
   AndroidScrollView,
+  AndroidHorizontalScrollContentView,
   AndroidHorizontalScrollView,
   RCTScrollView,
   RCTScrollContentView;
@@ -898,6 +935,9 @@ if (Platform.OS === 'android') {
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps
   );
+  AndroidHorizontalScrollContentView = requireNativeComponent(
+    'AndroidHorizontalScrollContentView'
+  );
 } else if (Platform.OS === 'ios') {
   nativeOnlyProps = {
     nativeOnly: {
@@ -912,7 +952,17 @@ if (Platform.OS === 'android') {
     (ScrollView: React.ComponentType<any>),
     nativeOnlyProps,
   );
-  // $FlowFixMe (bvaughn) Update ComponentInterface in ViewPropTypes to include a string type (for Fiber host components) in a follow-up.
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
+} else {
+  nativeOnlyProps = {
+    nativeOnly: {
+    }
+  };
+  RCTScrollView = requireNativeComponent(
+    'RCTScrollView',
+    null,
+    nativeOnlyProps,
+  );
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
 }
 

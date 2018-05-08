@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTNavItemManager.h"
@@ -56,6 +54,9 @@ RCT_EXPORT_VIEW_PROPERTY(navigationBarHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(shadowHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
+#if !TARGET_OS_TV
+RCT_EXPORT_VIEW_PROPERTY(barStyle, UIBarStyle)
+#endif
 RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
 
 RCT_EXPORT_VIEW_PROPERTY(title, NSString)

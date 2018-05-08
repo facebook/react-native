@@ -1,27 +1,24 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SpringConfig
  * @flow
  */
 
 'use strict';
 
 type SpringConfigType = {
-  tension: number,
-  friction: number,
+  stiffness: number,
+  damping: number,
 };
 
-function tensionFromOrigamiValue(oValue) {
+function stiffnessFromOrigamiValue(oValue) {
   return (oValue - 30) * 3.62 + 194;
 }
 
-function frictionFromOrigamiValue(oValue) {
+function dampingFromOrigamiValue(oValue) {
   return (oValue - 8) * 3 + 25;
 }
 
@@ -30,8 +27,8 @@ function fromOrigamiTensionAndFriction(
   friction: number,
 ): SpringConfigType {
   return {
-    tension: tensionFromOrigamiValue(tension),
-    friction: frictionFromOrigamiValue(friction)
+    stiffness: stiffnessFromOrigamiValue(tension),
+    damping: dampingFromOrigamiValue(friction),
   };
 }
 
@@ -91,8 +88,8 @@ function fromBouncinessAndSpeed(
   );
 
   return {
-    tension: tensionFromOrigamiValue(bouncyTension),
-    friction: frictionFromOrigamiValue(bouncyFriction)
+    stiffness: stiffnessFromOrigamiValue(bouncyTension),
+    damping: dampingFromOrigamiValue(bouncyFriction),
   };
 }
 

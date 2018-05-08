@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=320, user-scalable=no">
   </head>
   <body>
-    <p>Messages recieved from React Native: 0</p>
+    <p>Messages received from React Native: 0</p>
     <p>(No messages)</p>
     <button type="button">
       Send message to React Native
@@ -17,7 +17,7 @@
     document.addEventListener('message', function(e) {
       messagesReceivedFromReactNative += 1;
       document.getElementsByTagName('p')[0].innerHTML =
-        'Messages recieved from React Native: ' + messagesReceivedFromReactNative;
+        'Messages received from React Native: ' + messagesReceivedFromReactNative;
       document.getElementsByTagName('p')[1].innerHTML = e.data;
     });
 

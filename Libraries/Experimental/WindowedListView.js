@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WindowedListView
  * @flow
  */
 'use strict';
@@ -176,6 +173,11 @@ class WindowedListView extends React.Component<Props, State> {
     maxNumToRender: 30,
     numToRenderAhead: 10,
     viewablePercentThreshold: 50,
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     renderScrollComponent: (props) => <ScrollView {...props} />,
     disableIncrementalRendering: false,
     recomputeRowsBatchingPeriod: 10, // This should capture most events that happen within a frame
@@ -238,7 +240,7 @@ class WindowedListView extends React.Component<Props, State> {
     DEBUG && infoLog('  knope');
     return false;
   }
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this._computeRowsToRenderBatcher.schedule();
   }
   _onMomentumScrollEnd = (e: Object) => {
@@ -387,7 +389,7 @@ class WindowedListView extends React.Component<Props, State> {
     }
     if (props.onEndReached) {
       // Make sure we call onEndReached exactly once every time we reach the
-      // end.  Resets if scoll back up and down again.
+      // end.  Resets if scroll back up and down again.
       const willBeAtTheEnd = lastRow === (totalRows - 1);
       if (willBeAtTheEnd && !this._hasCalledOnEndReached) {
         props.onEndReached();
@@ -619,7 +621,7 @@ class CellRenderer extends React.Component<CellProps> {
   _perfUpdateID: number = 0;
   _asyncCookie: any;
   _includeInLayoutLatch: boolean = false;
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.asyncRowPerfEventName) {
       this._perfUpdateID = g_perf_update_id++;
       this._asyncCookie = Systrace.beginAsyncEvent(
@@ -682,11 +684,14 @@ class CellRenderer extends React.Component<CellProps> {
     }
   };
   componentWillUnmount() {
+    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.63 was deployed. To see the error delete this
+     * comment and run Flow. */
     clearTimeout(this._timeout);
     this.props.onProgressChange({rowKey: this.props.rowKey, inProgress: false});
     this.props.onWillUnmount(this.props.rowKey);
   }
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (newProps.includeInLayout && !this.props.includeInLayout) {
       invariant(this._offscreenRenderDone, 'Should never try to add to layout before render done');
       this._includeInLayoutLatch = true; // Once we render in layout, make sure it sticks.
@@ -697,10 +702,9 @@ class CellRenderer extends React.Component<CellProps> {
     return newProps.rowData !== this.props.rowData;
   }
   _setRef = (ref) => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb) This comment suppresses an
-     * error when upgrading Flow's support for React. Common errors found when
-     * upgrading Flow's React support are documented at
-     * https://fburl.com/eq7bs81w */
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._containerRef = ref;
   };
   render() {

@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule ListExampleShared
  */
 'use strict';
 
@@ -64,6 +61,9 @@ class ItemComponent extends React.PureComponent<{
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
+        tvParallaxProperties={{
+          pressMagnification: 1.1,
+        }}
         style={horizontal ? styles.horizItem : styles.item}>
         <View style={[
           styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
@@ -111,6 +111,16 @@ class HeaderComponent extends React.PureComponent<{}> {
           <Text>LIST HEADER</Text>
         </View>
         <SeparatorComponent />
+      </View>
+    );
+  }
+}
+
+class ListEmptyComponent extends React.PureComponent<{}> {
+  render() {
+    return (
+      <View style={styles.listEmpty}>
+        <Text>The list is empty :o</Text>
       </View>
     );
   }
@@ -201,6 +211,9 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
+  if (Platform.isTVOS) {
+    return null;
+  }
   return (
     <View style={styles.option}>
       <Text>{key}:</Text>
@@ -235,6 +248,11 @@ const styles = StyleSheet.create({
   },
   headerFooterContainer: {
     backgroundColor: 'rgb(239, 239, 244)',
+  },
+  listEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
   },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
@@ -313,6 +331,7 @@ const styles = StyleSheet.create({
 module.exports = {
   FooterComponent,
   HeaderComponent,
+  ListEmptyComponent,
   ItemComponent,
   ItemSeparatorComponent,
   PlainInput,
