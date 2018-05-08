@@ -9,7 +9,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <fishhook/fishhook.h>
+#import <React/fishhook.h>
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 #import <os/log.h>
