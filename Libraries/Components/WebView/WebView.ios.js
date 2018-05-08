@@ -10,15 +10,17 @@
 
 const ActivityIndicator = require('ActivityIndicator');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const React = require('React');
+const Linking = require('Linking');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
+const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
-const ScrollView = require('ScrollView');
+const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
 const invariant = require('fbjs/lib/invariant');
@@ -354,6 +356,15 @@ class WebView extends React.Component {
     mediaPlaybackRequiresUserAction: PropTypes.bool,
 
     /**
+     * List of origin strings to allow being navigated to. The strings allow
+     * wildcards and get matched against *just* the origin (not the full URL).
+     * If the user taps to navigate to a new page but the new page is not in
+     * this whitelist, we will open the URL in Safari.
+     * The default whitelisted origins are "http://*" and "https://*".
+     */
+    originWhitelist: PropTypes.arrayOf(PropTypes.string),
+
+    /**
      * Function that accepts a string that will be passed to the WebView and
      * executed immediately as JavaScript.
      */
@@ -398,6 +409,7 @@ class WebView extends React.Component {
   };
 
   static defaultProps = {
+    originWhitelist: WebViewShared.defaultOriginWhitelist,
     scalesPageToFit: true,
   };
 
@@ -446,9 +458,19 @@ class WebView extends React.Component {
 
     const viewManager = nativeConfig.viewManager || RCTWebViewManager;
 
-    const onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
-      const shouldStart = this.props.onShouldStartLoadWithRequest &&
-        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+    const compiledWhitelist = (this.props.originWhitelist || []).map(WebViewShared.originWhitelistToRegex);
+    const onShouldStartLoadWithRequest = ((event: Event) => {
+      let shouldStart = true;
+      const {url} = event.nativeEvent;
+      const origin = WebViewShared.extractOrigin(url);
+      const passesWhitelist = compiledWhitelist.some(x => new RegExp(x).test(origin));
+      shouldStart = shouldStart && passesWhitelist;
+      if (!passesWhitelist) {
+        Linking.openURL(url);
+      }
+      if (this.props.onShouldStartLoadWithRequest) {
+        shouldStart = shouldStart && this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      }
       viewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
 

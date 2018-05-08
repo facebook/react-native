@@ -27,6 +27,7 @@ var DISABLED_WASH = 'rgba(255,255,255,0.25)';
 var TEXT_INPUT_REF = 'urlInput';
 var WEBVIEW_REF = 'webview';
 var DEFAULT_URL = 'https://m.facebook.com';
+const FILE_SYSTEM_ORIGIN_WHITE_LIST = ['file://*', 'http://*', 'https://*'];
 
 class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -241,6 +242,7 @@ class MessagingTest extends React.Component<{}, $FlowFixMeState> {
               backgroundColor: BGWASH,
               height: 100,
             }}
+            originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
             source={require('./messagingtest.html')}
             onMessage={this.onMessage}
           />
@@ -414,6 +416,7 @@ exports.examples = [
             backgroundColor: BGWASH,
             height: 100,
           }}
+          originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
           source={require('./helloworld.html')}
           scalesPageToFit={true}
         />

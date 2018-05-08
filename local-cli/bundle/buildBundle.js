@@ -14,8 +14,6 @@ const log = require('../util/log').out('bundle');
 const Server = require('metro/src/Server');
 const {Terminal} = require('metro-core');
 const TerminalReporter = require('metro/src/lib/TerminalReporter');
-/* $FlowFixMe(site=react_native_oss) */
-const TransformCaching = require('metro/src/lib/TransformCaching');
 
 const {defaults} = require('metro');
 /* $FlowFixMe(site=react_native_oss) */
@@ -102,7 +100,6 @@ async function buildBundle(
     resetCache: args.resetCache,
     resolveRequest: config.resolveRequest,
     sourceExts: sourceExts.concat(defaultSourceExts),
-    transformCache: TransformCaching.useTempDir(),
     transformModulePath: transformModulePath,
     watch: false,
     workerPath: config.getWorkerPath && config.getWorkerPath(),

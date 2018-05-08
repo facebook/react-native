@@ -328,7 +328,11 @@ class MessageQueue {
   __callFunction(module: string, method: string, args: any[]): any {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    Systrace.beginEvent(`${module}.${method}()`);
+    if (__DEV__ || this.__spy) {
+      Systrace.beginEvent(`${module}.${method}(${stringifySafe(args)})`);
+    } else {
+      Systrace.beginEvent(`${module}.${method}(...)`);
+    }
     if (this.__spy) {
       this.__spy({type: TO_JS, module, method, args});
     }

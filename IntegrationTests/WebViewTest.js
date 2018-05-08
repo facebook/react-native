@@ -48,6 +48,7 @@ class WebViewTest extends React.Component {
       <WebView
         source={source}
         onMessage = {processMessage}
+        originWhitelist={['about:blank']}
         />
     );
   }

@@ -16,6 +16,7 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
+const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
 const keyMirror = require('fbjs/lib/keyMirror');
@@ -139,6 +140,12 @@ class WebView extends React.Component {
     domStorageEnabled: PropTypes.bool,
 
     /**
+     * Sets whether Geolocation is enabled. The default is false.
+     * @platform android
+     */
+    geolocationEnabled: PropTypes.bool,
+
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
@@ -172,6 +179,15 @@ class WebView extends React.Component {
      * @platform android
      */
     allowUniversalAccessFromFileURLs: PropTypes.bool,
+
+    /**
+     * List of origin strings to allow being navigated to. The strings allow
+     * wildcards and get matched against *just* the origin (not the full URL).
+     * If the user taps to navigate to a new page but the new page is not in
+     * this whitelist, the URL will be oppened by the Android OS.
+     * The default whitelisted origins are "http://*" and "https://*".
+     */
+    originWhitelist: PropTypes.arrayOf(PropTypes.string),
 
     /**
      * Function that accepts a string that will be passed to the WebView and
@@ -235,7 +251,8 @@ class WebView extends React.Component {
     javaScriptEnabled : true,
     thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
-    saveFormDataDisabled: false
+    saveFormDataDisabled: false,
+    originWhitelist: WebViewShared.defaultOriginWhitelist,
   };
 
   state = {
@@ -287,6 +304,8 @@ class WebView extends React.Component {
 
     const nativeConfig = this.props.nativeConfig || {};
 
+    const originWhitelist = (this.props.originWhitelist || []).map(WebViewShared.originWhitelistToRegex);
+
     let NativeWebView = nativeConfig.component || RCTWebView;
 
     const webView =
@@ -310,8 +329,10 @@ class WebView extends React.Component {
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        geolocationEnabled={this.props.geolocationEnabled}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
+        originWhitelist={originWhitelist}
         mixedContentMode={this.props.mixedContentMode}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
         urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}

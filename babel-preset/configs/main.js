@@ -52,6 +52,7 @@ const exponentiationOperator = [
 ];
 const objectAssign = [require('@babel/plugin-transform-object-assign')];
 const objectRestSpread = [require('@babel/plugin-proposal-object-rest-spread')];
+const optionalChaining = [require('@babel/plugin-proposal-optional-chaining')];
 const reactDisplayName = [
   require('@babel/plugin-transform-react-display-name'),
 ];
@@ -97,6 +98,9 @@ const getPreset = (src, options) => {
     src.indexOf('createReactClass') !== -1
   ) {
     extraPlugins.push(reactDisplayName);
+  }
+  if (isNull || src.indexOf('?.') !== -1) {
+    extraPlugins.push(optionalChaining);
   }
 
   if (options && options.dev) {
