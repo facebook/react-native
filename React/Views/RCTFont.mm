@@ -55,12 +55,12 @@ static RCTFontWeight weightOfFont(UIFont *font)
 
   for (NSInteger i = 0; i < fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
-      return (RCTFontWeight)[fontWeights[i] doubleValue];
+      return (RCTFontWeight)[fontWeights[i] floatValue];
     }
   }
 
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return (RCTFontWeight)[traits[UIFontWeightTrait] doubleValue];
+  return (RCTFontWeight)[traits[UIFontWeightTrait] floatValue];
 }
 
 static BOOL isItalicFont(UIFont *font)
@@ -193,7 +193,7 @@ RCT_ENUM_CONVERTER(RCTFontWeight, (@{
                                      @"700": @(UIFontWeightBold),
                                      @"800": @(UIFontWeightHeavy),
                                      @"900": @(UIFontWeightBlack),
-                                     }), UIFontWeightRegular, doubleValue)
+                                     }), UIFontWeightRegular, floatValue)
 
 typedef BOOL RCTFontStyle;
 RCT_ENUM_CONVERTER(RCTFontStyle, (@{
