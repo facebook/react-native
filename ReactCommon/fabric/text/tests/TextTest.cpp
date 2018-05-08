@@ -9,6 +9,6 @@
 
 #include <gtest/gtest.h>
 
-TEST(TextLayoutManagerTest, testSomething) {
+TEST(TextTest, testSomething) {
   // TODO:
 }
