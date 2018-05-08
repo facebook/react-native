@@ -1,3 +1,4 @@
+# Note: reactnativeci/android-base is not yet built automatically.
 FROM reactnativeci/android-base:latest
 
 # set default environment variables
