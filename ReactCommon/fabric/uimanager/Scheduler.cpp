@@ -65,7 +65,6 @@ void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNod
   auto nonConstNewRootShadowNode = std::const_pointer_cast<RootShadowNode>(newRootShadowNode);
 
   LayoutContext layoutContext = LayoutContext();
-  layoutContext.affectedShadowNodes = std::make_shared<std::unordered_set<SharedLayoutableShadowNode>>();
 
   LOG(INFO) << "Old Shadow Tree: \n" << oldRootShadowNode->getDebugDescription();
   LOG(INFO) << "New Shadow Tree *before* layout: \n" << newRootShadowNode->getDebugDescription();
