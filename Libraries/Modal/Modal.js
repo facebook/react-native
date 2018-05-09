@@ -129,6 +129,18 @@ class Modal extends React.Component<Object> {
     this._identifier = uniqueModalIdentifier++;
   }
 
+  static childContextTypes = {
+    virtualizedList: PropTypes.object,
+  };
+
+  getChildContext() {
+    // Reset the context so VirtualizedList doesn't get confused by nesting
+    // in the React tree that doesn't reflect the native component heirarchy.
+    return {
+      virtualizedList: null,
+    };
+  }
+
   componentDidMount() {
     if (ModalEventEmitter) {
       this._eventSubscription = ModalEventEmitter.addListener(
