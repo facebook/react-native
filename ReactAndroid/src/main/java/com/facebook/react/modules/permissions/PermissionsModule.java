@@ -96,7 +96,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
     Context context = getReactApplicationContext().getBaseContext();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       context.checkPermission(permission, Process.myPid(), Process.myUid()) ==
-              PackageManager.PERMISSION_GRANTED ? promise.resolve(GRANTED) : promise.reject(DENIED)
+              PackageManager.PERMISSION_GRANTED ? promise.resolve(GRANTED) : promise.reject(DENIED);
       return;
     }
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
