@@ -188,8 +188,9 @@
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
                       maximumSize:(CGSize)maximumSize
 {
-  // TODO: Not supported yet.
-  return CGSizeZero;
+  return [_surfacePresenter sizeThatFitsMinimumSize:minimumSize
+                                        maximumSize:maximumSize
+                                            surface:self];
 }
 
 #pragma mark - Size Constraints
@@ -213,7 +214,9 @@
     _minimumSize = minimumSize;
   }
 
-  // TODO: Not supported yet.
+  return [_surfacePresenter setMinimumSize:minimumSize
+                               maximumSize:maximumSize
+                                   surface:self];
 }
 
 - (CGSize)minimumSize

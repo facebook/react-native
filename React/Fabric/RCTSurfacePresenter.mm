@@ -19,6 +19,11 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
 
+#import <fabric/core/LayoutContext.h>
+#import <fabric/core/LayoutConstraints.h>
+
+#import "RCTConversions.h"
+
 using namespace facebook::react;
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
@@ -87,6 +92,34 @@ using namespace facebook::react;
   [_surfaceRegistry unregisterSurface:surface];
 }
 
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  return [_scheduler measureWithLayoutConstraints:layoutConstraints
+                                    layoutContext:layoutContext
+                                          rootTag:surface.rootTag];
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  [_scheduler constraintLayoutWithLayoutConstraints:layoutConstraints
+                                      layoutContext:layoutContext
+                                            rootTag:surface.rootTag];
+}
+
 - (void)runSurface:(RCTFabricSurface *)surface
 {
   NSDictionary *applicationParameters = @{
@@ -121,9 +154,6 @@ using namespace facebook::react;
   [surface _setStage:RCTSurfaceStageSurfaceDidInitialMounting];
 
   UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
-
-  // FIXME: Remove this.
-  rootComponentView.frame = CGRectMake(0, 0, 400, 400);
 
   surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
 }
