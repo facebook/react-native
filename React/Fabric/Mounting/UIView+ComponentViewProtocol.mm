@@ -8,6 +8,7 @@
 #import "UIView+ComponentViewProtocol.h"
 
 #import <React/RCTAssert.h>
+#import "RCTConversions.h"
 
 @implementation UIView (ComponentViewProtocol)
 
@@ -40,16 +41,7 @@
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
-    self.frame = {
-      .origin = {
-        .x = layoutMetrics.frame.origin.x,
-        .y = layoutMetrics.frame.origin.y
-      },
-      .size = {
-        .width = layoutMetrics.frame.size.width,
-        .height = layoutMetrics.frame.size.height
-      }
-    };
+    self.frame = RCTCGRectFromRect(layoutMetrics.frame);
   }
 
   // TODO: Apply another layout metrics here.

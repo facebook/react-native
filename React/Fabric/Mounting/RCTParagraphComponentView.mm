@@ -13,6 +13,7 @@
 #import <fabric/text/ParagraphProps.h>
 #import <fabric/textlayoutmanager/TextLayoutManager.h>
 #import <fabric/textlayoutmanager/RCTTextLayoutManager.h>
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 
@@ -60,17 +61,7 @@ using namespace facebook::react;
   RCTTextLayoutManager *nativeTextLayoutManager =
     (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
-  auto contentFrame = _layoutMetrics.getContentFrame();
-  CGRect frame = {
-    .origin = {
-      .x = contentFrame.origin.x,
-      .y = contentFrame.origin.y
-    },
-    .size = {
-      .width = contentFrame.size.width,
-      .height = contentFrame.size.height
-    }
-  };
+  CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
   [nativeTextLayoutManager drawAttributedString:_paragraphLocalData->getAttributedString()
                             paragraphAttributes:_paragraphAttributes
