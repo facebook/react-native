@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('React');
-const ReactNative = require('ReactNative');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const TextAncestor = require('TextAncestor');
 const TextPropTypes = require('TextPropTypes');
@@ -23,6 +22,7 @@ const nullthrows = require('fbjs/lib/nullthrows');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
+import type {NativeComponent} from 'ReactNative';
 import type {PressRetentionOffset, TextProps} from 'TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
@@ -34,7 +34,10 @@ type ResponseHandlers = $ReadOnly<{|
   onResponderTerminationRequest: () => boolean,
 |}>;
 
-type Props = TextProps;
+type Props = $ReadOnly<{
+  ...TextProps,
+  forwardedRef: ?React.Ref<NativeComponent<TextProps, any>>,
+}>;
 
 type State = {|
   touchable: {|
@@ -70,9 +73,7 @@ const viewConfig = {
  *
  * See https://facebook.github.io/react-native/docs/text.html
  */
-class Text extends ReactNative.NativeComponent<Props, State> {
-  static propTypes = TextPropTypes;
-
+class TouchableText extends React.Component<Props, State> {
   static defaultProps = {
     accessible: true,
     allowFontScaling: true,
@@ -138,10 +139,10 @@ class Text extends ReactNative.NativeComponent<Props, State> {
       <TextAncestor.Consumer>
         {hasTextAncestor =>
           hasTextAncestor ? (
-            <RCTVirtualText {...props} />
+            <RCTVirtualText {...props} ref={props.forwardedRef} />
           ) : (
             <TextAncestor.Provider value={true}>
-              <RCTText {...props} />
+              <RCTText {...props} ref={props.forwardedRef} />
             </TextAncestor.Provider>
           )
         }
@@ -260,4 +261,13 @@ const RCTVirtualText =
         uiViewClassName: 'RCTVirtualText',
       }));
 
-module.exports = Text;
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const Text = React.forwardRef((props, ref) => (
+  <TouchableText {...props} forwardedRef={ref} />
+));
+Text.displayName = 'Text';
+
+// TODO: Deprecate this.
+Text.propTypes = TextPropTypes;
+
+module.exports = ((Text: any): NativeComponent<TextProps, any>);

@@ -28,6 +28,10 @@ module.exports = (moduleName, instanceMethods) => {
     }
   };
 
+  if (RealComponent.propTypes != null) {
+    Component.propTypes = RealComponent.propTypes;
+  }
+
   if (instanceMethods != null) {
     Object.assign(Component.prototype, instanceMethods);
   }
