@@ -30,4 +30,12 @@ using namespace facebook::react;
   // TODO: Implement all sutable non-layout <View> props.
 }
 
+- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+
+  _layoutMetrics = layoutMetrics;
+}
+
 @end

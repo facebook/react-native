@@ -9,13 +9,17 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
+#import <fabric/core/LayoutMetrics.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * UIView class for <View> component.
  */
-@interface RCTViewComponentView : UIView <RCTComponentViewProtocol>
+@interface RCTViewComponentView : UIView <RCTComponentViewProtocol> {
+@protected
+  facebook::react::LayoutMetrics _layoutMetrics;
+}
 
 @end
 
