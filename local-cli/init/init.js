@@ -86,7 +86,7 @@ function generateProject(destinationRoot, newProjectName, options) {
   }
   if (!options['skip-jest']) {
     const jestDeps = (
-      `jest babel-jest babel-preset-react-native react-test-renderer@${reactVersion}`
+      `jest babel-jest babel-preset-react-native@next react-test-renderer@${reactVersion}`
     );
     if (yarnVersion) {
       console.log('Adding Jest...');
