@@ -18,7 +18,7 @@ const invariant = require('fbjs/lib/invariant');
 
 function createAnimatedComponent(Component: any): any {
   invariant(
-    typeof Component === 'string' ||
+    typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
     '`createAnimatedComponent` does not support stateless functional components; ' +
       'use a class component instead.',

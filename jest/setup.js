@@ -38,7 +38,7 @@ jest
   .mock('Text', () => mockComponent('Text'))
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
-  .mock('View', () => mockComponent('View'))
+  .mock('View', () => mockComponent('View', MockNativeMethods))
   .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
   .mock(
