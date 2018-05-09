@@ -40,7 +40,18 @@ const FrameRateLogger = {
         'Trying to debug FrameRateLogger without the native module!',
       );
     }
-    NativeModules.FrameRateLogger && NativeModules.FrameRateLogger.setGlobalOptions(options);
+    if (NativeModules.FrameRateLogger) {
+      // Freeze the object to avoid the prepack warning (PP0017) about leaking
+      // unfrozen objects.
+      // Needs to clone the object first to avoid modifying the argument.
+      const optionsClone = {
+        debug: !!options.debug,
+        reportStackTraces: !!options.reportStackTraces,
+      };
+      Object.freeze(optionsClone);
+      Object.seal(optionsClone);
+      NativeModules.FrameRateLogger.setGlobalOptions(optionsClone);
+    }
   },
 
   /**
