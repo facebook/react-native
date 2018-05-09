@@ -9,15 +9,10 @@
 #include <fabric/uimanager/SchedulerDelegate.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/view/ViewShadowNode.h>
+#include <fabric/view/RootShadowNode.h>
 
 namespace facebook {
 namespace react {
-
-/*
- * We expect having a dedicated subclass for root shadow node.
- */
-using SharedRootShadowNode = SharedViewShadowNode;
-using RootShadowNode = ViewShadowNode;
 
 class FabricUIManager;
 

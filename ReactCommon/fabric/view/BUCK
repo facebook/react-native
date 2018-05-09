@@ -22,6 +22,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
             ("accessibility", "*.h"),
+            ("root", "*.h"),
             ("yoga", "*.h"),
         ],
         prefix = "fabric/view",
