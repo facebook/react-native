@@ -12,6 +12,7 @@
 const React = require('React');
 const ReactNative = require('ReactNative');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const TextAncestor = require('TextAncestor');
 const TextPropTypes = require('TextPropTypes');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
@@ -19,11 +20,9 @@ const UIManager = require('UIManager');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
-const {ViewContextTypes} = require('ViewContext');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {TextProps} from 'TextProps';
-import type {ViewChildContext} from 'ViewContext';
 
 type State = {
   isHighlighted: boolean,
@@ -61,8 +60,6 @@ const viewConfig = {
  */
 class Text extends ReactNative.NativeComponent<TextProps, State> {
   static propTypes = TextPropTypes;
-  static childContextTypes = ViewContextTypes;
-  static contextTypes = ViewContextTypes;
 
   static defaultProps = {
     accessible: true,
@@ -75,12 +72,6 @@ class Text extends ReactNative.NativeComponent<TextProps, State> {
   });
 
   viewConfig = viewConfig;
-
-  getChildContext(): ViewChildContext {
-    return {
-      isInAParentText: true,
-    };
-  }
 
   _handlers: ?Object;
 
@@ -215,11 +206,19 @@ class Text extends ReactNative.NativeComponent<TextProps, State> {
         style: [this.props.style, {color: 'magenta'}],
       };
     }
-    if (this.context.isInAParentText) {
-      return <RCTVirtualText {...newProps} />;
-    } else {
-      return <RCTText {...newProps} />;
-    }
+    return (
+      <TextAncestor.Consumer>
+        {hasTextAncestor =>
+          hasTextAncestor ? (
+            <RCTVirtualText {...newProps} />
+          ) : (
+            <TextAncestor.Provider value={true}>
+              <RCTText {...newProps} />
+            </TextAncestor.Provider>
+          )
+        }
+      </TextAncestor.Consumer>
+    );
   }
 }
 
