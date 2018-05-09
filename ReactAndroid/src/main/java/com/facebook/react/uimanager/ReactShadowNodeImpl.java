@@ -166,6 +166,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopy() {
     ReactShadowNodeImpl copy = copy();
+    Assertions.assertCondition(
+        getClass() == copy.getClass(),
+        "Copied shadow node must use the same class");
     if (mYogaNode != null) {
       copy.mYogaNode = mYogaNode.clone();
       copy.mYogaNode.setData(copy);
@@ -182,6 +185,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public ReactShadowNodeImpl mutableCopyWithNewChildren() {
     ReactShadowNodeImpl copy = copy();
+    Assertions.assertCondition(
+        getClass() == copy.getClass(),
+        "Copied shadow node must use the same class");
     if (mYogaNode != null) {
       copy.mYogaNode = mYogaNode.cloneWithNewChildren();
       copy.mYogaNode.setData(copy);
