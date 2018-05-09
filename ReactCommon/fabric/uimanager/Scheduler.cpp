@@ -19,7 +19,6 @@ namespace react {
 
 Scheduler::Scheduler() {
   auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
-
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>());
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>());
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>());
@@ -34,12 +33,29 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
-  auto rootShadowNode = std::make_shared<RootShadowNode>(rootTag, rootTag, nullptr);
-  rootNodeRegistry_.insert({rootTag, rootShadowNode});
+  auto &&shadowTree = std::make_shared<ShadowTree>(rootTag);
+  shadowTree->setDelegate(this);
+  shadowTreeRegistry_.insert({rootTag, shadowTree});
 }
 
 void Scheduler::unregisterRootTag(Tag rootTag) {
-  rootNodeRegistry_.erase(rootTag);
+  auto &&iterator = shadowTreeRegistry_.find(rootTag);
+  auto &&shadowTree = iterator->second;
+  assert(shadowTree);
+  shadowTree->setDelegate(nullptr);
+  shadowTreeRegistry_.erase(iterator);
+}
+
+Size Scheduler::measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
+  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  assert(shadowTree);
+  return shadowTree->measure(layoutConstraints, layoutContext);
+}
+
+void Scheduler::constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) {
+  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  assert(shadowTree);
+  return shadowTree->constraintLayout(layoutConstraints, layoutContext);
 }
 
 #pragma mark - Delegate
@@ -48,53 +64,25 @@ void Scheduler::setDelegate(SchedulerDelegate *delegate) {
   delegate_ = delegate;
 }
 
-SchedulerDelegate *Scheduler::getDelegate() {
+SchedulerDelegate *Scheduler::getDelegate() const {
   return delegate_;
+}
+
+#pragma mark - ShadowTreeDelegate
+
+void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) {
+  if (delegate_) {
+    delegate_->schedulerDidComputeMutationInstructions(shadowTree->getRootTag(), instructions);
+  }
 }
 
 #pragma mark - UIManagerDelegate
   
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  SharedRootShadowNode oldRootShadowNode = rootNodeRegistry_[rootTag];
-  assert(oldRootShadowNode);
-
-  SharedRootShadowNode newRootShadowNode =
-    std::make_shared<RootShadowNode>(oldRootShadowNode, nullptr, SharedShadowNodeSharedList(rootChildNodes));
-
-  auto nonConstOldRootShadowNode = std::const_pointer_cast<RootShadowNode>(oldRootShadowNode);
-  auto nonConstNewRootShadowNode = std::const_pointer_cast<RootShadowNode>(newRootShadowNode);
-
-  LayoutContext layoutContext = LayoutContext();
-
-  LOG(INFO) << "Old Shadow Tree: \n" << oldRootShadowNode->getDebugDescription();
-  LOG(INFO) << "New Shadow Tree *before* layout: \n" << newRootShadowNode->getDebugDescription();
-
-  nonConstNewRootShadowNode->layout(layoutContext);
-
-  nonConstNewRootShadowNode->sealRecursive();
-
-  LOG(INFO) << "New Shadow Tree *after* layout: \n" << nonConstNewRootShadowNode->getDebugDescription();
-
-  TreeMutationInstructionList instructions = TreeMutationInstructionList();
-
-  calculateMutationInstructions(
-    instructions,
-    oldRootShadowNode,
-    oldRootShadowNode->ShadowNode::getChildren(),
-    newRootShadowNode->ShadowNode::getChildren()
-  );
-
-  LOG(INFO) << "TreeMutationInstructionList:";
-
-  for (auto instruction : instructions) {
-    LOG(INFO) << "Instruction: " << instruction.getDebugDescription();
-  }
-
-  rootNodeRegistry_[rootTag] = newRootShadowNode;
-
-  if (delegate_) {
-    delegate_->schedulerDidComputeMutationInstructions(rootTag, instructions);
-  }
+  auto &&iterator = shadowTreeRegistry_.find(rootTag);
+  auto &&shadowTree = iterator->second;
+  assert(shadowTree);
+  return shadowTree->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) {
