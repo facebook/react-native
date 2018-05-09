@@ -28,7 +28,6 @@
   // Immutable
   RCTSurfacePresenter *_surfacePresenter;
   NSString *_moduleName;
-  ReactTag _rootTag;
 
   // Protected by the `_mutex`
   std::mutex _mutex;
