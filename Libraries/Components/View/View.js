@@ -63,10 +63,9 @@ if (__DEV__) {
   ViewToExport = React.forwardRef((props, ref) => (
     <TextAncestor.Consumer>
       {hasTextAncestor => {
-        // TODO: Change iOS to behave the same as Android.
         invariant(
-          !hasTextAncestor || Platform.OS !== 'android',
-          'Nesting of <View> within <Text> is not supported on Android.',
+          !hasTextAncestor,
+          'Nesting of <View> within <Text> is not currently supported.',
         );
         return <RCTView {...props} ref={ref} />;
       }}
