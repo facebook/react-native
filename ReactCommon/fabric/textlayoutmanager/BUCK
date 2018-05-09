@@ -1,5 +1,5 @@
-load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags", "get_fbobjc_enable_exception_lang_compiler_flags")
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library", "get_apple_inspector_flags", "APPLE")
+load("//configurations/buck/apple:flag_defs.bzl", "get_application_ios_flags", "get_debug_preprocessor_flags", "OBJC_ARC_PREPROCESSOR_FLAGS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "get_apple_inspector_flags", "react_native_xplat_target", "ANDROID", "APPLE")
 
 APPLE_COMPILER_FLAGS = []
 
@@ -39,14 +39,14 @@ rn_xplat_cxx_library(
         ":tests",
     ],
     force_static = True,
-    macosx_tests_override = [],
     frameworks = [
+        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
-        "$SDKROOT/System/Library/Frameworks/QuartzCore.framework",
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
     ],
-    lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags(),
-    preprocessor_flags = get_debug_preprocessor_flags() + [
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
@@ -58,6 +58,7 @@ rn_xplat_cxx_library(
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
+        "xplat//yoga:yoga",
         react_native_xplat_target("fabric/attributedstring:attributedstring"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),

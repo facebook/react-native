@@ -12,6 +12,7 @@
 
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/core/Props.h>
+#include <fabric/text/BaseTextProps.h>
 #include <fabric/view/ViewProps.h>
 
 namespace facebook {
@@ -27,7 +28,8 @@ using SharedParagraphProps = std::shared_ptr<const ParagraphProps>;
  * object.
  */
 class ParagraphProps:
-  public ViewProps {
+  public ViewProps,
+  public BaseTextProps {
 
 public:
 

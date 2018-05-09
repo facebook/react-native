@@ -18,57 +18,13 @@ namespace react {
 
 void TextProps::apply(const RawProps &rawProps) {
   Props::apply(rawProps);
-
-  // Color
-  applyRawProp(rawProps, "color", textAttributes_.foregroundColor);
-  applyRawProp(rawProps, "backgroundColor", textAttributes_.backgroundColor);
-  applyRawProp(rawProps, "opacity", textAttributes_.opacity);
-
-  // Font
-  applyRawProp(rawProps, "fontFamily", textAttributes_.fontFamily);
-  applyRawProp(rawProps, "fontSize", textAttributes_.fontSize);
-  applyRawProp(rawProps, "fontSizeMultiplier", textAttributes_.fontSizeMultiplier);
-  applyRawProp(rawProps, "fontWeight", textAttributes_.fontWeight);
-  applyRawProp(rawProps, "fontStyle", textAttributes_.fontStyle);
-  applyRawProp(rawProps, "fontVariant", textAttributes_.fontVariant);
-  applyRawProp(rawProps, "allowFontScaling", textAttributes_.allowFontScaling);
-  applyRawProp(rawProps, "letterSpacing", textAttributes_.letterSpacing);
-
-  // Paragraph
-  applyRawProp(rawProps, "lineHeight", textAttributes_.lineHeight);
-  applyRawProp(rawProps, "alignment", textAttributes_.alignment);
-  applyRawProp(rawProps, "baseWritingDirection", textAttributes_.baseWritingDirection);
-
-  // Decoration
-  applyRawProp(rawProps, "textDecorationColor", textAttributes_.textDecorationColor);
-  applyRawProp(rawProps, "textDecorationLineType", textAttributes_.textDecorationLineType);
-  applyRawProp(rawProps, "textDecorationLineStyle", textAttributes_.textDecorationLineStyle);
-  applyRawProp(rawProps, "textDecorationLinePattern", textAttributes_.textDecorationLinePattern);
-
-  // Shadow
-  applyRawProp(rawProps, "textShadowOffset", textAttributes_.textShadowOffset);
-  applyRawProp(rawProps, "textShadowRadius", textAttributes_.textShadowRadius);
-  applyRawProp(rawProps, "textShadowColor", textAttributes_.textShadowColor);
-
-  // Special
-  applyRawProp(rawProps, "isHighlighted", textAttributes_.isHighlighted);
-}
-
-#pragma mark - Getters
-
-TextAttributes TextProps::getTextAttributes() const {
-  return textAttributes_;
+  BaseTextProps::apply(rawProps);
 }
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList TextProps::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-
-  auto textAttributesPropsList = textAttributes_.getDebugProps();
-  std::move(textAttributesPropsList.begin(), textAttributesPropsList.end(), std::back_inserter(list));
-
-  return list;
+  return BaseTextProps::getDebugProps();
 }
 
 } // namespace react

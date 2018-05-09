@@ -17,6 +17,7 @@ namespace react {
 
 void ParagraphProps::apply(const RawProps &rawProps) {
   ViewProps::apply(rawProps);
+  BaseTextProps::apply(rawProps);
 
   // Paragraph Attributes
   applyRawProp(rawProps, "numberOfLines", paragraphAttributes_.maximumNumberOfLines);
@@ -44,13 +45,17 @@ bool ParagraphProps::getIsSelectable() const {
 SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
   SharedDebugStringConvertibleList list = {};
 
+  // View Props
+  auto &&viewPropsList = ViewProps::getDebugProps();
+  std::move(viewPropsList.begin(), viewPropsList.end(), std::back_inserter(list));
+
   // Paragraph Props
   auto &&paragraphAttributePropsList = paragraphAttributes_.getDebugProps();
   std::move(paragraphAttributePropsList.begin(), paragraphAttributePropsList.end(), std::back_inserter(list));
 
-  // View Props
-  auto &&viewPropsList = ViewProps::getDebugProps();
-  std::move(viewPropsList.begin(), viewPropsList.end(), std::back_inserter(list));
+  // Base Text Props
+  auto &&baseTextPropsList = BaseTextProps::getDebugProps();
+  std::move(baseTextPropsList.begin(), baseTextPropsList.end(), std::back_inserter(list));
 
   return list;
 }

@@ -17,17 +17,9 @@ namespace react {
 ComponentName ParagraphShadowNode::getComponentName() const {
   return ComponentName("Paragraph");
 }
-  
-SharedTextShadowNode ParagraphShadowNode::getTextChildNode() const {
-  // <Paragraph> component must always have a single <Text> child component.
-  assert(getChildren()->size() == 1);
-  auto childNode = getChildren()->front();
-  assert(std::dynamic_pointer_cast<const TextShadowNode>(childNode));
-  return std::static_pointer_cast<const TextShadowNode>(childNode);
-}
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
-  return getTextChildNode()->getAttributedString(TextAttributes());
+  return BaseTextShadowNode::getAttributedString(getProps()->getTextAttributes(), getChildren());
 }
 
 void ParagraphShadowNode::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
