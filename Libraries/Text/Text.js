@@ -18,27 +18,24 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const mergeFast = require('mergeFast');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
-import type {TextProps} from 'TextProps';
+import type {PressRetentionOffset, TextProps} from 'TextProps';
 
-type State = {
+type State = {|
+  touchable: {|
+    touchState: ?string,
+    responderID: ?number,
+  |},
   isHighlighted: boolean,
-};
-
-type RectOffset = {
-  top: number,
-  left: number,
-  right: number,
-  bottom: number,
-};
+|};
 
 const PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 const viewConfig = {
-  validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
+  validAttributes: {
+    ...ReactNativeViewAttributes.UIView,
     isHighlighted: true,
     numberOfLines: true,
     ellipsizeMode: true,
@@ -49,7 +46,7 @@ const viewConfig = {
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
     textBreakStrategy: true,
-  }),
+  },
   uiViewClassName: 'RCTText',
 };
 
@@ -67,9 +64,10 @@ class Text extends ReactNative.NativeComponent<TextProps, State> {
     ellipsizeMode: 'tail',
   };
 
-  state = mergeFast(Touchable.Mixin.touchableGetInitialState(), {
+  state = {
+    ...Touchable.Mixin.touchableGetInitialState(),
     isHighlighted: false,
-  });
+  };
 
   viewConfig = viewConfig;
 
@@ -143,7 +141,7 @@ class Text extends ReactNative.NativeComponent<TextProps, State> {
                 this.props.onLongPress && this.props.onLongPress(e);
               };
 
-              this.touchableGetPressRectOffset = function(): RectOffset {
+              this.touchableGetPressRectOffset = function(): PressRetentionOffset {
                 return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
@@ -230,9 +228,10 @@ var RCTVirtualText = RCTText;
 
 if (UIManager.RCTVirtualText) {
   RCTVirtualText = createReactNativeComponentClass('RCTVirtualText', () => ({
-    validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
+    validAttributes: {
+      ...ReactNativeViewAttributes.UIView,
       isHighlighted: true,
-    }),
+    },
     uiViewClassName: 'RCTVirtualText',
   }));
 }
