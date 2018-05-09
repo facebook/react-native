@@ -61,12 +61,7 @@ TextAttributes BaseTextProps::getTextAttributes() const {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-
-  auto textAttributesPropsList = textAttributes_.getDebugProps();
-  std::move(textAttributesPropsList.begin(), textAttributesPropsList.end(), std::back_inserter(list));
-
-  return list;
+  return textAttributes_.getDebugProps();
 }
 
 } // namespace react

@@ -7,8 +7,9 @@
 
 #include "TextAttributes.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/graphics/debugStringConvertibleUtils.h>
 #include <fabric/graphics/graphicValuesConversions.h>
+#include "debugStringConvertibleUtils.h"
 
 namespace facebook {
 namespace react {
@@ -53,26 +54,44 @@ void TextAttributes::apply(TextAttributes textAttributes) {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
-  TextAttributes defaultAttributes = {};
-
-  SharedDebugStringConvertibleList list = {};
-
-#define PROPS_ADD_TO_SET(propertyName, accessor, convertor) \
-  if (propertyName != defaultAttributes.propertyName) { \
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(#propertyName, convertor(propertyName accessor))); \
-  }
-
-  PROPS_ADD_TO_SET(backgroundColor, , colorNameFromColor)
-  PROPS_ADD_TO_SET(foregroundColor, , colorNameFromColor)
-  PROPS_ADD_TO_SET(opacity, , std::to_string)
-
-  PROPS_ADD_TO_SET(fontFamily, , )
-  PROPS_ADD_TO_SET(fontSize, , std::to_string)
-  PROPS_ADD_TO_SET(fontSizeMultiplier, , std::to_string)
-
   // TODO: Implement all fields.
 
-  return list;
+  return {
+    // Color
+    debugStringConvertibleItem("backgroundColor", backgroundColor),
+    debugStringConvertibleItem("foregroundColor", foregroundColor),
+    debugStringConvertibleItem("opacity", opacity),
+
+    // Font
+    debugStringConvertibleItem("fontFamily", fontFamily),
+    debugStringConvertibleItem("fontSize", fontSize),
+    debugStringConvertibleItem("fontSizeMultiplier", fontSizeMultiplier),
+    debugStringConvertibleItem("fontWeight", fontWeight),
+    debugStringConvertibleItem("fontStyle", fontStyle),
+    //debugStringConvertibleItem("fontVariant", fontVariant),
+    debugStringConvertibleItem("allowFontScaling", allowFontScaling),
+    debugStringConvertibleItem("letterSpacing", letterSpacing),
+
+    // Paragraph Styles
+    debugStringConvertibleItem("lineHeight", lineHeight),
+    //debugStringConvertibleItem("alignment", alignment),
+    //debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
+
+    // Decoration
+    debugStringConvertibleItem("textDecorationColor", textDecorationColor),
+    //debugStringConvertibleItem("textDecorationLineType", textDecorationLineType),
+    //debugStringConvertibleItem("textDecorationLineStyle", textDecorationLineStyle),
+    //debugStringConvertibleItem("textDecorationLinePattern", textDecorationLinePattern),
+
+    // Shadow
+    debugStringConvertibleItem("textShadowOffset", textShadowOffset),
+    debugStringConvertibleItem("textShadowRadius", textShadowRadius),
+    debugStringConvertibleItem("textShadowColor", textShadowColor),
+
+    // Special
+    debugStringConvertibleItem("isHighlighted", isHighlighted),
+    //debugStringConvertibleItem("layoutDirection", layoutDirection),
+  };
 }
 
 } // namespace react

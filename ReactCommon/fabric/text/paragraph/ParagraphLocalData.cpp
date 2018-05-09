@@ -7,7 +7,7 @@
 
 #include "ParagraphLocalData.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -37,9 +37,9 @@ std::string ParagraphLocalData::getDebugName() const {
 }
 
 SharedDebugStringConvertibleList ParagraphLocalData::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("attributedString", attributedString_.getDebugDescription()));
-  return list;
+  return {
+    debugStringConvertibleItem("attributedString", attributedString_)
+  };
 }
 
 } // namespace react

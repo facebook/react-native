@@ -49,12 +49,24 @@ inline FontWeight fontWeightFromDynamic(const folly::dynamic &value) {
   abort();
 }
 
+inline std::string stringFromFontWeight(const FontWeight &fontWeight) {
+  return std::to_string((int)fontWeight);
+}
+
 inline FontStyle fontStyleFromDynamic(const folly::dynamic &value) {
   auto string = value.asString();
   if (string == "normal") { return FontStyle::Normal; }
   if (string == "italic") { return FontStyle::Italic; }
   if (string == "oblique") { return FontStyle::Oblique; }
   abort();
+}
+
+inline std::string stringFromFontStyle(const FontStyle &fontStyle) {
+  switch (fontStyle) {
+    case FontStyle::Normal: return "normal";
+    case FontStyle::Italic: return "italic";
+    case FontStyle::Oblique: return "oblique";
+  }
 }
 
 inline FontVariant fontVariantFromDynamic(const folly::dynamic &value) {

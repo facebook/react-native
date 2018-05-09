@@ -9,7 +9,7 @@
 
 #include <fabric/attributedstring/textValuesConversions.h>
 #include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 #include <fabric/text/propsConversions.h>
 
 namespace facebook {
@@ -43,21 +43,10 @@ bool ParagraphProps::getIsSelectable() const {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-
-  // View Props
-  auto &&viewPropsList = ViewProps::getDebugProps();
-  std::move(viewPropsList.begin(), viewPropsList.end(), std::back_inserter(list));
-
-  // Paragraph Props
-  auto &&paragraphAttributePropsList = paragraphAttributes_.getDebugProps();
-  std::move(paragraphAttributePropsList.begin(), paragraphAttributePropsList.end(), std::back_inserter(list));
-
-  // Base Text Props
-  auto &&baseTextPropsList = BaseTextProps::getDebugProps();
-  std::move(baseTextPropsList.begin(), baseTextPropsList.end(), std::back_inserter(list));
-
-  return list;
+  return
+    ViewProps::getDebugProps() +
+    paragraphAttributes_.getDebugProps() +
+    BaseTextProps::getDebugProps();
 }
 
 } // namespace react
