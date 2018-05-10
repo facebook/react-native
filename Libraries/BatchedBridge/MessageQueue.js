@@ -46,7 +46,6 @@ class MessageQueue {
   _successCallbacks: {[key: number]: ?Function};
   _failureCallbacks: {[key: number]: ?Function};
   _callID: number;
-  _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
 
@@ -248,8 +247,7 @@ class MessageQueue {
     const now = new Date().getTime();
     if (
       global.nativeFlushQueueImmediate &&
-      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-        this._inCall === 0)
+      now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
       var queue = this._queue;
       this._queue = [[], [], [], this._callID];
@@ -286,7 +284,6 @@ class MessageQueue {
    */
 
   __guard(fn: () => void) {
-    this._inCall++;
     if (this.__shouldPauseOnThrow()) {
       fn();
     } else {
@@ -296,7 +293,6 @@ class MessageQueue {
         ErrorUtils.reportFatalError(error);
       }
     }
-    this._inCall--;
   }
 
   // MessageQueue installs a global handler to catch all exceptions where JS users can register their own behavior
