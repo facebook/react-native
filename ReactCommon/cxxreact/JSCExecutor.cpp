@@ -696,12 +696,12 @@ bool JSCExecutor::isInspectable() {
   return canUseInspector(m_context);
 }
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
 void JSCExecutor::handleMemoryPressure(int pressureLevel) {
+#ifdef WITH_JSC_MEMORY_PRESSURE
   JSHandleMemoryPressure(
       this, m_context, static_cast<JSMemoryPressure>(pressureLevel));
-}
 #endif
+}
 
 void JSCExecutor::flushQueueImmediate(Value&& queue) {
   auto queueStr = queue.toJSONString();

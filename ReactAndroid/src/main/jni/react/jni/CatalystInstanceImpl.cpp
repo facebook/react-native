@@ -259,9 +259,7 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
 }
 
 void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
   instance_->handleMemoryPressure(pressureLevel);
-  #endif
 }
 
 }}
