@@ -4,21 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {
-  Image,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+var {TestModule} = ReactNative.NativeModules;
 
 var deepDiffer = require('deepDiffer');
 
@@ -55,27 +51,23 @@ var LayoutEventsTest = createReactClass({
   },
   animateViewLayout: function() {
     debug('animateViewLayout invoked');
-    LayoutAnimation.configureNext(
-      LayoutAnimation.Presets.spring,
-      () => {
-        debug('animateViewLayout done');
-        this.checkLayout(this.addWrapText);
-      }
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
+      debug('animateViewLayout done');
+      this.checkLayout(this.addWrapText);
+    });
     this.setState({viewStyle: {margin: 60}});
   },
   addWrapText: function() {
     debug('addWrapText invoked');
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
-      () => this.checkLayout(this.changeContainer)
+      () => this.checkLayout(this.changeContainer),
     );
   },
   changeContainer: function() {
     debug('changeContainer invoked');
-    this.setState(
-      {containerStyle: {width: 280}},
-      () => this.checkLayout(TestModule.markTestCompleted)
+    this.setState({containerStyle: {width: 280}}, () =>
+      this.checkLayout(TestModule.markTestCompleted),
     );
   },
   checkLayout: function(next?: ?Function) {
@@ -103,8 +95,9 @@ var LayoutEventsTest = createReactClass({
     if (deepDiffer(measured, onLayout)) {
       var data = {measured, onLayout};
       throw new Error(
-        node + ' onLayout mismatch with measure ' +
-          JSON.stringify(data, null, '  ')
+        node +
+          ' onLayout mismatch with measure ' +
+          JSON.stringify(data, null, '  '),
       );
     }
   },
@@ -145,7 +138,7 @@ var LayoutEventsTest = createReactClass({
         </View>
       </View>
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({

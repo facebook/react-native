@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 var BatchedBridge = require('BatchedBridge');
@@ -16,7 +18,7 @@ var LoggingTestModule = {
   logToConsole: function(str) {
     console.log(str);
   },
-  logToConsoleAfterWait: function(str,timeout_ms) {
+  logToConsoleAfterWait: function(str, timeout_ms) {
     setTimeout(function() {
       console.log(str);
     }, timeout_ms);
@@ -32,12 +34,9 @@ var LoggingTestModule = {
   },
   throwError: function(str) {
     throw new Error(str);
-  }
+  },
 };
 
-BatchedBridge.registerCallableModule(
-  'LoggingTestModule',
-  LoggingTestModule
-);
+BatchedBridge.registerCallableModule('LoggingTestModule', LoggingTestModule);
 
 module.exports = LoggingTestModule;

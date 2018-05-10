@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
@@ -15,11 +17,8 @@ var ReactNative = require('react-native');
  * run Flow. */
 var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
-var {
-  StyleSheet,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+var {StyleSheet, View} = ReactNative;
+var {TestModule} = ReactNative.NativeModules;
 
 class SimpleSnapshotTest extends React.Component<{}> {
   componentDidMount() {
@@ -29,7 +28,7 @@ class SimpleSnapshotTest extends React.Component<{}> {
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
   }
 
-  done = (success : boolean) => {
+  done = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
