@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target", "APPLE_JSC_DEPS", "ANDROID_JSC_DEPS")
 
 TEST_SRCS = [
     "RecoverableErrorTest.cpp",
@@ -28,7 +28,7 @@ if not IS_OSS_BUILD:
             'xplat//third-party/linker_lib:android',
             'xplat//third-party/gmock:gtest',
             react_native_xplat_target('cxxreact:bridge'),
-        ],
+        ] + ANDROID_JSC_DEPS,
         visibility = [
             'fbandroid//instrumentation_tests/...'
         ],
@@ -47,7 +47,7 @@ if not IS_OSS_BUILD:
             'xplat//third-party/gmock:gtest',
             react_native_xplat_target('cxxreact:bridge'),
             react_native_xplat_target('jschelpers:jschelpers'),
-        ],
+        ] + APPLE_JSC_DEPS,
         visibility = [
             react_native_xplat_target('cxxreact/...'),
         ],

@@ -141,6 +141,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_deps = APPLE_JSC_DEPS,
+    fbobjc_force_static = True,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
