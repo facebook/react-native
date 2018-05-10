@@ -66,6 +66,7 @@ const viewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
+    dataDetectorType: true,
   },
   directEventTypes: {
     topTextLayout: {

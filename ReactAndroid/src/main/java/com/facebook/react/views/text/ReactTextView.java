@@ -14,7 +14,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.Spannable;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import com.facebook.common.logging.FLog;
@@ -35,6 +38,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
+  private int mLinkifyMaskType = 0;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -55,7 +59,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     if (getLayoutParams() == null) {
       setLayoutParams(EMPTY_LAYOUT_PARAMS);
     }
-    setText(update.getText());
+    Spannable spannable = update.getText();
+    if (mLinkifyMaskType > 0) {
+      Linkify.addLinks(spannable, mLinkifyMaskType);
+      setMovementMethod(LinkMovementMethod.getInstance());
+    }
+    setText(spannable);
     setPadding(
       (int) Math.floor(update.getPaddingLeft()),
       (int) Math.floor(update.getPaddingTop()),
@@ -275,5 +284,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public Spannable getSpanned() {
     return mSpanned;
+  }
+
+  public void setLinkifyMask(int mask) {
+    mLinkifyMaskType = mask;
   }
 }
