@@ -4,7 +4,8 @@
 
 #include <string>
 
-#include "Platform.h"
+#include "ModuleRegistry.h"
+#include "ReactMarker.h"
 
 namespace facebook {
 namespace react {

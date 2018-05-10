@@ -4,7 +4,8 @@
 
 #include <string>
 #include <fb/fbjni.h>
-#include <cxxreact/Platform.h>
+
+#include <cxxreact/ReactMarker.h>
 
 namespace facebook {
 namespace react {

@@ -1,9 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "ReactMarker.h"
+#include "JReactMarker.h"
 #include <mutex>
-#include <cxxreact/Platform.h>
-#include <jschelpers/JSCHelpers.h>
+#include <cxxreact/ReactMarker.h>
 #include <fb/fbjni.h>
 
 namespace facebook {
