@@ -11,6 +11,8 @@
 
 'use strict';
 
+process.env.BABEL_VERSION = '7'
+
 const {transformSync: babelTransformSync} = require('@babel/core');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
@@ -76,10 +78,7 @@ module.exports = {
         [require('@babel/plugin-transform-regenerator')],
         [require('@babel/plugin-transform-sticky-regex')],
         [require('@babel/plugin-transform-unicode-regex')],
-        [
-          require('@babel/plugin-transform-modules-commonjs'),
-          {strict: false, allowTopLevelThis: true},
-        ],
+        [require('@babel/plugin-transform-modules-commonjs')],
         [require('@babel/plugin-transform-classes')],
         [require('@babel/plugin-transform-arrow-functions')],
         [require('@babel/plugin-transform-spread')],
@@ -96,7 +95,7 @@ module.exports = {
       ],
     });
 
-    return generate(ast, {
+    const code = generate(ast, {
       code: true,
       comments: false,
       compact: false,
@@ -105,6 +104,8 @@ module.exports = {
       sourceFileName: file,
       sourceMaps: true,
     }, src).code;
+
+    return code;
   },
 
   getCacheKey: createCacheKeyFunction([
