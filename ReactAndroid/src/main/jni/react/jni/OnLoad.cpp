@@ -2,14 +2,9 @@
 
 #include <string>
 
-#include <jschelpers/JSCHelpers.h>
-#include <cxxreact/JSCExecutor.h>
-#include <cxxreact/Platform.h>
 #include <fb/fbjni.h>
 #include <fb/glog_init.h>
 #include <fb/log.h>
-#include <folly/dynamic.h>
-#include <jschelpers/Value.h>
 
 #include "AndroidJSCFactory.h"
 #include "CatalystInstanceImpl.h"
