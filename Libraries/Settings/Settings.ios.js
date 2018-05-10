@@ -8,14 +8,14 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTSettingsManager = require('NativeModules').SettingsManager;
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTSettingsManager = require('NativeModules').SettingsManager;
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
+const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
 
-var Settings = {
+const Settings = {
   _settings: RCTSettingsManager && RCTSettingsManager.settings,
 
   get(key: string): mixed {
@@ -37,7 +37,7 @@ var Settings = {
       'keys should be a string or array of strings'
     );
 
-    var sid = subscriptions.length;
+    const sid = subscriptions.length;
     subscriptions.push({keys: keys, callback: callback});
     return sid;
   },
@@ -50,8 +50,8 @@ var Settings = {
 
   _sendObservations(body: Object) {
     Object.keys(body).forEach((key) => {
-      var newValue = body[key];
-      var didChange = this._settings[key] !== newValue;
+      const newValue = body[key];
+      const didChange = this._settings[key] !== newValue;
       this._settings[key] = newValue;
 
       if (didChange) {

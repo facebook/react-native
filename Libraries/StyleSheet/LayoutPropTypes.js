@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var ReactPropTypes = require('prop-types');
+const ReactPropTypes = require('prop-types');
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -23,7 +23,7 @@ var ReactPropTypes = require('prop-types');
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-var LayoutPropTypes = {
+const LayoutPropTypes = {
   /** `display` sets the display type of this component.
    *
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.

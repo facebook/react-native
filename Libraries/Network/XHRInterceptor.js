@@ -12,13 +12,13 @@ const originalXHROpen = XMLHttpRequest.prototype.open;
 const originalXHRSend = XMLHttpRequest.prototype.send;
 const originalXHRSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
 
-var openCallback;
-var sendCallback;
-var requestHeaderCallback;
-var headerReceivedCallback;
-var responseCallback;
+let openCallback;
+let sendCallback;
+let requestHeaderCallback;
+let headerReceivedCallback;
+let responseCallback;
 
-var isInterceptorEnabled = false;
+let isInterceptorEnabled = false;
 
 /**
  * A network interceptor which monkey-patches XMLHttpRequest methods

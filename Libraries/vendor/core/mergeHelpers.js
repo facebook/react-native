@@ -10,13 +10,13 @@
 
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * Maximum number of levels to traverse. Will catch circular structures.
  * @const
  */
-var MAX_MERGE_DEPTH = 36;
+const MAX_MERGE_DEPTH = 36;
 
 /**
  * We won't worry about edge cases like new String('x') or new Boolean(true).
@@ -24,11 +24,11 @@ var MAX_MERGE_DEPTH = 36;
  * @param {*} o The item/object/value to test.
  * @return {boolean} true iff the argument is a terminal.
  */
-var isTerminal = function(o) {
+const isTerminal = function(o) {
   return typeof o !== 'object' || o instanceof Date || o === null;
 };
 
-var mergeHelpers = {
+const mergeHelpers = {
 
   MAX_MERGE_DEPTH: MAX_MERGE_DEPTH,
 

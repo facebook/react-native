@@ -9,7 +9,7 @@
 'use strict';
 
 
-var parseErrorStack = require('parseErrorStack');
+const parseErrorStack = require('parseErrorStack');
 
 function getFakeError() {
   return new Error('Happy Cat');
@@ -18,24 +18,24 @@ function getFakeError() {
 describe('parseErrorStack', function() {
 
   it('parses error stack', function() {
-    var stack = parseErrorStack(getFakeError());
+    const stack = parseErrorStack(getFakeError());
     expect(stack.length).toBeGreaterThan(0);
 
-    var firstFrame = stack[0];
+    const firstFrame = stack[0];
     expect(firstFrame.methodName).toEqual('getFakeError');
     expect(firstFrame.file).toMatch(/parseErrorStack-test\.js$/);
   });
 
   it('supports framesToPop', function() {
     function getWrappedError() {
-      var error = getFakeError();
+      const error = getFakeError();
       error.framesToPop = 1;
       return error;
     }
 
     // Make sure framesToPop == 1 causes it to ignore getFakeError
     // stack frame
-    var stack = parseErrorStack(getWrappedError());
+    const stack = parseErrorStack(getWrappedError());
     expect(stack[0].methodName).toEqual('getWrappedError');
   });
 

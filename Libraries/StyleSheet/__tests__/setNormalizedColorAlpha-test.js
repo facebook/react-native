@@ -8,8 +8,8 @@
  */
 'use strict';
 
-var setNormalizedColorAlpha = require('setNormalizedColorAlpha');
-var normalizeColor = require('normalizeColor');
+const setNormalizedColorAlpha = require('setNormalizedColorAlpha');
+const normalizeColor = require('normalizeColor');
 
 describe('setNormalizedColorAlpha', function() {
   it('should adjust the alpha of the color passed in', function() {
@@ -27,7 +27,7 @@ describe('setNormalizedColorAlpha', function() {
   });
 
   it('should return the original color when alpha is unchanged', function() {
-    var originalColor = normalizeColor('blue');
+    const originalColor = normalizeColor('blue');
     expect(setNormalizedColorAlpha(originalColor, 1)).toBe(originalColor);
   });
 });

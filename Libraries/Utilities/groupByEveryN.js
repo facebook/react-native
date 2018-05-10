@@ -25,10 +25,10 @@
 'use strict';
 
 function groupByEveryN<T>(array: Array<T>, n: number): Array<Array<?T>> {
-  var result = [];
-  var temp = [];
+  const result = [];
+  let temp = [];
 
-  for (var i = 0; i < array.length; ++i) {
+  for (let i = 0; i < array.length; ++i) {
     if (i > 0 && i % n === 0) {
       result.push(temp);
       temp = [];

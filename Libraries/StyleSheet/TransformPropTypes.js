@@ -8,11 +8,11 @@
  */
 'use strict';
 
-var ReactPropTypes = require('prop-types');
+const ReactPropTypes = require('prop-types');
 
-var deprecatedPropType = require('deprecatedPropType');
+const deprecatedPropType = require('deprecatedPropType');
 
-var TransformMatrixPropType = function(
+const TransformMatrixPropType = function(
   props : Object,
   propName : string,
   componentName : string
@@ -25,7 +25,7 @@ var TransformMatrixPropType = function(
   }
 };
 
-var DecomposedMatrixPropType = function(
+const DecomposedMatrixPropType = function(
   props : Object,
   propName : string,
   componentName : string
@@ -38,7 +38,7 @@ var DecomposedMatrixPropType = function(
   }
 };
 
-var TransformPropTypes = {
+const TransformPropTypes = {
   /**
    * `transform` accepts an array of transformation objects. Each object specifies
    * the property that will be transformed as the key, and the value to use in the

@@ -11,9 +11,9 @@
 jest.enableAutomock().unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
-  var InteractionManager;
-  var InteractionMixin;
-  var component;
+  let InteractionManager;
+  let InteractionMixin;
+  let component;
 
   beforeEach(() => {
     jest.resetModules();
@@ -29,19 +29,19 @@ describe('InteractionMixin', () => {
   });
 
   it('should end interactions', () => {
-    var handle = {};
+    const handle = {};
     component.clearInteractionHandle(handle);
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });
 
   it('should schedule tasks', () => {
-    var task = jest.fn();
+    const task = jest.fn();
     component.runAfterInteractions(task);
     expect(InteractionManager.runAfterInteractions).toBeCalledWith(task);
   });
 
   it('should end unfinished interactions in componentWillUnmount', () => {
-    var handle = component.createInteractionHandle();
+    const handle = component.createInteractionHandle();
     component.componentWillUnmount();
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });

@@ -9,9 +9,9 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
-var VibrationIOS = {
+const VibrationIOS = {
   vibrate: function() {
     warning('VibrationIOS is not supported on this platform!');
   }

@@ -5,9 +5,9 @@
  */
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
-var Sample = {
+const Sample = {
   test: function() {
     warning('Not yet implemented for Android.');
   }

@@ -36,7 +36,7 @@ import type EmitterSubscription from 'EmitterSubscription';
 // <Modal> on screen. There can be different ones, either nested or as siblings.
 // We cannot pass the onDismiss callback to native as the view will be
 // destroyed before the callback is fired.
-var uniqueModalIdentifier = 0;
+let uniqueModalIdentifier = 0;
 
 class Modal extends React.Component<Object> {
   static propTypes = {

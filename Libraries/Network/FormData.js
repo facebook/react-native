@@ -60,9 +60,9 @@ class FormData {
 
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
-      var contentDisposition = 'form-data; name="' + name + '"';
+      const contentDisposition = 'form-data; name="' + name + '"';
 
-      var headers: Headers = {'content-disposition': contentDisposition};
+      const headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means
       // an object with a `uri` attribute. Optionally, it can also

@@ -15,16 +15,16 @@
  * https://github.com/facebook/react-devtools/blob/master/backend/getData.js
  */
 function getData(element: Object): Object {
-  var children = null;
-  var props = null;
-  var state = null;
-  var context = null;
-  var updater = null;
-  var name = null;
-  var type = null;
-  var text = null;
-  var publicInstance = null;
-  var nodeType = 'Native';
+  let children = null;
+  let props = null;
+  let state = null;
+  let context = null;
+  let updater = null;
+  let name = null;
+  let type = null;
+  let text = null;
+  let publicInstance = null;
+  let nodeType = 'Native';
   // If the parent is a native node without rendered children, but with
   // multiple string children, then the `element` that gets passed in here is
   // a plain value -- a string or number.
@@ -80,7 +80,7 @@ function getData(element: Object): Object {
   }
 
   if (element._instance) {
-    var inst = element._instance;
+    const inst = element._instance;
     updater = {
       setState: inst.setState && inst.setState.bind(inst),
       forceUpdate: inst.forceUpdate && inst.forceUpdate.bind(inst),
@@ -113,7 +113,7 @@ function getData(element: Object): Object {
 }
 
 function setInProps(internalInst, path: Array<string | number>, value: any) {
-  var element = internalInst._currentElement;
+  const element = internalInst._currentElement;
   internalInst._currentElement = {
     ...element,
     props: copyWithSet(element.props, path, value),
@@ -132,16 +132,16 @@ function setInContext(inst, path: Array<string | number>, value: any) {
 }
 
 function setIn(obj: Object, path: Array<string | number>, value: any) {
-  var last = path.pop();
-  var parent = path.reduce((obj_, attr) => obj_ ? obj_[attr] : null, obj);
+  const last = path.pop();
+  const parent = path.reduce((obj_, attr) => obj_ ? obj_[attr] : null, obj);
   if (parent) {
     parent[last] = value;
   }
 }
 
 function childrenList(children) {
-  var res = [];
-  for (var name in children) {
+  const res = [];
+  for (const name in children) {
     res.push(children[name]);
   }
   return res;
@@ -151,8 +151,8 @@ function copyWithSetImpl(obj, path, idx, value) {
   if (idx >= path.length) {
     return value;
   }
-  var key = path[idx];
-  var updated = Array.isArray(obj) ? obj.slice() : {...obj};
+  const key = path[idx];
+  const updated = Array.isArray(obj) ? obj.slice() : {...obj};
   // $FlowFixMe number or string is fine here
   updated[key] = copyWithSetImpl(obj[key], path, idx + 1, value);
   return updated;

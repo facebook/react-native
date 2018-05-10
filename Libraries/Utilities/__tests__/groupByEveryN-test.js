@@ -9,7 +9,7 @@
 'use strict';
 
 describe('groupByEveryN', () => {
-  var groupByEveryN = require('groupByEveryN');
+  const groupByEveryN = require('groupByEveryN');
 
   it('should group by with different n', () => {
     expect(groupByEveryN([1, 2, 3, 4, 5, 6, 7, 8, 9], 1))

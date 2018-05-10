@@ -8,10 +8,10 @@
  */
 'use strict';
 
-var Easing = require('Easing');
+const Easing = require('Easing');
 describe('Easing', () => {
   it('should work with linear', () => {
-    var easing = Easing.linear;
+    const easing = Easing.linear;
 
     expect(easing(0)).toBe(0);
     expect(easing(0.5)).toBe(0.5);
@@ -20,7 +20,7 @@ describe('Easing', () => {
   });
 
   it('should work with ease in linear', () => {
-    var easing = Easing.in(Easing.linear);
+    const easing = Easing.in(Easing.linear);
     expect(easing(0)).toBe(0);
     expect(easing(0.5)).toBe(0.5);
     expect(easing(0.8)).toBe(0.8);
@@ -28,7 +28,7 @@ describe('Easing', () => {
   });
 
   it('should work with easy out linear', () => {
-    var easing = Easing.out(Easing.linear);
+    const easing = Easing.out(Easing.linear);
     expect(easing(0)).toBe(0);
     expect(easing(0.5)).toBe(0.5);
     expect(easing(0.6)).toBe(0.6);
@@ -39,8 +39,8 @@ describe('Easing', () => {
     function easeInQuad(t) {
       return t * t;
     }
-    var easing = Easing.in(Easing.quad);
-    for (var t = -0.5; t < 1.5; t += 0.1) {
+    const easing = Easing.in(Easing.quad);
+    for (let t = -0.5; t < 1.5; t += 0.1) {
       expect(easing(t)).toBe(easeInQuad(t));
     }
   });
@@ -49,8 +49,8 @@ describe('Easing', () => {
     function easeOutQuad(t) {
       return -t * (t - 2);
     }
-    var easing = Easing.out(Easing.quad);
-    for (var t = 0; t <= 1; t += 0.1) {
+    const easing = Easing.out(Easing.quad);
+    for (let t = 0; t <= 1; t += 0.1) {
       expect(easing(1)).toBe(easeOutQuad(1));
     }
   });
@@ -63,31 +63,31 @@ describe('Easing', () => {
       }
       return -((t - 1) * (t - 3) - 1) / 2;
     }
-    var easing = Easing.inOut(Easing.quad);
-    for (var t = -0.5; t < 1.5; t += 0.1) {
+    const easing = Easing.inOut(Easing.quad);
+    for (let t = -0.5; t < 1.5; t += 0.1) {
       expect(easing(t)).toBeCloseTo(easeInOutQuad(t), 4);
     }
   });
 
   it('should satisfy boundary conditions with elastic', () => {
-    for (var b = 0; b < 4; b += 0.3) {
-      var easing = Easing.elastic(b);
+    for (let b = 0; b < 4; b += 0.3) {
+      const easing = Easing.elastic(b);
       expect(easing(0)).toBe(0);
       expect(easing(1)).toBe(1);
     }
   });
 
   function sampleEasingFunction(easing) {
-    var DURATION = 300;
-    var tickCount = Math.round(DURATION * 60 / 1000);
-    var samples = [];
-    for (var i = 0; i <= tickCount; i++) {
+    const DURATION = 300;
+    const tickCount = Math.round(DURATION * 60 / 1000);
+    const samples = [];
+    for (let i = 0; i <= tickCount; i++) {
       samples.push(easing(i / tickCount));
     }
     return samples;
   }
 
-  var Samples = {
+  const Samples = {
     in_quad: [0,0.0030864197530864196,0.012345679012345678,0.027777777777777776,0.04938271604938271,0.0771604938271605,0.1111111111111111,0.15123456790123457,0.19753086419753085,0.25,0.308641975308642,0.37345679012345684,0.4444444444444444,0.5216049382716049,0.6049382716049383,0.6944444444444445,0.7901234567901234,0.8919753086419753,1],
     out_quad: [0,0.10802469135802469,0.20987654320987653,0.3055555555555555,0.3950617283950617,0.47839506172839513,0.5555555555555556,0.6265432098765432,0.691358024691358,0.75,0.8024691358024691,0.8487654320987654,0.888888888888889,0.9228395061728394,0.9506172839506174,0.9722222222222221,0.9876543209876543,0.9969135802469136,1],
     inOut_quad: [0,0.006172839506172839,0.024691358024691357,0.05555555555555555,0.09876543209876543,0.154320987654321,0.2222222222222222,0.30246913580246915,0.3950617283950617,0.5,0.6049382716049383,0.697530864197531,0.7777777777777777,0.845679012345679,0.9012345679012346,0.9444444444444444,0.9753086419753086,0.9938271604938271,1],
@@ -109,13 +109,13 @@ describe('Easing', () => {
 
   Object.keys(Samples).forEach(function(type) {
     it('should ease ' + type, function() {
-      var [modeName, easingName, isFunction] = type.split('_');
-      var easing = Easing[easingName];
+      const [modeName, easingName, isFunction] = type.split('_');
+      let easing = Easing[easingName];
       if (isFunction !== undefined) {
         easing = easing();
       }
-      var computed = sampleEasingFunction(Easing[modeName](easing));
-      var samples = Samples[type];
+      const computed = sampleEasingFunction(Easing[modeName](easing));
+      const samples = Samples[type];
 
       computed.forEach((value, key) => {
         expect(value).toBeCloseTo(samples[key], 2);

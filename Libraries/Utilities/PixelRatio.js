@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var Dimensions = require('Dimensions');
+const Dimensions = require('Dimensions');
 
 /**
  * PixelRatio class gives access to the device pixel density.
@@ -108,7 +108,7 @@ class PixelRatio {
    * exactly (8.33 * 3) = 25 pixels.
    */
   static roundToNearestPixel(layoutSize: number): number {
-    var ratio = PixelRatio.get();
+    const ratio = PixelRatio.get();
     return Math.round(layoutSize * ratio) / ratio;
   }
 

@@ -9,13 +9,13 @@
 /* eslint-disable space-infix-ops */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * Memory conservative (mutative) matrix math utilities. Uses "command"
  * matrices, which are reusable.
  */
-var MatrixMath = {
+const MatrixMath = {
   createIdentityMatrix: function() {
     return [
       1,0,0,0,
@@ -35,13 +35,13 @@ var MatrixMath = {
   },
 
   createOrthographic: function(left, right, bottom, top, near, far) {
-    var a = 2 / (right - left);
-    var b = 2 / (top - bottom);
-    var c = -2 / (far - near);
+    const a = 2 / (right - left);
+    const b = 2 / (top - bottom);
+    const c = -2 / (far - near);
 
-    var tx = -(right + left) / (right - left);
-    var ty = -(top + bottom) / (top - bottom);
-    var tz = -(far + near) / (far - near);
+    const tx = -(right + left) / (right - left);
+    const ty = -(top + bottom) / (top - bottom);
+    const tz = -(far + near) / (far - near);
 
     return [
         a,  0,  0,  0,
@@ -52,15 +52,15 @@ var MatrixMath = {
   },
 
   createFrustum: function(left, right, bottom, top, near, far) {
-    var r_width  = 1 / (right - left);
-    var r_height = 1 / (top - bottom);
-    var r_depth  = 1 / (near - far);
-    var x = 2 * (near * r_width);
-    var y = 2 * (near * r_height);
-    var A = (right + left) * r_width;
-    var B = (top + bottom) * r_height;
-    var C = (far + near) * r_depth;
-    var D = 2 * (far * near * r_depth);
+    const r_width  = 1 / (right - left);
+    const r_height = 1 / (top - bottom);
+    const r_depth  = 1 / (near - far);
+    const x = 2 * (near * r_width);
+    const y = 2 * (near * r_height);
+    const A = (right + left) * r_width;
+    const B = (top + bottom) * r_height;
+    const C = (far + near) * r_depth;
+    const D = 2 * (far * near * r_depth);
     return [
       x, 0, 0, 0,
       0, y, 0, 0,
@@ -76,10 +76,10 @@ var MatrixMath = {
    * @param fovInRadians - field of view in randians
    */
   createPerspective: function(fovInRadians, aspect, near, far) {
-    var h = 1 / Math.tan(fovInRadians / 2);
-    var r_depth  = 1 / (near - far);
-    var C = (far + near) * r_depth;
-    var D = 2 * (far * near * r_depth);
+    const h = 1 / Math.tan(fovInRadians / 2);
+    const r_depth  = 1 / (near - far);
+    const C = (far + near) * r_depth;
+    const D = 2 * (far * near * r_depth);
     return [
       h/aspect, 0, 0, 0,
       0, h, 0, 0,
@@ -89,7 +89,7 @@ var MatrixMath = {
   },
 
   createTranslate2d: function(x, y) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseTranslate2dCommand(mat, x, y);
     return mat;
   },
@@ -106,7 +106,7 @@ var MatrixMath = {
   },
 
   createScale: function(factor) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseScaleCommand(mat, factor);
     return mat;
   },
@@ -161,7 +161,7 @@ var MatrixMath = {
   },
 
   createRotateZ: function(radians) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateZCommand(mat, radians);
     return mat;
   },
@@ -175,12 +175,9 @@ var MatrixMath = {
   },
 
   multiplyInto: function(out, a, b) {
-    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
-      a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
-      a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
-      a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+    const a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
 
-    var b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
+    let b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
     out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
     out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
     out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
@@ -206,7 +203,7 @@ var MatrixMath = {
   },
 
   determinant(matrix: Array<number>): number {
-    var [
+    const [
       m00, m01, m02, m03,
       m10, m11, m12, m13,
       m20, m21, m22, m23,
@@ -236,11 +233,11 @@ var MatrixMath = {
    * http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
    */
   inverse(matrix: Array<number>): Array<number> {
-    var det = MatrixMath.determinant(matrix);
+    const det = MatrixMath.determinant(matrix);
     if (!det) {
       return matrix;
     }
-    var [
+    const [
       m00, m01, m02, m03,
       m10, m11, m12, m13,
       m20, m21, m22, m23,
@@ -285,7 +282,7 @@ var MatrixMath = {
     v: Array<number>,
     m: Array<number>
   ): Array<number> {
-    var [vx, vy, vz, vw] = v;
+    const [vx, vy, vz, vw] = v;
     return [
       vx * m[0] + vy * m[4] + vz * m[8]  + vw * m[12],
       vx * m[1] + vy * m[5] + vz * m[9]  + vw * m[13],
@@ -308,7 +305,7 @@ var MatrixMath = {
      vector: Array<number>,
      v3Length: number
     ): Array<number> {
-    var im = 1 / (v3Length || MatrixMath.v3Length(vector));
+    const im = 1 / (v3Length || MatrixMath.v3Length(vector));
     return [
       vector[0] * im,
       vector[1] * im,
@@ -372,14 +369,14 @@ var MatrixMath = {
    * roll  === bank               === x-axis
    */
   quaternionToDegreesXYZ(q: Array<number>, matrix, row): Array<number> {
-    var [qx, qy, qz, qw] = q;
-    var qw2 = qw * qw;
-    var qx2 = qx * qx;
-    var qy2 = qy * qy;
-    var qz2 = qz * qz;
-    var test = qx * qy + qz * qw;
-    var unit = qw2 + qx2 + qy2 + qz2;
-    var conv = 180 / Math.PI;
+    const [qx, qy, qz, qw] = q;
+    const qw2 = qw * qw;
+    const qx2 = qx * qx;
+    const qy2 = qy * qy;
+    const qz2 = qz * qz;
+    const test = qx * qy + qz * qw;
+    const unit = qw2 + qx2 + qy2 + qz2;
+    const conv = 180 / Math.PI;
 
     if (test > 0.49999 * unit) {
       return [0, 2 * Math.atan2(qx, qw) * conv, 90];
@@ -406,7 +403,7 @@ var MatrixMath = {
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
    */
   roundTo3Places(n: number): number {
-    var arr = n.toString().split('e');
+    const arr = n.toString().split('e');
     return Math.round(arr[0] + 'e' + (arr[1] ? (+arr[1] - 3) : 3)) * 0.001;
   },
 
@@ -431,22 +428,22 @@ var MatrixMath = {
 
     // output values
     var perspective = [];
-    var quaternion = [];
-    var scale = [];
-    var skew = [];
-    var translation = [];
+    const quaternion = [];
+    const scale = [];
+    const skew = [];
+    const translation = [];
 
     // create normalized, 2d array matrix
     // and normalized 1d array perspectiveMatrix with redefined 4th column
     if (!transformMatrix[15]) {
       return;
     }
-    var matrix = [];
-    var perspectiveMatrix = [];
+    const matrix = [];
+    const perspectiveMatrix = [];
     for (var i = 0; i < 4; i++) {
       matrix.push([]);
-      for (var j = 0; j < 4; j++) {
-        var value = transformMatrix[(i * 4) + j] / transformMatrix[15];
+      for (let j = 0; j < 4; j++) {
+        const value = transformMatrix[(i * 4) + j] / transformMatrix[15];
         matrix[i].push(value);
         perspectiveMatrix.push(j === 3 ? 0 : value);
       }
@@ -462,7 +459,7 @@ var MatrixMath = {
     if (matrix[0][3] !== 0 || matrix[1][3] !== 0 || matrix[2][3] !== 0) {
       // rightHandSide is the right hand side of the equation.
       // rightHandSide is a vector, or point in 3d space relative to the origin.
-      var rightHandSide = [
+      const rightHandSide = [
         matrix[0][3],
         matrix[1][3],
         matrix[2][3],
@@ -471,10 +468,10 @@ var MatrixMath = {
 
       // Solve the equation by inverting perspectiveMatrix and multiplying
       // rightHandSide by the inverse.
-      var inversePerspectiveMatrix = MatrixMath.inverse(
+      const inversePerspectiveMatrix = MatrixMath.inverse(
         perspectiveMatrix
       );
-      var transposedInversePerspectiveMatrix = MatrixMath.transpose(
+      const transposedInversePerspectiveMatrix = MatrixMath.transpose(
         inversePerspectiveMatrix
       );
       var perspective = MatrixMath.multiplyVectorByMatrix(
@@ -494,7 +491,7 @@ var MatrixMath = {
 
     // Now get scale and shear.
     // 'row' is a 3 element array of 3 component vectors
-    var row = [];
+    const row = [];
     for (i = 0; i < 3; i++) {
       row[i] = [
         matrix[i][0],
@@ -535,7 +532,7 @@ var MatrixMath = {
     // At this point, the matrix (in rows) is orthonormal.
     // Check for a coordinate system flip.  If the determinant
     // is -1, then negate the matrix and the scaling factors.
-    var pdum3 = MatrixMath.v3Cross(row[1], row[2]);
+    const pdum3 = MatrixMath.v3Cross(row[1], row[2]);
     if (MatrixMath.v3Dot(row[0], pdum3) < 0) {
       for (i = 0; i < 3; i++) {
         scale[i] *= -1;
@@ -566,7 +563,7 @@ var MatrixMath = {
     }
 
     // correct for occasional, weird Euler synonyms for 2d rotation
-    var rotationDegrees;
+    let rotationDegrees;
     if (
       quaternion[0] < 0.001 && quaternion[0] >= 0 &&
       quaternion[1] < 0.001 && quaternion[1] >= 0

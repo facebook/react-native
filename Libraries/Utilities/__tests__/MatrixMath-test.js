@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var MatrixMath = require('MatrixMath');
+const MatrixMath = require('MatrixMath');
 
 function degreesToRadians(degrees) {
   return degrees * Math.PI / 180;
@@ -26,7 +26,7 @@ describe('MatrixMath', () => {
     ]).rotationDegrees).toEqual([0, 0, 0]);
 
     [30, 45, 60, 75, 90, 100, 115, 120, 133, 167].forEach(angle => {
-      var mat = MatrixMath.createRotateZ(degreesToRadians(angle));
+      let mat = MatrixMath.createRotateZ(degreesToRadians(angle));
       expect(convertZeroes(MatrixMath.decomposeMatrix(mat).rotationDegrees))
         .toEqual([0, 0, angle]);
 
@@ -80,7 +80,7 @@ describe('MatrixMath', () => {
   });
 
   it('decomposes a 4x4 matrix to produce accurate Y-axis angles', () => {
-    var mat;
+    let mat;
     [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateYCommand(mat, degreesToRadians(angle));
@@ -112,7 +112,7 @@ describe('MatrixMath', () => {
   });
 
   it('decomposes a 4x4 matrix to produce accurate X-axis angles', () => {
-    var mat;
+    let mat;
     [30, 45, 60, 75, 90, 100, 110, 120, 133, 167].forEach(angle => {
       mat = MatrixMath.createIdentityMatrix();
       MatrixMath.reuseRotateXCommand(mat, degreesToRadians(angle));

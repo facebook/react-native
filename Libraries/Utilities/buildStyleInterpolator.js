@@ -8,18 +8,18 @@
 
 'use strict';
 
-var keyOf = require('fbjs/lib/keyOf');
+const keyOf = require('fbjs/lib/keyOf');
 
-var X_DIM = keyOf({x: null});
-var Y_DIM = keyOf({y: null});
-var Z_DIM = keyOf({z: null});
+const X_DIM = keyOf({x: null});
+const Y_DIM = keyOf({y: null});
+const Z_DIM = keyOf({z: null});
 
-var InitialOperationField = {
+const InitialOperationField = {
   transformTranslate: [0, 0, 0],
   transformScale: [1, 1, 1],
 };
 
-var InterpolateMatrix = {
+const InterpolateMatrix = {
   transformScale: function(mat, x, y, z) {
     mat[0] = mat[0] * x;
     mat[1] = mat[1] * x;
@@ -42,27 +42,27 @@ var InterpolateMatrix = {
   }
 };
 
-var computeNextValLinear = function(anim, from, to, value) {
-  var hasRoundRatio = 'round' in anim;
-  var roundRatio = anim.round;
-  var ratio = (value - anim.min) / (anim.max - anim.min);
+const computeNextValLinear = function(anim, from, to, value) {
+  const hasRoundRatio = 'round' in anim;
+  const roundRatio = anim.round;
+  let ratio = (value - anim.min) / (anim.max - anim.min);
   if (!anim.extrapolate) {
     ratio = ratio > 1 ? 1 : (ratio < 0 ? 0 : ratio);
   }
-  var nextVal = from * (1 - ratio) + to * ratio;
+  let nextVal = from * (1 - ratio) + to * ratio;
   if (hasRoundRatio) {
     nextVal = Math.round(roundRatio * nextVal) / roundRatio;
   }
   return nextVal;
 };
 
-var computeNextValLinearScalar = function(anim, value) {
+const computeNextValLinearScalar = function(anim, value) {
   return computeNextValLinear(anim, anim.from, anim.to, value);
 };
 
-var setNextValAndDetectChange = function(result, name, nextVal, didChange) {
+const setNextValAndDetectChange = function(result, name, nextVal, didChange) {
   if (!didChange) {
-    var prevVal = result[name];
+    const prevVal = result[name];
     result[name] = nextVal;
     didChange = didChange  || (nextVal !== prevVal);
   } else {
@@ -71,7 +71,7 @@ var setNextValAndDetectChange = function(result, name, nextVal, didChange) {
   return didChange;
 };
 
-var initIdentity = function(mat) {
+const initIdentity = function(mat) {
   mat[0] = 1;
   mat[1] = 0;
   mat[2] = 0;
@@ -90,7 +90,7 @@ var initIdentity = function(mat) {
   mat[15] = 1;
 };
 
-var computeNextMatrixOperationField = function(anim, name, dim, index, value) {
+const computeNextMatrixOperationField = function(anim, name, dim, index, value) {
   if (anim.from[dim] !== undefined && anim.to[dim] !== undefined) {
     return computeNextValLinear(anim, anim.from[dim], anim.to[dim], value);
   } else {
@@ -98,33 +98,33 @@ var computeNextMatrixOperationField = function(anim, name, dim, index, value) {
   }
 };
 
-var computeTransform = function(anim, name, value, result,
+const computeTransform = function(anim, name, value, result,
                                 didChange, didMatrix) {
-  var transform = result.transform !== undefined ?
+  const transform = result.transform !== undefined ?
         result.transform : (result.transform = [{ matrix: [] }]);
-  var mat = transform[0].matrix;
-  var m0 = mat[0];
-  var m1 = mat[1];
-  var m2 = mat[2];
-  var m3 = mat[3];
-  var m4 = mat[4];
-  var m5 = mat[5];
-  var m6 = mat[6];
-  var m7 = mat[7];
-  var m8 = mat[8];
-  var m9 = mat[9];
-  var m10 = mat[10];
-  var m11 = mat[11];
-  var m12 = mat[12];
-  var m13 = mat[13];
-  var m14 = mat[14];
-  var m15 = mat[15];
+  const mat = transform[0].matrix;
+  const m0 = mat[0];
+  const m1 = mat[1];
+  const m2 = mat[2];
+  const m3 = mat[3];
+  const m4 = mat[4];
+  const m5 = mat[5];
+  const m6 = mat[6];
+  const m7 = mat[7];
+  const m8 = mat[8];
+  const m9 = mat[9];
+  const m10 = mat[10];
+  const m11 = mat[11];
+  const m12 = mat[12];
+  const m13 = mat[13];
+  const m14 = mat[14];
+  const m15 = mat[15];
   if (!didMatrix) {
     initIdentity(mat);  // This will be the first transform.
   }
-  var x = computeNextMatrixOperationField(anim, name, X_DIM, 0, value);
-  var y = computeNextMatrixOperationField(anim, name, Y_DIM, 1, value);
-  var z = computeNextMatrixOperationField(anim, name, Z_DIM, 2, value);
+  const x = computeNextMatrixOperationField(anim, name, X_DIM, 0, value);
+  const y = computeNextMatrixOperationField(anim, name, Y_DIM, 1, value);
+  const z = computeNextMatrixOperationField(anim, name, Z_DIM, 2, value);
   InterpolateMatrix[name](mat, x, y, z);
   if (!didChange) {
     didChange = m0 !== mat[0] || m1 !== mat[1] ||
@@ -144,12 +144,12 @@ var computeTransform = function(anim, name, value, result,
  * @return {function} Function accepting style object, that mutates that style
  * object and returns a boolean describing if any update was actually applied.
  */
-var buildStyleInterpolator = function(anims) {
+const buildStyleInterpolator = function(anims) {
   function styleInterpolator(result, value) {
-    var didChange = false;
-    var didMatrix = false;
-    for (var name in anims) {
-      var anim = anims[name];
+    let didChange = false;
+    let didMatrix = false;
+    for (const name in anims) {
+      const anim = anims[name];
       if (anim.type === 'linear') {
         if (name in InterpolateMatrix) {
           didChange = computeTransform(anim, name, value, result,

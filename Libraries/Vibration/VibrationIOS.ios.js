@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var RCTVibration = require('NativeModules').Vibration;
+const RCTVibration = require('NativeModules').Vibration;
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * NOTE: `VibrationIOS` is being deprecated. Use `Vibration` instead.
@@ -25,7 +25,7 @@ var invariant = require('fbjs/lib/invariant');
  * Vibration patterns are currently unsupported.
  */
 
-var VibrationIOS = {
+const VibrationIOS = {
   /**
    * @deprecated
    */

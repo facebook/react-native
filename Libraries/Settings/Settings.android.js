@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var Settings = {
+const Settings = {
   get(key: string): mixed {
     console.warn('Settings is not yet supported on Android');
     return null;

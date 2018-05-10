@@ -24,7 +24,7 @@ const RCTAsyncStorage = NativeModules.AsyncRocksDBStorage ||
  *
  * See http://facebook.github.io/react-native/docs/asyncstorage.html
  */
-var AsyncStorage = {
+const AsyncStorage = {
   _getRequests: ([]: Array<any>),
   _getKeys: ([]: Array<string>),
   _immediate: (null: ?number),
@@ -41,8 +41,8 @@ var AsyncStorage = {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
-        var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
-        var errs = convertErrors(errors);
+        const value = (result && result[0] && result[0][1]) ? result[0][1] : null;
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0], value);
         if (errs) {
           reject(errs[0]);
@@ -65,7 +65,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet([[key,value]], function(errors) {
-        var errs = convertErrors(errors);
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -87,7 +87,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove([key], function(errors) {
-        var errs = convertErrors(errors);
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -113,7 +113,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
-        var errs = convertErrors(errors);
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -222,7 +222,7 @@ var AsyncStorage = {
       });
     }
 
-    var getRequest = {
+    const getRequest = {
       keys: keys,
       callback: callback,
       // do we need this?
@@ -231,7 +231,7 @@ var AsyncStorage = {
       reject: null,
     };
 
-    var promiseResult = new Promise((resolve, reject) => {
+    const promiseResult = new Promise((resolve, reject) => {
       getRequest.resolve = resolve;
       getRequest.reject = reject;
     });
@@ -259,7 +259,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -281,7 +281,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -306,7 +306,7 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -335,7 +335,7 @@ function convertError(error) {
   if (!error) {
     return null;
   }
-  var out = new Error(error.message);
+  const out = new Error(error.message);
   out.key = error.key; // flow doesn't like this :(
   return out;
 }

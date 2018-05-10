@@ -15,14 +15,14 @@ type Inset = {
   bottom: ?number,
 }
 
-var dummyInsets = {
+const dummyInsets = {
 	top: undefined,
 	left: undefined,
 	right: undefined,
 	bottom: undefined,
 };
 
-var insetsDiffer = function(
+const insetsDiffer = function(
   one: ?Inset,
   two: ?Inset
 ): bool {

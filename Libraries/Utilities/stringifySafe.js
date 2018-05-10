@@ -13,8 +13,8 @@
  * (e.g. from circular objects) and always returns a string and never throws.
  */
 function stringifySafe(arg: any): string {
-  var ret;
-  var type = typeof arg;
+  let ret;
+  const type = typeof arg;
   if (arg === undefined) {
     ret = 'undefined';
   } else if (arg === null) {

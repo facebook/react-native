@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var deepDiffer = require('deepDiffer');
+const deepDiffer = require('deepDiffer');
 
 describe('deepDiffer', function() {
   it('should diff primitives of the same type', () => {
@@ -95,7 +95,7 @@ describe('deepDiffer', function() {
     expect(deepDiffer(['a', 'b'], {length: 2, 0: 'a', 1: 'b'})).toBe(true);
   });
   it('should diff same object', () => {
-    var obj = [1,[2,3]];
+    const obj = [1,[2,3]];
     expect(deepDiffer(obj, obj)).toBe(false);
   });
   it('should respect maxDepth arg', () => {

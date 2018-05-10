@@ -12,7 +12,7 @@
  * correctly dispatches to commonJS modules. The `testHook` is overriden by test
  * cases.
  */
-var MessageQueueTestModule = {
+const MessageQueueTestModule = {
   testHook1: function() {
   },
   testHook2: function() {

@@ -18,8 +18,8 @@
  * @return {array}     The object's values.
  */
 function getObjectValues(obj) {
-  var values = [];
-  for (var key in obj) {
+  const values = [];
+  for (const key in obj) {
     values.push(obj[key]);
   }
   return values;

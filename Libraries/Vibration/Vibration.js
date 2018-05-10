@@ -9,8 +9,8 @@
  */
 'use strict';
 
-var RCTVibration = require('NativeModules').Vibration;
-var Platform = require('Platform');
+const RCTVibration = require('NativeModules').Vibration;
+const Platform = require('Platform');
 
 /**
  * Vibration API
@@ -18,8 +18,8 @@ var Platform = require('Platform');
  * See https://facebook.github.io/react-native/docs/vibration.html
  */
 
-var _vibrating: boolean = false;
-var _id: number = 0; // _id is necessary to prevent race condition.
+let _vibrating: boolean = false;
+let _id: number = 0; // _id is necessary to prevent race condition.
 
 function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   if (_vibrating) {
@@ -53,7 +53,7 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
   setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex + 1), pattern[nextIndex]);
 }
 
-var Vibration = {
+const Vibration = {
   /**
    * Trigger a vibration with specified `pattern`.
    *

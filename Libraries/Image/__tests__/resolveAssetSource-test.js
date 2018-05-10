@@ -8,13 +8,13 @@
  */
 'use strict';
 
-var AssetRegistry = require('AssetRegistry');
-var Platform = require('Platform');
-var NativeModules = require('NativeModules');
-var resolveAssetSource = require('../resolveAssetSource');
+const AssetRegistry = require('AssetRegistry');
+const Platform = require('Platform');
+const NativeModules = require('NativeModules');
+const resolveAssetSource = require('../resolveAssetSource');
 
 function expectResolvesAsset(input, expectedSource) {
-  var assetId = AssetRegistry.registerAsset(input);
+  const assetId = AssetRegistry.registerAsset(input);
   expect(resolveAssetSource(assetId)).toEqual(expectedSource);
 }
 
@@ -24,10 +24,10 @@ describe('resolveAssetSource', () => {
   });
 
   it('returns same source for simple static and network images', () => {
-    var source1 = {uri: 'https://www.facebook.com/logo'};
+    const source1 = {uri: 'https://www.facebook.com/logo'};
     expect(resolveAssetSource(source1)).toBe(source1);
 
-    var source2 = {uri: 'logo'};
+    const source2 = {uri: 'logo'};
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 

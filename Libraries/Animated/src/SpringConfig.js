@@ -77,11 +77,11 @@ function fromBouncinessAndSpeed(
     }
   }
 
-  var b = normalize(bounciness / 1.7, 0, 20);
+  let b = normalize(bounciness / 1.7, 0, 20);
   b = projectNormal(b, 0, 0.8);
-  var s = normalize(speed / 1.7, 0, 20);
-  var bouncyTension = projectNormal(s, 0.5, 200);
-  var bouncyFriction = quadraticOutInterpolation(
+  const s = normalize(speed / 1.7, 0, 20);
+  const bouncyTension = projectNormal(s, 0.5, 200);
+  const bouncyFriction = quadraticOutInterpolation(
     b,
     b3Nobounce(bouncyTension),
     0.01

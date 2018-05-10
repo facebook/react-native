@@ -8,11 +8,11 @@
  */
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const TextStylePropTypes = require('TextStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 // Hardcoded because this is a legit case but we don't want to load it from
 // a private API. We might likely want to unify style sheet creation with how it
@@ -26,12 +26,12 @@ class StyleSheetValidation {
       return;
     }
     if (allStylePropTypes[prop] === undefined) {
-      var message1 = '"' + prop + '" is not a valid style property.';
-      var message2 = '\nValid style props: ' +
+      const message1 = '"' + prop + '" is not a valid style property.';
+      const message2 = '\nValid style props: ' +
         JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
       styleError(message1, style, caller, message2);
     }
-    var error = allStylePropTypes[prop](
+    const error = allStylePropTypes[prop](
       style,
       prop,
       caller,
@@ -48,19 +48,19 @@ class StyleSheetValidation {
     if (!__DEV__) {
       return;
     }
-    for (var prop in styles[name]) {
+    for (const prop in styles[name]) {
       StyleSheetValidation.validateStyleProp(prop, styles[name], 'StyleSheet ' + name);
     }
   }
 
   static addValidStylePropTypes(stylePropTypes) {
-    for (var key in stylePropTypes) {
+    for (const key in stylePropTypes) {
       allStylePropTypes[key] = stylePropTypes[key];
     }
   }
 }
 
-var styleError = function(message1, style, caller?, message2?) {
+const styleError = function(message1, style, caller?, message2?) {
   invariant(
     false,
     message1 + '\n' + (caller || '<<unknown>>') + ': ' +
@@ -68,7 +68,7 @@ var styleError = function(message1, style, caller?, message2?) {
   );
 };
 
-var allStylePropTypes = {};
+const allStylePropTypes = {};
 
 StyleSheetValidation.addValidStylePropTypes(ImageStylePropTypes);
 StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);

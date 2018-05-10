@@ -7,7 +7,7 @@
 */
 'use strict';
 
-var NativeModules = require('NativeModules');
+const NativeModules = require('NativeModules');
 
 function emptyCallback() {}
 

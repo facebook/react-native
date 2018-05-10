@@ -19,7 +19,7 @@ function reportError(error) {
   throw error;
 }
 
-var ErrorUtils = {
+const ErrorUtils = {
   apply: jest.fn(execute),
   applyWithGuard: jest.fn(execute),
   guard: jest.fn(callback => callback),

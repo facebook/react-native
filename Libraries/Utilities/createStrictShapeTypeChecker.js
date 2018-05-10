@@ -8,8 +8,8 @@
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-var merge = require('merge');
+const invariant = require('fbjs/lib/invariant');
+const merge = require('merge');
 
 function createStrictShapeTypeChecker(
   shapeTypes: {[key: string]: ReactPropsCheckType}
@@ -25,9 +25,9 @@ function createStrictShapeTypeChecker(
       }
       return;
     }
-    var propValue = props[propName];
-    var propType = typeof propValue;
-    var locationName = location || '(unknown)';
+    const propValue = props[propName];
+    const propType = typeof propValue;
+    const locationName = location || '(unknown)';
     if (propType !== 'object') {
       invariant(
         false,
@@ -37,9 +37,9 @@ function createStrictShapeTypeChecker(
     }
     // We need to check all keys in case some are required but missing from
     // props.
-    var allKeys = merge(props[propName], shapeTypes);
-    for (var key in allKeys) {
-      var checker = shapeTypes[key];
+    const allKeys = merge(props[propName], shapeTypes);
+    for (const key in allKeys) {
+      const checker = shapeTypes[key];
       if (!checker) {
         invariant(
           false,
@@ -48,7 +48,7 @@ function createStrictShapeTypeChecker(
             '\nValid keys: ' + JSON.stringify(Object.keys(shapeTypes), null, '  ')
         );
       }
-      var error = checker(propValue, key, componentName, location, ...rest);
+      const error = checker(propValue, key, componentName, location, ...rest);
       if (error) {
         invariant(
           false,

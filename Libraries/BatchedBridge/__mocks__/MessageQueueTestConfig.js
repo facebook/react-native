@@ -7,12 +7,12 @@
  * These don't actually exist anywhere in the code.
  */
 'use strict';
-var remoteModulesConfig = [
+const remoteModulesConfig = [
   ['RemoteModule1',null,['remoteMethod','promiseMethod'],[]],
   ['RemoteModule2',null,['remoteMethod','promiseMethod'],[]],
 ];
 
-var MessageQueueTestConfig = {
+const MessageQueueTestConfig = {
   remoteModuleConfig: remoteModulesConfig,
 };
 

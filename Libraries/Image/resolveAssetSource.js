@@ -85,7 +85,7 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return source;
   }
 
-  var asset = AssetRegistry.getAssetByID(source);
+  const asset = AssetRegistry.getAssetByID(source);
   if (!asset) {
     return null;
   }

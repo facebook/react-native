@@ -8,20 +8,20 @@
  */
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
-var BorderBox = require('BorderBox');
-var resolveBoxStyle = require('resolveBoxStyle');
+const React = require('React');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
+const BorderBox = require('BorderBox');
+const resolveBoxStyle = require('resolveBoxStyle');
 
-var flattenStyle = require('flattenStyle');
+const flattenStyle = require('flattenStyle');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render() {
-    var style = flattenStyle(this.props.style) || {};
-    var margin = resolveBoxStyle('margin', style);
-    var padding = resolveBoxStyle('padding', style);
-    var frameStyle = this.props.frame;
+    const style = flattenStyle(this.props.style) || {};
+    const margin = resolveBoxStyle('margin', style);
+    const padding = resolveBoxStyle('padding', style);
+    let frameStyle = this.props.frame;
     if (margin) {
       frameStyle = {
         top: frameStyle.top - margin.top,
@@ -30,7 +30,7 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
         width: frameStyle.width + margin.left + margin.right,
       };
     }
-    var contentStyle = {
+    let contentStyle = {
       width: this.props.frame.width,
       height: this.props.frame.height,
     };
@@ -52,7 +52,7 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   frame: {
     position: 'absolute',
   },

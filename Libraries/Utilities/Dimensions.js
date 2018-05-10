@@ -8,15 +8,15 @@
  */
 'use strict';
 
-var EventEmitter = require('EventEmitter');
-var Platform = require('Platform');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const EventEmitter = require('EventEmitter');
+const Platform = require('Platform');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
-var eventEmitter = new EventEmitter();
-var dimensionsInitialized = false;
-var dimensions = {};
+const eventEmitter = new EventEmitter();
+let dimensionsInitialized = false;
+const dimensions = {};
 class Dimensions {
   /**
    * This should only be called from native code by sending the

@@ -8,11 +8,11 @@
  */
 'use strict';
 
-var PropTypes = require('prop-types');
+const PropTypes = require('prop-types');
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 
-var PointPropType = createStrictShapeTypeChecker({
+const PointPropType = createStrictShapeTypeChecker({
   x: PropTypes.number,
   y: PropTypes.number,
 });

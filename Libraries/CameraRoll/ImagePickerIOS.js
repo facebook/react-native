@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var RCTImagePicker = require('NativeModules').ImagePickerIOS;
+const RCTImagePicker = require('NativeModules').ImagePickerIOS;
 
-var ImagePickerIOS = {
+const ImagePickerIOS = {
   canRecordVideos: function(callback: Function) {
     return RCTImagePicker.canRecordVideos(callback);
   },

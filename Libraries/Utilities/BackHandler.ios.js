@@ -54,14 +54,14 @@ let BackHandler;
 
 if (Platform.isTVOS) {
   const _tvEventHandler = new TVEventHandler();
-  var _backPressSubscriptions = new Set();
+  const _backPressSubscriptions = new Set();
 
   _tvEventHandler.enable(this, function(cmp, evt) {
     if (evt && evt.eventType === 'menu') {
-      var invokeDefault = true;
-      var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+      let invokeDefault = true;
+      const subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
 
-      for (var i = 0; i < subscriptions.length; ++i) {
+      for (let i = 0; i < subscriptions.length; ++i) {
         if (subscriptions[i]()) {
           invokeDefault = false;
           break;

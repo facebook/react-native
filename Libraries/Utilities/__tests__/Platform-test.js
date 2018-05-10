@@ -8,8 +8,8 @@
  */
 'use strict';
 
-var PlatformIOS = require('../Platform.ios');
-var PlatformAndroid = require('../Platform.android');
+const PlatformIOS = require('../Platform.ios');
+const PlatformAndroid = require('../Platform.android');
 
 describe('Platform', () => {
 

@@ -77,7 +77,7 @@ const DEBUG = false;
  * allowing events such as touches to start interactions and block queued tasks
  * from executing, making apps more responsive.
  */
-var InteractionManager = {
+const InteractionManager = {
   Events: keyMirror({
     interactionStart: true,
     interactionComplete: true,
@@ -118,7 +118,7 @@ var InteractionManager = {
   createInteractionHandle(): Handle {
     DEBUG && infoLog('create interaction handle');
     _scheduleUpdate();
-    var handle = ++_inc;
+    const handle = ++_inc;
     _addInteractionSet.add(handle);
     return handle;
   },
@@ -181,14 +181,14 @@ function _scheduleUpdate() {
 function _processUpdate() {
   _nextUpdateHandle = 0;
 
-  var interactionCount = _interactionSet.size;
+  const interactionCount = _interactionSet.size;
   _addInteractionSet.forEach(handle =>
     _interactionSet.add(handle)
   );
   _deleteInteractionSet.forEach(handle =>
     _interactionSet.delete(handle)
   );
-  var nextInteractionCount = _interactionSet.size;
+  const nextInteractionCount = _interactionSet.size;
 
   if (interactionCount !== 0 && nextInteractionCount === 0) {
     // transition from 1+ --> 0 interactions

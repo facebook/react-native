@@ -10,7 +10,7 @@
 
 describe('truncate', () => {
 
-  var truncate = require('truncate');
+  const truncate = require('truncate');
 
   it('should truncate', () => {
     expect(truncate('Hello, world.', 5))

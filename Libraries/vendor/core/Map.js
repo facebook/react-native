@@ -12,10 +12,10 @@
 
 'use strict';
 
-var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-var guid = require('guid');
-var isNode = require('fbjs/lib/isNode');
-var toIterator = require('toIterator');
+const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
+const guid = require('guid');
+const isNode = require('fbjs/lib/isNode');
+const toIterator = require('toIterator');
 
 module.exports = (function(global, undefined) {
   // Since our implementation is spec-compliant for the most part we can safely
@@ -81,23 +81,23 @@ module.exports = (function(global, undefined) {
    */
 
   // Kinds of map iterations 23.1.5.3
-  var KIND_KEY = 'key';
-  var KIND_VALUE = 'value';
-  var KIND_KEY_VALUE = 'key+value';
+  const KIND_KEY = 'key';
+  const KIND_VALUE = 'value';
+  const KIND_KEY_VALUE = 'key+value';
 
   // In older browsers we can't create a null-prototype object so we have to
   // defend against key collisions with built-in methods.
-  var KEY_PREFIX = '$map_';
+  const KEY_PREFIX = '$map_';
 
   // This property will be used as the internal size variable to disallow
   // writing and to issue warnings for writings in development.
-  var SECRET_SIZE_PROP;
+  let SECRET_SIZE_PROP;
   if (__DEV__) {
     SECRET_SIZE_PROP = '$size' + guid();
   }
 
   // In oldIE we use the DOM Node `uniqueID` property to get create the hash.
-  var OLD_IE_HASH_PREFIX = 'IE_HASH_';
+  const OLD_IE_HASH_PREFIX = 'IE_HASH_';
 
   class Map {
 
@@ -118,8 +118,8 @@ module.exports = (function(global, undefined) {
       initMap(this);
 
       if (iterable != null) {
-        var it = toIterator(iterable);
-        var next;
+        const it = toIterator(iterable);
+        let next;
         while (!(next = it.next()).done) {
           if (!isObject(next.value)) {
             throw new TypeError('Expected iterable items to be pair objects.');
@@ -145,7 +145,7 @@ module.exports = (function(global, undefined) {
      * @return {boolean}
      */
     has(key) {
-      var index = getIndex(this, key);
+      const index = getIndex(this, key);
       return !!(index != null && this._mapData[index]);
     }
 
@@ -158,7 +158,7 @@ module.exports = (function(global, undefined) {
      * @return {map}
      */
     set(key, value) {
-      var index = getIndex(this, key);
+      let index = getIndex(this, key);
 
       if (index != null && this._mapData[index]) {
         this._mapData[index][1] = value;
@@ -186,7 +186,7 @@ module.exports = (function(global, undefined) {
      * @return {*}
      */
     get(key) {
-      var index = getIndex(this, key);
+      const index = getIndex(this, key);
       if (index == null) {
         return undefined;
       } else {
@@ -203,7 +203,7 @@ module.exports = (function(global, undefined) {
      * @return {boolean} Whether the key was found and deleted.
      */
     delete(key) {
-      var index = getIndex(this, key);
+      const index = getIndex(this, key);
       if (index != null && this._mapData[index]) {
         setIndex(this, key, undefined);
         this._mapData[index] = undefined;
@@ -263,14 +263,14 @@ module.exports = (function(global, undefined) {
         throw new TypeError('Callback must be callable.');
       }
 
-      var boundCallback = callback.bind(thisArg || undefined);
-      var mapData = this._mapData;
+      const boundCallback = callback.bind(thisArg || undefined);
+      const mapData = this._mapData;
 
       // Note that `mapData.length` should be computed on each iteration to
       // support iterating over new items in the map that were added after the
       // start of the iteration.
-      for (var i = 0; i < mapData.length; i++) {
-        var entry = mapData[i];
+      for (let i = 0; i < mapData.length; i++) {
+        const entry = mapData[i];
         if (entry != null) {
           boundCallback(entry[1], entry[0], this);
         }
@@ -316,18 +316,18 @@ module.exports = (function(global, undefined) {
         throw new TypeError('Expected to be called on a MapIterator.');
       }
 
-      var map = this._map;
-      var index = this._nextIndex;
-      var kind = this._kind;
+      const map = this._map;
+      let index = this._nextIndex;
+      const kind = this._kind;
 
       if (map == null) {
         return createIterResultObject(undefined, true);
       }
 
-      var entries = map._mapData;
+      const entries = map._mapData;
 
       while (index < entries.length) {
-        var record = entries[index];
+        const record = entries[index];
 
         index += 1;
         this._nextIndex = index;
@@ -369,10 +369,10 @@ module.exports = (function(global, undefined) {
    */
   function getIndex(map, key) {
     if (isObject(key)) {
-      var hash = getHash(key);
+      const hash = getHash(key);
       return map._objectIndex[hash];
     } else {
-      var prefixedKey = KEY_PREFIX + key;
+      const prefixedKey = KEY_PREFIX + key;
       if (typeof key === 'string') {
         return map._stringIndex[prefixedKey];
       } else {
@@ -388,17 +388,17 @@ module.exports = (function(global, undefined) {
    * @param {*} key
    */
   function setIndex(map, key, index) {
-    var shouldDelete = index == null;
+    const shouldDelete = index == null;
 
     if (isObject(key)) {
-      var hash = getHash(key);
+      const hash = getHash(key);
       if (shouldDelete) {
         delete map._objectIndex[hash];
       } else {
         map._objectIndex[hash] = index;
       }
     } else {
-      var prefixedKey = KEY_PREFIX + key;
+      const prefixedKey = KEY_PREFIX + key;
       if (typeof key === 'string') {
         if (shouldDelete) {
           delete map._stringIndex[prefixedKey];
@@ -505,7 +505,7 @@ module.exports = (function(global, undefined) {
   }
 
   // Are we in a legit ES5 environment. Spoiler alert: that doesn't include IE8.
-  var isES5 = (function() {
+  const isES5 = (function() {
     try {
       Object.defineProperty({}, 'x', {});
       return true;
@@ -537,7 +537,7 @@ module.exports = (function(global, undefined) {
    * @return {?string}
    */
   function getIENodeHash(node) {
-    var uniqueID;
+    let uniqueID;
     switch (node.nodeType) {
       case 1: // Element
         uniqueID = node.uniqueID;
@@ -556,10 +556,10 @@ module.exports = (function(global, undefined) {
     }
   }
 
-  var getHash = (function() {
-    var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-    var hashProperty = guid();
-    var hashCounter = 0;
+  const getHash = (function() {
+    const propIsEnumerable = Object.prototype.propertyIsEnumerable;
+    const hashProperty = guid();
+    let hashCounter = 0;
 
     /**
      * Get the "hash" associated with an object.

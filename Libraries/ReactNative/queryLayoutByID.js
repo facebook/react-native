@@ -9,7 +9,7 @@
  */
 'use strict';
 
-var UIManager = require('UIManager');
+const UIManager = require('UIManager');
 
 type OnSuccessCallback = (
   left: number,
@@ -42,7 +42,7 @@ type OnErrorCallback = (error: any) => void;
  * @param {function} onError `func(error)`
  * @param {function} onSuccess `func(left, top, width, height, pageX, pageY)`
  */
-var queryLayoutByID = function(
+const queryLayoutByID = function(
   tag: ?number,
   onError: OnErrorCallback,
   onSuccess: OnSuccessCallback,

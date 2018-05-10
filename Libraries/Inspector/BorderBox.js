@@ -8,16 +8,16 @@
  */
 'use strict';
 
-var React = require('React');
-var View = require('View');
+const React = require('React');
+const View = require('View');
 
 class BorderBox extends React.Component<$FlowFixMeProps> {
   render() {
-    var box = this.props.box;
+    const box = this.props.box;
     if (!box) {
       return this.props.children;
     }
-    var style = {
+    const style = {
       borderTopWidth: box.top,
       borderBottomWidth: box.bottom,
       borderLeftWidth: box.left,

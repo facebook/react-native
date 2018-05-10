@@ -14,7 +14,7 @@
  * that is safe to be used.
  */
 function _shouldActuallyPolyfillES6Collection(collectionName: string): boolean {
-  var Collection = global[collectionName];
+  const Collection = global[collectionName];
   if (Collection == null) {
     return true;
   }
@@ -27,7 +27,7 @@ function _shouldActuallyPolyfillES6Collection(collectionName: string): boolean {
     return true;
   }
 
-  var proto = Collection.prototype;
+  const proto = Collection.prototype;
 
   // These checks are adapted from es6-shim: https://fburl.com/34437854
   // NOTE: `isCallableWithoutNew` and `!supportsSubclassing` are not checked

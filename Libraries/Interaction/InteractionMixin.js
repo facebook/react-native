@@ -8,14 +8,14 @@
  */
 'use strict';
 
-var InteractionManager = require('InteractionManager');
+const InteractionManager = require('InteractionManager');
 
 /**
  * This mixin provides safe versions of InteractionManager start/end methods
  * that ensures `clearInteractionHandle` is always called
  * once per start, even if the component is unmounted.
  */
-var InteractionMixin = {
+const InteractionMixin = {
   componentWillUnmount: function() {
     while (this._interactionMixinHandles.length) {
       InteractionManager.clearInteractionHandle(
@@ -27,7 +27,7 @@ var InteractionMixin = {
   _interactionMixinHandles: ([]: Array<number>),
 
   createInteractionHandle: function() {
-    var handle = InteractionManager.createInteractionHandle();
+    const handle = InteractionManager.createInteractionHandle();
     this._interactionMixinHandles.push(handle);
     return handle;
   },

@@ -83,8 +83,8 @@ describe('flattenStyle', () => {
 
   it('should not allocate an object when there is a single class', () => {
     const fixture = getFixture();
-    var singleStyle = flattenStyle(fixture.elementA);
-    var singleStyleAgain = flattenStyle(fixture.elementA);
+    const singleStyle = flattenStyle(fixture.elementA);
+    const singleStyleAgain = flattenStyle(fixture.elementA);
 
     expect(singleStyle).toBe(singleStyleAgain);
     expect(singleStyle).toEqual({
@@ -95,8 +95,8 @@ describe('flattenStyle', () => {
 
   it('should merge single class and style properly', () => {
     const fixture = getFixture();
-    var style = {styleA: 'overrideA', styleC: 'overrideC'};
-    var arrayStyle = flattenStyle([fixture.elementA, style]);
+    const style = {styleA: 'overrideA', styleC: 'overrideC'};
+    const arrayStyle = flattenStyle([fixture.elementA, style]);
 
     expect(arrayStyle).toEqual({
       styleA: 'overrideA',
@@ -107,8 +107,8 @@ describe('flattenStyle', () => {
 
   it('should merge multiple classes', () => {
     const fixture = getFixture();
-    var AthenB = flattenStyle([fixture.elementA, fixture.elementB]);
-    var BthenA = flattenStyle([fixture.elementB, fixture.elementA]);
+    const AthenB = flattenStyle([fixture.elementA, fixture.elementB]);
+    const BthenA = flattenStyle([fixture.elementB, fixture.elementA]);
 
     expect(AthenB).toEqual({
       styleA: 'moduleA/elementA/styleA',
@@ -122,9 +122,9 @@ describe('flattenStyle', () => {
 
   it('should merge multiple classes with style', () => {
     const fixture = getFixture();
-    var style = {styleA: 'overrideA'};
-    var AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
-    var BthenA = flattenStyle([fixture.elementB, fixture.elementA, style]);
+    const style = {styleA: 'overrideA'};
+    const AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
+    const BthenA = flattenStyle([fixture.elementB, fixture.elementA, style]);
 
     expect(AthenB).toEqual({
       styleA: 'overrideA',
@@ -138,8 +138,8 @@ describe('flattenStyle', () => {
 
   it('should flatten recursively', () => {
     const fixture = getFixture();
-    var style = [{styleA: 'newA', styleB: 'newB'}, {styleA: 'newA2'}];
-    var AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
+    const style = [{styleA: 'newA', styleB: 'newB'}, {styleA: 'newA2'}];
+    const AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
 
     expect(AthenB).toEqual({
       styleA: 'newA2',
@@ -148,7 +148,7 @@ describe('flattenStyle', () => {
   });
 
   it('should ignore invalid class names', () => {
-    var invalid = flattenStyle(1234, null);
+    const invalid = flattenStyle(1234, null);
 
     expect(invalid).toEqual(undefined);
     // Invalid class name 1234 skipping ...

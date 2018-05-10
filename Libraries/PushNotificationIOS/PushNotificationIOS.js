@@ -182,7 +182,7 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
-    var listener;
+    let listener;
     if (type === 'notification') {
       listener =  PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
@@ -226,7 +226,7 @@ class PushNotificationIOS {
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
-    var listener = _notifHandlers.get(type);
+    const listener = _notifHandlers.get(type);
     if (!listener) {
       return;
     }
@@ -251,7 +251,7 @@ class PushNotificationIOS {
     badge: boolean,
     sound: boolean
   }> {
-    var requestedPermissions = {};
+    let requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
         alert: !!permissions.alert,
@@ -321,7 +321,7 @@ class PushNotificationIOS {
       // Extract data from Apple's `aps` dict as defined:
       // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
       Object.keys(nativeNotif).forEach((notifKey) => {
-        var notifVal = nativeNotif[notifKey];
+        const notifVal = nativeNotif[notifKey];
         if (notifKey === 'aps') {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;

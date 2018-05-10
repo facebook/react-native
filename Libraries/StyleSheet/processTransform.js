@@ -8,11 +8,11 @@
  */
 'use strict';
 
-var MatrixMath = require('MatrixMath');
-var Platform = require('Platform');
+const MatrixMath = require('MatrixMath');
+const Platform = require('Platform');
 
-var invariant = require('fbjs/lib/invariant');
-var stringifySafe = require('stringifySafe');
+const invariant = require('fbjs/lib/invariant');
+const stringifySafe = require('stringifySafe');
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that
@@ -34,11 +34,11 @@ function processTransform(transform: Array<Object>): Array<Object> | Array<numbe
     return transform;
   }
 
-  var result = MatrixMath.createIdentityMatrix();
+  const result = MatrixMath.createIdentityMatrix();
 
   transform.forEach(transformation => {
-    var key = Object.keys(transformation)[0];
-    var value = transformation[key];
+    const key = Object.keys(transformation)[0];
+    const value = transformation[key];
 
     switch (key) {
       case 'matrix':
@@ -97,8 +97,8 @@ function _multiplyTransform(
   matrixMathFunction: Function,
   args: Array<number>
 ): void {
-  var matrixToApply = MatrixMath.createIdentityMatrix();
-  var argsWithIdentity = [matrixToApply].concat(args);
+  const matrixToApply = MatrixMath.createIdentityMatrix();
+  const argsWithIdentity = [matrixToApply].concat(args);
   matrixMathFunction.apply(this, argsWithIdentity);
   MatrixMath.multiplyInto(result, result, matrixToApply);
 }
@@ -108,20 +108,20 @@ function _multiplyTransform(
  * Note that validation on the string is done in `_validateTransform()`.
  */
 function _convertToRadians(value: string): number {
-  var floatValue = parseFloat(value);
+  const floatValue = parseFloat(value);
   return value.indexOf('rad') > -1 ? floatValue : floatValue * Math.PI / 180;
 }
 
 function _validateTransforms(transform: Array<Object>): void {
   transform.forEach(transformation => {
-    var keys = Object.keys(transformation);
+    const keys = Object.keys(transformation);
     invariant(
       keys.length === 1,
       'You must specify exactly one property per transform object. Passed properties: %s',
       stringifySafe(transformation),
     );
-    var key = keys[0];
-    var value = transformation[key];
+    const key = keys[0];
+    const value = transformation[key];
     _validateTransform(key, value, transformation);
   });
 }
@@ -134,7 +134,7 @@ function _validateTransform(key, value, transformation) {
     'replace <View /> by <Animated.View />.'
   );
 
-  var multivalueTransforms = [
+  const multivalueTransforms = [
     'matrix',
     'translate',
   ];

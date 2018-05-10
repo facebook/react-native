@@ -3,13 +3,13 @@
  */
 'use strict';
 
-var NativeSample = require('NativeModules').Sample;
+const NativeSample = require('NativeModules').Sample;
 
 /**
  * High-level docs for the Sample iOS API can be written here.
  */
 
-var Sample = {
+const Sample = {
   test: function() {
     NativeSample.test();
   }

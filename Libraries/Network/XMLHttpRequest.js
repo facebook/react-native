@@ -421,14 +421,14 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       // according to the spec, return null if no response has been received
       return null;
     }
-    var headers = this.responseHeaders || {};
+    const headers = this.responseHeaders || {};
     return Object.keys(headers).map((headerName) => {
       return headerName + ': ' + headers[headerName];
     }).join('\r\n');
   }
 
   getResponseHeader(header: string): ?string {
-    var value = this._lowerCaseResponseHeaders[header.toLowerCase()];
+    const value = this._lowerCaseResponseHeaders[header.toLowerCase()];
     return value !== undefined ? value : null;
   }
 
@@ -545,7 +545,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
 
   setResponseHeaders(responseHeaders: ?Object): void {
     this.responseHeaders = responseHeaders || null;
-    var headers = responseHeaders || {};
+    const headers = responseHeaders || {};
     this._lowerCaseResponseHeaders =
       Object.keys(headers).reduce((lcaseHeaders, headerName) => {
         lcaseHeaders[headerName.toLowerCase()] = headers[headerName];

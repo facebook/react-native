@@ -25,11 +25,11 @@ function flattenStyle(
     return style;
   }
 
-  var result = {};
-  for (var i = 0, styleLength = style.length; i < styleLength; ++i) {
-    var computedStyle = flattenStyle(style[i]);
+  const result = {};
+  for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
+    const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
-      for (var key in computedStyle) {
+      for (const key in computedStyle) {
         result[key] = computedStyle[key];
       }
     }

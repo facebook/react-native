@@ -8,17 +8,17 @@
  */
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const View = require('View');
 
 class StyleInspector extends React.Component<$FlowFixMeProps> {
   render() {
     if (!this.props.style) {
       return <Text style={styles.noStyle}>No style</Text>;
     }
-    var names = Object.keys(this.props.style);
+    const names = Object.keys(this.props.style);
     return (
       <View style={styles.container}>
         <View>
@@ -27,7 +27,7 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
 
         <View>
           {names.map(name => {
-            var value = typeof this.props.style[name] === 'object' ? JSON.stringify(this.props.style[name]) : this.props.style[name];
+            const value = typeof this.props.style[name] === 'object' ? JSON.stringify(this.props.style[name]) : this.props.style[name];
             return <Text key={name} style={styles.value}>{value}</Text>;
           } ) }
         </View>
@@ -36,7 +36,7 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
   },

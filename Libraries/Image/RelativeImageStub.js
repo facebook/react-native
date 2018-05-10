@@ -11,7 +11,7 @@
 // This is a stub for flow to make it understand require('./icon.png')
 // See metro/src/Bundler/index.js
 
-var AssetRegistry = require('AssetRegistry');
+const AssetRegistry = require('AssetRegistry');
 
 module.exports = AssetRegistry.registerAsset({
   __packager_asset: true,

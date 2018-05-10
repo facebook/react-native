@@ -8,16 +8,16 @@
  */
 'use strict';
 
-var React = require('React');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var { TestModule } = require('NativeModules');
-var UIManager = require('UIManager');
-var View = require('View');
+const StyleSheet = require('StyleSheet');
+const { TestModule } = require('NativeModules');
+const UIManager = require('UIManager');
+const View = require('View');
 
 const ViewPropTypes = require('ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
 class SnapshotViewIOS extends React.Component<{
   onSnapshotReady?: Function,
@@ -37,8 +37,8 @@ class SnapshotViewIOS extends React.Component<{
   };
 
   render() {
-    var testIdentifier = this.props.testIdentifier || 'test';
-    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
+    const testIdentifier = this.props.testIdentifier || 'test';
+    const onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
       <RCTSnapshot
         style={style.snapshot}
@@ -50,7 +50,7 @@ class SnapshotViewIOS extends React.Component<{
   }
 }
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   snapshot: {
     flex: 1,
   },
@@ -59,7 +59,7 @@ var style = StyleSheet.create({
 // Verify that RCTSnapshot is part of the UIManager since it is only loaded
 // if you have linked against RCTTest like in tests, otherwise we will have
 // a warning printed out
-var RCTSnapshot = UIManager.RCTSnapshot ?
+const RCTSnapshot = UIManager.RCTSnapshot ?
   requireNativeComponent('RCTSnapshot', SnapshotViewIOS) :
   View;
 

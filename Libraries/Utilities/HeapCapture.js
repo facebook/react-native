@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var HeapCapture = {
+const HeapCapture = {
   captureHeap: function (path: string) {
-    var error = null;
+    let error = null;
     try {
       global.nativeCaptureHeap(path);
       console.log('HeapCapture.captureHeap succeeded: ' + path);

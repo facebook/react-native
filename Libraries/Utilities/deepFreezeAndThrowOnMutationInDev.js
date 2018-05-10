@@ -35,7 +35,7 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
       return object;
     }
 
-    var keys = Object.keys(object);
+    const keys = Object.keys(object);
 
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];

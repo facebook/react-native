@@ -9,7 +9,7 @@
  */
 'use strict';
 
-var RCTAlertManager = require('NativeModules').AlertManager;
+const RCTAlertManager = require('NativeModules').AlertManager;
 
 /**
  * An Alert button type
@@ -118,7 +118,7 @@ class AlertIOS {
         'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
         'keyboardType) and the old syntax will be removed in a future version.');
 
-      var callback = type;
+      const callback = type;
       RCTAlertManager.alertWithArgs({
         title: title || '',
         type: 'plain-text',
@@ -129,10 +129,10 @@ class AlertIOS {
       return;
     }
 
-    var callbacks = [];
-    var buttons = [];
-    var cancelButtonKey;
-    var destructiveButtonKey;
+    let callbacks = [];
+    const buttons = [];
+    let cancelButtonKey;
+    let destructiveButtonKey;
     if (typeof callbackOrButtons === 'function') {
       callbacks = [callbackOrButtons];
     }
@@ -145,7 +145,7 @@ class AlertIOS {
           destructiveButtonKey = String(index);
         }
         if (btn.text || index < (callbackOrButtons || []).length - 1) {
-          var btnDef = {};
+          const btnDef = {};
           btnDef[index] = btn.text || '';
           buttons.push(btnDef);
         }
@@ -162,7 +162,7 @@ class AlertIOS {
       destructiveButtonKey,
       keyboardType,
     }, (id, value) => {
-      var cb = callbacks[id];
+      const cb = callbacks[id];
       cb && cb(value);
     });
   }

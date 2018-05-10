@@ -15,7 +15,7 @@ jest.setMock('NativeModules', {
   }
 });
 
-var WebSocket = require('WebSocket');
+const WebSocket = require('WebSocket');
 
 describe('WebSocket', function() {
 

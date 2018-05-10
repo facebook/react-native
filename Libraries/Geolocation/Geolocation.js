@@ -23,8 +23,8 @@ const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
 const Platform = require('Platform');
 const PermissionsAndroid = require('PermissionsAndroid');
 
-var subscriptions = [];
-var updatesEnabled = false;
+let subscriptions = [];
+let updatesEnabled = false;
 
 type GeoConfiguration = {
   skipPermissionRequests: bool;
@@ -44,7 +44,7 @@ type GeoOptions = {
  *
  * See https://facebook.github.io/react-native/docs/geolocation.html
  */
-var Geolocation = {
+const Geolocation = {
 
   /*
     * Sets configuration options that will be used in all location requests.
@@ -116,7 +116,7 @@ var Geolocation = {
       RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;
     }
-    var watchID = subscriptions.length;
+    const watchID = subscriptions.length;
     subscriptions.push([
       LocationEventEmitter.addListener(
         'geolocationDidChange',
@@ -131,7 +131,7 @@ var Geolocation = {
   },
 
   clearWatch: function(watchID: number) {
-    var sub = subscriptions[watchID];
+    const sub = subscriptions[watchID];
     if (!sub) {
       // Silently exit when the watchID is invalid or already cleared
       // This is consistent with timers
@@ -140,10 +140,10 @@ var Geolocation = {
 
     sub[0].remove();
     // array element refinements not yet enabled in Flow
-    var sub1 = sub[1]; sub1 && sub1.remove();
+    const sub1 = sub[1]; sub1 && sub1.remove();
     subscriptions[watchID] = undefined;
-    var noWatchers = true;
-    for (var ii = 0; ii < subscriptions.length; ii++) {
+    let noWatchers = true;
+    for (let ii = 0; ii < subscriptions.length; ii++) {
       if (subscriptions[ii]) {
         noWatchers = false; // still valid subscriptions
       }
@@ -157,13 +157,13 @@ var Geolocation = {
     if (updatesEnabled) {
       RCTLocationObserver.stopObserving();
       updatesEnabled = false;
-      for (var ii = 0; ii < subscriptions.length; ii++) {
-        var sub = subscriptions[ii];
+      for (let ii = 0; ii < subscriptions.length; ii++) {
+        const sub = subscriptions[ii];
         if (sub) {
           warning(false, 'Called stopObserving with existing subscriptions.');
           sub[0].remove();
           // array element refinements not yet enabled in Flow
-          var sub1 = sub[1]; sub1 && sub1.remove();
+          const sub1 = sub[1]; sub1 && sub1.remove();
         }
       }
       subscriptions = [];

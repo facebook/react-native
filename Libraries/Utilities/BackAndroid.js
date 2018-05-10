@@ -11,14 +11,14 @@
 
 'use strict';
 
-var BackHandler = require('BackHandler');
+const BackHandler = require('BackHandler');
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
 /**
  * Deprecated.  Use BackHandler instead.
  */
-var BackAndroid = {
+const BackAndroid = {
 
   exitApp: function() {
     warning(false, 'BackAndroid is deprecated.  Please use BackHandler instead.');

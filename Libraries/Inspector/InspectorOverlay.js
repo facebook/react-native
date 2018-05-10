@@ -8,13 +8,13 @@
  */
 'use strict';
 
-var Dimensions = require('Dimensions');
-var ElementBox = require('ElementBox');
-var PropTypes = require('prop-types');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('UIManager');
-var View = require('View');
+const Dimensions = require('Dimensions');
+const ElementBox = require('ElementBox');
+const PropTypes = require('prop-types');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
 
 type EventLike = {
   nativeEvent: Object,
@@ -38,7 +38,7 @@ class InspectorOverlay extends React.Component<{
   };
 
   findViewForTouchEvent = (e: EventLike) => {
-    var {locationX, locationY} = e.nativeEvent.touches[0];
+    const {locationX, locationY} = e.nativeEvent.touches[0];
     UIManager.findSubviewIn(
       this.props.inspectedViewTag,
       [locationX, locationY],
@@ -54,7 +54,7 @@ class InspectorOverlay extends React.Component<{
   };
 
   render() {
-    var content = null;
+    let content = null;
     if (this.props.inspected) {
       content = <ElementBox frame={this.props.inspected.frame} style={this.props.inspected.style} />;
     }
@@ -70,7 +70,7 @@ class InspectorOverlay extends React.Component<{
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   inspector: {
     backgroundColor: 'transparent',
     position: 'absolute',

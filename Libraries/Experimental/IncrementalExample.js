@@ -153,7 +153,7 @@ function burnCPU(milliseconds) {
   while (performanceNow() < (start + milliseconds)) {}
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   scrollView: {
     margin: 10,
     backgroundColor: 'white',

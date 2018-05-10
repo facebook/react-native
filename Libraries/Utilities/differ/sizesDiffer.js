@@ -7,9 +7,9 @@
  */
 'use strict';
 
-var dummySize = {width: undefined, height: undefined};
+const dummySize = {width: undefined, height: undefined};
 
-var sizesDiffer = function(one, two) {
+const sizesDiffer = function(one, two) {
   one = one || dummySize;
   two = two || dummySize;
   return one !== two && (

@@ -7,10 +7,10 @@
  */
 'use strict';
 
-var normalizeColor = require('normalizeColor');
+const normalizeColor = require('normalizeColor');
 
-var colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
-  var color = props[propName];
+const colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
+  const color = props[propName];
   if (color === undefined || color === null) {
     if (isRequired) {
       return new Error(
@@ -48,7 +48,7 @@ var colorPropType = function(isRequired, props, propName, componentName, locatio
   }
 };
 
-var ColorPropType = colorPropType.bind(null, false /* isRequired */);
+const ColorPropType = colorPropType.bind(null, false /* isRequired */);
 ColorPropType.isRequired = colorPropType.bind(null, true /* isRequired */);
 
 module.exports = ColorPropType;
