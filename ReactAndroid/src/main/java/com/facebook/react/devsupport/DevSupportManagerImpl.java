@@ -841,29 +841,6 @@ public class DevSupportManagerImpl implements
     });
   }
 
-  @Override
-  public void onPokeSamplingProfilerCommand(final Responder responder) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mCurrentContext == null) {
-          responder.error("JSCContext is missing, unable to profile");
-          return;
-        }
-        try {
-          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
-          synchronized (jsContext) {
-            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
-            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
-            handler.onRequest(null, responder);
-          }
-        } catch (Exception e) {
-          // Module not present
-        }
-      }
-    });
-  }
-
   private void handleCaptureHeap(final Responder responder) {
     if (mCurrentContext == null) {
       return;
