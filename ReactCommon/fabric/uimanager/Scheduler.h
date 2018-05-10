@@ -21,7 +21,7 @@ class FabricUIManager;
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler:
+class Scheduler final:
   public UIManagerDelegate,
   public ShadowTreeDelegate {
 
