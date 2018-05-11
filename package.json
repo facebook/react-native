@@ -8,7 +8,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "prettier": {
     "requirePragma": true,
