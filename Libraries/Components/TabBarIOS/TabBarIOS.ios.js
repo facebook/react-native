@@ -63,6 +63,10 @@ class TabBarIOS extends React.Component<ViewProps & {
      */
     translucent: PropTypes.bool,
     /**
+     * A Boolean value that indicates whether the tab bar is hidden
+     */
+    hidden: PropTypes.bool,
+    /**
      * Specifies tab bar item positioning. Available values are:
      * - fill - distributes items across the entire width of the tab bar
      * - center - centers item in the available tab bar space
@@ -84,7 +88,8 @@ class TabBarIOS extends React.Component<ViewProps & {
         barTintColor={this.props.barTintColor}
         barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
-        translucent={this.props.translucent !== false}>
+        translucent={this.props.translucent !== false}
+        hidden={this.props.hidden !== false}>
         {this.props.children}
       </RCTTabBar>
     );

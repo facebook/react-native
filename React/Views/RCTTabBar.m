@@ -146,6 +146,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.tintColor = tintColor;
 }
 
+- (BOOL)hidden
+{
+  return _tabController.tabBar.isHidden;
+}
+
+- (void)setHidden:(BOOL)hidden
+{
+  _tabController.tabBar.hidden = hidden;
+}
+
 - (BOOL)translucent
 {
   return _tabController.tabBar.isTranslucent;
