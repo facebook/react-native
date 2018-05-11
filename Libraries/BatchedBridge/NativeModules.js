@@ -151,7 +151,7 @@ function createErrorFromErrorData(errorData: {message: string}): ExtendedError {
 let NativeModules: {[moduleName: string]: Object} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
-} else {
+} else if (!global.nativeExtensions) {
   const bridgeConfig = global.__fbBatchedBridgeConfig;
   invariant(
     bridgeConfig,
