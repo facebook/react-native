@@ -80,7 +80,7 @@ class AlertAndroid {
     }
     // At most three buttons (neutral, negative, positive). Ignore rest.
     // The text 'OK' should be probably localized. iOS Alert does that in native.
-    const validButtons: Buttons = buttons
+    const validButtons: Buttons = buttons instanceof Array
       ? buttons.slice(0, 3)
       : [{text: 'OK'}];
     const buttonPositive = validButtons.pop();
