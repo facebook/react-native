@@ -249,7 +249,7 @@ class MessageQueue {
       global.nativeFlushQueueImmediate &&
       now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
-      var queue = this._queue;
+      const queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
       global.nativeFlushQueueImmediate(queue);
