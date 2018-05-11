@@ -4,34 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
 
 var nativeImageSource = require('nativeImageSource');
-var {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {Image, StyleSheet, Text, View} = ReactNative;
 
 class ImageCapInsetsExample extends React.Component<{}> {
   render() {
     return (
       <View>
         <View style={styles.background}>
-          <Text>
-            capInsets: none
-          </Text>
+          <Text>capInsets: none</Text>
           <Image
             source={nativeImageSource({
               ios: 'story-background',
               width: 60,
-              height: 60
+              height: 60,
             })}
             style={styles.storyBackground}
             resizeMode={Image.resizeMode.stretch}
@@ -39,14 +34,12 @@ class ImageCapInsetsExample extends React.Component<{}> {
           />
         </View>
         <View style={[styles.background, {paddingTop: 10}]}>
-          <Text>
-            capInsets: 15
-          </Text>
+          <Text>capInsets: 15</Text>
           <Image
             source={nativeImageSource({
               ios: 'story-background',
               width: 60,
-              height: 60
+              height: 60,
             })}
             style={styles.storyBackground}
             resizeMode={Image.resizeMode.stretch}
@@ -74,7 +67,7 @@ var styles = StyleSheet.create({
   },
   text: {
     fontSize: 13.5,
-  }
+  },
 });
 
 module.exports = ImageCapInsetsExample;

@@ -4,20 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  Slider,
-  Switch,
-} = ReactNative;
+var {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
 
 class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -27,8 +22,8 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
     prev3Text: '<No Event>',
   };
 
-  updateText = (text) => {
-    this.setState((state) => {
+  updateText = text => {
+    this.setState(state => {
       return {
         curText: text,
         prevText: state.curText,
@@ -48,25 +43,28 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
-          onChange={(event) => this.updateText(
-            'onChange text: ' + event.nativeEvent.text
-          )}
-          onContentSizeChange={(event) => this.updateText(
-            'onContentSizeChange size: ' + event.nativeEvent.contentSize
-          )}
-          onEndEditing={(event) => this.updateText(
-            'onEndEditing text: ' + event.nativeEvent.text
-          )}
-          onSubmitEditing={(event) => this.updateText(
-            'onSubmitEditing text: ' + event.nativeEvent.text
-          )}
-          onKeyPress={(event) => this.updateText(
-            'onKeyPress key: ' + event.nativeEvent.key
-          )}
+          onChange={event =>
+            this.updateText('onChange text: ' + event.nativeEvent.text)
+          }
+          onContentSizeChange={event =>
+            this.updateText(
+              'onContentSizeChange size: ' + event.nativeEvent.contentSize,
+            )
+          }
+          onEndEditing={event =>
+            this.updateText('onEndEditing text: ' + event.nativeEvent.text)
+          }
+          onSubmitEditing={event =>
+            this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
+          }
+          onKeyPress={event =>
+            this.updateText('onKeyPress key: ' + event.nativeEvent.key)
+          }
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
-          {this.state.curText}{'\n'}
+          {this.state.curText}
+          {'\n'}
           (prev: {this.state.prevText}){'\n'}
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
@@ -90,7 +88,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
         <TextInput
           multiline={false}
           maxLength={limit}
-          onChangeText={(text) => {
+          onChangeText={text => {
             text = text.replace(/ /g, '_');
             this.setState({text});
           }}
@@ -105,19 +103,23 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class TokenizedTextExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
   }
   render() {
-
     //define delimiter
     let delimiter = /\s+/;
 
     //split string
     let _text = this.state.text;
-    let token, index, parts = [];
+    let token,
+      index,
+      parts = [];
     while (_text) {
       delimiter.lastIndex = 0;
       token = delimiter.exec(_text);
@@ -136,9 +138,13 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map((text) => {
+    parts = parts.map(text => {
       if (/^#/.test(text)) {
-        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+        return (
+          <Text key={text} style={styles.hashtag}>
+            {text}
+          </Text>
+        );
       } else {
         return text;
       }
@@ -149,7 +155,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
         <TextInput
           multiline={true}
           style={styles.multiline}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}>
           <Text>{parts}</Text>
@@ -160,7 +166,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
 }
 
 class BlurOnSubmitExample extends React.Component<{}> {
-  focusNextField = (nextField) => {
+  focusNextField = nextField => {
     this.refs[nextField].focus();
   };
 
@@ -213,7 +219,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
   }
 }
 
-class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class ToggleDefaultPaddingExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
@@ -221,8 +230,9 @@ class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $Flow
   render() {
     return (
       <View>
-        <TextInput style={this.state.hasPadding ? { padding: 0 } : null}/>
-        <Text onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
+        <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
+        <Text
+          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
           Toggle padding
         </Text>
       </View>
@@ -232,20 +242,23 @@ class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $Flow
 
 type SelectionExampleState = {
   selection: {
-    start: number;
-    end: number;
-  };
-  value: string;
+    start: number,
+    end: number,
+  },
+  value: string,
 };
 
-class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExampleState> {
+class SelectionExample extends React.Component<
+  $FlowFixMeProps,
+  SelectionExampleState,
+> {
   _textInput: any;
 
   constructor(props) {
     super(props);
     this.state = {
       selection: {start: 0, end: 0},
-      value: props.value
+      value: props.value,
     };
   }
 
@@ -283,7 +296,7 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
       <View>
         <TextInput
           multiline={this.props.multiline}
-          onChangeText={(value) => this.setState({value})}
+          onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
@@ -291,24 +304,16 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
           value={this.state.value}
         />
         <View>
-          <Text>
-            selection = {JSON.stringify(this.state.selection)}
-          </Text>
+          <Text>selection = {JSON.stringify(this.state.selection)}</Text>
           <Text onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
           <Text onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
-          <Text onPress={this.placeAtRandom.bind(this)}>
-            Place at Random
-          </Text>
-          <Text onPress={this.select.bind(this, 0, length)}>
-            Select All
-          </Text>
-          <Text onPress={this.selectRandom.bind(this)}>
-            Select Random
-          </Text>
+          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
+          <Text onPress={this.select.bind(this, 0, length)}>Select All</Text>
+          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
         </View>
       </View>
     );
@@ -316,7 +321,6 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
 }
 
 class AutogrowingTextInputExample extends React.Component<{}> {
-
   constructor(props) {
     super(props);
 
@@ -347,19 +351,21 @@ class AutogrowingTextInputExample extends React.Component<{}> {
           minimumValue={0}
           maximumValue={100}
           step={10}
-          onValueChange={(value) => this.setState({width: value})}
+          onValueChange={value => this.setState({width: value})}
         />
         <Text>Multiline:</Text>
         <Switch
           value={this.state.multiline}
-          onValueChange={(value) => this.setState({multiline: value})}
+          onValueChange={value => this.setState({multiline: value})}
         />
         <Text>TextInput:</Text>
         <TextInput
           multiline={this.state.multiline}
           style={[style, {width: this.state.width + '%'}]}
-          onChangeText={(value) => this.setState({text: value})}
-          onContentSizeChange={(event) => this.setState({contentSize: event.nativeEvent.contentSize})}
+          onChangeText={value => this.setState({text: value})}
+          onContentSizeChange={event =>
+            this.setState({contentSize: event.nativeEvent.contentSize})
+          }
           {...props}
         />
         <Text>Plain text value representation:</Text>
@@ -405,24 +411,19 @@ exports.examples = [
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
-    }
+    },
   },
   {
     title: "Live Re-Write (<sp>  ->  '_')",
     render: function() {
       return <RewriteExample />;
-    }
+    },
   },
   {
     title: 'Auto-capitalize',
     render: function() {
-      var autoCapitalizeTypes = [
-        'none',
-        'sentences',
-        'words',
-        'characters',
-      ];
-      var examples = autoCapitalizeTypes.map((type) => {
+      var autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
+      var examples = autoCapitalizeTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -433,7 +434,7 @@ exports.examples = [
         );
       });
       return <View>{examples}</View>;
-    }
+    },
   },
   {
     title: 'Auto-correct',
@@ -452,18 +453,13 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Keyboard types',
     render: function() {
-      var keyboardTypes = [
-        'default',
-        'email-address',
-        'numeric',
-        'phone-pad',
-      ];
-      var examples = keyboardTypes.map((type) => {
+      var keyboardTypes = ['default', 'email-address', 'numeric', 'phone-pad'];
+      var examples = keyboardTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -474,15 +470,19 @@ exports.examples = [
         );
       });
       return <View>{examples}</View>;
-    }
+    },
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> {
+      return <BlurOnSubmitExample />;
+    },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element<any> { return <TextEventsExample />; },
+    render: function(): React.Element<any> {
+      return <TextEventsExample />;
+    },
   },
   {
     title: 'Colors and text inputs',
@@ -517,7 +517,10 @@ exports.examples = [
           />
           <TextInput
             defaultValue="Same BackgroundColor as View "
-            style={[styles.singleLine, {backgroundColor: 'rgba(100, 100, 100, 0.3)'}]}>
+            style={[
+              styles.singleLine,
+              {backgroundColor: 'rgba(100, 100, 100, 0.3)'},
+            ]}>
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
@@ -525,10 +528,11 @@ exports.examples = [
           <TextInput
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
-            style={styles.singleLine} />
+            style={styles.singleLine}
+          />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Text input, themes and heights',
@@ -539,7 +543,7 @@ exports.examples = [
           style={[styles.singleLineWithHeightTextInput]}
         />
       );
-    }
+    },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
@@ -551,11 +555,17 @@ exports.examples = [
             placeholder="Custom fonts like Sans-Serif are supported"
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: 'bold'},
+            ]}
             placeholder="Sans-Serif bold"
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontStyle: 'italic'},
+            ]}
             placeholder="Sans-Serif italic"
           />
           <TextInput
@@ -564,7 +574,7 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'letterSpacing',
@@ -589,7 +599,7 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Passwords',
@@ -609,19 +619,19 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Editable',
     render: function() {
       return (
         <TextInput
-           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
-           editable={false}
-           style={styles.singleLine}
-         />
+          defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
+          editable={false}
+          style={styles.singleLine}
+        />
       );
-    }
+    },
   },
   {
     title: 'Multiline',
@@ -633,24 +643,36 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            style={[styles.multiline, {textAlign: 'left', textAlignVertical: 'top'}]}
+            style={[
+              styles.multiline,
+              {textAlign: 'left', textAlignVertical: 'top'},
+            ]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            style={[styles.multiline, {textAlign: 'center', textAlignVertical: 'center'}]}
+            style={[
+              styles.multiline,
+              {textAlign: 'center', textAlignVertical: 'center'},
+            ]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            style={[styles.multiline, {color: 'blue'}, {textAlign: 'right', textAlignVertical: 'bottom'}]}>
-            <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
+            style={[
+              styles.multiline,
+              {color: 'blue'},
+              {textAlign: 'right', textAlignVertical: 'bottom'},
+            ]}>
+            <Text style={styles.multiline}>
+              multiline with children, aligned bottom-right
+            </Text>
           </TextInput>
         </View>
       );
-    }
+    },
   },
   {
     title: 'Fixed number of lines',
@@ -658,17 +680,19 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <TextInput numberOfLines={2}
+          <TextInput
+            numberOfLines={2}
             multiline={true}
             placeholder="Two line input"
           />
-          <TextInput numberOfLines={5}
+          <TextInput
+            numberOfLines={5}
             multiline={true}
             placeholder="Five line input"
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Auto-expanding',
@@ -679,8 +703,7 @@ exports.examples = [
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
             multiline={true}
-            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}
-          >
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
             generic generic generic
             <Text style={{fontSize: 6, color: 'red'}}>
               small small small small small small
@@ -693,13 +716,13 @@ exports.examples = [
           </AutogrowingTextInputExample>
         </View>
       );
-    }
+    },
   },
   {
     title: 'Attributed text',
     render: function() {
       return <TokenizedTextExample />;
-    }
+    },
   },
   {
     title: 'Return key',
@@ -713,11 +736,8 @@ exports.examples = [
         'previous',
         'next',
       ];
-      var returnKeyLabels = [
-        'Compile',
-        'React Native',
-      ];
-      var examples = returnKeyTypes.map((type) => {
+      var returnKeyLabels = ['Compile', 'React Native'];
+      var examples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -727,7 +747,7 @@ exports.examples = [
           />
         );
       });
-      var types = returnKeyLabels.map((type) => {
+      var types = returnKeyLabels.map(type => {
         return (
           <TextInput
             key={type}
@@ -737,8 +757,13 @@ exports.examples = [
           />
         );
       });
-      return <View>{examples}{types}</View>;
-    }
+      return (
+        <View>
+          {examples}
+          {types}
+        </View>
+      );
+    },
   },
   {
     title: 'Inline Images',
@@ -762,11 +787,13 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element<any> { return <ToggleDefaultPaddingExample />; },
+    render: function(): React.Element<any> {
+      return <ToggleDefaultPaddingExample />;
+    },
   },
   {
     title: 'Text selection & cursor placement',
@@ -784,6 +811,6 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
 ];

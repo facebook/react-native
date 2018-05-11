@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -53,34 +55,29 @@ class RowComponent extends React.PureComponent<{
     return (
       <TouchableHighlight {...this.props} onPress={this._onPress}>
         <View style={styles.row}>
-          <Text style={styles.rowTitleText}>
-            {item.module.title}
-          </Text>
-          <Text style={styles.rowDetailText}>
-            {item.module.description}
-          </Text>
+          <Text style={styles.rowTitleText}>{item.module.title}</Text>
+          <Text style={styles.rowDetailText}>{item.module.description}</Text>
         </View>
       </TouchableHighlight>
     );
   }
 }
 
-const renderSectionHeader = ({section}) =>
-  <Text style={styles.sectionHeader}>
-    {section.title}
-  </Text>;
+const renderSectionHeader = ({section}) => (
+  <Text style={styles.sectionHeader}>{section.title}</Text>
+);
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) =>
+    const filter = example =>
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this
        * comment and run Flow. */
       this.props.disableSearch ||
-        filterRegex.test(example.module.title) &&
-        (!Platform.isTVOS || example.supportsTVOS);
+      (filterRegex.test(example.module.title) &&
+        (!Platform.isTVOS || example.supportsTVOS));
 
     const sections = [
       {
@@ -138,10 +135,12 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     }
     return (
       <RowComponent
-        item={{module: {
-          title: 'RNTester',
-          description: 'React Native Examples',
-        }}}
+        item={{
+          module: {
+            title: 'RNTester',
+            description: 'React Native Examples',
+          },
+        }}
         onNavigate={this.props.onNavigate}
         onPress={() => {
           this.props.onNavigate(RNTesterActions.ExampleList());
@@ -185,10 +184,13 @@ const ItemSeparator = ({highlighted}) => (
   <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
 );
 
-RNTesterExampleList = RNTesterStatePersister.createContainer(RNTesterExampleList, {
-  cacheKeySuffix: () => 'mainList',
-  getInitialState: () => ({filter: ''}),
-});
+RNTesterExampleList = RNTesterStatePersister.createContainer(
+  RNTesterExampleList,
+  {
+    cacheKeySuffix: () => 'mainList',
+    getInitialState: () => ({filter: ''}),
+  },
+);
 
 const styles = StyleSheet.create({
   listContainer: {

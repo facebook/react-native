@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -22,10 +23,12 @@ const babelRegisterOnly = require('metro-babel-register');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = RegExp([
-  '/local-cli/',
-  '/metro(?:-[^\/]*)?/', // metro, metro-core, metro-source-map, metro-etc
-].join('|'));
+const nodeFiles = RegExp(
+  [
+    '/local-cli/',
+    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
+  ].join('|'),
+);
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
@@ -33,11 +36,12 @@ babelRegisterOnly([]);
 /* $FlowFixMe(site=react_native_oss) */
 const transformer = require('metro/src/transformer.js');
 module.exports = {
-  process(src/*: string*/, file/*: string*/) {
-    if (nodeFiles.test(file)) { // node specific transforms only
+  process(src /*: string */, file /*: string */) {
+    if (nodeFiles.test(file)) {
+      // node specific transforms only
       return babelTransformSync(
         src,
-        Object.assign({filename: file}, nodeOptions)
+        Object.assign({filename: file}, nodeOptions),
       ).code;
     }
 
@@ -96,15 +100,19 @@ module.exports = {
       ],
     });
 
-    return generate(ast, {
-      code: true,
-      comments: false,
-      compact: false,
-      filename: file,
-      retainLines: true,
-      sourceFileName: file,
-      sourceMaps: true,
-    }, src).code;
+    return generate(
+      ast,
+      {
+        code: true,
+        comments: false,
+        compact: false,
+        filename: file,
+        retainLines: true,
+        sourceFileName: file,
+        sourceMaps: true,
+      },
+      src,
+    ).code;
   },
 
   getCacheKey: createCacheKeyFunction([
