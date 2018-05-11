@@ -527,6 +527,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
