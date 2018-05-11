@@ -2,12 +2,12 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.testing.robolectric.v3.WithTestDefaultsRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /** Tests {@link ReactShadowNode} */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ReactShadowNodeTest {
 
   @Test(expected = AssertionError.class)
