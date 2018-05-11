@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -20,7 +22,9 @@ const matricesDiffer = function(one, two) {
   if (one === two) {
     return false;
   }
-  return !one || !two ||
+  return (
+    !one ||
+    !two ||
     one[12] !== two[12] ||
     one[13] !== two[13] ||
     one[14] !== two[14] ||
@@ -35,7 +39,8 @@ const matricesDiffer = function(one, two) {
     one[8] !== two[8] ||
     one[9] !== two[9] ||
     one[11] !== two[11] ||
-    one[15] !== two[15];
+    one[15] !== two[15]
+  );
 };
 
 module.exports = matricesDiffer;

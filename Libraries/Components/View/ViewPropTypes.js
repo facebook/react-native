@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
@@ -36,15 +38,20 @@ export type ViewLayoutEvent = LayoutEvent;
 // There's no easy way to create a different type if (Platform.isTVOS):
 // so we must include TVViewProps
 export type ViewProps = {
-  accessible?: bool,
-  accessibilityLabel?: null | React$PropType$Primitive<any> | string | Array<any> | any,
+  accessible?: boolean,
+  accessibilityLabel?:
+    | null
+    | React$PropType$Primitive<any>
+    | string
+    | Array<any>
+    | any,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
-  importantForAccessibility?: 'auto'| 'yes'| 'no'| 'no-hide-descendants',
+  importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
-  accessibilityViewIsModal?: bool,
-  accessibilityElementsHidden?: bool,
+  accessibilityViewIsModal?: boolean,
+  accessibilityElementsHidden?: boolean,
   children?: ?React.Node,
   onAccessibilityAction?: Function,
   onAccessibilityTap?: Function,
@@ -63,13 +70,13 @@ export type ViewProps = {
   onMoveShouldSetResponder?: ?Function,
   onMoveShouldSetResponderCapture?: ?Function,
   hitSlop?: ?EdgeInsetsProp,
-  pointerEvents?: null | 'box-none'| 'none'| 'box-only'| 'auto',
+  pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
   style?: stylePropType,
-  removeClippedSubviews?: bool,
-  renderToHardwareTextureAndroid?: bool,
-  shouldRasterizeIOS?: bool,
-  collapsable?: bool,
-  needsOffscreenAlphaCompositing?: bool,
+  removeClippedSubviews?: boolean,
+  renderToHardwareTextureAndroid?: boolean,
+  shouldRasterizeIOS?: boolean,
+  collapsable?: boolean,
+  needsOffscreenAlphaCompositing?: boolean,
 } & TVViewProps;
 
 module.exports = {
@@ -115,11 +122,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityliveregion
    */
-  accessibilityLiveRegion: PropTypes.oneOf([
-    'none',
-    'polite',
-    'assertive',
-  ]),
+  accessibilityLiveRegion: PropTypes.oneOf(['none', 'polite', 'assertive']),
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -361,12 +364,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#pointerevents
    */
-  pointerEvents: PropTypes.oneOf([
-    'box-none',
-    'none',
-    'box-only',
-    'auto',
-  ]),
+  pointerEvents: PropTypes.oneOf(['box-none', 'none', 'box-only', 'auto']),
 
   /**
    * See http://facebook.github.io/react-native/docs/style.html

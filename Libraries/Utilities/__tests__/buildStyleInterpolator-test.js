@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const buildStyleInterpolator = require('buildStyleInterpolator');
@@ -87,7 +89,7 @@ describe('buildStyleInterpolator', function() {
         min: 0,
         max: 1,
         type: 'linear',
-        round: 1,  // To make testing easier
+        round: 1, // To make testing easier
         extrapolate: true,
       },
       left: {
@@ -96,7 +98,7 @@ describe('buildStyleInterpolator', function() {
         min: 0,
         max: 1,
         type: 'linear',
-        round: 1,  // To make testing easier
+        round: 1, // To make testing easier
         extrapolate: true,
       },
       top: {
@@ -149,7 +151,7 @@ describe('buildStyleInterpolator', function() {
         min: 0,
         max: 1,
         type: 'linear',
-        round: 2,  // As in one over two
+        round: 2, // As in one over two
         extrapolate: true,
       },
     };
@@ -193,7 +195,7 @@ describe('buildStyleInterpolator', function() {
         min: 0,
         max: 1,
         type: 'linear',
-        round: 2,  // As in one over two
+        round: 2, // As in one over two
         extrapolate: false,
       },
     };
@@ -261,10 +263,11 @@ describe('buildStyleInterpolator', function() {
     const obj = {};
     const res = interpolator(obj, 1);
     expect(obj).toEqual({
-      transform: [{matrix: [1, 0, 0, 0,
-                            0, 1, 0, 0,
-                            0, 0, 1, 0,
-                            2, 20, 200, 1]}]
+      transform: [
+        {
+          matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 20, 200, 1],
+        },
+      ],
     });
     expect(res).toBe(true);
   });
@@ -282,10 +285,11 @@ describe('buildStyleInterpolator', function() {
     const obj = {};
     const res = interpolator(obj, 1);
     expect(obj).toEqual({
-      transform: [{matrix: [2, 0, 0, 0,
-                            0, 20, 0, 0,
-                            0, 0, 200, 0,
-                            0, 0, 0, 1]}]
+      transform: [
+        {
+          matrix: [2, 0, 0, 0, 0, 20, 0, 0, 0, 0, 200, 0, 0, 0, 0, 1],
+        },
+      ],
     });
     expect(res).toBe(true);
   });
@@ -310,10 +314,11 @@ describe('buildStyleInterpolator', function() {
     const obj = {};
     const res = interpolator(obj, 1);
     expect(obj).toEqual({
-      transform: [{matrix: [2, 0, 0, 0,
-                            0, 20, 0, 0,
-                            0, 0, 200, 0,
-                            4, 400, 40000, 1]}]
+      transform: [
+        {
+          matrix: [2, 0, 0, 0, 0, 20, 0, 0, 0, 0, 200, 0, 4, 400, 40000, 1],
+        },
+      ],
     });
     expect(res).toBe(true);
   });

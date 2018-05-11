@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const normalizeColor = require('normalizeColor');
@@ -122,7 +124,7 @@ describe('normalizeColor', function() {
     expect(normalizeColor(0x01234567)).toBe(0x01234567);
   });
 
-  it('should return the same color when it\'s already normalized', function() {
+  it("should return the same color when it's already normalized", function() {
     const normalizedColor = normalizeColor('red') || 0;
     expect(normalizeColor(normalizedColor)).toBe(normalizedColor);
   });

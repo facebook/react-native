@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -31,7 +33,7 @@ type DefaultProps = {
   color: any,
   hidesWhenStopped: boolean,
   size: IndicatorSize,
-}
+};
 
 /**
  * Displays a circular loading indicator.
@@ -63,7 +65,7 @@ const ActivityIndicator = createReactClass({
      * See http://facebook.github.io/react-native/docs/activityindicator.html#size
      */
     size: PropTypes.oneOfType([
-      PropTypes.oneOf([ 'small', 'large' ]),
+      PropTypes.oneOf(['small', 'large']),
       PropTypes.number,
     ]),
     /**
@@ -117,14 +119,14 @@ const ActivityIndicator = createReactClass({
         )}
       </View>
     );
-  }
+  },
 });
 
 if (Platform.OS === 'ios') {
   RCTActivityIndicator = requireNativeComponent(
     'RCTActivityIndicatorView',
     ActivityIndicator,
-    { nativeOnly: { activityIndicatorViewStyle: true } }
+    {nativeOnly: {activityIndicatorViewStyle: true}},
   );
 }
 

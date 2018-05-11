@@ -6,7 +6,10 @@
  *
  *
  * This function dismisses the currently-open keyboard, if any
+ *
+ * @format
  */
+
 'use strict';
 
 const TextInputState = require('TextInputState');

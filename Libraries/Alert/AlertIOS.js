@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  * @jsdoc
  */
+
 'use strict';
 
 const RCTAlertManager = require('NativeModules').AlertManager;
@@ -18,7 +20,7 @@ export type AlertType = $Enum<{
   /**
    * Default alert with no inputs
    */
-  'default': string,
+  default: string,
   /**
    * Plain text input alert
    */
@@ -40,15 +42,15 @@ export type AlertButtonStyle = $Enum<{
   /**
    * Default button style
    */
-  'default': string,
+  default: string,
   /**
    * Cancel button style
    */
-  'cancel': string,
+  cancel: string,
   /**
    * Destructive button style
    */
-  'destructive': string,
+  destructive: string,
 }>;
 
 /**
@@ -87,11 +89,13 @@ class AlertIOS {
   static alert(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?(() => void) | ButtonsArray,
+    callbackOrButtons?: ?((() => void) | ButtonsArray),
     type?: AlertType,
   ): void {
     if (typeof type !== 'undefined') {
-      console.warn('AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+      console.warn(
+        'AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.',
+      );
       this.prompt(title, message, callbackOrButtons, type);
       return;
     }
@@ -106,26 +110,30 @@ class AlertIOS {
   static prompt(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
+    callbackOrButtons?: ?(((text: string) => void) | ButtonsArray),
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
-    keyboardType?: string
+    keyboardType?: string,
   ): void {
     if (typeof type === 'function') {
       console.warn(
         'You passed a callback function as the "type" argument to AlertIOS.prompt(). React Native is ' +
-        'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
-        'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
-        'keyboardType) and the old syntax will be removed in a future version.');
+          'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
+          'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
+          'keyboardType) and the old syntax will be removed in a future version.',
+      );
 
       const callback = type;
-      RCTAlertManager.alertWithArgs({
-        title: title || '',
-        type: 'plain-text',
-        defaultValue: message,
-      }, (id, value) => {
-        callback(value);
-      });
+      RCTAlertManager.alertWithArgs(
+        {
+          title: title || '',
+          type: 'plain-text',
+          defaultValue: message,
+        },
+        (id, value) => {
+          callback(value);
+        },
+      );
       return;
     }
 
@@ -135,8 +143,7 @@ class AlertIOS {
     let destructiveButtonKey;
     if (typeof callbackOrButtons === 'function') {
       callbacks = [callbackOrButtons];
-    }
-    else if (callbackOrButtons instanceof Array) {
+    } else if (callbackOrButtons instanceof Array) {
       callbackOrButtons.forEach((btn, index) => {
         callbacks[index] = btn.onPress;
         if (btn.style === 'cancel') {
@@ -152,19 +159,22 @@ class AlertIOS {
       });
     }
 
-    RCTAlertManager.alertWithArgs({
-      title: title || '',
-      message: message || undefined,
-      buttons,
-      type: type || undefined,
-      defaultValue,
-      cancelButtonKey,
-      destructiveButtonKey,
-      keyboardType,
-    }, (id, value) => {
-      const cb = callbacks[id];
-      cb && cb(value);
-    });
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || '',
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultValue,
+        cancelButtonKey,
+        destructiveButtonKey,
+        keyboardType,
+      },
+      (id, value) => {
+        const cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
 }
 

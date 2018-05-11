@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  * @jsdoc
  */
+
 'use strict';
 
 const RCTVibration = require('NativeModules').Vibration;
@@ -37,7 +39,12 @@ function vibrateByPattern(pattern: Array<number>, repeat: boolean = false) {
   setTimeout(() => vibrateScheduler(++_id, pattern, repeat, 1), pattern[0]);
 }
 
-function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex: number) {
+function vibrateScheduler(
+  id,
+  pattern: Array<number>,
+  repeat: boolean,
+  nextIndex: number,
+) {
   if (!_vibrating || id !== _id) {
     return;
   }
@@ -50,7 +57,10 @@ function vibrateScheduler(id, pattern: Array<number>, repeat: boolean, nextIndex
       return;
     }
   }
-  setTimeout(() => vibrateScheduler(id, pattern, repeat, nextIndex + 1), pattern[nextIndex]);
+  setTimeout(
+    () => vibrateScheduler(id, pattern, repeat, nextIndex + 1),
+    pattern[nextIndex],
+  );
 }
 
 const Vibration = {
@@ -59,7 +69,10 @@ const Vibration = {
    *
    * See https://facebook.github.io/react-native/docs/vibration.html#vibrate
    */
-  vibrate: function(pattern: number | Array<number> = 400, repeat: boolean = false) {
+  vibrate: function(
+    pattern: number | Array<number> = 400,
+    repeat: boolean = false,
+  ) {
     if (Platform.OS === 'android') {
       if (typeof pattern === 'number') {
         RCTVibration.vibrate(pattern);
@@ -92,7 +105,7 @@ const Vibration = {
     } else {
       RCTVibration.cancel();
     }
-  }
+  },
 };
 
 module.exports = Vibration;

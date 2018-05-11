@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
@@ -27,16 +29,16 @@ let subscriptions = [];
 let updatesEnabled = false;
 
 type GeoConfiguration = {
-  skipPermissionRequests: bool;
-}
+  skipPermissionRequests: boolean,
+};
 
 type GeoOptions = {
   timeout?: number,
   maximumAge?: number,
-  enableHighAccuracy?: bool,
+  enableHighAccuracy?: boolean,
   distanceFilter: number,
-  useSignificantChanges?: bool,
-}
+  useSignificantChanges?: boolean,
+};
 
 /**
  * The Geolocation API extends the web spec:
@@ -45,16 +47,13 @@ type GeoOptions = {
  * See https://facebook.github.io/react-native/docs/geolocation.html
  */
 const Geolocation = {
-
   /*
     * Sets configuration options that will be used in all location requests.
     *
     * See https://facebook.github.io/react-native/docs/geolocation.html#setrnconfiguration
     *
     */
-  setRNConfiguration: function(
-    config: GeoConfiguration
-  ) {
+  setRNConfiguration: function(config: GeoConfiguration) {
     if (RCTLocationObserver.setConfiguration) {
       RCTLocationObserver.setConfiguration(config);
     }
@@ -77,11 +76,11 @@ const Geolocation = {
   getCurrentPosition: async function(
     geo_success: Function,
     geo_error?: Function,
-    geo_options?: GeoOptions
+    geo_options?: GeoOptions,
   ) {
     invariant(
       typeof geo_success === 'function',
-      'Must provide a valid geo_success callback.'
+      'Must provide a valid geo_success callback.',
     );
     let hasPermission = true;
     // Supports Android's new permission model. For Android older devices,
@@ -111,21 +110,21 @@ const Geolocation = {
    *
    * See https://facebook.github.io/react-native/docs/geolocation.html#watchposition
    */
-  watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
+  watchPosition: function(
+    success: Function,
+    error?: Function,
+    options?: GeoOptions,
+  ): number {
     if (!updatesEnabled) {
       RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;
     }
     const watchID = subscriptions.length;
     subscriptions.push([
-      LocationEventEmitter.addListener(
-        'geolocationDidChange',
-        success
-      ),
-      error ? LocationEventEmitter.addListener(
-        'geolocationError',
-        error
-      ) : null,
+      LocationEventEmitter.addListener('geolocationDidChange', success),
+      error
+        ? LocationEventEmitter.addListener('geolocationError', error)
+        : null,
     ]);
     return watchID;
   },
@@ -140,7 +139,8 @@ const Geolocation = {
 
     sub[0].remove();
     // array element refinements not yet enabled in Flow
-    const sub1 = sub[1]; sub1 && sub1.remove();
+    const sub1 = sub[1];
+    sub1 && sub1.remove();
     subscriptions[watchID] = undefined;
     let noWatchers = true;
     for (let ii = 0; ii < subscriptions.length; ii++) {
@@ -163,12 +163,13 @@ const Geolocation = {
           warning(false, 'Called stopObserving with existing subscriptions.');
           sub[0].remove();
           // array element refinements not yet enabled in Flow
-          const sub1 = sub[1]; sub1 && sub1.remove();
+          const sub1 = sub[1];
+          sub1 && sub1.remove();
         }
       }
       subscriptions = [];
     }
-  }
+  },
 };
 
 module.exports = Geolocation;

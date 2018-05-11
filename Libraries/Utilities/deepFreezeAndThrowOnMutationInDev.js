@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -28,10 +29,12 @@
  */
 function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
   if (__DEV__) {
-    if (typeof object !== 'object' ||
-        object === null ||
-        Object.isFrozen(object) ||
-        Object.isSealed(object)) {
+    if (
+      typeof object !== 'object' ||
+      object === null ||
+      Object.isFrozen(object) ||
+      Object.isSealed(object)
+    ) {
       return object;
     }
 
@@ -60,9 +63,12 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
 
 function throwOnImmutableMutation(key, value) {
   throw Error(
-    'You attempted to set the key `' + key + '` with the value `' +
-    JSON.stringify(value) + '` on an object that is meant to be immutable ' +
-    'and has been frozen.'
+    'You attempted to set the key `' +
+      key +
+      '` with the value `' +
+      JSON.stringify(value) +
+      '` on an object that is meant to be immutable ' +
+      'and has been frozen.',
   );
 }
 

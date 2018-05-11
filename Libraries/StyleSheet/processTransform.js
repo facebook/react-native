@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const MatrixMath = require('MatrixMath');
@@ -22,7 +24,9 @@ const stringifySafe = require('stringifySafe');
  * be applied in an arbitrary order, and yet have a universal, singular
  * interface to native code.
  */
-function processTransform(transform: Array<Object>): Array<Object> | Array<number> {
+function processTransform(
+  transform: Array<Object>,
+): Array<Object> | Array<number> {
   if (__DEV__) {
     _validateTransforms(transform);
   }
@@ -48,14 +52,20 @@ function processTransform(transform: Array<Object>): Array<Object> | Array<numbe
         _multiplyTransform(result, MatrixMath.reusePerspectiveCommand, [value]);
         break;
       case 'rotateX':
-        _multiplyTransform(result, MatrixMath.reuseRotateXCommand, [_convertToRadians(value)]);
+        _multiplyTransform(result, MatrixMath.reuseRotateXCommand, [
+          _convertToRadians(value),
+        ]);
         break;
       case 'rotateY':
-        _multiplyTransform(result, MatrixMath.reuseRotateYCommand, [_convertToRadians(value)]);
+        _multiplyTransform(result, MatrixMath.reuseRotateYCommand, [
+          _convertToRadians(value),
+        ]);
         break;
       case 'rotate':
       case 'rotateZ':
-        _multiplyTransform(result, MatrixMath.reuseRotateZCommand, [_convertToRadians(value)]);
+        _multiplyTransform(result, MatrixMath.reuseRotateZCommand, [
+          _convertToRadians(value),
+        ]);
         break;
       case 'scale':
         _multiplyTransform(result, MatrixMath.reuseScaleCommand, [value]);
@@ -67,19 +77,33 @@ function processTransform(transform: Array<Object>): Array<Object> | Array<numbe
         _multiplyTransform(result, MatrixMath.reuseScaleYCommand, [value]);
         break;
       case 'translate':
-        _multiplyTransform(result, MatrixMath.reuseTranslate3dCommand, [value[0], value[1], value[2] || 0]);
+        _multiplyTransform(result, MatrixMath.reuseTranslate3dCommand, [
+          value[0],
+          value[1],
+          value[2] || 0,
+        ]);
         break;
       case 'translateX':
-        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [value, 0]);
+        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [
+          value,
+          0,
+        ]);
         break;
       case 'translateY':
-        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [0, value]);
+        _multiplyTransform(result, MatrixMath.reuseTranslate2dCommand, [
+          0,
+          value,
+        ]);
         break;
       case 'skewX':
-        _multiplyTransform(result, MatrixMath.reuseSkewXCommand, [_convertToRadians(value)]);
+        _multiplyTransform(result, MatrixMath.reuseSkewXCommand, [
+          _convertToRadians(value),
+        ]);
         break;
       case 'skewY':
-        _multiplyTransform(result, MatrixMath.reuseSkewYCommand, [_convertToRadians(value)]);
+        _multiplyTransform(result, MatrixMath.reuseSkewYCommand, [
+          _convertToRadians(value),
+        ]);
         break;
       default:
         throw new Error('Invalid transform name: ' + key);
@@ -95,7 +119,7 @@ function processTransform(transform: Array<Object>): Array<Object> | Array<numbe
 function _multiplyTransform(
   result: Array<number>,
   matrixMathFunction: Function,
-  args: Array<number>
+  args: Array<number>,
 ): void {
   const matrixToApply = MatrixMath.createIdentityMatrix();
   const argsWithIdentity = [matrixToApply].concat(args);
@@ -130,14 +154,11 @@ function _validateTransform(key, value, transformation) {
   invariant(
     !value.getValue,
     'You passed an Animated.Value to a normal component. ' +
-    'You need to wrap that component in an Animated. For example, ' +
-    'replace <View /> by <Animated.View />.'
+      'You need to wrap that component in an Animated. For example, ' +
+      'replace <View /> by <Animated.View />.',
   );
 
-  const multivalueTransforms = [
-    'matrix',
-    'translate',
-  ];
+  const multivalueTransforms = ['matrix', 'translate'];
   if (multivalueTransforms.indexOf(key) !== -1) {
     invariant(
       Array.isArray(value),
@@ -210,7 +231,12 @@ function _validateTransform(key, value, transformation) {
       );
       break;
     default:
-      invariant(false, 'Invalid transform %s: %s', key, stringifySafe(transformation));
+      invariant(
+        false,
+        'Invalid transform %s: %s',
+        key,
+        stringifySafe(transformation),
+      );
   }
 }
 

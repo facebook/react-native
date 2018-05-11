@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -13,10 +15,8 @@
  * cases.
  */
 const MessageQueueTestModule = {
-  testHook1: function() {
-  },
-  testHook2: function() {
-  }
+  testHook1: function() {},
+  testHook2: function() {},
 };
 
 module.exports = MessageQueueTestModule;

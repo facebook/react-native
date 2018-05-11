@@ -1,6 +1,8 @@
 /**
+ * @format
  * @flow
  */
+
 'use strict';
 
 const NativeSample = require('NativeModules').Sample;
@@ -12,7 +14,7 @@ const NativeSample = require('NativeModules').Sample;
 const Sample = {
   test: function() {
     NativeSample.test();
-  }
+  },
 };
 
 module.exports = Sample;

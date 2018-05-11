@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const RCTVibration = require('NativeModules').Vibration;
@@ -30,12 +32,9 @@ const VibrationIOS = {
    * @deprecated
    */
   vibrate: function() {
-    invariant(
-      arguments[0] === undefined,
-      'Vibration patterns not supported.'
-    );
+    invariant(arguments[0] === undefined, 'Vibration patterns not supported.');
     RCTVibration.vibrate();
-  }
+  },
 };
 
 module.exports = VibrationIOS;

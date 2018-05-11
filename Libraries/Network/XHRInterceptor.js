@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
- 'use strict';
+
+'use strict';
 
 const XMLHttpRequest = require('XMLHttpRequest');
 const originalXHROpen = XMLHttpRequest.prototype.open;
@@ -96,43 +98,48 @@ const XHRInterceptor = {
         sendCallback(data, this);
       }
       if (this.addEventListener) {
-        this.addEventListener('readystatechange', () => {
-          if (!isInterceptorEnabled) {
-            return;
-          }
-          if (this.readyState === this.HEADERS_RECEIVED) {
-            const contentTypeString = this.getResponseHeader('Content-Type');
-            const contentLengthString =
-              this.getResponseHeader('Content-Length');
-            let responseContentType, responseSize;
-            if (contentTypeString) {
-              responseContentType = contentTypeString.split(';')[0];
+        this.addEventListener(
+          'readystatechange',
+          () => {
+            if (!isInterceptorEnabled) {
+              return;
             }
-            if (contentLengthString) {
-              responseSize = parseInt(contentLengthString, 10);
-            }
-            if (headerReceivedCallback) {
-              headerReceivedCallback(
-                responseContentType,
-                responseSize,
-                this.getAllResponseHeaders(),
-                this,
+            if (this.readyState === this.HEADERS_RECEIVED) {
+              const contentTypeString = this.getResponseHeader('Content-Type');
+              const contentLengthString = this.getResponseHeader(
+                'Content-Length',
               );
+              let responseContentType, responseSize;
+              if (contentTypeString) {
+                responseContentType = contentTypeString.split(';')[0];
+              }
+              if (contentLengthString) {
+                responseSize = parseInt(contentLengthString, 10);
+              }
+              if (headerReceivedCallback) {
+                headerReceivedCallback(
+                  responseContentType,
+                  responseSize,
+                  this.getAllResponseHeaders(),
+                  this,
+                );
+              }
             }
-          }
-          if (this.readyState === this.DONE) {
-            if (responseCallback) {
-              responseCallback(
-                this.status,
-                this.timeout,
-                this.response,
-                this.responseURL,
-                this.responseType,
-                this,
-              );
+            if (this.readyState === this.DONE) {
+              if (responseCallback) {
+                responseCallback(
+                  this.status,
+                  this.timeout,
+                  this.response,
+                  this.responseURL,
+                  this.responseType,
+                  this,
+                );
+              }
             }
-          }
-        }, false);
+          },
+          false,
+        );
       }
       originalXHRSend.apply(this, arguments);
     };

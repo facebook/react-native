@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /**
@@ -31,7 +33,10 @@ function getData(element: Object): Object {
   if (typeof element !== 'object') {
     nodeType = 'Text';
     text = element + '';
-  } else if (element._currentElement === null || element._currentElement === false) {
+  } else if (
+    element._currentElement === null ||
+    element._currentElement === false
+  ) {
     nodeType = 'Empty';
   } else if (element._renderedComponent) {
     nodeType = 'NativeWrapper';
@@ -65,7 +70,11 @@ function getData(element: Object): Object {
       name = element.getName();
       // 0.14 top-level wrapper
       // TODO(jared): The backend should just act as if these don't exist.
-      if (element._renderedComponent && element._currentElement.props === element._renderedComponent._currentElement) {
+      if (
+        element._renderedComponent &&
+        element._currentElement.props ===
+          element._renderedComponent._currentElement
+      ) {
         nodeType = 'Wrapper';
       }
       if (name === null) {
@@ -133,7 +142,7 @@ function setInContext(inst, path: Array<string | number>, value: any) {
 
 function setIn(obj: Object, path: Array<string | number>, value: any) {
   const last = path.pop();
-  const parent = path.reduce((obj_, attr) => obj_ ? obj_[attr] : null, obj);
+  const parent = path.reduce((obj_, attr) => (obj_ ? obj_[attr] : null), obj);
   if (parent) {
     parent[last] = value;
   }
@@ -158,7 +167,11 @@ function copyWithSetImpl(obj, path, idx, value) {
   return updated;
 }
 
-function copyWithSet(obj: Object | Array<any>, path: Array<string | number>, value: any): Object | Array<any> {
+function copyWithSet(
+  obj: Object | Array<any>,
+  path: Array<string | number>,
+  value: any,
+): Object | Array<any> {
   return copyWithSetImpl(obj, path, 0, value);
 }
 

@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 const React = require('React');
@@ -22,14 +24,14 @@ const LazyRenderer = createReactClass({
 
   UNSAFE_componentWillMount: function(): void {
     this.setState({
-      _lazyRender : true,
+      _lazyRender: true,
     });
   },
 
   componentDidMount: function(): void {
     requestAnimationFrame(() => {
       this.setState({
-        _lazyRender : false,
+        _lazyRender: false,
       });
     });
   },

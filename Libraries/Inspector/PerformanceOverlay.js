@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const PerformanceLogger = require('PerformanceLogger');
@@ -21,23 +23,19 @@ class PerformanceOverlay extends React.Component<{}> {
 
     for (const key in perfLogs) {
       if (perfLogs[key].totalTime) {
-        const unit = (key === 'BundleSize') ? 'b' : 'ms';
+        const unit = key === 'BundleSize' ? 'b' : 'ms';
         items.push(
           <View style={styles.row} key={key}>
             <Text style={[styles.text, styles.label]}>{key}</Text>
             <Text style={[styles.text, styles.totalTime]}>
               {perfLogs[key].totalTime + unit}
             </Text>
-          </View>
+          </View>,
         );
       }
     }
 
-    return (
-      <View style={styles.container}>
-        {items}
-      </View>
-    );
+    return <View style={styles.container}>{items}</View>;
   }
 }
 

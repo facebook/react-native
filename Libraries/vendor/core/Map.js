@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @preventMunge
  * @typechecks
  */
@@ -100,7 +101,6 @@ module.exports = (function(global, undefined) {
   const OLD_IE_HASH_PREFIX = 'IE_HASH_';
 
   class Map {
-
     /**
      * 23.1.1.1
      * Takes an `iterable` which is basically any object that implements a
@@ -163,10 +163,7 @@ module.exports = (function(global, undefined) {
       if (index != null && this._mapData[index]) {
         this._mapData[index][1] = value;
       } else {
-        index = this._mapData.push([
-          key,
-          value
-        ]) - 1;
+        index = this._mapData.push([key, value]) - 1;
         setIndex(this, key, index);
         if (__DEV__) {
           this[SECRET_SIZE_PROP] += 1;
@@ -193,7 +190,6 @@ module.exports = (function(global, undefined) {
         return this._mapData[index][1];
       }
     }
-
 
     /**
      * 23.1.3.3
@@ -282,7 +278,6 @@ module.exports = (function(global, undefined) {
   Map.prototype[toIterator.ITERATOR_SYMBOL] = Map.prototype.entries;
 
   class MapIterator {
-
     /**
      * 23.1.5.1
      * Create a `MapIterator` for a given `map`. While this class is private it
@@ -459,17 +454,17 @@ module.exports = (function(global, undefined) {
         } else {
           Object.defineProperty(map, SECRET_SIZE_PROP, {
             value: 0,
-            writable: true
+            writable: true,
           });
           Object.defineProperty(map, 'size', {
-            set: (v) => {
+            set: v => {
               console.error(
                 'PLEASE FIX ME: You are changing the map size property which ' +
-                'should not be writable and will break in production.'
+                  'should not be writable and will break in production.',
               );
               throw new Error('The map size property is not writable.');
             },
-            get: () => map[SECRET_SIZE_PROP]
+            get: () => map[SECRET_SIZE_PROP],
           });
         }
 
@@ -550,7 +545,7 @@ module.exports = (function(global, undefined) {
     }
 
     if (uniqueID) {
-      return  OLD_IE_HASH_PREFIX + uniqueID;
+      return OLD_IE_HASH_PREFIX + uniqueID;
     } else {
       return null;
     }
@@ -567,16 +562,17 @@ module.exports = (function(global, undefined) {
      * @param {object|array|function|regexp} o
      * @return {number}
      */
-    return function getHash(o) { // eslint-disable-line no-shadow
+    return function getHash(o) {
+      // eslint-disable-line no-shadow
       if (o[hashProperty]) {
         return o[hashProperty];
-      } else if (!isES5 &&
-                  o.propertyIsEnumerable &&
-                  o.propertyIsEnumerable[hashProperty]) {
+      } else if (
+        !isES5 &&
+        o.propertyIsEnumerable &&
+        o.propertyIsEnumerable[hashProperty]
+      ) {
         return o.propertyIsEnumerable[hashProperty];
-      } else if (!isES5 &&
-                  isNode(o) &&
-                  getIENodeHash(o)) {
+      } else if (!isES5 && isNode(o) && getIENodeHash(o)) {
         return getIENodeHash(o);
       } else if (!isES5 && o[hashProperty]) {
         return o[hashProperty];
@@ -589,7 +585,7 @@ module.exports = (function(global, undefined) {
             enumerable: false,
             writable: false,
             configurable: false,
-            value: hashCounter
+            value: hashCounter,
           });
         } else if (o.propertyIsEnumerable) {
           // Since we can't define a non-enumerable property on the object

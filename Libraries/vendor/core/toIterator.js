@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -21,13 +23,13 @@ const KIND_KEY = 'key';
 const KIND_VALUE = 'value';
 const KIND_KEY_VAL = 'key+value';
 /*global Symbol: true*/
-const ITERATOR_SYMBOL = (typeof Symbol === 'function')
-    ? Symbol.iterator
-    : '@@iterator';
+const ITERATOR_SYMBOL =
+  typeof Symbol === 'function' ? Symbol.iterator : '@@iterator';
 
 const toIterator = (function() {
-  if (!(Array.prototype[ITERATOR_SYMBOL] &&
-        String.prototype[ITERATOR_SYMBOL])) {
+  if (
+    !(Array.prototype[ITERATOR_SYMBOL] && String.prototype[ITERATOR_SYMBOL])
+  ) {
     // IIFE to avoid creating classes for no reason because of hoisting.
     return (function() {
       class ArrayIterator {
@@ -110,11 +112,11 @@ const toIterator = (function() {
           let ret;
           const first = s.charCodeAt(index);
 
-          if (first < 0xD800 || first > 0xDBFF || index + 1 === len) {
+          if (first < 0xd800 || first > 0xdbff || index + 1 === len) {
             ret = s[index];
           } else {
             const second = s.charCodeAt(index + 1);
-            if (second < 0xDC00 || second > 0xDFFF) {
+            if (second < 0xdc00 || second > 0xdfff) {
               ret = s[index];
             } else {
               ret = s[index] + s[index + 1];
@@ -162,7 +164,7 @@ Object.assign(toIterator, {
   KIND_KEY,
   KIND_VALUE,
   KIND_KEY_VAL,
-  ITERATOR_SYMBOL
+  ITERATOR_SYMBOL,
 });
 
 module.exports = toIterator;

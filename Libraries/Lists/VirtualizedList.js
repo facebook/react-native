@@ -1353,14 +1353,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // But only if there are items before the first rendered item
     if (first > 0) {
       const distTop = offset - this._getFrameMetricsApprox(first).offset;
-      hiPri = hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
+      hiPri =
+        hiPri || distTop < 0 || (velocity < -2 && distTop < scrollingThreshold);
     }
     // Mark as high priority if we're close to the end of the last item
     // But only if there are items after the last rendered item
     if (last < itemCount - 1) {
       const distBottom =
         this._getFrameMetricsApprox(last).offset - (offset + visibleLength);
-      hiPri = hiPri || distBottom < 0 || (velocity > 2 && distBottom < scrollingThreshold);
+      hiPri =
+        hiPri ||
+        distBottom < 0 ||
+        (velocity > 2 && distBottom < scrollingThreshold);
     }
     // Only trigger high-priority updates if we've actually rendered cells,
     // and with that size estimate, accurately compute how many cells we should render.

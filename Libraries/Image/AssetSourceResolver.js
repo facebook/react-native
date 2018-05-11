@@ -40,7 +40,10 @@ function getScaledAssetPath(asset): string {
  */
 function getAssetPathInDrawableFolder(asset): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  const drawbleFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
+  const drawbleFolder = assetPathUtils.getAndroidResourceFolderName(
+    asset,
+    scale,
+  );
   const fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
   return drawbleFolder + '/' + fileName + '.' + asset.type;
 }

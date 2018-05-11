@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 /* eslint no-bitwise: 0 */
 'use strict';
 
@@ -30,30 +32,39 @@ function normalizeColor(color: string | number): ?number {
 
   if ((match = matchers.rgb.exec(color))) {
     return (
-      (// b
-      (parse255(match[1]) << 24 | // r
-      parse255(match[2]) << 16 | // g
-      parse255(match[3]) << 8 | 0x000000ff)) // a
-    ) >>> 0;
+      // b
+      ((parse255(match[1]) << 24) | // r
+      (parse255(match[2]) << 16) | // g
+        (parse255(match[3]) << 8) |
+        0x000000ff) >>> // a
+      0
+    );
   }
 
   if ((match = matchers.rgba.exec(color))) {
     return (
-      (// b
-      (parse255(match[1]) << 24 | // r
-      parse255(match[2]) << 16 | // g
-      parse255(match[3]) << 8 | parse1(match[4]))) // a
-    ) >>> 0;
+      // b
+      ((parse255(match[1]) << 24) | // r
+      (parse255(match[2]) << 16) | // g
+        (parse255(match[3]) << 8) |
+        parse1(match[4])) >>> // a
+      0
+    );
   }
 
   if ((match = matchers.hex3.exec(color))) {
-    return parseInt(
-      match[1] + match[1] + // r
-      match[2] + match[2] + // g
-      match[3] + match[3] + // b
-      'ff', // a
-      16
-    ) >>> 0;
+    return (
+      parseInt(
+        match[1] +
+        match[1] + // r
+        match[2] +
+        match[2] + // g
+        match[3] +
+        match[3] + // b
+          'ff', // a
+        16,
+      ) >>> 0
+    );
   }
 
   // https://drafts.csswg.org/css-color-4/#hex-notation
@@ -62,13 +73,19 @@ function normalizeColor(color: string | number): ?number {
   }
 
   if ((match = matchers.hex4.exec(color))) {
-    return parseInt(
-      match[1] + match[1] + // r
-      match[2] + match[2] + // g
-      match[3] + match[3] + // b
-      match[4] + match[4], // a
-      16
-    ) >>> 0;
+    return (
+      parseInt(
+        match[1] +
+        match[1] + // r
+        match[2] +
+        match[2] + // g
+        match[3] +
+        match[3] + // b
+          match[4] +
+          match[4], // a
+        16,
+      ) >>> 0
+    );
   }
 
   if ((match = matchers.hsl.exec(color))) {
@@ -76,9 +93,11 @@ function normalizeColor(color: string | number): ?number {
       (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
-        parsePercentage(match[3]) // l
-      ) | 0x000000ff) // a
-    ) >>> 0;
+        parsePercentage(match[3]), // l
+      ) |
+        0x000000ff) >>> // a
+      0
+    );
   }
 
   if ((match = matchers.hsla.exec(color))) {
@@ -86,9 +105,11 @@ function normalizeColor(color: string | number): ?number {
       (hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
-        parsePercentage(match[3]) // l
-      ) | parse1(match[4])) // a
-    ) >>> 0;
+        parsePercentage(match[3]), // l
+      ) |
+        parse1(match[4])) >>> // a
+      0
+    );
   }
 
   return null;
@@ -121,9 +142,9 @@ function hslToRgb(h: number, s: number, l: number): number {
   const b = hue2rgb(p, q, h - 1 / 3);
 
   return (
-    Math.round(r * 255) << 24 |
-    Math.round(g * 255) << 16 |
-    Math.round(b * 255) << 8
+    (Math.round(r * 255) << 24) |
+    (Math.round(g * 255) << 16) |
+    (Math.round(b * 255) << 8)
   );
 }
 
@@ -159,7 +180,7 @@ function parse255(str: string): number {
 
 function parse360(str: string): number {
   const int = parseFloat(str);
-  return (((int % 360) + 360) % 360) / 360;
+  return ((int % 360 + 360) % 360) / 360;
 }
 
 function parse1(str: string): number {

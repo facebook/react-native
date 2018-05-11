@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -39,7 +40,7 @@ const InterpolateMatrix = {
     mat[13] = mat[1] * x + mat[5] * y + mat[9] * z + mat[13];
     mat[14] = mat[2] * x + mat[6] * y + mat[10] * z + mat[14];
     mat[15] = mat[3] * x + mat[7] * y + mat[11] * z + mat[15];
-  }
+  },
 };
 
 const computeNextValLinear = function(anim, from, to, value) {
@@ -47,7 +48,7 @@ const computeNextValLinear = function(anim, from, to, value) {
   const roundRatio = anim.round;
   let ratio = (value - anim.min) / (anim.max - anim.min);
   if (!anim.extrapolate) {
-    ratio = ratio > 1 ? 1 : (ratio < 0 ? 0 : ratio);
+    ratio = ratio > 1 ? 1 : ratio < 0 ? 0 : ratio;
   }
   let nextVal = from * (1 - ratio) + to * ratio;
   if (hasRoundRatio) {
@@ -64,7 +65,7 @@ const setNextValAndDetectChange = function(result, name, nextVal, didChange) {
   if (!didChange) {
     const prevVal = result[name];
     result[name] = nextVal;
-    didChange = didChange  || (nextVal !== prevVal);
+    didChange = didChange || nextVal !== prevVal;
   } else {
     result[name] = nextVal;
   }
@@ -90,7 +91,13 @@ const initIdentity = function(mat) {
   mat[15] = 1;
 };
 
-const computeNextMatrixOperationField = function(anim, name, dim, index, value) {
+const computeNextMatrixOperationField = function(
+  anim,
+  name,
+  dim,
+  index,
+  value,
+) {
   if (anim.from[dim] !== undefined && anim.to[dim] !== undefined) {
     return computeNextValLinear(anim, anim.from[dim], anim.to[dim], value);
   } else {
@@ -98,10 +105,18 @@ const computeNextMatrixOperationField = function(anim, name, dim, index, value) 
   }
 };
 
-const computeTransform = function(anim, name, value, result,
-                                didChange, didMatrix) {
-  const transform = result.transform !== undefined ?
-        result.transform : (result.transform = [{ matrix: [] }]);
+const computeTransform = function(
+  anim,
+  name,
+  value,
+  result,
+  didChange,
+  didMatrix,
+) {
+  const transform =
+    result.transform !== undefined
+      ? result.transform
+      : (result.transform = [{matrix: []}]);
   const mat = transform[0].matrix;
   const m0 = mat[0];
   const m1 = mat[1];
@@ -120,21 +135,30 @@ const computeTransform = function(anim, name, value, result,
   const m14 = mat[14];
   const m15 = mat[15];
   if (!didMatrix) {
-    initIdentity(mat);  // This will be the first transform.
+    initIdentity(mat); // This will be the first transform.
   }
   const x = computeNextMatrixOperationField(anim, name, X_DIM, 0, value);
   const y = computeNextMatrixOperationField(anim, name, Y_DIM, 1, value);
   const z = computeNextMatrixOperationField(anim, name, Z_DIM, 2, value);
   InterpolateMatrix[name](mat, x, y, z);
   if (!didChange) {
-    didChange = m0 !== mat[0] || m1 !== mat[1] ||
-                m2 !== mat[2] || m3 !== mat[3] ||
-                m4 !== mat[4] || m5 !== mat[5] ||
-                m6 !== mat[6] || m7 !== mat[7] ||
-                m8 !== mat[8] || m9 !== mat[9] ||
-                m10 !== mat[10] || m11 !== mat[11] ||
-                m12 !== mat[12] || m13 !== mat[13] ||
-                m14 !== mat[14] || m15 !== mat[15];
+    didChange =
+      m0 !== mat[0] ||
+      m1 !== mat[1] ||
+      m2 !== mat[2] ||
+      m3 !== mat[3] ||
+      m4 !== mat[4] ||
+      m5 !== mat[5] ||
+      m6 !== mat[6] ||
+      m7 !== mat[7] ||
+      m8 !== mat[8] ||
+      m9 !== mat[9] ||
+      m10 !== mat[10] ||
+      m11 !== mat[11] ||
+      m12 !== mat[12] ||
+      m13 !== mat[13] ||
+      m14 !== mat[14] ||
+      m15 !== mat[15];
   }
   return didChange;
 };
@@ -152,8 +176,14 @@ const buildStyleInterpolator = function(anims) {
       const anim = anims[name];
       if (anim.type === 'linear') {
         if (name in InterpolateMatrix) {
-          didChange = computeTransform(anim, name, value, result,
-                                       didChange, didMatrix);
+          didChange = computeTransform(
+            anim,
+            name,
+            value,
+            result,
+            didChange,
+            didMatrix,
+          );
           didMatrix = true;
         } else {
           var next = computeNextValLinearScalar(anim, value);

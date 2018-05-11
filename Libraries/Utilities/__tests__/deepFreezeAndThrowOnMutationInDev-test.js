@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 
 describe('deepFreezeAndThrowOnMutationInDev', function() {
-
   it('should be a noop on non object values', () => {
     __DEV__ = true;
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
@@ -30,9 +31,11 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {key: 'oldValue'};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key = 'newValue'; }).toThrowError(
+    expect(() => {
+      o.key = 'newValue';
+    }).toThrowError(
       'You attempted to set the key `key` with the value `"newValue"` ' +
-      'on an object that is meant to be immutable and has been frozen.'
+        'on an object that is meant to be immutable and has been frozen.',
     );
     expect(o.key).toBe('oldValue');
   });
@@ -41,9 +44,11 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {key: 'oldValue'};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key = 'newValue'; }).toThrowError(
+    expect(() => {
+      o.key = 'newValue';
+    }).toThrowError(
       'You attempted to set the key `key` with the value `"newValue"` ' +
-      'on an object that is meant to be immutable and has been frozen.'
+        'on an object that is meant to be immutable and has been frozen.',
     );
     expect(o.key).toBe('oldValue');
   });
@@ -53,9 +58,11 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {key1: {key2: {key3: 'oldValue'}}};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key1.key2.key3 = 'newValue'; }).toThrowError(
+    expect(() => {
+      o.key1.key2.key3 = 'newValue';
+    }).toThrowError(
       'You attempted to set the key `key3` with the value `"newValue"` ' +
-      'on an object that is meant to be immutable and has been frozen.'
+        'on an object that is meant to be immutable and has been frozen.',
     );
     expect(o.key1.key2.key3).toBe('oldValue');
   });
@@ -64,9 +71,11 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {key1: {key2: {key3: 'oldValue'}}};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key1.key2.key3 = 'newValue'; }).toThrowError(
+    expect(() => {
+      o.key1.key2.key3 = 'newValue';
+    }).toThrowError(
       'You attempted to set the key `key3` with the value `"newValue"` ' +
-      'on an object that is meant to be immutable and has been frozen.'
+        'on an object that is meant to be immutable and has been frozen.',
     );
     expect(o.key1.key2.key3).toBe('oldValue');
   });
@@ -76,10 +85,11 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.newKey = 'value'; })
-      .toThrowError(
-        /(Cannot|Can't) add property newKey, object is not extensible/
-      );
+    expect(() => {
+      o.newKey = 'value';
+    }).toThrowError(
+      /(Cannot|Can't) add property newKey, object is not extensible/,
+    );
     expect(o.newKey).toBe(undefined);
   });
 
@@ -87,7 +97,9 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = true;
     const o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.newKey = 'value'; }).not.toThrow();
+    expect(() => {
+      o.newKey = 'value';
+    }).not.toThrow();
     expect(o.newKey).toBe(undefined);
   });
 
@@ -96,7 +108,9 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     __DEV__ = false;
     const o = {key: 'oldValue'};
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key = 'newValue'; }).not.toThrow();
+    expect(() => {
+      o.key = 'newValue';
+    }).not.toThrow();
     expect(o.key).toBe('newValue');
   });
 
@@ -107,7 +121,9 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     const o = {key1: {key2: 'oldValue'}};
     Object.freeze(o);
     deepFreezeAndThrowOnMutationInDev(o);
-    expect(() => { o.key1.key2 = 'newValue'; }).not.toThrow();
+    expect(() => {
+      o.key1.key2 = 'newValue';
+    }).not.toThrow();
     expect(o.key1.key2).toBe('newValue');
   });
 
@@ -117,5 +133,4 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     o.circular = o;
     deepFreezeAndThrowOnMutationInDev(o);
   });
-
 });

@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -15,13 +17,10 @@ const ReactNative = require('react-native');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const TimerMixin = require('react-timer-mixin');
-const {
-  NativeModules,
-  StyleSheet,
-  Text,
-} = ReactNative;
+const {NativeModules, StyleSheet, Text} = ReactNative;
 
-const TestManager = NativeModules.TestManager || NativeModules.SnapshotTestManager;
+const TestManager =
+  NativeModules.TestManager || NativeModules.SnapshotTestManager;
 
 const TextUpdateTest = createReactClass({
   displayName: 'TextUpdateTest',
@@ -30,10 +29,10 @@ const TextUpdateTest = createReactClass({
     return {seeMore: true};
   },
   componentDidMount: function() {
-    this.requestAnimationFrame(
-      () => this.setState({seeMore: false}, () => {
+    this.requestAnimationFrame(() =>
+      this.setState({seeMore: false}, () => {
         TestManager.markTestCompleted();
-      })
+      }),
     );
   },
   render: function() {

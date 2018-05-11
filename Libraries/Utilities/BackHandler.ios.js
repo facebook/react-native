@@ -7,6 +7,7 @@
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
  *
+ * @format
  */
 
 'use strict';
@@ -59,7 +60,9 @@ if (Platform.isTVOS) {
   _tvEventHandler.enable(this, function(cmp, evt) {
     if (evt && evt.eventType === 'menu') {
       let invokeDefault = true;
-      const subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+      const subscriptions = Array.from(
+        _backPressSubscriptions.values(),
+      ).reverse();
 
       for (let i = 0; i < subscriptions.length; ++i) {
         if (subscriptions[i]()) {
@@ -77,9 +80,9 @@ if (Platform.isTVOS) {
   BackHandler = {
     exitApp: emptyFunction,
 
-    addEventListener: function (
+    addEventListener: function(
       eventName: BackPressEventName,
-      handler: Function
+      handler: Function,
     ): {remove: () => void} {
       _backPressSubscriptions.add(handler);
       return {
@@ -89,15 +92,12 @@ if (Platform.isTVOS) {
 
     removeEventListener: function(
       eventName: BackPressEventName,
-      handler: Function
+      handler: Function,
     ): void {
       _backPressSubscriptions.delete(handler);
     },
-
   };
-
 } else {
-
   BackHandler = {
     exitApp: emptyFunction,
     addEventListener() {
@@ -107,7 +107,6 @@ if (Platform.isTVOS) {
     },
     removeEventListener: emptyFunction,
   };
-
 }
 
 module.exports = BackHandler;

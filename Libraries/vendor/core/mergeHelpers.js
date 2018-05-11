@@ -6,6 +6,8 @@
  *
  *
  * requiresPolyfills: Array.isArray
+ *
+ * @format
  */
 
 'use strict';
@@ -29,7 +31,6 @@ const isTerminal = function(o) {
 };
 
 const mergeHelpers = {
-
   MAX_MERGE_DEPTH: MAX_MERGE_DEPTH,
 
   isTerminal: isTerminal,
@@ -57,7 +58,7 @@ const mergeHelpers = {
       Array.isArray(one) && Array.isArray(two),
       'Tried to merge arrays, instead got %s and %s.',
       one,
-      two
+      two,
     );
   },
 
@@ -77,7 +78,7 @@ const mergeHelpers = {
     invariant(
       !isTerminal(arg) && !Array.isArray(arg),
       'Tried to merge an object, instead got %s.',
-      arg
+      arg,
     );
   },
 
@@ -88,7 +89,7 @@ const mergeHelpers = {
     invariant(
       (!isTerminal(arg) || typeof arg === 'function') && !Array.isArray(arg),
       'Tried to merge into an object, instead got %s.',
-      arg
+      arg,
     );
   },
 
@@ -102,7 +103,7 @@ const mergeHelpers = {
     invariant(
       level < MAX_MERGE_DEPTH,
       'Maximum deep merge depth exceeded. You may be attempting to merge ' +
-      'circular structures in an unsupported way.'
+        'circular structures in an unsupported way.',
     );
   },
 
@@ -115,7 +116,7 @@ const mergeHelpers = {
     invariant(
       strategy === undefined || strategy in mergeHelpers.ArrayStrategies,
       'You must provide an array strategy to deep merge functions to ' +
-      'instruct the deep merge how to resolve merging two arrays.'
+        'instruct the deep merge how to resolve merging two arrays.',
     );
   },
 
@@ -131,7 +132,6 @@ const mergeHelpers = {
     Concat: 'Concat',
     IndexByIndex: 'IndexByIndex',
   },
-
 };
 
 module.exports = mergeHelpers;

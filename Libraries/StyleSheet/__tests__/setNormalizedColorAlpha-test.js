@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const setNormalizedColorAlpha = require('setNormalizedColorAlpha');
@@ -22,7 +24,7 @@ describe('setNormalizedColorAlpha', function() {
     expect(setNormalizedColorAlpha(0xffffffff, -1)).toBe(0xffffff00);
   });
 
-  it('should ignore the color\'s original alpha', function() {
+  it("should ignore the color's original alpha", function() {
     expect(setNormalizedColorAlpha(0x204080aa, 0.8)).toBe(0x204080cc);
   });
 

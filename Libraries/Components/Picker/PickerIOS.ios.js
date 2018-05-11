@@ -6,7 +6,10 @@
  *
  *
  * This is a controlled component version of RCTPickerIOS
+ *
+ * @format
  */
+
 'use strict';
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
@@ -46,7 +49,7 @@ const PickerIOS = createReactClass({
   _stateFromProps: function(props) {
     let selectedIndex = 0;
     const items = [];
-    React.Children.toArray(props.children).forEach(function (child, index) {
+    React.Children.toArray(props.children).forEach(function(child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -63,7 +66,7 @@ const PickerIOS = createReactClass({
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={picker => this._picker = picker}
+          ref={picker => (this._picker = picker)}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
@@ -80,7 +83,10 @@ const PickerIOS = createReactClass({
       this.props.onChange(event);
     }
     if (this.props.onValueChange) {
-      this.props.onValueChange(event.nativeEvent.newValue, event.nativeEvent.newIndex);
+      this.props.onValueChange(
+        event.nativeEvent.newValue,
+        event.nativeEvent.newIndex,
+      );
     }
 
     // The picker is a controlled component. This means we expect the
@@ -89,9 +95,12 @@ const PickerIOS = createReactClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
+    if (
+      this._picker &&
+      this.state.selectedIndex !== event.nativeEvent.newIndex
+    ) {
       this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex
+        selectedIndex: this.state.selectedIndex,
       });
     }
   },
@@ -119,16 +128,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTPickerIOS = requireNativeComponent('RCTPicker', {
-  propTypes: {
-    style: itemStylePropType,
+const RCTPickerIOS = requireNativeComponent(
+  'RCTPicker',
+  {
+    propTypes: {
+      style: itemStylePropType,
+    },
   },
-}, {
-  nativeOnly: {
-    items: true,
-    onChange: true,
-    selectedIndex: true,
+  {
+    nativeOnly: {
+      items: true,
+      onChange: true,
+      selectedIndex: true,
+    },
   },
-});
+);
 
 module.exports = PickerIOS;

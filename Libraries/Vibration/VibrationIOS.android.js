@@ -6,7 +6,9 @@
  *
  * Stub of VibrationIOS for Android.
  *
+ * @format
  */
+
 'use strict';
 
 const warning = require('fbjs/lib/warning');
@@ -14,7 +16,7 @@ const warning = require('fbjs/lib/warning');
 const VibrationIOS = {
   vibrate: function() {
     warning('VibrationIOS is not supported on this platform!');
-  }
+  },
 };
 
 module.exports = VibrationIOS;

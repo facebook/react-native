@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Dimensions = require('Dimensions');
@@ -43,12 +45,16 @@ class InspectorOverlay extends React.Component<{
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        this.props.onTouchViewTag(nativeViewTag, {left, top, width, height}, locationY);
-      }
+        this.props.onTouchViewTag(
+          nativeViewTag,
+          {left, top, width, height},
+          locationY,
+        );
+      },
     );
   };
 
-  shouldSetResponser = (e: EventLike): bool => {
+  shouldSetResponser = (e: EventLike): boolean => {
     this.findViewForTouchEvent(e);
     return true;
   };
@@ -56,7 +62,12 @@ class InspectorOverlay extends React.Component<{
   render() {
     let content = null;
     if (this.props.inspected) {
-      content = <ElementBox frame={this.props.inspected.frame} style={this.props.inspected.style} />;
+      content = (
+        <ElementBox
+          frame={this.props.inspected.frame}
+          style={this.props.inspected.style}
+        />
+      );
     }
 
     return (

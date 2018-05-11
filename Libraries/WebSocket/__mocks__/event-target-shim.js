@@ -1,3 +1,5 @@
+/** @format */
+
 // Jest fatals for the following statement (minimal repro case)
 //
 //   exports.something = Symbol;

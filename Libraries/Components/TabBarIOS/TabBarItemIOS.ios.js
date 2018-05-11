@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @noflow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -26,10 +28,7 @@ class TabBarItemIOS extends React.Component {
     /**
      * Little red bubble that sits at the top right of the icon.
      */
-    badge: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    badge: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     /**
      * Background color for the badge. Available since iOS 10.
      */
@@ -105,7 +104,7 @@ class TabBarItemIOS extends React.Component {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: { selected?: boolean }) {
+  UNSAFE_componentWillReceiveProps(nextProps: {selected?: boolean}) {
     if (this.state.hasBeenSelected || nextProps.selected) {
       this.setState({hasBeenSelected: true});
     }
@@ -117,18 +116,17 @@ class TabBarItemIOS extends React.Component {
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
     if (this.state.hasBeenSelected) {
-      var tabContents =
+      var tabContents = (
         <StaticContainer shouldUpdate={this.props.selected}>
           {children}
-        </StaticContainer>;
+        </StaticContainer>
+      );
     } else {
       var tabContents = <View />;
     }
 
     return (
-      <RCTTabBarItem
-        {...props}
-        style={[styles.tab, style]}>
+      <RCTTabBarItem {...props} style={[styles.tab, style]}>
         {tabContents}
       </RCTTabBarItem>
     );
@@ -142,7 +140,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-  }
+  },
 });
 
 const RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);

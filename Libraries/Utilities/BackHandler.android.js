@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -66,7 +67,6 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * ```
  */
 const BackHandler = {
-
   exitApp: function() {
     DeviceEventManager.invokeDefaultBackPressHandler();
   },
@@ -77,9 +77,9 @@ const BackHandler = {
    * - `hardwareBackPress`: Fires when the Android hardware back button is pressed or when the
    * tvOS menu button is pressed.
    */
-  addEventListener: function (
+  addEventListener: function(
     eventName: BackPressEventName,
-    handler: Function
+    handler: Function,
   ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
     return {
@@ -92,11 +92,10 @@ const BackHandler = {
    */
   removeEventListener: function(
     eventName: BackPressEventName,
-    handler: Function
+    handler: Function,
   ): void {
     _backPressSubscriptions.delete(handler);
   },
-
 };
 
 module.exports = BackHandler;

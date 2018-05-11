@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ImageStylePropTypes = require('ImageStylePropTypes');
@@ -27,7 +29,8 @@ class StyleSheetValidation {
     }
     if (allStylePropTypes[prop] === undefined) {
       const message1 = '"' + prop + '" is not a valid style property.';
-      const message2 = '\nValid style props: ' +
+      const message2 =
+        '\nValid style props: ' +
         JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
       styleError(message1, style, caller, message2);
     }
@@ -49,7 +52,11 @@ class StyleSheetValidation {
       return;
     }
     for (const prop in styles[name]) {
-      StyleSheetValidation.validateStyleProp(prop, styles[name], 'StyleSheet ' + name);
+      StyleSheetValidation.validateStyleProp(
+        prop,
+        styles[name],
+        'StyleSheet ' + name,
+      );
     }
   }
 
@@ -63,8 +70,12 @@ class StyleSheetValidation {
 const styleError = function(message1, style, caller?, message2?) {
   invariant(
     false,
-    message1 + '\n' + (caller || '<<unknown>>') + ': ' +
-    JSON.stringify(style, null, '  ') + (message2 || '')
+    message1 +
+      '\n' +
+      (caller || '<<unknown>>') +
+      ': ' +
+      JSON.stringify(style, null, '  ') +
+      (message2 || ''),
   );
 };
 

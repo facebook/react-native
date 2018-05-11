@@ -4,10 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  *
  * This is a controlled component version of RCTDatePickerIOS
+ *
+ * @format
+ * @flow
  */
+
 'use strict';
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
@@ -125,9 +128,8 @@ const DatePickerIOS = createReactClass({
 
   _onChange: function(event: Event) {
     const nativeTimeStamp = event.nativeEvent.timestamp;
-    this.props.onDateChange && this.props.onDateChange(
-      new Date(nativeTimeStamp)
-    );
+    this.props.onDateChange &&
+      this.props.onDateChange(new Date(nativeTimeStamp));
     // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
   },
@@ -141,9 +143,17 @@ const DatePickerIOS = createReactClass({
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={ picker => { this._picker = picker; } }
+          ref={picker => {
+            this._picker = picker;
+          }}
           style={styles.datePickerIOS}
-          date={props.date ? props.date.getTime() : props.initialDate ? props.initialDate.getTime() : undefined}
+          date={
+            props.date
+              ? props.date.getTime()
+              : props.initialDate
+                ? props.initialDate.getTime()
+                : undefined
+          }
           locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
@@ -160,7 +170,7 @@ const DatePickerIOS = createReactClass({
         />
       </View>
     );
-  }
+  },
 });
 
 const styles = StyleSheet.create({
@@ -178,7 +188,7 @@ const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
     maximumDate: PropTypes.number,
     onDateChange: () => null,
     onChange: PropTypes.func,
-  }
+  },
 });
 
 module.exports = DatePickerIOS;

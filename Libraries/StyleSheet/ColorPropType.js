@@ -4,18 +4,32 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 const normalizeColor = require('normalizeColor');
 
-const colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
+const colorPropType = function(
+  isRequired,
+  props,
+  propName,
+  componentName,
+  location,
+  propFullName,
+) {
   const color = props[propName];
   if (color === undefined || color === null) {
     if (isRequired) {
       return new Error(
-        'Required ' + location + ' `' + (propFullName || propName) +
-        '` was not specified in `' + componentName + '`.'
+        'Required ' +
+          location +
+          ' `' +
+          (propFullName || propName) +
+          '` was not specified in `' +
+          componentName +
+          '`.',
       );
     }
     return;
@@ -30,9 +44,16 @@ const colorPropType = function(isRequired, props, propName, componentName, locat
 
   if (normalizeColor(color) === null) {
     return new Error(
-      'Invalid ' + location + ' `' + (propFullName || propName) +
-      '` supplied to `' + componentName + '`: ' + color + '\n' +
-`Valid color formats are
+      'Invalid ' +
+        location +
+        ' `' +
+        (propFullName || propName) +
+        '` supplied to `' +
+        componentName +
+        '`: ' +
+        color +
+        '\n' +
+        `Valid color formats are
   - '#f0f' (#rgb)
   - '#f0fc' (#rgba)
   - '#ff00ff' (#rrggbb)
@@ -44,7 +65,8 @@ const colorPropType = function(isRequired, props, propName, componentName, locat
   - 'transparent'
   - 'red'
   - 0xff00ff00 (0xrrggbbaa)
-`);
+`,
+    );
   }
 };
 

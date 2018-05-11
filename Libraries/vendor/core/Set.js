@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @preventMunge
  * @typechecks
  */
@@ -69,7 +70,6 @@ module.exports = (function(global) {
    */
 
   class Set {
-
     /**
      * 23.2.1.1
      *
@@ -80,8 +80,10 @@ module.exports = (function(global) {
      * @param {*} iterable
      */
     constructor(iterable) {
-      if (this == null ||
-          (typeof this !== 'object' && typeof this !== 'function')) {
+      if (
+        this == null ||
+        (typeof this !== 'object' && typeof this !== 'function')
+      ) {
         throw new TypeError('Wrong set object type.');
       }
 

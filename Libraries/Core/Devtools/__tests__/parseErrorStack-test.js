@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
-'use strict';
 
+'use strict';
 
 const parseErrorStack = require('parseErrorStack');
 
@@ -16,7 +17,6 @@ function getFakeError() {
 }
 
 describe('parseErrorStack', function() {
-
   it('parses error stack', function() {
     const stack = parseErrorStack(getFakeError());
     expect(stack.length).toBeGreaterThan(0);
@@ -43,5 +43,4 @@ describe('parseErrorStack', function() {
     expect(parseErrorStack({})).toEqual([]);
     expect(parseErrorStack(null)).toEqual([]);
   });
-
 });

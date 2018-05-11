@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 let Animated = require('Animated');
@@ -15,29 +17,33 @@ describe('Animated tests', () => {
   });
 
   describe('Animated', () => {
-
     it('works end to end', () => {
       const anim = new Animated.Value(0);
 
       const callback = jest.fn();
 
-      const node = new Animated.__PropsOnlyForTests({
-        style: {
-          backgroundColor: 'red',
-          opacity: anim,
-          transform: [
-            {translateX: anim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [100, 200],
-            })},
-            {scale: anim},
-          ],
-          shadowOffset: {
-            width: anim,
-            height: anim,
+      const node = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            backgroundColor: 'red',
+            opacity: anim,
+            transform: [
+              {
+                translateX: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [100, 200],
+                }),
+              },
+              {scale: anim},
+            ],
+            shadowOffset: {
+              width: anim,
+              height: anim,
+            },
           },
-        }
-      }, callback);
+        },
+        callback,
+      );
 
       expect(anim.__getChildren().length).toBe(3);
 
@@ -45,10 +51,7 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0,
-          transform: [
-            {translateX: 100},
-            {scale: 0},
-          ],
+          transform: [{translateX: 100}, {scale: 0}],
           shadowOffset: {
             width: 0,
             height: 0,
@@ -64,10 +67,7 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0.5,
-          transform: [
-            {translateX: 150},
-            {scale: 0.5},
-          ],
+          transform: [{translateX: 150}, {scale: 0.5}],
           shadowOffset: {
             width: 0.5,
             height: 0.5,
@@ -107,7 +107,6 @@ describe('Animated tests', () => {
       expect(anim.__detach).toBeCalled();
     });
 
-
     it('stops animation when detached', () => {
       const anim = new Animated.Value(0);
       const callback = jest.fn();
@@ -141,7 +140,8 @@ describe('Animated tests', () => {
       anim.addListener(listener);
       Animated.spring(anim, {toValue: 15}).start();
       jest.runAllTimers();
-      const lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      const lastValue =
+        listener.mock.calls[listener.mock.calls.length - 2][0].value;
       expect(lastValue).not.toBe(15);
       expect(lastValue).toBeCloseTo(15);
       expect(anim.__getValue()).toBe(15);
@@ -151,9 +151,14 @@ describe('Animated tests', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
       anim.addListener(listener);
-      Animated.spring(anim, {stiffness: 8000, damping: 2000, toValue: 15}).start();
+      Animated.spring(anim, {
+        stiffness: 8000,
+        damping: 2000,
+        toValue: 15,
+      }).start();
       jest.runAllTimers();
-      const lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      const lastValue =
+        listener.mock.calls[listener.mock.calls.length - 2][0].value;
       expect(lastValue).not.toBe(15);
       expect(lastValue).toBeCloseTo(15);
       expect(anim.__getValue()).toBe(15);
@@ -164,9 +169,7 @@ describe('Animated tests', () => {
     });
   });
 
-
   describe('Animated Sequence', () => {
-
     it('works with an empty sequence', () => {
       const cb = jest.fn();
       Animated.sequence([]).start(cb);
@@ -232,9 +235,12 @@ describe('Animated tests', () => {
   });
 
   describe('Animated Loop', () => {
-
     it('loops indefinitely if config not specified', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
       const loop = Animated.loop(animation);
@@ -261,10 +267,14 @@ describe('Animated tests', () => {
     });
 
     it('loops indefinitely if iterations is -1', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
-      const loop = Animated.loop(animation, { iterations: -1 });
+      const loop = Animated.loop(animation, {iterations: -1});
 
       expect(animation.start).not.toBeCalled();
 
@@ -288,10 +298,14 @@ describe('Animated tests', () => {
     });
 
     it('loops indefinitely if iterations not specified', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
-      const loop = Animated.loop(animation, { anotherKey: 'value' });
+      const loop = Animated.loop(animation, {anotherKey: 'value'});
 
       expect(animation.start).not.toBeCalled();
 
@@ -315,10 +329,14 @@ describe('Animated tests', () => {
     });
 
     it('loops three times if iterations is 3', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
-      const loop = Animated.loop(animation, { iterations: 3 });
+      const loop = Animated.loop(animation, {iterations: 3});
 
       expect(animation.start).not.toBeCalled();
 
@@ -342,10 +360,14 @@ describe('Animated tests', () => {
     });
 
     it('does not loop if iterations is 1', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
-      const loop = Animated.loop(animation, { iterations: 1 });
+      const loop = Animated.loop(animation, {iterations: 1});
 
       expect(animation.start).not.toBeCalled();
 
@@ -359,10 +381,14 @@ describe('Animated tests', () => {
     });
 
     it('does not animate if iterations is 0', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
-      const loop = Animated.loop(animation, { iterations: 0 });
+      const loop = Animated.loop(animation, {iterations: 0});
 
       expect(animation.start).not.toBeCalled();
 
@@ -373,7 +399,11 @@ describe('Animated tests', () => {
     });
 
     it('supports interrupting an indefinite loop', () => {
-      const animation = {start: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
       Animated.loop(animation).start(cb);
@@ -391,7 +421,12 @@ describe('Animated tests', () => {
     });
 
     it('supports stopping loop', () => {
-      const animation = {start: jest.fn(), stop: jest.fn(), reset: jest.fn(), _isUsingNativeDriver: () => false};
+      const animation = {
+        start: jest.fn(),
+        stop: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
       const cb = jest.fn();
 
       const loop = Animated.loop(animation);
@@ -409,7 +444,6 @@ describe('Animated tests', () => {
   });
 
   describe('Animated Parallel', () => {
-
     it('works with an empty parallel', () => {
       const cb = jest.fn();
       Animated.parallel([]).start(cb);
@@ -470,7 +504,6 @@ describe('Animated tests', () => {
       expect(cb).toBeCalledWith({finished: false});
     });
 
-
     it('does not call stop more than once when stopping', () => {
       const anim1 = {start: jest.fn(), stop: jest.fn()};
       const anim2 = {start: jest.fn(), stop: jest.fn()};
@@ -504,10 +537,7 @@ describe('Animated tests', () => {
     it('should call anim after delay in sequence', () => {
       const anim = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
-      Animated.sequence([
-        Animated.delay(1000),
-        anim,
-      ]).start(cb);
+      Animated.sequence([Animated.delay(1000), anim]).start(cb);
       jest.runAllTimers();
       expect(anim.start.mock.calls.length).toBe(1);
       expect(cb).not.toBeCalled();
@@ -529,19 +559,14 @@ describe('Animated tests', () => {
   describe('Animated Events', () => {
     it('should map events', () => {
       const value = new Animated.Value(0);
-      const handler = Animated.event(
-        [null, {state: {foo: value}}],
-      );
+      const handler = Animated.event([null, {state: {foo: value}}]);
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
     it('should call listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
-      const handler = Animated.event(
-        [{foo: value}],
-        {listener},
-      );
+      const handler = Animated.event([{foo: value}], {listener});
       handler({foo: 42});
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
@@ -550,10 +575,7 @@ describe('Animated tests', () => {
     it('should call forked event listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
-      const handler = Animated.event(
-        [{foo: value}],
-        {listener},
-      );
+      const handler = Animated.event([{foo: value}], {listener});
       const listener2 = jest.fn();
       const forkedHandler = Animated.forkEvent(handler, listener2);
       forkedHandler({foo: 42});
@@ -577,7 +599,7 @@ describe('Animated tests', () => {
       InteractionManager = require('InteractionManager');
     });
 
-    afterEach(()=> {
+    afterEach(() => {
       jest.unmock('InteractionManager');
     });
 
@@ -633,7 +655,7 @@ describe('Animated tests', () => {
       Animated.timing(value2, {
         toValue: value1.interpolate({
           inputRange: [0, 2],
-          outputRange: [0, 1]
+          outputRange: [0, 1],
         }),
         duration: 0,
       }).start();
@@ -665,24 +687,24 @@ describe('Animated tests', () => {
 
       const callback = jest.fn();
 
-      const node = new Animated.__PropsOnlyForTests({
-        style: {
-          opacity: vec.x.interpolate({
-            inputRange: [0, 42],
-            outputRange: [0.2, 0.8],
-          }),
-          transform: vec.getTranslateTransform(),
-          ...vec.getLayout(),
-        }
-      }, callback);
+      const node = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            opacity: vec.x.interpolate({
+              inputRange: [0, 42],
+              outputRange: [0.2, 0.8],
+            }),
+            transform: vec.getTranslateTransform(),
+            ...vec.getLayout(),
+          },
+        },
+        callback,
+      );
 
       expect(node.__getValue()).toEqual({
         style: {
           opacity: 0.2,
-          transform: [
-            {translateX: 0},
-            {translateY: 0},
-          ],
+          transform: [{translateX: 0}, {translateY: 0}],
           left: 0,
           top: 0,
         },
@@ -695,10 +717,7 @@ describe('Animated tests', () => {
       expect(node.__getValue()).toEqual({
         style: {
           opacity: 0.8,
-          transform: [
-            {translateX: 42},
-            {translateY: 1492},
-          ],
+          transform: [{translateX: 42}, {translateY: 1492}],
           left: 42,
           top: 1492,
         },
@@ -767,7 +786,7 @@ describe('Animated tests', () => {
     it('should removeAll', () => {
       const value1 = new Animated.Value(0);
       const listener = jest.fn();
-      [1,2,3,4].forEach(() => value1.addListener(listener));
+      [1, 2, 3, 4].forEach(() => value1.addListener(listener));
       value1.setValue(42);
       expect(listener.mock.calls.length).toBe(4);
       expect(listener).toBeCalledWith({value: 42});

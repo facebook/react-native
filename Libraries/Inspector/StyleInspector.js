@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
@@ -22,14 +24,25 @@ class StyleInspector extends React.Component<$FlowFixMeProps> {
     return (
       <View style={styles.container}>
         <View>
-          {names.map(name => <Text key={name} style={styles.attr}>{name}:</Text>)}
+          {names.map(name => (
+            <Text key={name} style={styles.attr}>
+              {name}:
+            </Text>
+          ))}
         </View>
 
         <View>
           {names.map(name => {
-            const value = typeof this.props.style[name] === 'object' ? JSON.stringify(this.props.style[name]) : this.props.style[name];
-            return <Text key={name} style={styles.value}>{value}</Text>;
-          } ) }
+            const value =
+              typeof this.props.style[name] === 'object'
+                ? JSON.stringify(this.props.style[name])
+                : this.props.style[name];
+            return (
+              <Text key={name} style={styles.value}>
+                {value}
+              </Text>
+            );
+          })}
         </View>
       </View>
     );
@@ -61,4 +74,3 @@ const styles = StyleSheet.create({
 });
 
 module.exports = StyleInspector;
-
