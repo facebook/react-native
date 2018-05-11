@@ -108,7 +108,7 @@ class Button extends React.Component<$FlowFixMeProps> {
         styles.button,
         this.props.pressed && styles.buttonPressed
       ]}>
-        <Text style={styles.buttonText}>{this.props.title}</Text>
+        <Text key={'button-' + this.props.title} style={styles.buttonText}>{this.props.title}</Text>
       </TouchableHighlight>
     );
   }
