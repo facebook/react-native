@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @noflow
  */
+
 'use strict';
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
@@ -167,15 +169,12 @@ const TouchableOpacity = createReactClass({
    * Animate the touchable to a new opacity.
    */
   setOpacityTo: function(value: number, duration: number) {
-    Animated.timing(
-      this.state.anim,
-      {
-        toValue: value,
-        duration: duration,
-        easing: Easing.inOut(Easing.quad),
-        useNativeDriver: true,
-      }
-    ).start();
+    Animated.timing(this.state.anim, {
+      toValue: value,
+      duration: duration,
+      easing: Easing.inOut(Easing.quad),
+      useNativeDriver: true,
+    }).start();
   },
 
   /**
@@ -217,8 +216,9 @@ const TouchableOpacity = createReactClass({
   },
 
   touchableGetLongPressDelayMS: function() {
-    return this.props.delayLongPress === 0 ? 0 :
-      this.props.delayLongPress || 500;
+    return this.props.delayLongPress === 0
+      ? 0
+      : this.props.delayLongPress || 500;
   },
 
   touchableGetPressOutDelayMS: function() {
@@ -230,16 +230,13 @@ const TouchableOpacity = createReactClass({
   },
 
   _opacityInactive: function(duration: number) {
-    this.setOpacityTo(
-      this._getChildStyleOpacityWithDefault(),
-      duration
-    );
+    this.setOpacityTo(this._getChildStyleOpacityWithDefault(), duration);
   },
 
   _getChildStyleOpacityWithDefault: function() {
-   const childStyle = flattenStyle(this.props.style) || {};
-   return childStyle.opacity == undefined ? 1 : childStyle.opacity;
- },
+    const childStyle = flattenStyle(this.props.style) || {};
+    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+  },
 
   render: function() {
     return (
@@ -257,13 +254,18 @@ const TouchableOpacity = createReactClass({
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderTerminationRequest={
+          this.touchableHandleResponderTerminationRequest
+        }
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
-        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
+        {Touchable.renderDebugView({
+          color: 'cyan',
+          hitSlop: this.props.hitSlop,
+        })}
       </Animated.View>
     );
   },

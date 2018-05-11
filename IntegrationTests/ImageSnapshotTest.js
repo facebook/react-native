@@ -4,17 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Image,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+var {Image, View} = ReactNative;
+var {TestModule} = ReactNative.NativeModules;
 
 class ImageSnapshotTest extends React.Component<{}> {
   componentDidMount() {
@@ -23,7 +22,7 @@ class ImageSnapshotTest extends React.Component<{}> {
     }
   }
 
-  done = (success : boolean) => {
+  done = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
@@ -32,7 +31,8 @@ class ImageSnapshotTest extends React.Component<{}> {
       <Image
         source={require('./blue_square.png')}
         defaultSource={require('./red_square.png')}
-        onLoad={() => TestModule.verifySnapshot(this.done)} />
+        onLoad={() => TestModule.verifySnapshot(this.done)}
+      />
     );
   }
 }

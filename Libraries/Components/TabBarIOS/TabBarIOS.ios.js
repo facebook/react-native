@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -20,17 +22,19 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
-class TabBarIOS extends React.Component<ViewProps & {
-  style?: DangerouslyImpreciseStyleProp,
-  unselectedTintColor?: string,
-  tintColor?: string,
-  unselectedItemTintColor?: string,
-  barTintColor?: string,
-  barStyle?: 'default' | 'black',
-  translucent?: boolean,
-  itemPositioning?: 'fill' | 'center' | 'auto',
-  children: React.Node,
-}> {
+class TabBarIOS extends React.Component<
+  ViewProps & {
+    style?: DangerouslyImpreciseStyleProp,
+    unselectedTintColor?: string,
+    tintColor?: string,
+    unselectedItemTintColor?: string,
+    barTintColor?: string,
+    barStyle?: 'default' | 'black',
+    translucent?: boolean,
+    itemPositioning?: 'fill' | 'center' | 'auto',
+    children: React.Node,
+  },
+> {
   static Item = TabBarItemIOS;
 
   static propTypes = {
@@ -94,7 +98,7 @@ class TabBarIOS extends React.Component<ViewProps & {
 const styles = StyleSheet.create({
   tabGroup: {
     flex: 1,
-  }
+  },
 });
 
 const RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);

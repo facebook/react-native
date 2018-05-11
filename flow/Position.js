@@ -6,10 +6,11 @@
  *
  * @flow
  * @nolint
+ * @format
  */
 
 declare class Position {
-  coords: Coordinates,
-  timestamp: number,
-  mocked: boolean,
+  coords: Coordinates;
+  timestamp: number;
+  mocked: boolean;
 }

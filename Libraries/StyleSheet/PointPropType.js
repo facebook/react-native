@@ -4,15 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var PropTypes = require('prop-types');
+const PropTypes = require('prop-types');
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 
-var PointPropType = createStrictShapeTypeChecker({
+const PointPropType = createStrictShapeTypeChecker({
   x: PropTypes.number,
   y: PropTypes.number,
 });

@@ -102,6 +102,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeToJsBridge.h",
     "Platform.h",
     "RAMBundleRegistry.h",
+    "ReactMarker.h",
     "RecoverableError.h",
     "SharedProxyCxxModule.h",
     "SystraceSection.h",
@@ -140,6 +141,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_deps = APPLE_JSC_DEPS,
+    fbobjc_force_static = True,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],

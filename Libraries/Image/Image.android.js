@@ -7,28 +7,28 @@
  * @flow
  * @format
  */
+
 'use strict';
 
-var ImageResizeMode = require('ImageResizeMode');
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var ViewPropTypes = require('ViewPropTypes');
+const ImageResizeMode = require('ImageResizeMode');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const NativeModules = require('NativeModules');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
+const TextAncestor = require('TextAncestor');
+const ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
-var flattenStyle = require('flattenStyle');
-var merge = require('merge');
-var requireNativeComponent = require('requireNativeComponent');
-var resolveAssetSource = require('resolveAssetSource');
+const createReactClass = require('create-react-class');
+const flattenStyle = require('flattenStyle');
+const merge = require('merge');
+const requireNativeComponent = require('requireNativeComponent');
+const resolveAssetSource = require('resolveAssetSource');
 
-const {ViewContextTypes} = require('ViewContext');
-
-var {ImageLoader} = NativeModules;
+const {ImageLoader} = NativeModules;
 
 let _requestId = 1;
 function generateRequestId() {
@@ -42,7 +42,7 @@ function generateRequestId() {
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-var Image = createReactClass({
+const Image = createReactClass({
   displayName: 'Image',
   propTypes: {
     ...ViewPropTypes,
@@ -202,8 +202,6 @@ var Image = createReactClass({
     validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
-  contextTypes: ViewContextTypes,
-
   render: function() {
     const source = resolveAssetSource(this.props.source);
     const defaultSource = resolveAssetSource(this.props.defaultSource);
@@ -236,52 +234,54 @@ var Image = createReactClass({
       );
     }
 
-    if (source && (source.uri || Array.isArray(source))) {
-      let style;
-      let sources;
-      if (source.uri) {
-        const {width, height} = source;
-        style = flattenStyle([{width, height}, styles.base, this.props.style]);
-        sources = [{uri: source.uri}];
-      } else {
-        style = flattenStyle([styles.base, this.props.style]);
-        sources = source;
-      }
-
-      const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
-      const nativeProps = merge(this.props, {
-        style,
-        shouldNotifyLoadEvents: !!(
-          onLoadStart ||
-          onLoad ||
-          onLoadEnd ||
-          onError
-        ),
-        src: sources,
-        headers: source.headers,
-        defaultSrc: defaultSource ? defaultSource.uri : null,
-        loadingIndicatorSrc: loadingIndicatorSource
-          ? loadingIndicatorSource.uri
-          : null,
-      });
-
-      if (this.context.isInAParentText) {
-        return <RCTTextInlineImage {...nativeProps} />;
-      } else {
-        return <RKImage {...nativeProps} />;
-      }
+    if (!source || (!source.uri && !Array.isArray(source))) {
+      return null;
     }
-    return null;
+
+    let style;
+    let sources;
+    if (source.uri) {
+      const {width, height} = source;
+      style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      sources = [{uri: source.uri}];
+    } else {
+      style = flattenStyle([styles.base, this.props.style]);
+      sources = source;
+    }
+
+    const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
+    const nativeProps = merge(this.props, {
+      style,
+      shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+      src: sources,
+      headers: source.headers,
+      defaultSrc: defaultSource ? defaultSource.uri : null,
+      loadingIndicatorSrc: loadingIndicatorSource
+        ? loadingIndicatorSource.uri
+        : null,
+    });
+
+    return (
+      <TextAncestor.Consumer>
+        {hasTextAncestor =>
+          hasTextAncestor ? (
+            <RCTTextInlineImage {...nativeProps} />
+          ) : (
+            <RKImage {...nativeProps} />
+          )
+        }
+      </TextAncestor.Consumer>
+    );
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     overflow: 'hidden',
   },
 });
 
-var cfg = {
+const cfg = {
   nativeOnly: {
     src: true,
     headers: true,
@@ -290,8 +290,8 @@ var cfg = {
     shouldNotifyLoadEvents: true,
   },
 };
-var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTTextInlineImage = requireNativeComponent(
+const RKImage = requireNativeComponent('RCTImageView', Image, cfg);
+const RCTTextInlineImage = requireNativeComponent(
   'RCTTextInlineImage',
   Image,
   cfg,

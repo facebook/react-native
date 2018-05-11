@@ -39,10 +39,31 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
 }
 
 static const std::string componentNameByReactViewName(std::string viewName) {
+  // We need this function only for the transition period;
+  // eventually, all names will be unified.
+
   std::string rctPrefix("RCT");
   if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin()).first == rctPrefix.end()) {
     // If `viewName` has "RCT" prefix, remove it.
     viewName.erase(0, 3);
+  }
+
+  // Fabric uses slightly new names for Text components because of differences
+  // in semantic.
+  if (viewName == "Text") {
+    return "Paragraph";
+  }
+  if (viewName == "VirtualText") {
+    return "Text";
+  }
+
+  // We need this temporarly for testing purposes until we have proper
+  // implementation of <ScrollView> component.
+  if (
+    viewName == "ScrollContentView" ||
+    viewName == "ScrollView"
+  ) {
+    return "View";
   }
 
   return viewName;

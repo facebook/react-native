@@ -6,7 +6,10 @@
  *
  *
  * This is a controlled component version of RCTPickerIOS
+ *
+ * @format
  */
+
 'use strict';
 
 module.exports = require('UnimplementedView');

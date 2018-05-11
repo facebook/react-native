@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface RCTSurfacePresenter (Internal)
+@interface RCTSurfacePresenter (Surface)
 
 /**
  * Surface uses those methods to register itself in the Presenter.
@@ -38,6 +38,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 
+/**
+ * Measures the Surface with given constraints.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface;
+
+/**
+ * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
+ */
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface;
 @end
 
 @interface RCTSurfacePresenter (Deprecated)

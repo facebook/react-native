@@ -6,10 +6,13 @@
  *
  *
  * This function dismisses the currently-open keyboard, if any
+ *
+ * @format
  */
+
 'use strict';
 
-var TextInputState = require('TextInputState');
+const TextInputState = require('TextInputState');
 
 function dismissKeyboard() {
   TextInputState.blurTextInput(TextInputState.currentlyFocusedField());

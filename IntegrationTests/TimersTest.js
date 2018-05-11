@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
@@ -16,12 +18,8 @@ var ReactNative = require('react-native');
  * run Flow. */
 var TimerMixin = require('react-timer-mixin');
 
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-var { TestModule  } = ReactNative.NativeModules;
+var {StyleSheet, Text, View} = ReactNative;
+var {TestModule} = ReactNative.NativeModules;
 
 var TimersTest = createReactClass({
   displayName: 'TimersTest',
@@ -91,7 +89,7 @@ var TimersTest = createReactClass({
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
-    fails.forEach((timeout) => this.clearTimeout(timeout));
+    fails.forEach(timeout => this.clearTimeout(timeout));
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
 
     this.setTimeout(this.testOrdering, 50);
@@ -102,22 +100,32 @@ var TimersTest = createReactClass({
     var fail0;
     this.setImmediate(() => this.clearTimeout(fail0));
     fail0 = this.setTimeout(
-      () => this._fail('testOrdering-t0, setImmediate should happen before ' +
-        'setTimeout 0'),
-      0
+      () =>
+        this._fail(
+          'testOrdering-t0, setImmediate should happen before ' +
+            'setTimeout 0',
+        ),
+      0,
     );
     var failAnim; // This should fail without the t=0 fastpath feature.
     this.setTimeout(() => this.cancelAnimationFrame(failAnim), 0);
-    failAnim = this.requestAnimationFrame(
-      () => this._fail('testOrdering-Anim, setTimeout 0 should happen before ' +
-        'requestAnimationFrame')
+    failAnim = this.requestAnimationFrame(() =>
+      this._fail(
+        'testOrdering-Anim, setTimeout 0 should happen before ' +
+          'requestAnimationFrame',
+      ),
     );
     var fail25;
-    this.setTimeout(() => { this.clearTimeout(fail25); }, 20);
+    this.setTimeout(() => {
+      this.clearTimeout(fail25);
+    }, 20);
     fail25 = this.setTimeout(
-      () => this._fail('testOrdering-t25, setTimeout 20 should happen before ' +
-        'setTimeout 25'),
-      25
+      () =>
+        this._fail(
+          'testOrdering-t25, setTimeout 20 should happen before ' +
+            'setTimeout 25',
+        ),
+      25,
     );
     this.setTimeout(this.done, 50);
   },
@@ -152,7 +160,7 @@ var TimersTest = createReactClass({
     this.setState({count: this.state.count + 1});
   },
 
-  _fail(caller : string) : void {
+  _fail(caller: string): void {
     throw new Error('_fail called by ' + caller);
   },
 });

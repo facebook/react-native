@@ -20,8 +20,8 @@ class YogaStylableProps;
 typedef std::shared_ptr<const YogaStylableProps> SharedYogaStylableProps;
 
 class YogaStylableProps:
-  public virtual DebugStringConvertible
-{
+  public virtual DebugStringConvertible {
+
 public:
   const YGStyle &getYogaStyle() const;
 

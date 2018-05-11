@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
@@ -46,9 +48,7 @@ const TouchableWithoutFeedback = createReactClass({
 
   propTypes: {
     accessible: PropTypes.bool,
-    accessibilityComponentType: PropTypes.oneOf(
-      AccessibilityComponentTypes
-    ),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
@@ -63,14 +63,14 @@ const TouchableWithoutFeedback = createReactClass({
      */
     onPress: PropTypes.func,
     /**
-    * Called as soon as the touchable element is pressed and invoked even before onPress.
-    * This can be useful when making network requests.
-    */
+     * Called as soon as the touchable element is pressed and invoked even before onPress.
+     * This can be useful when making network requests.
+     */
     onPressIn: PropTypes.func,
     /**
-    * Called as soon as the touch is released even before onPress.
-    */
-     onPressOut: PropTypes.func,
+     * Called as soon as the touch is released even before onPress.
+     */
+    onPressOut: PropTypes.func,
     /**
      * Invoked on mount and layout changes with
      *
@@ -156,8 +156,9 @@ const TouchableWithoutFeedback = createReactClass({
   },
 
   touchableGetLongPressDelayMS: function(): number {
-    return this.props.delayLongPress === 0 ? 0 :
-      this.props.delayLongPress || 500;
+    return this.props.delayLongPress === 0
+      ? 0
+      : this.props.delayLongPress || 500;
   },
 
   touchableGetPressOutDelayMS: function(): number {
@@ -172,15 +173,25 @@ const TouchableWithoutFeedback = createReactClass({
     warning(
       !child.type || child.type.displayName !== 'Text',
       'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
-        ((child._owner && child._owner.getName && child._owner.getName()) || '<unknown>')
+        ((child._owner && child._owner.getName && child._owner.getName()) ||
+          '<unknown>'),
     );
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'View') {
+    if (
+      Touchable.TOUCH_TARGET_DEBUG &&
+      child.type &&
+      child.type.displayName === 'View'
+    ) {
       children = React.Children.toArray(children);
-      children.push(Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}));
+      children.push(
+        Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
+      );
     }
-    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
-      [child.props.style, {color: 'red'}] :
-      child.props.style;
+    const style =
+      Touchable.TOUCH_TARGET_DEBUG &&
+      child.type &&
+      child.type.displayName === 'Text'
+        ? [child.props.style, {color: 'red'}]
+        : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
@@ -191,7 +202,8 @@ const TouchableWithoutFeedback = createReactClass({
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
-      onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
+      onResponderTerminationRequest: this
+        .touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
@@ -199,7 +211,7 @@ const TouchableWithoutFeedback = createReactClass({
       style,
       children,
     });
-  }
+  },
 });
 
 module.exports = TouchableWithoutFeedback;

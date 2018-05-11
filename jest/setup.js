@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const MockNativeMethods = require.requireActual('./MockNativeMethods');
 const mockComponent = require.requireActual('./mockComponent');
 
 require.requireActual('../Libraries/polyfills/babelHelpers.js');
@@ -34,10 +35,10 @@ jest.setMock('ErrorUtils', require('ErrorUtils'));
 jest
   .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
-  .mock('Text', () => mockComponent('Text'))
+  .mock('Text', () => mockComponent('Text', MockNativeMethods))
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
-  .mock('View', () => mockComponent('View'))
+  .mock('View', () => mockComponent('View', MockNativeMethods))
   .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
   .mock(
@@ -81,33 +82,9 @@ jest
     const NativeMethodsMixin =
       ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativeMethodsMixin;
 
-    const mockFunction = (key) => {
-      let warned = false;
-      return function() {
-        if (warned) {
-          return;
-        }
-        warned = true;
-        console.warn(
-          'Calling .' + key + '() in the test renderer environment is not ' +
-            'supported. Instead, mock out your components that use ' +
-            'findNodeHandle with replacements that don\'t rely on the ' +
-            'native environment.',
-        );
-      };
-    };
+    Object.assign(NativeMethodsMixin, MockNativeMethods);
+    Object.assign(ReactNative.NativeComponent.prototype, MockNativeMethods);
 
-    [
-      'measure',
-      'measureInWindow',
-      'measureLayout',
-      'setNativeProps',
-      'focus',
-      'blur',
-    ].forEach((key) => {
-      NativeMethodsMixin[key] = mockFunction(key);
-      ReactNative.NativeComponent.prototype[key] = mockFunction(key);
-    });
     return ReactNative;
   })
   .mock('ensureComponentIsNative', () => () => true);

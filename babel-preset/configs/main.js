@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -31,7 +33,7 @@ const defaultPlugins = [
     require('@babel/plugin-transform-modules-commonjs'),
     {
       strict: false,
-      strictMode : false, // prevent "use strict" injections
+      strictMode: false, // prevent "use strict" injections
       allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
     },
   ],

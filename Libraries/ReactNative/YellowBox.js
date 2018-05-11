@@ -452,7 +452,7 @@ const rowHeight = 46;
 const elevation =
   Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
     width: '100%',

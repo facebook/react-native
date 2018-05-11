@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -14,7 +15,7 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
 
-import type { ViewProps } from 'ViewPropTypes';
+import type {ViewProps} from 'ViewPropTypes';
 
 type Props = ViewProps & {
   children: any,
@@ -70,13 +71,13 @@ class MaskedViewIOS extends React.Component<Props> {
   _hasWarnedInvalidRenderMask = false;
 
   render() {
-    const { maskElement, children, ...otherViewProps } = this.props;
+    const {maskElement, children, ...otherViewProps} = this.props;
 
     if (!React.isValidElement(maskElement)) {
       if (!this._hasWarnedInvalidRenderMask) {
         console.warn(
           'MaskedView: Invalid `maskElement` prop was passed to MaskedView. ' +
-            'Expected a React Element. No mask will render.'
+            'Expected a React Element. No mask will render.',
         );
         this._hasWarnedInvalidRenderMask = true;
       }

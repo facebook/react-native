@@ -872,14 +872,6 @@ exports.examples = [
             style={styles.multiline}
             dataDetectorTypes="phoneNumber"
           />
-          <TextInput
-            placeholder="multiline with children"
-            multiline={true}
-            enablesReturnKeyAutomatically={true}
-            returnKeyType="go"
-            style={styles.multiline}>
-            <View style={styles.multilineChild}/>
-          </TextInput>
         </View>
       );
     }
