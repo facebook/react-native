@@ -1,7 +1,6 @@
 # inspired by https://github.com/Originate/guide/blob/master/android/guide/Continuous%20Integration.md
 
-THIS_DIR=$(dirname "$0")
-source "${THIS_DIR}/.tests.env"
+source "scripts/.tests.env"
 
 function getAndroidPackages {
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools.bin:$PATH"
