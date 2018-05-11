@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /**
@@ -16,6 +18,6 @@
 module.exports = function promiseWaterfall(tasks) {
   return tasks.reduce(
     (prevTaskPromise, task) => prevTaskPromise.then(task),
-    Promise.resolve()
+    Promise.resolve(),
   );
 };

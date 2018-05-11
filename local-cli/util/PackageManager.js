@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const spawnSync = require('child_process').spawnSync;
@@ -25,8 +28,7 @@ function callYarnOrNpm(yarnCommand, npmCommand) {
 
   const projectDir = process.cwd();
   const isYarnAvailable =
-    yarn.getYarnVersionIfAvailable() &&
-    yarn.isGlobalCliUsingYarn(projectDir);
+    yarn.getYarnVersionIfAvailable() && yarn.isGlobalCliUsingYarn(projectDir);
 
   if (isYarnAvailable) {
     command = yarnCommand;
@@ -50,7 +52,7 @@ function callYarnOrNpm(yarnCommand, npmCommand) {
 function add(packageName) {
   return callYarnOrNpm(
     `yarn add ${packageName}`,
-    `npm install ${packageName} --save`
+    `npm install ${packageName} --save`,
   );
 }
 
@@ -62,7 +64,7 @@ function add(packageName) {
 function remove(packageName) {
   return callYarnOrNpm(
     `yarn remove ${packageName}`,
-    `npm uninstall --save ${packageName}`
+    `npm uninstall --save ${packageName}`,
   );
 }
 

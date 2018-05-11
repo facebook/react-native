@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const path = require('path');
@@ -12,5 +14,7 @@ const path = require('path');
  */
 module.exports = function getProjectDependencies() {
   const pjson = require(path.join(process.cwd(), './package.json'));
-  return Object.keys(pjson.dependencies || {}).filter(name => name !== 'react-native');
+  return Object.keys(pjson.dependencies || {}).filter(
+    name => name !== 'react-native',
+  );
 };

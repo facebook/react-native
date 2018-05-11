@@ -1,8 +1,14 @@
+/** @format */
+
 const fs = require.requireActual('fs');
 const path = require('path');
 
-const manifest = fs.readFileSync(path.join(__dirname, './files/AndroidManifest.xml'));
-const mainJavaClass = fs.readFileSync(path.join(__dirname, './files/Main.java'));
+const manifest = fs.readFileSync(
+  path.join(__dirname, './files/AndroidManifest.xml'),
+);
+const mainJavaClass = fs.readFileSync(
+  path.join(__dirname, './files/Main.java'),
+);
 
 function generateValidFileStructure(classFileName) {
   return {
@@ -13,7 +19,9 @@ function generateValidFileStructure(classFileName) {
           some: {
             example: {
               'Main.java': mainJavaClass,
-              [classFileName]: fs.readFileSync(path.join(__dirname, `./files/${classFileName}`)),
+              [classFileName]: fs.readFileSync(
+                path.join(__dirname, `./files/${classFileName}`),
+              ),
             },
           },
         },
@@ -34,13 +42,17 @@ exports.userConfigManifest = {
         some: {
           example: {
             'Main.java': mainJavaClass,
-            'ReactPackage.java': fs.readFileSync(path.join(__dirname, './files/ReactPackage.java')),
+            'ReactPackage.java': fs.readFileSync(
+              path.join(__dirname, './files/ReactPackage.java'),
+            ),
           },
         },
       },
     },
     debug: {
-      'AndroidManifest.xml': fs.readFileSync(path.join(__dirname, './files/AndroidManifest-debug.xml')),
+      'AndroidManifest.xml': fs.readFileSync(
+        path.join(__dirname, './files/AndroidManifest-debug.xml'),
+      ),
     },
   },
 };
