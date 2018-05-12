@@ -144,6 +144,7 @@ const TouchableWithoutFeedback = createReactClass({
   },
 
   touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    // $FlowFixMe Invalid prop usage
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
@@ -194,10 +195,13 @@ const TouchableWithoutFeedback = createReactClass({
         : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
+      // $FlowFixMe Invalid prop usage
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
+      // $FlowFixMe Invalid prop usage
       nativeID: this.props.nativeID,
+      // $FlowFixMe Invalid prop usage
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

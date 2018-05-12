@@ -636,6 +636,7 @@ const ScrollView = createReactClass({
   },
 
   _getKeyForIndex: function(index, childArray) {
+    // $FlowFixMe Invalid prop usage
     const child = childArray[index];
     return child && child.key;
   },
@@ -668,6 +669,7 @@ const ScrollView = createReactClass({
     if (!this.props.stickyHeaderIndices) {
       return;
     }
+    // $FlowFixMe Invalid prop usage
     const childArray = React.Children.toArray(this.props.children);
     if (key !== this._getKeyForIndex(index, childArray)) {
       // ignore stale layout update
@@ -677,8 +679,10 @@ const ScrollView = createReactClass({
     const layoutY = event.nativeEvent.layout.y;
     this._headerLayoutYs.set(key, layoutY);
 
+    // $FlowFixMe Invalid prop usage
     const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
     const previousHeaderIndex = this.props.stickyHeaderIndices[
+      // $FlowFixMe Invalid prop usage
       indexOfIndex - 1
     ];
     if (previousHeaderIndex != null) {
@@ -799,12 +803,16 @@ const ScrollView = createReactClass({
     const hasStickyHeaders =
       stickyHeaderIndices && stickyHeaderIndices.length > 0;
     const childArray =
+      // $FlowFixMe Invalid prop usage
       hasStickyHeaders && React.Children.toArray(this.props.children);
     const children = hasStickyHeaders
+      // $FlowFixMe Invalid prop usage
       ? childArray.map((child, index) => {
+          // $FlowFixMe Invalid prop usage
           const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
           if (indexOfIndex > -1) {
             const key = child.key;
+            // $FlowFixMe Invalid prop usage
             const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
             return (
               <ScrollViewStickyHeader
@@ -826,10 +834,12 @@ const ScrollView = createReactClass({
             return child;
           }
         })
+      // $FlowFixMe Invalid prop usage
       : this.props.children;
     const contentContainer = (
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
+        // $FlowFixMe Invalid prop usage
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
@@ -913,6 +923,7 @@ const ScrollView = createReactClass({
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
+          // $FlowFixMe Invalid prop usage
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTVOS ? null : refreshControl}
             {contentContainer}
@@ -931,6 +942,7 @@ const ScrollView = createReactClass({
           <ScrollViewClass
             {...props}
             style={baseStyle}
+            // $FlowFixMe Invalid prop usage
             ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>,
@@ -938,6 +950,7 @@ const ScrollView = createReactClass({
       }
     }
     return (
+      // $FlowFixMe Invalid prop usage
       <ScrollViewClass {...props} ref={this._setScrollViewRef}>
         {contentContainer}
       </ScrollViewClass>

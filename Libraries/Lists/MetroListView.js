@@ -85,6 +85,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
+    // $FlowFixMe Invalid prop usage
     this._listRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -94,6 +95,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   setNativeProps(props: Object) {
     if (this._listRef) {
+      // $FlowFixMe Invalid prop usage
       this._listRef.setNativeProps(props);
     }
   }
@@ -102,6 +104,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
+          // $FlowFixMe Invalid prop usage
           <ScrollView
             {...props}
             refreshControl={
@@ -117,6 +120,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
           />
         );
       } else {
+        // $FlowFixMe Invalid prop usage
         return <ScrollView {...props} />;
       }
     },
@@ -135,6 +139,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   render() {
     return (
+      // $FlowFixMe Invalid prop usage
       <ListView
         {...this.props}
         dataSource={this.state.ds}
@@ -142,6 +147,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
         renderRow={this._renderRow}
         renderFooter={this.props.FooterComponent && this._renderFooter}
         renderSectionHeader={this.props.sections && this._renderSectionHeader}
+        // $FlowFixMe Invalid prop usage
         renderSeparator={this.props.SeparatorComponent && this._renderSeparator}
       />
     );
@@ -167,6 +173,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     } else {
       invariant(!props.sections, 'Cannot have both sections and items props.');
       return {
+        // $FlowFixMe Invalid prop usage
         ds: state.ds.cloneWithRows(props.items),
         sectionHeaderData,
       };

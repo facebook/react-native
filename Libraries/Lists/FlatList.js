@@ -476,6 +476,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
   _captureRef = ref => {
+    // $FlowFixMe Invalid prop usage
     this._listRef = ref;
   };
 

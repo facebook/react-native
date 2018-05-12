@@ -190,6 +190,7 @@ const TouchableHighlight = createReactClass({
   getDefaultProps: () => DEFAULT_PROPS,
 
   getInitialState: function() {
+    // $FlowFixMe Invalid prop usage
     this._isMounted = false;
     if (this.props.testOnly_pressed) {
       return {
@@ -211,11 +212,13 @@ const TouchableHighlight = createReactClass({
   },
 
   componentDidMount: function() {
+    // $FlowFixMe Invalid prop usage
     this._isMounted = true;
     ensurePositiveDelayProps(this.props);
   },
 
   componentWillUnmount: function() {
+    // $FlowFixMe Invalid prop usage
     this._isMounted = false;
     clearTimeout(this._hideTimeout);
   },
@@ -235,12 +238,14 @@ const TouchableHighlight = createReactClass({
    */
   touchableHandleActivePressIn: function(e: PressEvent) {
     clearTimeout(this._hideTimeout);
+    // $FlowFixMe Invalid prop usage
     this._hideTimeout = null;
     this._showUnderlay();
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
   touchableHandleActivePressOut: function(e: PressEvent) {
+    // $FlowFixMe Invalid prop usage
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
@@ -251,6 +256,7 @@ const TouchableHighlight = createReactClass({
     clearTimeout(this._hideTimeout);
     if (!Platform.isTVOS) {
       this._showUnderlay();
+      // $FlowFixMe Invalid prop usage
       this._hideTimeout = setTimeout(
         this._hideUnderlay,
         this.props.delayPressOut,
@@ -284,6 +290,7 @@ const TouchableHighlight = createReactClass({
   },
 
   _showUnderlay: function() {
+    // $FlowFixMe Invalid prop usage
     if (!this._isMounted || !this._hasPressHandler()) {
       return;
     }
@@ -300,6 +307,7 @@ const TouchableHighlight = createReactClass({
 
   _hideUnderlay: function() {
     clearTimeout(this._hideTimeout);
+    // $FlowFixMe Invalid prop usage
     this._hideTimeout = null;
     if (this.props.testOnly_pressed) {
       return;
@@ -323,10 +331,12 @@ const TouchableHighlight = createReactClass({
   },
 
   render: function() {
+    // $FlowFixMe Invalid prop usage
     const child = React.Children.only(this.props.children);
     return (
       <View
         accessible={this.props.accessible !== false}
+        // $FlowFixMe Invalid prop usage
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
@@ -347,7 +357,9 @@ const TouchableHighlight = createReactClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        // $FlowFixMe Invalid prop usage
         nativeID={this.props.nativeID}
+        // $FlowFixMe Invalid prop usage
         testID={this.props.testID}>
         {React.cloneElement(child, {
           style: StyleSheet.compose(

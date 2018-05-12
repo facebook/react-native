@@ -284,6 +284,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
    */
   recordInteraction() {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    // $FlowFixMe Invalid prop usage
     listRef && listRef.recordInteraction();
   }
 
@@ -294,6 +295,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
    */
   flashScrollIndicators() {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    // $FlowFixMe Invalid prop usage
     listRef && listRef.flashScrollIndicators();
   }
 
@@ -303,6 +305,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   getScrollResponder(): ?ScrollView {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
+      // $FlowFixMe Invalid prop usage
       return listRef.getScrollResponder();
     }
   }
@@ -310,6 +313,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   getScrollableNode() {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
+      // $FlowFixMe Invalid prop usage
       return listRef.getScrollableNode();
     }
   }
@@ -317,6 +321,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   setNativeProps(props: Object) {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
+      // $FlowFixMe Invalid prop usage
       listRef.setNativeProps(props);
     }
   }

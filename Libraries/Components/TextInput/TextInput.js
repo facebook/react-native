@@ -1040,6 +1040,7 @@ const TextInput = createReactClass({
   },
 
   _onTextInput: function(event: Event) {
+    // $FlowFixMe Invalid prop usage
     this.props.onTextInput && this.props.onTextInput(event);
   },
 

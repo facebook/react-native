@@ -138,6 +138,7 @@ const TouchableBounce = createReactClass({
   },
 
   touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    // $FlowFixMe Invalid prop usage
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 

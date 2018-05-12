@@ -924,6 +924,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
+      // $FlowFixMe Invalid prop usage
       {
         ref: this._captureScrollRef,
       },
@@ -1016,6 +1017,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
+        // $FlowFixMe Invalid prop usage
         <ScrollView
           {...props}
           refreshControl={
@@ -1032,6 +1034,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
+      // $FlowFixMe Invalid prop usage
       return <ScrollView {...props} />;
     }
   };
