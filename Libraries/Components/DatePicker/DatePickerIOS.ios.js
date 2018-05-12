@@ -24,11 +24,25 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {ViewProps} from 'ViewPropTypes';
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime',
 };
 
 type Event = Object;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  date?: ?Date,
+  initialDate?: ?Date,
+  locale?: ?string,
+  maximumDate?: ?Date,
+  minimumDate?: ?Date,
+  minuteInterval?: ?(1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30),
+  mode?: ?('date' | 'time' | 'datetime'),
+  onDateChange: (date: Date) => void,
+  timeZoneOffsetInMinutes?: ?number,
+|}>;
 
 /**
  * Use `DatePickerIOS` to render a date/time picker (selector) on iOS.  This is
@@ -37,7 +51,7 @@ type Event = Object;
  * the user's change will be reverted immediately to reflect `props.date` as the
  * source of truth.
  */
-const DatePickerIOS = createReactClass({
+const DatePickerIOS = ((createReactClass({
   displayName: 'DatePickerIOS',
   // TOOD: Put a better type for _picker
   _picker: (undefined: ?$FlowFixMe),
@@ -171,7 +185,7 @@ const DatePickerIOS = createReactClass({
       </View>
     );
   },
-});
+}): any): React.ComponentType<Props>);
 
 const styles = StyleSheet.create({
   datePickerIOS: {
