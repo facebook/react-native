@@ -17,7 +17,9 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
-type Props = ViewProps & {
+type Props = {
+  ...ViewProps,
+
   children: any,
   /**
    * Should be a React element to be rendered and applied as the
