@@ -334,7 +334,6 @@ const ScrollView = createReactClass({
      *   - `false`, deprecated, use 'never' instead
      *   - `true`, deprecated, use 'always' instead
      */
-    // $FlowFixMe
     keyboardShouldPersistTaps: PropTypes.oneOf([
       'always',
       'never',

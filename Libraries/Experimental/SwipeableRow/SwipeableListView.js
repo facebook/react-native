@@ -117,11 +117,9 @@ class SwipeableListView extends React.Component<Props, State> {
 
   render(): React.Node {
     return (
-      // $FlowFixMe Invalid prop usage
       <ListView
         {...this.props}
         ref={ref => {
-          // $FlowFixMe Invalid prop usage
           this._listViewRef = ref;
         }}
         dataSource={this.state.dataSource.getDataSource()}

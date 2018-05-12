@@ -516,10 +516,8 @@ const ListView = createReactClass({
     if (props.removeClippedSubviews === undefined) {
       props.removeClippedSubviews = true;
     }
-    // $FlowFixMe Invalid prop usage
     Object.assign(props, {
       onScroll: this._onScroll,
-      // $FlowFixMe Invalid prop usage
       stickyHeaderIndices: this.props.stickyHeaderIndices.concat(
         stickySectionHeaderIndices,
       ),
