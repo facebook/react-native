@@ -24,7 +24,8 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewProps, ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type ScreenRect = {
   screenX: number,
@@ -39,13 +40,21 @@ type KeyboardChangeEvent = {
   easing?: string,
 };
 
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  behavior?: ?('height' | 'position' | 'padding'),
+  contentContainerStyle?: ?ViewStyleProp,
+  enabled?: ?boolean,
+  keyboardVerticalOffset?: ?number,
+|}>;
+
 const viewRef = 'VIEW';
 
 /**
  * This is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
  * It can automatically adjust either its height, position or bottom padding based on the position of the keyboard.
  */
-const KeyboardAvoidingView = createReactClass({
+const KeyboardAvoidingView = ((createReactClass({
   displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
@@ -229,6 +238,6 @@ const KeyboardAvoidingView = createReactClass({
         );
     }
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = KeyboardAvoidingView;
