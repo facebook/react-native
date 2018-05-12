@@ -365,24 +365,6 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs JavaScript tests on Node 6
-  test_javascript_node6_compatibility:
-    <<: *defaults
-    docker:
-      - image: circleci/node:6
-    steps:
-      - checkout
-      - run: *setup-artifacts
-
-      - restore-cache: *restore-cache-yarn
-      - run: *yarn
-      - save-cache: *save-cache-yarn
-
-      - run: *run-js-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
   # Runs unit tests on iOS devices
   test_ios:
     <<: *macos_defaults
@@ -623,10 +605,6 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
-
-      # Test JavaScript using Node 6, the minimum supported version
-      - test_javascript_node6_compatibility:
-          filters: *filter-ignore-gh-pages
 
       # Test Android
       - test_android:
