@@ -35,9 +35,11 @@ const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-// There's no easy way to create a different type if (Platform.isTVOS):
-// so we must include TVViewProps
 export type ViewProps = {
+  // There's no easy way to create a different type if (Platform.isTVOS):
+  // so we must include TVViewProps
+  ...TVViewProps,
+
   accessible?: boolean,
   accessibilityLabel?:
     | null
@@ -77,7 +79,7 @@ export type ViewProps = {
   shouldRasterizeIOS?: boolean,
   collapsable?: boolean,
   needsOffscreenAlphaCompositing?: boolean,
-} & TVViewProps;
+};
 
 module.exports = {
   /**

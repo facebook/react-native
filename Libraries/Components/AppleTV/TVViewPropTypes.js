@@ -71,7 +71,7 @@ const TVViewPropTypes = {
   tvParallaxMagnification: PropTypes.number,
 };
 
-export type TVViewProps = {
+export type TVViewProps = $ReadOnly<{|
   isTVSelectable?: boolean,
   hasTVPreferredFocus?: boolean,
   tvParallaxProperties?: Object,
@@ -79,6 +79,6 @@ export type TVViewProps = {
   tvParallaxShiftDistanceY?: number,
   tvParallaxTiltAngle?: number,
   tvParallaxMagnification?: number,
-};
+|}>;
 
 module.exports = TVViewPropTypes;
