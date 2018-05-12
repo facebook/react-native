@@ -17,4 +17,9 @@ const PointPropType = PropTypes.shape({
   y: PropTypes.number,
 });
 
+export type PointProp = $ReadOnly<{
+  x: number,
+  y: number,
+}>;
+
 module.exports = PointPropType;

@@ -19,11 +19,11 @@ const EdgeInsetsPropType = PropTypes.shape({
   right: PropTypes.number,
 });
 
-export type EdgeInsetsProp = {|
-  +top: number,
-  +left: number,
-  +bottom: number,
-  +right: number,
-|};
+export type EdgeInsetsProp = $ReadOnly<{|
+  top?: ?number,
+  left?: ?number,
+  bottom?: ?number,
+  right?: ?number,
+|}>;
 
 module.exports = EdgeInsetsPropType;
