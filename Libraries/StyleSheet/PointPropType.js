@@ -12,9 +12,7 @@
 
 const PropTypes = require('prop-types');
 
-const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-
-const PointPropType = createStrictShapeTypeChecker({
+const PointPropType = PropTypes.shape({
   x: PropTypes.number,
   y: PropTypes.number,
 });

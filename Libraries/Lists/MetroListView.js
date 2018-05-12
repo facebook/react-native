@@ -146,7 +146,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
       />
     );
   }
-  _listRef: ListView;
+  _listRef: ?ListView;
   _captureRef = ref => {
     this._listRef = ref;
   };

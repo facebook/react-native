@@ -80,7 +80,7 @@ exports.examples = [
         title: string,
         additionalStyles: typeof StyleSheet,
       ) {
-        let _scrollView: ScrollView;
+        let _scrollView: ?ScrollView;
         return (
           <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>

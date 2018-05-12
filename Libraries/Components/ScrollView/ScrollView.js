@@ -237,6 +237,7 @@ const ScrollView = createReactClass({
      *   - `false`, deprecated, use 'never' instead
      *   - `true`, deprecated, use 'always' instead
      */
+    // $FlowFixMe
     keyboardShouldPersistTaps: PropTypes.oneOf([
       'always',
       'never',
@@ -521,9 +522,11 @@ const ScrollView = createReactClass({
 
   UNSAFE_componentWillMount: function() {
     this._scrollAnimatedValue = new AnimatedImplementation.Value(
+      // $FlowFixMe
       this.props.contentOffset ? this.props.contentOffset.y : 0,
     );
     this._scrollAnimatedValue.setOffset(
+      // $FlowFixMe
       this.props.contentInset ? this.props.contentInset.top : 0,
     );
     this._stickyHeaderRefs = new Map();
