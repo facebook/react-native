@@ -10,7 +10,6 @@
 'use strict';
 
 const ImageProps = require('ImageProps');
-const ImageResizeMode = require('ImageResizeMode');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
@@ -36,7 +35,6 @@ const Image = createReactClass({
   propTypes: ImageProps,
 
   statics: {
-    resizeMode: ImageResizeMode,
     /**
      * Retrieve the width and height (in pixels) of an image prior to displaying it.
      *
