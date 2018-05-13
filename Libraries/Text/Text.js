@@ -36,7 +36,7 @@ type ResponseHandlers = $ReadOnly<{|
 
 type Props = $ReadOnly<{
   ...TextProps,
-  forwardedRef: ?React.Ref<NativeComponent<TextProps, any>>,
+  forwardedRef: ?React.Ref<NativeComponent<TextProps>>,
 }>;
 
 type State = {|
@@ -270,4 +270,4 @@ Text.displayName = 'Text';
 // TODO: Deprecate this.
 Text.propTypes = TextPropTypes;
 
-module.exports = ((Text: any): NativeComponent<TextProps, any>);
+module.exports = ((Text: any): Class<NativeComponent<TextProps>>);

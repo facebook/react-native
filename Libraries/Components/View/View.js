@@ -74,4 +74,4 @@ if (__DEV__) {
   ViewToExport.displayName = 'View';
 }
 
-module.exports = ((ViewToExport: any): Class<NativeComponent<ViewProps, any>>);
+module.exports = ((ViewToExport: any): Class<NativeComponent<ViewProps>>);
