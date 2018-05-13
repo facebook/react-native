@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -23,22 +25,11 @@ exports.framework = 'React';
 exports.title = '<StatusBar>';
 exports.description = 'Component for controlling the status bar';
 
-const colors = [
-  '#ff0000',
-  '#00ff00',
-  '#0000ff',
-  'rgba(0, 0, 0, 0.4)',
-];
+const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 
-const barStyles = [
-  'default',
-  'light-content',
-];
+const barStyles = ['default', 'light-content'];
 
-const showHideTransitions = [
-  'fade',
-  'slide',
-];
+const showHideTransitions = ['fade', 'slide'];
 
 function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
@@ -64,7 +55,10 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
   _onChangeTransition = () => {
     this._showHideTransitionIndex++;
     this.setState({
-      showHideTransition: getValue(showHideTransitions, this._showHideTransitionIndex),
+      showHideTransition: getValue(
+        showHideTransitions,
+        this._showHideTransitionIndex,
+      ),
     });
   };
 
@@ -87,7 +81,9 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
           style={styles.wrapper}
           onPress={this._onChangeAnimated}>
           <View style={styles.button}>
-            <Text>animated (ios only): {this.state.animated ? 'true' : 'false'}</Text>
+            <Text>
+              animated (ios only): {this.state.animated ? 'true' : 'false'}
+            </Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
@@ -95,8 +91,10 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
           onPress={this._onChangeTransition}>
           <View style={styles.button}>
             <Text>
-              showHideTransition (ios only):
-              '{getValue(showHideTransitions, this._showHideTransitionIndex)}'
+              showHideTransition (ios only): '{getValue(
+                showHideTransitions,
+                this._showHideTransitionIndex,
+              )}'
             </Text>
           </View>
         </TouchableHighlight>
@@ -149,14 +147,18 @@ class StatusBarStyleExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class StatusBarNetworkActivityExample extends React.Component<{}, $FlowFixMeState> {
+class StatusBarNetworkActivityExample extends React.Component<
+  {},
+  $FlowFixMeState,
+> {
   state = {
     networkActivityIndicatorVisible: false,
   };
 
   _onChangeNetworkIndicatorVisible = () => {
     this.setState({
-      networkActivityIndicatorVisible: !this.state.networkActivityIndicatorVisible,
+      networkActivityIndicatorVisible: !this.state
+        .networkActivityIndicatorVisible,
     });
   };
 
@@ -164,7 +166,9 @@ class StatusBarNetworkActivityExample extends React.Component<{}, $FlowFixMeStat
     return (
       <View>
         <StatusBar
-          networkActivityIndicatorVisible={this.state.networkActivityIndicatorVisible}
+          networkActivityIndicatorVisible={
+            this.state.networkActivityIndicatorVisible
+          }
         />
         <TouchableHighlight
           style={styles.wrapper}
@@ -181,7 +185,10 @@ class StatusBarNetworkActivityExample extends React.Component<{}, $FlowFixMeStat
   }
 }
 
-class StatusBarBackgroundColorExample extends React.Component<{}, $FlowFixMeState> {
+class StatusBarBackgroundColorExample extends React.Component<
+  {},
+  $FlowFixMeState,
+> {
   state = {
     animated: true,
     backgroundColor: getValue(colors, 0),
@@ -238,14 +245,14 @@ class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <StatusBar
-          translucent={this.state.translucent}
-        />
+        <StatusBar translucent={this.state.translucent} />
         <TouchableHighlight
           style={styles.wrapper}
           onPress={this._onChangeTranslucent}>
           <View style={styles.button}>
-            <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
+            <Text>
+              translucent: {this.state.translucent ? 'true' : 'false'}
+            </Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -363,7 +370,10 @@ class StatusBarStaticAndroidExample extends React.Component<{}> {
             StatusBar.setBackgroundColor('rgba(0, 0, 0, 0.4)', true);
           }}>
           <View style={styles.button}>
-            <Text>setTranslucent(true) and setBackgroundColor('rgba(0, 0, 0, 0.4)', true)</Text>
+            <Text>
+              setTranslucent(true) and setBackgroundColor('rgba(0, 0, 0, 0.4)',
+              true)
+            </Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
@@ -373,14 +383,15 @@ class StatusBarStaticAndroidExample extends React.Component<{}> {
             StatusBar.setBackgroundColor('black', true);
           }}>
           <View style={styles.button}>
-            <Text>setTranslucent(false) and setBackgroundColor('black', true)</Text>
+            <Text>
+              setTranslucent(false) and setBackgroundColor('black', true)
+            </Text>
           </View>
         </TouchableHighlight>
       </View>
     );
   }
 }
-
 
 class ModalExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -423,58 +434,67 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const examples = [{
-  title: 'StatusBar hidden',
-  render() {
-    return <StatusBarHiddenExample />;
+const examples = [
+  {
+    title: 'StatusBar hidden',
+    render() {
+      return <StatusBarHiddenExample />;
+    },
   },
-}, {
-  title: 'StatusBar style',
-  render() {
-    return <StatusBarStyleExample />;
+  {
+    title: 'StatusBar style',
+    render() {
+      return <StatusBarStyleExample />;
+    },
+    platform: 'ios',
   },
-  platform: 'ios',
-}, {
-  title: 'StatusBar network activity indicator',
-  render() {
-    return <StatusBarNetworkActivityExample />;
+  {
+    title: 'StatusBar network activity indicator',
+    render() {
+      return <StatusBarNetworkActivityExample />;
+    },
+    platform: 'ios',
   },
-  platform: 'ios',
-}, {
-  title: 'StatusBar background color',
-  render() {
-    return <StatusBarBackgroundColorExample />;
+  {
+    title: 'StatusBar background color',
+    render() {
+      return <StatusBarBackgroundColorExample />;
+    },
+    platform: 'android',
   },
-  platform: 'android',
-}, {
-  title: 'StatusBar translucent',
-  render() {
-    return <StatusBarTranslucentExample />;
+  {
+    title: 'StatusBar translucent',
+    render() {
+      return <StatusBarTranslucentExample />;
+    },
+    platform: 'android',
   },
-  platform: 'android',
-}, {
-  title: 'StatusBar static API',
-  render() {
-    return <StatusBarStaticIOSExample />;
+  {
+    title: 'StatusBar static API',
+    render() {
+      return <StatusBarStaticIOSExample />;
+    },
+    platform: 'ios',
   },
-  platform: 'ios',
-}, {
-  title: 'StatusBar static API',
-  render() {
-    return <StatusBarStaticAndroidExample />;
+  {
+    title: 'StatusBar static API',
+    render() {
+      return <StatusBarStaticAndroidExample />;
+    },
+    platform: 'android',
   },
-  platform: 'android',
-}, {
-  title: 'StatusBar dimensions',
-  render() {
-    return (
-      <View>
-        <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>
-      </View>
-    );
+  {
+    title: 'StatusBar dimensions',
+    render() {
+      return (
+        <View>
+          <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>
+        </View>
+      );
+    },
+    platform: 'android',
   },
-  platform: 'android',
-}];
+];
 
 exports.examples = examples;
 
@@ -483,7 +503,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5fcff'
+    backgroundColor: '#f5fcff',
   },
   innerContainer: {
     borderRadius: 10,

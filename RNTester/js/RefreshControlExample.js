@@ -4,7 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 const React = require('react');
@@ -42,7 +44,7 @@ class Row extends React.Component {
 
   render() {
     return (
-     <TouchableWithoutFeedback onPress={this._onClick} >
+      <TouchableWithoutFeedback onPress={this._onClick}>
         <View style={styles.row}>
           <Text style={styles.text}>
             {this.props.data.text + ' (' + this.props.data.clicks + ' clicks)'}
@@ -60,11 +62,13 @@ class RefreshControlExample extends React.Component {
   state = {
     isRefreshing: false,
     loaded: 0,
-    rowData: Array.from(new Array(20)).map(
-      (val, i) => ({text: 'Initial row ' + i, clicks: 0})),
+    rowData: Array.from(new Array(20)).map((val, i) => ({
+      text: 'Initial row ' + i,
+      clicks: 0,
+    })),
   };
 
-  _onClick = (row) => {
+  _onClick = row => {
     row.clicks++;
     this.setState({
       rowData: this.state.rowData,
@@ -73,7 +77,7 @@ class RefreshControlExample extends React.Component {
 
   render() {
     const rows = this.state.rowData.map((row, ii) => {
-      return <Row key={ii} data={row} onClick={this._onClick}/>;
+      return <Row key={ii} data={row} onClick={this._onClick} />;
     });
     return (
       <ScrollView
@@ -99,11 +103,11 @@ class RefreshControlExample extends React.Component {
     setTimeout(() => {
       // prepend 10 items
       const rowData = Array.from(new Array(10))
-      .map((val, i) => ({
-        text: 'Loaded row ' + (+this.state.loaded + i),
-        clicks: 0,
-      }))
-      .concat(this.state.rowData);
+        .map((val, i) => ({
+          text: 'Loaded row ' + (+this.state.loaded + i),
+          clicks: 0,
+        }))
+        .concat(this.state.rowData);
 
       this.setState({
         loaded: this.state.loaded + 10,

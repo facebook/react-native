@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -15,8 +16,14 @@ var Asserts = {
     if (expected !== actual) {
       Assert.fail(
         msg ||
-        'Expected: ' + expected + ', received: ' + actual + '\n' +
-        'at ' + (new Error()).stack);
+          'Expected: ' +
+            expected +
+            ', received: ' +
+            actual +
+            '\n' +
+            'at ' +
+            new Error().stack,
+      );
     } else {
       Assert.success();
     }

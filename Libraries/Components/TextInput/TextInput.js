@@ -20,22 +20,16 @@ const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
+const TextAncestor = require('TextAncestor');
 const TextInputState = require('TextInputState');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
-const {ViewContextTypes} = require('ViewContext');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 let AndroidTextInput;
@@ -46,8 +40,6 @@ const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-import type {ViewChildContext} from 'ViewContext';
 
 if (Platform.OS === 'android') {
   AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
@@ -401,6 +393,7 @@ const TextInput = createReactClass({
      * Only called for multiline text inputs.
      */
     onContentSizeChange: PropTypes.func,
+    onTextInput: PropTypes.func,
     /**
      * Callback that is called when text input ends.
      */
@@ -701,16 +694,7 @@ const TextInput = createReactClass({
     }
   },
 
-  getChildContext(): ViewChildContext {
-    return {
-      isInAParentText: true,
-    };
-  },
-
-  childContextTypes: ViewContextTypes,
-
   contextTypes: {
-    ...ViewContextTypes,
     onFocusRequested: PropTypes.func,
     focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
@@ -723,13 +707,17 @@ const TextInput = createReactClass({
   },
 
   render: function() {
+    let textInput;
     if (Platform.OS === 'ios') {
-      return UIManager.RCTVirtualText
+      textInput = UIManager.RCTVirtualText
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
-      return this._renderAndroid();
+      textInput = this._renderAndroid();
     }
+    return (
+      <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
+    );
   },
 
   _getText: function(): ?string {

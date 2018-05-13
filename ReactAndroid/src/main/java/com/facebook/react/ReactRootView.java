@@ -147,11 +147,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
+        enableLayoutCalculation();
       } else {
+        enableLayoutCalculation();
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
-
-      enableLayoutCalculation();
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -527,6 +527,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {

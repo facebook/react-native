@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -117,11 +118,7 @@ async function buildBundle(
   });
 
   // When we're done saving bundle output and the assets, we're done.
-  const assets = await saveAssets(
-    outputAssets,
-    args.platform,
-    args.assetsDest,
-  );
+  const assets = await saveAssets(outputAssets, args.platform, args.assetsDest);
 
   server.end();
 

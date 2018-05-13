@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /**
@@ -18,7 +20,9 @@
 module.exports = function removeFromProjectReferences(project, file) {
   const firstProject = project.getFirstProject().firstProject;
 
-  const projectRef = firstProject.projectReferences.find(item => item.ProjectRef === file.uuid);
+  const projectRef = firstProject.projectReferences.find(
+    item => item.ProjectRef === file.uuid,
+  );
 
   if (!projectRef) {
     return null;
@@ -26,7 +30,7 @@ module.exports = function removeFromProjectReferences(project, file) {
 
   firstProject.projectReferences.splice(
     firstProject.projectReferences.indexOf(projectRef),
-    1
+    1,
   );
 
   return projectRef;

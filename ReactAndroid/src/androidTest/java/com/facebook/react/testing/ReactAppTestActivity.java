@@ -262,7 +262,7 @@ public class ReactAppTestActivity extends FragmentActivity
                       @Override
                       public FabricUIManager getJSIModule() {
                         List<ViewManager> viewManagers =
-                            getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext);
+                          getReactInstanceManager().getOrCreateViewManagers(reactApplicationContext);
                         FabricUIManager fabricUIManager =
                             new FabricUIManager(
                                 reactApplicationContext, new ViewManagerRegistry(viewManagers));

@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const AppContainer = require('AppContainer');
@@ -21,8 +23,10 @@ const View = require('View');
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
-const ModalEventEmitter = Platform.OS === 'ios' && NativeModules.ModalManager ?
-  new NativeEventEmitter(NativeModules.ModalManager) : null;
+const ModalEventEmitter =
+  Platform.OS === 'ios' && NativeModules.ModalManager
+    ? new NativeEventEmitter(NativeModules.ModalManager)
+    : null;
 
 import type EmitterSubscription from 'EmitterSubscription';
 
@@ -36,7 +40,7 @@ import type EmitterSubscription from 'EmitterSubscription';
 // <Modal> on screen. There can be different ones, either nested or as siblings.
 // We cannot pass the onDismiss callback to native as the view will be
 // destroyed before the callback is fired.
-var uniqueModalIdentifier = 0;
+let uniqueModalIdentifier = 0;
 
 class Modal extends React.Component<Object> {
   static propTypes = {
@@ -51,7 +55,12 @@ class Modal extends React.Component<Object> {
      *
      * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
      */
-    presentationStyle: PropTypes.oneOf(['fullScreen', 'pageSheet', 'formSheet', 'overFullScreen']),
+    presentationStyle: PropTypes.oneOf([
+      'fullScreen',
+      'pageSheet',
+      'formSheet',
+      'overFullScreen',
+    ]),
     /**
      * The `transparent` prop determines whether your modal will fill the
      * entire view.
@@ -78,7 +87,10 @@ class Modal extends React.Component<Object> {
      *
      * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
      */
-    onRequestClose: (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func,
+    onRequestClose:
+      Platform.isTVOS || Platform.OS === 'android'
+        ? PropTypes.func.isRequired
+        : PropTypes.func,
     /**
      * The `onShow` prop allows passing a function that will be called once the
      * modal has been shown.
@@ -95,14 +107,22 @@ class Modal extends React.Component<Object> {
     onDismiss: PropTypes.func,
     animated: deprecatedPropType(
       PropTypes.bool,
-      'Use the `animationType` prop instead.'
+      'Use the `animationType` prop instead.',
     ),
     /**
      * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
      *
      * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
      */
-    supportedOrientations: PropTypes.arrayOf(PropTypes.oneOf(['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'])),
+    supportedOrientations: PropTypes.arrayOf(
+      PropTypes.oneOf([
+        'portrait',
+        'portrait-upside-down',
+        'landscape',
+        'landscape-left',
+        'landscape-right',
+      ]),
+    ),
     /**
      * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
      *
@@ -129,6 +149,18 @@ class Modal extends React.Component<Object> {
     this._identifier = uniqueModalIdentifier++;
   }
 
+  static childContextTypes = {
+    virtualizedList: PropTypes.object,
+  };
+
+  getChildContext() {
+    // Reset the context so VirtualizedList doesn't get confused by nesting
+    // in the React tree that doesn't reflect the native component heirarchy.
+    return {
+      virtualizedList: null,
+    };
+  }
+
   componentDidMount() {
     if (ModalEventEmitter) {
       this._eventSubscription = ModalEventEmitter.addListener(
@@ -153,8 +185,16 @@ class Modal extends React.Component<Object> {
   }
 
   static _confirmProps(props: Object) {
-    if (props.presentationStyle && props.presentationStyle !== 'overFullScreen' && props.transparent) {
-      console.warn(`Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`);
+    if (
+      props.presentationStyle &&
+      props.presentationStyle !== 'overFullScreen' &&
+      props.transparent
+    ) {
+      console.warn(
+        `Modal with '${
+          props.presentationStyle
+        }' presentation style and 'transparent' value is not supported.`,
+      );
     }
   }
 
@@ -184,11 +224,13 @@ class Modal extends React.Component<Object> {
       }
     }
 
-    const innerChildren = __DEV__ ?
-      ( <AppContainer rootTag={this.context.rootTag}>
-          {this.props.children}
-        </AppContainer>) :
-      this.props.children;
+    const innerChildren = __DEV__ ? (
+      <AppContainer rootTag={this.context.rootTag}>
+        {this.props.children}
+      </AppContainer>
+    ) : (
+      this.props.children
+    );
 
     return (
       <RCTModalHostView
@@ -202,11 +244,8 @@ class Modal extends React.Component<Object> {
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
-        onOrientationChange={this.props.onOrientationChange}
-        >
-        <View style={[styles.container, containerStyles]}>
-          {innerChildren}
-        </View>
+        onOrientationChange={this.props.onOrientationChange}>
+        <View style={[styles.container, containerStyles]}>{innerChildren}</View>
       </RCTModalHostView>
     );
   }
@@ -224,9 +263,9 @@ const styles = StyleSheet.create({
   },
   container: {
     position: 'absolute',
-    [side] : 0,
+    [side]: 0,
     top: 0,
-  }
+  },
 });
 
 module.exports = Modal;

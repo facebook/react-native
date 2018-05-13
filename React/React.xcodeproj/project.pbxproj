@@ -51,6 +51,7 @@
 		133957881DF76D3500EC27BE /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		133957891DF76D3500EC27BE /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		1339578B1DF76D3500EC27BE /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
+		133EA4E52098F6E30035B1D8 /* ReactMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
 		13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */; };
 		134D63C31F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 134D63C21F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h */; };
 		134D63C41F1FEC65008872B5 /* RCTCxxBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 134D63C21F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h */; };
@@ -127,6 +128,10 @@
 		13D033631C1837FE0021DC29 /* RCTClipboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D033621C1837FE0021DC29 /* RCTClipboard.m */; };
 		13D9FEEB1CDCCECF00158BD7 /* RCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */; };
 		13D9FEEE1CDCD93000158BD7 /* RCTKeyboardObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D9FEED1CDCD93000158BD7 /* RCTKeyboardObserver.m */; };
+		13DA8A312097A90B00276ED4 /* ReactMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
+		13DA8A322097A90B00276ED4 /* ReactMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
+		13DA8A332097A90B00276ED4 /* ReactMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13DA8A302097A90B00276ED4 /* ReactMarker.cpp */; };
+		13DA8A342097A90B00276ED4 /* ReactMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13DA8A302097A90B00276ED4 /* ReactMarker.cpp */; };
 		13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067491A70F434002CDEE1 /* RCTUIManager.m */; };
 		13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E0674E1A70F44B002CDEE1 /* RCTViewManager.m */; };
 		13E067571A70F44B002CDEE1 /* RCTView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13E067501A70F44B002CDEE1 /* RCTView.m */; };
@@ -1147,6 +1152,8 @@
 		59EDBCC61FDF4E55003573DE /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		59EDBCC71FDF4E55003573DE /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
 		59EDBCC81FDF4E55003573DE /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
+		5C70426020A1004800FBEEF7 /* RCTFontConstantsOverride.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C70425F20A1004800FBEEF7 /* RCTFontConstantsOverride.h */; };
+		5C70426120A1022C00FBEEF7 /* RCTFontConstantsOverride.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5C70425F20A1004800FBEEF7 /* RCTFontConstantsOverride.h */; };
 		5CE2080220772F7D009A43B3 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
 		5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		657734841EE834C900A0E9EA /* RCTInspectorDevServerHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */; };
@@ -1599,6 +1606,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				5C70426120A1022C00FBEEF7 /* RCTFontConstantsOverride.h in Copy Headers */,
 				39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */,
 				591F78DE202ADB8F004A668C /* RCTLayout.h in Copy Headers */,
 				59EDBCBD1FDF4E43003573DE /* RCTScrollableProtocol.h in Copy Headers */,
@@ -1753,6 +1761,7 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				133EA4E52098F6E30035B1D8 /* ReactMarker.h in Copy Headers */,
 				C669D8981F72E3DE006748EB /* RAMBundleRegistry.h in Copy Headers */,
 				3DA981A01E5B0E34004F2374 /* CxxModule.h in Copy Headers */,
 				3DA981A11E5B0E34004F2374 /* CxxNativeModule.h in Copy Headers */,
@@ -2014,6 +2023,8 @@
 		13D9FEEA1CDCCECF00158BD7 /* RCTEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventEmitter.m; sourceTree = "<group>"; };
 		13D9FEEC1CDCD93000158BD7 /* RCTKeyboardObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTKeyboardObserver.h; sourceTree = "<group>"; };
 		13D9FEED1CDCD93000158BD7 /* RCTKeyboardObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTKeyboardObserver.m; sourceTree = "<group>"; };
+		13DA8A2F2097A90A00276ED4 /* ReactMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReactMarker.h; sourceTree = "<group>"; };
+		13DA8A302097A90B00276ED4 /* ReactMarker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReactMarker.cpp; sourceTree = "<group>"; };
 		13E067481A70F434002CDEE1 /* RCTUIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIManager.h; sourceTree = "<group>"; };
 		13E067491A70F434002CDEE1 /* RCTUIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManager.m; sourceTree = "<group>"; };
 		13E0674B1A70F44B002CDEE1 /* RCTShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTShadowView.h; sourceTree = "<group>"; };
@@ -2240,6 +2251,7 @@
 		59EDBCA41FDF4E0C003573DE /* RCTScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollView.m; sourceTree = "<group>"; };
 		59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTScrollViewManager.h; sourceTree = "<group>"; };
 		59EDBCA61FDF4E0C003573DE /* RCTScrollViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTScrollViewManager.m; sourceTree = "<group>"; };
+		5C70425F20A1004800FBEEF7 /* RCTFontConstantsOverride.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFontConstantsOverride.h; sourceTree = "<group>"; };
 		5CE2080020772F7C009A43B3 /* YGConfig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGConfig.cpp; sourceTree = "<group>"; };
 		5CE2080120772F7C009A43B3 /* YGConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGConfig.h; sourceTree = "<group>"; };
 		657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTInspectorDevServerHelper.h; sourceTree = "<group>"; };
@@ -2561,6 +2573,7 @@
 		13B07FF31A6947C200A75B9A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5C70425F20A1004800FBEEF7 /* RCTFontConstantsOverride.h */,
 				B95154301D1B34B200FE7B80 /* RCTActivityIndicatorView.h */,
 				B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */,
 				13B080181A69489C00A75B9A /* RCTActivityIndicatorViewManager.h */,
@@ -3036,6 +3049,8 @@
 		AC70D2EA1DE489FC002E6351 /* cxxreact */ = {
 			isa = PBXGroup;
 			children = (
+				13DA8A302097A90B00276ED4 /* ReactMarker.cpp */,
+				13DA8A2F2097A90A00276ED4 /* ReactMarker.h */,
 				E223624320875A8000108244 /* JSExecutor.cpp */,
 				3D92B0A71E03699D0018521A /* CxxModule.h */,
 				3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */,
@@ -3324,6 +3339,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13DA8A322097A90B00276ED4 /* ReactMarker.h in Headers */,
 				3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */,
 				C6D3801B1F71D76200621378 /* RAMBundleRegistry.h in Headers */,
 				27595AD51E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
@@ -3418,6 +3434,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13DA8A312097A90B00276ED4 /* ReactMarker.h in Headers */,
 				3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */,
 				C6D3801A1F71D76100621378 /* RAMBundleRegistry.h in Headers */,
 				27595ABA1E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
@@ -3568,6 +3585,7 @@
 				3D80DA621DF820620028D040 /* RCTAutoInsetsProtocol.h in Headers */,
 				C60128AB1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */,
 				59EDBCAD1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */,
+				5C70426020A1004800FBEEF7 /* RCTFontConstantsOverride.h in Headers */,
 				59EDBCA71FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
 				591F78DC202ADB22004A668C /* RCTLayout.h in Headers */,
 				5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */,
@@ -4399,6 +4417,7 @@
 				13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */,
 				13F887721E29726200C3C7A1 /* JSCExecutor.cpp in Sources */,
 				13F887741E29726200C3C7A1 /* JSCLegacyTracing.cpp in Sources */,
+				13DA8A332097A90B00276ED4 /* ReactMarker.cpp in Sources */,
 				13F887771E29726200C3C7A1 /* JSCPerfStats.cpp in Sources */,
 				13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */,
 				13F887791E29726200C3C7A1 /* JSCUtils.cpp in Sources */,
@@ -4424,6 +4443,7 @@
 				13F887851E29726300C3C7A1 /* JSCExecutor.cpp in Sources */,
 				13F887871E29726300C3C7A1 /* JSCLegacyTracing.cpp in Sources */,
 				13F8878A1E29726300C3C7A1 /* JSCPerfStats.cpp in Sources */,
+				13DA8A342097A90B00276ED4 /* ReactMarker.cpp in Sources */,
 				13F887841E29726300C3C7A1 /* Instance.cpp in Sources */,
 				13F8878C1E29726300C3C7A1 /* JSCUtils.cpp in Sources */,
 				13F8878B1E29726300C3C7A1 /* JSCSamplingProfiler.cpp in Sources */,

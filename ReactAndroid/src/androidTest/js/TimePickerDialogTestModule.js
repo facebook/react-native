@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -31,14 +32,14 @@ var TimePickerDialogTestModule = {
           RecordingModule.recordDismissed();
         }
       },
-      ({code, message}) => RecordingModule.recordError()
+      ({code, message}) => RecordingModule.recordError(),
     );
   },
 };
 
 BatchedBridge.registerCallableModule(
   'TimePickerDialogTestModule',
-  TimePickerDialogTestModule
+  TimePickerDialogTestModule,
 );
 
 module.exports = TimePickerDialogTestModule;

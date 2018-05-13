@@ -57,7 +57,6 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
       mWidth = node.mWidth;
       mHeight = node.mHeight;
       mMeasured = node.mMeasured;
-      initMeasureFunction();
     }
 
     private void initMeasureFunction() {

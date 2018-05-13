@@ -81,7 +81,6 @@ public:
 
   const SharedConcreteProps getProps() const {
     assert(std::dynamic_pointer_cast<const PropsT>(props_));
-
     return std::static_pointer_cast<const PropsT>(props_);
   }
 

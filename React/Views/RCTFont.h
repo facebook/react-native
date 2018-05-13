@@ -18,7 +18,7 @@ typedef UIFont *(^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescript
  * "semibold", "extrabold", "bold", "heavy", or "black".
  */
 RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
-RCT_EXTERN BOOL RCTHasFontHandlerSet();
+RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
 
 @interface RCTFont : NSObject
 

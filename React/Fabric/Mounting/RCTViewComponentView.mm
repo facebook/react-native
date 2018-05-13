@@ -17,8 +17,9 @@ using namespace facebook::react;
            oldProps:(facebook::react::SharedProps)oldProps
 {
   if (!oldProps) {
-    oldProps = std::make_shared<ViewProps>();
+    oldProps = _props ?: std::make_shared<ViewProps>();
   }
+  _props = props;
 
   auto oldViewProps = *std::dynamic_pointer_cast<const ViewProps>(oldProps);
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(props);
@@ -28,6 +29,14 @@ using namespace facebook::react;
   }
 
   // TODO: Implement all sutable non-layout <View> props.
+}
+
+- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+{
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+
+  _layoutMetrics = layoutMetrics;
 }
 
 @end

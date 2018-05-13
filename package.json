@@ -8,7 +8,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "prettier": {
     "requirePragma": true,
@@ -128,9 +128,9 @@
     "lint": "eslint .",
     "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
-    "docker-setup-android": "docker pull hramos/android-base:latest",
-    "docker-build-android-base": "docker build -t hramos/android-base -f ContainerShip/Dockerfile.android-base .",
-    "docker-build-android": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
+    "docker-setup-android": "docker pull reactnativeci/android-base:latest",
+    "docker-build-android-base": "docker build -t reactnativeci/android-base -f ContainerShip/Dockerfile.android-base .",
+    "docker-build-android": "docker build -t reactnativeci/android -f ContainerShip/Dockerfile.android .",
     "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
     "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-unit-tests.sh",
     "test-android-run-e2e": "docker run --privileged -it react/android bash ContainerShip/scripts/run-ci-e2e-tests.sh --android --js",
@@ -158,6 +158,7 @@
     "denodeify": "^1.2.1",
     "envinfo": "^3.0.0",
     "errorhandler": "^1.5.0",
+    "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
     "fbjs": "^0.8.14",
     "fbjs-scripts": "^0.8.1",
@@ -212,8 +213,8 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.6.1",
     "eslint-plugin-react-native": "^3.2.1",
-    "flow-bin": "^0.71.0",
-    "jest": "23.0.0-beta.2",
+    "flow-bin": "^0.72.0",
+    "jest": "23.0.0-charlie.1",
     "jest-junit": "3.7.0",
     "prettier": "1.12.1",
     "react": "16.3.2",

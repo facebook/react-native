@@ -85,6 +85,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
+    // $FlowFixMe Invalid prop usage
     this._listRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -102,6 +103,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
+          // $FlowFixMe Invalid prop usage
           <ScrollView
             {...props}
             refreshControl={
@@ -117,6 +119,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
           />
         );
       } else {
+        // $FlowFixMe Invalid prop usage
         return <ScrollView {...props} />;
       }
     },
@@ -146,7 +149,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
       />
     );
   }
-  _listRef: ListView;
+  _listRef: ?ListView;
   _captureRef = ref => {
     this._listRef = ref;
   };

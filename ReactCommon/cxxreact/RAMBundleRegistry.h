@@ -9,7 +9,6 @@
 #include <utility>
 
 #include <cxxreact/JSModulesUnbundle.h>
-#include <jschelpers/noncopyable.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -18,7 +17,7 @@
 namespace facebook {
 namespace react {
 
-class RN_EXPORT RAMBundleRegistry : noncopyable {
+class RN_EXPORT RAMBundleRegistry {
 public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
