@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -17,10 +18,9 @@ describe('getProjectDependencies', () => {
     jest.resetModules();
   });
   it('should return an array of project dependencies', () => {
-    jest.setMock(
-      path.join(process.cwd(), './package.json'),
-      { dependencies: { lodash: '^6.0.0', 'react-native': '^16.0.0' }}
-    );
+    jest.setMock(path.join(process.cwd(), './package.json'), {
+      dependencies: {lodash: '^6.0.0', 'react-native': '^16.0.0'},
+    });
 
     expect(getProjectDependencies()).toEqual(['lodash']);
   });

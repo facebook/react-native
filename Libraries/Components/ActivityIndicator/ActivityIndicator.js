@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -20,25 +22,37 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+
 let RCTActivityIndicator;
 
 const GRAY = '#999999';
 
 type IndicatorSize = number | 'small' | 'large';
 
+type Props = $ReadOnly<{|
+  ...ViewProps,
+
+  animating?: ?boolean,
+  color?: ?string,
+  hidesWhenStopped?: ?boolean,
+  size?: ?IndicatorSize,
+|}>;
+
 type DefaultProps = {
   animating: boolean,
-  color: any,
+  color: ?string,
   hidesWhenStopped: boolean,
   size: IndicatorSize,
-}
+};
 
 /**
  * Displays a circular loading indicator.
  *
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
-const ActivityIndicator = createReactClass({
+const ActivityIndicator = ((createReactClass({
   displayName: 'ActivityIndicator',
   mixins: [NativeMethodsMixin],
 
@@ -63,7 +77,7 @@ const ActivityIndicator = createReactClass({
      * See http://facebook.github.io/react-native/docs/activityindicator.html#size
      */
     size: PropTypes.oneOfType([
-      PropTypes.oneOf([ 'small', 'large' ]),
+      PropTypes.oneOf(['small', 'large']),
       PropTypes.number,
     ]),
     /**
@@ -79,7 +93,7 @@ const ActivityIndicator = createReactClass({
   getDefaultProps(): DefaultProps {
     return {
       animating: true,
-      color: Platform.OS === 'ios' ? GRAY : undefined,
+      color: Platform.OS === 'ios' ? GRAY : null,
       hidesWhenStopped: true,
       size: 'small',
     };
@@ -117,14 +131,14 @@ const ActivityIndicator = createReactClass({
         )}
       </View>
     );
-  }
-});
+  },
+}): any): React.ComponentType<Props>);
 
 if (Platform.OS === 'ios') {
   RCTActivityIndicator = requireNativeComponent(
     'RCTActivityIndicatorView',
     ActivityIndicator,
-    { nativeOnly: { activityIndicatorViewStyle: true } }
+    {nativeOnly: {activityIndicatorViewStyle: true}},
   );
 }
 

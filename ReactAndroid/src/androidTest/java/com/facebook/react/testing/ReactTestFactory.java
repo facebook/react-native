@@ -14,7 +14,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.NativeModule;
 
 public interface ReactTestFactory {
-  public static interface ReactInstanceEasyBuilder {
+  interface ReactInstanceEasyBuilder {
     ReactInstanceEasyBuilder setContext(Context context);
     ReactInstanceEasyBuilder addNativeModule(NativeModule module);
     CatalystInstance build();

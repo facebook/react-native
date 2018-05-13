@@ -24,6 +24,8 @@ float yogaFloatFromFabricFloat(Float value);
 Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value);
 YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value);
 
+YGValue yogaStyleValueFromFloat(const Float &value);
+
 LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode);
 
 YGDirection yogaStyleDirectionFromDynamic(const folly::dynamic &value);

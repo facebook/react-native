@@ -9,17 +9,17 @@
  */
 'use strict';
 
-var UIManager = require('UIManager');
+const UIManager = require('UIManager');
 
-var installed = false;
-var UIManagerStatTracker = {
+let installed = false;
+const UIManagerStatTracker = {
   install: function() {
     if (installed) {
       return;
     }
     installed = true;
-    var statLogHandle;
-    var stats = {};
+    let statLogHandle;
+    const stats = {};
     function printStats() {
       console.log({UIManagerStatTracker: stats});
       statLogHandle = null;
@@ -30,19 +30,19 @@ var UIManagerStatTracker = {
         statLogHandle = setImmediate(printStats);
       }
     }
-    var createViewOrig = UIManager.createView;
+    const createViewOrig = UIManager.createView;
     UIManager.createView = function(tag, className, rootTag, props) {
       incStat('createView', 1);
       incStat('setProp', Object.keys(props || []).length);
       createViewOrig(tag, className, rootTag, props);
     };
-    var updateViewOrig = UIManager.updateView;
+    const updateViewOrig = UIManager.updateView;
     UIManager.updateView = function(tag, className, props) {
       incStat('updateView', 1);
       incStat('setProp', Object.keys(props || []).length);
       updateViewOrig(tag, className, props);
     };
-    var manageChildrenOrig = UIManager.manageChildren;
+    const manageChildrenOrig = UIManager.manageChildren;
     UIManager.manageChildren = function(
       tag,
       moveFrom,

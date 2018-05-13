@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -14,10 +16,7 @@ const StyleSheet = require('StyleSheet');
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 
-const {
-  Picker,
-  Text,
-} = ReactNative;
+const {Picker, Text} = ReactNative;
 
 const Item = Picker.Item;
 
@@ -46,7 +45,10 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
           </Picker>
         </RNTesterBlock>
         <RNTesterBlock title="Disabled picker">
-          <Picker style={styles.picker} enabled={false} selectedValue={this.state.selected1}>
+          <Picker
+            style={styles.picker}
+            enabled={false}
+            selectedValue={this.state.selected1}>
             <Item label="hello" value="key0" />
             <Item label="world" value="key1" />
           </Picker>
@@ -77,7 +79,8 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
             <Item label="world" value="key1" />
           </Picker>
           <Text>
-            Cannot change the value of this picker because it doesn't update selectedValue.
+            Cannot change the value of this picker because it doesn't update
+            selectedValue.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Colorful pickers">
@@ -105,7 +108,8 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   }
 
   changeMode = () => {
-    const newMode = this.state.mode === Picker.MODE_DIALOG
+    const newMode =
+      this.state.mode === Picker.MODE_DIALOG
         ? Picker.MODE_DROPDOWN
         : Picker.MODE_DIALOG;
     this.setState({mode: newMode});

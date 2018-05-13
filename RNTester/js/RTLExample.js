@@ -484,6 +484,7 @@ class RTLExample extends React.Component<any, State> {
           <RNTesterBlock
             title={'Controlling Animation'}
             description={'Animation direction according to layout'}>
+            {/* $FlowFixMe - Typing ReactNativeComponent revealed errors */}
             <View Style={styles.view}>
               <AnimationBlock
                 onPress={this._linearTap}

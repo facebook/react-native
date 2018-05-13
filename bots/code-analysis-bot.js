@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 if (!process.env.CI_USER) {
@@ -15,7 +18,9 @@ if (!process.env.CI_REPO) {
   process.exit(1);
 }
 if (!process.env.GITHUB_TOKEN) {
-  console.error('Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e');
+  console.error(
+    'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e',
+  );
   process.exit(1);
 }
 if (!process.env.PULL_REQUEST_NUMBER) {
@@ -90,7 +95,7 @@ var converters = {
         });
       });
     });
-  }
+  },
 };
 
 function getShaFromPullRequest(user, repo, number, callback) {
@@ -118,7 +123,6 @@ function getFilesFromCommit(user, repo, sha, callback) {
   });
 }
 
-
 /**
  * Sadly we can't just give the line number to github, we have to give the
  * line number relative to the patch file which is super annoying. This
@@ -130,7 +134,7 @@ function getLineMapFromPatch(patchString) {
   var fileLineIndex = 0;
   var lineMap = {};
 
-  patchString.split('\n').forEach((line) => {
+  patchString.split('\n').forEach(line => {
     if (line.match(/^@@/)) {
       fileLineIndex = line.match(/\+([0-9]+)/)[1] - 1;
       return;
@@ -179,27 +183,27 @@ function main(messages, user, repo, number) {
     return;
   }
 
-  getShaFromPullRequest(user, repo, number, (sha) => {
-    getFilesFromCommit(user, repo, sha, (files) => {
-      files
-        .filter((file) => messages[file.filename])
-        .forEach((file) => {
-          // github api sometimes does not return a patch on large commits
-          if (!file.patch) {
-            return;
-          }
-          var lineMap = getLineMapFromPatch(file.patch);
-          messages[file.filename].forEach((message) => {
-            sendComment(user, repo, number, sha, file.filename, lineMap, message);
-          });
+  getShaFromPullRequest(user, repo, number, sha => {
+    getFilesFromCommit(user, repo, sha, files => {
+      files.filter(file => messages[file.filename]).forEach(file => {
+        // github api sometimes does not return a patch on large commits
+        if (!file.patch) {
+          return;
+        }
+        var lineMap = getLineMapFromPatch(file.patch);
+        messages[file.filename].forEach(message => {
+          sendComment(user, repo, number, sha, file.filename, lineMap, message);
         });
+      });
     });
   });
 }
 
 var content = '';
 process.stdin.resume();
-process.stdin.on('data', function(buf) { content += buf.toString(); });
+process.stdin.on('data', function(buf) {
+  content += buf.toString();
+});
 process.stdin.on('end', function() {
   var messages = {};
 

@@ -7,6 +7,11 @@
 
 package com.facebook.react.views.webview;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
@@ -110,6 +115,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     protected boolean mLastLoadFailed = false;
     protected @Nullable ReadableArray mUrlPrefixesForDefaultIntent;
+    protected @Nullable List<Pattern> mOriginWhitelist;
 
     @Override
     public void onPageFinished(WebView webView, String url) {
@@ -137,32 +143,50 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        boolean useDefaultIntent = false;
-        if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
-          ArrayList<Object> urlPrefixesForDefaultIntent =
-              mUrlPrefixesForDefaultIntent.toArrayList();
-          for (Object urlPrefix : urlPrefixesForDefaultIntent) {
-            if (url.startsWith((String) urlPrefix)) {
-              useDefaultIntent = true;
-              break;
-            }
+      if (url.equals(BLANK_URL)) return false;
+
+      // url blacklisting
+      if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
+        ArrayList<Object> urlPrefixesForDefaultIntent =
+            mUrlPrefixesForDefaultIntent.toArrayList();
+        for (Object urlPrefix : urlPrefixesForDefaultIntent) {
+          if (url.startsWith((String) urlPrefix)) {
+            launchIntent(view.getContext(), url);
+            return true;
           }
         }
+      }
 
-        if (!useDefaultIntent &&
-            (url.startsWith("http://") || url.startsWith("https://") ||
-            url.startsWith("file://") || url.equals("about:blank"))) {
-          return false;
-        } else {
-          try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            view.getContext().startActivity(intent);
-          } catch (ActivityNotFoundException e) {
-            FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
-          }
+      if (mOriginWhitelist != null && shouldHandleURL(mOriginWhitelist, url)) {
+        return false;
+      }
+
+      launchIntent(view.getContext(), url);
+      return true;
+    }
+
+    private void launchIntent(Context context, String url) {
+      try {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        context.startActivity(intent);
+      } catch (ActivityNotFoundException e) {
+        FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
+      }
+    }
+
+    private boolean shouldHandleURL(List<Pattern> originWhitelist, String url) {
+      Uri uri = Uri.parse(url);
+      String scheme = uri.getScheme() != null ? uri.getScheme() : "";
+      String authority = uri.getAuthority() != null ? uri.getAuthority() : "";
+      String urlToCheck = scheme + "://" + authority;
+      for (Pattern pattern : originWhitelist) {
+        if (pattern.matcher(urlToCheck).matches()) {
           return true;
         }
+      }
+      return false;
     }
 
     @Override
@@ -210,6 +234,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setUrlPrefixesForDefaultIntent(ReadableArray specialUrls) {
       mUrlPrefixesForDefaultIntent = specialUrls;
+    }
+
+    public void setOriginWhitelist(List<Pattern> originWhitelist) {
+      mOriginWhitelist = originWhitelist;
     }
   }
 
@@ -356,6 +384,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   }
 
   @Override
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   protected WebView createViewInstance(ThemedReactContext reactContext) {
     ReactWebView webView = createReactWebViewInstance(reactContext);
     webView.setWebChromeClient(new WebChromeClient() {
@@ -375,9 +404,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     });
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
-    webView.getSettings().setBuiltInZoomControls(true);
-    webView.getSettings().setDisplayZoomControls(false);
-    webView.getSettings().setDomStorageEnabled(true);
+    WebSettings settings = webView.getSettings();
+    settings.setBuiltInZoomControls(true);
+    settings.setDisplayZoomControls(false);
+    settings.setDomStorageEnabled(true);
+
+    settings.setAllowFileAccess(false);
+    settings.setAllowContentAccess(false);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      settings.setAllowFileAccessFromFileURLs(false);
+      setAllowUniversalAccessFromFileURLs(webView, false);
+    }
+    setMixedContentMode(webView, "never");
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
@@ -544,6 +582,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     WebView view,
     @Nullable Boolean isGeolocationEnabled) {
     view.getSettings().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
+  }
+
+  @ReactProp(name = "originWhitelist")
+  public void setOriginWhitelist(
+    WebView view,
+    @Nullable ReadableArray originWhitelist) {
+    ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
+    if (client != null && originWhitelist != null) {
+      List<Pattern> whiteList = new LinkedList<>();
+      for (int i = 0 ; i < originWhitelist.size() ; i++) {
+        whiteList.add(Pattern.compile(originWhitelist.getString(i)));
+      }
+      client.setOriginWhitelist(whiteList);
+    }
   }
 
   @Override

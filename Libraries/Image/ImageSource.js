@@ -11,7 +11,7 @@
 
 // This is to sync with ImageSourcePropTypes.js.
 
-type ImageURISource = {
+type ImageURISource = $ReadOnly<{|
   uri?: string,
   bundle?: string,
   method?: string,
@@ -21,6 +21,6 @@ type ImageURISource = {
   width?: number,
   height?: number,
   scale?: number,
-};
+|}>;
 
 export type ImageSource = ImageURISource | number | Array<ImageURISource>;

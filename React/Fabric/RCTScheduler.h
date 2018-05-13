@@ -9,6 +9,8 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
+#import <fabric/core/LayoutConstraints.h>
+#import <fabric/core/LayoutContext.h>
 #import <fabric/uimanager/FabricUIManager.h>
 #import <fabric/uimanager/TreeMutationInstruction.h>
 
@@ -37,6 +39,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerRootTag:(ReactTag)tag;
 
 - (void)unregisterRootTag:(ReactTag)tag;
+
+- (CGSize)measureWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                         layoutContext:(facebook::react::LayoutContext)layoutContext
+                               rootTag:(ReactTag)rootTag;
+
+- (void)constraintLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                layoutContext:(facebook::react::LayoutContext)layoutContext
+                                      rootTag:(ReactTag)rootTag;
 
 @end
 

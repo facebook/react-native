@@ -46,6 +46,14 @@ YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
   return YGFloatOptional(yogaFloatFromFabricFloat(value));
 }
 
+YGValue yogaStyleValueFromFloat(const Float &value) {
+  if (isnan(value) || value == kFloatUndefined) {
+    return YGValueUndefined;
+  }
+
+  return {(float)value, YGUnitPoint};
+}
+
 LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   LayoutMetrics layoutMetrics;
 
@@ -182,12 +190,11 @@ YGDisplay yogaStyleDisplayFromDynamic(const folly::dynamic &value) {
 
 YGValue yogaStyleValueFromDynamic(const folly::dynamic &value) {
   if (value.isNumber()) {
-    float x = value.asDouble();
-    return { x, YGUnitPoint };
+    return yogaStyleValueFromFloat(value.asDouble());
   } else if (value.isString()) {
     const auto stringValue = value.asString();
     if (stringValue == "auto") {
-      return { YGUndefined, YGUnitAuto };
+      return YGValueUndefined;
     } else {
       if (stringValue.back() == '%') {
         return { folly::to<float>(stringValue.substr(stringValue.length() - 1)), YGUnitPercent };

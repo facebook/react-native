@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -40,7 +42,7 @@ if (__DEV__) {
         (stack == null ? '' : stack);
       console.warn(warning);
     },
-    onHandled: (id) => {
+    onHandled: id => {
       const warning =
         `Promise Rejection Handled (id: ${id})\n` +
         'This means you can ignore any previous messages of the form ' +

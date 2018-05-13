@@ -5,18 +5,8 @@
 #include <android/log.h>
 #include <string>
 
-#include <JavaScriptCore/JSContextRef.h>
-
 namespace facebook {
 namespace react {
-
-JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef* exception);
 
 void reactAndroidLoggingHook(
     const std::string& message,

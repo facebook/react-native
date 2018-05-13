@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
@@ -58,15 +60,10 @@ var propTypes = {
    */
   imagesPerRow: PropTypes.number,
 
-   /**
+  /**
    * The asset type, one of 'Photos', 'Videos' or 'All'
    */
-  assetType: PropTypes.oneOf([
-    'Photos',
-    'Videos',
-    'All',
-  ]),
-
+  assetType: PropTypes.oneOf(['Photos', 'Videos', 'All']),
 };
 
 var CameraRollView = createReactClass({
@@ -82,12 +79,7 @@ var CameraRollView = createReactClass({
       renderImage: function(asset) {
         var imageSize = 150;
         var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
-        return (
-          <Image
-            source={asset.node.image}
-            style={imageStyle}
-          />
-        );
+        return <Image source={asset.node.image} style={imageStyle} />;
       },
     };
   },
@@ -98,7 +90,7 @@ var CameraRollView = createReactClass({
     return {
       assets: ([]: Array<Image>),
       groupTypes: this.props.groupTypes,
-      lastCursor: (null : ?string),
+      lastCursor: (null: ?string),
       assetType: this.props.assetType,
       noMore: false,
       loadingMore: false,
@@ -114,7 +106,7 @@ var CameraRollView = createReactClass({
     var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
       // $FlowFixMe(>=0.41.0)
-      groupByEveryN(this.state.assets, this.props.imagesPerRow)
+      groupByEveryN(this.state.assets, this.props.imagesPerRow),
     );
   },
 
@@ -178,7 +170,9 @@ var CameraRollView = createReactClass({
    */
   fetch: function(clear?: boolean) {
     if (!this.state.loadingMore) {
-      this.setState({loadingMore: true}, () => { this._fetch(clear); });
+      this.setState({loadingMore: true}, () => {
+        this._fetch(clear);
+      });
     }
   },
 
@@ -217,8 +211,12 @@ var CameraRollView = createReactClass({
   },
 
   // rowData is an array of images
-  _renderRow: function(rowData: Array<Image>, sectionID: string, rowID: string)  {
-    var images = rowData.map((image) => {
+  _renderRow: function(
+    rowData: Array<Image>,
+    sectionID: string,
+    rowID: string,
+  ) {
+    var images = rowData.map(image => {
       if (image === null) {
         return null;
       }
@@ -226,16 +224,12 @@ var CameraRollView = createReactClass({
       return this.props.renderImage(image);
     });
 
-    return (
-      <View style={styles.row}>
-        {images}
-      </View>
-    );
+    return <View style={styles.row}>{images}</View>;
   },
 
   _appendAssets: function(data: Object) {
     var assets = data.edges;
-    var newState: Object = { loadingMore: false };
+    var newState: Object = {loadingMore: false};
 
     if (!data.page_info.has_next_page) {
       newState.noMore = true;
@@ -246,7 +240,7 @@ var CameraRollView = createReactClass({
       newState.assets = this.state.assets.concat(assets);
       newState.dataSource = this.state.dataSource.cloneWithRows(
         // $FlowFixMe(>=0.41.0)
-        groupByEveryN(newState.assets, this.props.imagesPerRow)
+        groupByEveryN(newState.assets, this.props.imagesPerRow),
       );
     }
 

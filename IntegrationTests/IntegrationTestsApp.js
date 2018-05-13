@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
@@ -40,7 +42,7 @@ TESTS.forEach(
   /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
    * suppresses an error found when Flow v0.54 was deployed. To see the error
    * delete this comment and run Flow. */
-  (test) => AppRegistry.registerComponent(test.displayName, () => test)
+  test => AppRegistry.registerComponent(test.displayName, () => test),
 );
 
 // Modules required for integration tests
@@ -68,20 +70,18 @@ class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
       <View style={styles.container}>
         <Text style={styles.row}>
           Click on a test to run it in this shell for easier debugging and
-          development.  Run all tests in the testing environment with cmd+U in
+          development. Run all tests in the testing environment with cmd+U in
           Xcode.
         </Text>
         <View style={styles.separator} />
         <ScrollView>
-          {TESTS.map((test) => [
+          {TESTS.map(test => [
             <TouchableOpacity
               onPress={() => this.setState({test})}
               style={styles.row}>
-              <Text style={styles.testName}>
-                {test.displayName}
-              </Text>
+              <Text style={styles.testName}>{test.displayName}</Text>
             </TouchableOpacity>,
-            <View style={styles.separator} />
+            <View style={styles.separator} />,
           ])}
         </ScrollView>
       </View>

@@ -16,19 +16,14 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @format
  */
 
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  NavigatorIOS,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
-} = ReactNative;
+var {NavigatorIOS, StatusBar, StyleSheet, Text, View} = ReactNative;
 
 class EmptyPage extends React.Component<{
   text: string,
@@ -36,9 +31,7 @@ class EmptyPage extends React.Component<{
   render() {
     return (
       <View style={styles.emptyPage}>
-        <Text style={styles.emptyPageText}>
-          {this.props.text}
-        </Text>
+        <Text style={styles.emptyPageText}>{this.props.text}</Text>
       </View>
     );
   }

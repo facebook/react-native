@@ -4,17 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  PickerIOS,
-  Text,
-  View,
-} = ReactNative;
+var {PickerIOS, Text, View} = ReactNative;
 
 var PickerItemIOS = PickerIOS.Item;
 
@@ -25,7 +23,16 @@ var CAR_MAKES_AND_MODELS = {
   },
   alfa: {
     name: 'Alfa-Romeo',
-    models: ['159', '4C', 'Alfasud', 'Brera', 'GTV6', 'Giulia', 'MiTo', 'Spider'],
+    models: [
+      '159',
+      '4C',
+      'Alfasud',
+      'Brera',
+      'GTV6',
+      'Giulia',
+      'MiTo',
+      'Spider',
+    ],
   },
   aston: {
     name: 'Aston Martin',
@@ -33,7 +40,19 @@ var CAR_MAKES_AND_MODELS = {
   },
   audi: {
     name: 'Audi',
-    models: ['90', '4000', '5000', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q5', 'Q7'],
+    models: [
+      '90',
+      '4000',
+      '5000',
+      'A3',
+      'A4',
+      'A5',
+      'A6',
+      'A7',
+      'A8',
+      'Q5',
+      'Q7',
+    ],
   },
   austin: {
     name: 'Austin',
@@ -45,8 +64,15 @@ var CAR_MAKES_AND_MODELS = {
   },
   buick: {
     name: 'Buick',
-    models: ['Electra', 'LaCrosse', 'LeSabre', 'Park Avenue', 'Regal',
-             'Roadmaster', 'Skylark'],
+    models: [
+      'Electra',
+      'LaCrosse',
+      'LeSabre',
+      'Park Avenue',
+      'Regal',
+      'Roadmaster',
+      'Skylark',
+    ],
   },
   cadillac: {
     name: 'Cadillac',
@@ -54,8 +80,21 @@ var CAR_MAKES_AND_MODELS = {
   },
   chevrolet: {
     name: 'Chevrolet',
-    models: ['Astro', 'Aveo', 'Bel Air', 'Captiva', 'Cavalier', 'Chevelle',
-             'Corvair', 'Corvette', 'Cruze', 'Nova', 'SS', 'Vega', 'Volt'],
+    models: [
+      'Astro',
+      'Aveo',
+      'Bel Air',
+      'Captiva',
+      'Cavalier',
+      'Chevelle',
+      'Corvair',
+      'Corvette',
+      'Cruze',
+      'Nova',
+      'SS',
+      'Vega',
+      'Volt',
+    ],
   },
 };
 
@@ -73,8 +112,8 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
         <Text>Please choose a make for your car:</Text>
         <PickerIOS
           selectedValue={this.state.carMake}
-          onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-          {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+          onValueChange={carMake => this.setState({carMake, modelIndex: 0})}>
+          {Object.keys(CAR_MAKES_AND_MODELS).map(carMake => (
             <PickerItemIOS
               key={carMake}
               value={carMake}
@@ -86,14 +125,16 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
         <PickerIOS
           selectedValue={this.state.modelIndex}
           key={this.state.carMake}
-          onValueChange={(modelIndex) => this.setState({modelIndex})}>
-          {CAR_MAKES_AND_MODELS[this.state.carMake].models.map((modelName, modelIndex) => (
-            <PickerItemIOS
-              key={this.state.carMake + '_' + modelIndex}
-              value={modelIndex}
-              label={modelName}
-            />
-          ))}
+          onValueChange={modelIndex => this.setState({modelIndex})}>
+          {CAR_MAKES_AND_MODELS[this.state.carMake].models.map(
+            (modelName, modelIndex) => (
+              <PickerItemIOS
+                key={this.state.carMake + '_' + modelIndex}
+                value={modelIndex}
+                label={modelName}
+              />
+            ),
+          )}
         </PickerIOS>
         <Text>You selected: {selectionString}</Text>
       </View>
@@ -110,10 +151,15 @@ class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <PickerIOS
-        itemStyle={{fontSize: 25, color: 'red', textAlign: 'left', fontWeight: 'bold'}}
+        itemStyle={{
+          fontSize: 25,
+          color: 'red',
+          textAlign: 'left',
+          fontWeight: 'bold',
+        }}
         selectedValue={this.state.carMake}
-        onValueChange={(carMake) => this.setState({carMake, modelIndex: 0})}>
-        {Object.keys(CAR_MAKES_AND_MODELS).map((carMake) => (
+        onValueChange={carMake => this.setState({carMake, modelIndex: 0})}>
+        {Object.keys(CAR_MAKES_AND_MODELS).map(carMake => (
           <PickerItemIOS
             key={carMake}
             value={carMake}
@@ -129,15 +175,16 @@ exports.displayName = (undefined: ?string);
 exports.title = '<PickerIOS>';
 exports.description = 'Render lists of selectable options with UIPickerView.';
 exports.examples = [
-{
-  title: '<PickerIOS>',
-  render: function(): React.Element<any> {
-    return <PickerExample />;
+  {
+    title: '<PickerIOS>',
+    render: function(): React.Element<any> {
+      return <PickerExample />;
+    },
   },
-},
-{
-  title: '<PickerIOS> with custom styling',
-  render: function(): React.Element<any> {
-    return <PickerStyleExample />;
+  {
+    title: '<PickerIOS> with custom styling',
+    render: function(): React.Element<any> {
+      return <PickerStyleExample />;
+    },
   },
-}];
+];

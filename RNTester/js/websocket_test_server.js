@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
+ * @format
  */
 'use strict';
 
@@ -29,8 +30,8 @@ ArrayBuffer instead of a string.
 
 const respondWithBinary = process.argv.indexOf('--binary') !== -1;
 const server = new WebSocket.Server({port: 5555});
-server.on('connection', (ws) => {
-  ws.on('message', (message) => {
+server.on('connection', ws => {
+  ws.on('message', message => {
     console.log('Received message:', message);
     console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {

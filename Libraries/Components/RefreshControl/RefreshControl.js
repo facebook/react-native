@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -19,8 +21,8 @@ const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout =
-    require('UIManager').AndroidSwipeRefreshLayout;
+  const AndroidSwipeRefreshLayout = require('UIManager')
+    .AndroidSwipeRefreshLayout;
   var RefreshLayoutConsts = AndroidSwipeRefreshLayout
     ? AndroidSwipeRefreshLayout.Constants
     : {SIZE: {}};
@@ -125,7 +127,10 @@ const RefreshControl = createReactClass({
      * Size of the refresh indicator, see RefreshControl.SIZE.
      * @platform android
      */
-    size: PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
+    size: PropTypes.oneOf([
+      RefreshLayoutConsts.SIZE.DEFAULT,
+      RefreshLayoutConsts.SIZE.LARGE,
+    ]),
     /**
      * Progress view top offset
      * @platform android
@@ -156,7 +161,9 @@ const RefreshControl = createReactClass({
     return (
       <NativeRefreshControl
         {...this.props}
-        ref={ref => {this._nativeRef = ref;}}
+        ref={ref => {
+          this._nativeRef = ref;
+        }}
         onRefresh={this._onRefresh}
       />
     );
@@ -176,12 +183,12 @@ const RefreshControl = createReactClass({
 if (Platform.OS === 'ios') {
   var NativeRefreshControl = requireNativeComponent(
     'RCTRefreshControl',
-    RefreshControl
+    RefreshControl,
   );
 } else if (Platform.OS === 'android') {
   var NativeRefreshControl = requireNativeComponent(
     'AndroidSwipeRefreshLayout',
-    RefreshControl
+    RefreshControl,
   );
 }
 

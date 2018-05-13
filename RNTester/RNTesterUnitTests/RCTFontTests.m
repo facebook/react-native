@@ -10,6 +10,7 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTFont.h>
+#import <React/RCTFontConstantsOverride.h>
 
 @interface RCTFontTests : XCTestCase
 
