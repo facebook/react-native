@@ -13,17 +13,11 @@
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const {
@@ -35,21 +29,21 @@ import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
-  AccessibilityTrait,
+  AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-type Props = $ReadOnly<{|
-  accessible?: boolean,
-  accessibilityComponentType?: AccessibilityComponentType,
+export type Props = $ReadOnly<{|
+  accessible?: ?boolean,
+  accessibilityComponentType?: ?AccessibilityComponentType,
   accessibilityLabel?:
     | null
     | React$PropType$Primitive<any>
     | string
     | Array<any>
     | any,
-  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,

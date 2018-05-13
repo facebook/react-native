@@ -55,7 +55,6 @@ exports.examples = [
             <TouchableHighlight
               style={styles.wrapper}
               activeOpacity={1}
-              animationVelocity={0}
               tvParallaxProperties={{
                 pressMagnification: 1.3,
                 pressDuration: 0.6,
@@ -348,7 +347,6 @@ class TouchableDisabled extends React.Component<{}> {
         <TouchableHighlight
           activeOpacity={1}
           disabled={true}
-          animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
@@ -357,7 +355,6 @@ class TouchableDisabled extends React.Component<{}> {
 
         <TouchableHighlight
           activeOpacity={1}
-          animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
