@@ -102,6 +102,7 @@ class AppContainer extends React.Component<Props, State> {
         pointerEvents="box-none"
         style={styles.appContainer}
         ref={ref => {
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
           this._mainRef = ref;
         }}>
         {this.props.children}

@@ -189,6 +189,7 @@ const KeyboardAvoidingView = ((createReactClass({
           heightStyle = {height: this.frame.height - bottomHeight, flex: 0};
         }
         return (
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
           <View
             ref={viewRef}
             style={[style, heightStyle]}
@@ -203,6 +204,7 @@ const KeyboardAvoidingView = ((createReactClass({
         const {contentContainerStyle} = this.props;
 
         return (
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
           <View
             ref={viewRef}
             style={style}
@@ -217,6 +219,7 @@ const KeyboardAvoidingView = ((createReactClass({
       case 'padding':
         const paddingStyle = {paddingBottom: bottomHeight};
         return (
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
           <View
             ref={viewRef}
             style={[style, paddingStyle]}
@@ -228,6 +231,7 @@ const KeyboardAvoidingView = ((createReactClass({
 
       default:
         return (
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
           <View
             ref={viewRef}
             onLayout={this._onLayout}
