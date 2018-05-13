@@ -32,8 +32,40 @@ const {
 } = require('ViewAccessibility');
 
 import type {PressEvent} from 'CoreEventTypes';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {
+  AccessibilityComponentType,
+  AccessibilityTrait,
+} from 'ViewAccessibility';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+type Props = $ReadOnly<{|
+  accessible?: boolean,
+  accessibilityComponentType?: AccessibilityComponentType,
+  accessibilityLabel?:
+    | null
+    | React$PropType$Primitive<any>
+    | string
+    | Array<any>
+    | any,
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  children?: ?React.Node,
+  delayLongPress?: ?number,
+  delayPressIn?: ?number,
+  delayPressOut?: ?number,
+  disabled?: ?boolean,
+  hitSlop?: ?EdgeInsetsProp,
+  nativeID?: ?string,
+  onLayout?: ?Function,
+  onLongPress?: ?Function,
+  onPress?: ?Function,
+  onPressIn?: ?Function,
+  onPressOut?: ?Function,
+  pressRetentionOffset?: ?EdgeInsetsProp,
+  rejectResponderTermination?: ?boolean,
+  testID?: ?string,
+|}>;
 
 /**
  * Do not use unless you have a very good reason. All elements that
@@ -42,12 +74,13 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-const TouchableWithoutFeedback = createReactClass({
+const TouchableWithoutFeedback = ((createReactClass({
   displayName: 'TouchableWithoutFeedback',
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
     accessible: PropTypes.bool,
+    accessibilityLabel: PropTypes.node,
     accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
@@ -79,6 +112,9 @@ const TouchableWithoutFeedback = createReactClass({
     onLayout: PropTypes.func,
 
     onLongPress: PropTypes.func,
+
+    nativeID: PropTypes.string,
+    testID: PropTypes.string,
 
     /**
      * Delay in ms, from the start of the touch, before onPressIn is called.
@@ -195,13 +231,10 @@ const TouchableWithoutFeedback = createReactClass({
         : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
-      // $FlowFixMe Invalid prop usage
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
-      // $FlowFixMe Invalid prop usage
       nativeID: this.props.nativeID,
-      // $FlowFixMe Invalid prop usage
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
@@ -216,6 +249,6 @@ const TouchableWithoutFeedback = createReactClass({
       children,
     });
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableWithoutFeedback;
