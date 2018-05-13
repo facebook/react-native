@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @noflow
+ * @flow
  */
 
 'use strict';
-
-// Note (avik): add @flow when Flow supports spread properties in propTypes
 
 const Animated = require('Animated');
 const Easing = require('Easing');
