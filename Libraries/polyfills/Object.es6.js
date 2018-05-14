@@ -1,17 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Object.es6
+ * @format
  * @polyfill
  * @nolint
  */
-
-/* eslint-disable strict */
 
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
@@ -25,7 +21,7 @@ Object.assign = function(target, sources) {
     if (typeof target !== 'object' && typeof target !== 'function') {
       throw new TypeError(
         'In this environment the target of assign MUST be an object. ' +
-        'This error is a performance optimization and not spec compliant.'
+          'This error is a performance optimization and not spec compliant.',
       );
     }
   }
@@ -37,11 +33,10 @@ Object.assign = function(target, sources) {
     }
 
     if (__DEV__) {
-      if (typeof nextSource !== 'object' &&
-          typeof nextSource !== 'function') {
+      if (typeof nextSource !== 'object' && typeof nextSource !== 'function') {
         throw new TypeError(
           'In this environment the sources for assign MUST be an object. ' +
-          'This error is a performance optimization and not spec compliant.'
+            'This error is a performance optimization and not spec compliant.',
         );
       }
     }
@@ -56,9 +51,9 @@ Object.assign = function(target, sources) {
         if (!hasOwnProperty.call(nextSource, key)) {
           throw new TypeError(
             'One of the sources for assign has an enumerable key on the ' +
-            'prototype chain. Are you trying to assign a prototype property? ' +
-            'We don\'t allow it, as this is an edge case that we do not support. ' +
-            'This error is a performance optimization and not spec compliant.'
+              'prototype chain. Are you trying to assign a prototype property? ' +
+              "We don't allow it, as this is an edge case that we do not support. " +
+              'This error is a performance optimization and not spec compliant.',
           );
         }
       }

@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  *
  * @format
+ * @emails oncall+react_native
  */
 'use strict';
 
@@ -159,5 +158,64 @@ describe('VirtualizedList', () => {
       />,
     );
     expect(component).toMatchSnapshot();
+  });
+
+  it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
+    const ITEM_HEIGHT = 800;
+    let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
+    const nativeEvent = {
+      contentOffset: {y: 0, x: 0},
+      layoutMeasurement: {width: 300, height: 600},
+      contentSize: {width: 300, height: data.length * ITEM_HEIGHT},
+      zoomScale: 1,
+      contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+    };
+    const onViewableItemsChanged = jest.fn();
+    const props = {
+      data,
+      renderItem: ({item}) => <item value={item.key} />,
+      getItem: (data, index) => data[index],
+      getItemCount: data => data.length,
+      getItemLayout: (data, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index,
+        index,
+      }),
+      onViewableItemsChanged,
+    };
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+
+    const instance = component.getInstance();
+
+    instance._onScrollBeginDrag({nativeEvent});
+    instance._onScroll({
+      timeStamp: 1000,
+      nativeEvent,
+    });
+
+    expect(onViewableItemsChanged).toHaveBeenCalledTimes(1);
+    expect(onViewableItemsChanged).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        viewableItems: [expect.objectContaining({isViewable: true, key: 'i1'})],
+      }),
+    );
+    data = [{key: 'i4'}, ...data];
+    component.update(<VirtualizedList {...props} data={data} />);
+
+    instance._onScroll({
+      timeStamp: 2000,
+      nativeEvent: {
+        ...nativeEvent,
+        contentOffset: {y: 100, x: 0},
+      },
+    });
+
+    expect(onViewableItemsChanged).toHaveBeenCalledTimes(2);
+    expect(onViewableItemsChanged).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        viewableItems: [expect.objectContaining({isViewable: true, key: 'i4'})],
+      }),
+    );
   });
 });

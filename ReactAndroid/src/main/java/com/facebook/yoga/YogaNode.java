@@ -1,27 +1,23 @@
 /*
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.yoga;
 
-import javax.annotation.Nullable;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNode {
+public class YogaNode implements Cloneable {
 
   static {
-    SoLoader.loadLibrary("yoga");
+      SoLoader.loadLibrary("yoga");
   }
 
   /**
@@ -29,17 +25,17 @@ public class YogaNode {
    */
   static native int jni_YGNodeGetInstanceCount();
 
-  private YogaNode mParent;
-  private List<YogaNode> mChildren;
+  private YogaNode mOwner;
+  @Nullable private List<YogaNode> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
   private Object mData;
 
   /* Those flags needs be in sync with YGJNI.cpp */
-  private final static int MARGIN = 1;
-  private final static int PADDING = 2;
-  private final static int BORDER = 4;
+  private static final int MARGIN = 1;
+  private static final int PADDING = 2;
+  private static final int BORDER = 4;
 
   @DoNotStrip
   private int mEdgeSetFlag = 0;
@@ -82,6 +78,7 @@ public class YogaNode {
   private int mLayoutDirection = 0;
   @DoNotStrip
   private boolean mHasNewLayout = true;
+  @DoNotStrip private boolean mDoesLegacyStretchFlagAffectsLayout = false;
 
   private native long jni_YGNodeNew();
   public YogaNode() {
@@ -100,6 +97,7 @@ public class YogaNode {
   }
 
   private native void jni_YGNodeFree(long nativePointer);
+  @Override
   protected void finalize() throws Throwable {
     try {
       jni_YGNodeFree(mNativePointer);
@@ -135,6 +133,7 @@ public class YogaNode {
     mMeasureFunction = null;
     mBaselineFunction = null;
     mData = null;
+    mDoesLegacyStretchFlagAffectsLayout = false;
 
     jni_YGNodeReset(mNativePointer);
   }
@@ -144,12 +143,15 @@ public class YogaNode {
   }
 
   public YogaNode getChildAt(int i) {
+    if (mChildren == null) {
+      throw new IllegalStateException("YogaNode does not have children");
+    }
     return mChildren.get(i);
   }
 
   private native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
   public void addChildAt(YogaNode child, int i) {
-    if (child.mParent != null) {
+    if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
 
@@ -157,22 +159,91 @@ public class YogaNode {
       mChildren = new ArrayList<>(4);
     }
     mChildren.add(i, child);
-    child.mParent = this;
+    child.mOwner = this;
     jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
+  }
+
+  private native void jni_YGNodeInsertSharedChild(long nativePointer, long childPointer, int index);
+
+  public void addSharedChildAt(YogaNode child, int i) {
+    if (mChildren == null) {
+      mChildren = new ArrayList<>(4);
+    }
+    mChildren.add(i, child);
+    child.mOwner = null;
+    jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
+  }
+
+  private native long jni_YGNodeClone(long nativePointer, Object newNode);
+
+  @Override
+  public YogaNode clone() {
+    try {
+      YogaNode clonedYogaNode = (YogaNode) super.clone();
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mChildren =
+          mChildren != null ? (List<YogaNode>) ((ArrayList) mChildren).clone() : null;
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public YogaNode cloneWithNewChildren() {
+    try {
+      YogaNode clonedYogaNode = (YogaNode) super.clone();
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      clonedYogaNode.clearChildren();
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
+  }
+
+  private native void jni_YGNodeClearChildren(long nativePointer);
+
+  private void clearChildren() {
+    mChildren = null;
+    jni_YGNodeClearChildren(mNativePointer);
   }
 
   private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
   public YogaNode removeChildAt(int i) {
-
+    if (mChildren == null) {
+      throw new IllegalStateException(
+          "Trying to remove a child of a YogaNode that does not have children");
+    }
     final YogaNode child = mChildren.remove(i);
-    child.mParent = null;
+    child.mOwner = null;
     jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
   }
 
-  public @Nullable
+  /**
+   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
+   * to.
+   * This method will return the parent of the {@link YogaNode} when the
+   * {@link YogaNode} only belongs to one YogaTree or null when the
+   * {@link YogaNode} is shared between two or more YogaTrees.
+   */
+  @Nullable
+  public
+  YogaNode getOwner() {
+    return mOwner;
+  }
+
+  /** @deprecated Use #getOwner() instead. This will be removed in the next version. */
+  @Deprecated
+  @Nullable
   YogaNode getParent() {
-    return mParent;
+    return getOwner();
   }
 
   public int indexOf(YogaNode child) {
@@ -191,6 +262,12 @@ public class YogaNode {
   private native void jni_YGNodeMarkDirty(long nativePointer);
   public void dirty() {
     jni_YGNodeMarkDirty(mNativePointer);
+  }
+
+  private native void jni_YGNodeMarkDirtyAndPropogateToDescendants(long nativePointer);
+
+  public void dirtyAllDescendants() {
+    jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
   }
 
   private native boolean jni_YGNodeIsDirty(long nativePointer);
@@ -553,6 +630,10 @@ public class YogaNode {
     return mHeight;
   }
 
+  public boolean getDoesLegacyStretchFlagAffectsLayout() {
+    return mDoesLegacyStretchFlagAffectsLayout;
+  }
+
   public float getLayoutMargin(YogaEdge edge) {
     switch (edge) {
       case LEFT:
@@ -632,11 +713,11 @@ public class YogaNode {
     }
 
     return mMeasureFunction.measure(
-          this,
-          width,
-          YogaMeasureMode.fromInt(widthMode),
-          height,
-          YogaMeasureMode.fromInt(heightMode));
+        this,
+        width,
+        YogaMeasureMode.fromInt(widthMode),
+        height,
+        YogaMeasureMode.fromInt(heightMode));
   }
 
   private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
@@ -670,5 +751,23 @@ public class YogaNode {
    */
   public void print() {
     jni_YGNodePrint(mNativePointer);
+  }
+
+  /**
+   * This method replaces the child at childIndex position with the newNode received by parameter.
+   * This is different than calling removeChildAt and addChildAt because this method ONLY replaces
+   * the child in the mChildren datastructure. @DoNotStrip: called from JNI
+   *
+   * @return the nativePointer of the newNode {@linl YogaNode}
+   */
+  @DoNotStrip
+  private final long replaceChild(YogaNode newNode, int childIndex) {
+    if (mChildren == null) {
+      throw new IllegalStateException("Cannot replace child. YogaNode does not have children");
+    }
+    mChildren.remove(childIndex);
+    mChildren.add(childIndex, newNode);
+    newNode.mOwner = this;
+    return newNode.mNativePointer;
   }
 }

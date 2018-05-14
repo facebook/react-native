@@ -1,88 +1,51 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AsyncStorage
+ * @format
  * @noflow
  * @flow-weak
  * @jsdoc
  */
+
 'use strict';
 
 const NativeModules = require('NativeModules');
 
 // Use RocksDB if available, then SQLite, then file storage.
-const RCTAsyncStorage = NativeModules.AsyncRocksDBStorage ||
+const RCTAsyncStorage =
+  NativeModules.AsyncRocksDBStorage ||
   NativeModules.AsyncSQLiteDBStorage ||
   NativeModules.AsyncLocalStorage;
 
 /**
- * @class
- * @description
- * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage
- * system that is global to the app.  It should be used instead of LocalStorage.
+ * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value
+ * storage system that is global to the app.  It should be used instead of
+ * LocalStorage.
  *
- * It is recommended that you use an abstraction on top of `AsyncStorage`
- * instead of `AsyncStorage` directly for anything more than light usage since
- * it operates globally.
- *
- * On iOS, `AsyncStorage` is backed by native code that stores small values in a
- * serialized dictionary and larger values in separate files. On Android,
- * `AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite
- * based on what is available.
- *
- * The `AsyncStorage` JavaScript code is a simple facade that provides a clear
- * JavaScript API, real `Error` objects, and simple non-multi functions. Each
- * method in the API returns a `Promise` object.
- *
- * Persisting data:
- * ```
- * try {
- *   await AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.');
- * } catch (error) {
- *   // Error saving data
- * }
- * ```
- *
- * Fetching data:
- * ```
- * try {
- *   const value = await AsyncStorage.getItem('@MySuperStore:key');
- *   if (value !== null){
- *     // We have data!!
- *     console.log(value);
- *   }
- * } catch (error) {
- *   // Error retrieving data
- * }
- * ```
+ * See http://facebook.github.io/react-native/docs/asyncstorage.html
  */
-var AsyncStorage = {
+const AsyncStorage = {
   _getRequests: ([]: Array<any>),
   _getKeys: ([]: Array<string>),
   _immediate: (null: ?number),
 
   /**
    * Fetches an item for a `key` and invokes a callback upon completion.
-   * Returns a `Promise` object.
-   * @param key Key of the item to fetch.
-   * @param callback Function that will be called with a result if found or
-   *    any error.
-   * @returns A `Promise` object.
+   *
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#getitem
    */
   getItem: function(
     key: string,
-    callback?: ?(error: ?Error, result: ?string) => void
+    callback?: ?(error: ?Error, result: ?string) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
-        var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
-        var errs = convertErrors(errors);
+        const value = result && result[0] && result[0][1] ? result[0][1] : null;
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0], value);
         if (errs) {
           reject(errs[0]);
@@ -95,20 +58,17 @@ var AsyncStorage = {
 
   /**
    * Sets the value for a `key` and invokes a callback upon completion.
-   * Returns a `Promise` object.
-   * @param key Key of the item to set.
-   * @param value Value to set for the `key`.
-   * @param callback Function that will be called with any error.
-   * @returns A `Promise` object.
+   *
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#setitem
    */
   setItem: function(
     key: string,
     value: string,
-    callback?: ?(error: ?Error) => void
+    callback?: ?(error: ?Error) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiSet([[key,value]], function(errors) {
-        var errs = convertErrors(errors);
+      RCTAsyncStorage.multiSet([[key, value]], function(errors) {
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -121,18 +81,16 @@ var AsyncStorage = {
 
   /**
    * Removes an item for a `key` and invokes a callback upon completion.
-   * Returns a `Promise` object.
-   * @param key Key of the item to remove.
-   * @param callback Function that will be called with any error.
-   * @returns A `Promise` object.
+   *
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#removeitem
    */
   removeItem: function(
     key: string,
-    callback?: ?(error: ?Error) => void
+    callback?: ?(error: ?Error) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove([key], function(errors) {
-        var errs = convertErrors(errors);
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -145,47 +103,20 @@ var AsyncStorage = {
 
   /**
    * Merges an existing `key` value with an input value, assuming both values
-   * are stringified JSON. Returns a `Promise` object.
+   * are stringified JSON.
    *
    * **NOTE:** This is not supported by all native implementations.
    *
-   * @param key Key of the item to modify.
-   * @param value New value to merge for the `key`.
-   * @param callback Function that will be called with any error.
-   * @returns A `Promise` object.
-   *
-   * @example <caption>Example</caption>
-   * let UID123_object = {
-   *  name: 'Chris',
-   *  age: 30,
-   *  traits: {hair: 'brown', eyes: 'brown'},
-   * };
-   * // You only need to define what will be added or updated
-   * let UID123_delta = {
-   *  age: 31,
-   *  traits: {eyes: 'blue', shoe_size: 10}
-   * };
-   *
-   * AsyncStorage.setItem('UID123', JSON.stringify(UID123_object), () => {
-   *   AsyncStorage.mergeItem('UID123', JSON.stringify(UID123_delta), () => {
-   *     AsyncStorage.getItem('UID123', (err, result) => {
-   *       console.log(result);
-   *     });
-   *   });
-   * });
-   *
-   * // Console log result:
-   * // => {'name':'Chris','age':31,'traits':
-   * //    {'shoe_size':10,'hair':'brown','eyes':'blue'}}
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#mergeitem
    */
   mergeItem: function(
     key: string,
     value: string,
-    callback?: ?(error: ?Error) => void
+    callback?: ?(error: ?Error) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
-        var errs = convertErrors(errors);
+      RCTAsyncStorage.multiMerge([[key, value]], function(errors) {
+        const errs = convertErrors(errors);
         callback && callback(errs && errs[0]);
         if (errs) {
           reject(errs[0]);
@@ -197,17 +128,17 @@ var AsyncStorage = {
   },
 
   /**
-   * Erases *all* `AsyncStorage` for all clients, libraries, etc.  You probably
+   * Erases *all* `AsyncStorage` for all clients, libraries, etc. You probably
    * don't want to call this; use `removeItem` or `multiRemove` to clear only
-   * your app's keys. Returns a `Promise` object.
-   * @param callback Function that will be called with any error.
-   * @returns A `Promise` object.
+   * your app's keys.
+   *
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#clear
    */
   clear: function(callback?: ?(error: ?Error) => void): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.clear(function(error) {
         callback && callback(convertError(error));
-        if (error && convertError(error)){
+        if (error && convertError(error)) {
           reject(convertError(error));
         } else {
           resolve(null);
@@ -218,13 +149,12 @@ var AsyncStorage = {
 
   /**
    * Gets *all* keys known to your app; for all callers, libraries, etc.
-   * Returns a `Promise` object.
-   * @param callback Function that will be called the keys found and any error.
-   * @returns A `Promise` object.
    *
-   * Example: see the `multiGet` example.
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#getallkeys
    */
-  getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
+  getAllKeys: function(
+    callback?: ?(error: ?Error, keys: ?Array<string>) => void,
+  ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.getAllKeys(function(error, keys) {
         callback && callback(convertError(error), keys);
@@ -247,7 +177,11 @@ var AsyncStorage = {
    * indicate which key caused the error.
    */
 
-  /** Flushes any pending requests using a single batch call to get the data. */
+  /**
+   * Flushes any pending requests using a single batch call to get the data.
+   *
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#flushgetrequests
+   * */
   flushGetRequests: function(): void {
     const getRequests = this._getRequests;
     const getKeys = this._getKeys;
@@ -263,7 +197,11 @@ var AsyncStorage = {
       // Is there a way to avoid using the map but fix the bug in this breaking test?
       // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
       const map = {};
-      result && result.forEach(([key, value]) => { map[key] = value; return value; });
+      result &&
+        result.forEach(([key, value]) => {
+          map[key] = value;
+          return value;
+        });
       const reqLength = getRequests.length;
       for (let i = 0; i < reqLength; i++) {
         const request = getRequests[i];
@@ -278,34 +216,13 @@ var AsyncStorage = {
   /**
    * This allows you to batch the fetching of items given an array of `key`
    * inputs. Your callback will be invoked with an array of corresponding
-   * key-value pairs found:
+   * key-value pairs found.
    *
-   * ```
-   * multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
-   * ```
-   *
-   * The method returns a `Promise` object.
-   *
-   * @param keys Array of key for the items to get.
-   * @param callback Function that will be called with a key-value array of
-   *     the results, plus an array of any key-specific errors found.
-   * @returns A `Promise` object.
-   *
-   * @example <caption>Example</caption>
-   *
-   * AsyncStorage.getAllKeys((err, keys) => {
-   *   AsyncStorage.multiGet(keys, (err, stores) => {
-   *    stores.map((result, i, store) => {
-   *      // get at each store's key/value so you can work with it
-   *      let key = store[i][0];
-   *      let value = store[i][1];
-   *     });
-   *   });
-   * });
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#multiget
    */
   multiGet: function(
     keys: Array<string>,
-    callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void
+    callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
   ): Promise {
     if (!this._immediate) {
       this._immediate = setImmediate(() => {
@@ -314,7 +231,7 @@ var AsyncStorage = {
       });
     }
 
-    var getRequest = {
+    const getRequest = {
       keys: keys,
       callback: callback,
       // do we need this?
@@ -323,7 +240,7 @@ var AsyncStorage = {
       reject: null,
     };
 
-    var promiseResult = new Promise((resolve, reject) => {
+    const promiseResult = new Promise((resolve, reject) => {
       getRequest.resolve = resolve;
       getRequest.reject = reject;
     });
@@ -341,27 +258,17 @@ var AsyncStorage = {
 
   /**
    * Use this as a batch operation for storing multiple key-value pairs. When
-   * the operation completes you'll get a single callback with any errors:
+   * the operation completes you'll get a single callback with any errors.
    *
-   * ```
-   * multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
-   * ```
-   *
-   * The method returns a `Promise` object.
-   *
-   * @param keyValuePairs Array of key-value array for the items to set.
-   * @param callback Function that will be called with an array of any
-   *    key-specific errors found.
-   * @returns A `Promise` object.
-   * Example: see the `multiMerge` example.
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#multiset
    */
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
-    callback?: ?(errors: ?Array<Error>) => void
+    callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -373,28 +280,17 @@ var AsyncStorage = {
   },
 
   /**
-   * Call this to batch the deletion of all keys in the `keys` array. Returns
-   * a `Promise` object.
+   * Call this to batch the deletion of all keys in the `keys` array.
    *
-   * @param keys Array of key for the items to delete.
-   * @param callback Function that will be called an array of any key-specific
-   *    errors found.
-   * @returns A `Promise` object.
-   *
-   * @example <caption>Example</caption>
-   * let keys = ['k1', 'k2'];
-   * AsyncStorage.multiRemove(keys, (err) => {
-   *   // keys k1 & k2 removed, if they existed
-   *   // do most stuff after removal (if you want)
-   * });
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#multiremove
    */
   multiRemove: function(
     keys: Array<string>,
-    callback?: ?(errors: ?Array<Error>) => void
+    callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -407,69 +303,19 @@ var AsyncStorage = {
 
   /**
    * Batch operation to merge in existing and new values for a given set of
-   * keys. This assumes that the values are stringified JSON. Returns a
-   * `Promise` object.
+   * keys. This assumes that the values are stringified JSON.
    *
    * **NOTE**: This is not supported by all native implementations.
    *
-   * @param keyValuePairs Array of key-value array for the items to merge.
-   * @param callback Function that will be called with an array of any
-   *    key-specific errors found.
-   * @returns A `Promise` object.
-   *
-   * @example <caption>Example</caption>
-   * // first user, initial values
-   * let UID234_object = {
-   *  name: 'Chris',
-   *  age: 30,
-   *  traits: {hair: 'brown', eyes: 'brown'},
-   * };
-   *
-   * // first user, delta values
-   * let UID234_delta = {
-   *  age: 31,
-   *  traits: {eyes: 'blue', shoe_size: 10},
-   * };
-   *
-   * // second user, initial values
-   * let UID345_object = {
-   *  name: 'Marge',
-   *  age: 25,
-   *  traits: {hair: 'blonde', eyes: 'blue'},
-   * };
-   *
-   * // second user, delta values
-   * let UID345_delta = {
-   *  age: 26,
-   *  traits: {eyes: 'green', shoe_size: 6},
-   * };
-   *
-   * let multi_set_pairs   = [['UID234', JSON.stringify(UID234_object)], ['UID345', JSON.stringify(UID345_object)]]
-   * let multi_merge_pairs = [['UID234', JSON.stringify(UID234_delta)], ['UID345', JSON.stringify(UID345_delta)]]
-   *
-   * AsyncStorage.multiSet(multi_set_pairs, (err) => {
-   *   AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
-   *     AsyncStorage.multiGet(['UID234','UID345'], (err, stores) => {
-   *       stores.map( (result, i, store) => {
-   *         let key = store[i][0];
-   *         let val = store[i][1];
-   *         console.log(key, val);
-   *       });
-   *     });
-   *   });
-   * });
-   *
-   * // Console log results:
-   * // => UID234 {"name":"Chris","age":31,"traits":{"shoe_size":10,"hair":"brown","eyes":"blue"}}
-   * // => UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}
+   * See http://facebook.github.io/react-native/docs/asyncstorage.html#multimerge
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
-    callback?: ?(errors: ?Array<Error>) => void
+    callback?: ?(errors: ?Array<Error>) => void,
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
-        var error = convertErrors(errors);
+        const error = convertErrors(errors);
         callback && callback(error);
         if (error) {
           reject(error);
@@ -491,14 +337,14 @@ function convertErrors(errs) {
   if (!errs) {
     return null;
   }
-  return (Array.isArray(errs) ? errs : [errs]).map((e) => convertError(e));
+  return (Array.isArray(errs) ? errs : [errs]).map(e => convertError(e));
 }
 
 function convertError(error) {
   if (!error) {
     return null;
   }
-  var out = new Error(error.message);
+  const out = new Error(error.message);
   out.key = error.key; // flow doesn't like this :(
   return out;
 }

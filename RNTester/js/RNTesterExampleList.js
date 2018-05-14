@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule RNTesterExampleList
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -22,15 +21,9 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
-import type {
-  RNTesterExample,
-} from './RNTesterList.ios';
-import type {
-  PassProps,
-} from './RNTesterStatePersister';
-import type {
-  StyleObj,
-} from 'StyleSheetTypes';
+import type {RNTesterExample} from './RNTesterList.ios';
+import type {PassProps} from './RNTesterStatePersister';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 type Props = {
   onNavigate: Function,
@@ -39,8 +32,8 @@ type Props = {
     APIExamples: Array<RNTesterExample>,
   },
   persister: PassProps<*>,
-  searchTextInputStyle: StyleObj,
-  style?: ?StyleObj,
+  searchTextInputStyle: DangerouslyImpreciseStyleProp,
+  style?: ?DangerouslyImpreciseStyleProp,
 };
 
 class RowComponent extends React.PureComponent<{
@@ -60,33 +53,34 @@ class RowComponent extends React.PureComponent<{
   render() {
     const {item} = this.props;
     return (
-      <TouchableHighlight {...this.props} onPress={this._onPress}>
+      <TouchableHighlight
+        onShowUnderlay={this.props.onShowUnderlay}
+        onHideUnderlay={this.props.onHideUnderlay}
+        onPress={this._onPress}>
         <View style={styles.row}>
-          <Text style={styles.rowTitleText}>
-            {item.module.title}
-          </Text>
-          <Text style={styles.rowDetailText}>
-            {item.module.description}
-          </Text>
+          <Text style={styles.rowTitleText}>{item.module.title}</Text>
+          <Text style={styles.rowDetailText}>{item.module.description}</Text>
         </View>
       </TouchableHighlight>
     );
   }
 }
 
-const renderSectionHeader = ({section}) =>
-  <Text style={styles.sectionHeader}>
-    {section.title}
-  </Text>;
+const renderSectionHeader = ({section}) => (
+  <Text style={styles.sectionHeader}>{section.title}</Text>
+);
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filterText = this.props.persister.state.filter;
     const filterRegex = new RegExp(String(filterText), 'i');
-    const filter = (example) =>
+    const filter = example =>
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.68 was deployed. To see the error delete this
+       * comment and run Flow. */
       this.props.disableSearch ||
-        filterRegex.test(example.module.title) &&
-        (!Platform.isTVOS || example.supportsTVOS);
+      (filterRegex.test(example.module.title) &&
+        (!Platform.isTVOS || example.supportsTVOS));
 
     const sections = [
       {
@@ -136,15 +130,20 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   );
 
   _renderTitleRow(): ?React.Element<any> {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (!this.props.displayTitleRow) {
       return null;
     }
     return (
       <RowComponent
-        item={{module: {
-          title: 'RNTester',
-          description: 'React Native Examples',
-        }}}
+        item={{
+          module: {
+            title: 'RNTester',
+            description: 'React Native Examples',
+          },
+        }}
         onNavigate={this.props.onNavigate}
         onPress={() => {
           this.props.onNavigate(RNTesterActions.ExampleList());
@@ -154,6 +153,9 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   }
 
   _renderTextInput(): ?React.Element<any> {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (this.props.disableSearch) {
       return null;
     }
@@ -185,10 +187,13 @@ const ItemSeparator = ({highlighted}) => (
   <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
 );
 
-RNTesterExampleList = RNTesterStatePersister.createContainer(RNTesterExampleList, {
-  cacheKeySuffix: () => 'mainList',
-  getInitialState: () => ({filter: ''}),
-});
+RNTesterExampleList = RNTesterStatePersister.createContainer(
+  RNTesterExampleList,
+  {
+    cacheKeySuffix: () => 'mainList',
+    getInitialState: () => ({filter: ''}),
+  },
+);
 
 const styles = StyleSheet.create({
   listContainer: {

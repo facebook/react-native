@@ -13,7 +13,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
-def downloadsDir = new File("$buildDir/downloads")
+def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
@@ -69,17 +70,17 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2016.09.26.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2016.10.31.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2016.09.26.00.tar.gz');
+    dest new File(downloadsDir, 'folly-2016.10.31.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-2016.09.26.00/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-2016.09.26.00/")}
+    include 'folly-2016.10.31.00/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-2016.10.31.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
@@ -143,6 +144,16 @@ task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
         filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
         into "$thirdPartyNdkDir/jsc";
     }
+}
+
+task downloadNdkBuildDependencies {
+  if (!boostPath) {
+    dependsOn downloadBoost
+  }
+  dependsOn downloadDoubleConversion
+  dependsOn downloadFolly
+  dependsOn downloadGlog
+  dependsOn downloadJSCHeaders
 }
 
 def getNdkBuildName() {
@@ -240,6 +251,8 @@ android {
         versionCode 1
         versionName "1.0"
 
+        consumerProguardFiles 'proguard-rules.pro'
+
         ndk {
             moduleName "reactnativejni"
         }
@@ -281,13 +294,13 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.3.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.3.0'
-    compile 'com.facebook.soloader:soloader:0.1.0'
+    compile 'com.facebook.fresco:fresco:1.9.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
+    compile 'com.facebook.soloader:soloader:0.3.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+    compile 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"

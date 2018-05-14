@@ -1,15 +1,14 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EventEmitter
+ * @format
  * @noflow
  * @typecheck
  */
+
 'use strict';
 
 const EmitterSubscription = require('EmitterSubscription');
@@ -32,7 +31,6 @@ const invariant = require('fbjs/lib/invariant');
  * more advanced emitter may use an EventHolder and EventFactory.
  */
 class EventEmitter {
-
   _subscriber: EventSubscriptionVendor;
   _currentSubscription: ?EmitterSubscription;
 
@@ -61,12 +59,14 @@ class EventEmitter {
    *   listener
    */
   addListener(
-    eventType: string, listener: Function, context: ?Object): EmitterSubscription {
-
+    eventType: string,
+    listener: Function,
+    context: ?Object,
+  ): EmitterSubscription {
     return (this._subscriber.addSubscription(
       eventType,
-      new EmitterSubscription(this, this._subscriber, listener, context)
-    ) : any);
+      new EmitterSubscription(this, this._subscriber, listener, context),
+    ): any);
   }
 
   /**
@@ -79,7 +79,11 @@ class EventEmitter {
    * @param {*} context - Optional context object to use when invoking the
    *   listener
    */
-  once(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
+  once(
+    eventType: string,
+    listener: Function,
+    context: ?Object,
+  ): EmitterSubscription {
     return this.addListener(eventType, (...args) => {
       this.removeCurrentListener();
       listener.apply(context, args);
@@ -121,7 +125,7 @@ class EventEmitter {
   removeCurrentListener() {
     invariant(
       !!this._currentSubscription,
-      'Not in an emitting cycle; there is no current subscription'
+      'Not in an emitting cycle; there is no current subscription',
     );
     this.removeSubscription(this._currentSubscription);
   }
@@ -133,7 +137,7 @@ class EventEmitter {
   removeSubscription(subscription: EmitterSubscription) {
     invariant(
       subscription.emitter === this,
-      'Subscription does not belong to this emitter.'
+      'Subscription does not belong to this emitter.',
     );
     this._subscriber.removeSubscription(subscription);
   }
@@ -146,10 +150,13 @@ class EventEmitter {
    * @returns {array}
    */
   listeners(eventType: string): [EmitterSubscription] {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     return subscriptions
-      ? subscriptions.filter(emptyFunction.thatReturnsTrue).map(
-          function(subscription) {
+      ? subscriptions
+          .filter(emptyFunction.thatReturnsTrue)
+          .map(function(subscription) {
             return subscription.listener;
           })
       : [];
@@ -170,7 +177,9 @@ class EventEmitter {
    *   emitter.emit('someEvent', 'abc'); // logs 'abc'
    */
   emit(eventType: string) {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {
         const subscription = subscriptions[i];
@@ -180,7 +189,7 @@ class EventEmitter {
           this._currentSubscription = subscription;
           subscription.listener.apply(
             subscription.context,
-            Array.prototype.slice.call(arguments, 1)
+            Array.prototype.slice.call(arguments, 1),
           );
         }
       }
@@ -202,7 +211,9 @@ class EventEmitter {
    *
    */
   removeListener(eventType: String, listener) {
-    const subscriptions: ?[EmitterSubscription] = (this._subscriber.getSubscriptionsForType(eventType): any);
+    const subscriptions: ?[
+      EmitterSubscription,
+    ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     if (subscriptions) {
       for (let i = 0, l = subscriptions.length; i < l; i++) {
         const subscription = subscriptions[i];

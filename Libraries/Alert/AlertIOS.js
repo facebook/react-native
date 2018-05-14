@@ -1,18 +1,17 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AlertIOS
+ * @format
  * @flow
  * @jsdoc
  */
+
 'use strict';
 
-var RCTAlertManager = require('NativeModules').AlertManager;
+const RCTAlertManager = require('NativeModules').AlertManager;
 
 /**
  * An Alert button type
@@ -21,7 +20,7 @@ export type AlertType = $Enum<{
   /**
    * Default alert with no inputs
    */
-  'default': string,
+  default: string,
   /**
    * Plain text input alert
    */
@@ -43,15 +42,15 @@ export type AlertButtonStyle = $Enum<{
   /**
    * Default button style
    */
-  'default': string,
+  default: string,
   /**
    * Cancel button style
    */
-  'cancel': string,
+  cancel: string,
   /**
    * Destructive button style
    */
-  'destructive': string,
+  destructive: string,
 }>;
 
 /**
@@ -77,69 +76,26 @@ export type ButtonsArray = Array<{
 }>;
 
 /**
- * @description
- * `AlertIOS` provides functionality to create an iOS alert dialog with a
- * message or create a prompt for user input.
+ * Use `AlertIOS` to display an alert dialog with a message or to create a prompt for user input on iOS. If you don't need to prompt for user input, we recommend using `Alert.alert() for cross-platform support.
  *
- * Creating an iOS alert:
- *
- * ```
- * AlertIOS.alert(
- *  'Sync Complete',
- *  'All your data are belong to us.'
- * );
- * ```
- *
- * Creating an iOS prompt:
- *
- * ```
- * AlertIOS.prompt(
- *   'Enter a value',
- *   null,
- *   text => console.log("You entered "+text)
- * );
- * ```
- *
- * We recommend using the [`Alert.alert`](docs/alert.html) method for
- * cross-platform support if you don't need to create iOS-only prompts.
- *
+ * See http://facebook.github.io/react-native/docs/alertios.html
  */
 class AlertIOS {
   /**
    * Create and display a popup alert.
-   * @static
-   * @method alert
-   * @param title The dialog's title. Passing null or '' will hide the title.
-   * @param message An optional message that appears below
-   *     the dialog's title.
-   * @param callbackOrButtons This optional argument should
-   *    be either a single-argument function or an array of buttons. If passed
-   *    a function, it will be called when the user taps 'OK'.
    *
-   *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys. `style`
-   *    should be one of 'default', 'cancel' or 'destructive'.
-   * @param type Deprecated, do not use.
-   *
-   * @example <caption>Example with custom buttons</caption>
-   *
-   * AlertIOS.alert(
-   *  'Update available',
-   *  'Keep your app up to date to enjoy the latest features',
-   *  [
-   *    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-   *    {text: 'Install', onPress: () => console.log('Install Pressed')},
-   *  ],
-   * );
+   * See http://facebook.github.io/react-native/docs/alertios.html#alert
    */
   static alert(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?(() => void) | ButtonsArray,
+    callbackOrButtons?: ?((() => void) | ButtonsArray),
     type?: AlertType,
   ): void {
     if (typeof type !== 'undefined') {
-      console.warn('AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.');
+      console.warn(
+        'AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.',
+      );
       this.prompt(title, message, callbackOrButtons, type);
       return;
     }
@@ -148,84 +104,46 @@ class AlertIOS {
 
   /**
    * Create and display a prompt to enter some text.
-   * @static
-   * @method prompt
-   * @param title The dialog's title.
-   * @param message An optional message that appears above the text
-   *    input.
-   * @param callbackOrButtons This optional argument should
-   *    be either a single-argument function or an array of buttons. If passed
-   *    a function, it will be called with the prompt's value when the user
-   *    taps 'OK'.
    *
-   *    If passed an array of button configurations, each button should include
-   *    a `text` key, as well as optional `onPress` and `style` keys (see
-   *    example). `style` should be one of 'default', 'cancel' or 'destructive'.
-   * @param type This configures the text input. One of 'plain-text',
-   *    'secure-text' or 'login-password'.
-   * @param defaultValue The default text in text input.
-   * @param keyboardType The keyboard type of first text field(if exists).
-   *    One of 'default', 'email-address', 'numeric', 'phone-pad',
-   *    'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad',
-   *    'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.
-   *
-   * @example <caption>Example with custom buttons</caption>
-   *
-   * AlertIOS.prompt(
-   *   'Enter password',
-   *   'Enter your password to claim your $1.5B in lottery winnings',
-   *   [
-   *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-   *     {text: 'OK', onPress: password => console.log('OK Pressed, password: ' + password)},
-   *   ],
-   *   'secure-text'
-   * );
-   *
-   * @example <caption>Example with the default button and a custom callback</caption>
-   *
-   * AlertIOS.prompt(
-   *   'Update username',
-   *   null,
-   *   text => console.log("Your username is "+text),
-   *   null,
-   *   'default'
-   * );
+   * See http://facebook.github.io/react-native/docs/alertios.html#prompt
    */
   static prompt(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?((text: string) => void) | ButtonsArray,
+    callbackOrButtons?: ?(((text: string) => void) | ButtonsArray),
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
-    keyboardType?: string
+    keyboardType?: string,
   ): void {
     if (typeof type === 'function') {
       console.warn(
         'You passed a callback function as the "type" argument to AlertIOS.prompt(). React Native is ' +
-        'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
-        'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
-        'keyboardType) and the old syntax will be removed in a future version.');
+          'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
+          'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
+          'keyboardType) and the old syntax will be removed in a future version.',
+      );
 
-      var callback = type;
-      var defaultValue = message;
-      RCTAlertManager.alertWithArgs({
-        title: title || '',
-        type: 'plain-text',
-        defaultValue,
-      }, (id, value) => {
-        callback(value);
-      });
+      const callback = type;
+      RCTAlertManager.alertWithArgs(
+        {
+          title: title || '',
+          type: 'plain-text',
+          defaultValue: message,
+        },
+        (id, value) => {
+          callback(value);
+        },
+      );
       return;
     }
 
-    var callbacks = [];
-    var buttons = [];
-    var cancelButtonKey;
-    var destructiveButtonKey;
+    let callbacks = [];
+    const buttons = [];
+    let cancelButtonKey;
+    let destructiveButtonKey;
     if (typeof callbackOrButtons === 'function') {
       callbacks = [callbackOrButtons];
-    }
-    else if (callbackOrButtons instanceof Array) {
+    } else if (callbackOrButtons instanceof Array) {
       callbackOrButtons.forEach((btn, index) => {
         callbacks[index] = btn.onPress;
         if (btn.style === 'cancel') {
@@ -234,26 +152,29 @@ class AlertIOS {
           destructiveButtonKey = String(index);
         }
         if (btn.text || index < (callbackOrButtons || []).length - 1) {
-          var btnDef = {};
+          const btnDef = {};
           btnDef[index] = btn.text || '';
           buttons.push(btnDef);
         }
       });
     }
 
-    RCTAlertManager.alertWithArgs({
-      title: title || '',
-      message: message || undefined,
-      buttons,
-      type: type || undefined,
-      defaultValue,
-      cancelButtonKey,
-      destructiveButtonKey,
-      keyboardType,
-    }, (id, value) => {
-      var cb = callbacks[id];
-      cb && cb(value);
-    });
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || '',
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultValue,
+        cancelButtonKey,
+        destructiveButtonKey,
+        keyboardType,
+      },
+      (id, value) => {
+        const cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
 }
 

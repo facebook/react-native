@@ -1,40 +1,39 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- * @providesModule ReactContentSizeUpdateTest
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
-var Subscribable = require('Subscribable');
-var TimerMixin = require('react-timer-mixin');
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
+const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
+const Subscribable = require('Subscribable');
+const TimerMixin = require('react-timer-mixin');
 
-var { View } = ReactNative;
+const {View} = ReactNative;
 
-var { TestModule } = ReactNative.NativeModules;
+const {TestModule} = ReactNative.NativeModules;
 
-var reactViewWidth = 101;
-var reactViewHeight = 102;
-var newReactViewWidth = 201;
-var newReactViewHeight = 202;
+const reactViewWidth = 101;
+const reactViewHeight = 102;
+const newReactViewWidth = 201;
+const newReactViewHeight = 202;
 
-var ReactContentSizeUpdateTest = createReactClass({
+const ReactContentSizeUpdateTest = createReactClass({
   displayName: 'ReactContentSizeUpdateTest',
-  mixins: [Subscribable.Mixin,
-           TimerMixin],
+  mixins: [Subscribable.Mixin, TimerMixin],
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this.addListenerOn(
       RCTNativeAppEventEmitter,
       'rootViewDidChangeIntrinsicSize',
-      this.rootViewDidChangeIntrinsicSize
+      this.rootViewDidChangeIntrinsicSize,
     );
   },
 
@@ -53,23 +52,25 @@ var ReactContentSizeUpdateTest = createReactClass({
   },
 
   componentDidMount: function() {
-    this.setTimeout(
-      () => { this.updateViewSize(); },
-      1000
-    );
+    this.setTimeout(() => {
+      this.updateViewSize();
+    }, 1000);
   },
 
   rootViewDidChangeIntrinsicSize: function(intrinsicSize) {
-    if (intrinsicSize.height === newReactViewHeight && intrinsicSize.width === newReactViewWidth) {
+    if (
+      intrinsicSize.height === newReactViewHeight &&
+      intrinsicSize.width === newReactViewWidth
+    ) {
       TestModule.markTestPassed(true);
     }
   },
 
   render() {
     return (
-      <View style={{'height':this.state.height, 'width':this.state.width}}/>
+      <View style={{height: this.state.height, width: this.state.width}} />
     );
-  }
+  },
 });
 
 ReactContentSizeUpdateTest.displayName = 'ReactContentSizeUpdateTest';

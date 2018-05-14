@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -75,7 +73,7 @@ public class NativeModuleRegistry {
   }
 
   /*
-  * Adds any new modules to the current module regsitry
+  * Adds any new modules to the current module registry
   */
   /* package */ void registerModules(NativeModuleRegistry newRegister) {
 
@@ -143,7 +141,8 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
-    return (T) Assertions.assertNotNull(mModules.get(moduleInterface)).getModule();
+    return (T) Assertions.assertNotNull(
+        mModules.get(moduleInterface), moduleInterface.getSimpleName()).getModule();
   }
 
   public List<NativeModule> getAllModules() {

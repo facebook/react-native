@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule KeyboardAvoidingViewExample
+ * @format
  */
+
 'use strict';
 
 const React = require('React');
@@ -43,15 +42,16 @@ class KeyboardAvoidingViewExample extends React.Component {
     return (
       <View style={styles.outerContainer}>
         <Modal animationType="fade" visible={this.state.modalOpen}>
-          <KeyboardAvoidingView behavior={this.state.behavior} style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={this.state.behavior}
+            style={styles.container}>
             <SegmentedControlIOS
               onValueChange={this.onSegmentChange}
               selectedIndex={this.state.behavior === 'padding' ? 0 : 1}
               style={styles.segment}
-              values={['Padding', 'Position']} />
-            <TextInput
-              placeholder="<TextInput />"
-              style={styles.textInput} />
+              values={['Padding', 'Position']}
+            />
+            <TextInput placeholder="<TextInput />" style={styles.textInput} />
           </KeyboardAvoidingView>
           <TouchableHighlight
             onPress={() => this.setState({modalOpen: false})}
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 30,
     left: 10,
-  }
+  },
 });
 
 module.exports = KeyboardAvoidingViewExample;

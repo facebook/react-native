@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 const fs = require('fs');
 const toCamelCase = require('lodash').camelCase;
 
@@ -11,7 +20,7 @@ const makePackagePatch = require('./patches/makePackagePatch');
 module.exports = function unregisterNativeAndroidModule(
   name,
   androidConfig,
-  projectConfig
+  projectConfig,
 ) {
   const buildPatch = makeBuildPatch(name);
   const strings = fs.readFileSync(projectConfig.stringsPath, 'utf8');
@@ -21,12 +30,12 @@ module.exports = function unregisterNativeAndroidModule(
     /moduleConfig="true" name="(\w+)">(.*)</g,
     (_, param, value) => {
       params[param.slice(toCamelCase(name).length + 1)] = value;
-    }
+    },
   );
 
   revokePatch(
     projectConfig.settingsGradlePath,
-    makeSettingsPatch(name, androidConfig, projectConfig)
+    makeSettingsPatch(name, androidConfig, projectConfig),
   );
 
   revokePatch(projectConfig.buildGradlePath, buildPatch);
@@ -34,11 +43,11 @@ module.exports = function unregisterNativeAndroidModule(
 
   revokePatch(
     projectConfig.mainFilePath,
-    makePackagePatch(androidConfig.packageInstance, params, name)
+    makePackagePatch(androidConfig.packageInstance, params, name),
   );
 
   revokePatch(
     projectConfig.mainFilePath,
-    makeImportPatch(androidConfig.packageImportPath)
+    makeImportPatch(androidConfig.packageImportPath),
   );
 };

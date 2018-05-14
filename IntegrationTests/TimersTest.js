@@ -1,32 +1,27 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule TimersTest
  */
+
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var TimerMixin = require('react-timer-mixin');
+const TimerMixin = require('react-timer-mixin');
 
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-var { TestModule  } = ReactNative.NativeModules;
+const {StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var TimersTest = createReactClass({
+const TimersTest = createReactClass({
   displayName: 'TimersTest',
   mixins: [TimerMixin],
 
@@ -75,26 +70,29 @@ var TimersTest = createReactClass({
   },
 
   testClearTimeout0() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
     this.clearTimeout(timeout);
     this.testClearTimeout30();
   },
 
   testClearTimeout30() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
     this.clearTimeout(timeout);
     this.setTimeout(this.testClearMulti, 50);
   },
 
   testClearMulti() {
-    var fails = [];
+    const fails = [];
     fails.push(this.setTimeout(() => this._fail('testClearMulti-1'), 20));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-2'), 50));
-    var delayClear = this.setTimeout(() => this._fail('testClearMulti-3'), 50);
+    const delayClear = this.setTimeout(
+      () => this._fail('testClearMulti-3'),
+      50,
+    );
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
-    fails.forEach((timeout) => this.clearTimeout(timeout));
+    fails.forEach(timeout => this.clearTimeout(timeout));
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
 
     this.setTimeout(this.testOrdering, 50);
@@ -102,25 +100,35 @@ var TimersTest = createReactClass({
 
   testOrdering() {
     // Clear timers are set first because it's more likely to uncover bugs.
-    var fail0;
+    let fail0;
     this.setImmediate(() => this.clearTimeout(fail0));
     fail0 = this.setTimeout(
-      () => this._fail('testOrdering-t0, setImmediate should happen before ' +
-        'setTimeout 0'),
-      0
+      () =>
+        this._fail(
+          'testOrdering-t0, setImmediate should happen before ' +
+            'setTimeout 0',
+        ),
+      0,
     );
-    var failAnim; // This should fail without the t=0 fastpath feature.
+    let failAnim; // This should fail without the t=0 fastpath feature.
     this.setTimeout(() => this.cancelAnimationFrame(failAnim), 0);
-    failAnim = this.requestAnimationFrame(
-      () => this._fail('testOrdering-Anim, setTimeout 0 should happen before ' +
-        'requestAnimationFrame')
+    failAnim = this.requestAnimationFrame(() =>
+      this._fail(
+        'testOrdering-Anim, setTimeout 0 should happen before ' +
+          'requestAnimationFrame',
+      ),
     );
-    var fail25;
-    this.setTimeout(() => { this.clearTimeout(fail25); }, 20);
+    let fail25;
+    this.setTimeout(() => {
+      this.clearTimeout(fail25);
+    }, 20);
     fail25 = this.setTimeout(
-      () => this._fail('testOrdering-t25, setTimeout 20 should happen before ' +
-        'setTimeout 25'),
-      25
+      () =>
+        this._fail(
+          'testOrdering-t25, setTimeout 20 should happen before ' +
+            'setTimeout 25',
+        ),
+      25,
     );
     this.setTimeout(this.done, 50);
   },
@@ -155,12 +163,12 @@ var TimersTest = createReactClass({
     this.setState({count: this.state.count + 1});
   },
 
-  _fail(caller : string) : void {
+  _fail(caller: string): void {
     throw new Error('_fail called by ' + caller);
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 40,

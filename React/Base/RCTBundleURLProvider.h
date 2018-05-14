@@ -1,17 +1,23 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 extern NSString *const RCTBundleURLProviderUpdatedNotification;
 
 extern const NSUInteger kRCTBundleURLProviderDefaultPort;
+
+#if defined(__cplusplus)
+}
+#endif
 
 @interface RCTBundleURLProvider : NSObject
 
@@ -28,9 +34,27 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
 /**
  * Returns the jsBundleURL for a given bundle entrypoint and
  * the fallback offline JS bundle if the packager is not running.
+ * if resourceName or extension are nil, "main" and "jsbundle" will be
+ * used, respectively.
+ */
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                   fallbackResource:(NSString *)resourceName
+                  fallbackExtension:(NSString *)extension;
+
+/**
+ * Returns the jsBundleURL for a given bundle entrypoint and
+ * the fallback offline JS bundle if the packager is not running.
  */
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                    fallbackResource:(NSString *)resourceName;
+
+/**
+ * Returns the jsBundleURL for a given bundle entrypoint and
+ * the fallback offline JS bundle. If resourceName or extension
+ * are nil, "main" and "jsbundle" will be used, respectively.
+ */
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
+                        fallbackExtension:(NSString *)extension;
 
 /**
  * Returns the resourceURL for a given bundle entrypoint and
@@ -40,11 +64,6 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
                          resourceName:(NSString *)name
                     resourceExtension:(NSString *)extension
                         offlineBundle:(NSBundle *)offlineBundle;
-
-/**
- * Returns the URL of the packager server.
- */
-- (NSURL *)packagerServerURL;
 
 /**
  * The IP address or hostname of the packager.

@@ -1,28 +1,25 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule UIManagerStatTracker
  * @flow
  * @format
  */
 'use strict';
 
-var UIManager = require('UIManager');
+const UIManager = require('UIManager');
 
-var installed = false;
-var UIManagerStatTracker = {
+let installed = false;
+const UIManagerStatTracker = {
   install: function() {
     if (installed) {
       return;
     }
     installed = true;
-    var statLogHandle;
-    var stats = {};
+    let statLogHandle;
+    const stats = {};
     function printStats() {
       console.log({UIManagerStatTracker: stats});
       statLogHandle = null;
@@ -33,19 +30,19 @@ var UIManagerStatTracker = {
         statLogHandle = setImmediate(printStats);
       }
     }
-    var createViewOrig = UIManager.createView;
+    const createViewOrig = UIManager.createView;
     UIManager.createView = function(tag, className, rootTag, props) {
       incStat('createView', 1);
       incStat('setProp', Object.keys(props || []).length);
       createViewOrig(tag, className, rootTag, props);
     };
-    var updateViewOrig = UIManager.updateView;
+    const updateViewOrig = UIManager.updateView;
     UIManager.updateView = function(tag, className, props) {
       incStat('updateView', 1);
       incStat('setProp', Object.keys(props || []).length);
       updateViewOrig(tag, className, props);
     };
-    var manageChildrenOrig = UIManager.manageChildren;
+    const manageChildrenOrig = UIManager.manageChildren;
     UIManager.manageChildren = function(
       tag,
       moveFrom,

@@ -19,6 +19,8 @@ class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeA
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
   static void mapException(const std::exception& ex);
+  jni::local_ref<jni::JArrayClass<jobject>> importArray();
+  jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
   jint getSize();
   jboolean isNull(jint index);
   jboolean getBoolean(jint index);

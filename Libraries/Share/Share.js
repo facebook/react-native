@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Share
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -16,16 +15,19 @@ const Platform = require('Platform');
 const invariant = require('fbjs/lib/invariant');
 const processColor = require('processColor');
 
-const {
-  ActionSheetManager,
-  ShareModule
-} = require('NativeModules');
+const {ActionSheetManager, ShareModule} = require('NativeModules');
 
-type Content = { title?: string, message: string } | { title?: string, url: string };
-type Options = { dialogTitle?: string, excludedActivityTypes?: Array<string>, tintColor?: string };
+type Content =
+  | {title?: string, message: string}
+  | {title?: string, url: string};
+type Options = {
+  dialogTitle?: string,
+  excludedActivityTypes?: Array<string>,
+  tintColor?: string,
+  subject?: string,
+};
 
 class Share {
-
   /**
    * Open a dialog to share text content.
    *
@@ -50,51 +52,52 @@ class Share {
    *
    * #### iOS
    *
-   * - `excludedActivityTypes`
-   * - `tintColor`
+   *  - `subject` - a subject to share via email
+   *  - `excludedActivityTypes`
+   *  - `tintColor`
    *
    * #### Android
    *
-   * - `dialogTitle`
+   *  - `dialogTitle`
    *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
     invariant(
       typeof content === 'object' && content !== null,
-      'Content to share must be a valid object'
+      'Content to share must be a valid object',
     );
     invariant(
       typeof content.url === 'string' || typeof content.message === 'string',
-      'At least one of URL and message is required'
+      'At least one of URL and message is required',
     );
     invariant(
       typeof options === 'object' && options !== null,
-      'Options must be a valid object'
+      'Options must be a valid object',
     );
 
     if (Platform.OS === 'android') {
       invariant(
         !content.title || typeof content.title === 'string',
-        'Invalid title: title should be a string.'
+        'Invalid title: title should be a string.',
       );
       return ShareModule.share(content, options.dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         ActionSheetManager.showShareActionSheetWithOptions(
           {...content, ...options, tintColor: processColor(options.tintColor)},
-          (error) => reject(error),
+          error => reject(error),
           (success, activityType) => {
             if (success) {
               resolve({
-                'action': 'sharedAction',
-                'activityType': activityType
+                action: 'sharedAction',
+                activityType: activityType,
               });
             } else {
               resolve({
-                'action': 'dismissedAction'
+                action: 'dismissedAction',
               });
             }
-          }
+          },
         );
       });
     } else {
@@ -105,14 +108,17 @@ class Share {
   /**
    * The content was successfully shared.
    */
-  static get sharedAction() { return 'sharedAction'; }
+  static get sharedAction(): string {
+    return 'sharedAction';
+  }
 
   /**
    * The dialog has been dismissed.
    * @platform ios
    */
-  static get dismissedAction() { return 'dismissedAction'; }
-
+  static get dismissedAction(): string {
+    return 'dismissedAction';
+  }
 }
 
 module.exports = Share;

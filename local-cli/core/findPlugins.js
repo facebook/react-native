@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const path = require('path');
@@ -18,10 +19,11 @@ const flatten = require('lodash').flatten;
  * @param  {String} dependency Name of the dependency
  * @return {Boolean}           If dependency is a rnpm plugin
  */
-const isRNPMPlugin = (dependency) => dependency.indexOf('rnpm-plugin-') === 0;
-const isReactNativePlugin = (dependency) => dependency.indexOf('react-native-') === 0;
+const isRNPMPlugin = dependency => dependency.indexOf('rnpm-plugin-') === 0;
+const isReactNativePlugin = dependency =>
+  dependency.indexOf('react-native-') === 0;
 
-const readPackage = (folder) => {
+const readPackage = folder => {
   try {
     return require(path.join(folder, 'package.json'));
   } catch (e) {
@@ -29,7 +31,7 @@ const readPackage = (folder) => {
   }
 };
 
-const findPluginsInReactNativePackage = (pjson) => {
+const findPluginsInReactNativePackage = pjson => {
   if (!pjson.rnpm || !pjson.rnpm.plugin) {
     return [];
   }
@@ -37,41 +39,55 @@ const findPluginsInReactNativePackage = (pjson) => {
   return path.join(pjson.name, pjson.rnpm.plugin);
 };
 
-const findPluginInFolder = (folder) => {
+const findPlatformsInPackage = pjson => {
+  if (!pjson.rnpm || !pjson.rnpm.platform) {
+    return [];
+  }
+
+  return path.join(pjson.name, pjson.rnpm.platform);
+};
+
+const findPluginInFolder = folder => {
   const pjson = readPackage(folder);
 
   if (!pjson) {
-    return [];
+    return {commands: [], platforms: []};
   }
 
   const deps = union(
     Object.keys(pjson.dependencies || {}),
-    Object.keys(pjson.devDependencies || {})
+    Object.keys(pjson.devDependencies || {}),
   );
 
   return deps.reduce(
     (acc, pkg) => {
+      let commands = acc.commands;
+      let platforms = acc.platforms;
       if (isRNPMPlugin(pkg)) {
-        return acc.concat(pkg);
+        commands = commands.concat(pkg);
       }
       if (isReactNativePlugin(pkg)) {
         const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
-        if (!pkgJson) {
-          return acc;
+        if (pkgJson) {
+          commands = commands.concat(findPluginsInReactNativePackage(pkgJson));
+          platforms = platforms.concat(findPlatformsInPackage(pkgJson));
         }
-        return acc.concat(findPluginsInReactNativePackage(pkgJson));
       }
-      return acc;
+      return {commands: commands, platforms: platforms};
     },
-    []
+    {commands: [], platforms: []},
   );
 };
 
 /**
  * Find plugins in package.json of the given folder
  * @param {String} folder Path to the folder to get the package.json from
- * @type  {Array}         Array of plugins or an empty array if no package.json found
+ * @type  {Object}        Object of commands and platform plugins
  */
 module.exports = function findPlugins(folders) {
-  return uniq(flatten(folders.map(findPluginInFolder)));
+  const plugins = folders.map(findPluginInFolder);
+  return {
+    commands: uniq(flatten(plugins.map(p => p.commands))),
+    platforms: uniq(flatten(plugins.map(p => p.platforms))),
+  };
 };

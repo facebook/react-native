@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTPropsAnimatedNode.h"
@@ -20,7 +18,7 @@
 {
   NSNumber *_connectedViewTag;
   NSString *_connectedViewName;
-  RCTUIManager *_uiManager;
+  __weak RCTUIManager *_uiManager;
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
 }
 
@@ -85,18 +83,18 @@
   if (!_connectedViewTag) {
     return;
   }
-
-  [self.parentNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber *_Nonnull parentTag, RCTAnimatedNode *_Nonnull parentNode, BOOL *_Nonnull stop) {
-
+  
+  for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
+    RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
       [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-
+      
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
       CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
       self->_propsDictionary[property] = @(value);
     }
-  }];
+  }
 
   if (_propsDictionary.count) {
     [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag

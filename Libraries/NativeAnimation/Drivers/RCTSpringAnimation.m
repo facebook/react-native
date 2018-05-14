@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSpringAnimation.h"
@@ -57,31 +55,35 @@ const NSTimeInterval MAX_DELTA_TIME = 0.064;
                   callBack:(nullable RCTResponseSenderBlock)callback
 {
   if ((self = [super init])) {
-    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
-
     _animationId = animationId;
-    _toValue = [RCTConvert CGFloat:config[@"toValue"]];
-    _fromValue = valueNode.value;
-    _lastPosition = 0;
+    _lastPosition = valueNode.value;
     _valueNode = valueNode;
-    _overshootClamping = [RCTConvert BOOL:config[@"overshootClamping"]];
-    _restDisplacementThreshold = [RCTConvert CGFloat:config[@"restDisplacementThreshold"]];
-    _restSpeedThreshold = [RCTConvert CGFloat:config[@"restSpeedThreshold"]];
-    _stiffness = [RCTConvert CGFloat:config[@"stiffness"]];
-    _damping = [RCTConvert CGFloat:config[@"damping"]];
-    _mass = [RCTConvert CGFloat:config[@"mass"]];
-    _initialVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
-    
+    _lastVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
     _callback = [callback copy];
-
-    _lastPosition = _fromValue;
-    _lastVelocity = _initialVelocity;
-
-    _animationHasFinished = iterations.integerValue == 0;
-    _iterations = iterations.integerValue;
-    _currentLoop = 1;
+    [self resetAnimationConfig:config];
   }
   return self;
+}
+
+- (void)resetAnimationConfig:(NSDictionary *)config
+{
+  NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+  _toValue = [RCTConvert CGFloat:config[@"toValue"]];
+  _overshootClamping = [RCTConvert BOOL:config[@"overshootClamping"]];
+  _restDisplacementThreshold = [RCTConvert CGFloat:config[@"restDisplacementThreshold"]];
+  _restSpeedThreshold = [RCTConvert CGFloat:config[@"restSpeedThreshold"]];
+  _stiffness = [RCTConvert CGFloat:config[@"stiffness"]];
+  _damping = [RCTConvert CGFloat:config[@"damping"]];
+  _mass = [RCTConvert CGFloat:config[@"mass"]];
+  _initialVelocity = _lastVelocity;
+  _fromValue = _lastPosition;
+  _fromValue = _lastPosition;
+  _lastVelocity = _initialVelocity;
+  _animationHasFinished = iterations.integerValue == 0;
+  _iterations = iterations.integerValue;
+  _currentLoop = 1;
+  _animationStartTime = _animationCurrentTime = -1;
+  _animationHasBegun = YES;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)

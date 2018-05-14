@@ -1,8 +1,9 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "YOGA_TARGET", "react_native_dep", "react_native_target")
 
-android_library(
+rn_android_library(
     name = "text",
     srcs = glob(["*.java"]),
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],

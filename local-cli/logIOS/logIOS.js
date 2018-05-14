@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const chalk = require('chalk');
@@ -27,22 +28,24 @@ function _logIOS() {
 
   try {
     rawDevices = child_process.execFileSync(
-      'xcrun', ['simctl', 'list', 'devices', '--json'], {encoding: 'utf8'}
+      'xcrun',
+      ['simctl', 'list', 'devices', '--json'],
+      {encoding: 'utf8'},
     );
   } catch (e) {
-    console.log(chalk.red(
-      'xcrun invocation failed. Please check that Xcode is installed.'
-    ));
+    console.log(
+      chalk.red(
+        'xcrun invocation failed. Please check that Xcode is installed.',
+      ),
+    );
     return Promise.reject(e);
   }
 
-  const { devices } = JSON.parse(rawDevices);
+  const {devices} = JSON.parse(rawDevices);
 
   const device = _findAvailableDevice(devices);
   if (device === undefined) {
-    console.log(chalk.red(
-      'No active iOS device found'
-    ));
+    console.log(chalk.red('No active iOS device found'));
     return Promise.reject();
   }
 
@@ -69,13 +72,14 @@ function tailDeviceLogs(udid) {
     'asl',
   );
 
-  const log =
-    child_process.spawnSync('syslog', ['-w', '-F', 'std', '-d', logDir], {stdio: 'inherit'});
+  const log = child_process.spawnSync(
+    'syslog',
+    ['-w', '-F', 'std', '-d', logDir],
+    {stdio: 'inherit'},
+  );
 
   if (log.error !== null) {
-    console.log(chalk.red(
-      'syslog invocation failed.'
-    ));
+    console.log(chalk.red('syslog invocation failed.'));
     return Promise.reject(log.error);
   }
 }

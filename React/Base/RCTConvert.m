@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTConvert.h"
@@ -218,6 +216,20 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
     return date;
   } else if (json) {
     RCTLogConvertError(json, @"a date");
+  }
+  return nil;
+}
+
++ (NSLocale *)NSLocale:(id)json
+{
+  if ([json isKindOfClass:[NSString class]]) {
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:json];
+    if (!locale) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
+    }
+    return locale;
+  } else if (json) {
+    RCTLogConvertError(json, @"a locale");
   }
   return nil;
 }
@@ -534,12 +546,6 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
-SEL RCTConvertSelectorForType(NSString *type)
-{
-  const char *input = type.UTF8String;
-  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
-}
-
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(UIColor)
@@ -651,7 +657,8 @@ RCT_ENUM_CONVERTER(YGJustify, (@{
   @"flex-end": @(YGJustifyFlexEnd),
   @"center": @(YGJustifyCenter),
   @"space-between": @(YGJustifySpaceBetween),
-  @"space-around": @(YGJustifySpaceAround)
+  @"space-around": @(YGJustifySpaceAround),
+  @"space-evenly": @(YGJustifySpaceEvenly)
 }), YGJustifyFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGAlign, (@{
@@ -678,7 +685,8 @@ RCT_ENUM_CONVERTER(YGPositionType, (@{
 
 RCT_ENUM_CONVERTER(YGWrap, (@{
   @"wrap": @(YGWrapWrap),
-  @"nowrap": @(YGWrapNoWrap)
+  @"nowrap": @(YGWrapNoWrap),
+  @"wrap-reverse": @(YGWrapWrapReverse)
 }), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{

@@ -1,31 +1,63 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RefreshControl
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
 if (Platform.OS === 'android') {
-  var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constants;
+  const AndroidSwipeRefreshLayout = require('UIManager')
+    .AndroidSwipeRefreshLayout;
+  var RefreshLayoutConsts = AndroidSwipeRefreshLayout
+    ? AndroidSwipeRefreshLayout.Constants
+    : {SIZE: {}};
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
+
+type IOSProps = $ReadOnly<{|
+  tintColor?: ?ColorValue,
+  titleColor?: ?ColorValue,
+  title?: ?string,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  enabled?: ?boolean,
+  colors?: ?$ReadOnlyArray<ColorValue>,
+  progressBackgroundColor?: ?ColorValue,
+  size?: ?(
+    | typeof RefreshLayoutConsts.SIZE.DEFAULT
+    | typeof RefreshLayoutConsts.SIZE.LARGE
+  ),
+  progressViewOffset?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+  onRefresh?: ?Function,
+  refreshing: boolean,
+|}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh
@@ -72,7 +104,6 @@ if (Platform.OS === 'android') {
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
-// $FlowFixMe(>=0.41.0)
 const RefreshControl = createReactClass({
   displayName: 'RefreshControl',
   statics: {
@@ -125,7 +156,10 @@ const RefreshControl = createReactClass({
      * Size of the refresh indicator, see RefreshControl.SIZE.
      * @platform android
      */
-    size: PropTypes.oneOf([RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE]),
+    size: PropTypes.oneOf([
+      RefreshLayoutConsts.SIZE.DEFAULT,
+      RefreshLayoutConsts.SIZE.LARGE,
+    ]),
     /**
      * Progress view top offset
      * @platform android
@@ -156,7 +190,9 @@ const RefreshControl = createReactClass({
     return (
       <NativeRefreshControl
         {...this.props}
-        ref={ref => {this._nativeRef = ref;}}
+        ref={ref => {
+          this._nativeRef = ref;
+        }}
         onRefresh={this._onRefresh}
       />
     );
@@ -173,16 +209,20 @@ const RefreshControl = createReactClass({
   },
 });
 
+class TypedRefreshControl extends ReactNative.NativeComponent<Props> {
+  static SIZE = RefreshLayoutConsts.SIZE;
+}
+
 if (Platform.OS === 'ios') {
   var NativeRefreshControl = requireNativeComponent(
     'RCTRefreshControl',
-    RefreshControl
+    RefreshControl,
   );
 } else if (Platform.OS === 'android') {
   var NativeRefreshControl = requireNativeComponent(
     'AndroidSwipeRefreshLayout',
-    RefreshControl
+    RefreshControl,
   );
 }
 
-module.exports = RefreshControl;
+module.exports = ((RefreshControl: any): Class<TypedRefreshControl>);

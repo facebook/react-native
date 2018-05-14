@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule FlatList
  * @flow
  * @format
  */
@@ -16,16 +13,23 @@ const MetroListView = require('MetroListView'); // Used as a fallback legacy opt
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
+const ListView = require('ListView');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
+
+export type SeparatorsObj = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
 
 type RequiredProps<ItemT> = {
   /**
@@ -57,11 +61,7 @@ type RequiredProps<ItemT> = {
   renderItem: (info: {
     item: ItemT,
     index: number,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-    },
+    separators: SeparatorsObj,
   }) => ?React.Element<any>,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
@@ -95,7 +95,7 @@ type OptionalProps<ItemT> = {
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: StyleObj,
+  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -326,7 +326,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
   scrollToEnd(params?: ?{animated?: ?boolean}) {
-    this._listRef.scrollToEnd(params);
+    if (this._listRef) {
+      this._listRef.scrollToEnd(params);
+    }
   }
 
   /**
@@ -343,7 +345,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewOffset?: number,
     viewPosition?: number,
   }) {
-    this._listRef.scrollToIndex(params);
+    if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
+      this._listRef.scrollToIndex(params);
+    }
   }
 
   /**
@@ -357,7 +362,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     item: ItemT,
     viewPosition?: number,
   }) {
-    this._listRef.scrollToItem(params);
+    if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
+      this._listRef.scrollToItem(params);
+    }
   }
 
   /**
@@ -366,16 +374,22 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * Check out [scrollToOffset](docs/virtualizedlist.html#scrolltooffset) of VirtualizedList
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
-    this._listRef.scrollToOffset(params);
+    if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
+      this._listRef.scrollToOffset(params);
+    }
   }
 
   /**
-   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
    * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
    * taps on items or by navigation actions.
    */
   recordInteraction() {
-    this._listRef.recordInteraction();
+    if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
+      this._listRef.recordInteraction();
+    }
   }
 
   /**
@@ -384,7 +398,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    * @platform ios
    */
   flashScrollIndicators() {
-    this._listRef.flashScrollIndicators();
+    if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
+      this._listRef.flashScrollIndicators();
+    }
   }
 
   /**
@@ -392,12 +409,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   getScrollResponder() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollResponder();
     }
   }
 
   getScrollableNode() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollableNode();
     }
   }
@@ -408,11 +427,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._checkProps(this.props);
   }
 
-  componentWillReceiveProps(nextProps: Props<ItemT>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props<ItemT>) {
     invariant(
       nextProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
@@ -447,6 +466,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         }),
       );
     } else if (this.props.onViewableItemsChanged) {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       this._virtualizedListPairs.push({
         viewabilityConfig: this.props.viewabilityConfig,
         onViewableItemsChanged: this._createOnViewableItemsChanged(
@@ -457,13 +479,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _hasWarnedLegacy = false;
-  _listRef: VirtualizedList;
+  _listRef: null | VirtualizedList | ListView | MetroListView;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this._listRef = ref;
   };
 
@@ -543,6 +562,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         .map((it, kk) => keyExtractor(it, index * numColumns + kk))
         .join(':');
     } else {
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       return keyExtractor(items, index);
     }
   };
@@ -611,8 +633,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   render() {
     if (this.props.legacyImplementation) {
       return (
+        /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.66 was deployed. To see the error delete
+         * this comment and run Flow. */
         <MetroListView
           {...this.props}
+          /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.66 was deployed. To see the error
+           * delete this comment and run Flow. */
           items={this.props.data}
           ref={this._captureRef}
         />

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTRootView.h"
@@ -24,6 +22,7 @@
 #import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
@@ -90,8 +89,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 #if TARGET_OS_TV
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
-      [self addGestureRecognizer:gr];
+    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
     }
 #endif
 
@@ -131,12 +130,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return [super preferredFocusedView];
 }
 #endif
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  _contentView.backgroundColor = backgroundColor;
-}
 
 #pragma mark - passThroughTouches
 
@@ -243,7 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
      * NOTE: Since the bridge persists, the RootViews might be reused, so the
      * react tag must be re-assigned every time a new UIManager is created.
      */
-    self.reactTag = [_bridge.uiManager allocateRootTag];
+    self.reactTag = RCTAllocateRootViewTag();
   }
   return super.reactTag;
 }
@@ -281,7 +274,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                             sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
-  _contentView.backgroundColor = self.backgroundColor;
   _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
@@ -393,17 +385,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   RCTLogWarn(@"Calling deprecated `[-RCTRootView intrinsicSize]`.");
   return self.intrinsicContentSize;
-}
-
-@end
-
-@implementation RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag
-{
-  NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
-  objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  return rootTag;
 }
 
 @end

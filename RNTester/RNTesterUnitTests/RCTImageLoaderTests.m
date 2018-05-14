@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -54,7 +52,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/logo-og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
@@ -85,7 +83,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:^{ return @[loader1, loader2]; } launchOptions:nil];
 
-  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react/logo-og.png"]];
+  NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://facebook.github.io/react-native/img/opengraph.png"]];
   [bridge.imageLoader loadImageWithURLRequest:urlRequest size:CGSizeMake(100, 100) scale:1.0 clipped:YES resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);

@@ -1,18 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule queryLayoutByID
  * @flow
  * @format
  */
 'use strict';
 
-var UIManager = require('UIManager');
+const UIManager = require('UIManager');
 
 type OnSuccessCallback = (
   left: number,
@@ -45,7 +42,7 @@ type OnErrorCallback = (error: any) => void;
  * @param {function} onError `func(error)`
  * @param {function} onSuccess `func(left, top, width, height, pageX, pageY)`
  */
-var queryLayoutByID = function(
+const queryLayoutByID = function(
   tag: ?number,
   onError: OnErrorCallback,
   onSuccess: OnSuccessCallback,

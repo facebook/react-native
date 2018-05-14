@@ -1,95 +1,92 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule QuickPerformanceLogger
+ * @format
+ * @flow
  */
 
 'use strict';
 
-var fixOpts = function(opts) {
-    var AUTO_SET_TIMESTAMP = -1;
-    var DUMMY_INSTANCE_KEY = 0;
-    opts = opts || {};
-    opts.instanceKey = opts.instanceKey || DUMMY_INSTANCE_KEY;
-    opts.timestamp = opts.timestamp || AUTO_SET_TIMESTAMP;
-    return opts;
-};
+const AUTO_SET_TIMESTAMP = -1;
+const DUMMY_INSTANCE_KEY = 0;
 
-var QuickPerformanceLogger = {
-  markerStart(markerId, opts) {
-    if (typeof markerId !== 'number') {
-      return;
-    }
+const QuickPerformanceLogger = {
+  markerStart(
+    markerId: number,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
     if (global.nativeQPLMarkerStart) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerStart(markerId, opts.instanceKey, opts.timestamp);
+      global.nativeQPLMarkerStart(markerId, instanceKey, timestamp);
     }
   },
 
-  markerEnd(markerId, actionId, opts) {
-    if (typeof markerId !== 'number' || typeof actionId !== 'number') {
-      return;
-    }
+  markerEnd(
+    markerId: number,
+    actionId: number,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
     if (global.nativeQPLMarkerEnd) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerEnd(markerId, opts.instanceKey, actionId, opts.timestamp);
+      global.nativeQPLMarkerEnd(markerId, instanceKey, actionId, timestamp);
     }
   },
 
-  markerNote(markerId, actionId, opts) {
-    if (typeof markerId !== 'number' || typeof actionId !== 'number') {
-      return;
-    }
+  markerNote(
+    markerId: number,
+    actionId: number,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
     if (global.nativeQPLMarkerNote) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerNote(markerId, opts.instanceKey, actionId, opts.timestamp);
+      global.nativeQPLMarkerNote(markerId, instanceKey, actionId, timestamp);
     }
   },
 
-  markerTag(markerId, tag, opts) {
-    if (typeof markerId !== 'number' || typeof tag !== 'string') {
-      return;
-    }
+  markerTag(
+    markerId: number,
+    tag: string,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+  ): void {
     if (global.nativeQPLMarkerTag) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerTag(markerId, opts.instanceKey, tag);
+      global.nativeQPLMarkerTag(markerId, instanceKey, tag);
     }
   },
 
-  markerAnnotate(markerId, annotationKey, annotationValue, opts) {
-    if (typeof markerId !== 'number' ||
-        typeof annotationKey !== 'string' ||
-        typeof annotationValue !== 'string') {
-      return;
-    }
+  markerAnnotate(
+    markerId: number,
+    annotationKey: string,
+    annotationValue: string,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+  ): void {
     if (global.nativeQPLMarkerAnnotate) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerAnnotate(markerId, opts.instanceKey, annotationKey, annotationValue);
+      global.nativeQPLMarkerAnnotate(
+        markerId,
+        instanceKey,
+        annotationKey,
+        annotationValue,
+      );
     }
   },
 
-  markerCancel(markerId, opts) {
-    if (typeof markerId !== 'number') {
-      return;
-    }
+  markerCancel(
+    markerId: number,
+    instanceKey?: number = DUMMY_INSTANCE_KEY,
+  ): void {
     if (global.nativeQPLMarkerCancel) {
-      opts = fixOpts(opts);
-      global.nativeQPLMarkerCancel(markerId, opts.instanceKey);
+      global.nativeQPLMarkerCancel(markerId, instanceKey);
     }
   },
 
-  currentTimestamp() {
+  currentTimestamp(): number {
     if (global.nativeQPLTimestamp) {
       return global.nativeQPLTimestamp();
     }
     return 0;
   },
-
 };
 
 module.exports = QuickPerformanceLogger;

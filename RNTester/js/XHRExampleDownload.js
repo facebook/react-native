@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule XHRExampleDownload
  */
+
 'use strict';
 
 const React = require('react');
@@ -43,11 +42,7 @@ class ProgressBar extends React.Component<$FlowFixMeProps> {
         />
       );
     }
-    return (
-      <ProgressViewIOS
-        progress={this.props.progress}
-      />
-    );
+    return <ProgressViewIOS progress={this.props.progress} />;
   }
 }
 
@@ -80,8 +75,10 @@ class XHRExampleDownload extends React.Component<{}, Object> {
 
     const onreadystatechange = () => {
       if (xhr.readyState === xhr.HEADERS_RECEIVED) {
-        const contentLength =
-          parseInt(xhr.getResponseHeader('Content-Length'), 10);
+        const contentLength = parseInt(
+          xhr.getResponseHeader('Content-Length'),
+          10,
+        );
         this.setState({
           contentLength,
           responseLength: 0,
@@ -92,7 +89,7 @@ class XHRExampleDownload extends React.Component<{}, Object> {
         });
       }
     };
-    const onprogress = (event) => {
+    const onprogress = event => {
       this.setState({
         progressTotal: event.total,
         progressLoaded: event.loaded,
@@ -115,17 +112,19 @@ class XHRExampleDownload extends React.Component<{}, Object> {
         return;
       }
       if (xhr.status === 200) {
-        let responseType =
-          `Response is a string, ${xhr.response.length} characters long.`;
+        let responseType = `Response is a string, ${
+          xhr.response.length
+        } characters long.`;
         if (xhr.response instanceof ArrayBuffer) {
-          responseType =
-            `Response is an ArrayBuffer, ${xhr.response.byteLength} bytes long.`;
+          responseType = `Response is an ArrayBuffer, ${
+            xhr.response.byteLength
+          } bytes long.`;
         }
         Alert.alert('Download complete!', responseType);
       } else if (xhr.status !== 0) {
         Alert.alert(
           'Error',
-          `Server returned HTTP status of ${xhr.status}: ${xhr.responseText}`
+          `Server returned HTTP status of ${xhr.status}: ${xhr.responseText}`,
         );
       } else {
         Alert.alert('Error', xhr.responseText);
@@ -137,7 +136,7 @@ class XHRExampleDownload extends React.Component<{}, Object> {
     xhr.send();
 
     this.setState({downloading: true});
-  }
+  };
 
   componentWillUnmount() {
     this.cancelled = true;
@@ -152,9 +151,7 @@ class XHRExampleDownload extends React.Component<{}, Object> {
         </View>
       </View>
     ) : (
-      <TouchableHighlight
-        style={styles.wrapper}
-        onPress={this._download}>
+      <TouchableHighlight style={styles.wrapper} onPress={this._download}>
         <View style={styles.button}>
           <Text>Download 5MB Text File</Text>
         </View>
@@ -164,30 +161,26 @@ class XHRExampleDownload extends React.Component<{}, Object> {
     let readystate = null;
     let progress = null;
     if (this.state.readystateHandler && !this.state.arraybuffer) {
-      const { responseLength, contentLength } = this.state;
+      const {responseLength, contentLength} = this.state;
       readystate = (
         <View>
           <Text style={styles.progressBarLabel}>
-            responseText:{' '}
-            {roundKilo(responseLength)}/{roundKilo(contentLength)}k chars
+            responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}k
+            chars
           </Text>
-          <ProgressBar
-            progress={(responseLength / contentLength)}
-          />
+          <ProgressBar progress={responseLength / contentLength} />
         </View>
       );
     }
     if (this.state.progressHandler) {
-      const { progressLoaded, progressTotal } = this.state;
+      const {progressLoaded, progressTotal} = this.state;
       progress = (
         <View>
           <Text style={styles.progressBarLabel}>
-            onprogress:{' '}
-            {roundKilo(progressLoaded)}/{roundKilo(progressTotal)} KB
+            onprogress: {roundKilo(progressLoaded)}/{roundKilo(progressTotal)}{' '}
+            KB
           </Text>
-          <ProgressBar
-            progress={(progressLoaded / progressTotal)}
-          />
+          <ProgressBar progress={progressLoaded / progressTotal} />
         </View>
       );
     }
@@ -198,21 +191,23 @@ class XHRExampleDownload extends React.Component<{}, Object> {
           <Text>onreadystatechange handler</Text>
           <Switch
             value={this.state.readystateHandler}
-            onValueChange={(readystateHandler => this.setState({readystateHandler}))}
+            onValueChange={readystateHandler =>
+              this.setState({readystateHandler})
+            }
           />
         </View>
         <View style={styles.configRow}>
           <Text>onprogress handler</Text>
           <Switch
             value={this.state.progressHandler}
-            onValueChange={(progressHandler => this.setState({progressHandler}))}
+            onValueChange={progressHandler => this.setState({progressHandler})}
           />
         </View>
         <View style={styles.configRow}>
           <Text>download as arraybuffer</Text>
           <Switch
             value={this.state.arraybuffer}
-            onValueChange={(arraybuffer => this.setState({arraybuffer}))}
+            onValueChange={arraybuffer => this.setState({arraybuffer})}
           />
         </View>
         {button}

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.slider;
@@ -19,6 +17,7 @@ import android.widget.SeekBar;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -50,7 +49,37 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     private boolean mMeasured;
 
     private ReactSliderShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSliderShadowNode(ReactSliderShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopy() {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    protected ReactSliderShadowNode copy() {
+      return new ReactSliderShadowNode(this);
     }
 
     @Override

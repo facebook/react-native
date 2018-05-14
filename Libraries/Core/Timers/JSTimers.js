@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule JSTimers
  * @format
  * @flow
  */
@@ -44,7 +41,7 @@ export type JSTimerType =
   | 'setImmediate'
   | 'requestIdleCallback';
 
-// These timing contants should be kept in sync with the ones in native ios and
+// These timing constants should be kept in sync with the ones in native ios and
 // android `RCTTiming` module.
 const FRAME_DURATION = 1000 / 60;
 const IDLE_CALLBACK_FRAME_DEADLINE = 1;
@@ -244,11 +241,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked after `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setTimeout: function(
-    func: Function,
-    duration: number,
-    ...args?: any
-  ): number {
+  setTimeout: function(func: Function, duration: number, ...args: any): number {
     if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
       console.warn(
         ANDROID_LONG_TIMER_MESSAGE +
@@ -273,7 +266,7 @@ const JSTimers = {
   setInterval: function(
     func: Function,
     duration: number,
-    ...args?: any
+    ...args: any
   ): number {
     if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
       console.warn(
@@ -296,7 +289,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  setImmediate: function(func: Function, ...args?: any) {
+  setImmediate: function(func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setImmediate',
@@ -489,13 +482,16 @@ const JSTimers = {
   },
 };
 
+let ExportedJSTimers;
 if (!Timing) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available
-  module.exports = ({
+  ExportedJSTimers = ({
     callImmediates: JSTimers.callImmediates,
     setImmediate: JSTimers.setImmediate,
   }: typeof JSTimers);
 } else {
-  module.exports = JSTimers;
+  ExportedJSTimers = JSTimers;
 }
+
+module.exports = ExportedJSTimers;

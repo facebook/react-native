@@ -1,13 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule matricesDiffer
+ * @format
  */
+
 'use strict';
 
 /**
@@ -19,11 +18,13 @@
  * @param {MatrixMath.Matrix} two Second matrix.
  * @return {boolean} Whether or not the two matrices differ.
  */
-var matricesDiffer = function(one, two) {
+const matricesDiffer = function(one, two) {
   if (one === two) {
     return false;
   }
-  return !one || !two ||
+  return (
+    !one ||
+    !two ||
     one[12] !== two[12] ||
     one[13] !== two[13] ||
     one[14] !== two[14] ||
@@ -38,7 +39,8 @@ var matricesDiffer = function(one, two) {
     one[8] !== two[8] ||
     one[9] !== two[9] ||
     one[11] !== two[11] ||
-    one[15] !== two[15];
+    one[15] !== two[15]
+  );
 };
 
 module.exports = matricesDiffer;

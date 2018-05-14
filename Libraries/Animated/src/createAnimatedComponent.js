@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule createAnimatedComponent
  * @flow
  * @format
  */
@@ -17,9 +14,19 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
+const invariant = require('fbjs/lib/invariant');
+
 function createAnimatedComponent(Component: any): any {
+  invariant(
+    typeof Component !== 'function' ||
+      (Component.prototype && Component.prototype.isReactComponent),
+    '`createAnimatedComponent` does not support stateless functional components; ' +
+      'use a class component instead.',
+  );
+
   class AnimatedComponent extends React.Component<Object> {
     _component: any;
+    _invokeAnimatedPropsCallbackOnMount: boolean = false;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
@@ -41,11 +48,16 @@ function createAnimatedComponent(Component: any): any {
       this._component.setNativeProps(props);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this._attachProps(this.props);
     }
 
     componentDidMount() {
+      if (this._invokeAnimatedPropsCallbackOnMount) {
+        this._invokeAnimatedPropsCallbackOnMount = false;
+        this._animatedPropsCallback();
+      }
+
       this._propsAnimated.setNativeView(this._component);
       this._attachNativeEvents();
     }
@@ -71,37 +83,44 @@ function createAnimatedComponent(Component: any): any {
       this._eventDetachers = [];
     }
 
+    // The system is best designed when setNativeProps is implemented. It is
+    // able to avoid re-rendering and directly set the attributes that changed.
+    // However, setNativeProps can only be implemented on leaf native
+    // components. If you want to animate a composite component, you need to
+    // re-render it. In this case, we have a fallback that uses forceUpdate.
+    _animatedPropsCallback = () => {
+      if (this._component == null) {
+        // AnimatedProps is created in will-mount because it's used in render.
+        // But this callback may be invoked before mount in async mode,
+        // In which case we should defer the setNativeProps() call.
+        // React may throw away uncommitted work in async mode,
+        // So a deferred call won't always be invoked.
+        this._invokeAnimatedPropsCallbackOnMount = true;
+      } else if (
+        AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
+        typeof this._component.setNativeProps !== 'function'
+      ) {
+        this.forceUpdate();
+      } else if (!this._propsAnimated.__isNative) {
+        this._component.setNativeProps(
+          this._propsAnimated.__getAnimatedValue(),
+        );
+      } else {
+        throw new Error(
+          'Attempting to run JS driven animation on animated ' +
+            'node that has been moved to "native" earlier by starting an ' +
+            'animation with `useNativeDriver: true`',
+        );
+      }
+    };
+
     _attachProps(nextProps) {
       const oldPropsAnimated = this._propsAnimated;
 
-      // The system is best designed when setNativeProps is implemented. It is
-      // able to avoid re-rendering and directly set the attributes that
-      // changed. However, setNativeProps can only be implemented on leaf
-      // native components. If you want to animate a composite component, you
-      // need to re-render it. In this case, we have a fallback that uses
-      // forceUpdate.
-      const callback = () => {
-        if (
-          !AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY &&
-          this._component.setNativeProps
-        ) {
-          if (!this._propsAnimated.__isNative) {
-            this._component.setNativeProps(
-              this._propsAnimated.__getAnimatedValue(),
-            );
-          } else {
-            throw new Error(
-              'Attempting to run JS driven animation on animated ' +
-                'node that has been moved to "native" earlier by starting an ' +
-                'animation with `useNativeDriver: true`',
-            );
-          }
-        } else {
-          this.forceUpdate();
-        }
-      };
-
-      this._propsAnimated = new AnimatedProps(nextProps, callback);
+      this._propsAnimated = new AnimatedProps(
+        nextProps,
+        this._animatedPropsCallback,
+      );
 
       // When you call detach, it removes the element from the parent list
       // of children. If it goes to 0, then the parent also detaches itself
@@ -114,7 +133,7 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
       this._attachProps(newProps);
     }
 
@@ -136,7 +155,7 @@ function createAnimatedComponent(Component: any): any {
           ref={this._setComponentRef}
           // The native driver updates views directly through the UI thread so we
           // have to make sure the view doesn't get optimized away because it cannot
-          // go through the NativeViewHierachyManager since it operates on the shadow
+          // go through the NativeViewHierarchyManager since it operates on the shadow
           // thread.
           collapsable={
             this._propsAnimated.__isNative ? false : props.collapsable
@@ -157,13 +176,7 @@ function createAnimatedComponent(Component: any): any {
     }
   }
 
-  // ReactNative `View.propTypes` have been deprecated in favor of
-  // `ViewPropTypes`. In their place a temporary getter has been added with a
-  // deprecated warning message. Avoid triggering that warning here by using
-  // temporary workaround, __propTypesSecretDontUseThesePlease.
-  // TODO (bvaughn) Revert this particular change any time after April 1
-  const propTypes =
-    Component.__propTypesSecretDontUseThesePlease || Component.propTypes;
+  const propTypes = Component.propTypes;
 
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {

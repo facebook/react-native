@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule processColor
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -27,7 +26,7 @@ function processColor(color?: string | number): ?number {
   }
 
   // Converts 0xrrggbbaa into 0xaarrggbb
-  int32Color = (int32Color << 24 | int32Color >>> 8) >>> 0;
+  int32Color = ((int32Color << 24) | (int32Color >>> 8)) >>> 0;
 
   if (Platform.OS === 'android') {
     // Android use 32 bit *signed* integer to represent the color

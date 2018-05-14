@@ -9,16 +9,17 @@ LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
   JavaModuleWrapper.cpp \
+  JReactMarker.cpp \
   JMessageQueueThread.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \
   JSLogging.cpp \
   JniJSModulesUnbundle.cpp \
-	JniRAMBundleRegistry.cpp \
   MethodInvoker.cpp \
   ModuleRegistryBuilder.cpp \
   NativeArray.cpp \
   NativeCommon.cpp \
+  NativeDeltaClient.cpp \
   NativeMap.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
