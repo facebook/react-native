@@ -174,10 +174,7 @@ const TouchableBounce = ((createReactClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
-        {
-          // $FlowFixMe(>=0.41.0)
-          this.props.children
-        }
+        {this.props.children}
         {Touchable.renderDebugView({
           color: 'orange',
           hitSlop: this.props.hitSlop,
