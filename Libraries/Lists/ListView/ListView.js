@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const InternalListViewType = require('InternalListViewType');
 const ListViewDataSource = require('ListViewDataSource');
 const Platform = require('Platform');
 const React = require('React');
@@ -25,11 +26,35 @@ const createReactClass = require('create-react-class');
 const isEmpty = require('isEmpty');
 const merge = require('merge');
 
+import type {Props as ScrollViewProps} from 'ScrollView';
+
 const DEFAULT_PAGE_SIZE = 1;
 const DEFAULT_INITIAL_ROWS = 10;
 const DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 const DEFAULT_END_REACHED_THRESHOLD = 1000;
 const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+
+type Props = $ReadOnly<{|
+  ...ScrollViewProps,
+
+  dataSource: ListViewDataSource,
+  renderSeparator?: ?Function,
+  renderRow: Function,
+  initialListSize?: ?number,
+  onEndReached?: ?Function,
+  onEndReachedThreshold?: ?number,
+  pageSize?: ?number,
+  renderFooter?: ?Function,
+  renderHeader?: ?Function,
+  renderSectionHeader?: ?Function,
+  renderScrollComponent?: ?Function,
+  scrollRenderAheadDistance?: ?number,
+  onChangeVisibleRows?: ?Function,
+  removeClippedSubviews?: ?boolean,
+  stickySectionHeadersEnabled?: ?boolean,
+  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  enableEmptySections?: ?boolean,
+|}>;
 
 /**
  * DEPRECATED - use one of the new list components, such as [`FlatList`](docs/flatlist.html)
@@ -92,7 +117,7 @@ const ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
-  _scrollComponent: (null: any),
+  _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
   _prevRenderedRowsCount: 0,
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
@@ -555,7 +580,7 @@ const ListView = createReactClass({
       );
   },
 
-  _setScrollComponentRef: function(scrollComponent: Object) {
+  _setScrollComponentRef: function(scrollComponent) {
     this._scrollComponent = scrollComponent;
   },
 
@@ -752,4 +777,4 @@ const ListView = createReactClass({
   },
 });
 
-module.exports = ListView;
+module.exports = ((ListView: any): Class<InternalListViewType<Props>>);

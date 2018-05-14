@@ -138,6 +138,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   render() {
     return (
+      // $FlowFixMe Found when typing ListView
       <ListView
         {...this.props}
         dataSource={this.state.ds}
@@ -170,6 +171,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     } else {
       invariant(!props.sections, 'Cannot have both sections and items props.');
       return {
+        // $FlowFixMe Found when typing ListView
         ds: state.ds.cloneWithRows(props.items),
         sectionHeaderData,
       };

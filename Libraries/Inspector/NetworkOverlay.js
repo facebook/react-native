@@ -497,6 +497,7 @@ class NetworkOverlay extends React.Component<
           renderRow={this._renderRow}
           enableEmptySections={true}
           renderSeparator={this._renderSeperator}
+          // $FlowFixMe Found when typing ListView
           onLayout={this._listViewOnLayout}
         />
       </View>

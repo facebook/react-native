@@ -99,7 +99,7 @@ type VRProps = $ReadOnly<{|
   scrollBarThumbImage?: ?($ReadOnly<{||}> | number),
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...ViewProps,
   ...TouchableProps,
   ...IOSProps,
