@@ -105,7 +105,7 @@ Pod::Spec.new do |s|
 
   s.subspec "tvOS" do |ss|
     ss.dependency             "React/Core"
-    ss.source_files         = "React/**/RCTTV*.{h, m}"
+    ss.source_files         = "React/**/RCTTV*.{h,m}"
   end
 
   s.subspec "jschelpers" do |ss|
@@ -149,6 +149,15 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "fabric" do |ss|
+    ss.subspec "attributedstring" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/attributedstring/**/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "fabric/attributedstring"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
     ss.subspec "core" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
@@ -176,6 +185,24 @@ Pod::Spec.new do |s|
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
+    ss.subspec "text" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/text/**/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "fabric/text"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "textlayoutmanager" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/textlayoutmanager/**/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "fabric/textlayoutmanager"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
     ss.subspec "uimanager" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
@@ -194,7 +221,6 @@ Pod::Spec.new do |s|
       sss.header_dir           = "fabric/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
-
   end
 
   s.subspec "ART" do |ss|

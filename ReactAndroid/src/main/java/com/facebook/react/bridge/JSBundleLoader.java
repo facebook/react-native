@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
+import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 
 /**
@@ -70,6 +71,28 @@ public abstract class JSBundleLoader {
       public String loadScript(CatalystInstanceImpl instance) {
         try {
           instance.loadScriptFromFile(cachedFileLocation, sourceURL, false);
+          return sourceURL;
+        } catch (Exception e) {
+          throw DebugServerException.makeGeneric(e.getMessage(), e);
+        }
+      }
+    };
+  }
+
+  /**
+   * This loader is used to load delta bundles from the dev server. We pass each delta message to
+   * the loader and process it in C++. Passing it as a string leads to inefficiencies due to memory
+   * copies, which will have to be addressed in a follow-up.
+   * @param nativeDeltaClient
+   */
+  public static JSBundleLoader createDeltaFromNetworkLoader(
+    final String sourceURL,
+    final NativeDeltaClient nativeDeltaClient) {
+    return new JSBundleLoader() {
+      @Override
+      public String loadScript(CatalystInstanceImpl instance) {
+        try {
+          instance.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);

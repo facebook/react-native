@@ -205,7 +205,12 @@ public class UIImplementation {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
-    mShadowNodeRegistry.addRootNode(rootCSSNode);
+    context.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mShadowNodeRegistry.addRootNode(rootCSSNode);
+      }
+    });
 
     // register it within NativeViewHierarchyManager
     mOperationsQueue.addRootView(tag, rootView, context);
@@ -783,7 +788,7 @@ public class UIImplementation {
     mOperationsQueue.enqueueClearJSResponder();
   }
 
-  public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
+  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     assertViewExists(reactTag, "dispatchViewManagerCommand");
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }

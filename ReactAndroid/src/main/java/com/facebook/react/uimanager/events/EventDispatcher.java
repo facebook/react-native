@@ -24,6 +24,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
 
 /**

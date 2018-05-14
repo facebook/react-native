@@ -10,6 +10,8 @@
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
 
+#import "RCTConversions.h"
+
 using namespace facebook::react;
 
 class SchedulerDelegateProxy: public SchedulerDelegate {
@@ -59,6 +61,20 @@ private:
 - (void)unregisterRootTag:(ReactTag)tag
 {
   _scheduler->unregisterRootTag(tag);
+}
+
+- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                         layoutContext:(LayoutContext)layoutContext
+                               rootTag:(ReactTag)rootTag
+{
+  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
+}
+
+- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                layoutContext:(LayoutContext)layoutContext
+                                      rootTag:(ReactTag)rootTag
+{
+  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
 }
 
 @end

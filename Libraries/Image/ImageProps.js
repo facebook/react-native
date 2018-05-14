@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageProps
  * @flow
  * @format
  */
@@ -19,8 +18,8 @@ const StyleSheetPropType = require('StyleSheetPropType');
 
 import type {ImageSource} from 'ImageSource';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {LayoutEvent} from 'CoreEventTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {LayoutEvent, SyntheticEvent} from 'CoreEventTypes';
+import type {ImageStyleProp} from 'StyleSheet';
 
 export type ImageProps = {
   accessible?: boolean,
@@ -36,7 +35,7 @@ export type ImageProps = {
   resizeMethod?: ?('auto' | 'resize' | 'scale'),
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
   source?: ?ImageSource,
-  style?: typeof ImageStylePropTypes,
+  style?: ImageStyleProp,
   testID?: ?string,
 
   // ios

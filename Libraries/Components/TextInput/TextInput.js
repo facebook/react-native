@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInput
  * @flow
  * @format
  */
@@ -21,23 +20,21 @@ const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
+const TextAncestor = require('TextAncestor');
 const TextInputState = require('TextInputState');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
-const {ViewContextTypes} = require('ViewContext');
 
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const warning = require('fbjs/lib/warning');
+
+import type {ColorValue} from 'StyleSheetTypes';
+import type {TextStyleProp} from 'StyleSheet';
+import type {ViewProps} from 'ViewPropTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -47,8 +44,6 @@ const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-import type {ViewChildContext} from 'ViewContext';
 
 if (Platform.OS === 'android') {
   AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
@@ -77,6 +72,144 @@ const DataDetectorTypes = [
   'none',
   'all',
 ];
+
+type DataDetectorTypesType =
+  | 'phoneNumber'
+  | 'link'
+  | 'address'
+  | 'calendarEvent'
+  | 'none'
+  | 'all';
+
+export type KeyboardType =
+  // Cross Platform
+  | 'default'
+  | 'email-address'
+  | 'numeric'
+  | 'phone-pad'
+  | 'number-pad'
+  // iOS-only
+  | 'ascii-capable'
+  | 'numbers-and-punctuation'
+  | 'url'
+  | 'name-phone-pad'
+  | 'decimal-pad'
+  | 'twitter'
+  | 'web-search'
+  // Android-only
+  | 'visible-password';
+
+export type ReturnKeyType =
+  // Cross Platform
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'search'
+  | 'send'
+  // Android-only
+  | 'none'
+  | 'previous'
+  // iOS-only
+  | 'default'
+  | 'emergency-call'
+  | 'google'
+  | 'join'
+  | 'route'
+  | 'yahoo';
+
+export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
+
+type IOSProps = $ReadOnly<{|
+  spellCheck?: ?boolean,
+  keyboardAppearance?: ?('default' | 'light' | 'dark'),
+  enablesReturnKeyAutomatically?: ?boolean,
+  selectionState?: ?DocumentSelectionState,
+  clearButtonMode?: ?('never' | 'while-editing' | 'unless-editing' | 'always'),
+  clearTextOnFocus?: ?boolean,
+  dataDetectorTypes?:
+    | ?DataDetectorTypesType
+    | $ReadOnlyArray<DataDetectorTypesType>,
+  inputAccessoryViewID?: ?string,
+  textContentType?: ?(
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+  ),
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  returnKeyLabel?: ?string,
+  numberOfLines?: ?number,
+  disableFullscreenUI?: ?boolean,
+  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
+  underlineColorAndroid?: ?ColorValue,
+  inlineImageLeft?: ?string,
+  inlineImagePadding?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+  autoCapitalize?: ?AutoCapitalize,
+  autoCorrect?: ?boolean,
+  autoFocus?: ?boolean,
+  allowFontScaling?: ?boolean,
+  editable?: ?boolean,
+  keyboardType?: ?KeyboardType,
+  returnKeyType?: ?ReturnKeyType,
+  maxLength?: ?number,
+  multiline?: ?boolean,
+  onBlur?: ?Function,
+  onFocus?: ?Function,
+  onChange?: ?Function,
+  onChangeText?: ?Function,
+  onContentSizeChange?: ?Function,
+  onTextInput?: ?Function,
+  onEndEditing?: ?Function,
+  onSelectionChange?: ?Function,
+  onSubmitEditing?: ?Function,
+  onKeyPress?: ?Function,
+  onScroll?: ?Function,
+  placeholder?: ?Stringish,
+  placeholderTextColor?: ?ColorValue,
+  secureTextEntry?: ?boolean,
+  selectionColor?: ?ColorValue,
+  selection?: ?$ReadOnly<{|
+    start: number,
+    end?: ?number,
+  |}>,
+  value?: ?Stringish,
+  defaultValue?: ?Stringish,
+  selectTextOnFocus?: ?boolean,
+  blurOnSubmit?: ?boolean,
+  style?: ?TextStyleProp,
+  caretHidden?: ?boolean,
+  contextMenuHidden?: ?boolean,
+|}>;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -408,6 +541,7 @@ const TextInput = createReactClass({
      * Only called for multiline text inputs.
      */
     onContentSizeChange: PropTypes.func,
+    onTextInput: PropTypes.func,
     /**
      * Callback that is called when text input ends.
      */
@@ -644,6 +778,7 @@ const TextInput = createReactClass({
   getDefaultProps(): Object {
     return {
       allowFontScaling: true,
+      underlineColorAndroid: 'transparent',
     };
   },
   /**
@@ -707,16 +842,7 @@ const TextInput = createReactClass({
     }
   },
 
-  getChildContext(): ViewChildContext {
-    return {
-      isInAParentText: true,
-    };
-  },
-
-  childContextTypes: ViewContextTypes,
-
   contextTypes: {
-    ...ViewContextTypes,
     onFocusRequested: PropTypes.func,
     focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
@@ -729,13 +855,17 @@ const TextInput = createReactClass({
   },
 
   render: function() {
+    let textInput;
     if (Platform.OS === 'ios') {
-      return UIManager.RCTVirtualText
+      textInput = UIManager.RCTVirtualText
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
-      return this._renderAndroid();
+      textInput = this._renderAndroid();
     }
+    return (
+      <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
+    );
   },
 
   _getText: function(): ?string {
@@ -1061,6 +1191,15 @@ const TextInput = createReactClass({
   },
 });
 
+class InternalTextInputType extends ReactNative.NativeComponent<Props> {
+  clear() {}
+
+  // $FlowFixMe
+  isFocused(): boolean {}
+}
+
+const TypedTextInput = ((TextInput: any): Class<InternalTextInputType>);
+
 const styles = StyleSheet.create({
   multilineInput: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
@@ -1070,4 +1209,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TextInput;
+module.exports = TypedTextInput;

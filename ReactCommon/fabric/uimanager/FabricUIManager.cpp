@@ -38,6 +38,37 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
   return result;
 }
 
+static const std::string componentNameByReactViewName(std::string viewName) {
+  // We need this function only for the transition period;
+  // eventually, all names will be unified.
+
+  std::string rctPrefix("RCT");
+  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin()).first == rctPrefix.end()) {
+    // If `viewName` has "RCT" prefix, remove it.
+    viewName.erase(0, 3);
+  }
+
+  // Fabric uses slightly new names for Text components because of differences
+  // in semantic.
+  if (viewName == "Text") {
+    return "Paragraph";
+  }
+  if (viewName == "VirtualText") {
+    return "Text";
+  }
+
+  // We need this temporarly for testing purposes until we have proper
+  // implementation of <ScrollView> component.
+  if (
+    viewName == "ScrollContentView" ||
+    viewName == "ScrollView"
+  ) {
+    return "View";
+  }
+
+  return viewName;
+}
+
 FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
@@ -52,7 +83,9 @@ UIManagerDelegate *FabricUIManager::getDelegate() {
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, void *instanceHandle) {
   LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag" << rootTag << ", props: " << props << ")";
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)["View"];
+
+  ComponentName componentName = componentNameByReactViewName(viewName);
+  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);
 
   SharedShadowNode shadowNode =
@@ -139,7 +172,8 @@ void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, cons
 
   // TODO: Remove this after we move this to JS side.
   if (childShadowNode->getSealed()) {
-    auto clonedChildShadowNode = componentDescriptor->cloneShadowNode(childShadowNode);
+    auto childComponentDescriptor = (*componentDescriptorRegistry_)[childShadowNode];
+    auto clonedChildShadowNode = childComponentDescriptor->cloneShadowNode(childShadowNode);
     auto nonConstClonedChildShadowNode = std::const_pointer_cast<ShadowNode>(clonedChildShadowNode);
     nonConstClonedChildShadowNode->shallowSourceNode();
     componentDescriptor->appendChild(parentShadowNode, clonedChildShadowNode);

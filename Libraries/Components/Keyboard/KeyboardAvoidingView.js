@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule KeyboardAvoidingView
+ * @format
  * @flow
  */
+
 'use strict';
 
 const createReactClass = require('create-react-class');
@@ -23,7 +24,8 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
 import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewProps, ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type ScreenRect = {
   screenX: number,
@@ -38,13 +40,21 @@ type KeyboardChangeEvent = {
   easing?: string,
 };
 
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  behavior?: ?('height' | 'position' | 'padding'),
+  contentContainerStyle?: ?ViewStyleProp,
+  enabled?: ?boolean,
+  keyboardVerticalOffset?: ?number,
+|}>;
+
 const viewRef = 'VIEW';
 
 /**
  * This is a component to solve the common problem of views that need to move out of the way of the virtual keyboard.
  * It can automatically adjust either its height, position or bottom padding based on the position of the keyboard.
  */
-const KeyboardAvoidingView = createReactClass({
+const KeyboardAvoidingView = ((createReactClass({
   displayName: 'KeyboardAvoidingView',
   mixins: [TimerMixin],
 
@@ -67,9 +77,9 @@ const KeyboardAvoidingView = createReactClass({
      */
     keyboardVerticalOffset: PropTypes.number.isRequired,
     /**
-    * This is to allow us to manually control which KAV shuld take effect when
-    * having more than one KAV at the same screen
-    */
+     * This is to allow us to manually control which KAV shuld take effect when
+     * having more than one KAV at the same screen
+     */
     enabled: PropTypes.bool.isRequired,
   },
 
@@ -131,10 +141,16 @@ const KeyboardAvoidingView = createReactClass({
     this.frame = event.nativeEvent.layout;
   },
 
-  UNSAFE_componentWillUpdate(nextProps: Object, nextState: Object, nextContext?: Object): void {
-    if (nextState.bottom === this.state.bottom &&
-        this.props.behavior === 'height' &&
-        nextProps.behavior === 'height') {
+  UNSAFE_componentWillUpdate(
+    nextProps: Object,
+    nextState: Object,
+    nextContext?: Object,
+  ): void {
+    if (
+      nextState.bottom === this.state.bottom &&
+      this.props.behavior === 'height' &&
+      nextProps.behavior === 'height'
+    ) {
       // If the component rerenders without an internal state change, e.g.
       // triggered by parent component re-rendering, no need for bottom to change.
       nextState.bottom = 0;
@@ -155,7 +171,7 @@ const KeyboardAvoidingView = createReactClass({
   },
 
   componentWillUnmount() {
-    this.subscriptions.forEach((sub) => sub.remove());
+    this.subscriptions.forEach(sub => sub.remove());
   },
 
   render(): React.Element<any> {
@@ -173,17 +189,27 @@ const KeyboardAvoidingView = createReactClass({
           heightStyle = {height: this.frame.height - bottomHeight, flex: 0};
         }
         return (
-          <View ref={viewRef} style={[style, heightStyle]} onLayout={this._onLayout} {...props}>
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
+          <View
+            ref={viewRef}
+            style={[style, heightStyle]}
+            onLayout={this._onLayout}
+            {...props}>
             {children}
           </View>
         );
 
       case 'position':
         const positionStyle = {bottom: bottomHeight};
-        const { contentContainerStyle } = this.props;
+        const {contentContainerStyle} = this.props;
 
         return (
-          <View ref={viewRef} style={style} onLayout={this._onLayout} {...props}>
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
+          <View
+            ref={viewRef}
+            style={style}
+            onLayout={this._onLayout}
+            {...props}>
             <View style={[contentContainerStyle, positionStyle]}>
               {children}
             </View>
@@ -193,19 +219,29 @@ const KeyboardAvoidingView = createReactClass({
       case 'padding':
         const paddingStyle = {paddingBottom: bottomHeight};
         return (
-          <View ref={viewRef} style={[style, paddingStyle]} onLayout={this._onLayout} {...props}>
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
+          <View
+            ref={viewRef}
+            style={[style, paddingStyle]}
+            onLayout={this._onLayout}
+            {...props}>
             {children}
           </View>
         );
 
       default:
         return (
-          <View ref={viewRef} onLayout={this._onLayout} style={style} {...props}>
+          // $FlowFixMe - Typing ReactNativeComponent revealed errors
+          <View
+            ref={viewRef}
+            onLayout={this._onLayout}
+            style={style}
+            {...props}>
             {children}
           </View>
         );
     }
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = KeyboardAvoidingView;

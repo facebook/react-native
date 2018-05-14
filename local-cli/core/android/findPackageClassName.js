@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const fs = require('fs');
@@ -17,7 +20,7 @@ const path = require('path');
  * @param {String} folder Folder to find java/kt files
  */
 module.exports = function getPackageClassName(folder) {
-  const files = glob.sync('**/+(*.java|*.kt)', { cwd: folder });
+  const files = glob.sync('**/+(*.java|*.kt)', {cwd: folder});
 
   const packages = files
     .map(filePath => fs.readFileSync(path.join(folder, filePath), 'utf8'))

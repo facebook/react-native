@@ -4,7 +4,7 @@ This lets us build React Native:
  - At Facebook by running buck from the root of the fb repo
  - Outside of Facebook by running buck in the root of the git repo
 """
-# @lint-ignore-every SKYLINT
+# @lint-ignore-every SKYLINT BUCKRESTRICTEDSYNTAX
 
 IS_OSS_BUILD = True
 
@@ -22,6 +22,7 @@ ANDROID_JSC_INTERNAL_DEPS = [
 ]
 ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
 ANDROID = "Android"
+APPLE = ""
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
@@ -31,6 +32,14 @@ KEYSTORE_TARGET = '//keystores:debug'
 
 with allow_unsafe_import():
     import os
+
+
+def get_apple_inspector_flags():
+    return []
+
+
+def get_android_inspector_flags():
+    return []
 
 
 # Building is not supported in OSS right now
