@@ -13,6 +13,7 @@
 const Image = require('Image');
 const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const ReactNative = require('ReactNative');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const Platform = require('Platform');
 const React = require('React');
@@ -23,7 +24,40 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {ImageSource} from 'ImageSource';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
 type Event = Object;
+
+type IOSProps = $ReadOnly<{|
+  trackImage?: ?ImageSource,
+  minimumTrackImage?: ?ImageSource,
+  maximumTrackImage?: ?ImageSource,
+  thumbImage?: ?ImageSource,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  thumbTintColor?: ?ColorValue,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+  style?: ?ViewStyleProp,
+  value?: ?number,
+  step?: ?number,
+  minimumValue?: ?number,
+  maximumValue?: ?number,
+  minimumTrackTintColor?: ?ColorValue,
+  maximumTrackTintColor?: ?ColorValue,
+  disabled?: ?boolean,
+  onValueChange?: ?Function,
+  onSlidingComplete?: ?Function,
+  testID?: ?string,
+|}>;
 
 /**
  * A component used to select a single value from a range of values.
@@ -282,4 +316,4 @@ if (Platform.OS === 'android') {
 }
 const RCTSlider = requireNativeComponent('RCTSlider', Slider, options);
 
-module.exports = Slider;
+module.exports = ((Slider: any): Class<ReactNative.NativeComponent<Props>>);
