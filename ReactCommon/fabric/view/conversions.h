@@ -5,16 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "yogaValuesConversions.h"
-
-#include <folly/Conv.h>
+#pragma once
 
 #include <fabric/core/LayoutMetrics.h>
+#include <fabric/graphics/Geometry.h>
+#include <folly/dynamic.h>
+#include <folly/Conv.h>
+#include <yoga/Yoga.h>
+#include <yoga/YGNode.h>
+
+// Yoga does not have this as part of the library, so we have to implement it
+// here ouside of `facebook::react::` namespace.
+inline bool operator==(const YGValue &lhs, const YGValue &rhs) {
+  if (
+    (lhs.unit == YGUnitUndefined && rhs.unit == YGUnitUndefined) ||
+    (lhs.unit == YGUnitAuto && rhs.unit == YGUnitAuto)
+  ) {
+    return true;
+  }
+
+  return
+    lhs.unit == rhs.unit &&
+    ((isnan(lhs.value) && isnan(rhs.value)) || (lhs.value == rhs.value));
+}
 
 namespace facebook {
 namespace react {
 
-Float fabricFloatFromYogaFloat(float value) {
+inline Float fabricFloatFromYogaFloat(float value) {
   if (value == YGUndefined) {
     return kFloatUndefined;
   }
@@ -22,7 +40,7 @@ Float fabricFloatFromYogaFloat(float value) {
   return (Float)value;
 }
 
-float yogaFloatFromFabricFloat(Float value) {
+inline float yogaFloatFromFabricFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGUndefined;
   }
@@ -30,7 +48,7 @@ float yogaFloatFromFabricFloat(Float value) {
   return (float)value;
 }
 
-Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value) {
+inline Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
     return kFloatUndefined;
   }
@@ -38,7 +56,7 @@ Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value) {
   return fabricFloatFromYogaFloat(value.getValue());
 }
 
-YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
+inline YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGFloatOptional();
   }
@@ -46,7 +64,7 @@ YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
   return YGFloatOptional(yogaFloatFromFabricFloat(value));
 }
 
-YGValue yogaStyleValueFromFloat(const Float &value) {
+inline YGValue yogaStyleValueFromFloat(const Float &value) {
   if (isnan(value) || value == kFloatUndefined) {
     return YGValueUndefined;
   }
@@ -54,7 +72,7 @@ YGValue yogaStyleValueFromFloat(const Float &value) {
   return {(float)value, YGUnitPoint};
 }
 
-LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
+inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   LayoutMetrics layoutMetrics;
 
   YGLayout layout = yogaNode.getLayout();
@@ -93,142 +111,130 @@ LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   return layoutMetrics;
 }
 
-YGDirection yogaStyleDirectionFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "inherit") { return YGDirectionInherit; }
-  if (stringValue == "ltr") { return YGDirectionLTR; }
-  if (stringValue == "rtl") { return YGDirectionRTL; }
-
+  if (stringValue == "inherit") { result = YGDirectionInherit; return; }
+  if (stringValue == "ltr") { result = YGDirectionLTR; return; }
+  if (stringValue == "rtl") { result = YGDirectionRTL; return; }
   abort();
 }
 
-YGFlexDirection yogaStyleFlexDirectionFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGFlexDirection &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "column") { return YGFlexDirectionColumn; }
-  if (stringValue == "column-reverse") { return YGFlexDirectionColumnReverse; }
-  if (stringValue == "row") { return YGFlexDirectionRow; }
-  if (stringValue == "row-reverse") { return YGFlexDirectionRowReverse; }
-
+  if (stringValue == "column") { result = YGFlexDirectionColumn; return; }
+  if (stringValue == "column-reverse") { result = YGFlexDirectionColumnReverse; return; }
+  if (stringValue == "row") { result = YGFlexDirectionRow; return; }
+  if (stringValue == "row-reverse") { result = YGFlexDirectionRowReverse; return; }
   abort();
 }
 
-YGJustify yogaStyleJustifyFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGJustify &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "flex-start") { return YGJustifyFlexStart; }
-  if (stringValue == "center") { return YGJustifyCenter; }
-  if (stringValue == "flex-end") { return YGJustifyFlexEnd; }
-  if (stringValue == "space-between") { return YGJustifySpaceBetween; }
-  if (stringValue == "space-around") { return YGJustifySpaceAround; }
-  if (stringValue == "space-evenly") { return YGJustifySpaceEvenly; }
-
+  if (stringValue == "flex-start") { result = YGJustifyFlexStart; return; }
+  if (stringValue == "center") { result = YGJustifyCenter; return; }
+  if (stringValue == "flex-end") { result = YGJustifyFlexEnd; return; }
+  if (stringValue == "space-between") { result = YGJustifySpaceBetween; return; }
+  if (stringValue == "space-around") { result = YGJustifySpaceAround; return; }
+  if (stringValue == "space-evenly") { result = YGJustifySpaceEvenly; return; }
   abort();
 }
 
-YGAlign yogaStyleAlignFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGAlign &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "auto") { return YGAlignAuto; }
-  if (stringValue == "flex-start") { return YGAlignFlexStart; }
-  if (stringValue == "center") { return YGAlignCenter; }
-  if (stringValue == "flex-end") { return YGAlignFlexEnd; }
-  if (stringValue == "stretch") { return YGAlignStretch; }
-  if (stringValue == "baseline") { return YGAlignBaseline; }
-  if (stringValue == "between") { return YGAlignSpaceBetween; }
-  if (stringValue == "space-around") { return YGAlignSpaceAround; }
-
+  if (stringValue == "auto") { result = YGAlignAuto; return; }
+  if (stringValue == "flex-start") { result = YGAlignFlexStart; return; }
+  if (stringValue == "center") { result = YGAlignCenter; return; }
+  if (stringValue == "flex-end") { result = YGAlignFlexEnd; return; }
+  if (stringValue == "stretch") { result = YGAlignStretch; return; }
+  if (stringValue == "baseline") { result = YGAlignBaseline; return; }
+  if (stringValue == "between") { result = YGAlignSpaceBetween; return; }
+  if (stringValue == "space-around") { result = YGAlignSpaceAround; return; }
   abort();
 }
 
-YGPositionType yogaStylePositionTypeFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGPositionType &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "relative") { return YGPositionTypeRelative; }
-  if (stringValue == "absolute") { return YGPositionTypeAbsolute; }
-
+  if (stringValue == "relative") { result = YGPositionTypeRelative; return; }
+  if (stringValue == "absolute") { result = YGPositionTypeAbsolute; return; }
   abort();
 }
 
-YGWrap yogaStyleWrapFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGWrap &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "no-wrap") { return YGWrapNoWrap; }
-  if (stringValue == "wrap") { return YGWrapWrap; }
-  if (stringValue == "wrap-reverse") { return YGWrapWrapReverse; }
-
+  if (stringValue == "no-wrap") { result = YGWrapNoWrap; return; }
+  if (stringValue == "wrap") { result = YGWrapWrap; return; }
+  if (stringValue == "wrap-reverse") { result = YGWrapWrapReverse; return; }
   abort();
 }
 
-YGOverflow yogaStyleOverflowFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGOverflow &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "visible") { return YGOverflowVisible; }
-  if (stringValue == "hidden") { return YGOverflowHidden; }
-  if (stringValue == "scroll") { return YGOverflowScroll; }
-
+  if (stringValue == "visible") { result = YGOverflowVisible; return; }
+  if (stringValue == "hidden") { result = YGOverflowHidden; return; }
+  if (stringValue == "scroll") { result = YGOverflowScroll; return; }
   abort();
 }
 
-YGDisplay yogaStyleDisplayFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-
-  if (stringValue == "flex") { return YGDisplayFlex; }
-  if (stringValue == "none") { return YGDisplayNone; }
-
+  if (stringValue == "flex") { result = YGDisplayFlex; return; }
+  if (stringValue == "none") { result = YGDisplayNone; return; }
   abort();
 }
 
-YGValue yogaStyleValueFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
   if (value.isNumber()) {
-    return yogaStyleValueFromFloat(value.asDouble());
+    result = yogaStyleValueFromFloat(value.asDouble());
+    return;
   } else if (value.isString()) {
     const auto stringValue = value.asString();
     if (stringValue == "auto") {
-      return YGValueUndefined;
+      result = YGValueUndefined;
+      return;
     } else {
       if (stringValue.back() == '%') {
-        return { folly::to<float>(stringValue.substr(stringValue.length() - 1)), YGUnitPercent };
+        result = { folly::to<float>(stringValue.substr(stringValue.length() - 1)), YGUnitPercent };
+        return;
       } else {
-        return { folly::to<float>(stringValue), YGUnitPoint };
+        result = { folly::to<float>(stringValue), YGUnitPoint };
+        return;
       }
     }
   }
-
-  return YGValueUndefined;
+  result = YGValueUndefined;
 }
 
-YGFloatOptional yogaStyleOptionalFloatFromDynamic(const folly::dynamic &value) {
+inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
   if (value.isNumber()) {
-    return YGFloatOptional(value.asDouble());
+    result = YGFloatOptional(value.asDouble());
+    return;
   } else if (value.isString()) {
     const auto stringValue = value.asString();
     if (stringValue == "auto") {
-      return YGFloatOptional();
+      result = YGFloatOptional();
+      return;
     }
   }
-
   abort();
 }
 
-std::string stringFromYogaDimensions(std::array<float, YGDimensionCount> dimensions) {
+inline std::string toString(const std::array<float, YGDimensionCount> &dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " + folly::to<std::string>(dimensions[1]) + "}";
 }
 
-std::string stringFromYogaPosition(std::array<float, 4> position) {
+inline std::string toString(const std::array<float, 4> &position) {
   return "{" + folly::to<std::string>(position[0]) + ", " + folly::to<std::string>(position[1]) + "}";
 }
 
-std::string stringFromYogaEdges(std::array<float, YGEdgeCount> edges) {
+inline std::string toString(const std::array<float, YGEdgeCount> &edges) {
   return "{" +
     folly::to<std::string>(edges[0]) + ", " +
     folly::to<std::string>(edges[1]) + ", " +
@@ -236,7 +242,7 @@ std::string stringFromYogaEdges(std::array<float, YGEdgeCount> edges) {
     folly::to<std::string>(edges[3]) + "}";
 }
 
-std::string stringFromYogaStyleDirection(YGDirection value) {
+inline std::string toString(const YGDirection &value) {
   switch (value) {
     case YGDirectionInherit: return "inherit";
     case YGDirectionLTR: return "ltr";
@@ -244,7 +250,7 @@ std::string stringFromYogaStyleDirection(YGDirection value) {
   }
 }
 
-std::string stringFromYogaStyleFlexDirection(YGFlexDirection value) {
+inline std::string toString(const YGFlexDirection &value) {
   switch (value) {
     case YGFlexDirectionColumn: return "column";
     case YGFlexDirectionColumnReverse: return "column-reverse";
@@ -253,7 +259,7 @@ std::string stringFromYogaStyleFlexDirection(YGFlexDirection value) {
   }
 }
 
-std::string stringFromYogaStyleJustify(YGJustify value) {
+inline std::string toString(const YGJustify &value) {
   switch (value) {
     case YGJustifyFlexStart: return "flex-start";
     case YGJustifyCenter: return "center";
@@ -264,7 +270,7 @@ std::string stringFromYogaStyleJustify(YGJustify value) {
   }
 }
 
-std::string stringFromYogaStyleAlign(YGAlign value) {
+inline std::string toString(const YGAlign &value) {
   switch (value) {
     case YGAlignAuto: return "auto";
     case YGAlignFlexStart: return "flex-start";
@@ -277,14 +283,14 @@ std::string stringFromYogaStyleAlign(YGAlign value) {
   }
 }
 
-std::string stringFromYogaStylePositionType(YGPositionType value) {
+inline std::string toString(const YGPositionType &value) {
   switch (value) {
     case YGPositionTypeRelative: return "relative";
     case YGPositionTypeAbsolute: return "absolute";
   }
 }
 
-std::string stringFromYogaStyleWrap(YGWrap value) {
+inline std::string toString(const YGWrap &value) {
   switch (value) {
     case YGWrapNoWrap: return "no-wrap";
     case YGWrapWrap: return "wrap";
@@ -292,7 +298,7 @@ std::string stringFromYogaStyleWrap(YGWrap value) {
   }
 }
 
-std::string stringFromYogaStyleOverflow(YGOverflow value) {
+inline std::string toString(const YGOverflow &value) {
   switch (value) {
     case YGOverflowVisible: return "visible";
     case YGOverflowScroll: return "scroll";
@@ -300,14 +306,14 @@ std::string stringFromYogaStyleOverflow(YGOverflow value) {
   }
 }
 
-std::string stringFromYogaStyleDisplay(YGDisplay value) {
+inline std::string toString(const YGDisplay &value) {
   switch (value) {
     case YGDisplayFlex: return "flex";
     case YGDisplayNone: return "none";
   }
 }
 
-std::string stringFromYogaStyleValue(YGValue value) {
+inline std::string toString(const YGValue &value) {
   switch (value.unit) {
     case YGUnitUndefined: return "undefined";
     case YGUnitPoint: return folly::to<std::string>(value.value);
@@ -316,7 +322,7 @@ std::string stringFromYogaStyleValue(YGValue value) {
   }
 }
 
-std::string stringFromYogaStyleOptionalFloat(YGFloatOptional value) {
+inline std::string toString(const YGFloatOptional &value) {
   if (value.isUndefined()) {
     return "undefined";
   }
@@ -324,23 +330,23 @@ std::string stringFromYogaStyleOptionalFloat(YGFloatOptional value) {
   return folly::to<std::string>(fabricFloatFromYogaFloat(value.getValue()));
 }
 
-std::string stringFromYogaStyleDimensions(std::array<YGValue, YGDimensionCount> value) {
+inline std::string toString(const std::array<YGValue, YGDimensionCount> &value) {
   return "{" +
-    stringFromYogaStyleValue(value[0]) + ", " +
-    stringFromYogaStyleValue(value[1]) + "}";
+    toString(value[0]) + ", " +
+    toString(value[1]) + "}";
 }
 
-std::string stringFromYogaStyleEdges(std::array<YGValue, YGEdgeCount> value) {
+inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
   return "{" +
-    stringFromYogaStyleValue(value[0]) + ", " +
-    stringFromYogaStyleValue(value[1]) + ", " +
-    stringFromYogaStyleValue(value[2]) + ", " +
-    stringFromYogaStyleValue(value[3]) + ", " +
-    stringFromYogaStyleValue(value[4]) + ", " +
-    stringFromYogaStyleValue(value[5]) + ", " +
-    stringFromYogaStyleValue(value[6]) + ", " +
-    stringFromYogaStyleValue(value[7]) + ", " +
-    stringFromYogaStyleValue(value[8]) + "}";
+    toString(value[0]) + ", " +
+    toString(value[1]) + ", " +
+    toString(value[2]) + ", " +
+    toString(value[3]) + ", " +
+    toString(value[4]) + ", " +
+    toString(value[5]) + ", " +
+    toString(value[6]) + ", " +
+    toString(value[7]) + ", " +
+    toString(value[8]) + "}";
 }
 
 } // namespace react

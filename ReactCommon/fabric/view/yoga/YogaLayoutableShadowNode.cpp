@@ -15,7 +15,7 @@
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <yoga/Yoga.h>
 
-#include "yogaValuesConversions.h"
+#include "conversions.h"
 
 namespace facebook {
 namespace react {

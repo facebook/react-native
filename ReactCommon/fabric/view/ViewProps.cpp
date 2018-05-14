@@ -28,14 +28,16 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
+  auto &&defaultViewProps = ViewProps();
+
   return
     AccessibilityProps::getDebugProps() +
     YogaStylableProps::getDebugProps() +
     SharedDebugStringConvertibleList {
-      debugStringConvertibleItem("zIndex", zIndex),
-      debugStringConvertibleItem("opacity", opacity),
-      debugStringConvertibleItem("foregroundColor", foregroundColor),
-      debugStringConvertibleItem("backgroundColor", backgroundColor),
+      debugStringConvertibleItem("zIndex", zIndex, defaultViewProps.zIndex),
+      debugStringConvertibleItem("opacity", opacity, defaultViewProps.opacity),
+      debugStringConvertibleItem("foregroundColor", foregroundColor, defaultViewProps.foregroundColor),
+      debugStringConvertibleItem("backgroundColor", backgroundColor, defaultViewProps.backgroundColor),
     };
 }
 

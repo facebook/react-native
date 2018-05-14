@@ -8,21 +8,10 @@
 #pragma once
 
 #include <fabric/core/propsConversions.h>
-#include <fabric/view/yogaValuesConversions.h>
+#include <fabric/view/conversions.h>
 
 namespace facebook {
 namespace react {
-
-CONVERT_RAW_PROP_TEMPLATE(YGDirection, yogaStyleDirectionFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGFlexDirection, yogaStyleFlexDirectionFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGJustify, yogaStyleJustifyFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGAlign, yogaStyleAlignFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGPositionType, yogaStylePositionTypeFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGWrap, yogaStyleWrapFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGOverflow, yogaStyleOverflowFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGDisplay, yogaStyleDisplayFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGValue, yogaStyleValueFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(YGFloatOptional, yogaStyleOptionalFloatFromDynamic)
 
 static std::array<YGValue, 2> convertRawProp(const RawProps &rawProps, const std::string &widthName, const std::string &heightName, const std::array<YGValue, 2> &defaultValue) {
   std::array<YGValue, 2> dimentions;

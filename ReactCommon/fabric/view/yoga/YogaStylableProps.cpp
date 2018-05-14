@@ -7,14 +7,14 @@
 
 #include "YogaStylableProps.h"
 
+#include <fabric/view/conversions.h>
 #include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/debugStringConvertibleUtils.h>
 #include <fabric/view/propsConversions.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 
-#include "yogaValuesConversions.h"
+#include "conversions.h"
 
 namespace facebook {
 namespace react {
