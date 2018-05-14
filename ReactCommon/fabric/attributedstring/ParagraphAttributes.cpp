@@ -8,6 +8,7 @@
 #include "ParagraphAttributes.h"
 
 #include <fabric/attributedstring/conversions.h>
+#include <fabric/graphics/conversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {

@@ -8,8 +8,10 @@
 #include "TextAttributes.h"
 
 #include <fabric/attributedstring/conversions.h>
+#include <fabric/core/conversions.h>
 #include <fabric/graphics/conversions.h>
-#include <fabric/core/debugStringConvertibleUtils.h>
+
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
