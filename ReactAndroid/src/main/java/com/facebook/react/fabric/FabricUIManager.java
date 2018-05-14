@@ -283,8 +283,7 @@ public class FabricUIManager implements UIManager {
     }
   }
 
-  @Deprecated
-  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mUIViewOperationQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 

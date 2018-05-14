@@ -10,8 +10,7 @@ package com.facebook.react.uimanager;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 
-import static com.facebook.react.uimanager.common.ViewType.FABRIC;
-import static com.facebook.react.uimanager.common.ViewType.PAPER;
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
@@ -586,19 +585,19 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.clearJSResponder();
   }
 
-  @Override
   @ReactMethod
   public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     //TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
-    if (ViewUtil.getViewType(reactTag) == FABRIC) {
-      UIManagerHelper.getUIManager(getReactApplicationContext(), true)
-        .dispatchViewManagerCommand(reactTag, commandId, commandArgs);
-    } else {
-      mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
-    }
+    UIManagerHelper.getUIManager(getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+      .dispatchCommand(reactTag, commandId, commandArgs);
   }
-  
+
+  @Override
+  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+  }
+
   @ReactMethod
   public void playTouchSound() {
     AudioManager audioManager = (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);

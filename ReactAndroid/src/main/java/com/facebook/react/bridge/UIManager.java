@@ -26,5 +26,5 @@ public interface UIManager extends JSIModule {
    * @param commandId {@link int} command id
    * @param commandArgs {@link ReadableArray} parameters associated with the command
    */
-  void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
+  void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
 }

@@ -8,6 +8,8 @@
 package com.facebook.react;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -50,6 +52,7 @@ import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import com.facebook.react.uimanager.common.UIManagerType;
 import javax.annotation.Nullable;
 
 /**
@@ -91,7 +94,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private @Nullable Runnable mJSEntryPoint;
-  private boolean mIsFabric = false;
+  private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
     super(context);
@@ -404,7 +407,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
             @Override
             public void runGuarded() {
               UIManagerHelper
-                .getUIManager(reactApplicationContext, isFabric())
+                .getUIManager(reactApplicationContext, getUIManagerType())
                 .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
             }
           });
@@ -507,7 +510,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         if (appProperties != null) {
           appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
         }
-        if (isFabric()) {
+        if (getUIManagerType() == FABRIC) {
           appParams.putBoolean("fabric", true);
         }
 
@@ -584,11 +587,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   public void setIsFabric(boolean isFabric) {
-    mIsFabric = isFabric;
+    mUIManagerType = isFabric ? FABRIC : DEFAULT;
   }
 
-  public boolean isFabric() {
-    return mIsFabric;
+  public @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
   }
 
   @Nullable

@@ -6,16 +6,16 @@
  */
 package com.facebook.react.uimanager.common;
 
-import static com.facebook.react.uimanager.common.ViewType.FABRIC;
-import static com.facebook.react.uimanager.common.ViewType.PAPER;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Retention;
 import android.support.annotation.IntDef;
 
 @Retention(SOURCE)
-@IntDef({PAPER, FABRIC})
-public @interface ViewType {
-  int PAPER = 1;
+@IntDef({DEFAULT, FABRIC})
+public @interface UIManagerType {
+  int DEFAULT = 1;
   int FABRIC = 2;
 }

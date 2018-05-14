@@ -25,6 +25,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREA
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
@@ -1011,7 +1012,7 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.isFabric());
+    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.invokeJSEntryPoint();
@@ -1037,7 +1038,7 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.detachViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
-    if (rootView.isFabric()) {
+    if (rootView.getUIManagerType() == FABRIC) {
       catalystInstance.getJSModule(ReactFabric.class)
         .unmountComponentAtNode(rootView.getId());
     } else {
