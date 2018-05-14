@@ -14,6 +14,7 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
@@ -21,11 +22,24 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
-type DefaultProps = {
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+type DefaultProps = $ReadOnly<{|
   value: boolean,
   disabled: boolean,
-};
+|}>;
 
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  value?: ?boolean,
+  disabled?: ?boolean,
+  onValueChange?: ?Function,
+  testID?: ?string,
+  tintColor?: ?ColorValue,
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
+|}>;
 /**
  * Renders a boolean input.
  *
@@ -161,4 +175,4 @@ if (Platform.OS === 'android') {
   });
 }
 
-module.exports = Switch;
+module.exports = ((Switch: any): Class<ReactNative.NativeComponent<Props>>);
