@@ -18,15 +18,8 @@ const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const ScrollView = require('ScrollView');
 const ScrollResponder = require('ScrollResponder');
 const StaticRenderer = require('StaticRenderer');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const cloneReferencedElement = require('react-clone-referenced-element');
 const createReactClass = require('create-react-class');
 const isEmpty = require('isEmpty');
@@ -423,9 +416,6 @@ const ListView = createReactClass({
       const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
-          /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
-           * an error found when Flow v0.54 was deployed. To see the error
-           * delete this comment and run Flow. */
           const warning = require('fbjs/lib/warning');
           warning(
             false,
