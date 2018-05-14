@@ -156,7 +156,8 @@ type IOSProps = $ReadOnly<{|
     | 'sublocality'
     | 'telephoneNumber'
     | 'username'
-    | 'password'),
+    | 'password'
+  ),
 |}>;
 
 type AndroidProps = $ReadOnly<{|
