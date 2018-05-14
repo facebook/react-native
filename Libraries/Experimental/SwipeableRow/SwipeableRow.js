@@ -57,6 +57,20 @@ const RIGHT_SWIPE_BOUNCE_BACK_DURATION = 300;
  */
 const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
 
+type Props = $ReadOnly<{|
+  children?: ?React.Node,
+  isOpen?: ?boolean,
+  maxSwipeDistance?: ?number,
+  onClose?: ?Function,
+  onOpen?: ?Function,
+  onSwipeEnd?: ?Function,
+  onSwipeStart?: ?Function,
+  preventSwipeRight?: ?boolean,
+  shouldBounceOnMount?: ?boolean,
+  slideoutView?: ?React.Node,
+  swipeThreshold?: ?number,
+|}>;
+
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
  * on the item hidden behind the row. Typically this should be used in
@@ -374,6 +388,11 @@ const SwipeableRow = createReactClass({
   },
 });
 
+// TODO: Delete this when `SwipeableRow` uses class syntax.
+class TypedSwipeableRow extends React.Component<Props> {
+  close() {}
+}
+
 const styles = StyleSheet.create({
   slideOutContainer: {
     bottom: 0,
@@ -384,4 +403,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SwipeableRow;
+module.exports = ((SwipeableRow: any): Class<TypedSwipeableRow>);
