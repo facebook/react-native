@@ -7,97 +7,16 @@
 
 #include "YogaStylableProps.h"
 
-#include <yoga/Yoga.h>
-#include <yoga/YGNode.h>
-
+#include <fabric/core/propsConversions.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/view/propsConversions.h>
+#include <yoga/YGNode.h>
+#include <yoga/Yoga.h>
 
 #include "yogaValuesConversions.h"
 
 namespace facebook {
 namespace react {
-
-static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &defaultValue) {
-  YGStyle yogaStyle = defaultValue;
-
-  for (auto const &pair : rawProps) {
-    auto const &name = pair.first;
-    auto const &value = pair.second;
-
-#define YOGA_STYLE_PROPERTY(stringName, yogaName, accessor, convertor) \
-  if (name == #stringName) { \
-    yogaStyle.yogaName = convertor(value accessor); \
-    continue; \
-  }
-
-#define YOGA_STYLE_SIMPLE_FLOAT_PROPERTY(name) \
-  YOGA_STYLE_PROPERTY(name, name, .asDouble(), )
-
-#define YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(name) \
-  YOGA_STYLE_PROPERTY(name, name, .asDouble(), yogaOptionalFloatFromFabricFloat)
-
-#define YOGA_STYLE_SIMPLE_INTEGER_PROPERTY(name) \
-  YOGA_STYLE_PROPERTY(name, name, .asInt(), )
-
-// Dimension Properties
-#define YOGA_STYLE_DIMENSION_PROPERTY() \
-  YOGA_STYLE_PROPERTY(width, dimensions[YGDimensionWidth], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(height, dimensions[YGDimensionHeight], , yogaStyleValueFromDynamic)
-
-#define YOGA_STYLE_PREFIXED_DIMENSION_PROPERTY(prefix) \
-  YOGA_STYLE_PROPERTY(prefix##Width, prefix##Dimensions[YGDimensionWidth], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Height, prefix##Dimensions[YGDimensionHeight], , yogaStyleValueFromDynamic)
-
-// Edge Properties
-#define YOGA_STYLE_POSITION_EDGE_PROPERTY() \
-  YOGA_STYLE_PROPERTY(left, position[YGEdgeLeft], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(top, position[YGEdgeTop], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(right, position[YGEdgeRight], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(bottom, position[YGEdgeBottom], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(start, position[YGEdgeStart], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(end, position[YGEdgeEnd], , yogaStyleValueFromDynamic)
-
-#define YOGA_STYLE_PREFIXED_EDGE_PROPERTY(prefix) \
-  YOGA_STYLE_PROPERTY(prefix##Left, prefix[YGEdgeLeft], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Top, prefix[YGEdgeTop], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Right, prefix[YGEdgeRight], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Bottom, prefix[YGEdgeBottom], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Start, prefix[YGEdgeStart], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##End, prefix[YGEdgeEnd], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Horizontal, prefix[YGEdgeHorizontal], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix##Vertical, prefix[YGEdgeVertical], , yogaStyleValueFromDynamic) \
-  YOGA_STYLE_PROPERTY(prefix, prefix[YGEdgeAll], , yogaStyleValueFromDynamic)
-
-    YOGA_STYLE_PROPERTY(direction, direction, , yogaStyleDirectionFromDynamic)
-    YOGA_STYLE_PROPERTY(flexDirection, flexDirection, , yogaStyleFlexDirectionFromDynamic)
-    YOGA_STYLE_PROPERTY(justifyContent, justifyContent, , yogaStyleJustifyFromDynamic)
-    YOGA_STYLE_PROPERTY(alignContent, alignContent, , yogaStyleAlignFromDynamic)
-    YOGA_STYLE_PROPERTY(alignItems, alignItems, , yogaStyleAlignFromDynamic)
-    YOGA_STYLE_PROPERTY(alignSelf, alignSelf, , yogaStyleAlignFromDynamic)
-    YOGA_STYLE_PROPERTY(positionType, positionType, , yogaStylePositionTypeFromDynamic)
-    YOGA_STYLE_PROPERTY(flexWrap, flexWrap, , yogaStyleWrapFromDynamic)
-    YOGA_STYLE_PROPERTY(overflow, overflow, , yogaStyleOverflowFromDynamic)
-    YOGA_STYLE_PROPERTY(display, display, , yogaStyleDisplayFromDynamic)
-
-    YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(flex)
-    YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(flexGrow)
-    YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(flexShrink)
-    YOGA_STYLE_PROPERTY(flexBasis, flexBasis, , yogaStyleValueFromDynamic)
-
-    YOGA_STYLE_DIMENSION_PROPERTY()
-    YOGA_STYLE_PREFIXED_DIMENSION_PROPERTY(min)
-    YOGA_STYLE_PREFIXED_DIMENSION_PROPERTY(max)
-
-    YOGA_STYLE_POSITION_EDGE_PROPERTY()
-    YOGA_STYLE_PREFIXED_EDGE_PROPERTY(margin)
-    YOGA_STYLE_PREFIXED_EDGE_PROPERTY(padding)
-    YOGA_STYLE_PREFIXED_EDGE_PROPERTY(border)
-
-    YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(aspectRatio)
-  }
-
-  return yogaStyle;
-}
 
 YogaStylableProps::YogaStylableProps(const YGStyle &yogaStyle):
   yogaStyle(yogaStyle) {}
