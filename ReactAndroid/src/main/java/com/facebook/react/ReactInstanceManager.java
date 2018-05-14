@@ -79,7 +79,7 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
@@ -1011,7 +1011,7 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = rootView.isFabric() ? catalystInstance.getJSIModule(UIManager.class) : catalystInstance.getNativeModule(UIManagerModule.class);
+    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.isFabric());
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.invokeJSEntryPoint();

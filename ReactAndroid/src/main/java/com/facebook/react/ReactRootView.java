@@ -44,6 +44,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
@@ -402,10 +403,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           new GuardedRunnable(reactApplicationContext) {
             @Override
             public void runGuarded() {
-              reactApplicationContext
-                  .getCatalystInstance()
-                  .getNativeModule(UIManagerModule.class)
-                  .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+              UIManagerHelper
+                .getUIManager(reactApplicationContext, isFabric())
+                .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
             }
           });
     }

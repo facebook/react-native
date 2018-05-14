@@ -16,6 +16,7 @@ import android.view.View;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
@@ -35,8 +36,10 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -280,6 +283,11 @@ public class FabricUIManager implements UIManager {
     }
   }
 
+  @Deprecated
+  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    mUIViewOperationQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
+  }
+
   private void notifyOnBeforeLayoutRecursive(ReactShadowNode node) {
     if (!node.hasUpdates()) {
       return;
@@ -365,6 +373,16 @@ public class FabricUIManager implements UIManager {
     mRootShadowNodeRegistry.registerNode(rootShadowNode);
     mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
     return rootTag;
+  }
+
+  @Override
+  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
+    if (rootNode == null) {
+      Log.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+      return;
+    }
+    updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
   }
 
   /**
