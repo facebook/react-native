@@ -32,6 +32,10 @@ const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
+import type {ColorValue} from 'StyleSheetTypes';
+import type {TextStyleProp} from 'StyleSheet';
+import type {ViewProps} from 'ViewPropTypes';
+
 let AndroidTextInput;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
@@ -68,6 +72,144 @@ const DataDetectorTypes = [
   'none',
   'all',
 ];
+
+type DataDetectorTypesType =
+  | 'phoneNumber'
+  | 'link'
+  | 'address'
+  | 'calendarEvent'
+  | 'none'
+  | 'all';
+
+export type KeyboardType =
+  // Cross Platform
+  | 'default'
+  | 'email-address'
+  | 'numeric'
+  | 'phone-pad'
+  | 'number-pad'
+  // iOS-only
+  | 'ascii-capable'
+  | 'numbers-and-punctuation'
+  | 'url'
+  | 'name-phone-pad'
+  | 'decimal-pad'
+  | 'twitter'
+  | 'web-search'
+  // Android-only
+  | 'visible-password';
+
+export type ReturnKeyType =
+  // Cross Platform
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'search'
+  | 'send'
+  // Android-only
+  | 'none'
+  | 'previous'
+  // iOS-only
+  | 'default'
+  | 'emergency-call'
+  | 'google'
+  | 'join'
+  | 'route'
+  | 'yahoo';
+
+export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
+
+type IOSProps = $ReadOnly<{|
+  spellCheck?: ?boolean,
+  keyboardAppearance?: ?('default' | 'light' | 'dark'),
+  enablesReturnKeyAutomatically?: ?boolean,
+  selectionState?: ?DocumentSelectionState,
+  clearButtonMode?: ?('never' | 'while-editing' | 'unless-editing' | 'always'),
+  clearTextOnFocus?: ?boolean,
+  dataDetectorTypes?:
+    | ?DataDetectorTypesType
+    | $ReadOnlyArray<DataDetectorTypesType>,
+  inputAccessoryViewID?: ?string,
+  textContentType?: ?(
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+  ),
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  returnKeyLabel?: ?string,
+  numberOfLines?: ?number,
+  disableFullscreenUI?: ?boolean,
+  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
+  underlineColorAndroid?: ?ColorValue,
+  inlineImageLeft?: ?string,
+  inlineImagePadding?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+  autoCapitalize?: ?AutoCapitalize,
+  autoCorrect?: ?boolean,
+  autoFocus?: ?boolean,
+  allowFontScaling?: ?boolean,
+  editable?: ?boolean,
+  keyboardType?: ?KeyboardType,
+  returnKeyType?: ?ReturnKeyType,
+  maxLength?: ?number,
+  multiline?: ?boolean,
+  onBlur?: ?Function,
+  onFocus?: ?Function,
+  onChange?: ?Function,
+  onChangeText?: ?Function,
+  onContentSizeChange?: ?Function,
+  onTextInput?: ?Function,
+  onEndEditing?: ?Function,
+  onSelectionChange?: ?Function,
+  onSubmitEditing?: ?Function,
+  onKeyPress?: ?Function,
+  onScroll?: ?Function,
+  placeholder?: ?Stringish,
+  placeholderTextColor?: ?ColorValue,
+  secureTextEntry?: ?boolean,
+  selectionColor?: ?ColorValue,
+  selection?: ?$ReadOnly<{|
+    start: number,
+    end?: ?number,
+  |}>,
+  value?: ?Stringish,
+  defaultValue?: ?Stringish,
+  selectTextOnFocus?: ?boolean,
+  blurOnSubmit?: ?boolean,
+  style?: ?TextStyleProp,
+  caretHidden?: ?boolean,
+  contextMenuHidden?: ?boolean,
+|}>;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -1043,6 +1185,15 @@ const TextInput = createReactClass({
   },
 });
 
+class InternalTextInputType extends ReactNative.NativeComponent<Props> {
+  clear() {}
+
+  // $FlowFixMe
+  isFocused(): boolean {}
+}
+
+const TypedTextInput = ((TextInput: any): Class<InternalTextInputType>);
+
 const styles = StyleSheet.create({
   multilineInput: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible
@@ -1052,4 +1203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TextInput;
+module.exports = TypedTextInput;
