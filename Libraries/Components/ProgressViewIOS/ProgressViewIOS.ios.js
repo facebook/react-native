@@ -13,12 +13,27 @@
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  progressViewStyle?: ?('default' | 'bar'),
+  progress?: ?number,
+  progressTintColor?: ?ColorValue,
+  trackTintColor?: ?string,
+  progressImage?: ?ImageSource,
+  trackImage?: ?ImageSource,
+|}>;
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
@@ -81,4 +96,6 @@ const RCTProgressView = requireNativeComponent(
   ProgressViewIOS,
 );
 
-module.exports = ProgressViewIOS;
+module.exports = ((ProgressViewIOS: any): Class<
+  ReactNative.NativeComponent<Props>,
+>);
