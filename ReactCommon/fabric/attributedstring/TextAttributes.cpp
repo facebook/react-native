@@ -7,6 +7,7 @@
 
 #include "TextAttributes.h"
 
+#include <fabric/core/debugStringConvertibleUtils.h>
 #include <fabric/graphics/debugStringConvertibleUtils.h>
 #include <fabric/graphics/graphicValuesConversions.h>
 #include "debugStringConvertibleUtils.h"
@@ -54,8 +55,6 @@ void TextAttributes::apply(TextAttributes textAttributes) {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
-  // TODO: Implement all fields.
-
   return {
     // Color
     debugStringConvertibleItem("backgroundColor", backgroundColor),
@@ -68,20 +67,20 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
     debugStringConvertibleItem("fontSizeMultiplier", fontSizeMultiplier),
     debugStringConvertibleItem("fontWeight", fontWeight),
     debugStringConvertibleItem("fontStyle", fontStyle),
-    //debugStringConvertibleItem("fontVariant", fontVariant),
+    debugStringConvertibleItem("fontVariant", fontVariant),
     debugStringConvertibleItem("allowFontScaling", allowFontScaling),
     debugStringConvertibleItem("letterSpacing", letterSpacing),
 
     // Paragraph Styles
     debugStringConvertibleItem("lineHeight", lineHeight),
-    //debugStringConvertibleItem("alignment", alignment),
-    //debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
+    debugStringConvertibleItem("alignment", alignment),
+    debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
 
     // Decoration
     debugStringConvertibleItem("textDecorationColor", textDecorationColor),
-    //debugStringConvertibleItem("textDecorationLineType", textDecorationLineType),
-    //debugStringConvertibleItem("textDecorationLineStyle", textDecorationLineStyle),
-    //debugStringConvertibleItem("textDecorationLinePattern", textDecorationLinePattern),
+    debugStringConvertibleItem("textDecorationLineType", textDecorationLineType),
+    debugStringConvertibleItem("textDecorationLineStyle", textDecorationLineStyle),
+    debugStringConvertibleItem("textDecorationLinePattern", textDecorationLinePattern),
 
     // Shadow
     debugStringConvertibleItem("textShadowOffset", textShadowOffset),
@@ -90,7 +89,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
 
     // Special
     debugStringConvertibleItem("isHighlighted", isHighlighted),
-    //debugStringConvertibleItem("layoutDirection", layoutDirection),
+    debugStringConvertibleItem("layoutDirection", layoutDirection),
   };
 }
 

@@ -16,6 +16,12 @@ namespace react {
 DEBUG_STRING_CONVERTIBLE_TEMPLATE(EllipsizeMode, stringFromEllipsizeMode)
 DEBUG_STRING_CONVERTIBLE_TEMPLATE(FontWeight, stringFromFontWeight)
 DEBUG_STRING_CONVERTIBLE_TEMPLATE(FontStyle, stringFromFontStyle)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(FontVariant, stringFromFontVariant)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(TextAlignment, stringFromTextAlignment)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(WritingDirection, stringFromWritingDirection)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(TextDecorationLineType, stringFromTextDecorationLineType)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(TextDecorationLineStyle, stringFromTextDecorationLineStyle)
+DEBUG_STRING_CONVERTIBLE_TEMPLATE(TextDecorationLinePattern, stringFromTextDecorationLinePattern)
 
 } // namespace react
 } // namespace facebook

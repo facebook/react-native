@@ -83,6 +83,22 @@ inline FontVariant fontVariantFromDynamic(const folly::dynamic &value) {
   return fontVariant;
 }
 
+inline std::string stringFromFontVariant(const FontVariant &fontVariant) {
+  std::string result;
+  std::string separator = ", ";
+  if ((int)fontVariant & (int)FontVariant::SmallCaps) { result += "small-caps" + separator; }
+  if ((int)fontVariant & (int)FontVariant::OldstyleNums) { result += "oldstyle-nums" + separator; }
+  if ((int)fontVariant & (int)FontVariant::LiningNums) { result += "lining-nums" + separator; }
+  if ((int)fontVariant & (int)FontVariant::TabularNums) { result += "tabular-nums" + separator; }
+  if ((int)fontVariant & (int)FontVariant::ProportionalNums) { result += "proportional-nums" + separator; }
+
+  if (!result.empty()) {
+    result.erase(result.length() - separator.length());
+  }
+
+  return result;
+}
+
 inline TextAlignment textAlignmentFromDynamic(const folly::dynamic &value) {
   auto string = value.asString();
   if (string == "natural") { return TextAlignment::Natural; }
@@ -93,12 +109,30 @@ inline TextAlignment textAlignmentFromDynamic(const folly::dynamic &value) {
   abort();
 }
 
+inline std::string stringFromTextAlignment(const TextAlignment &textAlignment) {
+  switch (textAlignment) {
+    case TextAlignment::Natural: return "natural";
+    case TextAlignment::Left: return "left";
+    case TextAlignment::Center: return "center";
+    case TextAlignment::Right: return "right";
+    case TextAlignment::Justified: return "justified";
+  }
+}
+
 inline WritingDirection writingDirectionFromDynamic(const folly::dynamic &value) {
   auto string = value.asString();
   if (string == "natural") { return WritingDirection::Natural; }
   if (string == "ltr") { return WritingDirection::LeftToRight; }
   if (string == "rtl") { return WritingDirection::RightToLeft; }
   abort();
+}
+
+inline std::string stringFromWritingDirection(const WritingDirection &writingDirection) {
+  switch (writingDirection) {
+    case WritingDirection::Natural: return "natural";
+    case WritingDirection::LeftToRight: return "ltr";
+    case WritingDirection::RightToLeft: return "rtl";
+  }
 }
 
 inline TextDecorationLineType textDecorationLineTypeFromDynamic(const folly::dynamic &value) {
@@ -110,12 +144,29 @@ inline TextDecorationLineType textDecorationLineTypeFromDynamic(const folly::dyn
   abort();
 }
 
+inline std::string stringFromTextDecorationLineType(const TextDecorationLineType &textDecorationLineType) {
+  switch (textDecorationLineType) {
+    case TextDecorationLineType::None: return "none";
+    case TextDecorationLineType::Underline: return "underline";
+    case TextDecorationLineType::Strikethrough: return "strikethrough";
+    case TextDecorationLineType::UnderlineStrikethrough: return "underline-strikethrough";
+  }
+}
+
 inline TextDecorationLineStyle textDecorationLineStyleFromDynamic(const folly::dynamic &value) {
   auto string = value.asString();
   if (string == "single") { return TextDecorationLineStyle::Single; }
   if (string == "thick") { return TextDecorationLineStyle::Thick; }
   if (string == "double") { return TextDecorationLineStyle::Double; }
   abort();
+}
+
+inline std::string stringFromTextDecorationLineStyle(const TextDecorationLineStyle &textDecorationLineStyle) {
+  switch (textDecorationLineStyle) {
+    case TextDecorationLineStyle::Single: return "single";
+    case TextDecorationLineStyle::Thick: return "thick";
+    case TextDecorationLineStyle::Double: return "double";
+  }
 }
 
 inline TextDecorationLinePattern textDecorationLinePatternFromDynamic(const folly::dynamic &value) {
@@ -126,6 +177,16 @@ inline TextDecorationLinePattern textDecorationLinePatternFromDynamic(const foll
   if (string == "dash-dot") { return TextDecorationLinePattern::DashDot; }
   if (string == "dash-dot-dot") { return TextDecorationLinePattern::DashDotDot; }
   abort();
+}
+
+inline std::string stringFromTextDecorationLinePattern(const TextDecorationLinePattern &textDecorationLinePattern) {
+  switch (textDecorationLinePattern) {
+    case TextDecorationLinePattern::Solid: return "solid";
+    case TextDecorationLinePattern::Dot: return "dot";
+    case TextDecorationLinePattern::Dash: return "dash";
+    case TextDecorationLinePattern::DashDot: return "dash-dot";
+    case TextDecorationLinePattern::DashDotDot: return "dash-dot-dot";
+  }
 }
 
 } // namespace react
