@@ -9,12 +9,12 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+const BatchedBridge = require('BatchedBridge');
 
-var warning = require('fbjs/lib/warning');
-var invariant = require('fbjs/lib/invariant');
+const warning = require('fbjs/lib/warning');
+const invariant = require('fbjs/lib/invariant');
 
-var LoggingTestModule = {
+const LoggingTestModule = {
   logToConsole: function(str) {
     console.log(str);
   },

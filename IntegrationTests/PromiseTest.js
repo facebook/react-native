@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class PromiseTest extends React.Component<{}> {
   shouldResolve = false;

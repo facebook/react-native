@@ -10,18 +10,18 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var TimerMixin = require('react-timer-mixin');
+const TimerMixin = require('react-timer-mixin');
 
-var {StyleSheet, Text, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const {StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var TimersTest = createReactClass({
+const TimersTest = createReactClass({
   displayName: 'TimersTest',
   mixins: [TimerMixin],
 
@@ -70,22 +70,25 @@ var TimersTest = createReactClass({
   },
 
   testClearTimeout0() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
     this.clearTimeout(timeout);
     this.testClearTimeout30();
   },
 
   testClearTimeout30() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
     this.clearTimeout(timeout);
     this.setTimeout(this.testClearMulti, 50);
   },
 
   testClearMulti() {
-    var fails = [];
+    const fails = [];
     fails.push(this.setTimeout(() => this._fail('testClearMulti-1'), 20));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-2'), 50));
-    var delayClear = this.setTimeout(() => this._fail('testClearMulti-3'), 50);
+    const delayClear = this.setTimeout(
+      () => this._fail('testClearMulti-3'),
+      50,
+    );
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
@@ -97,7 +100,7 @@ var TimersTest = createReactClass({
 
   testOrdering() {
     // Clear timers are set first because it's more likely to uncover bugs.
-    var fail0;
+    let fail0;
     this.setImmediate(() => this.clearTimeout(fail0));
     fail0 = this.setTimeout(
       () =>
@@ -107,7 +110,7 @@ var TimersTest = createReactClass({
         ),
       0,
     );
-    var failAnim; // This should fail without the t=0 fastpath feature.
+    let failAnim; // This should fail without the t=0 fastpath feature.
     this.setTimeout(() => this.cancelAnimationFrame(failAnim), 0);
     failAnim = this.requestAnimationFrame(() =>
       this._fail(
@@ -115,7 +118,7 @@ var TimersTest = createReactClass({
           'requestAnimationFrame',
       ),
     );
-    var fail25;
+    let fail25;
     this.setTimeout(() => {
       this.clearTimeout(fail25);
     }, 20);
@@ -165,7 +168,7 @@ var TimersTest = createReactClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 40,

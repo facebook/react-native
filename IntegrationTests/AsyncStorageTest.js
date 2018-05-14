@@ -10,27 +10,27 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {AsyncStorage, Text, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {AsyncStorage, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var deepDiffer = require('deepDiffer');
+const deepDiffer = require('deepDiffer');
 
-var DEBUG = false;
+const DEBUG = false;
 
-var KEY_1 = 'key_1';
-var VAL_1 = 'val_1';
-var KEY_2 = 'key_2';
-var VAL_2 = 'val_2';
-var KEY_MERGE = 'key_merge';
-var VAL_MERGE_1 = {foo: 1, bar: {hoo: 1, boo: 1}, moo: {a: 3}};
-var VAL_MERGE_2 = {bar: {hoo: 2}, baz: 2, moo: {a: 3}};
-var VAL_MERGE_EXPECT = {foo: 1, bar: {hoo: 2, boo: 1}, baz: 2, moo: {a: 3}};
+const KEY_1 = 'key_1';
+const VAL_1 = 'val_1';
+const KEY_2 = 'key_2';
+const VAL_2 = 'val_2';
+const KEY_MERGE = 'key_merge';
+const VAL_MERGE_1 = {foo: 1, bar: {hoo: 1, boo: 1}, moo: {a: 3}};
+const VAL_MERGE_2 = {bar: {hoo: 2}, baz: 2, moo: {a: 3}};
+const VAL_MERGE_EXPECT = {foo: 1, bar: {hoo: 2, boo: 1}, baz: 2, moo: {a: 3}};
 
 // setup in componentDidMount
-var done = (result: ?boolean) => {};
-var updateMessage = (message: string) => {};
+let done = (result: ?boolean) => {};
+let updateMessage = (message: string) => {};
 
 function runTestCase(description: string, fn) {
   updateMessage(description);

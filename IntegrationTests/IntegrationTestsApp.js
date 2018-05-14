@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AppRegistry,
   ScrollView,
   StyleSheet,
@@ -22,7 +22,7 @@ var {
 } = ReactNative;
 
 // Keep this list in sync with RNTesterIntegrationTests.m
-var TESTS = [
+const TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
   require('./AsyncStorageTest'),
@@ -89,7 +89,7 @@ class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     marginTop: 40,

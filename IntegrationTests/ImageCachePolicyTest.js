@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, View, Text, StyleSheet} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, View, Text, StyleSheet} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 /*
  * The reload and force-cache tests don't actually verify that the complete functionality.

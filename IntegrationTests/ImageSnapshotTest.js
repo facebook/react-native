@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class ImageSnapshotTest extends React.Component<{}> {
   componentDidMount() {
