@@ -156,8 +156,7 @@ type IOSProps = $ReadOnly<{|
     | 'sublocality'
     | 'telephoneNumber'
     | 'username'
-    | 'password'
-  ),
+    | 'password'),
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -328,8 +327,18 @@ const TextInput = createReactClass({
   statics: {
     State: {
       currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: TextInputState.focusTextInput,
-      blurTextInput: TextInputState.blurTextInput,
+      focusTextInput: (textFieldID: ?number) => {
+        console.warn(
+          '`focusTextInput` is deprecated, use the `focus` method of the `TextInput` ref instead.',
+        );
+        TextInputState.focusTextInput(textFieldID);
+      },
+      blurTextInput: (textFieldID: ?number) => {
+        console.warn(
+          '`blurTextInput` is deprecated, use `Keyboard.dismiss` or the `blur` method of the `TextInput` ref.',
+        );
+        TextInputState.blurTextInput(textFieldID);
+      },
     },
   },
   propTypes: {
