@@ -220,7 +220,7 @@ YGFloatOptional yogaStyleOptionalFloatFromDynamic(const folly::dynamic &value) {
   abort();
 }
 
-std::string stringFromYogaDimensions(std::array<float, 2> dimensions) {
+std::string stringFromYogaDimensions(std::array<float, YGDimensionCount> dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " + folly::to<std::string>(dimensions[1]) + "}";
 }
 
@@ -228,7 +228,7 @@ std::string stringFromYogaPosition(std::array<float, 4> position) {
   return "{" + folly::to<std::string>(position[0]) + ", " + folly::to<std::string>(position[1]) + "}";
 }
 
-std::string stringFromYogaEdges(std::array<float, 6> edges) {
+std::string stringFromYogaEdges(std::array<float, YGEdgeCount> edges) {
   return "{" +
     folly::to<std::string>(edges[0]) + ", " +
     folly::to<std::string>(edges[1]) + ", " +
@@ -324,18 +324,23 @@ std::string stringFromYogaStyleOptionalFloat(YGFloatOptional value) {
   return folly::to<std::string>(fabricFloatFromYogaFloat(value.getValue()));
 }
 
-std::string stringFromYogaStyleDimensions(std::array<YGValue, 2> value) {
+std::string stringFromYogaStyleDimensions(std::array<YGValue, YGDimensionCount> value) {
   return "{" +
     stringFromYogaStyleValue(value[0]) + ", " +
     stringFromYogaStyleValue(value[1]) + "}";
 }
 
-std::string stringFromYogaStyleEdge(std::array<YGValue, YGEdgeCount> value) {
+std::string stringFromYogaStyleEdges(std::array<YGValue, YGEdgeCount> value) {
   return "{" +
     stringFromYogaStyleValue(value[0]) + ", " +
     stringFromYogaStyleValue(value[1]) + ", " +
     stringFromYogaStyleValue(value[2]) + ", " +
-    stringFromYogaStyleValue(value[3]) + "}";
+    stringFromYogaStyleValue(value[3]) + ", " +
+    stringFromYogaStyleValue(value[4]) + ", " +
+    stringFromYogaStyleValue(value[5]) + ", " +
+    stringFromYogaStyleValue(value[6]) + ", " +
+    stringFromYogaStyleValue(value[7]) + ", " +
+    stringFromYogaStyleValue(value[8]) + "}";
 }
 
 } // namespace react

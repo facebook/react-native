@@ -19,8 +19,7 @@ class YogaStylableProps;
 
 typedef std::shared_ptr<const YogaStylableProps> SharedYogaStylableProps;
 
-class YogaStylableProps:
-  public virtual DebugStringConvertible {
+class YogaStylableProps {
 
 public:
 
@@ -32,9 +31,9 @@ public:
 
   const YGStyle yogaStyle {};
 
-#pragma mark - DebugStringConvertible
+#pragma mark - DebugStringConvertible (Partial)
 
-  SharedDebugStringConvertibleList getDebugProps() const override;
+  SharedDebugStringConvertibleList getDebugProps() const;
 };
 
 } // namespace react

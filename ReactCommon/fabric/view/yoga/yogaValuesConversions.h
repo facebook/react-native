@@ -39,9 +39,9 @@ YGDisplay yogaStyleDisplayFromDynamic(const folly::dynamic &value);
 YGValue yogaStyleValueFromDynamic(const folly::dynamic &value);
 YGFloatOptional yogaStyleOptionalFloatFromDynamic(const folly::dynamic &value);
 
-std::string stringFromYogaDimensions(std::array<float, 2> dimensions);
+std::string stringFromYogaDimensions(std::array<float, YGDimensionCount> dimensions);
 std::string stringFromYogaPosition(std::array<float, 4> position);
-std::string stringFromYogaEdges(std::array<float, 6> edges);
+std::string stringFromYogaEdges(std::array<float, YGEdgeCount> edges);
 std::string stringFromYogaStyleDirection(YGDirection direction);
 std::string stringFromYogaStyleFlexDirection(YGFlexDirection value);
 std::string stringFromYogaStyleJustify(YGJustify value);
@@ -52,8 +52,8 @@ std::string stringFromYogaStyleOverflow(YGOverflow value);
 std::string stringFromYogaStyleDisplay(YGDisplay value);
 std::string stringFromYogaStyleValue(YGValue value);
 std::string stringFromYogaStyleOptionalFloat(YGFloatOptional value);
-std::string stringFromYogaStyleDimensions(std::array<YGValue, 2> value);
-std::string stringFromYogaStyleEdge(std::array<YGValue, YGEdgeCount> value);
+std::string stringFromYogaStyleDimensions(std::array<YGValue, YGDimensionCount> value);
+std::string stringFromYogaStyleEdges(std::array<YGValue, YGEdgeCount> value);
 
 } // namespace react
 } // namespace facebook
