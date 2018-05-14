@@ -49,28 +49,6 @@ describe('link', () => {
     });
   });
 
-  it('should read dependencies from package.json when name not provided', done => {
-    const config = {
-      getPlatformConfig: () => ({ios: {}, android: {}}),
-      getProjectConfig: () => ({assets: []}),
-      getDependencyConfig: sinon.stub().returns({assets: [], commands: {}}),
-    };
-
-    jest.setMock(path.join(process.cwd(), 'package.json'), {
-      dependencies: {
-        'react-native-test': '*',
-      },
-    });
-
-    const link = require('../link').func;
-    link([], config).then(() => {
-      expect(
-        config.getDependencyConfig.calledWith('react-native-test'),
-      ).toBeTruthy();
-      done();
-    });
-  });
-
   it('should register native module when android/ios projects are present', done => {
     const registerNativeModule = sinon.stub();
     const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};

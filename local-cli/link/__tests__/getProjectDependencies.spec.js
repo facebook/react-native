@@ -6,6 +6,7 @@
  *
  * @format
  * @emails oncall+javascript_foundation
+ * @format
  */
 
 'use strict';
@@ -13,20 +14,22 @@
 const getProjectDependencies = require('../getProjectDependencies');
 const path = require('path');
 
+const CWD = path.resolve(__dirname, '../../..');
+
 describe('getProjectDependencies', () => {
   beforeEach(() => {
     jest.resetModules();
   });
   it('should return an array of project dependencies', () => {
-    jest.setMock(path.join(process.cwd(), './package.json'), {
+    jest.setMock(path.join(CWD, './package.json'), {
       dependencies: {lodash: '^6.0.0', 'react-native': '^16.0.0'},
     });
 
-    expect(getProjectDependencies()).toEqual(['lodash']);
+    expect(getProjectDependencies(CWD)).toEqual(['lodash']);
   });
 
   it('should return an empty array when no dependencies set', () => {
-    jest.setMock(path.join(process.cwd(), './package.json'), {});
-    expect(getProjectDependencies()).toEqual([]);
+    jest.setMock(path.join(CWD, './package.json'), {});
+    expect(getProjectDependencies(CWD)).toEqual([]);
   });
 });
