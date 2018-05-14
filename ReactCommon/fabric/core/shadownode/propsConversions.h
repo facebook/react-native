@@ -69,5 +69,22 @@ inline T convertRawProp(const RawProps &rawProps, const std::string &name, const
   }
 }
 
+template <typename T>
+inline static folly::Optional<T> convertRawProp(const RawProps &rawProps, const std::string &name, const folly::Optional<T> &defaultValue) {
+  auto &&iterator = rawProps.find(name);
+  if (iterator != rawProps.end()) {
+    auto &&value = iterator->second;
+    if (value.isNull()) {
+      return defaultValue;
+    } else {
+      T result;
+      fromDynamic(value, result);
+      return result;
+    }
+  } else {
+    return defaultValue;
+  }
+}
+
 } // namespace react
 } // namespace facebook

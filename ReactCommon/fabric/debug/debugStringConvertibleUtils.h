@@ -28,6 +28,14 @@ inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name,
   return std::make_shared<DebugStringConvertibleItem>(name, toString(value));
 }
 
+template <typename T>
+inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name, folly::Optional<T> value, T defaultValue = {}) {
+  if (!value.has_value()) {
+    return nullptr;
+  }
+  return debugStringConvertibleItem(name, value.value_or(defaultValue), defaultValue);
+}
+
 SharedDebugStringConvertibleList operator+(const SharedDebugStringConvertibleList &lhs, const SharedDebugStringConvertibleList &rhs);
 SharedDebugStringConvertible debugStringConvertibleItem(std::string name, DebugStringConvertible value, std::string defaultValue = "");
 
