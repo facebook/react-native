@@ -16,7 +16,7 @@ ComponentName RootShadowNode::getComponentName() const {
 
 void RootShadowNode::layout() {
   ensureUnsealed();
-  layout(getProps()->getLayoutContext());
+  layout(getProps()->layoutContext);
 }
 
 } // namespace react

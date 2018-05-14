@@ -13,6 +13,7 @@
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/ShadowNode.h>
+#include <folly/dynamic.h>
 
 using namespace facebook::react;
 
@@ -37,11 +38,9 @@ private:
 
 class TestProps : public Props {
 public:
-  TestProps() {
-    RawProps raw;
-    raw["nativeID"] = "testNativeID";
-    apply(raw);
-  }
+  using Props::Props;
+  TestProps():
+    Props(Props(), {{"nativeID", "testNativeID"}}) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
 

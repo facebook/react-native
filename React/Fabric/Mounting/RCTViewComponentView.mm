@@ -24,8 +24,8 @@ using namespace facebook::react;
   auto oldViewProps = *std::dynamic_pointer_cast<const ViewProps>(oldProps);
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(props);
 
-  if (oldViewProps.getBackgroundColor() != newViewProps.getBackgroundColor()) {
-    self.backgroundColor = [UIColor colorWithCGColor:newViewProps.getBackgroundColor().get()];
+  if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
+    self.backgroundColor = [UIColor colorWithCGColor:newViewProps.backgroundColor.get()];
   }
 
   // TODO: Implement all sutable non-layout <View> props.

@@ -23,16 +23,18 @@ class YogaStylableProps:
   public virtual DebugStringConvertible {
 
 public:
-  const YGStyle &getYogaStyle() const;
 
-  void apply(const RawProps &rawProps);
+  YogaStylableProps() = default;
+  YogaStylableProps(const YGStyle &yogaStyle);
+  YogaStylableProps(const YogaStylableProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const YGStyle yogaStyle {};
 
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
-
-protected:
-  YGStyle yogaStyle_ {};
 };
 
 } // namespace react

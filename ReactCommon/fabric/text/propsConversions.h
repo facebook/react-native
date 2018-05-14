@@ -15,15 +15,15 @@
 namespace facebook {
 namespace react {
 
-APPLY_RAW_PROP_TEMPLATE(EllipsizeMode, ellipsizeModeFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(FontWeight, fontWeightFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(FontStyle, fontStyleFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(FontVariant, fontVariantFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(WritingDirection, writingDirectionFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(TextAlignment, textAlignmentFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(TextDecorationLineType, textDecorationLineTypeFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(TextDecorationLineStyle, textDecorationLineStyleFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(TextDecorationLinePattern, textDecorationLinePatternFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(EllipsizeMode, ellipsizeModeFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(FontWeight, fontWeightFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(FontStyle, fontStyleFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(FontVariant, fontVariantFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(WritingDirection, writingDirectionFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(TextAlignment, textAlignmentFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(TextDecorationLineType, textDecorationLineTypeFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(TextDecorationLineStyle, textDecorationLineStyleFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(TextDecorationLinePattern, textDecorationLinePatternFromDynamic)
 
 } // namespace react
 } // namespace facebook

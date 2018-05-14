@@ -20,33 +20,37 @@ inline int intFromDynamic(const folly::dynamic &value) { return value.getInt(); 
 inline Float floatFromDynamic(const folly::dynamic &value) { return value.getDouble(); }
 inline std::string stringFromDynamic(const folly::dynamic &value) { return value.getString(); }
 
-#define APPLY_RAW_PROP_TEMPLATE(type, converter) \
-inline static void applyRawProp(const RawProps &rawProps, const std::string &name, type &property) { \
+#define CONVERT_RAW_PROP_TEMPLATE(type, converter) \
+inline static type convertRawProp(const RawProps &rawProps, const std::string &name, const type &defaultValue) { \
   auto &&iterator = rawProps.find(name); \
   if (iterator != rawProps.end()) { \
-    property = converter(iterator->second); \
+    return converter(iterator->second); \
+  } else { \
+    return defaultValue; \
   } \
 } \
 \
-inline static void applyRawProp(const RawProps &rawProps, const std::string &name, folly::Optional<type> &property) { \
+inline static folly::Optional<type> convertRawProp(const RawProps &rawProps, const std::string &name, const folly::Optional<type> &defaultValue) { \
   auto &&iterator = rawProps.find(name); \
   if (iterator != rawProps.end()) { \
     auto &&value = iterator->second; \
     if (value.isNull()) { \
-      property = {}; \
+      return {}; \
     } else { \
-      property = converter(value); \
+      return converter(value); \
     } \
+  } else { \
+    return defaultValue; \
   } \
 }
 
-APPLY_RAW_PROP_TEMPLATE(bool, boolFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(int, intFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(Float, floatFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(std::string, stringFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(SharedColor, colorFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(Point, pointFromDynamic)
-APPLY_RAW_PROP_TEMPLATE(Size, sizeFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(bool, boolFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(int, intFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(Float, floatFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(std::string, stringFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(SharedColor, colorFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(Point, pointFromDynamic)
+CONVERT_RAW_PROP_TEMPLATE(Size, sizeFromDynamic)
 
 } // namespace react
 } // namespace facebook

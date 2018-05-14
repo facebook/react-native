@@ -17,18 +17,16 @@
 namespace facebook {
 namespace react {
 
-const YGStyle &YogaStylableProps::getYogaStyle() const {
-  return yogaStyle_;
-}
+static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &defaultValue) {
+  YGStyle yogaStyle = defaultValue;
 
-void YogaStylableProps::apply(const RawProps &rawProps) {
   for (auto const &pair : rawProps) {
     auto const &name = pair.first;
     auto const &value = pair.second;
 
 #define YOGA_STYLE_PROPERTY(stringName, yogaName, accessor, convertor) \
   if (name == #stringName) { \
-    yogaStyle_.yogaName = convertor(value accessor); \
+    yogaStyle.yogaName = convertor(value accessor); \
     continue; \
   }
 
@@ -97,7 +95,15 @@ void YogaStylableProps::apply(const RawProps &rawProps) {
 
     YOGA_STYLE_OPTIONAL_FLOAT_PROPERTY(aspectRatio)
   }
+
+  return yogaStyle;
 }
+
+YogaStylableProps::YogaStylableProps(const YGStyle &yogaStyle):
+  yogaStyle(yogaStyle) {}
+
+YogaStylableProps::YogaStylableProps(const YogaStylableProps &sourceProps, const RawProps &rawProps):
+  yogaStyle(convertRawProp(rawProps, sourceProps.yogaStyle)) {};
 
 #pragma mark - DebugStringConvertible
 
@@ -105,7 +111,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
   SharedDebugStringConvertibleList list = {};
 
   YGStyle defaultYogaStyle = YGStyle();
-  YGStyle currentYogaStyle = yogaStyle_;
+  YGStyle currentYogaStyle = yogaStyle;
 
 #define YOGA_STYLE_PROPS_ADD_TO_SET(stringName, propertyName, accessor, convertor) \
   { \

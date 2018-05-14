@@ -19,7 +19,7 @@ ComponentName ParagraphShadowNode::getComponentName() const {
 }
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
-  return BaseTextShadowNode::getAttributedString(getProps()->getTextAttributes(), getChildren());
+  return BaseTextShadowNode::getAttributedString(getProps()->textAttributes, getChildren());
 }
 
 void ParagraphShadowNode::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
@@ -41,7 +41,7 @@ void ParagraphShadowNode::updateLocalData() {
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
     getAttributedString(),
-    getProps()->getParagraphAttributes(),
+    getProps()->paragraphAttributes,
     layoutConstraints
   );
 }

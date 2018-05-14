@@ -28,22 +28,12 @@ public:
   using SharedConcreteProps = std::shared_ptr<const PropsT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
 
-  static const SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
-    if (!baseProps) {
-      auto props = std::make_shared<PropsT>();
-      props->apply(rawProps);
-      return props;
-    }
-
-    auto concreteBaseProps = std::dynamic_pointer_cast<const PropsT>(baseProps);
-    assert(concreteBaseProps);
-    auto props = std::make_shared<PropsT>(*concreteBaseProps);
-    props->apply(rawProps);
-    return props;
+  static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
+    return std::make_shared<const PropsT>(baseProps ? *std::static_pointer_cast<const PropsT>(baseProps) : PropsT(), rawProps);
   }
 
-  static const SharedConcreteProps defaultSharedProps() {
-    static const SharedConcreteProps defaultSharedProps = std::make_shared<PropsT>();
+  static SharedConcreteProps defaultSharedProps() {
+    static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();
     return defaultSharedProps;
   }
 

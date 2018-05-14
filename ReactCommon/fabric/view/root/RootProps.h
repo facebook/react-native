@@ -25,19 +25,17 @@ class RootProps final:
 
 public:
 
-  /*
-   * Same semantic as `apply()` but LayoutConstraints & LayoutContext specific.
-   */
-  void applyLayoutConstraints(const LayoutConstraints &layoutConstraints);
-  void applyLayoutContext(const LayoutContext &layoutContext);
+  RootProps() = default;
+  RootProps(
+    const RootProps &sourceProps,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  );
 
-  LayoutConstraints getLayoutConstraints() const;
-  LayoutContext getLayoutContext() const;
+#pragma mark - Props
 
-private:
-
-  LayoutConstraints layoutConstraints_;
-  LayoutContext layoutContext_;
+  const LayoutConstraints layoutConstraints {};
+  const LayoutContext layoutContext {};
 };
 
 } // namespace react

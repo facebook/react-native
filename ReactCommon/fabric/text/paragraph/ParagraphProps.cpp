@@ -15,38 +15,34 @@
 namespace facebook {
 namespace react {
 
-void ParagraphProps::apply(const RawProps &rawProps) {
-  ViewProps::apply(rawProps);
-  BaseTextProps::apply(rawProps);
+static ParagraphAttributes convertRawProp(const RawProps &rawProps, const ParagraphAttributes &defaultParagraphAttributes) {
+  ParagraphAttributes paragraphAttributes;
 
-  // Paragraph Attributes
-  applyRawProp(rawProps, "numberOfLines", paragraphAttributes_.maximumNumberOfLines);
-  applyRawProp(rawProps, "ellipsizeMode", paragraphAttributes_.ellipsizeMode);
-  applyRawProp(rawProps, "adjustsFontSizeToFit", paragraphAttributes_.adjustsFontSizeToFit);
-  applyRawProp(rawProps, "minimumFontSize", paragraphAttributes_.minimumFontSize);
-  applyRawProp(rawProps, "maximumFontSize", paragraphAttributes_.maximumFontSize);
+  paragraphAttributes.maximumNumberOfLines = convertRawProp(rawProps, "numberOfLines", defaultParagraphAttributes.maximumNumberOfLines);
+  paragraphAttributes.ellipsizeMode = convertRawProp(rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+  paragraphAttributes.adjustsFontSizeToFit = convertRawProp(rawProps, "adjustsFontSizeToFit", defaultParagraphAttributes.adjustsFontSizeToFit);
+  paragraphAttributes.minimumFontSize = convertRawProp(rawProps, "minimumFontSize", defaultParagraphAttributes.minimumFontSize);
+  paragraphAttributes.maximumFontSize = convertRawProp(rawProps, "maximumFontSize", defaultParagraphAttributes.maximumFontSize);
 
-  // Other Props
-  applyRawProp(rawProps, "selectable", isSelectable_);
+  return paragraphAttributes;
 }
 
-#pragma mark - Getters
-
-ParagraphAttributes ParagraphProps::getParagraphAttributes() const {
-  return paragraphAttributes_;
-}
-
-bool ParagraphProps::getIsSelectable() const {
-  return isSelectable_;
-}
+ParagraphProps::ParagraphProps(const ParagraphProps &sourceProps, const RawProps &rawProps):
+  ViewProps(sourceProps, rawProps),
+  BaseTextProps(sourceProps, rawProps),
+  paragraphAttributes(convertRawProp(rawProps, sourceProps.paragraphAttributes)),
+  isSelectable(convertRawProp(rawProps, "selectable", sourceProps.isSelectable)) {};
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
   return
     ViewProps::getDebugProps() +
-    paragraphAttributes_.getDebugProps() +
-    BaseTextProps::getDebugProps();
+    BaseTextProps::getDebugProps() +
+    paragraphAttributes.getDebugProps() +
+    SharedDebugStringConvertibleList {
+      debugStringConvertibleItem("isSelectable", isSelectable)
+    };
 }
 
 } // namespace react

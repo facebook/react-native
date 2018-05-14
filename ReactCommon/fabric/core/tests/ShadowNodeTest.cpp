@@ -19,13 +19,12 @@ TEST(ShadowNodeTest, handleProps) {
   RawProps raw;
   raw["nativeID"] = "abc";
 
-  auto props = std::make_shared<Props>();
-  props->apply(raw);
+  auto props = std::make_shared<Props>(Props(), raw);
 
   // Props are not sealed after applying raw props.
   ASSERT_FALSE(props->getSealed());
 
-  ASSERT_STREQ(props->getNativeId().c_str(), "abc");
+  ASSERT_STREQ(props->nativeId.c_str(), "abc");
 }
 
 TEST(ShadowNodeTest, handleShadowNodeCreation) {
@@ -41,7 +40,7 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getSourceNode(), nullptr);
   ASSERT_EQ(node->getChildren()->size(), 0);
 
-  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "testNativeID");
+  ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());

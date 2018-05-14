@@ -26,28 +26,26 @@ class ViewProps:
   public AccessibilityProps {
 
 public:
-  void apply(const RawProps &rawProps) override;
 
-#pragma mark - Getters
+  ViewProps() = default;
+  ViewProps(const YGStyle &yogaStyle);
+  ViewProps(const ViewProps &sourceProps, const RawProps &rawProps);
 
-  SharedColor getForegroundColor() const;
-  SharedColor getBackgroundColor() const;
+#pragma mark - Props
+
+  const int zIndex {0};
+  const Float opacity {1};
+
+  const SharedColor foregroundColor {nullptr};
+  const SharedColor backgroundColor {nullptr};
+
+  const SharedColor shadowColor {nullptr};
+  const Point shadowOffset {};
 
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
-
-private:
-  int zIndex_ {0};
-  Float opacity_ {1.0};
-
-  SharedColor foregroundColor_ {nullptr};
-  SharedColor backgroundColor_ {nullptr};
-
-  SharedColor shadowColor_ {nullptr};
-  Point shadowOffset_ {0, 0};
 };
 
 } // namespace react
 } // namespace facebook
-

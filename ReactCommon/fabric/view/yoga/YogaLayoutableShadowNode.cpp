@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <memory>
 
-#include <yoga/Yoga.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
+#include <yoga/Yoga.h>
 
 #include "yogaValuesConversions.h"
 
@@ -40,7 +40,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
   auto yogaNode = std::make_shared<YGNode>();
   yogaNode->setConfig(suitableYogaConfig().get());
-  yogaNode->setStyle(props->getYogaStyle());
+  yogaNode->setStyle(props->yogaStyle);
   yogaNode->setContext(this);
   yogaNode->setDirty(true);
   YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(*yogaNode, children);
@@ -59,7 +59,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode->setDirty(true);
 
   if (props) {
-    yogaNode->setStyle(props->getYogaStyle());
+    yogaNode->setStyle(props->yogaStyle);
   }
 
   if (children) {
