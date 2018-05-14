@@ -14,11 +14,15 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
 
 if (Platform.OS === 'android') {
   const AndroidSwipeRefreshLayout = require('UIManager')
@@ -29,6 +33,31 @@ if (Platform.OS === 'android') {
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
+
+type IOSProps = $ReadOnly<{|
+  tintColor?: ?ColorValue,
+  titleColor?: ?ColorValue,
+  title?: ?string,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  enabled?: ?boolean,
+  colors?: ?$ReadOnlyArray<ColorValue>,
+  progressBackgroundColor?: ?ColorValue,
+  size?: ?(
+    | typeof RefreshLayoutConsts.SIZE.DEFAULT
+    | typeof RefreshLayoutConsts.SIZE.LARGE
+  ),
+  progressViewOffset?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+  onRefresh?: ?Function,
+  refreshing: boolean,
+|}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh
@@ -180,6 +209,10 @@ const RefreshControl = createReactClass({
   },
 });
 
+class TypedRefreshControl extends ReactNative.NativeComponent<Props> {
+  static SIZE = RefreshLayoutConsts.SIZE;
+}
+
 if (Platform.OS === 'ios') {
   var NativeRefreshControl = requireNativeComponent(
     'RCTRefreshControl',
@@ -192,4 +225,4 @@ if (Platform.OS === 'ios') {
   );
 }
 
-module.exports = RefreshControl;
+module.exports = ((RefreshControl: any): Class<TypedRefreshControl>);
