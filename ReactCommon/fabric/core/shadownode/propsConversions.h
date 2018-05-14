@@ -52,5 +52,22 @@ CONVERT_RAW_PROP_TEMPLATE(SharedColor, colorFromDynamic)
 CONVERT_RAW_PROP_TEMPLATE(Point, pointFromDynamic)
 CONVERT_RAW_PROP_TEMPLATE(Size, sizeFromDynamic)
 
+inline void fromDynamic(const folly::dynamic &value, bool &result) { result = value.getBool(); }
+inline void fromDynamic(const folly::dynamic &value, int &result) { result = value.getInt(); }
+inline void fromDynamic(const folly::dynamic &value, Float &result) { result = value.getDouble(); }
+inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
+
+template <typename T>
+inline T convertRawProp(const RawProps &rawProps, const std::string &name, const T &defaultValue) {
+  auto &&iterator = rawProps.find(name);
+  if (iterator != rawProps.end()) {
+    T result = defaultValue;
+    fromDynamic(iterator->second, result);
+    return result;
+  } else {
+    return defaultValue;
+  }
+}
+
 } // namespace react
 } // namespace facebook

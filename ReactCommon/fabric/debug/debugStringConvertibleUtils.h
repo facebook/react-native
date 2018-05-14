@@ -19,6 +19,15 @@
 namespace facebook {
 namespace react {
 
+template <typename T>
+inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name, T value, T defaultValue = {}) {
+  if (value == defaultValue) {
+    return nullptr;
+  }
+
+  return std::make_shared<DebugStringConvertibleItem>(name, toString(value));
+}
+
 SharedDebugStringConvertibleList operator+(const SharedDebugStringConvertibleList &lhs, const SharedDebugStringConvertibleList &rhs);
 SharedDebugStringConvertible debugStringConvertibleItem(std::string name, DebugStringConvertible value, std::string defaultValue = "");
 
