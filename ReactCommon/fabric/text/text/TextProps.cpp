@@ -7,12 +7,6 @@
 
 #include "TextProps.h"
 
-#include <fabric/attributedstring/textValuesConversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/graphicValuesConversions.h>
-#include <fabric/text/propsConversions.h>
-
 namespace facebook {
 namespace react {
 

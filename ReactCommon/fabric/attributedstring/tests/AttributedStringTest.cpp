@@ -9,10 +9,6 @@
 
 #include <gtest/gtest.h>
 
-#include <fabric/attributedstring/TextPrimitives.h>
-
-using namespace facebook::react;
-
 TEST(AttributedStringTest, testSomething) {
   // TODO
 }

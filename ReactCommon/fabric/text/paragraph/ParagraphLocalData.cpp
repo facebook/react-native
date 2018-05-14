@@ -8,7 +8,6 @@
 #include "ParagraphLocalData.h"
 
 #include <fabric/debug/debugStringConvertibleUtils.h>
-#include <fabric/attributedstring/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {

@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include <fabric/attributedstring/TextPrimitives.h>
+#include <fabric/attributedstring/primitives.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/graphics/Geometry.h>
 
