@@ -337,16 +337,25 @@ inline std::string toString(const std::array<YGValue, YGDimensionCount> &value) 
 }
 
 inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
-  return "{" +
-    toString(value[0]) + ", " +
-    toString(value[1]) + ", " +
-    toString(value[2]) + ", " +
-    toString(value[3]) + ", " +
-    toString(value[4]) + ", " +
-    toString(value[5]) + ", " +
-    toString(value[6]) + ", " +
-    toString(value[7]) + ", " +
-    toString(value[8]) + "}";
+  static std::array<std::string, YGEdgeCount> names = {
+    {"left", "top", "right", "bottom", "start", "end", "horizontal", "vertical", "all"}
+  };
+
+  std::string result;
+  std::string separator = ", ";
+
+  for (int i = 0; i < YGEdgeCount; i++) {
+    if (value[i].unit == YGUnitUndefined) {
+      continue;
+    }
+    result += names[i] + ": " + toString(value[i]) + separator;
+  }
+
+  if (!result.empty()) {
+    result.erase(result.length() - separator.length());
+  }
+
+  return "{" + result + "}";
 }
 
 } // namespace react
