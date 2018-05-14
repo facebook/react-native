@@ -14,6 +14,7 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -25,6 +26,17 @@ const processColor = require('processColor');
 const createReactClass = require('create-react-class');
 const itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 const requireNativeComponent = require('requireNativeComponent');
+
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  color?: ?ColorValue,
+  label: string,
+  testID?: ?string,
+  value?: ?any,
+|}>;
 
 const PickerIOS = createReactClass({
   displayName: 'PickerIOS',
@@ -106,7 +118,13 @@ const PickerIOS = createReactClass({
   },
 });
 
-PickerIOS.Item = class extends React.Component {
+PickerIOS.Item = class extends React.Component<
+  $ReadOnly<{|
+    label: string,
+    value?: ?any,
+    color?: ?ColorValue,
+  |}>,
+> {
   static propTypes = {
     value: PropTypes.any, // string or integer basically
     label: PropTypes.string,
@@ -118,6 +136,10 @@ PickerIOS.Item = class extends React.Component {
     return null;
   }
 };
+
+class TypedPickerIOS extends ReactNative.NativeComponent<Props> {
+  static Item = PickerIOS.Item;
+}
 
 const styles = StyleSheet.create({
   pickerIOS: {
@@ -144,4 +166,4 @@ const RCTPickerIOS = requireNativeComponent(
   },
 );
 
-module.exports = PickerIOS;
+module.exports = ((PickerIOS: any): Class<TypedPickerIOS>);
