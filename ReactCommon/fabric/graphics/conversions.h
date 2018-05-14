@@ -5,14 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "graphicValuesConversions.h"
+#pragma once
 
-#include <folly/Conv.h>
+#include <folly/dynamic.h>
+#include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
 
-SharedColor colorFromDynamic(const folly::dynamic &value) {
+#pragma mark - Color
+
+inline void fromDynamic(const folly::dynamic &value, SharedColor &result) {
   float red;
   float green;
   float blue;
@@ -36,10 +40,10 @@ SharedColor colorFromDynamic(const folly::dynamic &value) {
     abort();
   }
 
-  return colorFromComponents({red, green, blue, alpha});
+  result = colorFromComponents({red, green, blue, alpha});
 }
 
-std::string colorNameFromColor(const SharedColor &value) {
+inline std::string toString(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
   const float ratio = 256;
   return "rgba(" +
@@ -49,42 +53,46 @@ std::string colorNameFromColor(const SharedColor &value) {
     folly::to<std::string>(round(components.alpha * ratio)) + ")";
 }
 
-std::string stringFromPoint(const Point &point) {
+#pragma mark - Geometry
+
+inline void fromDynamic(const folly::dynamic &value, Float &result) {
+  result = value.asDouble();
+}
+
+inline void fromDynamic(const folly::dynamic &value, Point &result) {
+  if (value.isArray()) {
+    result = Point {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+    return;
+  }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, Size &result) {
+  if (value.isArray()) {
+    result = Size {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+    return;
+  }
+  abort();
+}
+
+inline std::string toString(const Point &point) {
   return "{" + folly::to<std::string>(point.x) + ", " + folly::to<std::string>(point.y) + "}";
 }
 
-std::string stringFromSize(const Size &size) {
+inline std::string toString(const Size &size) {
   return "{" + folly::to<std::string>(size.width) + ", " + folly::to<std::string>(size.height) + "}";
 }
 
-std::string stringFromRect(const Rect &rect) {
-  return "{" + stringFromPoint(rect.origin) + ", " + stringFromSize(rect.size) + "}";
+inline std::string toString(const Rect &rect) {
+  return "{" + toString(rect.origin) + ", " + toString(rect.size) + "}";
 }
 
-std::string stringFromEdgeInsets(const EdgeInsets &edgeInsets) {
+inline std::string toString(const EdgeInsets &edgeInsets) {
   return "{" +
     folly::to<std::string>(edgeInsets.left) + ", " +
     folly::to<std::string>(edgeInsets.top) + ", " +
     folly::to<std::string>(edgeInsets.right) + ", " +
     folly::to<std::string>(edgeInsets.bottom) + "}";
-}
-
-Float floatFromDynamic(const folly::dynamic &value) {
-  return value.asDouble();
-}
-
-Point pointFromDynamic(const folly::dynamic &value) {
-  if (value.isArray()) {
-    return Point {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
-  }
-  abort();
-}
-
-Size sizeFromDynamic(const folly::dynamic &value) {
-  if (value.isArray()) {
-    return Size {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
-  }
-  abort();
 }
 
 } // namespace react

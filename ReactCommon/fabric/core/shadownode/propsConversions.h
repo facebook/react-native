@@ -10,7 +10,7 @@
 #include <folly/dynamic.h>
 #include <fabric/graphics/Color.h>
 #include <fabric/graphics/Geometry.h>
-#include <fabric/graphics/graphicValuesConversions.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -44,17 +44,8 @@ inline static folly::Optional<type> convertRawProp(const RawProps &rawProps, con
   } \
 }
 
-CONVERT_RAW_PROP_TEMPLATE(bool, boolFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(int, intFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(Float, floatFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(std::string, stringFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(SharedColor, colorFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(Point, pointFromDynamic)
-CONVERT_RAW_PROP_TEMPLATE(Size, sizeFromDynamic)
-
 inline void fromDynamic(const folly::dynamic &value, bool &result) { result = value.getBool(); }
 inline void fromDynamic(const folly::dynamic &value, int &result) { result = value.getInt(); }
-inline void fromDynamic(const folly::dynamic &value, Float &result) { result = value.getDouble(); }
 inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>

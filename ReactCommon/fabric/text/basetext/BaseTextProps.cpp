@@ -10,7 +10,7 @@
 #include <fabric/attributedstring/conversions.h>
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/graphicValuesConversions.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

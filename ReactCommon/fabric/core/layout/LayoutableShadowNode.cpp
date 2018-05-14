@@ -11,7 +11,7 @@
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/graphicValuesConversions.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -110,14 +110,14 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   LayoutMetrics layoutMetrics = getLayoutMetrics();
   LayoutMetrics defaultLayoutMetrics = LayoutMetrics();
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", stringFromRect(layoutMetrics.frame)));
+  list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("borderWidth", stringFromEdgeInsets(layoutMetrics.borderWidth)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("contentInsets", stringFromEdgeInsets(layoutMetrics.contentInsets)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {

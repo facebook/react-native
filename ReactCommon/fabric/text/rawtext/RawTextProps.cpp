@@ -8,7 +8,6 @@
 #include "RawTextProps.h"
 
 #include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
