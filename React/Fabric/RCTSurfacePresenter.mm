@@ -8,7 +8,6 @@
 #import "RCTSurfacePresenter.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTCxxExceptionManager.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTFabricSurface.h>
@@ -30,7 +29,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSurfacePresenter {
-  std::shared_ptr<ExceptionManager> _exceptionManager;
   RCTScheduler *_scheduler;
   RCTMountingManager *_mountingManager;
   RCTBridge *_bridge;
@@ -44,8 +42,6 @@ using namespace facebook::react;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
 
-    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
-
     _scheduler = [[RCTScheduler alloc] init];
     _scheduler.delegate = self;
 
@@ -55,11 +51,6 @@ using namespace facebook::react;
   }
 
   return self;
-}
-
-- (std::shared_ptr<ExceptionManager>)exceptionManager
-{
-  return _exceptionManager;
 }
 
 - (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
@@ -165,11 +156,6 @@ using namespace facebook::react;
 - (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
   return _scheduler.uiManager_DO_NOT_USE;
-}
-
-- (std::shared_ptr<facebook::react::ExceptionManager>)exceptionManager_DO_NOT_USE
-{
-  return _exceptionManager;
 }
 
 @end

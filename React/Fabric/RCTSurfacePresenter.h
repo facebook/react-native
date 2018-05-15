@@ -9,7 +9,6 @@
 #import <memory>
 
 #import <React/RCTBridge.h>
-#import <React/RCTCxxExceptionManager.h>
 #import <fabric/uimanager/FabricUIManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -56,10 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter (Deprecated)
 
 /**
- * We need to expose `exceptionManager` and `uiManager` for registration
+ * We need to expose `uiManager` for registration
  * purposes. Eventually, we will move this down to C++ side.
  */
-- (std::shared_ptr<facebook::react::ExceptionManager>)exceptionManager_DO_NOT_USE;
 - (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
 
 @end

@@ -74,13 +74,6 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.private_header_files = "React/Cxx*/*.h"
     ss.source_files         = "React/Cxx*/*.{h,m,mm}"
-    ss.exclude_files        = "React/CxxExceptions/**/*"
-  end
-
-  s.subspec "CxxExceptions" do |ss|
-    ss.dependency             "React/CxxBridge"
-    ss.dependency             "React/exceptions"
-    ss.source_files         = "React/CxxExceptions/*.{h,m,mm}"
   end
 
   s.subspec "DevSupport" do |ss|
@@ -93,7 +86,6 @@ Pod::Spec.new do |s|
   s.subspec "RCTFabric" do |ss|
     ss.dependency             "Folly", folly_version
     ss.dependency             "React/Core"
-    ss.dependency             "React/CxxExceptions"
     ss.dependency             "React/fabric"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}"
@@ -140,12 +132,6 @@ Pod::Spec.new do |s|
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
     ss.private_header_files = "ReactCommon/cxxreact/*.h"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
-  end
-
-  s.subspec "exceptions" do |ss|
-    ss.source_files         = "ReactCommon/exceptions/*.{cpp,h}"
-    ss.header_dir           = "cxxreact"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "fabric" do |ss|
