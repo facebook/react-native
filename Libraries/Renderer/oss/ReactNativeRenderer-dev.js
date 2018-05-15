@@ -523,21 +523,6 @@ var injection$1 = {
   }
 };
 
-function isEndish(topLevelType) {
-  return (
-    topLevelType === "topMouseUp" ||
-    topLevelType === "topTouchEnd" ||
-    topLevelType === "topTouchCancel"
-  );
-}
-
-function isMoveish(topLevelType) {
-  return topLevelType === "topMouseMove" || topLevelType === "topTouchMove";
-}
-function isStartish(topLevelType) {
-  return topLevelType === "topMouseDown" || topLevelType === "topTouchStart";
-}
-
 var validateEventDispatches = void 0;
 {
   validateEventDispatches = function(event) {
@@ -961,9 +946,7 @@ var HostRoot = 3; // Root of a host tree. Could be nested inside another node.
 var HostPortal = 4; // A subtree. Could be an entry point to a different renderer.
 var HostComponent = 5;
 var HostText = 6;
-var CallComponent = 7;
-var CallHandlerPhase = 8;
-var ReturnComponent = 9;
+
 var Fragment = 10;
 var Mode = 11;
 var ContextConsumer = 12;
@@ -1540,6 +1523,29 @@ var ResponderSyntheticEvent = SyntheticEvent$1.extend({
   }
 });
 
+var TOP_TOUCH_START = "topTouchStart";
+var TOP_TOUCH_MOVE = "topTouchMove";
+var TOP_TOUCH_END = "topTouchEnd";
+var TOP_TOUCH_CANCEL = "topTouchCancel";
+var TOP_SCROLL = "topScroll";
+var TOP_SELECTION_CHANGE = "topSelectionChange";
+
+function isStartish(topLevelType) {
+  return topLevelType === TOP_TOUCH_START;
+}
+
+function isMoveish(topLevelType) {
+  return topLevelType === TOP_TOUCH_MOVE;
+}
+
+function isEndish(topLevelType) {
+  return topLevelType === TOP_TOUCH_END || topLevelType === TOP_TOUCH_CANCEL;
+}
+
+var startDependencies = [TOP_TOUCH_START];
+var moveDependencies = [TOP_TOUCH_MOVE];
+var endDependencies = [TOP_TOUCH_CANCEL, TOP_TOUCH_END];
+
 /**
  * Tracks the position and time of each active touch by `touch.identifier`. We
  * should typically only see IDs in the range of 1-20 because IDs get recycled
@@ -1762,11 +1768,6 @@ var responderInst = null;
  */
 var trackedTouchCount = 0;
 
-/**
- * Last reported number of active touches.
- */
-var previousActiveTouches = 0;
-
 var changeResponder = function(nextResponderInst, blockHostResponder) {
   var oldResponderInst = responderInst;
   responderInst = nextResponderInst;
@@ -1788,7 +1789,8 @@ var eventTypes$1 = {
     phasedRegistrationNames: {
       bubbled: "onStartShouldSetResponder",
       captured: "onStartShouldSetResponderCapture"
-    }
+    },
+    dependencies: startDependencies
   },
 
   /**
@@ -1804,7 +1806,8 @@ var eventTypes$1 = {
     phasedRegistrationNames: {
       bubbled: "onScrollShouldSetResponder",
       captured: "onScrollShouldSetResponderCapture"
-    }
+    },
+    dependencies: [TOP_SCROLL]
   },
 
   /**
@@ -1818,7 +1821,8 @@ var eventTypes$1 = {
     phasedRegistrationNames: {
       bubbled: "onSelectionChangeShouldSetResponder",
       captured: "onSelectionChangeShouldSetResponderCapture"
-    }
+    },
+    dependencies: [TOP_SELECTION_CHANGE]
   },
 
   /**
@@ -1829,22 +1833,45 @@ var eventTypes$1 = {
     phasedRegistrationNames: {
       bubbled: "onMoveShouldSetResponder",
       captured: "onMoveShouldSetResponderCapture"
-    }
+    },
+    dependencies: moveDependencies
   },
 
   /**
    * Direct responder events dispatched directly to responder. Do not bubble.
    */
-  responderStart: { registrationName: "onResponderStart" },
-  responderMove: { registrationName: "onResponderMove" },
-  responderEnd: { registrationName: "onResponderEnd" },
-  responderRelease: { registrationName: "onResponderRelease" },
-  responderTerminationRequest: {
-    registrationName: "onResponderTerminationRequest"
+  responderStart: {
+    registrationName: "onResponderStart",
+    dependencies: startDependencies
   },
-  responderGrant: { registrationName: "onResponderGrant" },
-  responderReject: { registrationName: "onResponderReject" },
-  responderTerminate: { registrationName: "onResponderTerminate" }
+  responderMove: {
+    registrationName: "onResponderMove",
+    dependencies: moveDependencies
+  },
+  responderEnd: {
+    registrationName: "onResponderEnd",
+    dependencies: endDependencies
+  },
+  responderRelease: {
+    registrationName: "onResponderRelease",
+    dependencies: endDependencies
+  },
+  responderTerminationRequest: {
+    registrationName: "onResponderTerminationRequest",
+    dependencies: []
+  },
+  responderGrant: {
+    registrationName: "onResponderGrant",
+    dependencies: []
+  },
+  responderReject: {
+    registrationName: "onResponderReject",
+    dependencies: []
+  },
+  responderTerminate: {
+    registrationName: "onResponderTerminate",
+    dependencies: []
+  }
 };
 
 /**
@@ -2047,7 +2074,7 @@ function setResponderAndExtractTransfer(
     ? eventTypes$1.startShouldSetResponder
     : isMoveish(topLevelType)
       ? eventTypes$1.moveShouldSetResponder
-      : topLevelType === "topSelectionChange"
+      : topLevelType === TOP_SELECTION_CHANGE
         ? eventTypes$1.selectionChangeShouldSetResponder
         : eventTypes$1.scrollShouldSetResponder;
 
@@ -2152,8 +2179,8 @@ function canTriggerTransfer(topLevelType, topLevelInst, nativeEvent) {
     // responderIgnoreScroll: We are trying to migrate away from specifically
     // tracking native scroll events here and responderIgnoreScroll indicates we
     // will send topTouchCancel to handle canceling touch events instead
-    ((topLevelType === "topScroll" && !nativeEvent.responderIgnoreScroll) ||
-      (trackedTouchCount > 0 && topLevelType === "topSelectionChange") ||
+    ((topLevelType === TOP_SCROLL && !nativeEvent.responderIgnoreScroll) ||
+      (trackedTouchCount > 0 && topLevelType === TOP_SELECTION_CHANGE) ||
       isStartish(topLevelType) ||
       isMoveish(topLevelType))
   );
@@ -2259,7 +2286,7 @@ var ResponderEventPlugin = {
     }
 
     var isResponderTerminate =
-      responderInst && topLevelType === "topTouchCancel";
+      responderInst && topLevelType === TOP_TOUCH_CANCEL;
     var isResponderRelease =
       responderInst &&
       !isResponderTerminate &&
@@ -2281,23 +2308,10 @@ var ResponderEventPlugin = {
       changeResponder(null);
     }
 
-    var numberActiveTouches =
-      ResponderTouchHistoryStore.touchHistory.numberActiveTouches;
-    if (
-      ResponderEventPlugin.GlobalInteractionHandler &&
-      numberActiveTouches !== previousActiveTouches
-    ) {
-      ResponderEventPlugin.GlobalInteractionHandler.onChange(
-        numberActiveTouches
-      );
-    }
-    previousActiveTouches = numberActiveTouches;
-
     return extracted;
   },
 
   GlobalResponderHandler: null,
-  GlobalInteractionHandler: null,
 
   injection: {
     /**
@@ -2307,14 +2321,6 @@ var ResponderEventPlugin = {
      */
     injectGlobalResponderHandler: function(GlobalResponderHandler) {
       ResponderEventPlugin.GlobalResponderHandler = GlobalResponderHandler;
-    },
-
-    /**
-     * @param {{onChange: (numberActiveTouches) => void} GlobalInteractionHandler
-     * Object that handles any change in the number of active touches.
-     */
-    injectGlobalInteractionHandler: function(GlobalInteractionHandler) {
-      ResponderEventPlugin.GlobalInteractionHandler = GlobalInteractionHandler;
     }
   }
 };
@@ -2752,8 +2758,6 @@ var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
 var hasSymbol = typeof Symbol === "function" && Symbol.for;
 
 var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for("react.element") : 0xeac7;
-var REACT_CALL_TYPE = hasSymbol ? Symbol.for("react.call") : 0xeac8;
-var REACT_RETURN_TYPE = hasSymbol ? Symbol.for("react.return") : 0xeac9;
 var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for("react.portal") : 0xeaca;
 var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for("react.fragment") : 0xeacb;
 var REACT_STRICT_MODE_TYPE = hasSymbol
@@ -2796,8 +2800,6 @@ function getComponentName(fiber) {
   switch (type) {
     case REACT_ASYNC_MODE_TYPE:
       return "AsyncMode";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
     case REACT_CONTEXT_TYPE:
       return "Context.Consumer";
     case REACT_FRAGMENT_TYPE:
@@ -2808,8 +2810,6 @@ function getComponentName(fiber) {
       return "Profiler(" + fiber.pendingProps.id + ")";
     case REACT_PROVIDER_TYPE:
       return "Context.Provider";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
     case REACT_STRICT_MODE_TYPE:
       return "StrictMode";
   }
@@ -3120,7 +3120,7 @@ var enablePersistentReconciler = false;
 var enableUserTimingAPI = true;
 var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 var warnAboutDeprecatedLifecycles = false;
-var enableProfilerTimer = false;
+var enableProfilerTimer = true;
 var fireGetDerivedStateFromPropsOnStateUpdates = true;
 
 // Only used in www builds.
@@ -3367,12 +3367,6 @@ function createFiberFromElement(element, mode, expirationTime) {
         break;
       case REACT_PROFILER_TYPE:
         return createFiberFromProfiler(pendingProps, mode, expirationTime, key);
-      case REACT_CALL_TYPE:
-        fiberTag = CallComponent;
-        break;
-      case REACT_RETURN_TYPE:
-        fiberTag = ReturnComponent;
-        break;
       case REACT_TIMEOUT_TYPE:
         fiberTag = TimeoutComponent;
         // Suspense does not require async, but its children should be strict
@@ -4338,8 +4332,6 @@ var shouldIgnoreFiber = function(fiber) {
     case HostComponent:
     case HostText:
     case HostPortal:
-    case CallComponent:
-    case ReturnComponent:
     case Fragment:
     case ContextProvider:
     case ContextConsumer:
@@ -8175,44 +8167,6 @@ var ReactFiberBeginWork = function(
     }
   }
 
-  function updateCallComponent(current, workInProgress, renderExpirationTime) {
-    var nextProps = workInProgress.pendingProps;
-    if (hasLegacyContextChanged()) {
-      // Normally we can bail out on props equality but if context has changed
-      // we don't do the bailout and we have to reuse existing props instead.
-    } else if (workInProgress.memoizedProps === nextProps) {
-      nextProps = workInProgress.memoizedProps;
-      // TODO: When bailing out, we might need to return the stateNode instead
-      // of the child. To check it for work.
-      // return bailoutOnAlreadyFinishedWork(current, workInProgress);
-    }
-
-    var nextChildren = nextProps.children;
-
-    // The following is a fork of reconcileChildrenAtExpirationTime but using
-    // stateNode to store the child.
-    if (current === null) {
-      workInProgress.stateNode = mountChildFibers(
-        workInProgress,
-        workInProgress.stateNode,
-        nextChildren,
-        renderExpirationTime
-      );
-    } else {
-      workInProgress.stateNode = reconcileChildFibers(
-        workInProgress,
-        current.stateNode,
-        nextChildren,
-        renderExpirationTime
-      );
-    }
-
-    memoizeProps(workInProgress, nextProps);
-    // This doesn't take arbitrary time so we could synchronously just begin
-    // eagerly do the work of workInProgress.child as an optimization.
-    return workInProgress.stateNode;
-  }
-
   function updateTimeoutComponent(
     current,
     workInProgress,
@@ -8689,20 +8643,6 @@ var ReactFiberBeginWork = function(
         );
       case HostText:
         return updateHostText(current, workInProgress);
-      case CallHandlerPhase:
-        // This is a restart. Reset the tag to the initial phase.
-        workInProgress.tag = CallComponent;
-      // Intentionally fall through since this is now the same.
-      case CallComponent:
-        return updateCallComponent(
-          current,
-          workInProgress,
-          renderExpirationTime
-        );
-      case ReturnComponent:
-        // A return component is just a placeholder, we can just run through the
-        // next one immediately.
-        return null;
       case TimeoutComponent:
         return updateTimeoutComponent(
           current,
@@ -8787,75 +8727,6 @@ var ReactFiberCompleteWork = function(
 
   function markRef(workInProgress) {
     workInProgress.effectTag |= Ref;
-  }
-
-  function appendAllReturns(returns, workInProgress) {
-    var node = workInProgress.stateNode;
-    if (node) {
-      node.return = workInProgress;
-    }
-    while (node !== null) {
-      if (
-        node.tag === HostComponent ||
-        node.tag === HostText ||
-        node.tag === HostPortal
-      ) {
-        invariant(false, "A call cannot have host component children.");
-      } else if (node.tag === ReturnComponent) {
-        returns.push(node.pendingProps.value);
-      } else if (node.child !== null) {
-        node.child.return = node;
-        node = node.child;
-        continue;
-      }
-      while (node.sibling === null) {
-        if (node.return === null || node.return === workInProgress) {
-          return;
-        }
-        node = node.return;
-      }
-      node.sibling.return = node.return;
-      node = node.sibling;
-    }
-  }
-
-  function moveCallToHandlerPhase(
-    current,
-    workInProgress,
-    renderExpirationTime
-  ) {
-    var props = workInProgress.memoizedProps;
-    invariant(
-      props,
-      "Should be resolved by now. This error is likely caused by a bug in " +
-        "React. Please file an issue."
-    );
-
-    // First step of the call has completed. Now we need to do the second.
-    // TODO: It would be nice to have a multi stage call represented by a
-    // single component, or at least tail call optimize nested ones. Currently
-    // that requires additional fields that we don't want to add to the fiber.
-    // So this requires nested handlers.
-    // Note: This doesn't mutate the alternate node. I don't think it needs to
-    // since this stage is reset for every pass.
-    workInProgress.tag = CallHandlerPhase;
-
-    // Build up the returns.
-    // TODO: Compare this to a generator or opaque helpers like Children.
-    var returns = [];
-    appendAllReturns(returns, workInProgress);
-    var fn = props.handler;
-    var childProps = props.props;
-    var nextChildren = fn(childProps, returns);
-
-    var currentFirstChild = current !== null ? current.child : null;
-    workInProgress.child = reconcileChildFibers(
-      workInProgress,
-      currentFirstChild,
-      nextChildren,
-      renderExpirationTime
-    );
-    return workInProgress.child;
   }
 
   function appendAllChildren(parent, workInProgress) {
@@ -9251,19 +9122,6 @@ var ReactFiberCompleteWork = function(
         }
         return null;
       }
-      case CallComponent:
-        return moveCallToHandlerPhase(
-          current,
-          workInProgress,
-          renderExpirationTime
-        );
-      case CallHandlerPhase:
-        // Reset the tag to now be a first phase call.
-        workInProgress.tag = CallComponent;
-        return null;
-      case ReturnComponent:
-        // Does nothing.
-        return null;
       case ForwardRef:
         return null;
       case TimeoutComponent:
@@ -9742,10 +9600,6 @@ var ReactFiberCommitWork = function(
       }
       case HostComponent: {
         safelyDetachRef(current);
-        return;
-      }
-      case CallComponent: {
-        commitNestedUnmounts(current.stateNode);
         return;
       }
       case HostPortal: {
@@ -12486,12 +12340,17 @@ var ReactFiberScheduler = function(config) {
 
     var next = void 0;
     if (enableProfilerTimer) {
-      startBaseRenderTimer();
+      if (workInProgress.mode & ProfileMode) {
+        startBaseRenderTimer();
+      }
+
       next = beginWork(current, workInProgress, nextRenderExpirationTime);
 
-      // Update "base" time if the render wasn't bailed out on.
-      recordElapsedBaseRenderTimeIfRunning(workInProgress);
-      stopBaseRenderTimerIfRunning();
+      if (workInProgress.mode & ProfileMode) {
+        // Update "base" time if the render wasn't bailed out on.
+        recordElapsedBaseRenderTimeIfRunning(workInProgress);
+        stopBaseRenderTimerIfRunning();
+      }
     } else {
       next = beginWork(current, workInProgress, nextRenderExpirationTime);
     }
@@ -14476,7 +14335,7 @@ var ReactNativeHostConfig = {
       tag, // reactTag
       viewConfig.uiViewClassName, // viewName
       rootContainerInstance, // rootTag
-      updatePayload
+      updatePayload // props
     );
 
     var component = new ReactNativeFiberHostComponent(tag, viewConfig);
@@ -14505,7 +14364,7 @@ var ReactNativeHostConfig = {
       tag, // reactTag
       "RCTRawText", // viewName
       rootContainerInstance, // rootTag
-      { text: text }
+      { text: text } // props
     );
 
     precacheFiberNode(internalInstanceHandle, tag);
@@ -14533,7 +14392,7 @@ var ReactNativeHostConfig = {
 
     UIManager.setChildren(
       parentInstance._nativeTag, // containerTag
-      nativeTags
+      nativeTags // reactTags
     );
 
     return false;
@@ -14613,7 +14472,7 @@ var ReactNativeHostConfig = {
           [children.length - 1], // moveToIndices
           [], // addChildReactTags
           [], // addAtIndices
-          []
+          [] // removeAtIndices
         );
       } else {
         children.push(child);
@@ -14624,7 +14483,7 @@ var ReactNativeHostConfig = {
           [], // moveToIndices
           [childTag], // addChildReactTags
           [children.length - 1], // addAtIndices
-          []
+          [] // removeAtIndices
         );
       }
     },
@@ -14632,14 +14491,14 @@ var ReactNativeHostConfig = {
       var childTag = typeof child === "number" ? child : child._nativeTag;
       UIManager.setChildren(
         parentInstance, // containerTag
-        [childTag]
+        [childTag] // reactTags
       );
     },
     commitTextUpdate: function(textInstance, oldText, newText) {
       UIManager.updateView(
         textInstance, // reactTag
         "RCTRawText", // viewName
-        { text: newText }
+        { text: newText } // props
       );
     },
     commitMount: function(instance, type, newProps, internalInstanceHandle) {
@@ -14666,7 +14525,7 @@ var ReactNativeHostConfig = {
         UIManager.updateView(
           instance._nativeTag, // reactTag
           viewConfig.uiViewClassName, // viewName
-          updatePayload
+          updatePayload // props
         );
       }
     },
@@ -14686,7 +14545,7 @@ var ReactNativeHostConfig = {
           [beforeChildIndex], // moveToIndices
           [], // addChildReactTags
           [], // addAtIndices
-          []
+          [] // removeAtIndices
         );
       } else {
         var _beforeChildIndex = children.indexOf(beforeChild);
@@ -14700,7 +14559,7 @@ var ReactNativeHostConfig = {
           [], // moveToIndices
           [childTag], // addChildReactTags
           [_beforeChildIndex], // addAtIndices
-          []
+          [] // removeAtIndices
         );
       }
     },
@@ -14727,7 +14586,7 @@ var ReactNativeHostConfig = {
         [], // moveToIndices
         [], // addChildReactTags
         [], // addAtIndices
-        [index]
+        [index] // removeAtIndices
       );
     },
     removeChildFromContainer: function(parentInstance, child) {
@@ -14738,7 +14597,7 @@ var ReactNativeHostConfig = {
         [], // moveToIndices
         [], // addChildReactTags
         [], // addAtIndices
-        [0]
+        [0] // removeAtIndices
       );
     },
     resetTextContent: function(instance) {

@@ -100,19 +100,6 @@ var plugins = [],
   getFiberCurrentPropsFromNode = null,
   getInstanceFromNode = null,
   getNodeFromInstance = null;
-function isEndish(topLevelType) {
-  return (
-    "topMouseUp" === topLevelType ||
-    "topTouchEnd" === topLevelType ||
-    "topTouchCancel" === topLevelType
-  );
-}
-function isMoveish(topLevelType) {
-  return "topMouseMove" === topLevelType || "topTouchMove" === topLevelType;
-}
-function isStartish(topLevelType) {
-  return "topMouseDown" === topLevelType || "topTouchStart" === topLevelType;
-}
 function executeDirectDispatch(event) {
   var dispatchListener = event._dispatchListeners,
     dispatchInstance = event._dispatchInstances;
@@ -382,10 +369,19 @@ function addEventPoolingTo(EventConstructor) {
   EventConstructor.release = releasePooledEvent;
 }
 var ResponderSyntheticEvent = SyntheticEvent.extend({
-    touchHistory: function() {
-      return null;
-    }
-  }),
+  touchHistory: function() {
+    return null;
+  }
+});
+function isStartish(topLevelType) {
+  return "topTouchStart" === topLevelType;
+}
+function isMoveish(topLevelType) {
+  return "topTouchMove" === topLevelType;
+}
+var startDependencies = ["topTouchStart"],
+  moveDependencies = ["topTouchMove"],
+  endDependencies = ["topTouchCancel", "topTouchEnd"],
   touchBank = [],
   touchHistory = {
     touchBank: touchBank,
@@ -491,19 +487,22 @@ var ResponderTouchHistoryStore = {
           (touchHistory.indexOfSingleActiveTouch =
             nativeEvent.touches[0].identifier);
     else if (
-      isEndish(topLevelType) &&
-      (nativeEvent.changedTouches.forEach(recordTouchEnd),
-      (touchHistory.numberActiveTouches = nativeEvent.touches.length),
-      1 === touchHistory.numberActiveTouches)
+      "topTouchEnd" === topLevelType ||
+      "topTouchCancel" === topLevelType
     )
-      for (topLevelType = 0; topLevelType < touchBank.length; topLevelType++)
-        if (
-          ((nativeEvent = touchBank[topLevelType]),
-          null != nativeEvent && nativeEvent.touchActive)
-        ) {
-          touchHistory.indexOfSingleActiveTouch = topLevelType;
-          break;
-        }
+      if (
+        (nativeEvent.changedTouches.forEach(recordTouchEnd),
+        (touchHistory.numberActiveTouches = nativeEvent.touches.length),
+        1 === touchHistory.numberActiveTouches)
+      )
+        for (topLevelType = 0; topLevelType < touchBank.length; topLevelType++)
+          if (
+            ((nativeEvent = touchBank[topLevelType]),
+            null != nativeEvent && nativeEvent.touchActive)
+          ) {
+            touchHistory.indexOfSingleActiveTouch = topLevelType;
+            break;
+          }
   },
   touchHistory: touchHistory
 };
@@ -519,8 +518,7 @@ function accumulate(current, next) {
       : Array.isArray(next) ? [current].concat(next) : [current, next];
 }
 var responderInst = null,
-  trackedTouchCount = 0,
-  previousActiveTouches = 0;
+  trackedTouchCount = 0;
 function changeResponder(nextResponderInst, blockHostResponder) {
   var oldResponderInst = responderInst;
   responderInst = nextResponderInst;
@@ -536,36 +534,59 @@ var eventTypes$1 = {
       phasedRegistrationNames: {
         bubbled: "onStartShouldSetResponder",
         captured: "onStartShouldSetResponderCapture"
-      }
+      },
+      dependencies: startDependencies
     },
     scrollShouldSetResponder: {
       phasedRegistrationNames: {
         bubbled: "onScrollShouldSetResponder",
         captured: "onScrollShouldSetResponderCapture"
-      }
+      },
+      dependencies: ["topScroll"]
     },
     selectionChangeShouldSetResponder: {
       phasedRegistrationNames: {
         bubbled: "onSelectionChangeShouldSetResponder",
         captured: "onSelectionChangeShouldSetResponderCapture"
-      }
+      },
+      dependencies: ["topSelectionChange"]
     },
     moveShouldSetResponder: {
       phasedRegistrationNames: {
         bubbled: "onMoveShouldSetResponder",
         captured: "onMoveShouldSetResponderCapture"
-      }
+      },
+      dependencies: moveDependencies
     },
-    responderStart: { registrationName: "onResponderStart" },
-    responderMove: { registrationName: "onResponderMove" },
-    responderEnd: { registrationName: "onResponderEnd" },
-    responderRelease: { registrationName: "onResponderRelease" },
+    responderStart: {
+      registrationName: "onResponderStart",
+      dependencies: startDependencies
+    },
+    responderMove: {
+      registrationName: "onResponderMove",
+      dependencies: moveDependencies
+    },
+    responderEnd: {
+      registrationName: "onResponderEnd",
+      dependencies: endDependencies
+    },
+    responderRelease: {
+      registrationName: "onResponderRelease",
+      dependencies: endDependencies
+    },
     responderTerminationRequest: {
-      registrationName: "onResponderTerminationRequest"
+      registrationName: "onResponderTerminationRequest",
+      dependencies: []
     },
-    responderGrant: { registrationName: "onResponderGrant" },
-    responderReject: { registrationName: "onResponderReject" },
-    responderTerminate: { registrationName: "onResponderTerminate" }
+    responderGrant: { registrationName: "onResponderGrant", dependencies: [] },
+    responderReject: {
+      registrationName: "onResponderReject",
+      dependencies: []
+    },
+    responderTerminate: {
+      registrationName: "onResponderTerminate",
+      dependencies: []
+    }
   },
   ResponderEventPlugin = {
     _getResponder: function() {
@@ -579,7 +600,10 @@ var eventTypes$1 = {
       nativeEventTarget
     ) {
       if (isStartish(topLevelType)) trackedTouchCount += 1;
-      else if (isEndish(topLevelType))
+      else if (
+        "topTouchEnd" === topLevelType ||
+        "topTouchCancel" === topLevelType
+      )
         if (0 <= trackedTouchCount) --trackedTouchCount;
         else
           return (
@@ -749,7 +773,9 @@ var eventTypes$1 = {
       } else JSCompiler_temp = null;
       JSCompiler_temp$jscomp$0 = responderInst && isStartish(topLevelType);
       targetInst = responderInst && isMoveish(topLevelType);
-      depthA = responderInst && isEndish(topLevelType);
+      depthA =
+        responderInst &&
+        ("topTouchEnd" === topLevelType || "topTouchCancel" === topLevelType);
       if (
         (JSCompiler_temp$jscomp$0 = JSCompiler_temp$jscomp$0
           ? eventTypes$1.responderStart
@@ -777,7 +803,9 @@ var eventTypes$1 = {
         responderInst && "topTouchCancel" === topLevelType;
       if (
         (topLevelType =
-          responderInst && !JSCompiler_temp$jscomp$0 && isEndish(topLevelType))
+          responderInst &&
+          !JSCompiler_temp$jscomp$0 &&
+          ("topTouchEnd" === topLevelType || "topTouchCancel" === topLevelType))
       )
         a: {
           if ((topLevelType = nativeEvent.touches) && 0 !== topLevelType.length)
@@ -819,23 +847,12 @@ var eventTypes$1 = {
           forEachAccumulated(nativeEvent, accumulateDirectDispatchesSingle),
           (JSCompiler_temp = accumulate(JSCompiler_temp, nativeEvent)),
           changeResponder(null);
-      nativeEvent = ResponderTouchHistoryStore.touchHistory.numberActiveTouches;
-      if (
-        ResponderEventPlugin.GlobalInteractionHandler &&
-        nativeEvent !== previousActiveTouches
-      )
-        ResponderEventPlugin.GlobalInteractionHandler.onChange(nativeEvent);
-      previousActiveTouches = nativeEvent;
       return JSCompiler_temp;
     },
     GlobalResponderHandler: null,
-    GlobalInteractionHandler: null,
     injection: {
       injectGlobalResponderHandler: function(GlobalResponderHandler) {
         ResponderEventPlugin.GlobalResponderHandler = GlobalResponderHandler;
-      },
-      injectGlobalInteractionHandler: function(GlobalInteractionHandler) {
-        ResponderEventPlugin.GlobalInteractionHandler = GlobalInteractionHandler;
       }
     }
   },
@@ -922,8 +939,6 @@ injection.injectEventPluginsByName({
 });
 var hasSymbol = "function" === typeof Symbol && Symbol.for,
   REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for("react.element") : 60103,
-  REACT_CALL_TYPE = hasSymbol ? Symbol.for("react.call") : 60104,
-  REACT_RETURN_TYPE = hasSymbol ? Symbol.for("react.return") : 60105,
   REACT_PORTAL_TYPE = hasSymbol ? Symbol.for("react.portal") : 60106,
   REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for("react.fragment") : 60107,
   REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for("react.strict_mode") : 60108,
@@ -1213,8 +1228,6 @@ function getComponentName(fiber) {
   switch (type) {
     case REACT_ASYNC_MODE_TYPE:
       return "AsyncMode";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
     case REACT_CONTEXT_TYPE:
       return "Context.Consumer";
     case REACT_FRAGMENT_TYPE:
@@ -1225,8 +1238,6 @@ function getComponentName(fiber) {
       return "Profiler(" + fiber.pendingProps.id + ")";
     case REACT_PROVIDER_TYPE:
       return "Context.Provider";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
     case REACT_STRICT_MODE_TYPE:
       return "StrictMode";
   }
@@ -1444,12 +1455,6 @@ function createFiberFromElement(element, mode, expirationTime) {
           (type.stateNode = { duration: 0, startTime: 0 }),
           type
         );
-      case REACT_CALL_TYPE:
-        fiberTag = 7;
-        break;
-      case REACT_RETURN_TYPE:
-        fiberTag = 9;
-        break;
       case REACT_TIMEOUT_TYPE:
         fiberTag = 16;
         mode |= 2;
@@ -3377,34 +3382,6 @@ function ReactFiberBeginWork(
             (workInProgress.memoizedProps = workInProgress.pendingProps),
             null
           );
-        case 8:
-          workInProgress.tag = 7;
-        case 7:
-          return (
-            (props = workInProgress.pendingProps),
-            hasLegacyContextChanged() ||
-              workInProgress.memoizedProps !== props ||
-              (props = workInProgress.memoizedProps),
-            (fn = props.children),
-            (workInProgress.stateNode =
-              null === current
-                ? mountChildFibers(
-                    workInProgress,
-                    workInProgress.stateNode,
-                    fn,
-                    renderExpirationTime
-                  )
-                : reconcileChildFibers(
-                    workInProgress,
-                    current.stateNode,
-                    fn,
-                    renderExpirationTime
-                  )),
-            (workInProgress.memoizedProps = props),
-            workInProgress.stateNode
-          );
-        case 9:
-          return null;
         case 16:
           return null;
         case 4:
@@ -3687,7 +3664,7 @@ function ReactFiberCompleteWork(
     };
   } else invariant(!1, "Noop reconciler is disabled.");
   return {
-    completeWork: function(current, workInProgress, renderExpirationTime) {
+    completeWork: function(current, workInProgress) {
       var newProps = workInProgress.pendingProps;
       switch (workInProgress.tag) {
         case 1:
@@ -3707,8 +3684,8 @@ function ReactFiberCompleteWork(
           return null;
         case 5:
           popHostContext(workInProgress);
-          renderExpirationTime = getRootHostContainer();
-          var type = workInProgress.type;
+          var rootContainerInstance = getRootHostContainer(),
+            type = workInProgress.type;
           if (null !== current && null != workInProgress.stateNode) {
             var oldProps = current.memoizedProps,
               instance = workInProgress.stateNode,
@@ -3718,7 +3695,7 @@ function ReactFiberCompleteWork(
               type,
               oldProps,
               newProps,
-              renderExpirationTime,
+              rootContainerInstance,
               currentHostContext
             );
             updateHostComponent(
@@ -3728,7 +3705,7 @@ function ReactFiberCompleteWork(
               type,
               oldProps,
               newProps,
-              renderExpirationTime,
+              rootContainerInstance,
               currentHostContext
             );
             current.ref !== workInProgress.ref &&
@@ -3746,13 +3723,13 @@ function ReactFiberCompleteWork(
             popHydrationState(workInProgress)
               ? prepareToHydrateHostInstance(
                   workInProgress,
-                  renderExpirationTime,
+                  rootContainerInstance,
                   current
                 ) && markUpdate(workInProgress)
               : ((oldProps = createInstance(
                   type,
                   newProps,
-                  renderExpirationTime,
+                  rootContainerInstance,
                   current,
                   workInProgress
                 )),
@@ -3761,7 +3738,7 @@ function ReactFiberCompleteWork(
                   oldProps,
                   type,
                   newProps,
-                  renderExpirationTime,
+                  rootContainerInstance,
                   current
                 ) && markUpdate(workInProgress),
                 (workInProgress.stateNode = oldProps));
@@ -3785,68 +3762,18 @@ function ReactFiberCompleteWork(
                 ),
                 null
               );
-            current = getRootHostContainer();
-            renderExpirationTime = getHostContext();
+            rootContainerInstance = getRootHostContainer();
+            type = getHostContext();
             popHydrationState(workInProgress)
               ? prepareToHydrateHostTextInstance(workInProgress) &&
                 markUpdate(workInProgress)
               : (workInProgress.stateNode = createTextInstance(
                   newProps,
-                  current,
-                  renderExpirationTime,
+                  rootContainerInstance,
+                  type,
                   workInProgress
                 ));
           }
-          return null;
-        case 7:
-          newProps = workInProgress.memoizedProps;
-          invariant(
-            newProps,
-            "Should be resolved by now. This error is likely caused by a bug in React. Please file an issue."
-          );
-          workInProgress.tag = 8;
-          type = [];
-          a: {
-            if ((oldProps = workInProgress.stateNode))
-              oldProps.return = workInProgress;
-            for (; null !== oldProps; ) {
-              if (
-                5 === oldProps.tag ||
-                6 === oldProps.tag ||
-                4 === oldProps.tag
-              )
-                invariant(!1, "A call cannot have host component children.");
-              else if (9 === oldProps.tag)
-                type.push(oldProps.pendingProps.value);
-              else if (null !== oldProps.child) {
-                oldProps.child.return = oldProps;
-                oldProps = oldProps.child;
-                continue;
-              }
-              for (; null === oldProps.sibling; ) {
-                if (
-                  null === oldProps.return ||
-                  oldProps.return === workInProgress
-                )
-                  break a;
-                oldProps = oldProps.return;
-              }
-              oldProps.sibling.return = oldProps.return;
-              oldProps = oldProps.sibling;
-            }
-          }
-          oldProps = newProps.handler;
-          newProps = oldProps(newProps.props, type);
-          workInProgress.child = reconcileChildFibers(
-            workInProgress,
-            null !== current ? current.child : null,
-            newProps,
-            renderExpirationTime
-          );
-          return workInProgress.child;
-        case 8:
-          return (workInProgress.tag = 7), null;
-        case 9:
           return null;
         case 14:
           return null;
@@ -4059,43 +3986,6 @@ function ReactFiberCommitWork(config, captureError) {
         ? current(null)
         : (current.current = null));
   }
-  function commitNestedUnmounts(root) {
-    for (var node = root; ; ) {
-      var current = node;
-      "function" === typeof onCommitUnmount && onCommitUnmount(current);
-      switch (current.tag) {
-        case 2:
-          safelyDetachRef(current);
-          var _instance6 = current.stateNode;
-          if ("function" === typeof _instance6.componentWillUnmount)
-            try {
-              (_instance6.props = current.memoizedProps),
-                (_instance6.state = current.memoizedState),
-                _instance6.componentWillUnmount();
-            } catch (unmountError) {
-              captureError(current, unmountError);
-            }
-          break;
-        case 5:
-          safelyDetachRef(current);
-          break;
-        case 7:
-          commitNestedUnmounts(current.stateNode);
-          break;
-        case 4:
-          persistence && emptyPortalContainer(current);
-      }
-      if (null === node.child || (mutation && 4 === node.tag)) {
-        if (node === root) break;
-        for (; null === node.sibling; ) {
-          if (null === node.return || node.return === root) return;
-          node = node.return;
-        }
-        node.sibling.return = node.return;
-        node = node.sibling;
-      } else (node.child.return = node), (node = node.child);
-    }
-  }
   var getPublicInstance = config.getPublicInstance,
     mutation = config.mutation,
     persistence = config.persistence,
@@ -4137,12 +4027,45 @@ function ReactFiberCommitWork(config, captureError) {
     return {
       commitResetTextContent: function() {},
       commitPlacement: function() {},
-      commitDeletion: function(current) {
-        commitNestedUnmounts(current);
-        current.return = null;
-        current.child = null;
-        current.alternate &&
-          ((current.alternate.child = null), (current.alternate.return = null));
+      commitDeletion: function(current$jscomp$0) {
+        a: for (var node = current$jscomp$0; ; ) {
+          var current = node;
+          "function" === typeof onCommitUnmount && onCommitUnmount(current);
+          switch (current.tag) {
+            case 2:
+              safelyDetachRef(current);
+              var _instance6 = current.stateNode;
+              if ("function" === typeof _instance6.componentWillUnmount)
+                try {
+                  (_instance6.props = current.memoizedProps),
+                    (_instance6.state = current.memoizedState),
+                    _instance6.componentWillUnmount();
+                } catch (unmountError) {
+                  captureError(current, unmountError);
+                }
+              break;
+            case 5:
+              safelyDetachRef(current);
+              break;
+            case 4:
+              persistence && emptyPortalContainer(current);
+          }
+          if (null === node.child || (mutation && 4 === node.tag)) {
+            if (node === current$jscomp$0) break;
+            for (; null === node.sibling; ) {
+              if (null === node.return || node.return === current$jscomp$0)
+                break a;
+              node = node.return;
+            }
+            node.sibling.return = node.return;
+            node = node.sibling;
+          } else (node.child.return = node), (node = node.child);
+        }
+        current$jscomp$0.return = null;
+        current$jscomp$0.child = null;
+        current$jscomp$0.alternate &&
+          ((current$jscomp$0.alternate.child = null),
+          (current$jscomp$0.alternate.return = null));
       },
       commitWork: function(current, finishedWork) {
         commitContainer(finishedWork);
@@ -5182,22 +5105,23 @@ function ReactFiberScheduler(config) {
     isAsync
       ? ((isAsync = root.finishedWork),
         null !== isAsync
-          ? completeRoot(root, isAsync, expirationTime)
+          ? completeRoot$$1(root, isAsync, expirationTime)
           : ((root.finishedWork = null),
             (isAsync = renderRoot(root, expirationTime, !0)),
             null !== isAsync &&
               (shouldYield()
                 ? (root.finishedWork = isAsync)
-                : completeRoot(root, isAsync, expirationTime))))
+                : completeRoot$$1(root, isAsync, expirationTime))))
       : ((isAsync = root.finishedWork),
         null !== isAsync
-          ? completeRoot(root, isAsync, expirationTime)
+          ? completeRoot$$1(root, isAsync, expirationTime)
           : ((root.finishedWork = null),
             (isAsync = renderRoot(root, expirationTime, !1)),
-            null !== isAsync && completeRoot(root, isAsync, expirationTime)));
+            null !== isAsync &&
+              completeRoot$$1(root, isAsync, expirationTime)));
     isRendering = !1;
   }
-  function completeRoot(root, finishedWork, expirationTime) {
+  function completeRoot$$1(root, finishedWork, expirationTime) {
     var firstBatch = root.firstBatch;
     if (
       null !== firstBatch &&
@@ -5909,14 +5833,22 @@ var nextReactTag = 2,
         return {
           node: keepChildren
             ? null !== updatePayload
-              ? FabricUIManager.cloneNodeWithNewProps(type, updatePayload)
-              : FabricUIManager.cloneNode(type)
+              ? FabricUIManager.cloneNodeWithNewProps(
+                  type,
+                  updatePayload,
+                  internalInstanceHandle
+                )
+              : FabricUIManager.cloneNode(type, internalInstanceHandle)
             : null !== updatePayload
               ? FabricUIManager.cloneNodeWithNewChildrenAndProps(
                   type,
-                  updatePayload
+                  updatePayload,
+                  internalInstanceHandle
                 )
-              : FabricUIManager.cloneNodeWithNewChildren(type),
+              : FabricUIManager.cloneNodeWithNewChildren(
+                  type,
+                  internalInstanceHandle
+                ),
           canonical: instance.canonical
         };
       },
