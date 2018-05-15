@@ -6,7 +6,9 @@ daysUntilClose: 30
 exemptLabels:
   - Good first issue
   - For Discussion
-  - Core Team 
+  - Core Team
+  - "Help Wanted :octocat:"
+  - ":warning:Regression"
 # Label to use when marking an issue as stale
 staleLabel: Stale 
 # Comment to post when marking an issue as stale. Set to `false` to disable
