@@ -8,7 +8,7 @@
  * @flow
  */
 
-import * as React from 'react';
+import React from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
