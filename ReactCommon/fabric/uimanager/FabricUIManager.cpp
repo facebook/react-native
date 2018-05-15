@@ -66,6 +66,14 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "View";
   }
 
+  // Other temporary fallback until the native components are implemented.
+  if (
+    viewName == "ActivityIndicatorView" ||
+    viewName == "ShimmeringView"
+  ) {
+    return "View";
+  }
+
   return viewName;
 }
 
