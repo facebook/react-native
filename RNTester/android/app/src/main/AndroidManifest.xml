@@ -18,7 +18,7 @@
 
   <uses-sdk
     android:minSdkVersion="16"
-    android:targetSdkVersion="23" />
+    android:targetSdkVersion="27" />
 
   <!--
   android:icon is used to display launcher icon on mobile devices.
