@@ -44,15 +44,15 @@ aliases:
 
   - &restore-cache-apt
     keys:
-      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
-      # Fallback in case checksum fails
-      - v1-apt-{{ arch }}-{{ .Branch }}-
+      - v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
       # Fallback in case this is a first-time run on a fork
-      - v1-apt-{{ arch }}-master-
+      # You always want to match checksum, if it fails,
+      # proceed with a fresh install.
+      - v1-apt-master-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
   - &save-cache-apt
     paths:
       - ~/vendor/apt
-    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
+    key: v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
 
   - &restore-cache-ndk
     keys:
