@@ -36,8 +36,7 @@ type ResponseHandlers = $ReadOnly<{|
 
 type Props = $ReadOnly<{
   ...TextProps,
-  // $FlowFixMe - Typing ReactNativeComponent revealed errors
-  forwardedRef: ?React.Ref<NativeComponent<TextProps>>,
+  forwardedRef: ?React.Ref<'RCTText' | 'RCTVirtualText'>,
 }>;
 
 type State = {|
@@ -140,7 +139,6 @@ class TouchableText extends React.Component<Props, State> {
       <TextAncestor.Consumer>
         {hasTextAncestor =>
           hasTextAncestor ? (
-            // $FlowFixMe - Typing ReactNativeComponent revealed errors
             <RCTVirtualText {...props} ref={props.forwardedRef} />
           ) : (
             <TextAncestor.Provider value={true}>
