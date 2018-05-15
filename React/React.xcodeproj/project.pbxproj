@@ -1200,6 +1200,10 @@
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
+		A2C986DF208C7DF700C0D579 /* JSWeak.h in Headers */ = {isa = PBXBuildFile; fileRef = A2E0E69F208AA9EC007044C1 /* JSWeak.h */; };
+		A2C986E0208C7DF900C0D579 /* JSWeak.h in Headers */ = {isa = PBXBuildFile; fileRef = A2E0E69F208AA9EC007044C1 /* JSWeak.h */; };
+		A2C986E1208C7E9C00C0D579 /* JSWeak.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = A2E0E69F208AA9EC007044C1 /* JSWeak.h */; };
+		A2C986E2208C7EA800C0D579 /* JSWeak.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = A2E0E69F208AA9EC007044C1 /* JSWeak.h */; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
@@ -1571,6 +1575,7 @@
 			dstPath = include/jschelpers;
 			dstSubfolderSpec = 16;
 			files = (
+				A2C986E2208C7EA800C0D579 /* JSWeak.h in Copy Headers */,
 				3DA982601E5B1089004F2374 /* JSCHelpers.h in Copy Headers */,
 				3DA982611E5B1089004F2374 /* noncopyable.h in Copy Headers */,
 				3DA982621E5B1089004F2374 /* Unicode.h in Copy Headers */,
@@ -1799,6 +1804,7 @@
 			dstPath = include/jschelpers;
 			dstSubfolderSpec = 16;
 			files = (
+				A2C986E1208C7E9C00C0D579 /* JSWeak.h in Copy Headers */,
 				3DA9825A1E5B1079004F2374 /* JavaScriptCore.h in Copy Headers */,
 				3DA9825B1E5B1079004F2374 /* JSCHelpers.h in Copy Headers */,
 				3DA9825C1E5B1079004F2374 /* JSCWrapper.h in Copy Headers */,
@@ -2302,6 +2308,7 @@
 		9936F3361F5F2F480010BF04 /* PrivateDataBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrivateDataBase.h; path = privatedata/PrivateDataBase.h; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
+		A2E0E69F208AA9EC007044C1 /* JSWeak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSWeak.h; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		ACDD3FDA1BC7430D00E7DE33 /* RCTBorderStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderStyle.h; sourceTree = "<group>"; };
@@ -2760,6 +2767,7 @@
 		3D4A621D1DDD3985001F41B4 /* jschelpers */ = {
 			isa = PBXGroup;
 			children = (
+				A2E0E69F208AA9EC007044C1 /* JSWeak.h */,
 				19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */,
 				3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */,
 				3D92B1071E0369AD0018521A /* JSCHelpers.cpp */,
@@ -3376,6 +3384,7 @@
 			files = (
 				19F61C041E8495FF00571D81 /* JSCHelpers.h in Headers */,
 				19F61C051E8495FF00571D81 /* noncopyable.h in Headers */,
+				A2C986E0208C7DF900C0D579 /* JSWeak.h in Headers */,
 				19F61C061E8495FF00571D81 /* Unicode.h in Headers */,
 				19F61C071E8495FF00571D81 /* Value.h in Headers */,
 				3D3030251DF8295E00D6DDAE /* JavaScriptCore.h in Headers */,
@@ -3423,6 +3432,7 @@
 			files = (
 				13EBC6821E28733C00880AC5 /* Value.h in Headers */,
 				13EBC6811E28733C00880AC5 /* Unicode.h in Headers */,
+				A2C986DF208C7DF700C0D579 /* JSWeak.h in Headers */,
 				13EBC6801E28733C00880AC5 /* noncopyable.h in Headers */,
 				13EBC67E1E28726000880AC5 /* JSCHelpers.h in Headers */,
 				3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */,
