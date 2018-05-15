@@ -1,25 +1,16 @@
 # inspired by https://github.com/Originate/guide/blob/master/android/guide/Continuous%20Integration.md
 
-# SDK Built Tools revision, per http://facebook.github.io/react-native/docs/getting-started.html
-ANDROID_SDK_BUILD_TOOLS_REVISION=23.0.1
-# API Level we build with
-ANDROID_SDK_BUILD_API_LEVEL="23"
-# Minimum API Level we target, used for emulator image
-ANDROID_SDK_TARGET_API_LEVEL="19"
-# Emulator name
-AVD_NAME="testAVD"
+source "scripts/.tests.env"
 
-function getAndroidSDK {
-  export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
+function getAndroidPackages {
+  export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools.bin:$PATH"
 
   DEPS="$ANDROID_HOME/installed-dependencies"
 
-  if [ ! -e $DEPS ]; then
-    echo "Installing Android API level $ANDROID_SDK_TARGET_API_LEVEL, Google APIs, ARM EABI v7a system image..."
-    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;armeabi-v7a"
-# x86 image requires hardware acceleration, which is not supported when running within the CircleCI Docker image
-#    echo "Installing Android API level $ANDROID_SDK_TARGET_API_LEVEL, Google APIs, Intel x86 Atom system image..."
-#    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;x86"
+  # Package names can be obtained using `sdkmanager --list`
+  if [ ! -e $DEPS ] || [ ! $CI ]; then
+    echo "Installing Android API level $ANDROID_SDK_TARGET_API_LEVEL, Google APIs, $AVD_ABI system image..."
+    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
     echo "Installing build SDK for Android API level $ANDROID_SDK_BUILD_API_LEVEL..."
     sdkmanager "platforms;android-$ANDROID_SDK_BUILD_API_LEVEL"
     echo "Installing target SDK for Android API level $ANDROID_SDK_TARGET_API_LEVEL..."
@@ -30,7 +21,7 @@ function getAndroidSDK {
     sdkmanager "add-ons;addon-google_apis-google-$ANDROID_SDK_BUILD_API_LEVEL"
     echo "Installing Android Support Repository"
     sdkmanager "extras;android;m2repository"
-    touch $DEPS
+    $CI && touch $DEPS
   fi
 }
 
@@ -50,13 +41,21 @@ function getAndroidNDK {
 }
 
 function createAVD {
-  echo no | avdmanager create avd --name $AVD_NAME --force --package "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;armeabi-v7a" --tag google_apis --abi armeabi-v7a
+  AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
+  echo "Creating AVD with packages $AVD_PACKAGES"
+  echo no | avdmanager create avd --name $AVD_NAME --force --package $AVD_PACKAGES --tag google_apis --abi $AVD_ABI
 }
 
 function launchAVD {
+  export PATH="$ANDROID_HOME/emulator:$PATH"
+
   # The AVD name here should match the one created in createAVD
-  # emulator64-arm -avd $AVD_NAME -no-audio -no-window -no-boot-anim -gpu off
-  emulator -avd $AVD_NAME -no-audio -no-window
+  if [ $CI ]
+  then
+    emulator -avd $AVD_NAME -no-audio -no-window
+  else
+    emulator -avd $AVD_NAME
+  fi
 }
 
 function waitForAVD {
