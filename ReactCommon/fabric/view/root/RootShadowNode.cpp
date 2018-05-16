@@ -6,7 +6,8 @@
  */
 
 #include "RootShadowNode.h"
-#include "conversions.h"
+
+#include <fabric/view/conversions.h>
 
 namespace facebook {
 namespace react {

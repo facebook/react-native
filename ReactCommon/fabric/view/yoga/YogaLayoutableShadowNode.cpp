@@ -13,9 +13,8 @@
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/view/conversions.h>
 #include <yoga/Yoga.h>
-
-#include "conversions.h"
 
 namespace facebook {
 namespace react {

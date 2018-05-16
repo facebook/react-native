@@ -183,7 +183,7 @@ Pod::Spec.new do |s|
     ss.subspec "textlayoutmanager" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/textlayoutmanager/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/textlayoutmanager/**/*.{cpp,h,mm}"
       sss.exclude_files        = "**/tests/*"
       sss.header_dir           = "fabric/textlayoutmanager"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
