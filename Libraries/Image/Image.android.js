@@ -239,7 +239,7 @@ const Image = createReactClass({
     let sources;
     if (source.uri) {
       const {width, height} = source;
-      style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      style = flattenStyle(['width' in source && { width }, 'height' in source && { height }, styles.base, this.props.style].filter(Boolean)) || {};
       sources = [{uri: source.uri}];
     } else {
       style = flattenStyle([styles.base, this.props.style]);

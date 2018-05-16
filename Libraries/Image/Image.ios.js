@@ -97,7 +97,7 @@ const Image = createReactClass({
     } else {
       const {width, height, uri} = source;
       style =
-        flattenStyle([{width, height}, styles.base, this.props.style]) || {};
+        flattenStyle(['width' in source && { width }, 'height' in source && { height }, styles.base, this.props.style].filter(Boolean)) || {};
       sources = [source];
 
       if (uri === '') {
@@ -107,7 +107,7 @@ const Image = createReactClass({
 
     const resizeMode =
       this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+    const tintColor = this.props.tintColor || (style || {}).tintColor; // Workaround for flow bug t7737108
 
     if (this.props.src) {
       console.warn(
