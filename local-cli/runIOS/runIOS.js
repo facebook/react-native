@@ -34,7 +34,6 @@ const getBuildPath = function(projectName, isWorkspace, scheme, configuration = 
 
   let path = /target React:(.|\n)*?target (.*?):(.|\n)*? BUILT_PRODUCTS_DIR = (.*?)\n/m.exec(output);
   let match = path[4];
-  console.log(match);
 
   return `${match}/${appName}.app`;
 };
