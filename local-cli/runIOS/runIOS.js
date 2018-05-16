@@ -16,7 +16,8 @@ const findXcodeProject = require('./findXcodeProject');
 const findReactNativeScripts = require('../util/findReactNativeScripts');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
-const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
+const derivedDataPath = 'build';
+const getBuildPath = function(projectName, isWorkspace, scheme, configuration = 'Debug', appName, isDevice) {
   let device;
 
   if (isDevice) {
@@ -27,7 +28,15 @@ const getBuildPath = function(configuration = 'Debug', appName, isDevice) {
     device = 'iphonesimulator';
   }
 
-  return `build/Build/Products/${configuration}-${device}/${appName}.app`;
+  let command = `xcodebuild -${isWorkspace ? 'workspace' : 'project'} ${projectName} -scheme ${scheme} -configuration ${configuration} -derivedDataPath ${derivedDataPath} -sdk ${device} -showBuildSettings`;
+  let settings = child_process.execSync(command);
+  let output = settings.toString('utf8');
+
+  let path = /target React:(.|\n)*?target (.*?):(.|\n)*? BUILT_PRODUCTS_DIR = (.*?)\n/m.exec(output);
+  let match = path[4];
+  console.log(match);
+
+  return `${match}/${appName}.app`;
 };
 const xcprettyAvailable = function() {
   try {
@@ -195,7 +204,7 @@ function runOnSimulator(xcodeProject, args, scheme) {
     if (!appName) {
       appName = scheme;
     }
-    let appPath = getBuildPath(args.configuration, appName);
+    let appPath = getBuildPath(xcodeProject.name, xcodeProject.isWorkspace, scheme, args.configuration, appName, false);
     console.log(`Installing ${appPath}`);
     child_process.spawnSync('xcrun', ['simctl', 'install', udid, appPath], {
       stdio: 'inherit',
@@ -239,7 +248,7 @@ function runOnDevice(
     }
     const iosDeployInstallArgs = [
       '--bundle',
-      getBuildPath(configuration, appName, true),
+      getBuildPath(xcodeProject.name, xcodeProject.isWorkspace, scheme, configuration, appName, true),
       '--id',
       selectedDevice.udid,
       '--justlaunch',
@@ -283,7 +292,7 @@ function buildProject(
       '-destination',
       `id=${udid}`,
       '-derivedDataPath',
-      'build',
+      derivedDataPath,
     ];
     console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
     let xcpretty;
