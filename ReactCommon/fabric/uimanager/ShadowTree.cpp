@@ -69,8 +69,7 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
   calculateMutationInstructions(
     instructions,
     oldRootShadowNode,
-    oldRootShadowNode->ShadowNode::getChildren(),
-    newRootShadowNode->ShadowNode::getChildren()
+    newRootShadowNode
   );
 
   if (commit(newRootShadowNode)) {
