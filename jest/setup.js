@@ -234,6 +234,7 @@ const mockNativeModules = {
     scriptURL: null,
   },
   StatusBarManager: {
+    HEIGHT: 42,
     setColor: jest.fn(),
     setStyle: jest.fn(),
     setHidden: jest.fn(),
