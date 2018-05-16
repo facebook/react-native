@@ -27,6 +27,8 @@ import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
@@ -484,6 +486,28 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setMessagingEnabled(WebView view, boolean enabled) {
     ((ReactWebView) view).setMessagingEnabled(enabled);
   }
+    
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(WebView view, final boolean enabled) {
+    view.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        if (enabled)
+          return false;
+        return event.getAction() == MotionEvent.ACTION_MOVE;
+      }
+    });
+  }
+
+  @ReactProp(name = "verticalScrollBarEnabled", defaultBoolean = true)
+  public void setVerticalScrollBarEnabled(WebView view, boolean enabled) {
+    view.setVerticalScrollBarEnabled(enabled);
+  }
+
+  @ReactProp(name = "horizontalScrollBarEnabled", defaultBoolean = true)
+  public void setHorizontalScrollBarEnabled(WebView view, boolean enabled) {
+    view.setHorizontalScrollBarEnabled(enabled);
+  }
 
   @ReactProp(name = "source")
   public void setSource(WebView view, @Nullable ReadableMap source) {
@@ -492,9 +516,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         String html = source.getString("html");
         if (source.hasKey("baseUrl")) {
           view.loadDataWithBaseURL(
-              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
+              source.getString("baseUrl"), html + ";charset=utf-8", HTML_MIME_TYPE, HTML_ENCODING, null);
         } else {
-          view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+          view.loadData(html, HTML_MIME_TYPE + ";charset=utf-8", HTML_ENCODING);
         }
         return;
       }
