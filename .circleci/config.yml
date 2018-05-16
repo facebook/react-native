@@ -22,12 +22,11 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/android-setup.sh" }}
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
+      - v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
 
   - &restore-cache-gradle
     keys:
