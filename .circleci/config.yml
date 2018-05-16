@@ -3,7 +3,6 @@ aliases:
   - &restore-cache-yarn
     keys:
       - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
-      - v1-yarn-{{ arch }}-
   - &save-cache-yarn
     paths:
       - node_modules
