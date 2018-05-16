@@ -1,13 +1,20 @@
 aliases:
   # Cache Management
-  - &restore-cache-yarn
+  - &restore-yarn-cache
     keys:
-      - v2-yarn-{{ arch }}-{{ checksum "package.json" }}
-  - &save-cache-yarn
+      - v1-yarn-cache-{{ arch }}
+  - &save-yarn-cache
+    paths:
+      - ~/.cache/yarn
+    key: v1-yarn-cache-{{ arch }}
+
+  - &restore-node-modules
+    keys:
+      - v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
+  - &save-node-modules
     paths:
       - node_modules
-      - ~/.cache/yarn
-    key: v2-yarn-{{ arch }}-{{ checksum "package.json" }}
+    key: v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
@@ -320,9 +327,11 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-node-modules
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
+      - save-cache: *save-node-modules
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -449,9 +458,11 @@ jobs:
       - run: *gradle-download-deps
       - save-cache: *save-cache-gradle-downloads
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-node-modules
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
+      - save-cache: *save-node-modules
 
       - run:
           name: Publish React Native Package
