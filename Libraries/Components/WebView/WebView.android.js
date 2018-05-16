@@ -62,6 +62,9 @@ class WebView extends React.Component {
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
+    scrollEnabled: PropTypes.bool,
+    horizontalScrollBarEnabled: PropTypes.bool,
+    verticalScrollBarEnabled: PropTypes.bool,
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
@@ -318,6 +321,9 @@ class WebView extends React.Component {
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
+        scrollEnabled={this.props.scrollEnabled}
+        verticalScrollBarEnabled={this.props.verticalScrollBarEnabled}
+        horizontalScrollBarEnabled={this.props.horizontalScrollBarEnabled}
         scalesPageToFit={this.props.scalesPageToFit}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
