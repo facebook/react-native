@@ -106,8 +106,8 @@ const Image = createReactClass({
     }
 
     const resizeMode =
-      this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    const tintColor = this.props.tintColor || (style || {}).tintColor; // Workaround for flow bug t7737108
+      (style || {}).resizeMode || this.props.resizeMode || 'cover'; // Workaround for flow bug t7737108
+    const tintColor = (style || {}).tintColor || this.props.tintColor; // Workaround for flow bug t7737108
 
     if (this.props.src) {
       console.warn(
