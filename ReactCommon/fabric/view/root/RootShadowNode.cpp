@@ -6,6 +6,7 @@
  */
 
 #include "RootShadowNode.h"
+#include "conversions.h"
 
 namespace facebook {
 namespace react {
@@ -17,6 +18,11 @@ ComponentName RootShadowNode::getComponentName() const {
 void RootShadowNode::layout() {
   ensureUnsealed();
   layout(getProps()->layoutContext);
+
+  // This is the rare place where shadow node must layout (set `layoutMetrics`)
+  // itself because there is no a parent node which usually should do it.
+  YGNode *yogaNode = const_cast<YGNode *>(yogaNode_.get());
+  setLayoutMetrics(layoutMetricsFromYogaNode(*yogaNode));
 }
 
 } // namespace react

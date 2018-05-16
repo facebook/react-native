@@ -82,9 +82,10 @@ public:
   
   void layoutChildren(LayoutContext layoutContext) override;
 
-private:
+protected:
   mutable SharedYogaNode yogaNode_;
 
+private:
   static SharedYogaConfig suitableYogaConfig();
   static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children);
   static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
