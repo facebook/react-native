@@ -75,6 +75,19 @@ inline void fromDynamic(const folly::dynamic &value, Size &result) {
   abort();
 }
 
+inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
+  if (value.isArray()) {
+    result = EdgeInsets {
+      (Float)value[0].asDouble(),
+      (Float)value[1].asDouble(),
+      (Float)value[2].asDouble(),
+      (Float)value[3].asDouble()
+    };
+    return;
+  }
+  abort();
+}
+
 inline std::string toString(const Point &point) {
   return "{" + folly::to<std::string>(point.x) + ", " + folly::to<std::string>(point.y) + "}";
 }
