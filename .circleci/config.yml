@@ -22,12 +22,12 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/android-setup.sh" }}
       - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-gradle
     keys:
@@ -56,12 +56,12 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/android-setup.sh" }}
       - v3-android-ndk-{{ arch }}-r10e-
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-buck
     keys:
@@ -117,7 +117,7 @@ aliases:
   # Dependency Management
   - &install-ndk
     name: Install Android NDK
-    command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
+    command: source scripts/android-setup.sh && getAndroidNDK
 
   - &yarn
     |
@@ -174,7 +174,7 @@ aliases:
 
   - &install-android-packages
     name: Install Android SDK Packages
-    command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    command: source scripts/android-setup.sh && getAndroidPackages
 
   - &install-android-build-dependencies
     name: Install Android Build Dependencies
@@ -223,16 +223,16 @@ aliases:
 
   - &create-avd
     name: Create Android Virtual Device
-    command: source scripts/circle-ci-android-setup.sh && createAVD
+    command: source scripts/android-setup.sh && createAVD
 
   - &launch-avd
     name: Launch Android Virtual Device in Background
-    command: source scripts/circle-ci-android-setup.sh && launchAVD
+    command: source scripts/android-setup.sh && launchAVD
     background: true
 
   - &wait-for-avd
     name: Wait for Android Virtual Device
-    command: source scripts/circle-ci-android-setup.sh && waitForAVD
+    command: source scripts/android-setup.sh && waitForAVD
 
   - &build-js-bundle
     name: Build JavaScript Bundle
@@ -253,7 +253,7 @@ aliases:
       if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
         echo "JavaScript bundle missing, cannot run instrumentation tests. Verify build-js-bundle step completed successfully."; exit 1;
       fi
-      source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+      source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
   - &collect-android-test-results
     name: Collect Test Results
