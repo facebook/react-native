@@ -35,6 +35,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -411,7 +412,9 @@ public class FabricUIManager implements UIManager {
   private ReactShadowNode createRootShadowNode(int rootTag, ThemedReactContext themedReactContext) {
     ReactShadowNode rootNode = new ReactShadowNodeImpl();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
-    // TODO: setLayoutDirection for the rootNode
+    if (sharedI18nUtilInstance.isRTL(themedReactContext)) {
+      rootNode.setLayoutDirection(YogaDirection.RTL);
+    }
     rootNode.setViewClassName("Root");
     rootNode.setReactTag(rootTag);
     rootNode.setThemedContext(themedReactContext);
