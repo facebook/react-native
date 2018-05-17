@@ -156,7 +156,7 @@
     "create-react-class": "^15.6.3",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
-    "envinfo": "^3.0.0",
+    "envinfo": "^5.7.0",
     "errorhandler": "^1.5.0",
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
