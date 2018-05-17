@@ -4,8 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -19,7 +18,7 @@ const last = require('lodash').last;
 const path = require('path');
 
 const project = xcode.project(
-  path.join(__dirname, '../../__fixtures__/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj'),
 );
 
 describe('ios::removeProjectFromLibraries', () => {
@@ -28,7 +27,7 @@ describe('ios::removeProjectFromLibraries', () => {
 
     addProjectToLibraries(
       project.pbxGroupByName('Libraries'),
-      new PbxFile('fakePath')
+      new PbxFile('fakePath'),
     );
   });
 

@@ -23,6 +23,7 @@
 #import "RCTUtils.h"
 
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
+NSString *const RCTJavaScriptWillStartExecutingNotification = @"RCTJavaScriptWillStartExecutingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
@@ -30,6 +31,7 @@ NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotificat
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
+NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
 NSArray<Class> *RCTGetModuleClasses(void)
@@ -362,14 +364,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
   [self.batchedBridge enqueueCallback:cbID args:args];
-}
-
-- (JSValue *)callFunctionOnModule:(NSString *)module
-                           method:(NSString *)method
-                        arguments:(NSArray *)arguments
-                            error:(NSError **)error
-{
-  return [self.batchedBridge callFunctionOnModule:module method:method arguments:arguments error:error];
 }
 
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path

@@ -1,12 +1,12 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
+#include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
@@ -21,9 +21,9 @@ struct YGStyle {
   YGWrap flexWrap;
   YGOverflow overflow;
   YGDisplay display;
-  float flex;
-  float flexGrow;
-  float flexShrink;
+  YGFloatOptional flex;
+  YGFloatOptional flexGrow;
+  YGFloatOptional flexShrink;
   YGValue flexBasis;
   std::array<YGValue, YGEdgeCount> margin;
   std::array<YGValue, YGEdgeCount> position;
@@ -32,7 +32,7 @@ struct YGStyle {
   std::array<YGValue, 2> dimensions;
   std::array<YGValue, 2> minDimensions;
   std::array<YGValue, 2> maxDimensions;
-  float aspectRatio;
+  YGFloatOptional aspectRatio;
 
   YGStyle();
   // Yoga specific properties, not compatible with flexbox specification

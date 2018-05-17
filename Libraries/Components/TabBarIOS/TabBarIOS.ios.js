@@ -4,25 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TabBarIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var React = require('React');
+const ColorPropType = require('ColorPropType');
+const React = require('React');
 const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var TabBarItemIOS = require('TabBarItemIOS');
+const StyleSheet = require('StyleSheet');
+const TabBarItemIOS = require('TabBarItemIOS');
 const ViewPropTypes = require('ViewPropTypes');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
-class TabBarIOS extends React.Component<ViewProps & {
-  style?: StyleObj,
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  style?: DangerouslyImpreciseStyleProp,
   unselectedTintColor?: string,
   tintColor?: string,
   unselectedItemTintColor?: string,
@@ -31,7 +33,9 @@ class TabBarIOS extends React.Component<ViewProps & {
   translucent?: boolean,
   itemPositioning?: 'fill' | 'center' | 'auto',
   children: React.Node,
-}> {
+|}>;
+
+class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
   static propTypes = {
@@ -92,12 +96,12 @@ class TabBarIOS extends React.Component<ViewProps & {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tabGroup: {
     flex: 1,
-  }
+  },
 });
 
-var RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
+const RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

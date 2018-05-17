@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Position
+ * @format
  */
 
 'use strict';
 
-var PooledClass = require('PooledClass');
+const PooledClass = require('PooledClass');
 
-var twoArgumentPooler = PooledClass.twoArgumentPooler;
+const twoArgumentPooler = PooledClass.twoArgumentPooler;
 
 /**
  * Position does not expose methods for construction via an `HTMLDOMElement`,

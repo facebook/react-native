@@ -18,6 +18,7 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -72,7 +73,11 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   T mutableCopy();
 
+  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
+
   T mutableCopyWithNewChildren();
+
+  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -99,6 +104,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
+
+  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
@@ -132,9 +139,9 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void setReactTag(int reactTag);
 
-  T getRootNode();
+  int getRootTag();
 
-  void setRootNode(T rootNode);
+  void setRootTag(int rootTag);
 
   void setViewClassName(String viewClassName);
 
@@ -187,6 +194,11 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   boolean isDescendantOf(T ancestorNode);
 
+  /**
+   * @return a {@link String} representation of the Yoga hierarchy of this {@link ReactShadowNode}
+   */
+  String getHierarchyInfo();
+
   /*
    * In some cases we need a way to specify some environmental data to shadow node
    * to improve layout (or do something similar), so {@code localData} serves these needs.
@@ -197,7 +209,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * Use  {@link UIManagerModule#setViewLocalData} to set this property
    * (to provide local/environmental data for a shadow node) from the main thread.
    */
-  public void setLocalData(Object data);
+  void setLocalData(Object data);
 
   /**
    * Returns the offset within the native children owned by all layout-only nodes in the subtree
@@ -347,4 +359,18 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  /**
+   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
+   * {@link ReactShadowNode}.
+   */
+  List<ReactShadowNode> getChildrenList();
+
+  /**
+   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
+   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
+   */
+  @Nullable ReactShadowNode getOriginalReactShadowNode();
+
+  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
 }

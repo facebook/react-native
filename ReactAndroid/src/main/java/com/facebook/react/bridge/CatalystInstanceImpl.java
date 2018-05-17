@@ -26,6 +26,7 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -79,6 +80,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;
+  private final JSIModuleRegistry mJSIModuleRegistry = new JSIModuleRegistry();
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
@@ -98,8 +100,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
-      final BridgeListener bridgeListener) {
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
@@ -125,9 +126,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
-    if (bridgeListener != null) {
-      bridgeListener.onBridgeStarted(this);
-    }
   }
 
   private static class BridgeCallback implements ReactCallback {
@@ -223,10 +221,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
+  /* package */ void loadScriptFromDeltaBundle(
+    String sourceURL,
+    NativeDeltaClient deltaClient,
+    boolean loadSynchronously) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromDeltaBundle(sourceURL, deltaClient, loadSynchronously);
+  }
+
   private native void jniSetSourceURL(String sourceURL);
   private native void jniRegisterSegment(int segmentId, String path);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+  private native void jniLoadScriptFromDeltaBundle(String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {
@@ -456,6 +463,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
+  @Override
+  public void addJSIModules(List<JSIModuleHolder> jsiModules) {
+    mJSIModuleRegistry.registerModules(jsiModules);
+  }
+
+  @Override
+  public <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface) {
+    return mJSIModuleRegistry.getModule(jsiModuleInterface);
+  }
+
   private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
@@ -555,7 +572,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-    private @Nullable BridgeListener mBridgeListener;
 
 
     public Builder setReactQueueConfigurationSpec(
@@ -585,20 +601,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setBridgeListener(
-      BridgeListener listener) {
-      mBridgeListener = listener;
-      return this;
-    }
-
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
           Assertions.assertNotNull(mReactQueueConfigurationSpec),
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mNativeModuleCallExceptionHandler),
-          mBridgeListener);
+          Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
     }
   }
 }

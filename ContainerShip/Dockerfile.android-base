@@ -1,11 +1,26 @@
+# React Native Base Android Development Environment
+#
+# This image provides a base Android development environment for React Native,
+# including, but not limited to, the Android SDK, Android NDK, Node, and BUCK.
+# These are required in order to run React Native's Android unit and integration
+# tests.
+#
+# This image is not currently built automatically as part of React Native's CI
+# infrastructure. It should not be necessary to rebuild this image while the
+# Android dependencies (Android SDK version, build tools version, etc) remain
+# equal. The operations performed to build this image are those that tend to
+# remain stable across commits in any given React Native release.
+
 FROM library/ubuntu:16.04
+
+LABEL Description="This image provides a base Android development environment for React Native, and may be used to run tests." maintainer "Héctor Ramos <hector@fb.com>"
 
 # set default build arguments
 ARG ANDROID_TOOLS_VERSION=25.2.5
-ARG BUCK_VERSION=v2017.11.16.01
+ARG BUCK_VERSION=v2018.02.16.01
 ARG NDK_VERSION=10e
-ARG NODE_VERSION=6.2.0
-ARG WATCHMAN_VERSION=4.7.0
+ARG NODE_VERSION=8.10.0
+ARG WATCHMAN_VERSION=4.9.0
 
 # set default environment variables
 ENV ADB_INSTALL_TIMEOUT=10
@@ -33,17 +48,6 @@ WORKDIR /opt/buck
 
 # build buck
 RUN ant
-
-# download watchman
-RUN git clone https://github.com/facebook/watchman.git /opt/watchman
-WORKDIR /opt/watchman
-RUN git checkout v$WATCHMAN_VERSION
-
-# build watchman
-RUN ./autogen.sh
-RUN ./configure
-RUN make
-RUN make install
 
 # Full reference at https://dl.google.com/android/repository/repository2-1.xml
 # download and unpack android

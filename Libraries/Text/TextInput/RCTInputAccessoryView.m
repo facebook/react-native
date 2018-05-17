@@ -13,56 +13,66 @@
 
 #import "RCTInputAccessoryViewContent.h"
 
+@interface RCTInputAccessoryView()
+
+// Overriding `inputAccessoryView` to `readwrite`.
+@property (nonatomic, readwrite, retain) UIView *inputAccessoryView;
+
+@end
+
 @implementation RCTInputAccessoryView
 {
-  BOOL _contentShouldBeFirstResponder;
+  BOOL _shouldBecomeFirstResponder;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if (self = [super init]) {
-    _content = [RCTInputAccessoryViewContent new];
+    _inputAccessoryView = [RCTInputAccessoryViewContent new];
     RCTTouchHandler *const touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
-    [touchHandler attachToView:_content.inputAccessoryView];
-    [self addSubview:_content];
+    [touchHandler attachToView:_inputAccessoryView];
   }
   return self;
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return true;
+}
+
 - (void)reactSetFrame:(CGRect)frame
 {
-  [_content.inputAccessoryView setFrame:frame];
-  [_content.contentView setFrame:frame];
+  [_inputAccessoryView setFrame:frame];
 
-  if (_contentShouldBeFirstResponder) {
-    _contentShouldBeFirstResponder = NO;
-    [_content becomeFirstResponder];
+  if (_shouldBecomeFirstResponder) {
+    _shouldBecomeFirstResponder = NO;
+    [self becomeFirstResponder];
   }
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
 {
   [super insertReactSubview:subview atIndex:index];
-  [_content insertReactSubview:subview atIndex:index];
+  [_inputAccessoryView insertReactSubview:subview atIndex:index];
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
-  [_content removeReactSubview:subview];
+  [_inputAccessoryView removeReactSubview:subview];
 }
 
 - (void)didUpdateReactSubviews
 {
-  // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`
+  // Do nothing, as subviews are managed by `insertReactSubview:atIndex:`.
 }
 
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   // If the accessory view is not linked to a text input via nativeID, assume it is
-  // a standalone component that should get focus whenever it is rendered
+  // a standalone component that should get focus whenever it is rendered.
   if (![changedProps containsObject:@"nativeID"] && !self.nativeID) {
-    _contentShouldBeFirstResponder = YES;
+    _shouldBecomeFirstResponder = YES;
   }
 }
 

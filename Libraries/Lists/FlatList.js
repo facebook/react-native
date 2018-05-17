@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule FlatList
  * @flow
  * @format
  */
@@ -18,7 +17,7 @@ const ListView = require('ListView');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -96,7 +95,7 @@ type OptionalProps<ItemT> = {
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: StyleObj,
+  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -347,6 +346,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewPosition?: number,
   }) {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToIndex(params);
     }
   }
@@ -363,6 +363,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewPosition?: number,
   }) {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToItem(params);
     }
   }
@@ -374,6 +375,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToOffset(params);
     }
   }
@@ -385,6 +387,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   recordInteraction() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       this._listRef.recordInteraction();
     }
   }
@@ -396,6 +399,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   flashScrollIndicators() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       this._listRef.flashScrollIndicators();
     }
   }
@@ -405,12 +409,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   getScrollResponder() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollResponder();
     }
   }
 
   getScrollableNode() {
     if (this._listRef) {
+      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollableNode();
     }
   }
@@ -473,7 +479,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _hasWarnedLegacy = false;
-  _listRef: null | VirtualizedList | ListView;
+  _listRef: null | VirtualizedList | ListView | MetroListView;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
   _captureRef = ref => {

@@ -7,8 +7,7 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.BridgeListener;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.JSIModulesProvider;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -45,12 +44,11 @@ public class ReactInstanceManagerBuilder {
   private @Nullable RedBoxHandler mRedBoxHandler;
   private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
-  private boolean mDelayViewManagerClassLoadsEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
-  private @Nullable BridgeListener mBridgeListener;
+  private @Nullable JSIModulesProvider mJSIModulesProvider;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -65,9 +63,9 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setBridgeListener(
-    @Nullable BridgeListener listener) {
-    mBridgeListener = listener;
+  public ReactInstanceManagerBuilder setJSIModulesProvider(
+    @Nullable JSIModulesProvider jsiModulesProvider) {
+    mJSIModulesProvider = jsiModulesProvider;
     return this;
   }
 
@@ -210,12 +208,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setDelayViewManagerClassLoadsEnabled(
-      boolean delayViewManagerClassLoadsEnabled) {
-    mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setDevBundleDownloadListener(
     @Nullable DevBundleDownloadListener listener) {
     mDevBundleDownloadListener = listener;
@@ -286,10 +278,9 @@ public class ReactInstanceManagerBuilder {
         mRedBoxHandler,
         mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
-        mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-        mBridgeListener);
+        mJSIModulesProvider);
   }
 }

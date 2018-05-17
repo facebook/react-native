@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
@@ -73,6 +74,7 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
   private boolean mLayoutAnimationEnabled;
+  private PopupMenu mPopupMenu;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     this(viewManagers, new RootViewManager());
@@ -730,18 +732,27 @@ public class NativeViewHierarchyManager {
       error.invoke("Can't display popup. Could not find view with tag " + reactTag);
       return;
     }
-    PopupMenu popupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
+    mPopupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
 
-    Menu menu = popupMenu.getMenu();
+    Menu menu = mPopupMenu.getMenu();
     for (int i = 0; i < items.size(); i++) {
       menu.add(Menu.NONE, Menu.NONE, i, items.getString(i));
     }
 
     PopupMenuCallbackHandler handler = new PopupMenuCallbackHandler(success);
-    popupMenu.setOnMenuItemClickListener(handler);
-    popupMenu.setOnDismissListener(handler);
+    mPopupMenu.setOnMenuItemClickListener(handler);
+    mPopupMenu.setOnDismissListener(handler);
 
-    popupMenu.show();
+    mPopupMenu.show();
+  }
+
+  /**
+   * Dismiss the last opened PopupMenu {@link PopupMenu}.
+   */
+  public void dismissPopupMenu() {
+    if (mPopupMenu != null) {
+      mPopupMenu.dismiss();
+    }
   }
 
   private static class PopupMenuCallbackHandler implements PopupMenu.OnMenuItemClickListener,

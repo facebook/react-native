@@ -40,12 +40,12 @@ struct YGCollectFlexItemsRowValues {
   float sizeConsumedOnCurrentLine;
   float totalFlexGrowFactors;
   float totalFlexShrinkScaledFactors;
-  float endOfLineIndex;
+  uint32_t endOfLineIndex;
   std::vector<YGNodeRef> relativeChildren;
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin
   // and border of flex items. This is used to calculate maxLineDim after going
-  // through all the rows to decide on the main axis size of parent.
+  // through all the rows to decide on the main axis size of owner.
   float mainDim;
   // The size of the crossDim for the row after considering size, padding,
   // margin and border of flex items. Used for calculating containers crossSize.
@@ -53,6 +53,50 @@ struct YGCollectFlexItemsRowValues {
 };
 
 bool YGValueEqual(const YGValue a, const YGValue b);
+
+// This custom float equality function returns true if either absolute
+// difference between two floats is less than 0.0001f or both are undefined.
+bool YGFloatsEqual(const float a, const float b);
+
+// We need custom max function, since we want that, if one argument is
+// YGUndefined then the max funtion should return the other argument as the max
+// value. We wouldn't have needed a custom max function if YGUndefined was NAN
+// as fmax has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
+float YGFloatMax(const float a, const float b);
+
+YGFloatOptional YGFloatOptionalMax(
+    const YGFloatOptional& op1,
+    const YGFloatOptional& op2);
+
+// We need custom min function, since we want that, if one argument is
+// YGUndefined then the min funtion should return the other argument as the min
+// value. We wouldn't have needed a custom min function if YGUndefined was NAN
+// as fmin has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
+float YGFloatMin(const float a, const float b);
+
+// This custom float comparision function compares the array of float with
+// YGFloatsEqual, as the default float comparision operator will not work(Look
+// at the comments of YGFloatsEqual function).
+template <std::size_t size>
+bool YGFloatArrayEqual(
+    const std::array<float, size>& val1,
+    const std::array<float, size>& val2) {
+  bool areEqual = true;
+  for (std::size_t i = 0; i < size && areEqual; ++i) {
+    areEqual = YGFloatsEqual(val1[i], val2[i]);
+  }
+  return areEqual;
+}
+
+// This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
+float YGFloatSanitize(const float& val);
+
+// This function unwraps optional and returns YGUndefined if not defined or
+// op.value otherwise
+// TODO: Get rid off this function
+float YGUnwrapFloatOptional(const YGFloatOptional& op);
 
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
@@ -63,17 +107,18 @@ inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-inline float YGResolveValue(const YGValue value, const float parentSize) {
+inline YGFloatOptional YGResolveValue(const YGValue value, const float ownerSize) {
   switch (value.unit) {
     case YGUnitUndefined:
     case YGUnitAuto:
-      return YGUndefined;
+      return YGFloatOptional();
     case YGUnitPoint:
-      return value.value;
+      return YGFloatOptional(value.value);
     case YGUnitPercent:
-      return value.value * parentSize / 100.0f;
+      return YGFloatOptional(
+          static_cast<float>(value.value * ownerSize * 0.01));
   }
-  return YGUndefined;
+  return YGFloatOptional();
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
@@ -95,8 +140,9 @@ inline YGFlexDirection YGResolveFlexDirection(
   return flexDirection;
 }
 
-static inline float YGResolveValueMargin(
+static inline YGFloatOptional YGResolveValueMargin(
     const YGValue value,
-    const float parentSize) {
-  return value.unit == YGUnitAuto ? 0 : YGResolveValue(value, parentSize);
+    const float ownerSize) {
+  return value.unit == YGUnitAuto ? YGFloatOptional(0)
+                                  : YGResolveValue(value, ownerSize);
 }

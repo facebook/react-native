@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Platform
+ * @format
  * @flow
  */
 
@@ -22,7 +22,11 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
-  select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
+  get isTV(): boolean {
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.uiMode === 'tv';
+  },
+  select: (obj: Object) => ('android' in obj ? obj.android : obj.default),
 };
 
 module.exports = Platform;

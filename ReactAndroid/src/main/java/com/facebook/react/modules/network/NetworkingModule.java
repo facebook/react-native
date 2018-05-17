@@ -348,7 +348,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     RequestBody requestBody;
-    if (data == null) {
+    if (data == null || method.toLowerCase().equals("get") || method.toLowerCase().equals("head")) {
       requestBody = RequestBodyUtil.getEmptyBody(method);
     } else if (handler != null) {
       requestBody = handler.toRequestBody(data, contentType);

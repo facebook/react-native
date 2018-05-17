@@ -4,26 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AccessibilityInfo
+ * @format
  * @flow
  */
+
 'use strict';
 
-var NativeModules = require('NativeModules');
-var Promise = require('Promise');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const NativeModules = require('NativeModules');
+const Promise = require('Promise');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var AccessibilityManager = NativeModules.AccessibilityManager;
+const AccessibilityManager = NativeModules.AccessibilityManager;
 
-var VOICE_OVER_EVENT = 'voiceOverDidChange';
-var ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
+const VOICE_OVER_EVENT = 'voiceOverDidChange';
+const ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
 
 type ChangeEventName = $Enum<{
   change: string,
-  announcementFinished: string
+  announcementFinished: string,
 }>;
 
-var _subscriptions = new Map();
+const _subscriptions = new Map();
 
 /**
  * Sometimes it's useful to know whether or not the device has a screen reader
@@ -34,8 +35,7 @@ var _subscriptions = new Map();
  *
  * See http://facebook.github.io/react-native/docs/accessibilityinfo.html
  */
-var AccessibilityInfo = {
-
+const AccessibilityInfo = {
   /**
    * Query whether a screen reader is currently enabled.
    *
@@ -46,10 +46,7 @@ var AccessibilityInfo = {
    */
   fetch: function(): Promise {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentVoiceOverState(
-        resolve,
-        reject
-      );
+      AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
     });
   },
 
@@ -68,27 +65,28 @@ var AccessibilityInfo = {
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#addeventlistener
    */
-  addEventListener: function (
+  addEventListener: function(
     eventName: ChangeEventName,
-    handler: Function
+    handler: Function,
   ): Object {
-    var listener;
+    let listener;
 
     if (eventName === 'change') {
-      listener = RCTDeviceEventEmitter.addListener(
-        VOICE_OVER_EVENT,
-        handler
-      );
+      listener = RCTDeviceEventEmitter.addListener(VOICE_OVER_EVENT, handler);
     } else if (eventName === 'announcementFinished') {
       listener = RCTDeviceEventEmitter.addListener(
         ANNOUNCEMENT_DID_FINISH_EVENT,
-        handler
+        handler,
       );
     }
 
     _subscriptions.set(handler, listener);
     return {
-      remove: AccessibilityInfo.removeEventListener.bind(null, eventName, handler),
+      remove: AccessibilityInfo.removeEventListener.bind(
+        null,
+        eventName,
+        handler,
+      ),
     };
   },
 
@@ -99,9 +97,7 @@ var AccessibilityInfo = {
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
-  setAccessibilityFocus: function(
-    reactTag: number
-  ): void {
+  setAccessibilityFocus: function(reactTag: number): void {
     AccessibilityManager.setAccessibilityFocus(reactTag);
   },
 
@@ -112,9 +108,7 @@ var AccessibilityInfo = {
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
-  announceForAccessibility: function(
-    announcement: string
-  ): void {
+  announceForAccessibility: function(announcement: string): void {
     AccessibilityManager.announceForAccessibility(announcement);
   },
 
@@ -125,16 +119,15 @@ var AccessibilityInfo = {
    */
   removeEventListener: function(
     eventName: ChangeEventName,
-    handler: Function
+    handler: Function,
   ): void {
-    var listener = _subscriptions.get(handler);
+    const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
     listener.remove();
     _subscriptions.delete(handler);
   },
-
 };
 
 module.exports = AccessibilityInfo;

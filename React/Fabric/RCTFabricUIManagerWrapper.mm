@@ -7,19 +7,32 @@
 
 #import "RCTFabricUIManagerWrapper.h"
 
-#include <fabric/FabricUIManager.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
+#include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/view/ViewComponentDescriptor.h>
+#include <folly/dynamic.h>
+#include <folly/json.h>
+
+#import "RCTFabricPlatformUIOperationManager.h"
 
 // This file contains experimental placeholders, nothing is finalized.
 @implementation RCTFabricUIManagerWrapper
 {
   std::shared_ptr<FabricUIManager> _manager;
+  std::shared_ptr<IFabricPlatformUIOperationManager> _platformUIOperationManager;
 }
 
-- (instancetype)initWithManager:(std::shared_ptr<FabricUIManager>)manager
+- (instancetype)init
 {
   self = [super init];
   if (self) {
-    _manager = manager;
+    _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
+
+    auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
+    SharedComponentDescriptor viewComponentDescriptor = std::make_shared<ViewComponentDescriptor>();
+    componentDescriptorRegistry->registerComponentDescriptor(viewComponentDescriptor);
+
+    _manager = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   }
   return self;
 }

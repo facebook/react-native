@@ -24,6 +24,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -203,7 +205,12 @@ public class UIImplementation {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
-    mShadowNodeRegistry.addRootNode(rootCSSNode);
+    context.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mShadowNodeRegistry.addRootNode(rootCSSNode);
+      }
+    });
 
     // register it within NativeViewHierarchyManager
     mOperationsQueue.addRootView(tag, rootView, context);
@@ -274,9 +281,10 @@ public class UIImplementation {
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
     ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
+    Assertions.assertNotNull(rootNode, "Root node with tag " + rootViewTag + " doesn't exist");
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
-    cssNode.setRootNode(rootNode);
+    cssNode.setRootTag(rootNode.getReactTag());
     cssNode.setThemedContext(rootNode.getThemedContext());
 
     mShadowNodeRegistry.addNode(cssNode);
@@ -780,7 +788,7 @@ public class UIImplementation {
     mOperationsQueue.enqueueClearJSResponder();
   }
 
-  public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
+  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     assertViewExists(reactTag, "dispatchViewManagerCommand");
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
@@ -798,6 +806,10 @@ public class UIImplementation {
   public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
     assertViewExists(reactTag, "showPopupMenu");
     mOperationsQueue.enqueueShowPopupMenu(reactTag, items, error, success);
+  }
+
+  public void dismissPopupMenu() {
+    mOperationsQueue.enqueueDismissPopupMenu();
   }
 
   public void sendAccessibilityEvent(int tag, int eventType) {
@@ -1001,7 +1013,7 @@ public class UIImplementation {
     ReactShadowNode node = resolveShadowNode(reactTag);
     int rootTag = 0;
     if (node != null) {
-      rootTag = node.getRootNode().getReactTag();
+      rootTag = node.getRootTag();
     } else {
       FLog.w(
         ReactConstants.TAG,

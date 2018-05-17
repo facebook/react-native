@@ -21,6 +21,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -281,6 +282,13 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
+    }
+  }
+
+  private final class DismissPopupMenuOperation implements UIOperation {
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dismissPopupMenu();
     }
   }
 
@@ -639,7 +647,7 @@ public class UIViewOperationQueue {
   public void enqueueDispatchCommand(
       int reactTag,
       int commandId,
-      ReadableArray commandArgs) {
+      @Nullable ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
   }
 
@@ -653,6 +661,10 @@ public class UIViewOperationQueue {
       Callback error,
       Callback success) {
     mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
+  }
+
+  public void enqueueDismissPopupMenu() {
+    mOperations.add(new DismissPopupMenuOperation());
   }
 
   public void enqueueCreateView(
@@ -763,7 +775,7 @@ public class UIViewOperationQueue {
     mOperations.add(0, new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(
+  public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

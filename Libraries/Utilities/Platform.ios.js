@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Platform
+ * @format
  * @flow
  */
 
@@ -22,7 +22,13 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'pad' : false;
   },
+  /**
+   * Deprecated, use `isTV` instead.
+   */
   get isTVOS() {
+    return Platform.isTV;
+  },
+  get isTV() {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'tv' : false;
   },
@@ -30,7 +36,7 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.isTesting;
   },
-  select: (obj: Object) => 'ios' in obj ? obj.ios : obj.default,
+  select: (obj: Object) => ('ios' in obj ? obj.ios : obj.default),
 };
 
 module.exports = Platform;

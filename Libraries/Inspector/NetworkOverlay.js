@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule NetworkOverlay
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ListView = require('ListView');
@@ -48,15 +49,18 @@ type NetworkRequestInfo = {
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component<Object, {
-  dataSource: ListView.DataSource,
-  newDetailInfo: bool,
-  detailRowID: ?number,
-}> {
+class NetworkOverlay extends React.Component<
+  Object,
+  {
+    dataSource: ListView.DataSource,
+    newDetailInfo: boolean,
+    detailRowID: ?number,
+  },
+> {
   _requests: Array<NetworkRequestInfo>;
   _listViewDataSource: ListView.DataSource;
   _listView: ?ListView;
-  _listViewHighlighted: bool;
+  _listViewHighlighted: boolean;
   _listViewHeight: number;
   _scrollView: ?ScrollView;
   _detailViewItems: Array<Array<React.Element<any>>>;
@@ -79,8 +83,9 @@ class NetworkOverlay extends React.Component<Object, {
     super(props);
     this._requests = [];
     this._detailViewItems = [];
-    this._listViewDataSource =
-      new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this._listViewDataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+    });
     this.state = {
       dataSource: this._listViewDataSource.cloneWithRows([]),
       newDetailInfo: false,
@@ -111,9 +116,9 @@ class NetworkOverlay extends React.Component<Object, {
       this._xhrIdMap[xhr._index] = xhrIndex;
 
       const _xhr: NetworkRequestInfo = {
-        'type': 'XMLHttpRequest',
-        'method': method,
-        'url': url
+        type: 'XMLHttpRequest',
+        method: method,
+        url: url,
       };
       this._requests.push(_xhr);
       this._detailViewItems.push([]);
@@ -157,17 +162,11 @@ class NetworkOverlay extends React.Component<Object, {
         networkInfo.responseSize = size;
         networkInfo.responseHeaders = responseHeaders;
         this._genDetailViewItem(xhrIndex);
-      }
+      },
     );
 
-    XHRInterceptor.setResponseCallback((
-        status,
-        timeout,
-        response,
-        responseURL,
-        responseType,
-        xhr,
-      ) => {
+    XHRInterceptor.setResponseCallback(
+      (status, timeout, response, responseURL, responseType, xhr) => {
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -179,7 +178,7 @@ class NetworkOverlay extends React.Component<Object, {
         networkInfo.responseURL = responseURL;
         networkInfo.responseType = responseType;
         this._genDetailViewItem(xhrIndex);
-      }
+      },
     );
 
     // Fire above callbacks.
@@ -196,9 +195,9 @@ class NetworkOverlay extends React.Component<Object, {
         const socketIndex = this._requests.length;
         this._socketIdMap[socketId] = socketIndex;
         const _webSocket: NetworkRequestInfo = {
-          'type': 'WebSocket',
-          'url': url,
-          'protocols': protocols,
+          type: 'WebSocket',
+          url: url,
+          protocols: protocols,
         };
         this._requests.push(_webSocket);
         this._detailViewItems.push([]);
@@ -207,7 +206,7 @@ class NetworkOverlay extends React.Component<Object, {
           {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
           this._scrollToBottom(),
         );
-      }
+      },
     );
 
     WebSocketInterceptor.setCloseCallback(
@@ -221,7 +220,7 @@ class NetworkOverlay extends React.Component<Object, {
           this._requests[socketIndex].closeReason = closeReason;
         }
         this._genDetailViewItem(socketIndex);
-      }
+      },
     );
 
     WebSocketInterceptor.setSendCallback((data, socketId) => {
@@ -295,7 +294,8 @@ class NetworkOverlay extends React.Component<Object, {
       methodCellViewStyle = styles.methodOddCellView;
     }
     return (
-      <TouchableHighlight onPress={() => {
+      <TouchableHighlight
+        onPress={() => {
           this._pressRow(rowID);
           highlightRow(sectionID, rowID);
         }}>
@@ -320,7 +320,8 @@ class NetworkOverlay extends React.Component<Object, {
   _renderSeperator(
     sectionID: number,
     rowID: number,
-    adjacentRowHighlighted: bool): React.Element<any> {
+    adjacentRowHighlighted: boolean,
+  ): React.Element<any> {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -338,14 +339,14 @@ class NetworkOverlay extends React.Component<Object, {
       if (scrollResponder) {
         const scrollY = Math.max(
           this._requests.length * LISTVIEW_CELL_HEIGHT +
-          (this._listViewHighlighted ? 2 * SEPARATOR_THICKNESS : 0) -
-          this._listViewHeight,
+            (this._listViewHighlighted ? 2 * SEPARATOR_THICKNESS : 0) -
+            this._listViewHeight,
           0,
         );
         scrollResponder.scrollResponderScrollTo({
           x: 0,
           y: scrollY,
-          animated: true
+          animated: true,
         });
       }
     }
@@ -366,10 +367,7 @@ class NetworkOverlay extends React.Component<Object, {
    */
   _pressRow(rowID: number): void {
     this._listViewHighlighted = true;
-    this.setState(
-      {detailRowID: rowID},
-      this._scrollToTop(),
-    );
+    this.setState({detailRowID: rowID}, this._scrollToTop());
   }
 
   _scrollToTop(): void {
@@ -397,8 +395,9 @@ class NetworkOverlay extends React.Component<Object, {
       return JSON.stringify(value);
     }
     if (typeof value === 'string' && value.length > 500) {
-      return String(value).substr(0, 500).concat(
-        '\n***TRUNCATED TO 500 CHARACTERS***');
+      return String(value)
+        .substr(0, 500)
+        .concat('\n***TRUNCATED TO 500 CHARACTERS***');
     }
     return value;
   }
@@ -444,12 +443,14 @@ class NetworkOverlay extends React.Component<Object, {
           <Text style={[styles.detailViewText, styles.detailValueCellView]}>
             {this._getStringByValue(requestItem[key])}
           </Text>
-        </View>
+        </View>,
       );
     }
     // Re-render if this network request is showing in the detail view.
-    if (this.state.detailRowID != null &&
-        Number(this.state.detailRowID) === index) {
+    if (
+      this.state.detailRowID != null &&
+      Number(this.state.detailRowID) === index
+    ) {
       this.setState({newDetailInfo: true});
     }
   }
@@ -457,30 +458,37 @@ class NetworkOverlay extends React.Component<Object, {
   render() {
     return (
       <View style={styles.container}>
-        {this.state.detailRowID != null &&
-        <TouchableHighlight
-          style={styles.closeButton}
-          onPress={this._closeButtonClicked}>
-          <View>
-            <Text style={styles.clostButtonText}>v</Text>
-          </View>
-        </TouchableHighlight>}
-        {this.state.detailRowID != null &&
-        <ScrollView
-          style={styles.detailScrollView}
-          ref={this._captureDetailScrollView}>
-          {this._detailViewItems[this.state.detailRowID]}
-        </ScrollView>}
+        {this.state.detailRowID != null && (
+          <TouchableHighlight
+            style={styles.closeButton}
+            onPress={this._closeButtonClicked}>
+            <View>
+              <Text style={styles.clostButtonText}>v</Text>
+            </View>
+          </TouchableHighlight>
+        )}
+        {this.state.detailRowID != null && (
+          <ScrollView
+            style={styles.detailScrollView}
+            ref={this._captureDetailScrollView}>
+            {this._detailViewItems[this.state.detailRowID]}
+          </ScrollView>
+        )}
         <View style={styles.listViewTitle}>
-          {this._requests.length > 0 &&
-          <View style={styles.tableRow}>
-            <View style={styles.urlTitleCellView}>
-              <Text style={styles.cellText} numberOfLines={1}>URL</Text>
+          {this._requests.length > 0 && (
+            <View style={styles.tableRow}>
+              <View style={styles.urlTitleCellView}>
+                <Text style={styles.cellText} numberOfLines={1}>
+                  URL
+                </Text>
+              </View>
+              <View style={styles.methodTitleCellView}>
+                <Text style={styles.cellText} numberOfLines={1}>
+                  Type
+                </Text>
+              </View>
             </View>
-            <View style={styles.methodTitleCellView}>
-              <Text style={styles.cellText} numberOfLines={1}>Type</Text>
-            </View>
-          </View>}
+          )}
         </View>
         <ListView
           style={styles.listView}
@@ -489,6 +497,7 @@ class NetworkOverlay extends React.Component<Object, {
           renderRow={this._renderRow}
           enableEmptySections={true}
           renderSeparator={this._renderSeperator}
+          // $FlowFixMe Found when typing ListView
           onLayout={this._listViewOnLayout}
         />
       </View>

@@ -72,9 +72,11 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
-      if (screenSize.height == 812 /* iPhone X */) {
-        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 60)];
-        self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, self->_window.bounds.size.width, 30)];
+      
+      if (@available(iOS 11.0, *)) {
+        UIWindow *window = UIApplication.sharedApplication.keyWindow;
+        self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
+        self->_label = [[UILabel alloc] initWithFrame:CGRectMake(0, window.safeAreaInsets.top, screenSize.width, 30)];
       } else {
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, 22)];
         self->_label = [[UILabel alloc] initWithFrame:self->_window.bounds];
@@ -161,6 +163,7 @@ RCT_EXPORT_METHOD(hide)
 
 + (NSString *)moduleName { return nil; }
 + (void)setEnabled:(BOOL)enabled { }
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor { }
 - (void)showWithURL:(NSURL *)URL { }
 - (void)updateProgress:(RCTLoadingProgress *)progress { }
 - (void)hide { }

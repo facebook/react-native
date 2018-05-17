@@ -19,7 +19,7 @@ public class ReactVirtualTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
-  public ReactVirtualTextShadowNode mutableCopy() {
+  protected ReactVirtualTextShadowNode copy() {
     return new ReactVirtualTextShadowNode(this);
   }
 }

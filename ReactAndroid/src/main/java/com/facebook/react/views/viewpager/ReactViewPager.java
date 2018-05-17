@@ -210,6 +210,26 @@ public class ReactViewPager extends ViewPager {
     mScrollEnabled = scrollEnabled;
   }
 
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    // The viewpager reset an internal flag on this method so we need to run another layout pass
+    // after attaching to window.
+    this.requestLayout();
+    post(measureAndLayout);
+  }
+
+  private final Runnable measureAndLayout = new Runnable() {
+    @Override
+    public void run() {
+      measure(
+              MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+              MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+      layout(getLeft(), getTop(), getRight(), getBottom());
+    }
+  };
+
   /*package*/ void addViewToAdapter(View child, int index) {
     getAdapter().addView(child, index);
   }

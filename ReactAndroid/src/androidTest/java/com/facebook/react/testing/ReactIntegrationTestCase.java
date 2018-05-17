@@ -7,6 +7,7 @@
 
 package com.facebook.react.testing;
 
+import com.facebook.react.modules.core.ReactChoreographer;
 import javax.annotation.Nullable;
 
 import java.util.concurrent.CountDownLatch;
@@ -139,6 +140,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new Runnable() {
           @Override
           public void run() {
+            ReactChoreographer.initialize();
             Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
             simpleSettableFuture.set(timing);
           }
