@@ -1,6 +1,6 @@
 ---
 name: 💬 Question
-about: Questions about using React Native
+about: For questions about using React Native in your app.
 
 ---
 
