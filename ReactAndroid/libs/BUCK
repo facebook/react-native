@@ -7,7 +7,7 @@ android_prebuilt_aar(
 remote_file(
     name = "appcompat-binary-aar",
     sha1 = "7d659f671541394a8bc2b9f909950aa2a5ec87ff",
-    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1",
+    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1"
 )
 
 android_prebuilt_aar(
