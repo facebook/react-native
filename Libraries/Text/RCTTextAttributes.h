@@ -9,6 +9,8 @@
 
 #import <React/RCTTextDecorationLineType.h>
 
+#import "RCTTextTransform.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
@@ -50,6 +52,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, strong, nullable) NSNumber *tag;
 @property (nonatomic, assign) UIUserInterfaceLayoutDirection layoutDirection;
+@property (nonatomic, assign) RCTTextTransform textTransform;
 
 #pragma mark - Inheritance
 
@@ -77,6 +80,11 @@ extern NSString *const RCTTextAttributesTagAttributeName;
  */
 - (UIColor *)effectiveForegroundColor;
 - (UIColor *)effectiveBackgroundColor;
+
+/**
+ * Text transformed per 'none', 'uppercase', 'lowercase', 'capitalize'
+ */
+- (NSString *)applyTextAttributesToText:(NSString *)text;
 
 @end
 

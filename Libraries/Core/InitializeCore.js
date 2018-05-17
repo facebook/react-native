@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InitializeCore
+ * @format
  * @flow
  */
 
@@ -153,33 +153,52 @@ polyfillObjectProperty(navigator, 'geolocation', () => require('Geolocation'));
 const BatchedBridge = require('BatchedBridge');
 BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
 BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
-BatchedBridge.registerLazyCallableModule('HeapCapture', () => require('HeapCapture'));
-BatchedBridge.registerLazyCallableModule('SamplingProfiler', () => require('SamplingProfiler'));
+BatchedBridge.registerLazyCallableModule('HeapCapture', () =>
+  require('HeapCapture'),
+);
+BatchedBridge.registerLazyCallableModule('SamplingProfiler', () =>
+  require('SamplingProfiler'),
+);
 BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
-BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () => require('RCTDeviceEventEmitter'));
-BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () => require('RCTNativeAppEventEmitter'));
-BatchedBridge.registerLazyCallableModule('PerformanceLogger', () => require('PerformanceLogger'));
-BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () => require('JSDevSupportModule'));
+BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () =>
+  require('RCTDeviceEventEmitter'),
+);
+BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () =>
+  require('RCTNativeAppEventEmitter'),
+);
+BatchedBridge.registerLazyCallableModule('PerformanceLogger', () =>
+  require('PerformanceLogger'),
+);
+BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () =>
+  require('JSDevSupportModule'),
+);
 
 global.__fetchSegment = function(
   segmentId: number,
+  options: {|+otaBuildNumber: ?string|},
   callback: (?Error) => void,
 ) {
   const {SegmentFetcher} = require('NativeModules');
   if (!SegmentFetcher) {
-    throw new Error('SegmentFetcher is missing. Please ensure that it is ' +
-      'included as a NativeModule.');
+    throw new Error(
+      'SegmentFetcher is missing. Please ensure that it is ' +
+        'included as a NativeModule.',
+    );
   }
 
-  SegmentFetcher.fetchSegment(segmentId, (errorObject: ?{message: string, code: string}) => {
-    if (errorObject) {
-      const error = new Error(errorObject.message);
-      (error: any).code = errorObject.code;
-      callback(error);
-    }
+  SegmentFetcher.fetchSegment(
+    segmentId,
+    options,
+    (errorObject: ?{message: string, code: string}) => {
+      if (errorObject) {
+        const error = new Error(errorObject.message);
+        (error: any).code = errorObject.code;
+        callback(error);
+      }
 
-    callback(null);
-  });
+      callback(null);
+    },
+  );
 };
 
 // Set up devtools

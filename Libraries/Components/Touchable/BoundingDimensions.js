@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule BoundingDimensions
+ * @format
  */
 
 'use strict';
@@ -37,7 +37,7 @@ BoundingDimensions.prototype.destructor = function() {
 BoundingDimensions.getPooledFromElement = function(element) {
   return BoundingDimensions.getPooled(
     element.offsetWidth,
-    element.offsetHeight
+    element.offsetHeight,
   );
 };
 

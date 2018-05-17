@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule NetworkAgent
+ * @format
  * @flow
  */
+
 'use strict';
 
 const InspectorAgent = require('InspectorAgent');
@@ -28,34 +29,34 @@ type Headers = Object;
 type ResourceTiming = null;
 
 type ResourceType =
-  'Document' |
-  'Stylesheet' |
-  'Image' |
-  'Media' |
-  'Font' |
-  'Script' |
-  'TextTrack' |
-  'XHR' |
-  'Fetch' |
-  'EventSource' |
-  'WebSocket' |
-  'Manifest' |
-  'Other';
+  | 'Document'
+  | 'Stylesheet'
+  | 'Image'
+  | 'Media'
+  | 'Font'
+  | 'Script'
+  | 'TextTrack'
+  | 'XHR'
+  | 'Fetch'
+  | 'EventSource'
+  | 'WebSocket'
+  | 'Manifest'
+  | 'Other';
 
 type SecurityState =
-  'unknown' |
-  'neutral' |
-  'insecure' |
-  'warning' |
-  'secure' |
-  'info';
+  | 'unknown'
+  | 'neutral'
+  | 'insecure'
+  | 'warning'
+  | 'secure'
+  | 'info';
 type BlockedReason =
-  'csp' |
-  'mixed-content' |
-  'origin' |
-  'inspector' |
-  'subresource-filter' |
-  'other';
+  | 'csp'
+  | 'mixed-content'
+  | 'origin'
+  | 'inspector'
+  | 'subresource-filter'
+  | 'other';
 
 type StackTrace = null;
 
@@ -63,8 +64,8 @@ type Initiator = {
   type: 'script' | 'other',
   stackTrace?: StackTrace,
   url?: string,
-  lineNumber?: number
-}
+  lineNumber?: number,
+};
 
 type ResourcePriority = 'VeryLow' | 'Low' | 'Medium' | 'High' | 'VeryHigh';
 
@@ -152,11 +153,7 @@ class Interceptor {
     return this._requests.get(requestId);
   }
 
-  requestSent(
-    id: number,
-    url: string,
-    method: string,
-    headers: Object) {
+  requestSent(id: number, url: string, method: string, headers: Object) {
     const requestId = String(id);
     this._requests.set(requestId, '');
 
@@ -184,11 +181,7 @@ class Interceptor {
     this._agent.sendEvent('requestWillBeSent', event);
   }
 
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Object) {
+  responseReceived(id: number, url: string, status: number, headers: Object) {
     const requestId = String(id);
     const response: Response = {
       url,
@@ -215,9 +208,7 @@ class Interceptor {
     this._agent.sendEvent('responseReceived', event);
   }
 
-  dataReceived(
-    id: number,
-    data: string) {
+  dataReceived(id: number, data: string) {
     const requestId = String(id);
     const existingData = this._requests.get(requestId) || '';
     this._requests.set(requestId, existingData.concat(data));
@@ -230,9 +221,7 @@ class Interceptor {
     this._agent.sendEvent('dataReceived', event);
   }
 
-  loadingFinished(
-    id: number,
-    encodedDataLength: number) {
+  loadingFinished(id: number, encodedDataLength: number) {
     const event: LoadingFinishedEvent = {
       requestId: String(id),
       timestamp: JSInspector.getTimestamp(),
@@ -241,9 +230,7 @@ class Interceptor {
     this._agent.sendEvent('loadingFinished', event);
   }
 
-  loadingFailed(
-      id: number,
-      error: string) {
+  loadingFailed(id: number, error: string) {
     const event: LoadingFailedEvent = {
       requestId: String(id),
       timestamp: JSInspector.getTimestamp(),
@@ -261,7 +248,7 @@ class Interceptor {
 
 type EnableArgs = {
   maxResourceBufferSize?: number,
-  maxTotalBufferSize?: number
+  maxTotalBufferSize?: number,
 };
 
 class NetworkAgent extends InspectorAgent {
@@ -270,7 +257,7 @@ class NetworkAgent extends InspectorAgent {
   _sendEvent: EventSender;
   _interceptor: ?Interceptor;
 
-  enable({ maxResourceBufferSize, maxTotalBufferSize }: EnableArgs) {
+  enable({maxResourceBufferSize, maxTotalBufferSize}: EnableArgs) {
     this._interceptor = new Interceptor(this);
     XMLHttpRequest.setInterceptor(this._interceptor);
   }
@@ -280,8 +267,11 @@ class NetworkAgent extends InspectorAgent {
     this._interceptor = null;
   }
 
-  getResponseBody({requestId}: {requestId: RequestId})
-      : {body: ?string, base64Encoded: boolean} {
+  getResponseBody({
+    requestId,
+  }: {
+    requestId: RequestId,
+  }): {body: ?string, base64Encoded: boolean} {
     return {body: this.interceptor().getData(requestId), base64Encoded: false};
   }
 
@@ -291,7 +281,6 @@ class NetworkAgent extends InspectorAgent {
     } else {
       throw Error('_interceptor can not be null');
     }
-
   }
 }
 

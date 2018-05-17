@@ -15,6 +15,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
@@ -45,7 +46,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
         0 : Layout.BREAK_STRATEGY_SIMPLE;
 
-    setMeasureFunction(this);
+    initMeasureFunction();
   }
 
   private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
@@ -53,16 +54,37 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     mMostRecentEventCount = node.mMostRecentEventCount;
     mText = node.mText;
     mLocalData = node.mLocalData;
-    setMeasureFunction(this);
-    ThemedReactContext themedContext = getThemedContext();
-    if (themedContext != null) {
-      setThemedContext(themedContext);
-    }
   }
 
   @Override
   protected ReactTextInputShadowNode copy() {
     return new ReactTextInputShadowNode(this);
+  }
+
+  @Override
+  public ReactTextInputShadowNode mutableCopy() {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy();
+    node.initMeasureFunction();
+    ThemedReactContext themedContext = getThemedContext();
+    if (themedContext != null) {
+      node.setThemedContext(themedContext);
+    }
+    return node;
+  }
+
+  private void initMeasureFunction() {
+    setMeasureFunction(this);
+  }
+
+  @Override
+  public ReactTextInputShadowNode mutableCopyWithNewChildren() {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren();
+    node.initMeasureFunction();
+    ThemedReactContext themedContext = getThemedContext();
+    if (themedContext != null) {
+      node.setThemedContext(themedContext);
+    }
+    return node;
   }
 
   @Override

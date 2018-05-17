@@ -6,7 +6,6 @@
 #include <memory>
 
 #include <cxxreact/NativeToJsBridge.h>
-#include <jschelpers/Value.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -66,9 +65,7 @@ public:
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);
-#endif
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

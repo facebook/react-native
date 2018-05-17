@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -16,7 +17,7 @@ const getGroup = require('../../ios/getGroup');
 const last = require('lodash').last;
 
 const project = xcode.project(
-  path.join(__dirname, '../../__fixtures__/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj'),
 );
 
 describe('ios::createGroup', () => {
@@ -33,18 +34,14 @@ describe('ios::createGroup', () => {
     const createdGroup = createGroup(project, 'Resources');
     const mainGroup = getGroup(project);
 
-    expect(
-      last(mainGroup.children).comment
-    ).toBe(createdGroup.name);
+    expect(last(mainGroup.children).comment).toBe(createdGroup.name);
   });
 
   it('should create a nested group with given path', () => {
     const createdGroup = createGroup(project, 'NewGroup/NewNestedGroup');
     const outerGroup = getGroup(project, 'NewGroup');
 
-    expect(
-      last(outerGroup.children).comment
-    ).toBe(createdGroup.name);
+    expect(last(outerGroup.children).comment).toBe(createdGroup.name);
   });
 
   it('should-not create already created groups', () => {
@@ -53,10 +50,7 @@ describe('ios::createGroup', () => {
     const mainGroup = getGroup(project);
 
     expect(
-      mainGroup
-        .children
-        .filter(group => group.comment === 'Libraries')
-        .length
+      mainGroup.children.filter(group => group.comment === 'Libraries').length,
     ).toBe(1);
     expect(last(outerGroup.children).comment).toBe(createdGroup.name);
   });

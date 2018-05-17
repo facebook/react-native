@@ -70,17 +70,17 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2016.09.26.00.tar.gz'
+    src 'https://github.com/facebook/folly/archive/v2016.10.31.00.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2016.09.26.00.tar.gz');
+    dest new File(downloadsDir, 'folly-2016.10.31.00.tar.gz');
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-2016.09.26.00/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-2016.09.26.00/")}
+    include 'folly-2016.10.31.00/folly/**/*', 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-2016.10.31.00/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
@@ -242,8 +242,8 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 16
@@ -292,14 +292,14 @@ android {
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:appcompat-v7:26.0.2'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.8.1'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.8.1'
+    compile 'com.facebook.fresco:fresco:1.9.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
     compile 'com.facebook.soloader:soloader:0.3.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
     compile 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 

@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule RNTesterActions
  */
+
 'use strict';
 
 export type RNTesterBackAction = {
@@ -22,12 +23,10 @@ export type RNTesterExampleAction = {
   openExample: string,
 };
 
-export type RNTesterAction = (
-  RNTesterBackAction |
-  RNTesterListAction |
-  RNTesterExampleAction
-);
-
+export type RNTesterAction =
+  | RNTesterBackAction
+  | RNTesterListAction
+  | RNTesterExampleAction;
 
 function Back(): RNTesterBackAction {
   return {

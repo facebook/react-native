@@ -340,10 +340,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef clonedYogaNode = YGNodeClone(self.yogaNode);
   YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
 
-  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+  YGNodeInsertChild(constraintYogaNode, clonedYogaNode, 0);
 
   YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
   YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
@@ -362,9 +362,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
   };
 
-  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
-  YGNodeFree(clonnedYogaNode);
+  YGNodeFree(clonedYogaNode);
 
   return measuredSize;
 }

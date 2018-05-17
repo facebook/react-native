@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include <fabric/graphics/graphicValuesConversions.h>
 #include <gtest/gtest.h>
-
-using namespace facebook::react;
 
 TEST(GraphicsTest, testSomething) {
   // TODO

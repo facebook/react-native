@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageSource
  * @flow
  * @format
  */
@@ -12,7 +11,7 @@
 
 // This is to sync with ImageSourcePropTypes.js.
 
-type ImageURISource = {
+type ImageURISource = $ReadOnly<{|
   uri?: string,
   bundle?: string,
   method?: string,
@@ -22,6 +21,6 @@ type ImageURISource = {
   width?: number,
   height?: number,
   scale?: number,
-};
+|}>;
 
 export type ImageSource = ImageURISource | number | Array<ImageURISource>;

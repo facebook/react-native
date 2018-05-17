@@ -1,24 +1,21 @@
-import React, { Component } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+/** @format */
+
+import React, {Component} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 export default class WelcomeText extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
+        <Text style={styles.welcome}>Welcome to React Native!</Text>
+        <Text style={styles.instructions}>
+          This app shows the basics of navigating between a few screens, working
+          with ListView and handling text input.
         </Text>
         <Text style={styles.instructions}>
-          This app shows the basics of navigating between a few screens,
-          working with ListView and handling text input.
-        </Text>
-        <Text style={styles.instructions}>
-          Modify any files to get started. For example try changing the
-          file{'\n'}views/welcome/WelcomeText.ios.js.
+          Modify any files to get started. For example try changing the file{
+            '\n'
+          }views/welcome/WelcomeText.ios.js.
         </Text>
         <Text style={styles.instructions}>
           Press Cmd+R to reload,{'\n'}

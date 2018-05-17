@@ -239,6 +239,13 @@ public class YogaNode implements Cloneable {
     return mOwner;
   }
 
+  /** @deprecated Use #getOwner() instead. This will be removed in the next version. */
+  @Deprecated
+  @Nullable
+  YogaNode getParent() {
+    return getOwner();
+  }
+
   public int indexOf(YogaNode child) {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }

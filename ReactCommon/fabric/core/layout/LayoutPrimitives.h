@@ -14,7 +14,7 @@ namespace react {
  * Defines visibility of the shadow node and partucular layout
  * engine which should be used for laying out the node.
  */
-enum DisplayType {
+enum class DisplayType {
   None,
   Flex,
   Inline,
@@ -23,7 +23,7 @@ enum DisplayType {
 /*
  * User interface layout direction.
  */
-enum LayoutDirection {
+enum class LayoutDirection {
   Undefined,
   LeftToRight,
   RightToLeft,

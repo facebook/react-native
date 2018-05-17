@@ -26,4 +26,9 @@ public abstract class JavaScriptExecutor {
   public void close() {
     mHybridData.resetNative();
   }
+
+  /**
+   * Returns the name of the executor, identifying the underlying runtime.
+   */
+  abstract public String getName();
 }

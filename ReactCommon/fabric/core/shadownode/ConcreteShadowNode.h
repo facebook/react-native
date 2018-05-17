@@ -28,21 +28,12 @@ public:
   using SharedConcreteProps = std::shared_ptr<const PropsT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
 
-  static const SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
-    if (!baseProps) {
-      auto props = std::make_shared<PropsT>();
-      props->apply(rawProps);
-      return props;
-    }
-
-    auto concreteBaseProps = std::dynamic_pointer_cast<const PropsT>(baseProps);
-    auto props = std::make_shared<PropsT>(*concreteBaseProps);
-    props->apply(rawProps);
-    return props;
+  static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
+    return std::make_shared<const PropsT>(baseProps ? *std::static_pointer_cast<const PropsT>(baseProps) : PropsT(), rawProps);
   }
 
-  static const SharedConcreteProps defaultSharedProps() {
-    static const SharedConcreteProps defaultSharedProps = std::make_shared<PropsT>();
+  static SharedConcreteProps defaultSharedProps() {
+    static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();
     return defaultSharedProps;
   }
 
@@ -51,14 +42,16 @@ public:
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedConcreteProps &props = ConcreteShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList()
+    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
+    const ShadowNodeCloneFunction &cloneFunction = nullptr
   ):
     ShadowNode(
       tag,
       rootTag,
       instanceHandle,
       (SharedProps)props,
-      children
+      children,
+      cloneFunction
     ) {};
 
   ConcreteShadowNode(
@@ -76,7 +69,8 @@ public:
     return typeid(*this).hash_code();
   }
 
-  const SharedConcreteProps &getProps() const {
+  const SharedConcreteProps getProps() const {
+    assert(std::dynamic_pointer_cast<const PropsT>(props_));
     return std::static_pointer_cast<const PropsT>(props_);
   }
 

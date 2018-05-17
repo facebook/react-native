@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EmitterSubscription
+ * @format
  * @flow
  */
+
 'use strict';
 
 const EventSubscription = require('EventSubscription');
@@ -18,7 +19,6 @@ import type EventSubscriptionVendor from 'EventSubscriptionVendor';
  * EmitterSubscription represents a subscription with listener and context data.
  */
 class EmitterSubscription extends EventSubscription {
-
   emitter: EventEmitter;
   listener: Function;
   context: ?Object;
@@ -37,7 +37,7 @@ class EmitterSubscription extends EventSubscription {
     emitter: EventEmitter,
     subscriber: EventSubscriptionVendor,
     listener: Function,
-    context: ?Object
+    context: ?Object,
   ) {
     super(subscriber);
     this.emitter = emitter;

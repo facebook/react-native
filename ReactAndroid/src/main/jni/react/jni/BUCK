@@ -7,6 +7,7 @@ EXPORTED_HEADERS = [
     "CxxSharedModuleWrapper.h",
     "JavaModuleWrapper.h",
     "JavaScriptExecutorHolder.h",
+    "JReactMarker.h",
     "JSLoader.h",
     "JSLogging.h",
     "MethodInvoker.h",
@@ -14,7 +15,6 @@ EXPORTED_HEADERS = [
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
-    "ReactMarker.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
     "WritableNativeArray.h",
@@ -47,7 +47,6 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
         "-DWITH_INSPECTOR=1",
-        "-DWITH_JSC_MEMORY_PRESSURE=1",
     ],
     soname = "libreactnativejni.$(ext)",
     visibility = [

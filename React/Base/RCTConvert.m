@@ -685,7 +685,8 @@ RCT_ENUM_CONVERTER(YGPositionType, (@{
 
 RCT_ENUM_CONVERTER(YGWrap, (@{
   @"wrap": @(YGWrapWrap),
-  @"nowrap": @(YGWrapNoWrap)
+  @"nowrap": @(YGWrapNoWrap),
+  @"wrap-reverse": @(YGWrapWrapReverse)
 }), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{
