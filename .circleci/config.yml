@@ -1,19 +1,24 @@
 aliases:
   # Cache Management
-  - &restore-cache-yarn
+  - &restore-yarn-cache
     keys:
-      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
-      - v1-yarn-{{ arch }}-
-  - &save-cache-yarn
+      - v1-yarn-cache-{{ arch }}
+  - &save-yarn-cache
+    paths:
+      - ~/.cache/yarn
+    key: v1-yarn-cache-{{ arch }}
+
+  - &restore-node-modules
+    keys:
+      - v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
+  - &save-node-modules
     paths:
       - node_modules
-      - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+    key: v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
       - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-      - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
       - bots/node_modules
@@ -45,8 +50,6 @@ aliases:
     keys:
       - v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
       # Fallback in case this is a first-time run on a fork
-      # You always want to match checksum, if it fails,
-      # proceed with a fresh install.
       - v1-apt-master-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
   - &save-cache-apt
     paths:
@@ -56,7 +59,6 @@ aliases:
   - &restore-cache-ndk
     keys:
       - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/android-setup.sh" }}
-      - v3-android-ndk-{{ arch }}-r10e-
   - &save-cache-ndk
     paths:
       - /opt/ndk
@@ -325,9 +327,11 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-node-modules
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
+      - save-cache: *save-node-modules
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -454,9 +458,11 @@ jobs:
       - run: *gradle-download-deps
       - save-cache: *save-cache-gradle-downloads
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-node-modules
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
+      - save-cache: *save-node-modules
 
       - run:
           name: Publish React Native Package
