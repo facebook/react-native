@@ -12,7 +12,7 @@
 <!-- Describe your issue in detail. -->
 
 ## Environment
-<!-- Required. Run `react-native info` in your terminal and paste its contents here. -->
+<!-- Required. Run `react-native info --clipboard` in your terminal and paste its contents here. -->
 
 ## Steps to Reproduce
 <!-- 

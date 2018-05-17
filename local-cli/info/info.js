@@ -14,28 +14,38 @@ const envinfo = require('envinfo');
 const info = function() {
   const args = Array.prototype.slice.call(arguments)[2];
 
-  envinfo
-    .run(
-      {
-        System: ['OS', 'CPU', 'Memory', 'Shell'],
-        Binaries: ['Node', 'Yarn', 'npm', 'Watchman'],
-        IDEs: ['Xcode', 'Android Studio'],
-        SDKs: ['iOS SDK', 'Android SDK'],
-        npmPackages:
-          (typeof args.packages === 'string' && !args.packages.includes('*')) ||
-          !args.packages
-            ? ['react', 'react-native'].concat((args.packages || '').split(','))
-            : args.packages,
-        npmGlobalPackages: '*react-native*',
-      },
-      {
-        console: true,
-      },
-    )
-    .catch(err => {
-      console.log('Error: unable to print environment info');
-      console.log(err);
-    });
+  try {
+    envinfo
+      .run(
+        {
+          System: ['OS', 'CPU', 'Memory', 'Shell'],
+          Binaries: ['Node', 'Yarn', 'npm', 'Watchman'],
+          IDEs: ['Xcode', 'Android Studio'],
+          SDKs: ['iOS SDK', 'Android SDK'],
+          npmPackages:
+            (typeof args.packages === 'string' &&
+              !args.packages.includes('*')) ||
+            !args.packages
+              ? ['react', 'react-native'].concat(
+                  (args.packages || '').split(','),
+                )
+              : args.packages,
+          npmGlobalPackages: '*react-native*',
+        },
+        {
+          clipboard: !!args.clipboard,
+          title: 'React Native Environment Info',
+        },
+      )
+      .then(console.log)
+      .catch(err => {
+        console.log('Error: unable to print environment info');
+        console.log(err);
+      });
+  } catch (err) {
+    console.log('Error: unable to print environment info');
+    console.log(err);
+  }
 };
 
 module.exports = {
@@ -47,6 +57,11 @@ module.exports = {
       description:
         'Which packages from your package.json to include, in addition to the default React Native and React versions.',
     },
+    {
+      command: '--clipboard [boolean]',
+      description:
+        'Automagically copy the environment report output to the clipboard',
+    },
   ],
   examples: [
     {
@@ -54,10 +69,16 @@ module.exports = {
       cmd: 'react-native info',
     },
     {
-      desc:
-        'Get standard version info & specified, globbed or all package versions',
-      cmd:
-        'react-native info --packages jest,eslint || react-native info --packages "*react*" ||  react-native info --packages',
+      desc: 'Get standard version info & specified package versions',
+      cmd: 'react-native info --packages jest,eslint',
+    },
+    {
+      desc: 'Get standard version info & globbed package versions',
+      cmd: 'react-native info --packages "*react*"',
+    },
+    {
+      desc: 'Get standard version info & all package versions',
+      cmd: 'react-native info --packages',
     },
   ],
   func: info,
