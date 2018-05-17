@@ -14,17 +14,28 @@ const envinfo = require('envinfo');
 const info = function() {
   const args = Array.prototype.slice.call(arguments)[2];
 
-  try {
-    envinfo.print({
-      packages:
-        typeof args.packages === 'string'
-          ? ['react', 'react-native'].concat(args.packages.split(','))
-          : args.packages,
+  envinfo
+    .run(
+      {
+        System: ['OS', 'CPU', 'Memory', 'Shell'],
+        Binaries: ['Node', 'Yarn', 'npm', 'Watchman'],
+        IDEs: ['Xcode', 'Android Studio'],
+        SDKs: ['iOS SDK', 'Android SDK'],
+        npmPackages:
+          (typeof args.packages === 'string' && !args.packages.includes('*')) ||
+          !args.packages
+            ? ['react', 'react-native'].concat((args.packages || '').split(','))
+            : args.packages,
+        npmGlobalPackages: '*react-native*',
+      },
+      {
+        console: true,
+      },
+    )
+    .catch(err => {
+      console.log('Error: unable to print environment info');
+      console.log(err);
     });
-  } catch (error) {
-    console.log('Error: unable to print environment info');
-    console.log(error);
-  }
 };
 
 module.exports = {
@@ -35,7 +46,6 @@ module.exports = {
       command: '--packages [string]',
       description:
         'Which packages from your package.json to include, in addition to the default React Native and React versions.',
-      default: ['react', 'react-native'],
     },
   ],
   examples: [
@@ -44,8 +54,10 @@ module.exports = {
       cmd: 'react-native info',
     },
     {
-      desc: 'Get standard version info & specified package versions',
-      cmd: 'react-native info --packages jest,eslint,babel-polyfill',
+      desc:
+        'Get standard version info & specified, globbed or all package versions',
+      cmd:
+        'react-native info --packages jest,eslint || react-native info --packages "*react*" ||  react-native info --packages',
     },
   ],
   func: info,
