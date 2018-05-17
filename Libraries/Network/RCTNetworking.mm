@@ -139,6 +139,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  for (NSNumber *requestID in _tasksByRequestID) {
+    [_tasksByRequestID[requestID] cancel];
+  }
+  [_tasksByRequestID removeAllObjects];
+  _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;
 }
