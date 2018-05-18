@@ -5,12 +5,13 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/ModuleRegistry.h>
 #include <folly/Optional.h>
 #include <jschelpers/Value.h>
 
 namespace facebook {
 namespace react {
+
+class ModuleRegistry;
 
 /**
  * Holds and creates JS representations of the modules in ModuleRegistry

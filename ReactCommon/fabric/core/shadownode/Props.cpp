@@ -7,27 +7,14 @@
 
 #include "Props.h"
 
+#include <fabric/core/propsConversions.h>
 #include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
 
-void Props::apply(const RawProps &rawProps) {
-  ensureUnsealed();
-
-  for (auto const &pair : rawProps) {
-    auto const &name = pair.first;
-    auto const &value = pair.second;
-
-    if (name == "nativeID") {
-      nativeId_ = value.asString();
-    }
-  }
-}
-
-const std::string &Props::getNativeId() const {
-  return nativeId_;
-}
+Props::Props(const Props &sourceProps, const RawProps &rawProps):
+  nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId)) {};
 
 } // namespace react
 } // namespace facebook

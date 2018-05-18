@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheetTypes
  * @flow
  * @format
  */
@@ -57,7 +56,7 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number,
   position?: 'absolute' | 'relative',
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
-  flexWrap?: 'wrap' | 'nowrap',
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse',
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -103,14 +102,16 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
     | {|+translateX: number | AnimatedNode|}
     | {|+translateY: number | AnimatedNode|}
     | {|
-      +translate: [number | AnimatedNode, number | AnimatedNode] | AnimatedNode,
-    |}
+        +translate:
+          | [number | AnimatedNode, number | AnimatedNode]
+          | AnimatedNode,
+      |}
     | {|+skewX: string|}
     | {|+skewY: string|}
     // TODO: what is the actual type it expects?
     | {|
-      +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-    |},
+        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+      |},
   >,
 |}>;
 

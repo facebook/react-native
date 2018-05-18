@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const bundleWithOutput = require('./bundle').withOutput;
@@ -23,7 +26,8 @@ module.exports = {
   func: unbundle,
   options: bundleCommandLineArgs.concat({
     command: '--indexed-unbundle',
-    description: 'Force indexed unbundle file format, even when building for android',
+    description:
+      'Force indexed unbundle file format, even when building for android',
     default: false,
   }),
 };

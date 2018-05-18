@@ -89,9 +89,7 @@ public:
 
   virtual bool isInspectable() override;
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
-#endif
 
   virtual void destroy() override;
 

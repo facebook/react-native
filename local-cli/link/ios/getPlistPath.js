@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const path = require('path');
@@ -17,6 +19,6 @@ module.exports = function getPlistPath(project, sourceDir) {
 
   return path.join(
     sourceDir,
-    plistFile.replace(/"/g, '').replace('$(SRCROOT)', '')
+    plistFile.replace(/"/g, '').replace('$(SRCROOT)', ''),
   );
 };

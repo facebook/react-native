@@ -4,16 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PushNotificationIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
-const RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
+const RCTPushNotificationManager = require('NativeModules')
+  .PushNotificationManager;
 const invariant = require('fbjs/lib/invariant');
 
-const PushNotificationEmitter = new NativeEventEmitter(RCTPushNotificationManager);
+const PushNotificationEmitter = new NativeEventEmitter(
+  RCTPushNotificationManager,
+);
 
 const _notifHandlers = new Map();
 
@@ -123,7 +127,9 @@ class PushNotificationIOS {
    *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getdeliverednotifications
    */
-  static getDeliveredNotifications(callback: (notifications: Array<Object>) => void): void {
+  static getDeliveredNotifications(
+    callback: (notifications: Array<Object>) => void,
+  ): void {
     RCTPushNotificationManager.getDeliveredNotifications(callback);
   }
 
@@ -180,37 +186,40 @@ class PushNotificationIOS {
    */
   static addEventListener(type: PushNotificationEventName, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
+      type === 'notification' ||
+        type === 'register' ||
+        type === 'registrationError' ||
+        type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events',
     );
-    var listener;
+    let listener;
     if (type === 'notification') {
-      listener =  PushNotificationEmitter.addListener(
+      listener = PushNotificationEmitter.addListener(
         DEVICE_NOTIF_EVENT,
-        (notifData) => {
+        notifData => {
           handler(new PushNotificationIOS(notifData));
-        }
+        },
       );
     } else if (type === 'localNotification') {
       listener = PushNotificationEmitter.addListener(
         DEVICE_LOCAL_NOTIF_EVENT,
-        (notifData) => {
+        notifData => {
           handler(new PushNotificationIOS(notifData));
-        }
+        },
       );
     } else if (type === 'register') {
       listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTER_EVENT,
-        (registrationInfo) => {
+        registrationInfo => {
           handler(registrationInfo.deviceToken);
-        }
+        },
       );
     } else if (type === 'registrationError') {
       listener = PushNotificationEmitter.addListener(
         NOTIF_REGISTRATION_ERROR_EVENT,
-        (errorInfo) => {
+        errorInfo => {
           handler(errorInfo);
-        }
+        },
       );
     }
     _notifHandlers.set(type, listener);
@@ -222,12 +231,18 @@ class PushNotificationIOS {
    *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#removeeventlistener
    */
-  static removeEventListener(type: PushNotificationEventName, handler: Function) {
+  static removeEventListener(
+    type: PushNotificationEventName,
+    handler: Function,
+  ) {
     invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
+      type === 'notification' ||
+        type === 'register' ||
+        type === 'registrationError' ||
+        type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events',
     );
-    var listener = _notifHandlers.get(type);
+    const listener = _notifHandlers.get(type);
     if (!listener) {
       return;
     }
@@ -246,24 +261,24 @@ class PushNotificationIOS {
   static requestPermissions(permissions?: {
     alert?: boolean,
     badge?: boolean,
-    sound?: boolean
+    sound?: boolean,
   }): Promise<{
     alert: boolean,
     badge: boolean,
-    sound: boolean
+    sound: boolean,
   }> {
-    var requestedPermissions = {};
+    let requestedPermissions = {};
     if (permissions) {
       requestedPermissions = {
         alert: !!permissions.alert,
         badge: !!permissions.badge,
-        sound: !!permissions.sound
+        sound: !!permissions.sound,
       };
     } else {
       requestedPermissions = {
         alert: true,
         badge: true,
-        sound: true
+        sound: true,
       };
     }
     return RCTPushNotificationManager.requestPermissions(requestedPermissions);
@@ -285,10 +300,7 @@ class PushNotificationIOS {
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#checkpermissions
    */
   static checkPermissions(callback: Function) {
-    invariant(
-      typeof callback === 'function',
-      'Must provide a valid callback'
-    );
+    invariant(typeof callback === 'function', 'Must provide a valid callback');
     RCTPushNotificationManager.checkPermissions(callback);
   }
 
@@ -299,9 +311,11 @@ class PushNotificationIOS {
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#getinitialnotification
    */
   static getInitialNotification(): Promise<?PushNotificationIOS> {
-    return RCTPushNotificationManager.getInitialNotification().then(notification => {
-      return notification && new PushNotificationIOS(notification);
-    });
+    return RCTPushNotificationManager.getInitialNotification().then(
+      notification => {
+        return notification && new PushNotificationIOS(notification);
+      },
+    );
   }
 
   /**
@@ -321,8 +335,8 @@ class PushNotificationIOS {
     if (nativeNotif.remote) {
       // Extract data from Apple's `aps` dict as defined:
       // https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
-      Object.keys(nativeNotif).forEach((notifKey) => {
-        var notifVal = nativeNotif[notifKey];
+      Object.keys(nativeNotif).forEach(notifKey => {
+        const notifVal = nativeNotif[notifKey];
         if (notifKey === 'aps') {
           this._alert = notifVal.alert;
           this._sound = notifVal.sound;
@@ -351,12 +365,19 @@ class PushNotificationIOS {
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#finish
    */
   finish(fetchResult: string) {
-    if (!this._isRemote || !this._notificationId || this._remoteNotificationCompleteCallbackCalled) {
+    if (
+      !this._isRemote ||
+      !this._notificationId ||
+      this._remoteNotificationCompleteCallbackCalled
+    ) {
       return;
     }
     this._remoteNotificationCompleteCallbackCalled = true;
 
-    RCTPushNotificationManager.onFinishRemoteNotification(this._notificationId, fetchResult);
+    RCTPushNotificationManager.onFinishRemoteNotification(
+      this._notificationId,
+      fetchResult,
+    );
   }
 
   /**

@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule parseErrorStack
+ * @format
  * @flow
  */
+
 'use strict';
 
 export type StackFrame = {
@@ -29,7 +30,9 @@ function parseErrorStack(e: ExtendedError): Array<StackFrame> {
    * error found when Flow v0.54 was deployed. To see the error delete this
    * comment and run Flow. */
   const stacktraceParser = require('stacktrace-parser');
-  const stack = Array.isArray(e.stack) ? e.stack : stacktraceParser.parse(e.stack);
+  const stack = Array.isArray(e.stack)
+    ? e.stack
+    : stacktraceParser.parse(e.stack);
 
   let framesToPop = typeof e.framesToPop === 'number' ? e.framesToPop : 0;
   while (framesToPop--) {

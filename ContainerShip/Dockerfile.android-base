@@ -1,4 +1,19 @@
+# React Native Base Android Development Environment
+#
+# This image provides a base Android development environment for React Native,
+# including, but not limited to, the Android SDK, Android NDK, Node, and BUCK.
+# These are required in order to run React Native's Android unit and integration
+# tests.
+#
+# This image is not currently built automatically as part of React Native's CI
+# infrastructure. It should not be necessary to rebuild this image while the
+# Android dependencies (Android SDK version, build tools version, etc) remain
+# equal. The operations performed to build this image are those that tend to
+# remain stable across commits in any given React Native release.
+
 FROM library/ubuntu:16.04
+
+LABEL Description="This image provides a base Android development environment for React Native, and may be used to run tests." maintainer "Héctor Ramos <hector@fb.com>"
 
 # set default build arguments
 ARG ANDROID_TOOLS_VERSION=25.2.5

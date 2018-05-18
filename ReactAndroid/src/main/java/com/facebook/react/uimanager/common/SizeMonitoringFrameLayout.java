@@ -20,7 +20,7 @@ import android.widget.FrameLayout;
  */
 public class SizeMonitoringFrameLayout extends FrameLayout {
 
-  public static interface OnSizeChangedListener {
+  public interface OnSizeChangedListener {
     void onSizeChanged(int width, int height, int oldWidth, int oldHeight);
   }
 
