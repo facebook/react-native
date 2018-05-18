@@ -4,64 +4,78 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * Regenerate through
+ *    `js1 upgrade babel-helpers` + manual tweaks
+ *
+ * Components used for this file;
+ *   - assertThisInitialized
+ *   - classCallCheck
+ *   - createClass
+ *   - defineProperty
+ *   - extends
+ *   - get
+ *   - inherits
+ *   - interopRequireDefault
+ *   - interopRequireWildcard
+ *   - objectWithoutProperties
+ *   - possibleConstructorReturn
+ *   - slicedToArray
+ *   - taggedTemplateLiteral
+ *   - taggedTemplateLiteralLoose
+ *   - toArray
+ *   - toConsumableArray
+ *   - wrapNativeSuper
+ *
+ * @flow
+ * @generated (with babel 7.0.0-beta.40)
  * @format
- * @polyfill
  * @nolint
+ * @polyfill
  */
 
-/* eslint-disable quotes, curly, no-proto, no-undef-init, dot-notation */
-
-// Created by running:
-// require('fs').writeFileSync('babelExternalHelpers.js', require('@babel/core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray taggedTemplateLiteral toArray toConsumableArray wrapNativeSuper assertThisInitialized taggedTemplateLiteralLoose'.split(' ')))// then replacing the `global` reference in the last line to also use `this`.
-//
-// Actually, that's a lie, because babel omits _extends and
-// createRawReactElement. the file is also cleaned up a bit.
-// You may need to clear wrapNativeSuper while the bug hasn't been fixed yet.
-// Do try to keep diffs to a minimum.
+'use strict';
 
 var babelHelpers = (global.babelHelpers = {});
 
-babelHelpers.createRawReactElement = (function() {
-  var REACT_ELEMENT_TYPE =
-    (typeof Symbol === 'function' &&
-      Symbol.for &&
-      Symbol.for('react.element')) ||
-    0xeac7;
-  return function createRawReactElement(type, key, props) {
-    return {
-      $$typeof: REACT_ELEMENT_TYPE,
-      type: type,
-      key: key,
-      ref: null,
-      props: props,
-      _owner: null,
-    };
-  };
-})();
+// ### classCallCheck ###
 
-babelHelpers.classCallCheck = function(instance, Constructor) {
+function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError('Cannot call a class as a function');
   }
-};
+}
+
+babelHelpers.classCallCheck = _classCallCheck;
+
+// ### createClass ###
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ('value' in descriptor) descriptor.writable = true;
+    if ('value' in descriptor) {
+      descriptor.writable = true;
+    }
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
 
-babelHelpers.createClass = function(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) {
+    _defineProperties(Constructor.prototype, protoProps);
+  }
+  if (staticProps) {
+    _defineProperties(Constructor, staticProps);
+  }
   return Constructor;
-};
+}
 
-babelHelpers.defineProperty = function(obj, key, value) {
+babelHelpers.createClass = _createClass;
+
+// ### defineProperty ###
+
+function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -74,26 +88,40 @@ babelHelpers.defineProperty = function(obj, key, value) {
   }
 
   return obj;
-};
+}
 
-babelHelpers._extends = babelHelpers.extends =
-  Object.assign ||
-  function(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
+babelHelpers.defineProperty = _defineProperty;
 
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
+// ### extends ###
+
+function _extends() {
+  babelHelpers.extends = _extends =
+    Object.assign ||
+    function(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
         }
       }
-    }
 
-    return target;
-  };
+      return target;
+    };
 
-babelHelpers.get = function get(object, property, receiver) {
-  if (object === null) object = Function.prototype;
+  return _extends.apply(this, arguments);
+}
+
+babelHelpers.extends = _extends;
+
+// ### get ###
+
+function _get(object, property, receiver) {
+  if (object === null) {
+    object = Function.prototype;
+  }
   var desc = Object.getOwnPropertyDescriptor(object, property);
 
   if (desc === undefined) {
@@ -102,7 +130,7 @@ babelHelpers.get = function get(object, property, receiver) {
     if (parent === null) {
       return undefined;
     } else {
-      return get(parent, property, receiver);
+      return _get(parent, property, receiver);
     }
   } else if ('value' in desc) {
     return desc.value;
@@ -115,12 +143,17 @@ babelHelpers.get = function get(object, property, receiver) {
 
     return getter.call(receiver);
   }
-};
+}
 
-babelHelpers.inherits = function(subClass, superClass) {
+babelHelpers.get = _get;
+
+// ### inherits ###
+
+function _inherits(subClass, superClass) {
   if (typeof superClass !== 'function' && superClass !== null) {
     throw new TypeError('Super expression must either be null or a function');
   }
+
   subClass.prototype = Object.create(superClass && superClass.prototype, {
     constructor: {
       value: subClass,
@@ -129,24 +162,32 @@ babelHelpers.inherits = function(subClass, superClass) {
       configurable: true,
     },
   });
-  if (superClass)
+  if (superClass) {
     Object.setPrototypeOf
       ? Object.setPrototypeOf(subClass, superClass)
       : (subClass.__proto__ = superClass);
-};
+  }
+}
+
+babelHelpers.inherits = _inherits;
+
+// ### wrapNativeSuper ###
 
 var _gPO =
   Object.getPrototypeOf ||
   function _gPO(o) {
     return o.__proto__;
   };
+
 var _sPO =
   Object.setPrototypeOf ||
   function _sPO(o, p) {
     o.__proto__ = p;
     return o;
   };
+
 var _construct =
+  // FB:
   // TODO: prepack does not like this line (and we can use the fallback just fine)
   // (typeof Reflect === "object" && Reflect.construct) ||
   function _construct(Parent, args, Class) {
@@ -156,24 +197,32 @@ var _construct =
     Constructor = Parent.bind.apply(Parent, a);
     return _sPO(new Constructor(), Class.prototype);
   };
+
 var _cache = typeof Map === 'function' && new Map();
-babelHelpers.wrapNativeSuper = function(Class) {
+
+function _wrapNativeSuper(Class) {
   // FB:
   // Note: while extending native classes is pretty meh we do have cases, for
   // example; Error. There is also a false positive, for example; Blob.
-
   if (typeof Class !== 'function') {
     throw new TypeError('Super expression must either be null or a function');
   }
+
   if (typeof _cache !== 'undefined') {
-    if (_cache.has(Class)) return _cache.get(Class);
+    if (_cache.has(Class)) {
+      return _cache.get(Class);
+    }
+
     _cache.set(Class, Wrapper);
   }
+
   function Wrapper() {
+    // FB:
     // this is a temporary fix for a babel bug (it's invoking the wrong func
     // when you do `super()`)
     return _construct(Class, arguments, _gPO(this).constructor);
   }
+
   Wrapper.prototype = Object.create(Class.prototype, {
     constructor: {
       value: Wrapper,
@@ -188,17 +237,25 @@ babelHelpers.wrapNativeSuper = function(Class) {
       return _construct(Class, arguments, _gPO(this).constructor);
     }, Class),
   );
-};
+}
 
-babelHelpers.interopRequireDefault = function(obj) {
+babelHelpers.wrapNativeSuper = _wrapNativeSuper;
+
+// ### interopRequireDefault ###
+
+function _interopRequireDefault(obj) {
   return obj && obj.__esModule
     ? obj
     : {
         default: obj,
       };
-};
+}
 
-babelHelpers.interopRequireWildcard = function(obj) {
+babelHelpers.interopRequireDefault = _interopRequireDefault;
+
+// ### interopRequireWildcard ###
+
+function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
   } else {
@@ -224,17 +281,25 @@ babelHelpers.interopRequireWildcard = function(obj) {
     newObj.default = obj;
     return newObj;
   }
-};
+}
 
-babelHelpers.objectWithoutProperties = function(source, excluded) {
-  if (source == null) return {};
+babelHelpers.interopRequireWildcard = _interopRequireWildcard;
+
+// ### objectWithoutProperties ###
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) {
+    return {};
+  }
   var target = {};
   var sourceKeys = Object.keys(source);
   var key, i;
 
   for (i = 0; i < sourceKeys.length; i++) {
     key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
+    if (excluded.indexOf(key) >= 0) {
+      continue;
+    }
     target[key] = source[key];
   }
 
@@ -243,16 +308,24 @@ babelHelpers.objectWithoutProperties = function(source, excluded) {
 
     for (i = 0; i < sourceSymbolKeys.length; i++) {
       key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      if (excluded.indexOf(key) >= 0) {
+        continue;
+      }
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) {
+        continue;
+      }
       target[key] = source[key];
     }
   }
 
   return target;
-};
+}
 
-babelHelpers.possibleConstructorReturn = function(self, call) {
+babelHelpers.objectWithoutProperties = _objectWithoutProperties;
+
+// ### possibleConstructorReturn ###
+
+function _possibleConstructorReturn(self, call) {
   if (call && (typeof call === 'object' || typeof call === 'function')) {
     return call;
   }
@@ -264,7 +337,11 @@ babelHelpers.possibleConstructorReturn = function(self, call) {
   }
 
   return self;
-};
+}
+
+babelHelpers.possibleConstructorReturn = _possibleConstructorReturn;
+
+// ### slicedToArray ###
 
 function _sliceIterator(arr, i) {
   var _arr = [];
@@ -280,23 +357,29 @@ function _sliceIterator(arr, i) {
     ) {
       _arr.push(_s.value);
 
-      if (i && _arr.length === i) break;
+      if (i && _arr.length === i) {
+        break;
+      }
     }
   } catch (err) {
     _d = true;
     _e = err;
   } finally {
     try {
-      if (!_n && _i['return'] != null) _i['return']();
+      if (!_n && _i.return != null) {
+        _i.return();
+      }
     } finally {
-      if (_d) throw _e;
+      if (_d) {
+        throw _e;
+      }
     }
   }
 
   return _arr;
 }
 
-babelHelpers.slicedToArray = function(arr, i) {
+function _slicedToArray(arr, i) {
   if (Array.isArray(arr)) {
     return arr;
   } else if (Symbol.iterator in Object(arr)) {
@@ -304,9 +387,13 @@ babelHelpers.slicedToArray = function(arr, i) {
   } else {
     throw new TypeError('Invalid attempt to destructure non-iterable instance');
   }
-};
+}
 
-babelHelpers.taggedTemplateLiteral = function(strings, raw) {
+babelHelpers.slicedToArray = _slicedToArray;
+
+// ### taggedTemplateLiteral ###
+
+function _taggedTemplateLiteral(strings, raw) {
   return Object.freeze(
     Object.defineProperties(strings, {
       raw: {
@@ -314,24 +401,37 @@ babelHelpers.taggedTemplateLiteral = function(strings, raw) {
       },
     }),
   );
-};
+}
 
-babelHelpers.toArray = function(arr) {
+babelHelpers.taggedTemplateLiteral = _taggedTemplateLiteral;
+
+// ### toArray ###
+
+function _toArray(arr) {
   return Array.isArray(arr) ? arr : Array.from(arr);
-};
+}
 
-babelHelpers.toConsumableArray = function(arr) {
+babelHelpers.toArray = _toArray;
+
+// ### toConsumableArray ###
+
+function _toConsumableArray(arr) {
   if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++)
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
       arr2[i] = arr[i];
+    }
 
     return arr2;
   } else {
     return Array.from(arr);
   }
-};
+}
 
-babelHelpers.assertThisInitialized = function(self) {
+babelHelpers.toConsumableArray = _toConsumableArray;
+
+// ### assertThisInitialized ###
+
+function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError(
       "this hasn't been initialised - super() hasn't been called",
@@ -339,9 +439,15 @@ babelHelpers.assertThisInitialized = function(self) {
   }
 
   return self;
-};
+}
 
-babelHelpers.taggedTemplateLiteralLoose = function(strings, raw) {
+babelHelpers.assertThisInitialized = _assertThisInitialized;
+
+// ### taggedTemplateLiteralLoose ###
+
+function _taggedTemplateLiteralLoose(strings, raw) {
   strings.raw = raw;
   return strings;
-};
+}
+
+babelHelpers.taggedTemplateLiteralLoose = _taggedTemplateLiteralLoose;
