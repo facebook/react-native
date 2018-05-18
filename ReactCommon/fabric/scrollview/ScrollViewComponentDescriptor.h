@@ -13,12 +13,7 @@
 namespace facebook {
 namespace react {
 
-class ScrollViewComponentDescriptor final: public ConcreteComponentDescriptor<ScrollViewShadowNode> {
-public:
-  ComponentName getComponentName() const override {
-    return "ScrollView";
-  }
-};
+using ScrollViewComponentDescriptor = ConcreteComponentDescriptor<ScrollViewShadowNode>;
 
 } // namespace react
 } // namespace facebook

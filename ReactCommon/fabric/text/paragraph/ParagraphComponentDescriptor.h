@@ -27,10 +27,6 @@ public:
     textLayoutManager_ = std::make_shared<TextLayoutManager>();
   }
 
-  ComponentName getComponentName() const override {
-    return "Paragraph";
-  }
-
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor<ParagraphShadowNode>::adopt(shadowNode);
 

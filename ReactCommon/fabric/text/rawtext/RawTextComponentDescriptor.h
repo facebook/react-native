@@ -13,15 +13,7 @@
 namespace facebook {
 namespace react {
 
-/*
- * Descriptor for <RawText> component.
- */
-class RawTextComponentDescriptor: public ConcreteComponentDescriptor<RawTextShadowNode> {
-public:
-  ComponentName getComponentName() const override {
-    return "RawText";
-  }
-};
+using RawTextComponentDescriptor = ConcreteComponentDescriptor<RawTextShadowNode>;
 
 } // namespace react
 } // namespace facebook

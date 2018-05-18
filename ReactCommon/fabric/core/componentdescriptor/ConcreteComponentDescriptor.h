@@ -35,6 +35,21 @@ public:
     return typeid(ShadowNodeT).hash_code();
   }
 
+  ComponentName getComponentName() const override {
+    // Even if this looks suboptimal, it is the only way to call
+    // a virtual non-static method of `ShadowNodeT`.
+    // Because it is not a hot path (it is executed once per an app run),
+    // it's fine.
+    return std::make_shared<ShadowNodeT>(
+      0,
+      0,
+      nullptr,
+      std::make_shared<const ConcreteProps>(),
+      ShadowNode::emptySharedShadowNodeSharedList(),
+      nullptr
+    )->ShadowNodeT::getComponentName();
+  }
+
   SharedShadowNode createShadowNode(
     const Tag &tag,
     const Tag &rootTag,
