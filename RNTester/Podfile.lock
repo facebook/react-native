@@ -14,9 +14,6 @@ PODS:
     - Folly (= 2016.10.31.00)
     - React/Core
     - React/cxxreact
-  - React/CxxExceptions (1000.0.0):
-    - React/CxxBridge
-    - React/exceptions
   - React/cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - Folly (= 2016.10.31.00)
@@ -25,18 +22,26 @@ PODS:
   - React/DevSupport (1000.0.0):
     - React/Core
     - React/RCTWebSocket
-  - React/exceptions (1000.0.0)
   - React/fabric (1000.0.0):
+    - React/fabric/attributedstring (= 1000.0.0)
     - React/fabric/core (= 1000.0.0)
     - React/fabric/debug (= 1000.0.0)
     - React/fabric/graphics (= 1000.0.0)
+    - React/fabric/text (= 1000.0.0)
+    - React/fabric/textlayoutmanager (= 1000.0.0)
     - React/fabric/uimanager (= 1000.0.0)
     - React/fabric/view (= 1000.0.0)
+  - React/fabric/attributedstring (1000.0.0):
+    - Folly (= 2016.10.31.00)
   - React/fabric/core (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/debug (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/graphics (1000.0.0):
+    - Folly (= 2016.10.31.00)
+  - React/fabric/text (1000.0.0):
+    - Folly (= 2016.10.31.00)
+  - React/fabric/textlayoutmanager (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/uimanager (1000.0.0):
     - Folly (= 2016.10.31.00)
@@ -61,7 +66,6 @@ PODS:
   - React/RCTFabric (1000.0.0):
     - Folly (= 2016.10.31.00)
     - React/Core
-    - React/CxxExceptions
     - React/fabric
   - React/RCTGeolocation (1000.0.0):
     - React/Core
@@ -111,7 +115,7 @@ DEPENDENCIES:
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -131,9 +135,9 @@ SPEC CHECKSUMS:
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Folly: 9a8eea4725a0b6ba3256ebf206c21e352c23abf8
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  React: e3382e39c51a5e5889248e97c6b9b1b3ca443a08
+  React: 3d56cdd885ecc0f2f3534b2f54a11cf9707229fb
   yoga: bdd268c5812f00bdb52cc2b58f129797e97935eb
 
 PODFILE CHECKSUM: 1a96172007b66aa74825c234f17139dd9c3d3cd7
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.2

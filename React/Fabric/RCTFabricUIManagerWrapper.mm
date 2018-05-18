@@ -7,7 +7,6 @@
 
 #import "RCTFabricUIManagerWrapper.h"
 
-#include <React/RCTCxxExceptionManager.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <fabric/view/ViewComponentDescriptor.h>
@@ -20,7 +19,6 @@
 @implementation RCTFabricUIManagerWrapper
 {
   std::shared_ptr<FabricUIManager> _manager;
-  std::shared_ptr<ExceptionManager> _exceptionManager;
   std::shared_ptr<IFabricPlatformUIOperationManager> _platformUIOperationManager;
 }
 
@@ -28,7 +26,6 @@
 {
   self = [super init];
   if (self) {
-    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
     _platformUIOperationManager = std::make_shared<RCTFabricPlatformUIOperationManagerConnector>();
 
     auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
@@ -43,11 +40,6 @@
 - (std::shared_ptr<FabricUIManager>)manager
 {
   return _manager;
-}
-
-- (std::shared_ptr<ExceptionManager>)exceptionManager
-{
-  return _exceptionManager;
 }
 
 - (void)invalidate

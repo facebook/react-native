@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -30,9 +32,10 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   current = 0;
 
   onPress = () => {
-    const animConfig = this.current && this.props.reverseConfig
-      ? this.props.reverseConfig
-      : this.props.config;
+    const animConfig =
+      this.current && this.props.reverseConfig
+        ? this.props.reverseConfig
+        : this.props.config;
     this.current = this.current ? 0 : 1;
     const config: Object = {
       ...animConfig,
@@ -62,9 +65,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
           <View>
             <Text>JavaScript:</Text>
           </View>
-          <View style={styles.row}>
-            {this.props.children(this.state.js)}
-          </View>
+          <View style={styles.row}>{this.props.children(this.state.js)}</View>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -155,7 +156,10 @@ class LoopExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 const RNTesterSettingSwitchRow = require('RNTesterSettingSwitchRow');
-class InternalSettings extends React.Component<{}, {busyTime: number | string, filteredStall: number}> {
+class InternalSettings extends React.Component<
+  {},
+  {busyTime: number | string, filteredStall: number},
+> {
   _stallInterval: ?number;
   render() {
     return (
@@ -170,8 +174,7 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
-              while (Date.now() - start < 100) {
-              }
+              while (Date.now() - start < 100) {}
             }, 300);
           }}
           onDisable={() => {
@@ -191,8 +194,8 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
               onStall: ({busyTime}) =>
                 this.setState(state => ({
                   busyTime,
-                  filteredStall: (state.filteredStall || 0) * 0.97 +
-                    busyTime * 0.03,
+                  filteredStall:
+                    (state.filteredStall || 0) * 0.97 + busyTime * 0.03,
                 })),
             });
           }}
@@ -200,11 +203,12 @@ class InternalSettings extends React.Component<{}, {busyTime: number | string, f
             console.warn('Cannot disable yet....');
           }}
         />
-        {this.state &&
+        {this.state && (
           <Text>
             {`JS Stall filtered: ${Math.round(this.state.filteredStall)}, `}
             {`last: ${this.state.busyTime}`}
-          </Text>}
+          </Text>
+        )}
       </View>
     );
   }
@@ -252,7 +256,10 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class TrackingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class TrackingExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     native: new Animated.Value(0),
     toNative: new Animated.Value(0),
@@ -287,9 +294,15 @@ class TrackingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> 
   };
 
   renderBlock = (anim, dest) => [
-    <Animated.View key="line" style={[styles.line, { transform: [{ translateX: dest }]}]}/>,
-    <Animated.View key="block" style={[styles.block, { transform: [{ translateX: anim }]}]}/>,
-  ]
+    <Animated.View
+      key="line"
+      style={[styles.line, {transform: [{translateX: dest}]}]}
+    />,
+    <Animated.View
+      key="block"
+      style={[styles.block, {transform: [{translateX: anim}]}]}
+    />,
+  ];
 
   render() {
     return (
@@ -572,7 +585,7 @@ exports.examples = [
     title: 'translateX => Animated.spring (stiffness/damping/mass)',
     render: function() {
       return (
-        <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3 }}>
+        <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3}}>
           {anim => (
             <Animated.View
               style={[

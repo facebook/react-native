@@ -647,7 +647,7 @@ public class UIViewOperationQueue {
   public void enqueueDispatchCommand(
       int reactTag,
       int commandId,
-      ReadableArray commandArgs) {
+      @Nullable ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
   }
 

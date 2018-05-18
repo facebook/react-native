@@ -1,7 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include "JInspector.h"
-#include <jschelpers/JavaScriptCore.h>
 
 #ifdef WITH_INSPECTOR
 

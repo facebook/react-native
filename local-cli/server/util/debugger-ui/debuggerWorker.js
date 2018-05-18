@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
@@ -22,14 +24,14 @@ onmessage = (function() {
       hasWarned = true;
       console.warn(
         'Remote debugger is in a background tab which may cause apps to ' +
-        'perform slowly. Fix this by foregrounding the tab (or opening it in ' +
-        'a separate window).'
+          'perform slowly. Fix this by foregrounding the tab (or opening it in ' +
+          'a separate window).',
       );
     };
   })();
 
   var messageHandlers = {
-    'executeApplicationScript': function(message, sendReply) {
+    executeApplicationScript: function(message, sendReply) {
       for (var key in message.inject) {
         self[key] = JSON.parse(message.inject[key]);
       }
@@ -41,7 +43,7 @@ onmessage = (function() {
       }
       sendReply(null /* result */, error);
     },
-    'setDebuggerVisibility': function(message) {
+    setDebuggerVisibility: function(message) {
       visibilityState = message.visibilityState;
     },
   };
@@ -67,7 +69,10 @@ onmessage = (function() {
       var error;
       try {
         if (typeof __fbBatchedBridge === 'object') {
-          returnValue = __fbBatchedBridge[object.method].apply(null, object.arguments);
+          returnValue = __fbBatchedBridge[object.method].apply(
+            null,
+            object.arguments,
+          );
         } else {
           error = 'Failed to call function, __fbBatchedBridge is undefined';
         }

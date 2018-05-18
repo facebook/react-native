@@ -4,18 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-} = ReactNative;
+var {StyleSheet, Text, TouchableHighlight} = ReactNative;
 
 class RNTesterButton extends React.Component<{onPress?: Function}> {
   static propTypes = {
@@ -31,7 +29,8 @@ class RNTesterButton extends React.Component<{onPress?: Function}> {
         <Text>
           {
             // $FlowFixMe found when converting React.createClass to ES6
-            this.props.children}
+            this.props.children
+          }
         </Text>
       </TouchableHighlight>
     );

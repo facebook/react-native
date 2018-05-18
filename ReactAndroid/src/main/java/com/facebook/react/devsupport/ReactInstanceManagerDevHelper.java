@@ -8,9 +8,9 @@
 package com.facebook.react.devsupport;
 
 import android.app.Activity;
-
 import com.facebook.react.bridge.JavaJSExecutor;
 
+import com.facebook.react.bridge.NativeDeltaClient;
 import javax.annotation.Nullable;
 
 /**
@@ -27,7 +27,7 @@ public interface ReactInstanceManagerDevHelper {
   /**
    * Notify react instance manager about new JS bundle version downloaded from the server.
    */
-  void onJSBundleLoadedFromServer();
+  void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient);
 
   /**
    * Request to toggle the react element inspector.

@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /**
@@ -10,7 +12,10 @@
  * a new PBXItemContainerProxy is created that contains `containerPortal` value
  * which equals to xcodeproj file.uuid from PBXFileReference section.
  */
-module.exports = function removeFromPbxItemContainerProxySection(project, file) {
+module.exports = function removeFromPbxItemContainerProxySection(
+  project,
+  file,
+) {
   const section = project.hash.project.objects.PBXContainerItemProxy;
 
   for (var key of Object.keys(section)) {

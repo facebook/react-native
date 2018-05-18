@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -11,12 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableWithoutFeedback,
-} = ReactNative;
+var {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
@@ -32,14 +28,22 @@ class ToastExample extends React.Component<{}, $FlowFixMeState> {
         <RNTesterBlock title="Simple toast">
           <TouchableWithoutFeedback
             onPress={() =>
-              ToastAndroid.show('This is a toast with short duration', ToastAndroid.SHORT)}>
+              ToastAndroid.show(
+                'This is a toast with short duration',
+                ToastAndroid.SHORT,
+              )
+            }>
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Toast with long duration">
           <TouchableWithoutFeedback
             onPress={() =>
-              ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG)}>
+              ToastAndroid.show(
+                'This is a toast with long duration',
+                ToastAndroid.LONG,
+              )
+            }>
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>

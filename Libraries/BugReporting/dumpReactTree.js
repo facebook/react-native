@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /*
@@ -35,7 +37,7 @@ function getReactTree() {
     'React tree dumps have been temporarily disabled while React is ' +
     'upgraded to Fiber.'
   );
-/*
+  /*
   let output = '';
   const rootIds = Object.getOwnPropertyNames(ReactNativeMount._instancesByContainerID);
   for (const rootId of rootIds) {

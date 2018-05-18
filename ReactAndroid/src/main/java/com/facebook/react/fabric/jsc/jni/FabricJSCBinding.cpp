@@ -33,10 +33,15 @@ typedef struct FabricJSCUIManager {
     : wrapperObjectClassRef(classRef)
     , useCustomJSC(customJSC) {
     fabricUiManager = make_global(module);
+    JSC_JSClassRetain(useCustomJSC, wrapperObjectClassRef);
   }
   global_ref<jobject> fabricUiManager;
   JSClassRef wrapperObjectClassRef;
   bool useCustomJSC;
+
+  ~FabricJSCUIManager() {
+    JSC_JSClassRelease(useCustomJSC, wrapperObjectClassRef);
+  }
 } FabricJSCUIManager;
 
 jobject makePlainGlobalRef(jobject object) {
@@ -282,6 +287,8 @@ void FabricJSCBinding::installFabric(jlong jsContextNativePointer,
   addFabricMethod(context, fabricModule, classRef, module, "createChildSet", createChildSet);
   addFabricMethod(context, fabricModule, classRef, module, "appendChildToSet", appendChildToSet);
   addFabricMethod(context, fabricModule, classRef, module, "completeRoot", completeRoot);
+
+  JSC_JSClassRelease(useCustomJSC, classRef);
 
   JSObjectRef globalObject = JSC_JSContextGetGlobalObject(context);
   JSStringRef globalName = JSC_JSStringCreateWithUTF8CString(context, "nativeFabricUIManager");

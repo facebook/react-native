@@ -7,7 +7,6 @@
 #include <map>
 #include <vector>
 
-#include <cxxreact/JSCExecutor.h>
 #include <cxxreact/JSExecutor.h>
 
 namespace folly {
@@ -74,9 +73,7 @@ public:
   void* getJavaScriptContext();
   bool isInspectable();
 
-  #ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);
-  #endif
 
   /**
    * Synchronously tears down the bridge and the main executor.

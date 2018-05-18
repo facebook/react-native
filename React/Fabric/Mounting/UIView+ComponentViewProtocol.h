@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProps:(facebook::react::SharedProps)props
            oldProps:(facebook::react::SharedProps)oldProps;
 
+- (void)updateLocalData:(facebook::react::SharedLocalData)localData
+           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
+
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;
 

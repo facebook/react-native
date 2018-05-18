@@ -28,6 +28,11 @@
 - (void)executeWithRegistry:(RCTComponentViewRegistry *)registry
 {
   UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:_tag];
+
+  if (componentView == nil) {
+    return;
+  }
+
   [registry enqueueComponentViewWithName:_componentName tag:_tag componentView:componentView];
 }
 

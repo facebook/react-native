@@ -17,6 +17,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "7.0.0-beta.40",
     "@babel/plugin-proposal-object-rest-spread": "7.0.0-beta.40",
+    "@babel/plugin-proposal-optional-chaining": "7.0.0-beta.40",
     "@babel/plugin-transform-arrow-functions": "7.0.0-beta.40",
     "@babel/plugin-transform-block-scoping": "7.0.0-beta.40",
     "@babel/plugin-transform-classes": "7.0.0-beta.40",

@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -48,30 +50,25 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   }
 
   _fetchRandomPhoto = () => {
-    CameraRoll.getPhotos(
-      {first: PAGE_SIZE}
-    ).then(
-      (data) => {
-        if (!this._isMounted) {
-          return;
-        }
-        var edges = data.edges;
-        var edge = edges[Math.floor(Math.random() * edges.length)];
-        var randomPhoto = edge && edge.node && edge.node.image;
-        if (randomPhoto) {
-          let {width, height} = randomPhoto;
-          width *= 0.25;
-          height *= 0.25;
-          ImageEditor.cropImage(
-            randomPhoto.uri,
-            {offset: {x: 0, y: 0}, size: {width, height}},
-            (uri) => this.setState({randomPhoto: {uri}}),
-            (error) => undefined
-          );
-        }
-      },
-      (error) => undefined
-    );
+    CameraRoll.getPhotos({first: PAGE_SIZE}).then(data => {
+      if (!this._isMounted) {
+        return;
+      }
+      var edges = data.edges;
+      var edge = edges[Math.floor(Math.random() * edges.length)];
+      var randomPhoto = edge && edge.node && edge.node.image;
+      if (randomPhoto) {
+        let {width, height} = randomPhoto;
+        width *= 0.25;
+        height *= 0.25;
+        ImageEditor.cropImage(
+          randomPhoto.uri,
+          {offset: {x: 0, y: 0}, size: {width, height}},
+          uri => this.setState({randomPhoto: {uri}}),
+          error => undefined,
+        );
+      }
+    }, error => undefined);
   };
 
   _addTextParam = () => {
@@ -107,10 +104,10 @@ class XHRExampleFormData extends React.Component<Object, Object> {
         name: 'image.jpg',
       });
     }
-    this.state.textParams.forEach(
-      (param) => formdata.append(param.name, param.value)
+    this.state.textParams.forEach(param =>
+      formdata.append(param.name, param.value),
     );
-    xhr.upload.onprogress = (event) => {
+    xhr.upload.onprogress = event => {
       if (event.lengthComputable) {
         this.setState({uploadProgress: event.loaded / event.total});
       }
@@ -124,10 +121,7 @@ class XHRExampleFormData extends React.Component<Object, Object> {
     var image = null;
     if (this.state.randomPhoto) {
       image = (
-        <Image
-          source={this.state.randomPhoto}
-          style={styles.randomPhoto}
-        />
+        <Image source={this.state.randomPhoto} style={styles.randomPhoto} />
       );
     }
     var textItems = this.state.textParams.map((item, index) => (
@@ -170,8 +164,9 @@ class XHRExampleFormData extends React.Component<Object, Object> {
       <View>
         <View style={styles.paramRow}>
           <Text style={styles.photoLabel}>
-            Random photo from your library
-            (<Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
+            Random photo from your library (<Text
+              style={styles.textButton}
+              onPress={this._fetchRandomPhoto}>
               update
             </Text>)
           </Text>
@@ -185,9 +180,7 @@ class XHRExampleFormData extends React.Component<Object, Object> {
             Add a text param
           </Text>
         </View>
-        <View style={styles.uploadButton}>
-          {uploadButton}
-        </View>
+        <View style={styles.uploadButton}>{uploadButton}</View>
       </View>
     );
   }

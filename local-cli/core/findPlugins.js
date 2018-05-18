@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const path = require('path');
@@ -16,10 +19,11 @@ const flatten = require('lodash').flatten;
  * @param  {String} dependency Name of the dependency
  * @return {Boolean}           If dependency is a rnpm plugin
  */
-const isRNPMPlugin = (dependency) => dependency.indexOf('rnpm-plugin-') === 0;
-const isReactNativePlugin = (dependency) => dependency.indexOf('react-native-') === 0;
+const isRNPMPlugin = dependency => dependency.indexOf('rnpm-plugin-') === 0;
+const isReactNativePlugin = dependency =>
+  dependency.indexOf('react-native-') === 0;
 
-const readPackage = (folder) => {
+const readPackage = folder => {
   try {
     return require(path.join(folder, 'package.json'));
   } catch (e) {
@@ -27,7 +31,7 @@ const readPackage = (folder) => {
   }
 };
 
-const findPluginsInReactNativePackage = (pjson) => {
+const findPluginsInReactNativePackage = pjson => {
   if (!pjson.rnpm || !pjson.rnpm.plugin) {
     return [];
   }
@@ -35,7 +39,7 @@ const findPluginsInReactNativePackage = (pjson) => {
   return path.join(pjson.name, pjson.rnpm.plugin);
 };
 
-const findPlatformsInPackage = (pjson) => {
+const findPlatformsInPackage = pjson => {
   if (!pjson.rnpm || !pjson.rnpm.platform) {
     return [];
   }
@@ -43,7 +47,7 @@ const findPlatformsInPackage = (pjson) => {
   return path.join(pjson.name, pjson.rnpm.platform);
 };
 
-const findPluginInFolder = (folder) => {
+const findPluginInFolder = folder => {
   const pjson = readPackage(folder);
 
   if (!pjson) {
@@ -52,7 +56,7 @@ const findPluginInFolder = (folder) => {
 
   const deps = union(
     Object.keys(pjson.dependencies || {}),
-    Object.keys(pjson.devDependencies || {})
+    Object.keys(pjson.devDependencies || {}),
   );
 
   return deps.reduce(
@@ -71,7 +75,7 @@ const findPluginInFolder = (folder) => {
       }
       return {commands: commands, platforms: platforms};
     },
-    {commands: [], platforms: []}
+    {commands: [], platforms: []},
   );
 };
 
@@ -84,6 +88,6 @@ module.exports = function findPlugins(folders) {
   const plugins = folders.map(findPluginInFolder);
   return {
     commands: uniq(flatten(plugins.map(p => p.commands))),
-    platforms: uniq(flatten(plugins.map(p => p.platforms)))
+    platforms: uniq(flatten(plugins.map(p => p.platforms))),
   };
 };

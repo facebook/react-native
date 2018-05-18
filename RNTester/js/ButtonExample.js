@@ -4,17 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  Alert,
-  Button,
-  View,
-} = ReactNative;
+const {Alert, Button, View} = ReactNative;
 
 const onButtonPress = () => {
   Alert.alert('Button has been pressed!');
@@ -28,7 +26,8 @@ exports.description = 'Simple React Native button component.';
 exports.examples = [
   {
     title: 'Simple Button',
-    description: 'The title and onPress handler are required. It is ' +
+    description:
+      'The title and onPress handler are required. It is ' +
       'recommended to set accessibilityLabel to help make your app usable by ' +
       'everyone.',
     render: function() {
@@ -43,7 +42,8 @@ exports.examples = [
   },
   {
     title: 'Adjusted color',
-    description: 'Adjusts the color in a way that looks standard on each ' +
+    description:
+      'Adjusts the color in a way that looks standard on each ' +
       'platform. On iOS, the color prop controls the color of the text. On ' +
       'Android, the color adjusts the background color of the button.',
     render: function() {
@@ -59,8 +59,8 @@ exports.examples = [
   },
   {
     title: 'Fit to text layout',
-    description: 'This layout strategy lets the title define the width of ' +
-      'the button',
+    description:
+      'This layout strategy lets the title define the width of ' + 'the button',
     render: function() {
       return (
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>

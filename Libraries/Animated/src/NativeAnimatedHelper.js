@@ -208,7 +208,7 @@ function validateTransform(configs: Array<Object>): void {
 }
 
 function validateStyles(styles: Object): void {
-  for (var key in styles) {
+  for (const key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(
         `Style property '${key}' is not supported by native animated module`,
@@ -218,7 +218,7 @@ function validateStyles(styles: Object): void {
 }
 
 function validateInterpolation(config: Object): void {
-  for (var key in config) {
+  for (const key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
       throw new Error(
         `Interpolation property '${key}' is not supported by native animated module`,
