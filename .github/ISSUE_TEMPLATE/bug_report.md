@@ -1,3 +1,9 @@
+---
+name: 🐛 Bug Report
+about: Something is not working as expected.
+
+---
+
 <!--
   We use GitHub Issues exclusively for tracking bugs in React Native.
   Questions? Visit http://facebook.github.io/react-native/help.html
@@ -15,8 +21,8 @@
 <!-- Required. Run `react-native info` in your terminal and paste its contents here. -->
 
 ## Steps to Reproduce
-<!-- 
-  Required. Let us know how to reproduce the issue. Include a code sample, share a project, 
+<!--
+  Required. Let us know how to reproduce the issue. Include a code sample, share a project,
   or share an app that reproduces the issue using [Snack](https://snack.expo.io/).
 -->
 
