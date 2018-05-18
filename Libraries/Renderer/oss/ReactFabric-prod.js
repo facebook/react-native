@@ -437,12 +437,14 @@ function recordTouchMove(touch) {
       (touchRecord.currentPageY = touch.pageY),
       (touchRecord.currentTimeStamp = timestampForTouch(touch)),
       (touchHistory.mostRecentTimeStamp = timestampForTouch(touch)))
-    : console.error(
-        "Cannot record touch move without a touch start.\nTouch Move: %s\n",
-        "Touch Bank: %s",
-        printTouch(touch),
-        printTouchBank()
-      );
+    : !touch.moveOnly
+      ? console.error(
+          "Cannot record touch move without a touch start.\nTouch Move: %s\n",
+          "Touch Bank: %s",
+          printTouch(touch),
+          printTouchBank()
+        )
+      : 0;
 }
 function recordTouchEnd(touch) {
   var touchRecord = touchBank[getTouchIdentifier(touch)];
