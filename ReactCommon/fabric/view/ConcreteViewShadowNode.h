@@ -43,9 +43,9 @@ public:
     const Tag &tag,
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
-    const SharedConcreteViewProps &props = ConcreteViewShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
-    const ShadowNodeCloneFunction &cloneFunction = nullptr
+    const SharedConcreteViewProps &props,
+    const SharedShadowNodeSharedList &children,
+    const ShadowNodeCloneFunction &cloneFunction
   ):
     ConcreteShadowNode<ViewPropsT>(
       tag,
@@ -65,8 +65,8 @@ public:
 
   ConcreteViewShadowNode(
     const SharedConcreteViewShadowNode &shadowNode,
-    const SharedConcreteViewProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const SharedConcreteViewProps &props,
+    const SharedShadowNodeSharedList &children
   ):
     ConcreteShadowNode<ViewPropsT>(
       shadowNode,

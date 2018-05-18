@@ -28,7 +28,7 @@ TEST(ShadowNodeTest, handleProps) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeCreation) {
-  auto node = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto node = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, std::make_shared<const TestProps>(), ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
 
   ASSERT_FALSE(node->getSealed());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
@@ -48,8 +48,8 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
-  auto node = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
-  auto node2 = std::make_shared<TestShadowNode>(node);
+  auto node = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, std::make_shared<const TestProps>(), ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto node2 = std::make_shared<TestShadowNode>(node, nullptr, nullptr);
 
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
@@ -59,9 +59,10 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeMutation) {
-  auto node1 = std::make_shared<TestShadowNode>(1, 1, (void *)NULL);
-  auto node2 = std::make_shared<TestShadowNode>(2, 1, (void *)NULL);
-  auto node3 = std::make_shared<TestShadowNode>(3, 1, (void *)NULL);
+  auto props = std::make_shared<const TestProps>();
+  auto node1 = std::make_shared<TestShadowNode>(1, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto node2 = std::make_shared<TestShadowNode>(2, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto node3 = std::make_shared<TestShadowNode>(3, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
 
   node1->appendChild(node2);
   node1->appendChild(node3);
@@ -70,7 +71,7 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   ASSERT_EQ(node1Children->at(0), node2);
   ASSERT_EQ(node1Children->at(1), node3);
 
-  auto node4 = std::make_shared<TestShadowNode>(node2);
+  auto node4 = std::make_shared<TestShadowNode>(node2, nullptr, nullptr);
   node1->replaceChild(node2, node4);
   node1Children = node1->getChildren();
   ASSERT_EQ(node1Children->size(), 2);
@@ -86,16 +87,16 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   // No more mutation after sealing.
   EXPECT_THROW(node4->clearSourceNode(), std::runtime_error);
 
-  auto node5 = std::make_shared<TestShadowNode>(node4);
+  auto node5 = std::make_shared<TestShadowNode>(node4, nullptr, nullptr);
   node5->clearSourceNode();
   ASSERT_EQ(node5->getSourceNode(), nullptr);
 }
 
 TEST(ShadowNodeTest, handleSourceNode) {
-  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
-  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration);
-  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration);
-  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration);
+  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, std::make_shared<const TestProps>(), ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration, nullptr, nullptr);
+  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration, nullptr, nullptr);
+  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration, nullptr, nullptr);
 
   // Ensure established shource nodes structure.
   ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeThirdGeneration);
@@ -116,7 +117,7 @@ TEST(ShadowNodeTest, handleSourceNode) {
 }
 
 TEST(ShadowNodeTest, handleCloneFunction) {
-  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, std::make_shared<const TestProps>(), ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
 
   // The shadow node is not clonable if `cloneFunction` is not provided,
   ASSERT_DEATH_IF_SUPPORTED(firstNode->clone(), "cloneFunction_");
@@ -159,10 +160,10 @@ TEST(ShadowNodeTest, handleLocalData) {
 
   auto localDataOver9000 = std::make_shared<TestLocalData>();
   localDataOver9000->setNumber(9001);
-
-  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
-  auto secondNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
-  auto thirdNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL);
+  auto props = std::make_shared<const TestProps>();
+  auto firstNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto secondNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto thirdNode = std::make_shared<TestShadowNode>(9, 1, (void *)NULL, props, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
 
   firstNode->setLocalData(localData42);
   secondNode->setLocalData(localData42);

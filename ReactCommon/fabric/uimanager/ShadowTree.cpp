@@ -19,7 +19,9 @@ ShadowTree::ShadowTree(Tag rootTag):
     rootTag,
     rootTag,
     nullptr,
-    RootShadowNode::defaultSharedProps()
+    RootShadowNode::defaultSharedProps(),
+    ShadowNode::emptySharedShadowNodeSharedList(),
+    nullptr
   );
 }
 

@@ -41,9 +41,9 @@ public:
     const Tag &tag,
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
-    const SharedConcreteProps &props = ConcreteShadowNode::defaultSharedProps(),
-    const SharedShadowNodeSharedList &children = ShadowNode::emptySharedShadowNodeSharedList(),
-    const ShadowNodeCloneFunction &cloneFunction = nullptr
+    const SharedConcreteProps &props,
+    const SharedShadowNodeSharedList &children,
+    const ShadowNodeCloneFunction &cloneFunction
   ):
     ShadowNode(
       tag,
@@ -56,8 +56,8 @@ public:
 
   ConcreteShadowNode(
     const SharedConcreteShadowNode &shadowNode,
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const SharedProps &props,
+    const SharedShadowNodeSharedList &children
   ):
     ShadowNode(
       shadowNode,
@@ -73,7 +73,6 @@ public:
     assert(std::dynamic_pointer_cast<const PropsT>(props_));
     return std::static_pointer_cast<const PropsT>(props_);
   }
-
 };
 
 } // namespace react

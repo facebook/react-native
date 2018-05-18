@@ -44,15 +44,15 @@ public:
     const Tag &tag,
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
-    const SharedProps &props = SharedProps(),
-    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList(),
-    const ShadowNodeCloneFunction &cloneFunction = nullptr
+    const SharedProps &props,
+    const SharedShadowNodeSharedList &children,
+    const ShadowNodeCloneFunction &cloneFunction
   );
 
   ShadowNode(
     const SharedShadowNode &shadowNode,
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const SharedProps &props,
+    const SharedShadowNodeSharedList &children
   );
 
   /*
