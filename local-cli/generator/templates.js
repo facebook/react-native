@@ -13,6 +13,7 @@ const copyProjectTemplateAndReplace = require('./copyProjectTemplateAndReplace')
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
+const PackageManager = require('../util/PackageManager');
 
 /**
  * Templates released as part of react-native in local-cli/templates.
@@ -171,10 +172,16 @@ function createFromRemoteTemplate(
       // only for publishing the template to npm.
       // We want to ignore this dummy file, otherwise it would overwrite
       // our project's package.json file.
-      ignorePaths: ['package.json', 'dependencies.json'],
+      ignorePaths: [
+        'package.json',
+        'dependencies.json',
+        'devDependencies.json',
+        'package.template.json',
+      ],
     });
     installTemplateDependencies(templatePath, yarnVersion);
     installTemplateDevDependencies(templatePath, yarnVersion);
+    installTemplateWithPackage(templatePath, destPath, yarnVersion);
   } finally {
     // Clean up the temp files
     try {
@@ -261,6 +268,64 @@ function installTemplateDevDependencies(templatePath, yarnVersion) {
       });
     }
   }
+}
+
+function isObject(o) {
+  return (typeof o === 'object') && (o != null);
+}
+
+function mergePackages(main, template) {
+  return Object.keys(main).reduce(function(acc, key) {
+    if (isObject(main[key]) && isObject(template[key])) {
+      acc[key] = mergePackages(main[key], template[key]);
+      return acc;
+    }
+
+    acc[key] = main[key];
+    return acc;
+  }, template);
+}
+
+function installTemplateWithPackage(templatePath, destPath, yarnVersion) {
+	const packageJsonPath = path.resolve(destPath, 'package.json');
+  const packageJsonTemplatePath = path.resolve(templatePath, 'package.template.json');
+
+  if (!fs.existsSync(packageJsonTemplatePath)) {
+    return;
+  }
+
+  let currentPackageJson;
+  try {
+    currentPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+  } catch (err) {
+    throw new Error(
+      "Could not parse current package.json: " + err.message,
+    );
+  }
+  let templatePackageJson;
+  try {
+    templatePackageJson = JSON.parse(fs.readFileSync(packageJsonTemplatePath, 'utf-8'));
+  } catch (err) {
+    throw new Error(
+      "Could not parse template's package.template.json: " + err.message,
+    );
+  }
+  const newPackageJson = mergePackages(currentPackageJson, templatePackageJson);
+  try {
+    fs.writeFileSync(
+      packageJsonPath,
+      JSON.stringify(newPackageJson, null, '  ')
+    );
+  } catch (err) {
+    throw new Error(
+      "Could not write new package.json: " + err.message,
+    );
+  }
+
+  PackageManager.callYarnOrNpm(
+    "yarn install",
+    "npm install"
+  );
 }
 
 module.exports = {

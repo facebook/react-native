@@ -71,4 +71,5 @@ function remove(packageName) {
 module.exports = {
   add: add,
   remove: remove,
+  callYarnOrNpm: callYarnOrNpm,
 };
