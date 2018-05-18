@@ -310,5 +310,19 @@ exports.examples = [
       }
       return <ZIndexExample />;
     },
+  }, {
+    title: 'BackfaceVisibility',
+    render: function() {
+      return (
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ height: 200, width: 200, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue', backfaceVisibility: 'hidden' }}>
+            <Text>Front</Text>
+          </View>
+          <View style={{ height: 200, width: 200, justifyContent: 'center', alignItems: 'center', backgroundColor: 'red', backfaceVisibility: 'hidden', transform: [ { rotateY: '180deg' }], position: 'absolute', top: 0 }}>
+            <Text>Back</Text>
+          </View>
+        </View>
+      );
+    },
   },
 ];
