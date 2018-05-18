@@ -63,8 +63,7 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   // We need this temporarly for testing purposes until we have proper
   // implementation of <ScrollView> component.
   if (
-    viewName == "ScrollContentView" ||
-    viewName == "ScrollView"
+    viewName == "ScrollContentView"
   ) {
     return "View";
   }

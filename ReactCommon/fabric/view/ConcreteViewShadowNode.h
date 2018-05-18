@@ -143,7 +143,7 @@ public:
     return list;
   }
 
-private:
+protected:
 
 #pragma mark - LayoutableShadowNode
 

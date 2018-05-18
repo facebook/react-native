@@ -3,11 +3,12 @@
 #include "Scheduler.h"
 
 #include <fabric/core/LayoutContext.h>
+#include <fabric/scrollview/ScrollViewComponentDescriptor.h>
+#include <fabric/text/ParagraphComponentDescriptor.h>
+#include <fabric/text/RawTextComponentDescriptor.h>
+#include <fabric/text/TextComponentDescriptor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/text/ParagraphComponentDescriptor.h>
-#include <fabric/text/TextComponentDescriptor.h>
-#include <fabric/text/RawTextComponentDescriptor.h>
 #include <fabric/view/ViewComponentDescriptor.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/ViewShadowNode.h>
@@ -20,6 +21,7 @@ namespace react {
 Scheduler::Scheduler() {
   auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>());
+  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ScrollViewComponentDescriptor>());
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>());
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>());
   componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<RawTextComponentDescriptor>());
