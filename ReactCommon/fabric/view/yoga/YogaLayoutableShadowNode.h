@@ -23,9 +23,6 @@ namespace react {
 
 class YogaLayoutableShadowNode;
 
-// We accept that Yoga node is highly mutable thing and we don't try to enforce immutability,
-// so it does not have `const` qualifier (and we mark it as `mutable` in the class).
-using SharedYogaNode = std::shared_ptr<YGNode>;
 using SharedYogaConfig = std::shared_ptr<YGConfig>;
 
 using SharedYogaLayoutableShadowNode = std::shared_ptr<const YogaLayoutableShadowNode>;
@@ -83,11 +80,11 @@ public:
   void layoutChildren(LayoutContext layoutContext) override;
 
 protected:
-  mutable SharedYogaNode yogaNode_;
+  std::unique_ptr<YGNode> yogaNode_;
 
 private:
   static SharedYogaConfig suitableYogaConfig();
-  static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode &yogaNode, const SharedShadowNodeSharedList &children);
+  static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode *yogaNodeRawPtr, const SharedShadowNodeSharedList &children);
   static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
 };
