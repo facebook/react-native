@@ -212,7 +212,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   BOOL canBeCoalesced = [eventName isEqualToString:@"touchMove"];
 
   // We increment `_coalescingKey` twice here just for sure that
-  // this `_coalescingKey` will not be reused by ahother (preceding or following) event
+  // this `_coalescingKey` will not be reused by another (preceding or following) event
   // (yes, even if coalescing only happens (and makes sense) on events of the same type).
 
   if (!canBeCoalesced) {
