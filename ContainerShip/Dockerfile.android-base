@@ -19,7 +19,7 @@ LABEL maintainer="Héctor Ramos <hector@fb.com>"
 # set default build arguments
 ARG SDK_VERSION=sdk-tools-linux-3859397.zip
 ARG ANDROID_BUILD_VERSION=26
-ARG ANDROID_TOOLS_VERSION=26.0.2
+ARG ANDROID_TOOLS_VERSION=26.0.3
 ARG BUCK_VERSION=v2018.02.16.01
 ARG NDK_VERSION=10e
 ARG NODE_VERSION=8.10.0
@@ -71,6 +71,7 @@ RUN mkdir /opt/ndk && \
 RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
     "platforms;android-$ANDROID_BUILD_VERSION" \
     "build-tools;$ANDROID_TOOLS_VERSION" \
+    "add-ons;addon-google_apis-google-23" \
     "extras;android;m2repository"
 
 # clean up unnecessary directories
