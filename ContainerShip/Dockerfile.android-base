@@ -69,8 +69,8 @@ RUN mkdir /opt/ndk && \
 
 # Add android SDK tools
 RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
-    "platforms;android-26" \
-    "build-tools;26.0.2" \
+    "platforms;android-$ANDROID_BUILD_VERSION" \
+    "build-tools;$ANDROID_BUILD_VERSION" \
     "extras;android;m2repository"
 
 # clean up unnecessary directories
