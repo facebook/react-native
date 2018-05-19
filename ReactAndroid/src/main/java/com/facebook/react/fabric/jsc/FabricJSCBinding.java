@@ -27,6 +27,10 @@ public class FabricJSCBinding implements FabricBinding {
 
   private static native HybridData initHybrid();
 
+  private native long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
+
+  private native void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
+
   private native void installFabric(long jsContextNativePointer, Object fabricModule);
 
   public FabricJSCBinding() {

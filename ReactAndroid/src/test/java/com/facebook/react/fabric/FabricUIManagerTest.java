@@ -97,7 +97,7 @@ public class FabricUIManagerTest {
     ReactShadowNode child = createViewNode();
     node.addChildAt(child, 0);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node, 0);
 
     assertThat(clonedNode).isNotSameAs(node);
     assertThat(clonedNode.getOriginalReactShadowNode()).isSameAs(node);
@@ -111,7 +111,7 @@ public class FabricUIManagerTest {
     ReactShadowNode node = createViewNode();
     node.setDefaultPadding(Spacing.LEFT, 10);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node, 0);
 
     node.setDefaultPadding(Spacing.LEFT, 20);
     assertThat(clonedNode.getStylePadding(Spacing.LEFT).value).isEqualTo(10f, Offset.offset(0.01f));
@@ -144,7 +144,7 @@ public class FabricUIManagerTest {
     ReactShadowNode child = createViewNode();
     node.addChildAt(child, 0);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildren(node);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildren(node, 0);
 
     assertThat(clonedNode.getChildCount()).isZero();
     assertSameFields(clonedNode, node);
@@ -155,7 +155,7 @@ public class FabricUIManagerTest {
     ReactShadowNode node = createViewNode();
     ReadableNativeMap props = null; // TODO(ayc): Figure out how to create a Native map from tests.
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewProps(node, props);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewProps(node, props, 0);
   }
 
   @Test
@@ -163,7 +163,7 @@ public class FabricUIManagerTest {
     ReactShadowNode node = createViewNode();
     ReadableNativeMap props = null;
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildrenAndProps(node, props);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildrenAndProps(node, props, 0);
 
     assertThat(clonedNode.getChildCount()).isZero();
   }
@@ -260,10 +260,10 @@ public class FabricUIManagerTest {
     mFabricUIManager.appendChildToSet(childSet, container);
     mFabricUIManager.completeRoot(rootTag, childSet);
 
-    ReactShadowNode aaClone = mFabricUIManager.cloneNodeWithNewProps(aa, null);
-    ReactShadowNode aClone = mFabricUIManager.cloneNodeWithNewChildren(a);
+    ReactShadowNode aaClone = mFabricUIManager.cloneNodeWithNewProps(aa, null, 0);
+    ReactShadowNode aClone = mFabricUIManager.cloneNodeWithNewChildren(a, 0);
     mFabricUIManager.appendChild(aClone, aaClone);
-    ReactShadowNode containerClone = mFabricUIManager.cloneNodeWithNewChildren(container);
+    ReactShadowNode containerClone = mFabricUIManager.cloneNodeWithNewChildren(container, 0);
     mFabricUIManager.appendChild(containerClone, b);
     mFabricUIManager.appendChild(containerClone, aClone);
     List<ReactShadowNode> childSet2 = mFabricUIManager.createChildSet(rootTag);

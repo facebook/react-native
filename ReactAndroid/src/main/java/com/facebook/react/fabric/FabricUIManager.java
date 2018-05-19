@@ -74,7 +74,7 @@ public class FabricUIManager implements UIManager {
   /** Creates a new {@link ReactShadowNode} */
   @Nullable
   public ReactShadowNode createNode(
-      int reactTag, String viewName, int rootTag, ReadableNativeMap props, int instanceHandle) {
+      int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "createNode \n\ttag: " + reactTag +
           "\n\tviewName: " + viewName +
@@ -123,11 +123,12 @@ public class FabricUIManager implements UIManager {
    *     including its children set (note that the children nodes will not be cloned).
    */
   @Nullable
-  public ReactShadowNode cloneNode(ReactShadowNode node) {
+  public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNode \n\tnode: " + node);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone = node.mutableCopy();
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -143,11 +144,12 @@ public class FabricUIManager implements UIManager {
    *     children set will be empty.
    */
   @Nullable
-  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
+  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone = node.mutableCopyWithNewChildren();
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -164,11 +166,12 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewProps(
-      ReactShadowNode node, @Nullable ReadableNativeMap newProps) {
+      ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone =
           node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
@@ -187,11 +190,12 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
-      ReactShadowNode node, ReadableNativeMap newProps) {
+      ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone =
           node.mutableCopyWithNewChildrenAndProps(
               newProps == null ? null : new ReactStylesDiffMap(newProps));

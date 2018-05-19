@@ -36,10 +36,10 @@ public:
 #pragma mark - JavaScript/React-facing Interface
 
   SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, void *instanceHandle);
-  SharedShadowNode cloneNode(const SharedShadowNode &node);
-  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node);
-  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props);
-  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps);
+  SharedShadowNode cloneNode(const SharedShadowNode &node, void *instanceHandle);
+  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node, void *instanceHandle);
+  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props, void *instanceHandle);
+  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps, void *instanceHandle);
   void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
