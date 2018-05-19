@@ -1148,7 +1148,7 @@ var ReactCurrentOwner =
   REACT_PORTAL_TYPE = hasSymbol ? Symbol.for("react.portal") : 60106,
   REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for("react.fragment") : 60107,
   REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for("react.strict_mode") : 60108,
-  REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profile_root") : 60108,
+  REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profiler") : 60114,
   REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for("react.provider") : 60109,
   REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for("react.context") : 60110,
   REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for("react.async_mode") : 60111,
@@ -1368,9 +1368,8 @@ function createFiberFromElement(element, mode, expirationTime) {
   var type = element.type,
     key = element.key;
   element = element.props;
-  var fiberTag = void 0;
   if ("function" === typeof type)
-    fiberTag = type.prototype && type.prototype.isReactComponent ? 2 : 0;
+    var fiberTag = type.prototype && type.prototype.isReactComponent ? 2 : 0;
   else if ("string" === typeof type) fiberTag = 5;
   else
     switch (type) {
@@ -1402,41 +1401,34 @@ function createFiberFromElement(element, mode, expirationTime) {
         mode |= 2;
         break;
       default:
-        if ("object" === typeof type && null !== type)
-          switch (type.$$typeof) {
+        a: {
+          switch ("object" === typeof type && null !== type
+            ? type.$$typeof
+            : null) {
             case REACT_PROVIDER_TYPE:
               fiberTag = 13;
-              break;
+              break a;
             case REACT_CONTEXT_TYPE:
               fiberTag = 12;
-              break;
+              break a;
             case REACT_FORWARD_REF_TYPE:
               fiberTag = 14;
-              break;
+              break a;
             default:
-              if ("number" === typeof type.tag)
-                return (
-                  (mode = type),
-                  (mode.pendingProps = element),
-                  (mode.expirationTime = expirationTime),
-                  mode
-                );
-              throwOnInvalidElementType(type, null);
+              invariant(
+                !1,
+                "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",
+                null == type ? type : typeof type,
+                ""
+              );
           }
-        else throwOnInvalidElementType(type, null);
+          fiberTag = void 0;
+        }
     }
   mode = new FiberNode(fiberTag, element, key, mode);
   mode.type = type;
   mode.expirationTime = expirationTime;
   return mode;
-}
-function throwOnInvalidElementType(type) {
-  invariant(
-    !1,
-    "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",
-    null == type ? type : typeof type,
-    ""
-  );
 }
 function createFiberFromFragment(elements, mode, expirationTime, key) {
   elements = new FiberNode(10, elements, key, mode);
@@ -3704,7 +3696,9 @@ function createCapturedValue(value, source) {
 function logError(boundary, errorInfo) {
   var source = errorInfo.source,
     stack = errorInfo.stack;
-  null === stack && (stack = getStackAddendumByWorkInProgressFiber(source));
+  null === stack &&
+    null !== source &&
+    (stack = getStackAddendumByWorkInProgressFiber(source));
   null !== source && getComponentName(source);
   source = null !== stack ? stack : "";
   errorInfo = errorInfo.value;
@@ -4837,28 +4831,31 @@ function ReactFiberScheduler(config) {
           for (; null !== nextUnitOfWork; )
             nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       } catch (thrownValue) {
-        if (null === nextUnitOfWork) {
-          didFatal = !0;
-          onUncaughtError(thrownValue);
-          break;
+        if (null === nextUnitOfWork)
+          (didFatal = !0), onUncaughtError(thrownValue);
+        else {
+          invariant(
+            null !== nextUnitOfWork,
+            "Failed to replay rendering after an error. This is likely caused by a bug in React. Please file an issue with a reproducing case to help us find it."
+          );
+          isAsync = nextUnitOfWork;
+          var returnFiber = isAsync.return;
+          if (null === returnFiber) {
+            didFatal = !0;
+            onUncaughtError(thrownValue);
+            break;
+          }
+          throwException(
+            root,
+            returnFiber,
+            isAsync,
+            thrownValue,
+            nextRenderIsExpired,
+            nextRenderExpirationTime,
+            mostRecentCurrentTimeMs
+          );
+          nextUnitOfWork = completeUnitOfWork(isAsync);
         }
-        isAsync = nextUnitOfWork;
-        var returnFiber = isAsync.return;
-        if (null === returnFiber) {
-          didFatal = !0;
-          onUncaughtError(thrownValue);
-          break;
-        }
-        throwException(
-          root,
-          returnFiber,
-          isAsync,
-          thrownValue,
-          nextRenderIsExpired,
-          nextRenderExpirationTime,
-          mostRecentCurrentTimeMs
-        );
-        nextUnitOfWork = completeUnitOfWork(isAsync);
       }
       break;
     } while (1);

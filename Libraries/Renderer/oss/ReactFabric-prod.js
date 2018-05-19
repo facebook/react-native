@@ -23,8 +23,72 @@ var invariant = require("fbjs/lib/invariant"),
   emptyObject = require("fbjs/lib/emptyObject"),
   shallowEqual = require("fbjs/lib/shallowEqual"),
   ExceptionsManager = require("ExceptionsManager"),
-  FabricUIManager = require("FabricUIManager"),
-  eventPluginOrder = null,
+  FabricUIManager = require("FabricUIManager");
+function invokeGuardedCallback(name, func, context, a, b, c, d, e, f) {
+  this._hasCaughtError = !1;
+  this._caughtError = null;
+  var funcArgs = Array.prototype.slice.call(arguments, 3);
+  try {
+    func.apply(context, funcArgs);
+  } catch (error) {
+    (this._caughtError = error), (this._hasCaughtError = !0);
+  }
+}
+var ReactErrorUtils = {
+  _caughtError: null,
+  _hasCaughtError: !1,
+  _rethrowError: null,
+  _hasRethrowError: !1,
+  invokeGuardedCallback: function(name, func, context, a, b, c, d, e, f) {
+    invokeGuardedCallback.apply(ReactErrorUtils, arguments);
+  },
+  invokeGuardedCallbackAndCatchFirstError: function(
+    name,
+    func,
+    context,
+    a,
+    b,
+    c,
+    d,
+    e,
+    f
+  ) {
+    ReactErrorUtils.invokeGuardedCallback.apply(this, arguments);
+    if (ReactErrorUtils.hasCaughtError()) {
+      var error = ReactErrorUtils.clearCaughtError();
+      ReactErrorUtils._hasRethrowError ||
+        ((ReactErrorUtils._hasRethrowError = !0),
+        (ReactErrorUtils._rethrowError = error));
+    }
+  },
+  rethrowCaughtError: function() {
+    return rethrowCaughtError.apply(ReactErrorUtils, arguments);
+  },
+  hasCaughtError: function() {
+    return ReactErrorUtils._hasCaughtError;
+  },
+  clearCaughtError: function() {
+    if (ReactErrorUtils._hasCaughtError) {
+      var error = ReactErrorUtils._caughtError;
+      ReactErrorUtils._caughtError = null;
+      ReactErrorUtils._hasCaughtError = !1;
+      return error;
+    }
+    invariant(
+      !1,
+      "clearCaughtError was called but no error was captured. This error is likely caused by a bug in React. Please file an issue."
+    );
+  }
+};
+function rethrowCaughtError() {
+  if (ReactErrorUtils._hasRethrowError) {
+    var error = ReactErrorUtils._rethrowError;
+    ReactErrorUtils._rethrowError = null;
+    ReactErrorUtils._hasRethrowError = !1;
+    throw error;
+  }
+}
+var eventPluginOrder = null,
   namesToPlugins = {};
 function recomputePluginOrdering() {
   if (eventPluginOrder)
@@ -100,6 +164,17 @@ var plugins = [],
   getFiberCurrentPropsFromNode = null,
   getInstanceFromNode = null,
   getNodeFromInstance = null;
+function executeDispatch(event, simulated, listener, inst) {
+  simulated = event.type || "unknown-event";
+  event.currentTarget = getNodeFromInstance(inst);
+  ReactErrorUtils.invokeGuardedCallbackAndCatchFirstError(
+    simulated,
+    listener,
+    void 0,
+    event
+  );
+  event.currentTarget = null;
+}
 function executeDirectDispatch(event) {
   var dispatchListener = event._dispatchListeners,
     dispatchInstance = event._dispatchInstances;
@@ -131,6 +206,26 @@ function accumulateInto(current, next) {
 }
 function forEachAccumulated(arr, cb, scope) {
   Array.isArray(arr) ? arr.forEach(cb, scope) : arr && cb.call(scope, arr);
+}
+var eventQueue = null;
+function executeDispatchesAndReleaseTopLevel(e) {
+  if (e) {
+    var dispatchListeners = e._dispatchListeners,
+      dispatchInstances = e._dispatchInstances;
+    if (Array.isArray(dispatchListeners))
+      for (
+        var i = 0;
+        i < dispatchListeners.length && !e.isPropagationStopped();
+        i++
+      )
+        executeDispatch(e, !1, dispatchListeners[i], dispatchInstances[i]);
+    else
+      dispatchListeners &&
+        executeDispatch(e, !1, dispatchListeners, dispatchInstances);
+    e._dispatchListeners = null;
+    e._dispatchInstances = null;
+    e.isPersistent() || e.constructor.release(e);
+  }
 }
 var injection = {
   injectEventPluginOrder: function(injectedEventPluginOrder) {
@@ -942,7 +1037,7 @@ var hasSymbol = "function" === typeof Symbol && Symbol.for,
   REACT_PORTAL_TYPE = hasSymbol ? Symbol.for("react.portal") : 60106,
   REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for("react.fragment") : 60107,
   REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for("react.strict_mode") : 60108,
-  REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profile_root") : 60108,
+  REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profiler") : 60114,
   REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for("react.provider") : 60109,
   REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for("react.context") : 60110,
   REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for("react.async_mode") : 60111,
@@ -967,6 +1062,43 @@ function createPortal(children, containerInfo, implementation) {
     containerInfo: containerInfo,
     implementation: implementation
   };
+}
+var restoreTarget = null,
+  restoreQueue = null;
+function restoreStateOfTarget(target) {
+  if ((target = getInstanceFromNode(target))) {
+    invariant(
+      null,
+      "Fiber needs to be injected to handle a fiber target for controlled events. This error is likely caused by a bug in React. Please file an issue."
+    );
+    var props = getFiberCurrentPropsFromNode(target.stateNode);
+    null.restoreControlledState(target.stateNode, target.type, props);
+  }
+}
+function _batchedUpdates(fn, bookkeeping) {
+  return fn(bookkeeping);
+}
+function _flushInteractiveUpdates() {}
+var isBatching = !1;
+function batchedUpdates(fn, bookkeeping) {
+  if (isBatching) return fn(bookkeeping);
+  isBatching = !0;
+  try {
+    return _batchedUpdates(fn, bookkeeping);
+  } finally {
+    if (((isBatching = !1), null !== restoreTarget || null !== restoreQueue))
+      if (
+        (_flushInteractiveUpdates(),
+        restoreTarget &&
+          ((bookkeeping = restoreTarget),
+          (fn = restoreQueue),
+          (restoreQueue = restoreTarget = null),
+          restoreStateOfTarget(bookkeeping),
+          fn))
+      )
+        for (bookkeeping = 0; bookkeeping < fn.length; bookkeeping++)
+          restoreStateOfTarget(fn[bookkeeping]);
+  }
 }
 var emptyObject$1 = {},
   removedKeys = null,
@@ -1426,9 +1558,8 @@ function createFiberFromElement(element, mode, expirationTime) {
   var type = element.type,
     key = element.key;
   element = element.props;
-  var fiberTag = void 0;
   if ("function" === typeof type)
-    fiberTag = type.prototype && type.prototype.isReactComponent ? 2 : 0;
+    var fiberTag = type.prototype && type.prototype.isReactComponent ? 2 : 0;
   else if ("string" === typeof type) fiberTag = 5;
   else
     switch (type) {
@@ -1460,41 +1591,34 @@ function createFiberFromElement(element, mode, expirationTime) {
         mode |= 2;
         break;
       default:
-        if ("object" === typeof type && null !== type)
-          switch (type.$$typeof) {
+        a: {
+          switch ("object" === typeof type && null !== type
+            ? type.$$typeof
+            : null) {
             case REACT_PROVIDER_TYPE:
               fiberTag = 13;
-              break;
+              break a;
             case REACT_CONTEXT_TYPE:
               fiberTag = 12;
-              break;
+              break a;
             case REACT_FORWARD_REF_TYPE:
               fiberTag = 14;
-              break;
+              break a;
             default:
-              if ("number" === typeof type.tag)
-                return (
-                  (mode = type),
-                  (mode.pendingProps = element),
-                  (mode.expirationTime = expirationTime),
-                  mode
-                );
-              throwOnInvalidElementType(type, null);
+              invariant(
+                !1,
+                "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",
+                null == type ? type : typeof type,
+                ""
+              );
           }
-        else throwOnInvalidElementType(type, null);
+          fiberTag = void 0;
+        }
     }
   mode = new FiberNode(fiberTag, element, key, mode);
   mode.type = type;
   mode.expirationTime = expirationTime;
   return mode;
-}
-function throwOnInvalidElementType(type) {
-  invariant(
-    !1,
-    "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s",
-    null == type ? type : typeof type,
-    ""
-  );
 }
 function createFiberFromFragment(elements, mode, expirationTime, key) {
   elements = new FiberNode(10, elements, key, mode);
@@ -3819,7 +3943,9 @@ function createCapturedValue(value, source) {
 function logError(boundary, errorInfo) {
   var source = errorInfo.source,
     stack = errorInfo.stack;
-  null === stack && (stack = getStackAddendumByWorkInProgressFiber(source));
+  null === stack &&
+    null !== source &&
+    (stack = getStackAddendumByWorkInProgressFiber(source));
   null !== source && getComponentName(source);
   source = null !== stack ? stack : "";
   errorInfo = errorInfo.value;
@@ -4774,28 +4900,31 @@ function ReactFiberScheduler(config) {
           for (; null !== nextUnitOfWork; )
             nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       } catch (thrownValue) {
-        if (null === nextUnitOfWork) {
-          didFatal = !0;
-          onUncaughtError(thrownValue);
-          break;
+        if (null === nextUnitOfWork)
+          (didFatal = !0), onUncaughtError(thrownValue);
+        else {
+          invariant(
+            null !== nextUnitOfWork,
+            "Failed to replay rendering after an error. This is likely caused by a bug in React. Please file an issue with a reproducing case to help us find it."
+          );
+          isAsync = nextUnitOfWork;
+          var returnFiber = isAsync.return;
+          if (null === returnFiber) {
+            didFatal = !0;
+            onUncaughtError(thrownValue);
+            break;
+          }
+          throwException(
+            root,
+            returnFiber,
+            isAsync,
+            thrownValue,
+            nextRenderIsExpired,
+            nextRenderExpirationTime,
+            mostRecentCurrentTimeMs
+          );
+          nextUnitOfWork = completeUnitOfWork(isAsync);
         }
-        isAsync = nextUnitOfWork;
-        var returnFiber = isAsync.return;
-        if (null === returnFiber) {
-          didFatal = !0;
-          onUncaughtError(thrownValue);
-          break;
-        }
-        throwException(
-          root,
-          returnFiber,
-          isAsync,
-          thrownValue,
-          nextRenderIsExpired,
-          nextRenderExpirationTime,
-          mostRecentCurrentTimeMs
-        );
-        nextUnitOfWork = completeUnitOfWork(isAsync);
       }
       break;
     } while (1);
@@ -5665,8 +5794,37 @@ function setTimeoutCallback() {
   scheduledCallback = null;
   null !== callback && callback(frameDeadlineObject);
 }
-var nextReactTag = 2,
-  ReactFabricHostComponent = (function() {
+function dispatchEvent(target, topLevelType, nativeEvent) {
+  batchedUpdates(function() {
+    var events = nativeEvent.target;
+    for (var events$jscomp$0 = null, i = 0; i < plugins.length; i++) {
+      var possiblePlugin = plugins[i];
+      possiblePlugin &&
+        (possiblePlugin = possiblePlugin.extractEvents(
+          topLevelType,
+          target,
+          nativeEvent,
+          events
+        )) &&
+        (events$jscomp$0 = accumulateInto(events$jscomp$0, possiblePlugin));
+    }
+    events = events$jscomp$0;
+    null !== events && (eventQueue = accumulateInto(eventQueue, events));
+    events = eventQueue;
+    eventQueue = null;
+    events &&
+      (forEachAccumulated(events, executeDispatchesAndReleaseTopLevel),
+      invariant(
+        !eventQueue,
+        "processEventQueue(): Additional events were enqueued while processing an event queue. Support for this has not yet been implemented."
+      ),
+      ReactErrorUtils.rethrowCaughtError());
+  });
+}
+var nextReactTag = 2;
+FabricUIManager.registerEventHandler &&
+  FabricUIManager.registerEventHandler(dispatchEvent);
+var ReactFabricHostComponent = (function() {
     function ReactFabricHostComponent(tag, viewConfig, props) {
       if (!(this instanceof ReactFabricHostComponent))
         throw new TypeError("Cannot call a class as a function");
@@ -5882,6 +6040,8 @@ function findNodeHandle(componentOrHandle) {
       ? componentOrHandle.canonical._nativeTag
       : componentOrHandle._nativeTag;
 }
+_batchedUpdates = ReactFabricRenderer.batchedUpdates;
+_flushInteractiveUpdates = ReactFabricRenderer.flushInteractiveUpdates;
 var roots = new Map(),
   ReactFabric = {
     NativeComponent: (function(findNodeHandle, findHostInstance) {

@@ -546,8 +546,52 @@ var validateEventDispatches = void 0;
 }
 
 /**
+ * Dispatch the event to the listener.
+ * @param {SyntheticEvent} event SyntheticEvent to handle
+ * @param {boolean} simulated If the event is simulated (changes exn behavior)
+ * @param {function} listener Application-level callback
+ * @param {*} inst Internal component instance
+ */
+function executeDispatch(event, simulated, listener, inst) {
+  var type = event.type || "unknown-event";
+  event.currentTarget = getNodeFromInstance(inst);
+  ReactErrorUtils.invokeGuardedCallbackAndCatchFirstError(
+    type,
+    listener,
+    undefined,
+    event
+  );
+  event.currentTarget = null;
+}
+
+/**
  * Standard/simple iteration through an event's collected dispatches.
  */
+function executeDispatchesInOrder(event, simulated) {
+  var dispatchListeners = event._dispatchListeners;
+  var dispatchInstances = event._dispatchInstances;
+  {
+    validateEventDispatches(event);
+  }
+  if (Array.isArray(dispatchListeners)) {
+    for (var i = 0; i < dispatchListeners.length; i++) {
+      if (event.isPropagationStopped()) {
+        break;
+      }
+      // Listeners and Instances are two parallel arrays that are always in sync.
+      executeDispatch(
+        event,
+        simulated,
+        dispatchListeners[i],
+        dispatchInstances[i]
+      );
+    }
+  } else if (dispatchListeners) {
+    executeDispatch(event, simulated, dispatchListeners, dispatchInstances);
+  }
+  event._dispatchListeners = null;
+  event._dispatchInstances = null;
+}
 
 /**
  * Standard/simple iteration through an event's collected dispatches, but stops
@@ -686,6 +730,35 @@ function forEachAccumulated(arr, cb, scope) {
   }
 }
 
+/**
+ * Internal queue of events that have accumulated their dispatches and are
+ * waiting to have their dispatches executed.
+ */
+var eventQueue = null;
+
+/**
+ * Dispatches an event and releases it back into the pool, unless persistent.
+ *
+ * @param {?object} event Synthetic event to be dispatched.
+ * @param {boolean} simulated If the event is simulated (changes exn behavior)
+ * @private
+ */
+var executeDispatchesAndRelease = function(event, simulated) {
+  if (event) {
+    executeDispatchesInOrder(event, simulated);
+
+    if (!event.isPersistent()) {
+      event.constructor.release(event);
+    }
+  }
+};
+var executeDispatchesAndReleaseSimulated = function(e) {
+  return executeDispatchesAndRelease(e, true);
+};
+var executeDispatchesAndReleaseTopLevel = function(e) {
+  return executeDispatchesAndRelease(e, false);
+};
+
 function isInteractive(tag) {
   return (
     tag === "button" ||
@@ -783,6 +856,87 @@ function getListener(inst, registrationName) {
     typeof listener
   );
   return listener;
+}
+
+/**
+ * Allows registered plugins an opportunity to extract events from top-level
+ * native browser events.
+ *
+ * @return {*} An accumulation of synthetic events.
+ * @internal
+ */
+function extractEvents(
+  topLevelType,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget
+) {
+  var events = null;
+  for (var i = 0; i < plugins.length; i++) {
+    // Not every plugin in the ordering may be loaded at runtime.
+    var possiblePlugin = plugins[i];
+    if (possiblePlugin) {
+      var extractedEvents = possiblePlugin.extractEvents(
+        topLevelType,
+        targetInst,
+        nativeEvent,
+        nativeEventTarget
+      );
+      if (extractedEvents) {
+        events = accumulateInto(events, extractedEvents);
+      }
+    }
+  }
+  return events;
+}
+
+function runEventsInBatch(events, simulated) {
+  if (events !== null) {
+    eventQueue = accumulateInto(eventQueue, events);
+  }
+
+  // Set `eventQueue` to null before processing it so that we can tell if more
+  // events get enqueued while processing.
+  var processingEventQueue = eventQueue;
+  eventQueue = null;
+
+  if (!processingEventQueue) {
+    return;
+  }
+
+  if (simulated) {
+    forEachAccumulated(
+      processingEventQueue,
+      executeDispatchesAndReleaseSimulated
+    );
+  } else {
+    forEachAccumulated(
+      processingEventQueue,
+      executeDispatchesAndReleaseTopLevel
+    );
+  }
+  invariant(
+    !eventQueue,
+    "processEventQueue(): Additional events were enqueued while processing " +
+      "an event queue. Support for this has not yet been implemented."
+  );
+  // This would be a good time to rethrow if any of the event handlers threw.
+  ReactErrorUtils.rethrowCaughtError();
+}
+
+function runExtractedEventsInBatch(
+  topLevelType,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget
+) {
+  var events = extractEvents(
+    topLevelType,
+    targetInst,
+    nativeEvent,
+    nativeEventTarget
+  );
+  runEventsInBatch(events, false);
 }
 
 var IndeterminateComponent = 0; // Before we know whether it is functional or class
@@ -2331,7 +2485,7 @@ var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for("react.fragment") : 0xeacb;
 var REACT_STRICT_MODE_TYPE = hasSymbol
   ? Symbol.for("react.strict_mode")
   : 0xeacc;
-var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profile_root") : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for("react.profiler") : 0xead2;
 var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for("react.provider") : 0xeacd;
 var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for("react.context") : 0xeace;
 var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for("react.async_mode") : 0xeacf;
@@ -2375,6 +2529,56 @@ function createPortal(
   };
 }
 
+// Use to restore controlled state after a change event has fired.
+
+var fiberHostComponent = null;
+
+var restoreTarget = null;
+var restoreQueue = null;
+
+function restoreStateOfTarget(target) {
+  // We perform this translation at the end of the event loop so that we
+  // always receive the correct fiber here
+  var internalInstance = getInstanceFromNode(target);
+  if (!internalInstance) {
+    // Unmounted
+    return;
+  }
+  invariant(
+    fiberHostComponent &&
+      typeof fiberHostComponent.restoreControlledState === "function",
+    "Fiber needs to be injected to handle a fiber target for controlled " +
+      "events. This error is likely caused by a bug in React. Please file an issue."
+  );
+  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
+  fiberHostComponent.restoreControlledState(
+    internalInstance.stateNode,
+    internalInstance.type,
+    props
+  );
+}
+
+function needsStateRestore() {
+  return restoreTarget !== null || restoreQueue !== null;
+}
+
+function restoreStateIfNeeded() {
+  if (!restoreTarget) {
+    return;
+  }
+  var target = restoreTarget;
+  var queuedTargets = restoreQueue;
+  restoreTarget = null;
+  restoreQueue = null;
+
+  restoreStateOfTarget(target);
+  if (queuedTargets) {
+    for (var i = 0; i < queuedTargets.length; i++) {
+      restoreStateOfTarget(queuedTargets[i]);
+    }
+  }
+}
+
 // Used as a way to call batchedUpdates when we don't have a reference to
 // the renderer. Such as when we're dispatching events or if third party
 // libraries need to call batchedUpdates. Eventually, this API will go away when
@@ -2389,6 +2593,33 @@ var _interactiveUpdates = function(fn, a, b) {
   return fn(a, b);
 };
 var _flushInteractiveUpdates = function() {};
+
+var isBatching = false;
+function batchedUpdates(fn, bookkeeping) {
+  if (isBatching) {
+    // If we are currently inside another batch, we need to wait until it
+    // fully completes before restoring state.
+    return fn(bookkeeping);
+  }
+  isBatching = true;
+  try {
+    return _batchedUpdates(fn, bookkeeping);
+  } finally {
+    // Here we wait until all updates have propagated, which is important
+    // when using controlled components within layers:
+    // https://github.com/facebook/react/issues/1698
+    // Then we restore state of any controlled component.
+    isBatching = false;
+    var controlledComponentsHavePendingUpdates = needsStateRestore();
+    if (controlledComponentsHavePendingUpdates) {
+      // If a controlled event was fired, we may need to restore the state of
+      // the DOM node back to the controlled value. This is necessary when React
+      // bails out of the update without touching the DOM.
+      _flushInteractiveUpdates();
+      restoreStateIfNeeded();
+    }
+  }
+}
 
 var injection$2 = {
   injectRenderer: function(renderer) {
@@ -3914,42 +4145,9 @@ function createFiberFromElement(element, mode, expirationTime) {
         // mode compatible.
         mode |= StrictMode;
         break;
-      default: {
-        if (typeof type === "object" && type !== null) {
-          switch (type.$$typeof) {
-            case REACT_PROVIDER_TYPE:
-              fiberTag = ContextProvider;
-              break;
-            case REACT_CONTEXT_TYPE:
-              // This is a consumer
-              fiberTag = ContextConsumer;
-              break;
-            case REACT_FORWARD_REF_TYPE:
-              fiberTag = ForwardRef;
-              break;
-            default:
-              if (typeof type.tag === "number") {
-                // Currently assumed to be a continuation and therefore is a
-                // fiber already.
-                // TODO: The yield system is currently broken for updates in
-                // some cases. The reified yield stores a fiber, but we don't
-                // know which fiber that is; the current or a workInProgress?
-                // When the continuation gets rendered here we don't know if we
-                // can reuse that fiber or if we need to clone it. There is
-                // probably a clever way to restructure this.
-                fiber = type;
-                fiber.pendingProps = pendingProps;
-                fiber.expirationTime = expirationTime;
-                return fiber;
-              } else {
-                throwOnInvalidElementType(type, owner);
-              }
-              break;
-          }
-        } else {
-          throwOnInvalidElementType(type, owner);
-        }
-      }
+      default:
+        fiberTag = getFiberTagFromObjectType(type, owner);
+        break;
     }
   }
 
@@ -3965,33 +4163,47 @@ function createFiberFromElement(element, mode, expirationTime) {
   return fiber;
 }
 
-function throwOnInvalidElementType(type, owner) {
-  var info = "";
-  {
-    if (
-      type === undefined ||
-      (typeof type === "object" &&
-        type !== null &&
-        Object.keys(type).length === 0)
-    ) {
-      info +=
-        " You likely forgot to export your component from the file " +
-        "it's defined in, or you might have mixed up default and " +
-        "named imports.";
-    }
-    var ownerName = owner ? getComponentName(owner) : null;
-    if (ownerName) {
-      info += "\n\nCheck the render method of `" + ownerName + "`.";
+function getFiberTagFromObjectType(type, owner) {
+  var $$typeof =
+    typeof type === "object" && type !== null ? type.$$typeof : null;
+
+  switch ($$typeof) {
+    case REACT_PROVIDER_TYPE:
+      return ContextProvider;
+    case REACT_CONTEXT_TYPE:
+      // This is a consumer
+      return ContextConsumer;
+    case REACT_FORWARD_REF_TYPE:
+      return ForwardRef;
+    default: {
+      var info = "";
+      {
+        if (
+          type === undefined ||
+          (typeof type === "object" &&
+            type !== null &&
+            Object.keys(type).length === 0)
+        ) {
+          info +=
+            " You likely forgot to export your component from the file " +
+            "it's defined in, or you might have mixed up default and " +
+            "named imports.";
+        }
+        var ownerName = owner ? getComponentName(owner) : null;
+        if (ownerName) {
+          info += "\n\nCheck the render method of `" + ownerName + "`.";
+        }
+      }
+      invariant(
+        false,
+        "Element type is invalid: expected a string (for built-in " +
+          "components) or a class/function (for composite components) " +
+          "but got: %s.%s",
+        type == null ? type : typeof type,
+        info
+      );
     }
   }
-  invariant(
-    false,
-    "Element type is invalid: expected a string (for built-in " +
-      "components) or a class/function (for composite components) " +
-      "but got: %s.%s",
-    type == null ? type : typeof type,
-    info
-  );
 }
 
 function createFiberFromFragment(elements, mode, expirationTime, key) {
@@ -4399,15 +4611,15 @@ var ReactStrictModeWarnings = {
     pendingUnsafeLifecycleWarnings = new Map();
   };
 
-  var getStrictRoot = function(fiber) {
+  var findStrictRoot = function(fiber) {
     var maybeStrictRoot = null;
 
-    while (fiber !== null) {
-      if (fiber.mode & StrictMode) {
-        maybeStrictRoot = fiber;
+    var node = fiber;
+    while (node !== null) {
+      if (node.mode & StrictMode) {
+        maybeStrictRoot = node;
       }
-
-      fiber = fiber.return;
+      node = node.return;
     }
 
     return maybeStrictRoot;
@@ -4517,7 +4729,15 @@ var ReactStrictModeWarnings = {
     fiber,
     instance
   ) {
-    var strictRoot = getStrictRoot(fiber);
+    var strictRoot = findStrictRoot(fiber);
+    if (strictRoot === null) {
+      warning(
+        false,
+        "Expected to find a StrictMode component in a strict mode tree. " +
+          "This error is likely caused by a bug in React. Please file an issue."
+      );
+      return;
+    }
 
     // Dedup strategy: Warn once per component.
     // This is difficult to track any other way since component names
@@ -9832,7 +10052,7 @@ var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
 function logError(boundary, errorInfo) {
   var source = errorInfo.source;
   var stack = errorInfo.stack;
-  if (stack === null) {
+  if (stack === null && source !== null) {
     stack = getStackAddendumByWorkInProgressFiber(source);
   }
 
@@ -11892,6 +12112,7 @@ var ReactFiberNewContext = function(stack, isPrimaryRenderer) {
       context._changedBits = providerFiber.stateNode;
       {
         !(
+          context._currentRenderer === undefined ||
           context._currentRenderer === null ||
           context._currentRenderer === rendererSigil
         )
@@ -11912,6 +12133,7 @@ var ReactFiberNewContext = function(stack, isPrimaryRenderer) {
       context._changedBits2 = providerFiber.stateNode;
       {
         !(
+          context._currentRenderer2 === undefined ||
           context._currentRenderer2 === null ||
           context._currentRenderer2 === rendererSigil
         )
@@ -12260,10 +12482,20 @@ var ReactFiberScheduler = function(config) {
       }
 
       // Restore the original state of the work-in-progress
+      if (stashedWorkInProgressProperties === null) {
+        // This should never happen. Don't throw because this code is DEV-only.
+        warning(
+          false,
+          "Could not replay rendering after an error. This is likely a bug in React. " +
+            "Please file an issue."
+        );
+        return;
+      }
       assignFiberPropertiesInDEV(
         failedUnitOfWork,
         stashedWorkInProgressProperties
       );
+
       switch (failedUnitOfWork.tag) {
         case HostRoot:
           popHostContainer(failedUnitOfWork);
@@ -12988,43 +13220,52 @@ var ReactFiberScheduler = function(config) {
           // This is a fatal error.
           didFatal = true;
           onUncaughtError(thrownValue);
-          break;
-        }
+        } else {
+          {
+            // Reset global debug state
+            // We assume this is defined in DEV
+            resetCurrentlyProcessingQueue();
+          }
 
-        {
-          // Reset global debug state
-          // We assume this is defined in DEV
-          resetCurrentlyProcessingQueue();
-        }
-
-        if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
           var failedUnitOfWork = nextUnitOfWork;
-          replayUnitOfWork(failedUnitOfWork, thrownValue, isAsync);
-        }
+          if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
+            replayUnitOfWork(failedUnitOfWork, thrownValue, isAsync);
+          }
 
-        var sourceFiber = nextUnitOfWork;
-        var returnFiber = sourceFiber.return;
-        if (returnFiber === null) {
-          // This is the root. The root could capture its own errors. However,
-          // we don't know if it errors before or after we pushed the host
-          // context. This information is needed to avoid a stack mismatch.
-          // Because we're not sure, treat this as a fatal error. We could track
-          // which phase it fails in, but doesn't seem worth it. At least
-          // for now.
-          didFatal = true;
-          onUncaughtError(thrownValue);
-          break;
+          // TODO: we already know this isn't true in some cases.
+          // At least this shows a nicer error message until we figure out the cause.
+          // https://github.com/facebook/react/issues/12449#issuecomment-386727431
+          invariant(
+            nextUnitOfWork !== null,
+            "Failed to replay rendering after an error. This " +
+              "is likely caused by a bug in React. Please file an issue " +
+              "with a reproducing case to help us find it."
+          );
+
+          var sourceFiber = nextUnitOfWork;
+          var returnFiber = sourceFiber.return;
+          if (returnFiber === null) {
+            // This is the root. The root could capture its own errors. However,
+            // we don't know if it errors before or after we pushed the host
+            // context. This information is needed to avoid a stack mismatch.
+            // Because we're not sure, treat this as a fatal error. We could track
+            // which phase it fails in, but doesn't seem worth it. At least
+            // for now.
+            didFatal = true;
+            onUncaughtError(thrownValue);
+            break;
+          }
+          throwException(
+            root,
+            returnFiber,
+            sourceFiber,
+            thrownValue,
+            nextRenderIsExpired,
+            nextRenderExpirationTime,
+            mostRecentCurrentTimeMs
+          );
+          nextUnitOfWork = completeUnitOfWork(sourceFiber);
         }
-        throwException(
-          root,
-          returnFiber,
-          sourceFiber,
-          thrownValue,
-          nextRenderIsExpired,
-          nextRenderExpirationTime,
-          mostRecentCurrentTimeMs
-        );
-        nextUnitOfWork = completeUnitOfWork(sourceFiber);
       }
       break;
     } while (true);
@@ -14210,6 +14451,20 @@ function cancelDeferredCallback(callbackID) {
   clearTimeout(callbackID);
 }
 
+function dispatchEvent(target, topLevelType, nativeEvent) {
+  var targetFiber = target;
+  batchedUpdates(function() {
+    runExtractedEventsInBatch(
+      topLevelType,
+      targetFiber,
+      nativeEvent,
+      nativeEvent.target
+    );
+  });
+  // React Native doesn't use ReactControlledComponent but if it did, here's
+  // where it would do it.
+}
+
 function _classCallCheck$1(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -14223,9 +14478,18 @@ function _classCallCheck$1(instance, Constructor) {
 // This means that they never overlap.
 var nextReactTag = 2;
 
+// TODO: Remove this conditional once all changes have propagated.
+if (FabricUIManager.registerEventHandler) {
+  /**
+   * Register the event emitter with the native bridge
+   */
+  FabricUIManager.registerEventHandler(dispatchEvent);
+}
+
 /**
  * This is used for refs on host components.
  */
+
 var ReactFabricHostComponent = (function() {
   function ReactFabricHostComponent(tag, viewConfig, props) {
     _classCallCheck$1(this, ReactFabricHostComponent);
