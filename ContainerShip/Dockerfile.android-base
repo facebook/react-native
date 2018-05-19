@@ -14,7 +14,7 @@
 FROM library/ubuntu:16.04
 
 LABEL Description="This image provides a base Android development environment for React Native, and may be used to run tests."
-maintainer="Héctor Ramos <hector@fb.com>"
+LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default build arguments
 ARG ANDROID_BUILD_VERSION=26
