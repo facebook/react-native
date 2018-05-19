@@ -13,19 +13,14 @@
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/ViewShadowNode.h>
 
+#include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
 
 namespace facebook {
 namespace react {
 
 Scheduler::Scheduler() {
-  auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ScrollViewComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<RawTextComponentDescriptor>());
-
+  auto componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry();
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
 }

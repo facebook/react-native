@@ -27,6 +27,7 @@ PODS:
     - React/fabric/core (= 1000.0.0)
     - React/fabric/debug (= 1000.0.0)
     - React/fabric/graphics (= 1000.0.0)
+    - React/fabric/scrollview (= 1000.0.0)
     - React/fabric/text (= 1000.0.0)
     - React/fabric/textlayoutmanager (= 1000.0.0)
     - React/fabric/uimanager (= 1000.0.0)
@@ -38,6 +39,8 @@ PODS:
   - React/fabric/debug (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/graphics (1000.0.0):
+    - Folly (= 2016.10.31.00)
+  - React/fabric/scrollview (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/text (1000.0.0):
     - Folly (= 2016.10.31.00)
@@ -67,6 +70,8 @@ PODS:
     - Folly (= 2016.10.31.00)
     - React/Core
     - React/fabric
+  - React/RCTFabricSample (1000.0.0):
+    - Folly (= 2016.10.31.00)
   - React/RCTGeolocation (1000.0.0):
     - React/Core
   - React/RCTImage (1000.0.0):
@@ -103,6 +108,7 @@ DEPENDENCIES:
   - React/RCTBlob (from `../`)
   - React/RCTCameraRoll (from `../`)
   - React/RCTFabric (from `../`)
+  - React/RCTFabricSample (from `../`)
   - React/RCTGeolocation (from `../`)
   - React/RCTImage (from `../`)
   - React/RCTLinkingIOS (from `../`)
@@ -135,9 +141,9 @@ SPEC CHECKSUMS:
   DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
   Folly: 9a8eea4725a0b6ba3256ebf206c21e352c23abf8
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  React: 3d56cdd885ecc0f2f3534b2f54a11cf9707229fb
+  React: 0a0271674c3a6772a89a6606f337ed8db583abc0
   yoga: bdd268c5812f00bdb52cc2b58f129797e97935eb
 
-PODFILE CHECKSUM: 1a96172007b66aa74825c234f17139dd9c3d3cd7
+PODFILE CHECKSUM: b28ea97efdc10f046a3a1b7b455c1e18a39cb10a
 
 COCOAPODS: 1.5.2

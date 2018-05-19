@@ -218,6 +218,16 @@ Pod::Spec.new do |s|
     end
   end
 
+  # Fabric sample target for sample app purpose.
+  s.subspec "RCTFabricSample" do |ss|
+    ss.dependency             "Folly", folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "ReactCommon/fabric/sample/**/*.{cpp,h}"
+    ss.exclude_files        = "**/tests/*"
+    ss.header_dir           = "fabric/sample"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+  end
+
   s.subspec "ART" do |ss|
     ss.dependency             "React/Core"
     ss.source_files         = "Libraries/ART/**/*.{h,m}"
