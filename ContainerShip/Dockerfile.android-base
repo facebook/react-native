@@ -68,7 +68,7 @@ RUN mkdir /opt/ndk && \
   rm ndk.zip
 
 # Add android SDK tools
-RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
     "platforms;android-26" \
     "build-tools;26.0.2" \
     "extras;android;m2repository"
