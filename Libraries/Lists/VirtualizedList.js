@@ -759,7 +759,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           <View onLayout={this._onLayoutHeader} style={inversionStyle}>
             {
               // $FlowFixMe - Typing ReactNativeComponent revealed errors
-              element}
+              element
+            }
           </View>
         </VirtualizedCellWrapper>,
       );
@@ -894,7 +895,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           <View onLayout={this._onLayoutFooter} style={inversionStyle}>
             {
               // $FlowFixMe - Typing ReactNativeComponent revealed errors
-              element}
+              element
+            }
           </View>
         </VirtualizedCellWrapper>,
       );
