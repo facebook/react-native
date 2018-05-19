@@ -17,6 +17,7 @@ LABEL Description="This image provides a base Android development environment fo
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default build arguments
+ARG SDK_VERSION=sdk-tools-linux-3859397.zip
 ARG ANDROID_BUILD_VERSION=26
 ARG ANDROID_TOOLS_VERSION=26.0.2
 ARG BUCK_VERSION=v2018.02.16.01
@@ -55,7 +56,7 @@ RUN ant
 # download and unpack android
 RUN mkdir /opt/android && \
  cd /opt/android && \
- curl --silent https://dl.google.com/android/repository/tools_r$ANDROID_TOOLS_VERSION-linux.zip > android.zip && \
+ curl --silent https://dl.google.com/android/repository/${SDK_VERSION} > android.zip && \
  unzip android.zip && \
  rm android.zip
 
