@@ -24,6 +24,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.view.View;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -121,9 +122,16 @@ public class ReactViewBackgroundDrawable extends Drawable {
     BOTTOM_START,
     BOTTOM_END
   }
+  private ColorState mColorState;
+
+  private static ReactViewBackgroundDrawable mInstance;
 
   public ReactViewBackgroundDrawable(Context context) {
     mContext = context;
+    if (mColorState == null) {
+      mColorState = new ColorState();
+    }
+    mInstance = this;
   }
 
   @Override
@@ -1223,5 +1231,23 @@ public class ReactViewBackgroundDrawable extends Drawable {
       borderRightWidth,
       borderBottomWidth
     );
+  }
+
+  @android.support.annotation.Nullable
+  @Override
+  public ConstantState getConstantState() {
+    return mColorState;
+  }
+
+  final static class ColorState extends ConstantState {
+    @NonNull
+    @Override
+    public Drawable newDrawable() {
+      return mInstance;
+    }
+    @Override
+    public int getChangingConfigurations() {
+      return 0;
+    }
   }
 }

@@ -88,7 +88,7 @@ public class ReactEditText extends EditText {
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
   public ReactEditText(Context context) {
-    super(context);
+    super(context,null,0);
     setFocusableInTouchMode(false);
 
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
@@ -174,14 +174,19 @@ public class ReactEditText extends EditText {
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
-    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
-        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
-
+//    ReactEditTextInputConnectionWrapper inputConnectionWrapper =
+//        new ReactEditTextInputConnectionWrapper(super.onCreateInputConnection(outAttrs), reactContext, this);
+    //Fix crashes onKeyPress Android
+    //https://github.com/facebook/react-native/pull/18114/commits/13d022cad32bb2d6bad7b87d5c6c0e103920960a
+    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+    if (inputConnection != null) {
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+    }
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return inputConnectionWrapper;
+    return inputConnection;
   }
 
   @Override
