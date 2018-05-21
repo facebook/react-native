@@ -215,5 +215,10 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
   }
 }
 
+void FabricUIManager::registerEventHandler(void *eventHandler) {
+  isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler)";
+  // TODO: Store eventHandler handle.
+}
+
 } // namespace react
 } // namespace facebook

@@ -44,6 +44,7 @@ public:
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
   void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
+  void registerEventHandler(void *eventHandler);
 
 private:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
