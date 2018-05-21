@@ -9,11 +9,6 @@
  */
 'use strict';
 
-/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
- * suppresses an error when upgrading Flow's support for React. To see the
- * error delete this comment and run Flow. */
-import type React from 'react';
-
 export type MeasureOnSuccessCallback = (
   x: number,
   y: number,
@@ -37,6 +32,27 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
+type BubblingEventType = {
+  phasedRegistrationNames: {
+    captured: string,
+    bubbled: string,
+  },
+};
+
+type DirectEventType = {
+  registrationName: string,
+};
+
+export type ReactNativeBaseComponentViewConfig = {
+  validAttributes: Object,
+  uiViewClassName: string,
+  bubblingEventTypes?: {[topLevelType: string]: BubblingEventType},
+  directEventTypes?: {[topLevelType: string]: DirectEventType},
+  propTypes?: Object,
+};
+
+export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig;
+
 /**
  * This type keeps ReactNativeFiberHostComponent and NativeMethodsMixin in sync.
  * It can also provide types for ReactNative applications that use NMM or refs.
@@ -54,17 +70,17 @@ export type NativeMethodsMixinType = {
   setNativeProps(nativeProps: Object): void,
 };
 
-type ReactNativeBaseComponentViewConfig = {
-  validAttributes: Object,
-  uiViewClassName: string,
-  propTypes?: Object,
+type ReactNativeBridgeEventPlugin = {
+  processEventTypes(viewConfig: ReactNativeBaseComponentViewConfig): void,
 };
 
 type SecretInternalsType = {
   NativeMethodsMixin: NativeMethodsMixinType,
   createReactNativeComponentClass(
-    viewConfig: ReactNativeBaseComponentViewConfig,
+    name: string,
+    callback: ViewConfigGetter,
   ): any,
+  ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin,
   ReactNativeComponentTree: any,
   ReactNativePropRegistry: any,
   // TODO (bvaughn) Decide which additional types to expose here?
@@ -79,7 +95,7 @@ export type ReactNativeType = {
   NativeComponent: any,
   findNodeHandle(componentOrHandle: any): ?number,
   render(
-    element: React.Element<any>,
+    element: React$Element<any>,
     containerTag: any,
     callback: ?Function,
   ): any,

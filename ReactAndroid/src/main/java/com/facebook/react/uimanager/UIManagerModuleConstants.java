@@ -9,17 +9,12 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.events.TouchEventType;
+import java.util.Map;
+
 
 /**
  * Constants exposed to JS from {@link UIManagerModule}.
@@ -68,23 +63,40 @@ import com.facebook.react.uimanager.events.TouchEventType;
                     "onTouchEnd",
                     "captured",
                     "onTouchEndCapture")))
+        .put(
+            TouchEventType.CANCEL.getJSEventName(),
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of(
+                    "bubbled",
+                    "onTouchCancel",
+                    "captured",
+                    "onTouchCancelCapture")))
         .build();
   }
 
   /* package */ static Map getDirectEventTypeConstants() {
+    final String rn = "registrationName";
     return MapBuilder.builder()
-        .put("topContentSizeChange", MapBuilder.of("registrationName", "onContentSizeChange"))
-        .put("topLayout", MapBuilder.of("registrationName", "onLayout"))
-        .put("topLoadingError", MapBuilder.of("registrationName", "onLoadingError"))
-        .put("topLoadingFinish", MapBuilder.of("registrationName", "onLoadingFinish"))
-        .put("topLoadingStart", MapBuilder.of("registrationName", "onLoadingStart"))
-        .put("topSelectionChange", MapBuilder.of("registrationName", "onSelectionChange"))
-        .put("topMessage", MapBuilder.of("registrationName", "onMessage"))
+        .put("topContentSizeChange", MapBuilder.of(rn, "onContentSizeChange"))
+        .put("topLayout", MapBuilder.of(rn, "onLayout"))
+        .put("topLoadingError", MapBuilder.of(rn, "onLoadingError"))
+        .put("topLoadingFinish", MapBuilder.of(rn, "onLoadingFinish"))
+        .put("topLoadingStart", MapBuilder.of(rn, "onLoadingStart"))
+        .put("topSelectionChange", MapBuilder.of(rn, "onSelectionChange"))
+        .put("topMessage", MapBuilder.of(rn, "onMessage"))
+        // Scroll events are added as per task T22348735.
+        // Subject for further improvement.
+        .put("topScrollBeginDrag", MapBuilder.of(rn, "onScrollBeginDrag"))
+        .put("topScrollEndDrag", MapBuilder.of(rn, "onScrollEndDrag"))
+        .put("topScroll", MapBuilder.of(rn, "onScroll"))
+        .put("topMomentumScrollBegin", MapBuilder.of(rn, "onMomentumScrollBegin"))
+        .put("topMomentumScrollEnd", MapBuilder.of(rn, "onMomentumScrollEnd"))
         .build();
   }
 
   public static Map<String, Object> getConstants() {
-    HashMap<String, Object> constants = new HashMap<String, Object>();
+    Map<String, Object> constants = MapBuilder.newHashMap();
     constants.put(
         "UIView",
         MapBuilder.of(

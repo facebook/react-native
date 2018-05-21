@@ -101,25 +101,29 @@ var TextAttributes = merge(RenderableAttributes, {
 
 // Native Components
 
-var NativeSurfaceView = createReactNativeComponentClass({
-  validAttributes: SurfaceViewAttributes,
-  uiViewClassName: 'ARTSurfaceView',
-});
+var NativeSurfaceView = createReactNativeComponentClass('ARTSurfaceView',
+  () => ({
+    validAttributes: SurfaceViewAttributes,
+    uiViewClassName: 'ARTSurfaceView',
+  }));
 
-var NativeGroup = createReactNativeComponentClass({
-  validAttributes: GroupAttributes,
-  uiViewClassName: 'ARTGroup',
-});
+var NativeGroup = createReactNativeComponentClass('ARTGroup',
+  () => ({
+    validAttributes: GroupAttributes,
+    uiViewClassName: 'ARTGroup',
+  }));
 
-var NativeShape = createReactNativeComponentClass({
-  validAttributes: ShapeAttributes,
-  uiViewClassName: 'ARTShape',
-});
+var NativeShape = createReactNativeComponentClass('ARTShape',
+  () => ({
+    validAttributes: ShapeAttributes,
+    uiViewClassName: 'ARTShape',
+  }));
 
-var NativeText = createReactNativeComponentClass({
-  validAttributes: TextAttributes,
-  uiViewClassName: 'ARTText',
-});
+var NativeText = createReactNativeComponentClass('ARTText',
+  () => ({
+    validAttributes: TextAttributes,
+    uiViewClassName: 'ARTText',
+  }));
 
 // Utilities
 
