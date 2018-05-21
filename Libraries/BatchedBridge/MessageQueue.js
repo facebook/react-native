@@ -303,12 +303,8 @@ class MessageQueue {
   __shouldPauseOnThrow() {
     return (
       // $FlowFixMe
-      (typeof DebuggerInternal !== 'undefined' &&
-        DebuggerInternal.shouldPauseOnThrow === true) || // eslint-disable-line no-undef
-      // FIXME(festevezga) Remove once T24034309 is rolled out internally
-      // $FlowFixMe
-      (typeof __fbUninstallRNGlobalErrorHandler !== 'undefined' &&
-        __fbUninstallRNGlobalErrorHandler === true) // eslint-disable-line no-undef
+      typeof DebuggerInternal !== 'undefined' &&
+      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
     );
   }
 
