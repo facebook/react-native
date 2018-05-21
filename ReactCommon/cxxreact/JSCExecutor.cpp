@@ -120,19 +120,17 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) {
   return folly::make_unique<JSCExecutor>(
-      delegate, jsQueue, m_jscConfig, m_nativeExtensionsProvider);
+      delegate, jsQueue, m_jscConfig);
 }
 
 JSCExecutor::JSCExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> messageQueueThread,
-    const folly::dynamic& jscConfig,
-    NativeExtensionsProvider nativeExtensionsProvider) throw(JSException)
+    const folly::dynamic& jscConfig) throw(JSException)
     : m_delegate(delegate),
       m_messageQueueThread(messageQueueThread),
       m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
-      m_jscConfig(jscConfig),
-      m_nativeExtensionsProvider(nativeExtensionsProvider) {
+      m_jscConfig(jscConfig) {
   initOnJSVMThread();
 
   {
@@ -141,12 +139,6 @@ JSCExecutor::JSCExecutor(
         m_context,
         "nativeModuleProxy",
         exceptionWrapMethod<&JSCExecutor::getNativeModule>());
-  }
-  if (nativeExtensionsProvider) {
-    installGlobalProxy(
-        m_context,
-        "nativeExtensions",
-        exceptionWrapMethod<&JSCExecutor::getNativeExtension>());
   }
 }
 
@@ -730,17 +722,6 @@ JSValueRef JSCExecutor::getNativeModule(
   }
 
   return m_nativeModules.getModule(m_context, propertyName);
-}
-
-JSValueRef JSCExecutor::getNativeExtension(
-    JSObjectRef object,
-    JSStringRef propertyName) {
-  if (m_nativeExtensionsProvider) {
-    folly::dynamic value =
-        m_nativeExtensionsProvider(String::ref(m_context, propertyName).str());
-    return Value::fromDynamic(m_context, std::move(value));
-  }
-  return JSC_JSValueMakeUndefined(m_context);
 }
 
 JSValueRef JSCExecutor::nativeRequire(

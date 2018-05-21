@@ -27,15 +27,14 @@ class RAMBundleRegistry;
 
 class RN_EXPORT JSCExecutorFactory : public JSExecutorFactory {
 public:
-  JSCExecutorFactory(const folly::dynamic& jscConfig, NativeExtensionsProvider provider) :
-    m_jscConfig(jscConfig), m_nativeExtensionsProvider(provider) {}
+  JSCExecutorFactory(const folly::dynamic& jscConfig) :
+    m_jscConfig(jscConfig) {}
   std::unique_ptr<JSExecutor> createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) override;
 private:
   std::string m_cacheDir;
   folly::dynamic m_jscConfig;
-  NativeExtensionsProvider m_nativeExtensionsProvider;
 };
 
 template<typename T>
@@ -59,8 +58,7 @@ public:
    */
   explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                        std::shared_ptr<MessageQueueThread> messageQueueThread,
-                       const folly::dynamic& jscConfig,
-                       NativeExtensionsProvider nativeExtensionsProvider) throw(JSException);
+                       const folly::dynamic& jscConfig) throw(JSException);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
@@ -104,7 +102,6 @@ private:
   JSCNativeModules m_nativeModules;
   folly::dynamic m_jscConfig;
   std::once_flag m_bindFlag;
-  NativeExtensionsProvider m_nativeExtensionsProvider;
 
   folly::Optional<Object> m_invokeCallbackAndReturnFlushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnFlushedQueueJS;
@@ -126,7 +123,6 @@ private:
   void installNativeHook(const char* name);
 
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
-  JSValueRef getNativeExtension(JSObjectRef object, JSStringRef propertyName);
 
   JSValueRef nativeRequire(
       size_t argumentCount,

@@ -34,7 +34,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeMap* jscConfig) {
-    return makeCxxInstance(makeAndroidJSCExecutorFactory(jscConfig->consume(), nullptr));
+    return makeCxxInstance(makeAndroidJSCExecutorFactory(jscConfig->consume()));
   }
 
   static void registerNatives() {

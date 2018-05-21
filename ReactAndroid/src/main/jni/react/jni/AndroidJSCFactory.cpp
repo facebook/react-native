@@ -113,9 +113,9 @@ void injectJSCExecutorAndroidPlatform() {
 }
 
 std::unique_ptr<JSExecutorFactory> makeAndroidJSCExecutorFactory(
-    const folly::dynamic& jscConfig, NativeExtensionsProvider nativeExtensionsProvider) {
+    const folly::dynamic& jscConfig) {
   detail::injectJSCExecutorAndroidPlatform();
-  return folly::make_unique<JSCExecutorFactory>(std::move(jscConfig), std::move(nativeExtensionsProvider));
+  return folly::make_unique<JSCExecutorFactory>(std::move(jscConfig));
 }
 
 }

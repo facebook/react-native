@@ -338,7 +338,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
-         , nullptr
       ));
     }
   } else {
