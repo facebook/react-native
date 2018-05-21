@@ -1,11 +1,12 @@
 load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library", "get_apple_inspector_flags", "ANDROID", "APPLE")
+load("//ReactNative:DEFS.bzl", "ANDROID", "APPLE", "IS_OSS_BUILD", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 APPLE_COMPILER_FLAGS = []
 
 if not IS_OSS_BUILD:
-    load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_static_library_ios_flags", "flags")
-    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "flags", "get_static_library_ios_flags")
+
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
 
 rn_xplat_cxx_library(
     name = "uimanager",

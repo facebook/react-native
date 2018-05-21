@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "ANDROID_JSC_INTERNAL_DEPS", "APPLE_JSC_INTERNAL_DEPS", "ANDROID", "APPLE")
+load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_INTERNAL_DEPS", "APPLE", "APPLE_JSC_INTERNAL_DEPS", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "JavaScriptCore.h",
