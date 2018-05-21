@@ -155,7 +155,7 @@
     "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
     "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
     "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e",
-    "test-ios-e2e": "detox build -c ios.sim.release && detox test -c ios.sim.release"
+    "test-ios-e2e": "FORCE_BUNDLING=true detox build -c ios.sim.debug && detox test -c ios.sim.debug"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -221,7 +221,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "detox": "^7.0.1",
+    "detox": "^7.3.7",
     "eslint": "^3.19.0",
     "eslint-config-fb-strict": "^20.0.3",
     "eslint-config-fbjs": "^1.1.1",
