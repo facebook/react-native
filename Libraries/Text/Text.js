@@ -167,25 +167,25 @@ class TouchableText extends React.Component<Props, State> {
       onResponderGrant: (event: SyntheticEvent<>, dispatchID: string): void => {
         nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
         if (this.props.onResponderGrant != null) {
-          this.props.onResponderGrant.apply(this, arguments);
+          this.props.onResponderGrant.call(this, event, dispatchID);
         }
       },
       onResponderMove: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderMove)(event);
         if (this.props.onResponderMove != null) {
-          this.props.onResponderMove.apply(this, arguments);
+          this.props.onResponderMove.call(this, event);
         }
       },
       onResponderRelease: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderRelease)(event);
         if (this.props.onResponderRelease != null) {
-          this.props.onResponderRelease.apply(this, arguments);
+          this.props.onResponderRelease.call(this, event);
         }
       },
       onResponderTerminate: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderTerminate)(event);
         if (this.props.onResponderTerminate != null) {
-          this.props.onResponderTerminate.apply(this, arguments);
+          this.props.onResponderTerminate.call(this, event);
         }
       },
       onResponderTerminationRequest: (): boolean => {
