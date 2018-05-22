@@ -4,7 +4,6 @@ EXPORTED_HEADERS = [
     "JavaScriptCore.h",
     "JSCHelpers.h",
     "JSCWrapper.h",
-    "JSWeak.h",
     "noncopyable.h",
     "Unicode.h",
     "Value.h",
