@@ -89,6 +89,14 @@ public class ReactSwipeRefreshLayout extends SwipeRefreshLayout {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (shouldInterceptTouchEvent(ev) && super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+
+      // If the pull-to-refresh gesture is interrupted by a parent with its own
+      // onInterceptTouchEvent then the refresh indicator gets stuck on-screen
+      // so we ask the parent to not intercept this touch event after it started
+      if (getParent() != null) {
+        getParent().requestDisallowInterceptTouchEvent(true);
+      }
+
       return true;
     }
     return false;

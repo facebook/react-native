@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -48,11 +49,24 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
       mWidth = node.mWidth;
       mHeight = node.mHeight;
       mMeasured = node.mMeasured;
-      initMeasureFunction();
     }
 
     private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopy() {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren();
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
     }
 
     @Override

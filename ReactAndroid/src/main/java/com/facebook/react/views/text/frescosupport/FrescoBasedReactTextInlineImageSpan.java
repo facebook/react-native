@@ -160,8 +160,10 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
     canvas.save();
 
-    // Align to baseline by default
-    int transY = y - mDrawable.getBounds().bottom;
+    // Align to center
+    int fontHeight = (int)(paint.descent() - paint.ascent());
+    int centerY = y + (int)paint.descent() - fontHeight / 2;
+    int transY = centerY - (mDrawable.getBounds().bottom - mDrawable.getBounds().top) / 2;
 
     canvas.translate(x, transY);
     mDrawable.draw(canvas);

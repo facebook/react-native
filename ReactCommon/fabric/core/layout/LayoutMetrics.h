@@ -23,6 +23,13 @@ struct LayoutMetrics {
   DisplayType displayType {DisplayType::Flex};
   LayoutDirection layoutDirection {LayoutDirection::Undefined};
 
+  Rect getContentFrame() const {
+    return Rect {
+      Point {contentInsets.left, contentInsets.top},
+      Size {frame.size.width - contentInsets.left - contentInsets.right, frame.size.height - contentInsets.top - contentInsets.bottom}
+    };
+  }
+
   bool operator ==(const LayoutMetrics& rhs) const {
     return
       std::tie(this->frame, this->contentInsets, this->borderWidth, this->displayType, this->layoutDirection) ==

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInputTestModule
+ * @format
  */
 
 'use strict';
@@ -26,13 +26,14 @@ class TokenizedTextExample extends React.Component {
     this.state = {text: ''};
   }
   render() {
-
     //define delimiter
     let delimiter = /\s+/;
 
     //split string
     let _text = this.state.text;
-    let token, index, parts = [];
+    let token,
+      index,
+      parts = [];
     while (_text) {
       delimiter.lastIndex = 0;
       token = delimiter.exec(_text);
@@ -51,9 +52,13 @@ class TokenizedTextExample extends React.Component {
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map((text) => {
+    parts = parts.map(text => {
       if (/^#/.test(text)) {
-        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+        return (
+          <Text key={text} style={styles.hashtag}>
+            {text}
+          </Text>
+        );
       } else {
         return text;
       }
@@ -66,7 +71,7 @@ class TokenizedTextExample extends React.Component {
           testID="tokenizedInput"
           multiline={true}
           style={styles.multiline}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}>
           <Text>{parts}</Text>
@@ -81,7 +86,7 @@ class TextInputTestApp extends React.Component {
     app = this;
   }
 
-  handleOnSubmitEditing = (record) => {
+  handleOnSubmitEditing = record => {
     Recording.record(record);
   };
 
@@ -174,7 +179,7 @@ var TextInputTestModule = {
 
 BatchedBridge.registerCallableModule(
   'TextInputTestModule',
-  TextInputTestModule
+  TextInputTestModule,
 );
 
 module.exports = TextInputTestModule;

@@ -13,7 +13,7 @@ jest.setMock('NativeModules', {
   BlobModule: require('../__mocks__/BlobModule'),
 });
 
-var Blob = require('Blob');
+const Blob = require('Blob');
 
 describe('Blob', function() {
   it('should create empty blob', () => {

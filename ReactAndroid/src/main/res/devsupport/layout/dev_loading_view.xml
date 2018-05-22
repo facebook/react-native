@@ -4,11 +4,14 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:background="#035900"
+  android:ellipsize="end"
+  android:gravity="center"
   android:paddingTop="5dp"
   android:paddingBottom="5dp"
   android:paddingStart="8dp"
   android:paddingEnd="8dp"
-  android:textSize="12sp"
   android:maxLines="1"
-  android:ellipsize="end"
-  android:gravity="center"/>
+  android:textColor="@android:color/white"
+  android:textSize="12sp"
+  />

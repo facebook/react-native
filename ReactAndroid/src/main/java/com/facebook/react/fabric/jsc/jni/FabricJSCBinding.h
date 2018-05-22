@@ -26,6 +26,10 @@ private:
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
+  jlong createEventTarget(jlong jsContextNativePointer, jlong instanceHandlePointer);
+
+  void releaseEventTarget(jlong jsContextNativePointer, jlong eventTargetPointer);
+
   void installFabric(jlong jsContextNativePointer, jni::alias_ref<jobject> fabricModule);
 
 };

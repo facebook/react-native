@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule MessageQueue
  * @flow
  * @format
  */
@@ -47,7 +46,6 @@ class MessageQueue {
   _successCallbacks: {[key: number]: ?Function};
   _failureCallbacks: {[key: number]: ?Function};
   _callID: number;
-  _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
 
@@ -249,10 +247,9 @@ class MessageQueue {
     const now = new Date().getTime();
     if (
       global.nativeFlushQueueImmediate &&
-      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-        this._inCall === 0)
+      now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
-      var queue = this._queue;
+      const queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
       global.nativeFlushQueueImmediate(queue);
@@ -287,7 +284,6 @@ class MessageQueue {
    */
 
   __guard(fn: () => void) {
-    this._inCall++;
     if (this.__shouldPauseOnThrow()) {
       fn();
     } else {
@@ -297,7 +293,6 @@ class MessageQueue {
         ErrorUtils.reportFatalError(error);
       }
     }
-    this._inCall--;
   }
 
   // MessageQueue installs a global handler to catch all exceptions where JS users can register their own behavior
@@ -308,12 +303,8 @@ class MessageQueue {
   __shouldPauseOnThrow() {
     return (
       // $FlowFixMe
-      (typeof DebuggerInternal !== 'undefined' &&
-        DebuggerInternal.shouldPauseOnThrow === true) || // eslint-disable-line no-undef
-      // FIXME(festevezga) Remove once T24034309 is rolled out internally
-      // $FlowFixMe
-      (typeof __fbUninstallRNGlobalErrorHandler !== 'undefined' &&
-        __fbUninstallRNGlobalErrorHandler === true) // eslint-disable-line no-undef
+      typeof DebuggerInternal !== 'undefined' &&
+      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
     );
   }
 
@@ -329,7 +320,11 @@ class MessageQueue {
   __callFunction(module: string, method: string, args: any[]): any {
     this._lastFlush = new Date().getTime();
     this._eventLoopStartTime = this._lastFlush;
-    Systrace.beginEvent(`${module}.${method}()`);
+    if (__DEV__ || this.__spy) {
+      Systrace.beginEvent(`${module}.${method}(${stringifySafe(args)})`);
+    } else {
+      Systrace.beginEvent(`${module}.${method}(...)`);
+    }
     if (this.__spy) {
       this.__spy({type: TO_JS, module, method, args});
     }

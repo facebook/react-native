@@ -15,9 +15,8 @@ namespace react {
  */
 void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
-  SharedShadowNode parentNode,
-  SharedShadowNodeSharedList oldChildNodes,
-  SharedShadowNodeSharedList newChildNodes
+  SharedShadowNode oldNode,
+  SharedShadowNode newNode
 );
 
 } // namespace react

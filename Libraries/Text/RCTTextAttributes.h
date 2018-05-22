@@ -8,7 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTTextDecorationLineType.h>
-#import <RCTText/RCTTextTransform.h>
+
+#import "RCTTextTransform.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -18,6 +18,10 @@ std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConve
   std::string childrenString = "";
 
   for (auto child : getDebugChildren()) {
+    if (!child) {
+      continue;
+    }
+
     childrenString += child->getDebugDescription(options, depth + 1);
   }
 
@@ -32,6 +36,10 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
   std::string propsString = "";
 
   for (auto prop : getDebugProps()) {
+    if (!prop) {
+      continue;
+    }
+
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
     auto children = prop->getDebugPropsDescription(options, depth + 1);

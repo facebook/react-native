@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AssetRegistry
  * @flow
  * @format
  */
@@ -22,7 +21,7 @@ export type PackagerAsset = {
   +type: string,
 };
 
-var assets: Array<PackagerAsset> = [];
+const assets: Array<PackagerAsset> = [];
 
 function registerAsset(asset: PackagerAsset): number {
   // `push` returns new array length, so the first asset will

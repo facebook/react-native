@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ToastAndroid
+ * @format
  * @flow
  */
 
@@ -34,7 +34,6 @@ const RCTToastAndroid = require('NativeModules').ToastAndroid;
  */
 
 const ToastAndroid = {
-
   // Toast duration constants
   SHORT: RCTToastAndroid.SHORT,
   LONG: RCTToastAndroid.LONG,
@@ -44,14 +43,11 @@ const ToastAndroid = {
   BOTTOM: RCTToastAndroid.BOTTOM,
   CENTER: RCTToastAndroid.CENTER,
 
-  show: function (
-    message: string,
-    duration: number
-  ): void {
+  show: function(message: string, duration: number): void {
     RCTToastAndroid.show(message, duration);
   },
 
-  showWithGravity: function (
+  showWithGravity: function(
     message: string,
     duration: number,
     gravity: number,
@@ -59,14 +55,20 @@ const ToastAndroid = {
     RCTToastAndroid.showWithGravity(message, duration, gravity);
   },
 
-  showWithGravityAndOffset: function (
+  showWithGravityAndOffset: function(
     message: string,
     duration: number,
     gravity: number,
     xOffset: number,
     yOffset: number,
   ): void {
-    RCTToastAndroid.showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset);
+    RCTToastAndroid.showWithGravityAndOffset(
+      message,
+      duration,
+      gravity,
+      xOffset,
+      yOffset,
+    );
   },
 };
 

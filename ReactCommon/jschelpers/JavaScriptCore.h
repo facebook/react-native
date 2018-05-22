@@ -72,16 +72,20 @@
 #define JSC_JSGlobalContextRelease(...) __jsc_wrapper(JSGlobalContextRelease, __VA_ARGS__)
 #define JSC_JSGlobalContextSetName(...) __jsc_wrapper(JSGlobalContextSetName, __VA_ARGS__)
 
-jsc_poison(JSContextGroupCreate JSContextGroupRelease JSContextGroupRetain
-           JSGlobalContextCreate JSGlobalContextCreateInGroup JSGlobalContextCopyName
-           JSGlobalContextRelease JSGlobalContextRetain JSGlobalContextSetName)
+jsc_poison(JSContextGroupCreate JSGlobalContextCreate JSGlobalContextCreateInGroup
+           JSGlobalContextCopyName JSGlobalContextRelease JSGlobalContextRetain
+           JSGlobalContextSetName)
 
 // JSContext
 #define JSC_JSContextGetGlobalContext(...) __jsc_wrapper(JSContextGetGlobalContext, __VA_ARGS__)
 #define JSC_JSContextGetGlobalObject(...) __jsc_wrapper(JSContextGetGlobalObject, __VA_ARGS__)
+#define JSC_JSContextGetGroup(ctx) __jsc_wrapper(JSContextGetGroup, ctx)
+#define JSC_JSContextGroupRetain(...) __jsc_bool_wrapper(JSContextGroupRetain, __VA_ARGS__)
+#define JSC_JSContextGroupRelease(...) __jsc_bool_wrapper(JSContextGroupRelease, __VA_ARGS__)
 #define JSC_FBJSContextStartGCTimers(...) __jsc_wrapper(FBJSContextStartGCTimers, __VA_ARGS__)
 
-jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup FBJSContextStartGCTimers)
+jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup
+           JSContextGroupRelease JSContextGroupRetain FBJSContextStartGCTimers)
 
 // JSEvaluate
 #define JSC_JSEvaluateScript(...) __jsc_wrapper(JSEvaluateScript, __VA_ARGS__)
@@ -134,6 +138,7 @@ jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSVal
 
 // JSClass
 #define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
+#define JSC_JSClassRetain(...) __jsc_bool_wrapper(JSClassRetain, __VA_ARGS__)
 #define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
 
 jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
@@ -181,6 +186,12 @@ jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
            JSObjectGetTypedArrayByteOffset JSObjectGetTypedArrayBytesPtr
            JSObjectGetTypedArrayBuffer JSObjectGetTypedArrayLength
            JSObjectGetArrayBufferBytesPtr JSObjectGetArrayBufferByteLength)
+
+// JSWeak
+#define JSC_JSWeakCreate(...) __jsc_bool_wrapper(JSWeakCreate, __VA_ARGS__)
+#define JSC_JSWeakRetain(...) __jsc_bool_wrapper(JSWeakRetain, __VA_ARGS__)
+#define JSC_JSWeakRelease(...) __jsc_bool_wrapper(JSWeakRelease, __VA_ARGS__)
+#define JSC_JSWeakGetObject(...) __jsc_drop_ctx_wrapper(JSWeakGetObject, __VA_ARGS__)
 
 // Sampling profiler
 #define JSC_JSSamplingProfilerEnabled(...) __jsc_drop_ctx_wrapper(JSSamplingProfilerEnabled, __VA_ARGS__)

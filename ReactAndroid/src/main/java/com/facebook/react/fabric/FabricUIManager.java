@@ -14,10 +14,13 @@ import static android.view.View.MeasureSpec.UNSPECIFIED;
 import android.util.Log;
 import android.view.View;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -32,8 +35,12 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -67,7 +74,7 @@ public class FabricUIManager implements UIManager {
   /** Creates a new {@link ReactShadowNode} */
   @Nullable
   public ReactShadowNode createNode(
-      int reactTag, String viewName, int rootTag, ReadableNativeMap props) {
+      int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "createNode \n\ttag: " + reactTag +
           "\n\tviewName: " + viewName +
@@ -116,11 +123,12 @@ public class FabricUIManager implements UIManager {
    *     including its children set (note that the children nodes will not be cloned).
    */
   @Nullable
-  public ReactShadowNode cloneNode(ReactShadowNode node) {
+  public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNode \n\tnode: " + node);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone = node.mutableCopy();
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -136,11 +144,12 @@ public class FabricUIManager implements UIManager {
    *     children set will be empty.
    */
   @Nullable
-  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
+  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone = node.mutableCopyWithNewChildren();
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -157,11 +166,12 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewProps(
-      ReactShadowNode node, @Nullable ReadableNativeMap newProps) {
+      ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone =
           node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
@@ -180,11 +190,12 @@ public class FabricUIManager implements UIManager {
    */
   @Nullable
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
-      ReactShadowNode node, ReadableNativeMap newProps) {
+      ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
     }
     try {
+      // TODO: Pass new instanceHandle
       ReactShadowNode clone =
           node.mutableCopyWithNewChildrenAndProps(
               newProps == null ? null : new ReactStylesDiffMap(newProps));
@@ -248,11 +259,12 @@ public class FabricUIManager implements UIManager {
     childList.add(child);
   }
 
-  public synchronized void completeRoot(int rootTag, List<ReactShadowNode> childList) {
-    if (DEBUG) {
-      Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
-    }
+  public synchronized void completeRoot(int rootTag, @Nullable List<ReactShadowNode> childList) {
     try {
+      childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
+      if (DEBUG) {
+        Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
+      }
       ReactShadowNode currentRootShadowNode = getRootNode(rootTag);
       Assertions.assertNotNull(
           currentRootShadowNode,
@@ -274,6 +286,10 @@ public class FabricUIManager implements UIManager {
     } catch (Exception e) {
       handleException(getRootNode(rootTag), e);
     }
+  }
+
+  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    mUIViewOperationQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
   private void notifyOnBeforeLayoutRecursive(ReactShadowNode node) {
@@ -340,7 +356,7 @@ public class FabricUIManager implements UIManager {
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
-    int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext themedRootContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
 
@@ -350,9 +366,47 @@ public class FabricUIManager implements UIManager {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
 
+    rootView.setOnSizeChangedListener(
+      new SizeMonitoringFrameLayout.OnSizeChangedListener() {
+        @Override
+        public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
+          updateRootSize(rootTag, width, height);
+        }
+      });
+
     mRootShadowNodeRegistry.registerNode(rootShadowNode);
     mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
     return rootTag;
+  }
+
+  @Override
+  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
+    if (rootNode == null) {
+      Log.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+      return;
+    }
+    updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
+  }
+
+  /**
+   * Updates the root view size and re-render the RN surface.
+   *
+   * //TODO: change synchronization to integrate with new #render loop.
+   */
+  private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
+    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
+    if (rootNode == null) {
+      Log.w(
+        ReactConstants.TAG,
+        "Tried to update size of non-existent tag: " + rootTag);
+      return;
+    }
+    int newWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
+    int newHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
+    updateRootView(rootNode, newWidthSpec, newHeightSpec);
+
+    completeRoot(rootTag, rootNode.getChildrenList());
   }
 
   public void removeRootView(int rootTag) {
@@ -362,7 +416,9 @@ public class FabricUIManager implements UIManager {
   private ReactShadowNode createRootShadowNode(int rootTag, ThemedReactContext themedReactContext) {
     ReactShadowNode rootNode = new ReactShadowNodeImpl();
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
-    // TODO: setLayoutDirection for the rootNode
+    if (sharedI18nUtilInstance.isRTL(themedReactContext)) {
+      rootNode.setLayoutDirection(YogaDirection.RTL);
+    }
     rootNode.setViewClassName("Root");
     rootNode.setReactTag(rootTag);
     rootNode.setThemedContext(themedReactContext);

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/Props.h>
@@ -34,21 +35,48 @@ public:
     return typeid(ShadowNodeT).hash_code();
   }
 
+  ComponentName getComponentName() const override {
+    // Even if this looks suboptimal, it is the only way to call
+    // a virtual non-static method of `ShadowNodeT`.
+    // Because it is not a hot path (it is executed once per an app run),
+    // it's fine.
+    return std::make_shared<ShadowNodeT>(
+      0,
+      0,
+      nullptr,
+      std::make_shared<const ConcreteProps>(),
+      ShadowNode::emptySharedShadowNodeSharedList(),
+      nullptr
+    )->ShadowNodeT::getComponentName();
+  }
+
   SharedShadowNode createShadowNode(
     const Tag &tag,
     const Tag &rootTag,
     const InstanceHandle &instanceHandle,
     const SharedProps &props
   ) const override {
-    return std::make_shared<ShadowNodeT>(tag, rootTag, instanceHandle, std::static_pointer_cast<const ConcreteProps>(props));
+    UnsharedShadowNode shadowNode = std::make_shared<ShadowNodeT>(
+      tag,
+      rootTag,
+      instanceHandle,
+      std::static_pointer_cast<const ConcreteProps>(props),
+      ShadowNode::emptySharedShadowNodeSharedList(),
+      getCloneFunction()
+    );
+    adopt(shadowNode);
+    return shadowNode;
   }
 
   SharedShadowNode cloneShadowNode(
-    const SharedShadowNode &shadowNode,
+    const SharedShadowNode &sourceShadowNode,
     const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const override {
-    return std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(shadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
+    assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
+    UnsharedShadowNode shadowNode = std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
+    adopt(shadowNode);
+    return shadowNode;
   }
 
   void appendChild(
@@ -67,6 +95,26 @@ public:
     return ShadowNodeT::Props(rawProps, props);
   };
 
+protected:
+
+  virtual void adopt(UnsharedShadowNode shadowNode) const {
+    // Default implementation does nothing.
+  }
+
+private:
+
+  mutable ShadowNodeCloneFunction cloneFunction_;
+
+  ShadowNodeCloneFunction getCloneFunction() const {
+    if (!cloneFunction_) {
+      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedShadowNodeSharedList &children) {
+        assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
+        return this->cloneShadowNode(shadowNode, props, children);
+      };
+    }
+
+    return cloneFunction_;
+  }
 };
 
 } // namespace react

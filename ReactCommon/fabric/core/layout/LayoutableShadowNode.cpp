@@ -10,6 +10,8 @@
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/LayoutMetrics.h>
+#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -92,6 +94,41 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
 
 void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   // Default implementation does nothing.
+}
+
+SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
+  SharedDebugStringConvertibleList list = {};
+
+  if (getHasNewLayout()) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
+  }
+
+  if (!getIsLayoutClean()) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
+  }
+
+  LayoutMetrics layoutMetrics = getLayoutMetrics();
+  LayoutMetrics defaultLayoutMetrics = LayoutMetrics();
+
+  list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", toString(layoutMetrics.frame)));
+
+  if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("borderWidth", toString(layoutMetrics.borderWidth)));
+  }
+
+  if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("contentInsets", toString(layoutMetrics.contentInsets)));
+  }
+
+  if (layoutMetrics.displayType == DisplayType::None) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("hidden"));
+  }
+
+  if (layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>("rtl"));
+  }
+
+  return list;
 }
 
 } // namespace react
