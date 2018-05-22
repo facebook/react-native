@@ -20,6 +20,7 @@
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
+#import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
 
 using namespace facebook::react;
@@ -74,6 +75,13 @@ using namespace facebook::react;
                                                                   oldProps:nullptr
                                                                   newProps:instruction.getNewChildNode()->getProps()]];
 
+        // LocalData
+        if (instruction.getNewChildNode()->getLocalData()) {
+          [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                    oldLocalData:nullptr
+                                                                    newLocalData:instruction.getNewChildNode()->getLocalData()]];
+        }
+
         // Layout
         SharedLayoutableShadowNode layoutableNewShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(instruction.getNewChildNode());
@@ -105,6 +113,15 @@ using namespace facebook::react;
             [[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
                                                 oldProps:instruction.getOldChildNode()->getProps()
                                                 newProps:instruction.getNewChildNode()->getProps()];
+          [mountItems addObject:mountItem];
+        }
+
+        // LocalData
+        if (oldShadowNode->getLocalData() != newShadowNode->getLocalData()) {
+          RCTUpdateLocalDataMountItem *mountItem =
+            [[RCTUpdateLocalDataMountItem alloc] initWithTag:newShadowNode->getTag()
+                                                oldLocalData:oldShadowNode->getLocalData()
+                                                newLocalData:newShadowNode->getLocalData()];
           [mountItems addObject:mountItem];
         }
 

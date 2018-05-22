@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PerformanceLogger
  * @flow
  * @format
  */
@@ -30,7 +29,7 @@ let timespans: {[key: string]: Timespan} = {};
 let extras: {[key: string]: any} = {};
 const cookies: {[key: string]: number} = {};
 
-const PRINT_TO_CONSOLE = false;
+const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 /**
  * This is meant to collect and log performance data in production, which means
@@ -70,7 +69,7 @@ const PerformanceLogger = {
       startTime: performanceNow(),
     };
     cookies[key] = Systrace.beginAsyncEvent(key);
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'start: ' + key);
     }
   },
@@ -98,7 +97,7 @@ const PerformanceLogger = {
 
     timespan.endTime = performanceNow();
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'end: ' + key);
     }
 
@@ -109,7 +108,7 @@ const PerformanceLogger = {
   clear() {
     timespans = {};
     extras = {};
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'clear');
     }
   },
@@ -121,7 +120,7 @@ const PerformanceLogger = {
       }
     }
     extras = {};
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'clearCompleted');
     }
   },
@@ -134,6 +133,9 @@ const PerformanceLogger = {
       return previous;
     }, {});
     extras = {};
+    if (PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clearExceptTimespans', keys);
+    }
   },
 
   currentTimestamp() {
@@ -182,6 +184,10 @@ const PerformanceLogger = {
 
   getExtras() {
     return extras;
+  },
+
+  logExtras() {
+    infoLog(extras);
   },
 };
 

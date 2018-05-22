@@ -20,22 +20,24 @@ class AccessibilityProps;
 typedef std::shared_ptr<const AccessibilityProps> SharedAccessibilityProps;
 
 class AccessibilityProps:
-  public virtual DebugStringConvertible
-{
+  public virtual DebugStringConvertible {
 
 public:
-  void apply(const RawProps &rawProps);
 
-protected:
-  bool accessible_ {true};
-  std::string accessibilityActions_ {""};
-  std::string accessibilityLabel_ {""};
-  AccessibilityTraits accessibilityTraits_ {AccessibilityTraits::None};
-  bool accessibilityViewIsModal_ {false};
-  bool accessibilityElementsHidden_ {false};
-  SharedDirectEventHandler onAccessibilityAction_ {nullptr};
-  SharedDirectEventHandler onAccessibilityTap_ {nullptr};
-  SharedDirectEventHandler onMagicTap_ {nullptr};
+  AccessibilityProps() = default;
+  AccessibilityProps(const AccessibilityProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const bool accessible {true};
+  const std::string accessibilityActions {""};
+  const std::string accessibilityLabel {""};
+  const AccessibilityTraits accessibilityTraits {AccessibilityTraits::None};
+  const bool accessibilityViewIsModal {false};
+  const bool accessibilityElementsHidden {false};
+  const SharedDirectEventHandler onAccessibilityAction {nullptr};
+  const SharedDirectEventHandler onAccessibilityTap {nullptr};
+  const SharedDirectEventHandler onMagicTap {nullptr};
 };
 
 } // namespace react

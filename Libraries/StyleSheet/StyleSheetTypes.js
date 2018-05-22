@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheetTypes
  * @flow
  * @format
  */
@@ -57,7 +56,7 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number,
   position?: 'absolute' | 'relative',
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
-  flexWrap?: 'wrap' | 'nowrap',
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse',
   justifyContent?:
     | 'flex-start'
     | 'flex-end'

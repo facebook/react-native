@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule BridgeSpyStallHandler
+ * @format
  * @flow
  */
+
 'use strict';
 
 const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
@@ -17,7 +18,7 @@ const infoLog = require('infoLog');
 const BridgeSpyStallHandler = {
   register: function() {
     let spyBuffer = [];
-    MessageQueue.spy((data) => {
+    MessageQueue.spy(data => {
       spyBuffer.push(data);
     });
     const TO_JS = 0;
@@ -25,13 +26,13 @@ const BridgeSpyStallHandler = {
       onStall: () => {
         infoLog(
           spyBuffer.length + ' bridge messages during stall: ',
-          spyBuffer.map((info) => {
+          spyBuffer.map(info => {
             let args = '<args>';
             try {
               args = JSON.stringify(info.args);
             } catch (e1) {
               if (Array.isArray(info.args)) {
-                args = info.args.map((arg) => {
+                args = info.args.map(arg => {
                   try {
                     return JSON.stringify(arg);
                   } catch (e2) {
@@ -42,8 +43,12 @@ const BridgeSpyStallHandler = {
                 args = 'keys:' + JSON.stringify(Object.keys(info.args));
               }
             }
-            return `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
-              `${info.module ? (info.module + '.') : ''}${info.method}(${JSON.stringify(args)})`;
+            return (
+              `${info.type === TO_JS ? 'N->JS' : 'JS->N'} : ` +
+              `${info.module ? info.module + '.' : ''}${
+                info.method
+              }(${JSON.stringify(args)})`
+            );
           }),
         );
       },

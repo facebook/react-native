@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const path = require('path');
@@ -26,15 +28,12 @@ module.exports = function findSymlinksPaths(lookupFolder, ignoredRoots) {
       if (index !== -1) {
         throw Error(
           'Infinite symlink recursion detected:\n  ' +
-            visited.slice(index).join('\n  ')
+            visited.slice(index).join('\n  '),
         );
       }
 
       visited.push(symlink);
-      symlink = path.resolve(
-        path.dirname(symlink),
-        fs.readlinkSync(symlink)
-      );
+      symlink = path.resolve(path.dirname(symlink), fs.readlinkSync(symlink));
     }
 
     if (visited.length && !rootExists(ignoredRoots, symlink)) {
@@ -43,7 +42,11 @@ module.exports = function findSymlinksPaths(lookupFolder, ignoredRoots) {
   });
 
   const timeEnd = Date.now();
-  console.log(`Scanning ${folders.length} folders for symlinks in ${lookupFolder} (${timeEnd - timeStart}ms)`);
+  console.log(
+    `Scanning ${
+      folders.length
+    } folders for symlinks in ${lookupFolder} (${timeEnd - timeStart}ms)`,
+  );
 
   return resolvedSymlinks;
 };

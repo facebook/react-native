@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule RNTesterList
  */
+
 'use strict';
 
 export type RNTesterExample = {
@@ -85,11 +86,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample')
+    module: require('./SwipeableFlatListExample'),
   },
   {
     key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample')
+    module: require('./SwipeableListViewExample'),
   },
   {
     key: 'SwitchExample',

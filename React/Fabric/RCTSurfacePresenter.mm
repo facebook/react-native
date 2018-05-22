@@ -8,7 +8,6 @@
 #import "RCTSurfacePresenter.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTCxxExceptionManager.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTFabricSurface.h>
@@ -19,13 +18,17 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
 
+#import <fabric/core/LayoutContext.h>
+#import <fabric/core/LayoutConstraints.h>
+
+#import "RCTConversions.h"
+
 using namespace facebook::react;
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
 
 @implementation RCTSurfacePresenter {
-  std::shared_ptr<ExceptionManager> _exceptionManager;
   RCTScheduler *_scheduler;
   RCTMountingManager *_mountingManager;
   RCTBridge *_bridge;
@@ -39,8 +42,6 @@ using namespace facebook::react;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
 
-    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
-
     _scheduler = [[RCTScheduler alloc] init];
     _scheduler.delegate = self;
 
@@ -50,11 +51,6 @@ using namespace facebook::react;
   }
 
   return self;
-}
-
-- (std::shared_ptr<ExceptionManager>)exceptionManager
-{
-  return _exceptionManager;
 }
 
 - (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
@@ -85,6 +81,34 @@ using namespace facebook::react;
   [self stopSurface:surface];
   [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
   [_surfaceRegistry unregisterSurface:surface];
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  return [_scheduler measureWithLayoutConstraints:layoutConstraints
+                                    layoutContext:layoutContext
+                                          rootTag:surface.rootTag];
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  [_scheduler constraintLayoutWithLayoutConstraints:layoutConstraints
+                                      layoutContext:layoutContext
+                                            rootTag:surface.rootTag];
 }
 
 - (void)runSurface:(RCTFabricSurface *)surface
@@ -122,9 +146,6 @@ using namespace facebook::react;
 
   UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
 
-  // FIXME: Remove this.
-  rootComponentView.frame = CGRectMake(0, 0, 400, 400);
-
   surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
 }
 
@@ -135,11 +156,6 @@ using namespace facebook::react;
 - (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
   return _scheduler.uiManager_DO_NOT_USE;
-}
-
-- (std::shared_ptr<facebook::react::ExceptionManager>)exceptionManager_DO_NOT_USE
-{
-  return _exceptionManager;
 }
 
 @end

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AssetSourceResolver
  * @flow
  * @format
  */
@@ -30,9 +29,9 @@ const invariant = require('fbjs/lib/invariant');
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
 function getScaledAssetPath(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  var assetDir = assetPathUtils.getBasePath(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+  const assetDir = assetPathUtils.getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
@@ -40,9 +39,12 @@ function getScaledAssetPath(asset): string {
  * Returns a path like 'drawable-mdpi/icon.png'
  */
 function getAssetPathInDrawableFolder(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var drawbleFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
-  var fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const drawbleFolder = assetPathUtils.getAndroidResourceFolderName(
+    asset,
+    scale,
+  );
+  const fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
   return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
@@ -152,7 +154,7 @@ class AssetSourceResolver {
 
   static pickScale(scales: Array<number>, deviceScale: number): number {
     // Packager guarantees that `scales` array is sorted
-    for (var i = 0; i < scales.length; i++) {
+    for (let i = 0; i < scales.length; i++) {
       if (scales[i] >= deviceScale) {
         return scales[i];
       }

@@ -170,11 +170,9 @@ const ModuleRegistry &Instance::getModuleRegistry() const {
 
 ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
 void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
-#endif
 
 } // namespace react
 } // namespace facebook

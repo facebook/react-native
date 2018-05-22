@@ -4,27 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule NavigatorIOSColorsExample
+ * @format
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  NavigatorIOS,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
-} = ReactNative;
+var {NavigatorIOS, StatusBar, StyleSheet, Text, View} = ReactNative;
 
 class EmptyPage extends React.Component {
   render() {
     return (
       <View style={styles.emptyPage}>
-        <Text style={styles.emptyPageText}>
-          {this.props.text}
-        </Text>
+        <Text style={styles.emptyPageText}>{this.props.text}</Text>
       </View>
     );
   }
@@ -50,7 +43,8 @@ class NavigatorIOSColors extends React.Component {
             this.props.onExampleExit();
           },
           passProps: {
-            text: 'The nav bar has custom colors with tintColor, ' +
+            text:
+              'The nav bar has custom colors with tintColor, ' +
               'barTintColor and titleTextColor props.',
           },
         }}

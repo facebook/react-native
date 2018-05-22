@@ -43,9 +43,6 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-/* $FlowFixMe(site=react_native_oss) */
-const TransformCaching = require('metro/src/lib/TransformCaching');
-
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {ConfigT} from 'metro';
@@ -179,6 +176,7 @@ function getPackagerServer(args, config, reporter) {
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
   return Metro.createServer({
+    asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(args.assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
@@ -191,7 +189,6 @@ function getPackagerServer(args, config, reporter) {
     getPolyfills: config.getPolyfills,
     getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
-    globalTransformCache: null,
     hasteImplModulePath: config.hasteImplModulePath,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
@@ -205,7 +202,6 @@ function getPackagerServer(args, config, reporter) {
     resolveRequest: config.resolveRequest,
     sourceExts: args.sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
-    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

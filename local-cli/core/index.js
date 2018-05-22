@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const android = require('./android');
@@ -48,39 +50,37 @@ export type RNConfig = {
   getDependencyConfig(pkgName: string): Object,
 };
 
-const getRNPMConfig = (folder) =>
+const getRNPMConfig = folder =>
   // $FlowFixMe non-literal require
   require(path.join(folder, './package.json')).rnpm || {};
 
-const attachPackage = (command, pkg) => Array.isArray(command)
-  ? command.map(cmd => attachPackage(cmd, pkg))
-  : { ...command, pkg };
+const attachPackage = (command, pkg) =>
+  Array.isArray(command)
+    ? command.map(cmd => attachPackage(cmd, pkg))
+    : {...command, pkg};
 
 const appRoot = process.cwd();
 const plugins = findPlugins([appRoot]);
-const pluginPlatforms = plugins
-  .platforms
-  .reduce((acc, pathToPlatforms) => {
+const pluginPlatforms = plugins.platforms.reduce((acc, pathToPlatforms) => {
+  return Object.assign(
+    acc,
     // $FlowFixMe non-literal require
-    return Object.assign(acc, require(path.join(appRoot, 'node_modules', pathToPlatforms)));
-  },
-  {});
+    require(path.join(appRoot, 'node_modules', pathToPlatforms)),
+  );
+}, {});
 
 const defaultRNConfig = {
+  hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getProjectCommands(): Array<CommandT> {
-    const commands = plugins
-      .commands
-      .map(pathToCommands => {
-        const name = pathToCommands.split(path.sep)[0];
+    const commands = plugins.commands.map(pathToCommands => {
+      const name = pathToCommands.split(path.sep)[0];
 
-        return attachPackage(
-          // $FlowFixMe non-literal require
-          require(path.join(appRoot, 'node_modules', pathToCommands)),
-          // $FlowFixMe non-literal require
-          require(path.join(appRoot, 'node_modules', name, 'package.json'))
-        );
-      });
+      return attachPackage(
+        require(path.join(appRoot, 'node_modules', pathToCommands)),
+        require(path.join(appRoot, 'node_modules', name, 'package.json')),
+      );
+    });
 
     return flatten(commands);
   },
@@ -89,7 +89,7 @@ const defaultRNConfig = {
     return {
       ios,
       android,
-      ...pluginPlatforms
+      ...pluginPlatforms,
     };
   },
 
@@ -113,7 +113,7 @@ const defaultRNConfig = {
     const platforms = this.getPlatformConfig();
     const folder = path.join(process.cwd(), 'node_modules', packageName);
     const rnpm = getRNPMConfig(
-      path.join(process.cwd(), 'node_modules', packageName)
+      path.join(process.cwd(), 'node_modules', packageName),
     );
 
     let config = Object.assign({}, rnpm, {
@@ -135,9 +135,10 @@ const defaultRNConfig = {
  */
 function getCliConfig(): RNConfig {
   const cliArgs = minimist(process.argv.slice(2));
-  const config = cliArgs.config != null
-    ? Config.load(path.resolve(__dirname, cliArgs.config))
-    : Config.findOptional(__dirname);
+  const config =
+    cliArgs.config != null
+      ? Config.load(path.resolve(__dirname, cliArgs.config))
+      : Config.findOptional(__dirname);
 
   return {...defaultRNConfig, ...config};
 }

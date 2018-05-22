@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule MultitouchHandlingTestAppModule
+ * @format
  */
 
 'use strict';
@@ -16,16 +16,16 @@ var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 var View = require('View');
 
 class TouchTestApp extends React.Component {
-  handleStartShouldSetResponder = (e) => {
+  handleStartShouldSetResponder = e => {
     return true;
   };
 
-  handleOnResponderMove = (e) => {
+  handleOnResponderMove = e => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     Recording.record('move;' + e.touches.length);
   };
 
-  handleResponderStart = (e) => {
+  handleResponderStart = e => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('start;' + e.touches.length);
@@ -34,7 +34,7 @@ class TouchTestApp extends React.Component {
     }
   };
 
-  handleResponderEnd = (e) => {
+  handleResponderEnd = e => {
     e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('end;' + e.touches.length);

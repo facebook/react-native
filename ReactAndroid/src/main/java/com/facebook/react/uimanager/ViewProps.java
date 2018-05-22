@@ -254,8 +254,6 @@ public class ViewProps {
           return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
         case BORDER_BOTTOM_WIDTH:
           return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
-        case ON_LAYOUT:
-          return true;
         case OVERFLOW: // We do nothing with this right now.
           return true;
         default:
