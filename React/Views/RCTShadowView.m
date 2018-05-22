@@ -9,6 +9,7 @@
 
 #import "RCTConvert.h"
 #import "RCTI18nUtil.h"
+#import "RCTLayout.h"
 #import "RCTLog.h"
 #import "RCTShadowView+Layout.h"
 #import "RCTUtils.h"
@@ -354,7 +355,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     constraintYogaNode,
     YGUndefined,
     YGUndefined,
-    self.layoutMetrics.layoutDirection
+    RCTYogaLayoutDirectionFromUIKitLayoutDirection(self.layoutMetrics.layoutDirection)
   );
 
   CGSize measuredSize = (CGSize){
