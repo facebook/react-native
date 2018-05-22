@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule renderApplication
  * @format
  * @flow
  */
@@ -13,8 +12,6 @@
 
 const AppContainer = require('AppContainer');
 const React = require('React');
-const ReactFabric = require('ReactFabric');
-const ReactNative = require('ReactNative');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -52,9 +49,9 @@ function renderApplication<Props: Object>(
   }
 
   if (fabric) {
-    ReactFabric.render(renderable, rootTag);
+    require('ReactFabric').render(renderable, rootTag);
   } else {
-    ReactNative.render(renderable, rootTag);
+    require('ReactNative').render(renderable, rootTag);
   }
 }
 

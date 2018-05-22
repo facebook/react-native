@@ -16,7 +16,10 @@
  *
  * NOTE: This file is used internally at Facebook and not in `local-cli` itself.
  * No changes should be made to this file without prior discussion with FB team.
+ *
+ * @format
  */
+
 'use strict';
 
 var optimistModule = require('optimist');

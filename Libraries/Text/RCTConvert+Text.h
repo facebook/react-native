@@ -6,7 +6,8 @@
  */
 
 #import <React/RCTConvert.h>
-#import <RCTText/RCTTextTransform.h>
+
+#import "RCTTextTransform.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

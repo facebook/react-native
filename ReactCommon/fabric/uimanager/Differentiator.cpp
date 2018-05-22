@@ -5,7 +5,7 @@
 namespace facebook {
 namespace react {
 
-void calculateMutationInstructions(
+static void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
   SharedShadowNode parentNode,
   SharedShadowNodeSharedList oldChildNodes,
@@ -152,6 +152,34 @@ void calculateMutationInstructions(
   instructions.insert(instructions.end(), createInstructions.begin(), createInstructions.end());
   instructions.insert(instructions.end(), insertInstructions.begin(), insertInstructions.end());
   instructions.insert(instructions.end(), downwardInstructions.begin(), downwardInstructions.end());
+}
+
+
+void calculateMutationInstructions(
+  TreeMutationInstructionList &instructions,
+  SharedShadowNode oldRootShadowNode,
+  SharedShadowNode newRootShadowNode
+) {
+  // Root shadow nodes must have same tag.
+  assert(oldRootShadowNode->getTag() == newRootShadowNode->getTag());
+
+  if (*oldRootShadowNode != *newRootShadowNode) {
+    instructions.push_back(
+      TreeMutationInstruction::Replace(
+        nullptr,
+        oldRootShadowNode,
+        newRootShadowNode,
+        -1
+      )
+    );
+  }
+
+  calculateMutationInstructions(
+    instructions,
+    oldRootShadowNode,
+    oldRootShadowNode->getChildren(),
+    newRootShadowNode->getChildren()
+  );
 }
 
 } // namespace react

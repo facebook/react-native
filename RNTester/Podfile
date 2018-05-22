@@ -16,6 +16,7 @@ target 'RNTester' do
     'RCTBlob',
     'RCTCameraRoll',
     'RCTFabric',
+    'RCTFabricSample', # This is RNTesterPods specific sample.
     'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',

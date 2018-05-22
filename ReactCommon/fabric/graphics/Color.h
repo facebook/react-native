@@ -23,7 +23,7 @@ struct ColorComponents {
   float alpha {0};
 };
 
-SharedColor colorFromComponents(float red, float green, float blue, float alpha);
+SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
 } // namespace react

@@ -4,18 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ListViewDataSource
  * @flow
  * @format
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-var isEmpty = require('isEmpty');
+const invariant = require('fbjs/lib/invariant');
+const isEmpty = require('isEmpty');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
   dataBlob: any,
@@ -143,7 +142,7 @@ class ListViewDataSource {
     dataBlob: $ReadOnlyArray<any> | {+[key: string]: any},
     rowIdentities: ?$ReadOnlyArray<string>,
   ): ListViewDataSource {
-    var rowIds = rowIdentities ? [[...rowIdentities]] : null;
+    const rowIds = rowIdentities ? [[...rowIdentities]] : null;
     if (!this._sectionHeaderHasChanged) {
       this._sectionHeaderHasChanged = () => false;
     }
@@ -185,7 +184,7 @@ class ListViewDataSource {
       'row and section ids lengths must be the same',
     );
 
-    var newSource = new ListViewDataSource({
+    const newSource = new ListViewDataSource({
       getRowData: this._getRowData,
       getSectionHeaderData: this._getSectionHeaderData,
       rowHasChanged: this._rowHasChanged,
@@ -238,7 +237,7 @@ class ListViewDataSource {
    * Returns if the row is dirtied and needs to be rerendered
    */
   rowShouldUpdate(sectionIndex: number, rowIndex: number): boolean {
-    var needsUpdate = this._dirtyRows[sectionIndex][rowIndex];
+    const needsUpdate = this._dirtyRows[sectionIndex][rowIndex];
     warning(
       needsUpdate !== undefined,
       'missing dirtyBit for section, row: ' + sectionIndex + ', ' + rowIndex,
@@ -250,8 +249,8 @@ class ListViewDataSource {
    * Gets the data required to render the row.
    */
   getRowData(sectionIndex: number, rowIndex: number): any {
-    var sectionID = this.sectionIdentities[sectionIndex];
-    var rowID = this.rowIdentities[sectionIndex][rowIndex];
+    const sectionID = this.sectionIdentities[sectionIndex];
+    const rowID = this.rowIdentities[sectionIndex][rowIndex];
     warning(
       sectionID !== undefined && rowID !== undefined,
       'rendering invalid section, row: ' + sectionIndex + ', ' + rowIndex,
@@ -264,8 +263,8 @@ class ListViewDataSource {
    * or null of out of range indexes.
    */
   getRowIDForFlatIndex(index: number): ?string {
-    var accessIndex = index;
-    for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
+    let accessIndex = index;
+    for (let ii = 0; ii < this.sectionIdentities.length; ii++) {
       if (accessIndex >= this.rowIdentities[ii].length) {
         accessIndex -= this.rowIdentities[ii].length;
       } else {
@@ -280,8 +279,8 @@ class ListViewDataSource {
    * or null for out of range indexes.
    */
   getSectionIDForFlatIndex(index: number): ?string {
-    var accessIndex = index;
-    for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
+    let accessIndex = index;
+    for (let ii = 0; ii < this.sectionIdentities.length; ii++) {
       if (accessIndex >= this.rowIdentities[ii].length) {
         accessIndex -= this.rowIdentities[ii].length;
       } else {
@@ -295,8 +294,8 @@ class ListViewDataSource {
    * Returns an array containing the number of rows in each section
    */
   getSectionLengths(): Array<number> {
-    var results = [];
-    for (var ii = 0; ii < this.sectionIdentities.length; ii++) {
+    const results = [];
+    for (let ii = 0; ii < this.sectionIdentities.length; ii++) {
       results.push(this.rowIdentities[ii].length);
     }
     return results;
@@ -306,7 +305,7 @@ class ListViewDataSource {
    * Returns if the section header is dirtied and needs to be rerendered
    */
   sectionHeaderShouldUpdate(sectionIndex: number): boolean {
-    var needsUpdate = this._dirtySections[sectionIndex];
+    const needsUpdate = this._dirtySections[sectionIndex];
     warning(
       needsUpdate !== undefined,
       'missing dirtyBit for section: ' + sectionIndex,
@@ -321,7 +320,7 @@ class ListViewDataSource {
     if (!this._getSectionHeaderData) {
       return null;
     }
-    var sectionID = this.sectionIdentities[sectionIndex];
+    const sectionID = this.sectionIdentities[sectionIndex];
     warning(
       sectionID !== undefined,
       'renderSection called on invalid section: ' + sectionIndex,
@@ -354,9 +353,9 @@ class ListViewDataSource {
     prevRowIDs: Array<Array<string>>,
   ): void {
     // construct a hashmap of the existing (old) id arrays
-    var prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
-    var prevRowsHash = {};
-    for (var ii = 0; ii < prevRowIDs.length; ii++) {
+    const prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
+    const prevRowsHash = {};
+    for (let ii = 0; ii < prevRowIDs.length; ii++) {
       var sectionID = prevSectionIDs[ii];
       warning(
         !prevRowsHash[sectionID],
@@ -369,12 +368,12 @@ class ListViewDataSource {
     this._dirtySections = [];
     this._dirtyRows = [];
 
-    var dirty;
-    for (var sIndex = 0; sIndex < this.sectionIdentities.length; sIndex++) {
+    let dirty;
+    for (let sIndex = 0; sIndex < this.sectionIdentities.length; sIndex++) {
       var sectionID = this.sectionIdentities[sIndex];
       // dirty if the sectionHeader is new or _sectionHasChanged is true
       dirty = !prevSectionsHash[sectionID];
-      var sectionHeaderHasChanged = this._sectionHeaderHasChanged;
+      const sectionHeaderHasChanged = this._sectionHeaderHasChanged;
       if (!dirty && sectionHeaderHasChanged) {
         dirty = sectionHeaderHasChanged(
           this._getSectionHeaderData(prevDataBlob, sectionID),
@@ -385,11 +384,11 @@ class ListViewDataSource {
 
       this._dirtyRows[sIndex] = [];
       for (
-        var rIndex = 0;
+        let rIndex = 0;
         rIndex < this.rowIdentities[sIndex].length;
         rIndex++
       ) {
-        var rowID = this.rowIdentities[sIndex][rIndex];
+        const rowID = this.rowIdentities[sIndex][rIndex];
         // dirty if the section is new, row is new or _rowHasChanged is true
         dirty =
           !prevSectionsHash[sectionID] ||
@@ -405,9 +404,9 @@ class ListViewDataSource {
 }
 
 function countRows(allRowIDs) {
-  var totalRows = 0;
-  for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-    var rowIDs = allRowIDs[sectionIdx];
+  let totalRows = 0;
+  for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+    const rowIDs = allRowIDs[sectionIdx];
     totalRows += rowIDs.length;
   }
   return totalRows;
@@ -417,9 +416,9 @@ function keyedDictionaryFromArray(arr) {
   if (isEmpty(arr)) {
     return {};
   }
-  var result = {};
-  for (var ii = 0; ii < arr.length; ii++) {
-    var key = arr[ii];
+  const result = {};
+  for (let ii = 0; ii < arr.length; ii++) {
+    const key = arr[ii];
     warning(!result[key], 'Value appears more than once in array: ' + key);
     result[key] = true;
   }

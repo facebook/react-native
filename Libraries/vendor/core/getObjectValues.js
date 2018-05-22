@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule getObjectValues
+ * @format
  * @typechecks
  */
+
 'use strict';
 
 /**
@@ -19,8 +20,8 @@
  * @return {array}     The object's values.
  */
 function getObjectValues(obj) {
-  var values = [];
-  for (var key in obj) {
+  const values = [];
+  for (const key in obj) {
     values.push(obj[key]);
   }
   return values;

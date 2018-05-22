@@ -32,6 +32,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -840,29 +841,6 @@ public class DevSupportManagerImpl implements
     });
   }
 
-  @Override
-  public void onPokeSamplingProfilerCommand(final Responder responder) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mCurrentContext == null) {
-          responder.error("JSCContext is missing, unable to profile");
-          return;
-        }
-        try {
-          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
-          synchronized (jsContext) {
-            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
-            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
-            handler.onRequest(null, responder);
-          }
-        } catch (Exception e) {
-          // Module not present
-        }
-      }
-    });
-  }
-
   private void handleCaptureHeap(final Responder responder) {
     if (mCurrentContext == null) {
       return;
@@ -973,7 +951,7 @@ public class DevSupportManagerImpl implements
     mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
-          public void onSuccess() {
+          public void onSuccess(final @Nullable NativeDeltaClient nativeDeltaClient) {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
             synchronized (DevSupportManagerImpl.this) {
@@ -981,14 +959,14 @@ public class DevSupportManagerImpl implements
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
-              mBundleDownloadListener.onSuccess();
+              mBundleDownloadListener.onSuccess(nativeDeltaClient);
             }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
                   public void run() {
                     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer(nativeDeltaClient);
                   }
                 });
           }
@@ -1072,7 +1050,7 @@ public class DevSupportManagerImpl implements
 
       // show the dev loading if it should be
       if (mDevLoadingViewVisible) {
-        mDevLoadingViewController.show();
+        mDevLoadingViewController.showMessage("Reloading...");
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);

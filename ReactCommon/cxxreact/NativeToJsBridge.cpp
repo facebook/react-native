@@ -11,6 +11,7 @@
 #include "SystraceSection.h"
 #include "MethodCall.h"
 #include "MessageQueueThread.h"
+#include "ModuleRegistry.h"
 #include "RAMBundleRegistry.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -194,13 +195,11 @@ bool NativeToJsBridge::isInspectable() {
   return m_executor->isInspectable();
 }
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
 }
-#endif
 
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if

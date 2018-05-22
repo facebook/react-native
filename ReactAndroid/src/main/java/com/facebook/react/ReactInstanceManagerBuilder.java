@@ -281,6 +281,6 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-      mJSIModulesProvider);
+        mJSIModulesProvider);
   }
 }

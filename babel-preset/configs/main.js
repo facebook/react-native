@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -31,7 +33,7 @@ const defaultPlugins = [
     require('@babel/plugin-transform-modules-commonjs'),
     {
       strict: false,
-      strictMode : false, // prevent "use strict" injections
+      strictMode: false, // prevent "use strict" injections
       allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
     },
   ],
@@ -52,6 +54,7 @@ const exponentiationOperator = [
 ];
 const objectAssign = [require('@babel/plugin-transform-object-assign')];
 const objectRestSpread = [require('@babel/plugin-proposal-object-rest-spread')];
+const optionalChaining = [require('@babel/plugin-proposal-optional-chaining')];
 const reactDisplayName = [
   require('@babel/plugin-transform-react-display-name'),
 ];
@@ -97,6 +100,9 @@ const getPreset = (src, options) => {
     src.indexOf('createReactClass') !== -1
   ) {
     extraPlugins.push(reactDisplayName);
+  }
+  if (isNull || src.indexOf('?.') !== -1) {
+    extraPlugins.push(optionalChaining);
   }
 
   if (options && options.dev) {

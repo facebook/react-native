@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTNetworking
+ * @format
  * @flow
  */
+
 'use strict';
 
 const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
@@ -16,10 +17,9 @@ const convertRequestBody = require('convertRequestBody');
 
 import type {RequestBody} from 'convertRequestBody';
 
-import type { NativeResponseType } from './XMLHttpRequest';
+import type {NativeResponseType} from './XMLHttpRequest';
 
 class RCTNetworking extends NativeEventEmitter {
-
   isAvailable: boolean = true;
 
   constructor() {
@@ -36,19 +36,22 @@ class RCTNetworking extends NativeEventEmitter {
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => any,
-    withCredentials: boolean
+    withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
-    RCTNetworkingNative.sendRequest({
-      method,
-      url,
-      data: {...body, trackingName},
-      headers,
-      responseType,
-      incrementalUpdates,
-      timeout,
-      withCredentials
-    }, callback);
+    RCTNetworkingNative.sendRequest(
+      {
+        method,
+        url,
+        data: {...body, trackingName},
+        headers,
+        responseType,
+        incrementalUpdates,
+        timeout,
+        withCredentials,
+      },
+      callback,
+    );
   }
 
   abortRequest(requestId: number) {

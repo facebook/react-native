@@ -33,6 +33,7 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
+#import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/Platform.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
@@ -337,7 +338,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
-         , nullptr
       ));
     }
   } else {

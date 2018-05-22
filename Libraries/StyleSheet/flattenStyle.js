@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule flattenStyle
  * @flow
  * @format
  */
@@ -26,11 +25,11 @@ function flattenStyle(
     return style;
   }
 
-  var result = {};
-  for (var i = 0, styleLength = style.length; i < styleLength; ++i) {
-    var computedStyle = flattenStyle(style[i]);
+  const result = {};
+  for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
+    const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
-      for (var key in computedStyle) {
+      for (const key in computedStyle) {
         result[key] = computedStyle[key];
       }
     }

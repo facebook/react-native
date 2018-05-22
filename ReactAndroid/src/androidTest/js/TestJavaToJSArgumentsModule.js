@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TestJavaToJSArgumentsModule
+ * @format
  */
 
 'use strict';
@@ -25,9 +25,7 @@ function strictStringCompare(a, b) {
 }
 
 function assertStrictStringEquals(a, b) {
-  assertTrue(
-    strictStringCompare(a,b),
-    'Expected: ' + a + ', received: ' + b);
+  assertTrue(strictStringCompare(a, b), 'Expected: ' + a + ', received: ' + b);
 }
 
 var TestJavaToJSArgumentsModule = {
@@ -93,7 +91,8 @@ var TestJavaToJSArgumentsModule = {
     assertStrictStringEquals('\uD83D\uDE1C', map['four-bytes']);
     assertStrictStringEquals(
       '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
-      map.mixed);
+      map.mixed,
+    );
   },
   receiveArrayWithMultibyteUTF8CharacterString: function(array) {
     assertTrue(true);
@@ -102,13 +101,14 @@ var TestJavaToJSArgumentsModule = {
     assertStrictStringEquals('\uD83D\uDE1C', array[2]);
     assertStrictStringEquals(
       '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
-      array[3]);
+      array[3],
+    );
   },
 };
 
 BatchedBridge.registerCallableModule(
   'TestJavaToJSArgumentsModule',
-  TestJavaToJSArgumentsModule
+  TestJavaToJSArgumentsModule,
 );
 
 module.exports = TestJavaToJSArgumentsModule;
