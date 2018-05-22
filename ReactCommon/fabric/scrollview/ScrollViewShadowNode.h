@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <fabric/core/LayoutContext.h>
+#include <fabric/scrollview/ScrollViewEventHandlers.h>
 #include <fabric/scrollview/ScrollViewProps.h>
 #include <fabric/view/ConcreteViewShadowNode.h>
 
@@ -24,7 +25,7 @@ using SharedScrollViewShadowNode = std::shared_ptr<const ScrollViewShadowNode>;
  * `ShadowNode` for <ScrollView> component.
  */
 class ScrollViewShadowNode final:
-  public ConcreteViewShadowNode<ScrollViewProps> {
+  public ConcreteViewShadowNode<ScrollViewProps, ScrollViewEventHandlers> {
 
 public:
 

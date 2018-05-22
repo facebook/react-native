@@ -21,6 +21,10 @@ inline CGRect RCTCGRectFromRect(facebook::react::Rect rect) {
   return {RCTCGPointFromPoint(rect.origin), RCTCGSizeFromSize(rect.size)};
 }
 
+inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(facebook::react::EdgeInsets edgeInsets) {
+  return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
+}
+
 inline facebook::react::Point RCTPointFromCGPoint(CGPoint point) {
   return {point.x, point.y};
 }
@@ -31,4 +35,8 @@ inline facebook::react::Size RCTSizeFromCGSize(CGSize size) {
 
 inline facebook::react::Rect RCTRectFromCGRect(CGRect rect) {
   return {RCTPointFromCGPoint(rect.origin), RCTSizeFromCGSize(rect.size)};
+}
+
+inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(UIEdgeInsets edgeInsets) {
+  return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
