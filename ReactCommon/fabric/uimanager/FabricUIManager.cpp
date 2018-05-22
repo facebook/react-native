@@ -48,7 +48,7 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   std::string rctPrefix("RCT");
   if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin()).first == rctPrefix.end()) {
     // If `viewName` has "RCT" prefix, remove it.
-    viewName.erase(0, 3);
+    viewName.erase(0, rctPrefix.length());
   }
 
   // Fabric uses slightly new names for Text components because of differences
@@ -70,8 +70,7 @@ static const std::string componentNameByReactViewName(std::string viewName) {
 
   // Other temporary fallback until the native components are implemented.
   if (
-    viewName == "ActivityIndicatorView" ||
-    viewName == "ShimmeringView"
+    viewName == "ActivityIndicatorView"
   ) {
     return "View";
   }
