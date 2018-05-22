@@ -134,10 +134,16 @@ task downloadJSCHeaders(type: Download) {
     dest output
 }
 
+task downloadJSC(type: Exec) {
+    workingDir "$rootDir/jsc-android-manager"
+    commandLine('yarn', 'install')
+}
+
 // Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
-task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) doLast {
+task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders, downloadJSC]) doLast {
     copy {
-        from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
+//        from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
+        from zipTree("../jsc-android-manager/node_modules/jsc-android/android/org/webkit/android-jsc/r216113/android-jsc-r216113.aar")
         from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
         from 'src/main/jni/third-party/jsc/Android.mk'
         include 'jni/**/*.so', '*.h', 'Android.mk'
@@ -232,7 +238,11 @@ task cleanReactNdkLib(type: Exec) {
 
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from "$buildDir/react-ndk/all"
-    exclude '**/libjsc.so'
+
+    // include jsc dependencies
+    from "$thirdPartyNdkDir/jsc/jni"
+    include '**/*.so'
+
     into "$buildDir/react-ndk/exported"
 }
 
@@ -301,7 +311,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
     compile 'com.squareup.okio:okio:1.14.0'
-    compile 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

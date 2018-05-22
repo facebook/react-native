@@ -1,0 +1,8 @@
+{
+  "name": "jsc-android-manager",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "jsc-android": "^216113.0.0"
+  }
+}
