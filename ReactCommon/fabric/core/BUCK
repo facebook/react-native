@@ -22,6 +22,7 @@ rn_xplat_cxx_library(
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
+            ("events", "*.h"),
             ("primitives", "*.h"),
             ("componentdescriptor", "*.h"),
             ("layout", "*.h"),

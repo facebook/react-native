@@ -47,7 +47,7 @@ public:
   virtual SharedShadowNode createShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
+    const SharedEventHandlers &eventHandlers,
     const SharedProps &props
   ) const = 0;
 
@@ -57,6 +57,7 @@ public:
   virtual SharedShadowNode cloneShadowNode(
     const SharedShadowNode &shadowNode,
     const SharedProps &props = nullptr,
+    const SharedEventHandlers &eventHandlers = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const = 0;
 
@@ -77,6 +78,14 @@ public:
   virtual SharedProps cloneProps(
     const SharedProps &props,
     const RawProps &rawProps
+  ) const = 0;
+
+  /*
+   * Creates a new `EventHandlers` object compatible with particular type of
+   * shadow nodes.
+   */
+  virtual SharedEventHandlers createEventHandlers(
+    const InstanceHandle &instanceHandle
   ) const = 0;
 };
 

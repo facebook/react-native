@@ -20,7 +20,8 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler() {
-  auto componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry();
+  eventDispatcher_ = std::make_shared<SchedulerEventDispatcher>();
+  auto componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher_);
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
 }

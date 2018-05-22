@@ -7,6 +7,7 @@
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
+#include <fabric/uimanager/SchedulerEventDispatcher.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
@@ -69,6 +70,7 @@ private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
+  std::shared_ptr<SchedulerEventDispatcher> eventDispatcher_;
 };
 
 } // namespace react

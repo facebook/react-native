@@ -15,11 +15,12 @@ namespace react {
 ShadowTree::ShadowTree(Tag rootTag):
   rootTag_(rootTag) {
 
+  auto &&noopEventHandlers = std::make_shared<const ViewEventHandlers>(nullptr, nullptr);
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     rootTag,
     rootTag,
-    nullptr,
     RootShadowNode::defaultSharedProps(),
+    noopEventHandlers,
     ShadowNode::emptySharedShadowNodeSharedList(),
     nullptr
   );
@@ -47,14 +48,14 @@ void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, co
 UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
   auto oldRootShadowNode = rootShadowNode_;
   auto &&props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
-  auto newRootShadowNode = std::make_shared<RootShadowNode>(oldRootShadowNode, props, nullptr);
+  auto newRootShadowNode = std::make_shared<RootShadowNode>(oldRootShadowNode, props, nullptr, nullptr);
   return newRootShadowNode;
 }
 
 void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) {
   auto oldRootShadowNode = rootShadowNode_;
   auto newRootShadowNode =
-    std::make_shared<RootShadowNode>(oldRootShadowNode, nullptr, SharedShadowNodeSharedList(rootChildNodes));
+    std::make_shared<RootShadowNode>(oldRootShadowNode, nullptr, nullptr, SharedShadowNodeSharedList(rootChildNodes));
 
   complete(newRootShadowNode);
 }

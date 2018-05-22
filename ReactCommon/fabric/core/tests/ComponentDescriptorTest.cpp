@@ -12,7 +12,7 @@
 using namespace facebook::react;
 
 TEST(ComponentDescriptorTest, createShadowNode) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   ASSERT_EQ(descriptor->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
@@ -20,7 +20,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node = descriptor->createShadowNode(9, 1, (void *)NULL, props);
+  SharedShadowNode node = descriptor->createShadowNode(9, 1, nullptr, props);
 
   ASSERT_EQ(node->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
@@ -30,12 +30,12 @@ TEST(ComponentDescriptorTest, createShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, cloneShadowNode) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node = descriptor->createShadowNode(9, 1, (void *)NULL, props);
+  SharedShadowNode node = descriptor->createShadowNode(9, 1, nullptr, props);
   SharedShadowNode cloned = descriptor->cloneShadowNode(node);
 
   ASSERT_EQ(cloned->getComponentHandle(), typeid(TestShadowNode).hash_code());
@@ -46,14 +46,14 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
 }
 
 TEST(ComponentDescriptorTest, appendChild) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node1 = descriptor->createShadowNode(1, 1, (void *)NULL, props);
-  SharedShadowNode node2 = descriptor->createShadowNode(2, 1, (void *)NULL, props);
-  SharedShadowNode node3 = descriptor->createShadowNode(3, 1, (void *)NULL, props);
+  SharedShadowNode node1 = descriptor->createShadowNode(1, 1, nullptr, props);
+  SharedShadowNode node2 = descriptor->createShadowNode(2, 1, nullptr, props);
+  SharedShadowNode node3 = descriptor->createShadowNode(3, 1, nullptr, props);
 
   descriptor->appendChild(node1, node2);
   descriptor->appendChild(node1, node3);

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <fabric/core/ComponentDescriptor.h>
+#include <fabric/core/EventDispatcher.h>
 
 #include "ComponentDescriptorRegistry.h"
 
@@ -24,7 +25,7 @@ namespace react {
 class ComponentDescriptorFactory {
 
 public:
-  static SharedComponentDescriptorRegistry buildRegistry();
+  static SharedComponentDescriptorRegistry buildRegistry(const SharedEventDispatcher &eventDispatcher);
 };
 
 } // namespace react
