@@ -12,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.fabric.FabricBinding;
 import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.bridge.NativeMap;
 import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
@@ -30,6 +31,16 @@ public class FabricJSCBinding implements FabricBinding {
   private native long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
 
   private native void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
+
+  private native void releaseEventHandler(long jsContextNativePointer, long eventHandlerPointer);
+
+  private native void dispatchEventToTarget(
+    long jsContextNativePointer,
+    long eventHandlerPointer,
+    long eventTargetPointer,
+    String type,
+    NativeMap payload
+  );
 
   private native void installFabric(long jsContextNativePointer, Object fabricModule);
 

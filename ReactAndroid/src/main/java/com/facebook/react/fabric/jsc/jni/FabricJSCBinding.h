@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <fb/fbjni.h>
+#include <react/jni/ReadableNativeMap.h>
 
 namespace facebook {
 namespace react {
@@ -29,6 +30,16 @@ private:
   jlong createEventTarget(jlong jsContextNativePointer, jlong instanceHandlePointer);
 
   void releaseEventTarget(jlong jsContextNativePointer, jlong eventTargetPointer);
+
+  void releaseEventHandler(jlong jsContextNativePointer, jlong eventHandlerPointer);
+
+  void dispatchEventToTarget(
+    jlong jsContextNativePointer,
+    jlong eventHandlerPointer,
+    jlong eventTargetPointer,
+    std::string type,
+    NativeMap *payload
+  );
 
   void installFabric(jlong jsContextNativePointer, jni::alias_ref<jobject> fabricModule);
 

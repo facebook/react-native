@@ -71,6 +71,10 @@ public class FabricUIManager implements UIManager {
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
   }
 
+  public void registerEventHandler(long eventHandlerPointer) {
+    // TODO: Release this event handler at some point.
+  }
+
   /** Creates a new {@link ReactShadowNode} */
   @Nullable
   public ReactShadowNode createNode(
