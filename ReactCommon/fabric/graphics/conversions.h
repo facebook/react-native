@@ -60,6 +60,10 @@ inline void fromDynamic(const folly::dynamic &value, Float &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, Point &result) {
+  if (value.isObject()) {
+    result = Point {(Float)value["x"].asDouble(), (Float)value["y"].asDouble()};
+    return;
+  }
   if (value.isArray()) {
     result = Point {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
     return;
@@ -68,6 +72,10 @@ inline void fromDynamic(const folly::dynamic &value, Point &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, Size &result) {
+  if (value.isObject()) {
+    result = Size {(Float)value["width"].asDouble(), (Float)value["height"].asDouble()};
+    return;
+  }
   if (value.isArray()) {
     result = Size {(Float)value[0].asDouble(), (Float)value[1].asDouble()};
     return;
@@ -76,6 +84,15 @@ inline void fromDynamic(const folly::dynamic &value, Size &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
+  if (value.isObject()) {
+    result = EdgeInsets {
+      (Float)value["top"].asDouble(),
+      (Float)value["left"].asDouble(),
+      (Float)value["bottom"].asDouble(),
+      (Float)value["right"].asDouble()
+    };
+    return;
+  }
   if (value.isArray()) {
     result = EdgeInsets {
       (Float)value[0].asDouble(),
