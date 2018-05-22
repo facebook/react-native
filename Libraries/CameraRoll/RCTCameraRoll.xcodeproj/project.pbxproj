@@ -184,6 +184,7 @@
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
+					"-Wno-deprecated-declarations",
 				);
 			};
 			name = Debug;
@@ -226,6 +227,7 @@
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
+					"-Wno-deprecated-declarations",
 				);
 			};
 			name = Release;
@@ -234,9 +236,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTCameraRoll;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -247,9 +247,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_STATIC_ANALYZER_MODE = deep;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTCameraRoll;
 				RUN_CLANG_STATIC_ANALYZER = NO;
