@@ -180,7 +180,7 @@
     "npmlog": "^2.0.4",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
-    "plist": "^1.2.0",
+    "plist": "3.0.1",
     "pretty-format": "^4.2.1",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
