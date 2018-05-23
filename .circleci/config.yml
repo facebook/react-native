@@ -2,11 +2,12 @@ aliases:
   # Cache Management
   - &restore-yarn-cache
     keys:
+      - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
       - v1-yarn-cache-{{ arch }}
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
-    key: v1-yarn-cache-{{ arch }}
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-node-modules
     keys:
