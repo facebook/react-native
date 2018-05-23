@@ -4,12 +4,7 @@ about: Something is not working as expected.
 
 ---
 
-<!--
-  We use GitHub Issues exclusively for tracking bugs in React Native.
-  Questions? Visit http://facebook.github.io/react-native/help.html
-  If this issue is about documentation or the website, please file it at:
-  https://github.com/facebook/react-native-website/issues/new
--->
+<!-- GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native. -->
 
 - [ ] I have reviewed the [documentation](https://facebook.github.io/react-native)
 - [ ] I have searched [existing issues](https://github.com/facebook/react-native/issues)
