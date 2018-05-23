@@ -6,7 +6,7 @@ about: For questions about using React Native in your app.
 
 --------------^ Click "Preview" for a nicer view!
 
-We use GitHub Issues exclusively for tracking bugs in React Native. If you need help with your React Native app, the right place to go depends on the type of help that you need.
+GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native. If you need help with your React Native app, the right place to go depends on the type of help that you need.
 
 ### Stack Overflow
 
