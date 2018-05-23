@@ -23,6 +23,7 @@ PODS:
     - React/Core
     - React/RCTWebSocket
   - React/fabric (1000.0.0):
+    - React/fabric/activityindicator (= 1000.0.0)
     - React/fabric/attributedstring (= 1000.0.0)
     - React/fabric/core (= 1000.0.0)
     - React/fabric/debug (= 1000.0.0)
@@ -32,6 +33,8 @@ PODS:
     - React/fabric/textlayoutmanager (= 1000.0.0)
     - React/fabric/uimanager (= 1000.0.0)
     - React/fabric/view (= 1000.0.0)
+  - React/fabric/activityindicator (1000.0.0):
+    - Folly (= 2016.10.31.00)
   - React/fabric/attributedstring (1000.0.0):
     - Folly (= 2016.10.31.00)
   - React/fabric/core (1000.0.0):
@@ -141,7 +144,7 @@ SPEC CHECKSUMS:
   DoubleConversion: a9706f16e388b53ff12cca34473428ee29746a26
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: 3931855c9cc99c3fab1355fc162fe369162d8183
-  React: 81df86644d0bca489723c964b33b005901ebfb3b
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
 PODFILE CHECKSUM: 30aa63dcdbb3546a2bacdfd4e005bcca50c9b55c
