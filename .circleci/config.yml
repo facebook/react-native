@@ -328,10 +328,8 @@ jobs:
       - run: *setup-artifacts
 
       - restore-cache: *restore-yarn-cache
-      - restore-cache: *restore-node-modules
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - save-cache: *save-node-modules
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -459,10 +457,8 @@ jobs:
       - save-cache: *save-cache-gradle-downloads
 
       - restore-cache: *restore-yarn-cache
-      - restore-cache: *restore-node-modules
       - run: *yarn
       - save-cache: *save-yarn-cache
-      - save-cache: *save-node-modules
 
       - run:
           name: Publish React Native Package
