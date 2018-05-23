@@ -10,7 +10,7 @@
 
 #import <React/RCTBridgeModule.h>
 
-static CGFloat RCTSingleFrameInterval = 1.0 / 60.0;
+static CGFloat RCTSingleFrameInterval = (CGFloat)(1.0 / 60.0);
 
 @class RCTValueAnimatedNode;
 
