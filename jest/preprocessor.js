@@ -41,7 +41,10 @@ module.exports = {
       // node specific transforms only
       return babelTransformSync(
         src,
-        Object.assign({filename: file}, nodeOptions),
+        Object.assign(
+          {filename: file},
+          {sourceType: 'script', ...nodeOptions, ast: false},
+        ),
       ).code;
     }
 
