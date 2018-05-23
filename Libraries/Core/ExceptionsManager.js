@@ -73,9 +73,9 @@ function handleException(e: Error, isFatal: boolean) {
     e = new Error(e);
   }
   if (console._errorOriginal) {
-    console._errorOriginal(e.message);
+    console._errorOriginal(e);
   } else {
-    console.error(e.message);
+    console.error(e);
   }
   reportException(e, isFatal);
 }
