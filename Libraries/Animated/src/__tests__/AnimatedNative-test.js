@@ -81,7 +81,7 @@ describe('Native Animated', () => {
       // via component refs table that we override here.
       c.refs = {
         node: {
-          setNativeProps: jest.genMockFunction(),
+          setNativeProps: jest.fn(),
         },
       };
 
