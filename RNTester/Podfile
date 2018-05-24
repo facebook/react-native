@@ -15,8 +15,6 @@ target 'RNTester' do
     'RCTAnimation',
     'RCTBlob',
     'RCTCameraRoll',
-    'RCTFabric',
-    'RCTFabricSample', # This is RNTesterPods specific sample.
     'RCTGeolocation',
     'RCTImage',
     'RCTLinkingIOS',
@@ -26,6 +24,11 @@ target 'RNTester' do
     'RCTText',
     'RCTVibration',
     'RCTWebSocket',
+
+    # Below this line is Fabric (experimental) specific.
+    # Currently they are disabled due to missing pre-reqs, e.g. upgrading Folly.
+    # 'RCTFabric',
+    # 'RCTFabricSample', # This is RNTesterPods specific sample.
   ]
 
   pod 'yoga', :path => '../ReactCommon/yoga'

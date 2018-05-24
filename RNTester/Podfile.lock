@@ -22,38 +22,6 @@ PODS:
   - React/DevSupport (1000.0.0):
     - React/Core
     - React/RCTWebSocket
-  - React/fabric (1000.0.0):
-    - React/fabric/activityindicator (= 1000.0.0)
-    - React/fabric/attributedstring (= 1000.0.0)
-    - React/fabric/core (= 1000.0.0)
-    - React/fabric/debug (= 1000.0.0)
-    - React/fabric/graphics (= 1000.0.0)
-    - React/fabric/scrollview (= 1000.0.0)
-    - React/fabric/text (= 1000.0.0)
-    - React/fabric/textlayoutmanager (= 1000.0.0)
-    - React/fabric/uimanager (= 1000.0.0)
-    - React/fabric/view (= 1000.0.0)
-  - React/fabric/activityindicator (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/attributedstring (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/core (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/debug (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/graphics (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/scrollview (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/text (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/textlayoutmanager (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/uimanager (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/view (1000.0.0):
-    - Folly (= 2016.10.31.00)
-    - yoga
   - React/fishhook (1000.0.0)
   - React/jschelpers (1000.0.0):
     - Folly (= 2016.10.31.00)
@@ -69,12 +37,6 @@ PODS:
   - React/RCTCameraRoll (1000.0.0):
     - React/Core
     - React/RCTImage
-  - React/RCTFabric (1000.0.0):
-    - Folly (= 2016.10.31.00)
-    - React/Core
-    - React/fabric
-  - React/RCTFabricSample (1000.0.0):
-    - Folly (= 2016.10.31.00)
   - React/RCTGeolocation (1000.0.0):
     - React/Core
   - React/RCTImage (1000.0.0):
@@ -110,8 +72,6 @@ DEPENDENCIES:
   - React/RCTAnimation (from `../`)
   - React/RCTBlob (from `../`)
   - React/RCTCameraRoll (from `../`)
-  - React/RCTFabric (from `../`)
-  - React/RCTFabricSample (from `../`)
   - React/RCTGeolocation (from `../`)
   - React/RCTImage (from `../`)
   - React/RCTLinkingIOS (from `../`)
@@ -147,6 +107,6 @@ SPEC CHECKSUMS:
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 30aa63dcdbb3546a2bacdfd4e005bcca50c9b55c
+PODFILE CHECKSUM: 7af77fbc34af9646e8c6389e7e2c0b4663bb16d9
 
 COCOAPODS: 1.5.2
