@@ -39,7 +39,7 @@ function runAndroid(argv, config, args) {
     } else {
       console.log(
         chalk.red(
-          'Android project not found. Maybe run react-native eject first?',
+          'Android project not found. Try running the command \'react-native eject\' first.',
         ),
       );
     }
