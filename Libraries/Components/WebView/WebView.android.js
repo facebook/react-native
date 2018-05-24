@@ -56,6 +56,7 @@ class WebView extends React.Component {
     onNavigationStateChange: PropTypes.func,
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
+    onScroll: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: ViewPropTypes.style,
 
@@ -326,6 +327,7 @@ class WebView extends React.Component {
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onScroll={this.onScroll}
         testID={this.props.testID}
         geolocationEnabled={this.props.geolocationEnabled}
         mediaPlaybackRequiresUserAction={
@@ -454,6 +456,11 @@ class WebView extends React.Component {
     const {onMessage} = this.props;
     onMessage && onMessage(event);
   };
+
+  onScroll = (event: Event) => {
+    const {onScroll} = this.props;
+    onScroll && onScroll(event);
+  }
 }
 
 const RCTWebView = requireNativeComponent('RCTWebView');
