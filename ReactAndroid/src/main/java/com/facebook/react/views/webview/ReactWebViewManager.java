@@ -56,6 +56,8 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -327,6 +329,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void onMessage(String message) {
       dispatchEvent(this, new TopMessageEvent(this.getId(), message));
+    }
+
+    protected void onScrollChanged(int x, int y, int oldX, int oldY) {
+      super.onScrollChanged(x, y, oldX, oldY);
+
+      ScrollEvent event = ScrollEvent.obtain(
+        this.getId(),
+        ScrollEventType.SCROLL,
+        x,
+        y,
+        0f, // can't get x velocity
+        0f, // can't get y velocity
+        0, // can't get content width
+        0, // can't get content height
+        oldX,
+        oldY);
+      dispatchEvent(this, event);
     }
 
     protected void cleanupCallbacksAndDestroy() {
