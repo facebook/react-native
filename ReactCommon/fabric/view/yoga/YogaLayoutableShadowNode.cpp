@@ -143,11 +143,26 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYoga
 
   // ... but we have to address this by `shared_ptr`. We cannot create a new `shared_ptr` for it because we will end up with two shared pointers to
   // single object which will cause preluminary destroyng the object.
-  // Another approaches to consider:
-  //  * Create a new `shared_ptr` with empty deleter.
-  //  * Using `childIndex` to find exact node.
+
+  auto &&layoutableChildNodes = parentShadowNodeRawPtr->getLayoutableChildNodes();
   SharedLayoutableShadowNode oldShadowNode = nullptr;
-  for (auto child : parentShadowNodeRawPtr->getLayoutableChildNodes()) {
+
+  // We cannot rely on `childIndex` all the time because `childNodes` can
+  // contain non-layoutable shadow nodes, however chances are good that
+  // `childIndex` points to the right shadow node.
+
+  // Optimistic attempt (in case if `childIndex` is valid):
+  if (childIndex < layoutableChildNodes.size()) {
+    oldShadowNode = layoutableChildNodes[childIndex];
+    if (oldShadowNode.get() == oldShadowNodeRawPtr) {
+      goto found;
+    } else {
+      oldShadowNode = nullptr;
+    }
+  }
+
+  // General solution:
+  for (auto child : layoutableChildNodes) {
     if (child.get() == oldShadowNodeRawPtr) {
       oldShadowNode = child;
       break;
@@ -155,6 +170,8 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(YGNode *oldYoga
   }
 
   assert(oldShadowNode);
+
+found:
 
   // The new one does not exist yet. So, we have to clone and replace this using `cloneAndReplaceChild`.
   SharedYogaLayoutableShadowNode newShadowNode =
