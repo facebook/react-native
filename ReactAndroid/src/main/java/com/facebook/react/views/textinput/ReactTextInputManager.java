@@ -308,6 +308,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "onKeyPress", defaultBoolean = false)
+  public void setOnKeyPress(final ReactEditText view, boolean onKeyPress) {
+    view.setOnKeyPress(onKeyPress);
+  }
+
   // Sets the letter spacing as an absolute point size.
   // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
   // correct display of spacing in placeholder (hint) text.
