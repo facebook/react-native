@@ -76,12 +76,51 @@ FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDesc
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
+FabricUIManager::~FabricUIManager() {
+  if (eventHandler_) {
+    releaseEventTargetFunction_(eventHandler_);
+  }
+}
+
 void FabricUIManager::setDelegate(UIManagerDelegate *delegate) {
   delegate_ = delegate;
 }
 
 UIManagerDelegate *FabricUIManager::getDelegate() {
   return delegate_;
+}
+
+void FabricUIManager::setCreateEventTargetFunction(std::function<CreateEventTargetFunction> createEventTargetFunction) {
+  createEventTargetFunction_ = createEventTargetFunction;
+}
+
+void FabricUIManager::setDispatchEventFunction(std::function<DispatchEventFunction> dispatchEventFunction) {
+  dispatchEventFunction_ = dispatchEventFunction;
+}
+
+void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction) {
+  releaseEventTargetFunction_ = releaseEventTargetFunction;
+}
+
+void FabricUIManager::setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction) {
+  releaseEventHandlerFunction_ = releaseEventHandlerFunction;
+}
+
+void *FabricUIManager::createEventTarget(void *instanceHandle) {
+  return createEventTargetFunction_(instanceHandle);
+}
+
+void FabricUIManager::dispatchEvent(void *eventTarget, const std::string &type, const folly::dynamic &payload) {
+  dispatchEventFunction_(
+    eventHandler_,
+    eventTarget,
+    const_cast<std::string &>(type),
+    const_cast<folly::dynamic &>(payload)
+  );
+}
+
+void FabricUIManager::releaseEventTarget(void *eventTarget) {
+  releaseEventTargetFunction_(eventTarget);
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, InstanceHandle instanceHandle) {
@@ -214,7 +253,7 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
 
 void FabricUIManager::registerEventHandler(void *eventHandler) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler)";
-  // TODO: Store eventHandler handle.
+  eventHandler_ = eventHandler;
 }
 
 } // namespace react
