@@ -14,6 +14,7 @@ const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 const ListView = require('ListView');
+const StyleSheet = require('StyleSheet');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -421,41 +422,15 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  setNativeProps(props: Object) {
+  setNativeProps(props: {[string]: mixed}) {
     if (this._listRef) {
       this._listRef.setNativeProps(props);
     }
   }
 
-  UNSAFE_componentWillMount() {
-    this._checkProps(this.props);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props<ItemT>) {
-    invariant(
-      nextProps.numColumns === this.props.numColumns,
-      'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
-        'changing the number of columns to force a fresh render of the component.',
-    );
-    invariant(
-      nextProps.onViewableItemsChanged === this.props.onViewableItemsChanged,
-      'Changing onViewableItemsChanged on the fly is not supported',
-    );
-    invariant(
-      nextProps.viewabilityConfig === this.props.viewabilityConfig,
-      'Changing viewabilityConfig on the fly is not supported',
-    );
-    invariant(
-      nextProps.viewabilityConfigCallbackPairs ===
-        this.props.viewabilityConfigCallbackPairs,
-      'Changing viewabilityConfigCallbackPairs on the fly is not supported',
-    );
-
-    this._checkProps(nextProps);
-  }
-
-  constructor(props: Props<*>) {
+  constructor(props: Props<ItemT>) {
     super(props);
+    this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
       this._virtualizedListPairs = this.props.viewabilityConfigCallbackPairs.map(
         pair => ({
@@ -476,6 +451,29 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         ),
       });
     }
+  }
+
+  componentDidUpdate(prevProps: Props<ItemT>) {
+    invariant(
+      prevProps.numColumns === this.props.numColumns,
+      'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
+        'changing the number of columns to force a fresh render of the component.',
+    );
+    invariant(
+      prevProps.onViewableItemsChanged === this.props.onViewableItemsChanged,
+      'Changing onViewableItemsChanged on the fly is not supported',
+    );
+    invariant(
+      prevProps.viewabilityConfig === this.props.viewabilityConfig,
+      'Changing viewabilityConfig on the fly is not supported',
+    );
+    invariant(
+      prevProps.viewabilityConfigCallbackPairs ===
+        this.props.viewabilityConfigCallbackPairs,
+      'Changing viewabilityConfigCallbackPairs on the fly is not supported',
+    );
+
+    this._checkProps(this.props);
   }
 
   _hasWarnedLegacy = false;
@@ -537,7 +535,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       const ret = [];
       for (let kk = 0; kk < numColumns; kk++) {
         const item = data[index * numColumns + kk];
-        item && ret.push(item);
+        if (item != null) {
+          ret.push(item);
+        }
       }
       return ret;
     } else {
@@ -614,7 +614,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         'Expected array of items with numColumns > 1',
       );
       return (
-        <View style={[{flexDirection: 'row'}, columnWrapperStyle]}>
+        <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
           {item.map((it, kk) => {
             const element = renderItem({
               item: it,
@@ -660,5 +660,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 }
+
+const styles = StyleSheet.create({
+  row: {flexDirection: 'row'},
+});
 
 module.exports = FlatList;
