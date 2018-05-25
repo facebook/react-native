@@ -16,6 +16,9 @@
 <p>It is recommended that you use an abstraction on top of <code>AsyncStorage</code> instead of <code>AsyncStorage</code> directly for anything more than light usage since it operates globally.</p>
 <p>On iOS, <code>AsyncStorage</code> is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, <code>AsyncStorage</code> will use either <a href="http://rocksdb.org/">RocksDB</a> or SQLite based on what is available.</p>
 <p>The <code>AsyncStorage</code> JavaScript code is a simple facade that provides a clear JavaScript API, real <code>Error</code> objects, and simple non-multi functions. Each method in the API returns a <code>Promise</code> object.</p>
+<p>Importing the <code>AsyncStorage</code> library:</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> { AsyncStorage } <span class="hljs-keyword">from</span> <span class="hljs-string">"react-native"</span>
+</code></pre>
 <p>Persisting data:</p>
 <pre><code class="hljs">_storeData = <span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-keyword">try</span> {
