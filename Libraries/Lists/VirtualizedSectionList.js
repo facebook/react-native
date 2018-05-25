@@ -37,12 +37,12 @@ type SectionBase = {
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?React.ComponentType<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItem, index: ?number) => string,
 
   // TODO: support more optional/override props
-  // FooterComponent?: ?ReactClass<*>,
-  // HeaderComponent?: ?ReactClass<*>,
+  // FooterComponent?: ?ReactClass<any>,
+  // HeaderComponent?: ?ReactClass<any>,
   // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
 };
 
@@ -54,11 +54,11 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered after the last item in the last section.
    */
-  ListFooterComponent?: ?(React.ComponentType<*> | React.Element<any>),
+  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?(React.ComponentType<*> | React.Element<any>),
+  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Default renderer for every item in every section.
    */
@@ -84,11 +84,11 @@ type OptionalProps<SectionT: SectionBase> = {
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.
    */
-  SectionSeparatorComponent?: ?React.ComponentType<*>,
+  SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Rendered at the bottom of every Item except the very last one in the last section.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
@@ -101,7 +101,7 @@ type OptionalProps<SectionT: SectionBase> = {
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
@@ -134,10 +134,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   Props<SectionT>,
   State,
 > {
-  props: Props<SectionT>;
-
-  state: State;
-
   static defaultProps: DefaultProps = {
     ...VirtualizedList.defaultProps,
     data: [],
@@ -162,6 +158,48 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
 
   getListRef(): VirtualizedList {
     return this._listRef;
+  }
+
+  constructor(props: Props<SectionT>, context: Object) {
+    super(props, context);
+    this.state = this._computeState(props);
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
+    this.setState(this._computeState(nextProps));
+  }
+
+  _computeState(props: Props<SectionT>): State {
+    const offset = props.ListHeaderComponent ? 1 : 0;
+    const stickyHeaderIndices = [];
+    const itemCount = props.sections.reduce((v, section) => {
+      stickyHeaderIndices.push(v + offset);
+      return v + section.data.length + 2; // Add two for the section header and footer.
+    }, 0);
+
+    return {
+      childProps: {
+        ...props,
+        renderItem: this._renderItem,
+        ItemSeparatorComponent: undefined, // Rendered with renderItem
+        data: props.sections,
+        getItemCount: () => itemCount,
+        getItem,
+        keyExtractor: this._keyExtractor,
+        onViewableItemsChanged: props.onViewableItemsChanged
+          ? this._onViewableItemsChanged
+          : undefined,
+        stickyHeaderIndices: props.stickySectionHeadersEnabled
+          ? stickyHeaderIndices
+          : undefined,
+      },
+    };
+  }
+
+  render() {
+    return (
+      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
+    );
   }
 
   _keyExtractor = (item: Item, index: number) => {
@@ -307,7 +345,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   _getSeparatorComponent(
     index: number,
     info?: ?Object,
-  ): ?React.ComponentType<*> {
+  ): ?React.ComponentType<any> {
     info = info || this._subExtractor(index);
     if (!info) {
       return null;
@@ -324,48 +362,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
       return ItemSeparatorComponent;
     }
     return null;
-  }
-
-  _computeState(props: Props<SectionT>): State {
-    const offset = props.ListHeaderComponent ? 1 : 0;
-    const stickyHeaderIndices = [];
-    const itemCount = props.sections.reduce((v, section) => {
-      stickyHeaderIndices.push(v + offset);
-      return v + section.data.length + 2; // Add two for the section header and footer.
-    }, 0);
-
-    return {
-      childProps: {
-        ...props,
-        renderItem: this._renderItem,
-        ItemSeparatorComponent: undefined, // Rendered with renderItem
-        data: props.sections,
-        getItemCount: () => itemCount,
-        getItem,
-        keyExtractor: this._keyExtractor,
-        onViewableItemsChanged: props.onViewableItemsChanged
-          ? this._onViewableItemsChanged
-          : undefined,
-        stickyHeaderIndices: props.stickySectionHeadersEnabled
-          ? stickyHeaderIndices
-          : undefined,
-      },
-    };
-  }
-
-  constructor(props: Props<SectionT>, context: Object) {
-    super(props, context);
-    this.state = this._computeState(props);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
-    this.setState(this._computeState(nextProps));
-  }
-
-  render() {
-    return (
-      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
-    );
   }
 
   _cellRefs = {};
