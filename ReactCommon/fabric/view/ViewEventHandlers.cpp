@@ -24,5 +24,19 @@ void ViewEventHandlers::onAccessibilityMagicTap() const {
   dispatchEvent("magicTap");
 }
 
+#pragma mark - Layout
+
+void ViewEventHandlers::onLayout(const LayoutMetrics &layoutMetrics) const {
+  folly::dynamic payload = folly::dynamic::object();
+  auto &&frame = layoutMetrics.frame;
+  payload["layout"] = folly::dynamic::object
+    ("x", frame.origin.x)
+    ("y", frame.origin.y)
+    ("width", frame.size.width)
+    ("height", frame.size.height);
+
+  dispatchEvent("layout", payload);
+}
+
 } // namespace react
 } // namespace facebook

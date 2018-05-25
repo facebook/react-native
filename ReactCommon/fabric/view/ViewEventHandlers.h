@@ -9,6 +9,7 @@
 #include <memory>
 
 #include <fabric/core/EventHandlers.h>
+#include <fabric/core/LayoutMetrics.h>
 
 namespace facebook {
 namespace react {
@@ -24,9 +25,15 @@ public:
 
   using EventHandlers::EventHandlers;
 
+#pragma mark - Accessibility
+
   void onAccessibilityAction(const std::string &name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
+
+#pragma mark - Layout
+
+  void onLayout(const LayoutMetrics &layoutMetrics) const;
 };
 
 } // namespace react

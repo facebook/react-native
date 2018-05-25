@@ -76,6 +76,8 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
   );
 
   if (commit(newRootShadowNode)) {
+    emitLayoutEvents(instructions);
+
     if (delegate_) {
       delegate_->shadowTreeDidCommit(shared_from_this(), instructions);
     }
@@ -91,6 +93,46 @@ bool ShadowTree::commit(const SharedRootShadowNode &newRootShadowNode) {
 
   rootShadowNode_ = newRootShadowNode;
   return true;
+}
+
+void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instructions) {
+  for (auto &&instruction : instructions) {
+    auto &&type = instruction.getType();
+
+    // Only `Insertion` and `Replacement` instructions can affect layout metrics.
+    if (
+        type == TreeMutationInstruction::Insertion ||
+        type == TreeMutationInstruction::Replacement
+    ) {
+      auto &&newShadowNode = instruction.getNewChildNode();
+      auto &&eventHandlers = newShadowNode->getEventHandlers();
+      auto &&viewEventHandlers = std::dynamic_pointer_cast<const ViewEventHandlers>(eventHandlers);
+
+      // Checking if particular shadow node supports `onLayout` event (part of `ViewEventHandlers`).
+      if (viewEventHandlers) {
+        // Now we know that both (old and new) shadow nodes must be `LayoutableShadowNode` subclasses.
+        assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode));
+        // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
+        auto &&newLayoutableShadowNode =
+          std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
+
+        // In case if we have `oldShadowNode`, we have to check that layout metrics have changed.
+        if (type == TreeMutationInstruction::Replacement) {
+          auto &&oldShadowNode = instruction.getOldChildNode();
+          assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode));
+          // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
+          auto &&oldLayoutableShadowNode =
+            std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
+
+          if (oldLayoutableShadowNode->getLayoutMetrics() == newLayoutableShadowNode->getLayoutMetrics()) {
+            continue;
+          }
+        }
+
+        viewEventHandlers->onLayout(newLayoutableShadowNode->getLayoutMetrics());
+      }
+    }
+  }
 }
 
 #pragma mark - Delegate
