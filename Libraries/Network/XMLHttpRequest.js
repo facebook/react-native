@@ -435,7 +435,7 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
     }
-    this._headers[header.toLowerCase()] = String(value);
+    this._headers[header] = String(value);
   }
 
   /**
