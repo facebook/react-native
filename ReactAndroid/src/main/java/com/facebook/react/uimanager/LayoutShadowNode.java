@@ -78,7 +78,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   @Override
-  public LayoutShadowNode mutableCopy() {
+  protected LayoutShadowNode copy() {
     return new LayoutShadowNode(this);
   }
 
@@ -315,6 +315,10 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         setFlexWrap(YogaWrap.WRAP);
         break;
       }
+      case "wrap-reverse": {
+        setFlexWrap(YogaWrap.WRAP_REVERSE);
+        break;
+      }
       default: {
         throw new JSApplicationIllegalArgumentException(
             "invalid value for flexWrap: " + flexWrap);
@@ -523,7 +527,6 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     if (isVirtual()) {
       return;
     }
-
     if (overflow == null) {
       setOverflow(YogaOverflow.VISIBLE);
       return;

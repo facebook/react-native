@@ -4,7 +4,7 @@ This lets us build React Native:
  - At Facebook by running buck from the root of the fb repo
  - Outside of Facebook by running buck in the root of the git repo
 """
-# @lint-ignore-every SKYLINT
+# @lint-ignore-every SKYLINT BUCKRESTRICTEDSYNTAX
 
 IS_OSS_BUILD = True
 
@@ -22,6 +22,7 @@ ANDROID_JSC_INTERNAL_DEPS = [
 ]
 ANDROID_JSC_DEPS = ANDROID_JSC_INTERNAL_DEPS
 ANDROID = "Android"
+APPLE = ""
 
 YOGA_TARGET = '//ReactAndroid/src/main/java/com/facebook:yoga'
 FBGLOGINIT_TARGET = '//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit'
@@ -33,9 +34,27 @@ with allow_unsafe_import():
     import os
 
 
+def get_apple_inspector_flags():
+    return []
+
+
+def get_android_inspector_flags():
+    return []
+
+
 # Building is not supported in OSS right now
-def rn_xplat_cxx_library(name, platforms = None, **kwargs):
-    cxx_library(name=name, **kwargs)
+def rn_xplat_cxx_library(name, **kwargs):
+    new_kwargs = {
+        k: v
+        for k, v in kwargs.items()
+        if k.startswith("exported_")
+    }
+
+    native.cxx_library(
+        name=name,
+        visibility=kwargs.get("visibility", []),
+        **new_kwargs
+    )
 
 
 # Example: react_native_target('java/com/facebook/react/common:common')
@@ -89,39 +108,39 @@ def rn_android_library(name, deps=[], plugins=[], *args, **kwargs):
 
         plugins = list(set(plugins + react_module_plugins))
 
-    android_library(name=name, deps=deps, plugins=plugins, *args, **kwargs)
+    native.android_library(name=name, deps=deps, plugins=plugins, *args, **kwargs)
 
 
 def rn_android_binary(*args, **kwargs):
-    android_binary(*args, **kwargs)
+    native.android_binary(*args, **kwargs)
 
 
 def rn_android_build_config(*args, **kwargs):
-    android_build_config(*args, **kwargs)
+    native.android_build_config(*args, **kwargs)
 
 
 def rn_android_resource(*args, **kwargs):
-    android_resource(*args, **kwargs)
+    native.android_resource(*args, **kwargs)
 
 
 def rn_android_prebuilt_aar(*args, **kwargs):
-    android_prebuilt_aar(*args, **kwargs)
+    native.android_prebuilt_aar(*args, **kwargs)
 
 
 def rn_java_library(*args, **kwargs):
-    java_library(*args, **kwargs)
+    native.java_library(*args, **kwargs)
 
 
 def rn_java_annotation_processor(*args, **kwargs):
-    java_annotation_processor(*args, **kwargs)
+    native.java_annotation_processor(*args, **kwargs)
 
 
 def rn_prebuilt_native_library(*args, **kwargs):
-    prebuilt_native_library(*args, **kwargs)
+    native.prebuilt_native_library(*args, **kwargs)
 
 
 def rn_prebuilt_jar(*args, **kwargs):
-    prebuilt_jar(*args, **kwargs)
+    native.prebuilt_jar(*args, **kwargs)
 
 
 def rn_robolectric_test(name, srcs, vm_args=None, *args, **kwargs):
@@ -166,10 +185,10 @@ def rn_robolectric_test(name, srcs, vm_args=None, *args, **kwargs):
     )
 
 
-original_cxx_library = cxx_library
-
-
 def cxx_library(allow_jni_merging=None, **kwargs):
-    kwargs.pop('fbandroid_deps', [])
-    kwargs.pop('fbobjc_deps', [])
-    original_cxx_library(**kwargs)
+    args = {
+        k: v
+        for k, v in kwargs.items()
+        if not (k.startswith("fbandroid_") or k.startswith("fbobjc_"))
+    }
+    native.cxx_library(**args)

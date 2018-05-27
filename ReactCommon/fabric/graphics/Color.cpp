@@ -13,11 +13,17 @@
 namespace facebook {
 namespace react {
 
-SharedColor colorFromComponents(float red, float green, float blue, float alpha) {
-  const CGFloat components[] = {red, green, blue, alpha};
+SharedColor colorFromComponents(ColorComponents components) {
+  const CGFloat componentsArray[] = {
+    components.red,
+    components.green,
+    components.blue,
+    components.alpha
+  };
+
   CGColorRef color = CGColorCreate(
     CGColorSpaceCreateDeviceRGB(),
-    components
+    componentsArray
   );
 
   return SharedColor(color, CFRelease);

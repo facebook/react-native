@@ -595,6 +595,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         NSString *property = creatingLayoutAnimation.property;
         if ([property isEqualToString:@"scaleXY"]) {
           view.layer.transform = CATransform3DMakeScale(0, 0, 0);
+        } else if ([property isEqualToString:@"scaleX"]) {
+        view.layer.transform = CATransform3DMakeScale(0, 1, 0);
+        } else if ([property isEqualToString:@"scaleY"]) {
+        view.layer.transform = CATransform3DMakeScale(1, 0, 0);
         } else if ([property isEqualToString:@"opacity"]) {
           view.layer.opacity = 0.0;
         } else {
@@ -603,7 +607,11 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         }
 
         [creatingLayoutAnimation performAnimations:^{
-          if ([property isEqualToString:@"scaleXY"]) {
+          if (
+            [property isEqualToString:@"scaleX"] ||
+            [property isEqualToString:@"scaleY"] ||
+            [property isEqualToString:@"scaleXY"]
+          ) {
             view.layer.transform = finalTransform;
           } else if ([property isEqualToString:@"opacity"]) {
             view.layer.opacity = finalOpacity;
@@ -738,6 +746,10 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     [deletingLayoutAnimation performAnimations:^{
       if ([property isEqualToString:@"scaleXY"]) {
         removedChild.layer.transform = CATransform3DMakeScale(0.001, 0.001, 0.001);
+      } else if ([property isEqualToString:@"scaleX"]) {
+      removedChild.layer.transform = CATransform3DMakeScale(0.001, 1, 0.001);
+      } else if ([property isEqualToString:@"scaleY"]) {
+      removedChild.layer.transform = CATransform3DMakeScale(1, 0.001, 0.001);
       } else if ([property isEqualToString:@"opacity"]) {
         removedChild.layer.opacity = 0.0;
       } else {

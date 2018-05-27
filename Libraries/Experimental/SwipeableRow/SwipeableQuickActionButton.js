@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableQuickActionButton
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Image = require('Image');
@@ -61,9 +62,7 @@ class SwipeableQuickActionButton extends React.Component<{
             source={this.props.imageSource}
             style={this.props.imageStyle}
           />
-          <Text style={this.props.textStyle}>
-            {this.props.text}
-          </Text>
+          <Text style={this.props.textStyle}>{this.props.text}</Text>
         </View>
       </TouchableHighlight>
     );

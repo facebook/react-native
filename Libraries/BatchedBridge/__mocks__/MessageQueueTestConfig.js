@@ -5,14 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * These don't actually exist anywhere in the code.
+ *
+ * @format
  */
+
 'use strict';
-var remoteModulesConfig = [
-  ['RemoteModule1',null,['remoteMethod','promiseMethod'],[]],
-  ['RemoteModule2',null,['remoteMethod','promiseMethod'],[]],
+const remoteModulesConfig = [
+  ['RemoteModule1', null, ['remoteMethod', 'promiseMethod'], []],
+  ['RemoteModule2', null, ['remoteMethod', 'promiseMethod'], []],
 ];
 
-var MessageQueueTestConfig = {
+const MessageQueueTestConfig = {
   remoteModuleConfig: remoteModulesConfig,
 };
 

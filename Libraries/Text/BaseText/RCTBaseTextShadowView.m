@@ -63,7 +63,7 @@ NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName = @"RCTBase
       NSString *text = rawTextShadowView.text;
       if (text) {
         NSAttributedString *rawTextAttributedString =
-          [[NSAttributedString alloc] initWithString:rawTextShadowView.text
+          [[NSAttributedString alloc] initWithString:[textAttributes applyTextAttributesToText:text]
                                           attributes:textAttributes.effectiveTextAttributes];
         [attributedText appendAttributedString:rawTextAttributedString];
       }

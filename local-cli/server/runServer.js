@@ -43,12 +43,8 @@ const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
 const webSocketProxy = require('./util/webSocketProxy.js');
 
-/* $FlowFixMe(site=react_native_oss) */
-const TransformCaching = require('metro/src/lib/TransformCaching');
-
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
-/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro';
 /* $FlowFixMe(site=react_native_oss) */
 import type {Reporter} from 'metro/src/lib/reporting';
@@ -78,6 +74,9 @@ function runServer(
   var ms = null;
 
   const terminal = new Terminal(process.stdout);
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
   const packagerServer = getPackagerServer(args, config, reporter);
@@ -105,10 +104,16 @@ function runServer(
 
   app.use(morgan('combined')).use(errorhandler());
 
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   if (args.https && (!args.key || !args.cert)) {
     throw new Error('Cannot use https without specifying key and cert options');
   }
 
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const serverInstance = args.https
     ? https.createServer(
         {
@@ -157,14 +162,21 @@ function getReporterImpl(customLogReporterPath: ?string) {
 }
 
 function getPackagerServer(args, config, reporter) {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   const transformModulePath = args.transformer
     ? path.resolve(args.transformer)
     : config.getTransformModulePath();
 
   const providesModuleNodeModules =
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
 
   return Metro.createServer({
+    asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(args.assetExts),
     assetRegistryPath: ASSET_REGISTRY_PATH,
     blacklistRE: config.getBlacklistRE(),
@@ -175,22 +187,21 @@ function getPackagerServer(args, config, reporter) {
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
+    getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
-    globalTransformCache: null,
     hasteImplModulePath: config.hasteImplModulePath,
     maxWorkers: args.maxWorkers,
     platforms: defaultPlatforms.concat(args.platforms),
     polyfillModuleNames: config.getPolyfillModuleNames(),
     postMinifyProcess: config.postMinifyProcess,
     postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    postProcessModules: config.postProcessModules,
     projectRoots: args.projectRoots,
     providesModuleNodeModules: providesModuleNodeModules,
     reporter,
     resetCache: args.resetCache,
+    resolveRequest: config.resolveRequest,
     sourceExts: args.sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
-    transformCache: TransformCaching.useTempDir(),
     verbose: args.verbose,
     watch: !args.nonPersistent,
     workerPath: config.getWorkerPath(),

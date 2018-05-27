@@ -2,16 +2,18 @@
 
 #pragma once
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <android/log.h>
+#include <string>
 
 namespace facebook {
 namespace react {
 
-JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception);
+void reactAndroidLoggingHook(
+    const std::string& message,
+    android_LogPriority logLevel);
+void reactAndroidLoggingHook(
+    const std::string& message,
+    unsigned int logLevel);
 
-}}
+} // namespace react
+} // namespace facebook

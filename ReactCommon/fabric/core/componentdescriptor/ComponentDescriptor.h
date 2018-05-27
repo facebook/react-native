@@ -26,6 +26,8 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
 class ComponentDescriptor {
 public:
 
+  virtual ~ComponentDescriptor() = default;
+
   /*
    * Returns `componentHandle` associated with particular kind of components.
    * All `ShadowNode`s of this type must return same `componentHandle`.
@@ -45,8 +47,8 @@ public:
   virtual SharedShadowNode createShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
-    const RawProps &rawProps
+    const SharedEventHandlers &eventHandlers,
+    const SharedProps &props
   ) const = 0;
 
   /*
@@ -54,7 +56,8 @@ public:
    */
   virtual SharedShadowNode cloneShadowNode(
     const SharedShadowNode &shadowNode,
-    const SharedRawProps &rawProps = nullptr,
+    const SharedProps &props = nullptr,
+    const SharedEventHandlers &eventHandlers = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const = 0;
 
@@ -64,6 +67,25 @@ public:
   virtual void appendChild(
     const SharedShadowNode &parentShadowNode,
     const SharedShadowNode &childShadowNode
+  ) const = 0;
+
+  /*
+   * Creates a new `Props` of a particular type with all values copied from
+   * `props` and `rawProps` applied on top of this.
+   * If `props` is `nullptr`, a default `Props` object (with default values)
+   * will be used.
+   */
+  virtual SharedProps cloneProps(
+    const SharedProps &props,
+    const RawProps &rawProps
+  ) const = 0;
+
+  /*
+   * Creates a new `EventHandlers` object compatible with particular type of
+   * shadow nodes.
+   */
+  virtual SharedEventHandlers createEventHandlers(
+    const InstanceHandle &instanceHandle
   ) const = 0;
 };
 

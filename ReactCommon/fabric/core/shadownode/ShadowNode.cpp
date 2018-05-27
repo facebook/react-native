@@ -21,27 +21,44 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-  Tag tag,
-  Tag rootTag,
-  InstanceHandle instanceHandle,
-  SharedProps props,
-  SharedShadowNodeSharedList children
+  const Tag &tag,
+  const Tag &rootTag,
+  const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
+  const SharedShadowNodeSharedList &children,
+  const ShadowNodeCloneFunction &cloneFunction
 ):
   tag_(tag),
   rootTag_(rootTag),
-  instanceHandle_(instanceHandle),
   props_(props),
-  children_(children) {}
+  eventHandlers_(eventHandlers),
+  children_(std::make_shared<SharedShadowNodeList>(*children)),
+  cloneFunction_(cloneFunction),
+  revision_(1) {}
 
 ShadowNode::ShadowNode(
-  SharedShadowNode shadowNode,
-  SharedProps props,
-  SharedShadowNodeSharedList children
+  const SharedShadowNode &shadowNode,
+  const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
+  const SharedShadowNodeSharedList &children
 ):
   tag_(shadowNode->tag_),
-  instanceHandle_(shadowNode->instanceHandle_),
+  rootTag_(shadowNode->rootTag_),
   props_(props ? props : shadowNode->props_),
-  children_(children ? children : shadowNode->children_) {}
+  eventHandlers_(eventHandlers ? eventHandlers : shadowNode->eventHandlers_),
+  children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
+  sourceNode_(shadowNode),
+  localData_(shadowNode->localData_),
+  cloneFunction_(shadowNode->cloneFunction_),
+  revision_(shadowNode->revision_ + 1) {}
+
+SharedShadowNode ShadowNode::clone(
+  const SharedProps &props,
+  const SharedShadowNodeSharedList &children
+) const {
+  assert(cloneFunction_);
+  return cloneFunction_(shared_from_this(), props_, eventHandlers_, children_);
+}
 
 #pragma mark - Getters
 
@@ -53,11 +70,25 @@ SharedProps ShadowNode::getProps() const {
   return props_;
 }
 
+SharedEventHandlers ShadowNode::getEventHandlers() const {
+  return eventHandlers_;
+}
+
 Tag ShadowNode::getTag() const {
   return tag_;
 }
 
-#pragma mark - Mutating Methods
+Tag ShadowNode::getRootTag() const {
+  return rootTag_;
+}
+
+SharedShadowNode ShadowNode::getSourceNode() const {
+  return sourceNode_.lock();
+}
+
+SharedLocalData ShadowNode::getLocalData() const {
+  return localData_;
+}
 
 void ShadowNode::sealRecursive() const {
   if (getSealed()) {
@@ -73,26 +104,55 @@ void ShadowNode::sealRecursive() const {
   }
 }
 
+#pragma mark - Mutating Methods
+
 void ShadowNode::appendChild(const SharedShadowNode &child) {
   ensureUnsealed();
 
-  // We cannot mutate `children_` in place here because it is a *shared*
-  // data structure which means other `ShadowNodes` might refer to its old value.
-  // So, we have to clone this and only then mutate.
-  auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
-  nonConstChildrenCopy.push_back(child);
-  children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+  auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
+  nonConstChildren->push_back(child);
 }
 
 void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild) {
   ensureUnsealed();
 
-  // We cannot mutate `children_` in place here because it is a *shared*
-  // data structure which means other `ShadowNodes` might refer to its old value.
-  // So, we have to clone this and only then mutate.
-  auto nonConstChildrenCopy = SharedShadowNodeList(*children_);
-  std::replace(nonConstChildrenCopy.begin(), nonConstChildrenCopy.end(), oldChild, newChild);
-  children_ = std::make_shared<const SharedShadowNodeList>(nonConstChildrenCopy);
+  auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
+  std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
+}
+
+void ShadowNode::clearSourceNode() {
+  ensureUnsealed();
+  sourceNode_.reset();
+}
+
+void ShadowNode::setLocalData(const SharedLocalData &localData) {
+  ensureUnsealed();
+  localData_ = localData;
+}
+
+void ShadowNode::shallowSourceNode() {
+  ensureUnsealed();
+
+  auto sourceNode = sourceNode_.lock();
+  assert(sourceNode);
+  sourceNode_ = sourceNode->getSourceNode();
+}
+
+#pragma mark - Equality
+
+bool ShadowNode::operator==(const ShadowNode& rhs) const {
+  // Note: Child nodes are not considered as part of instance's value
+  // and/or identity.
+  return
+    tag_ == rhs.tag_ &&
+    rootTag_ == rhs.rootTag_ &&
+    props_ == rhs.props_ &&
+    eventHandlers_ == rhs.eventHandlers_ &&
+    localData_ == rhs.localData_;
+}
+
+bool ShadowNode::operator!=(const ShadowNode& rhs) const {
+  return !(*this == rhs);
 }
 
 #pragma mark - DebugStringConvertible
@@ -102,7 +162,7 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return getSealed() ? "sealed" : "";
+  return "r" + std::to_string(revision_) + (getSealed() ? "/sealed" : "");
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
@@ -123,8 +183,12 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
 
   list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", std::to_string(tag_)));
 
-  if (instanceHandle_) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("handle", std::to_string((size_t)instanceHandle_)));
+  SharedShadowNode sourceNode = getSourceNode();
+  if (sourceNode) {
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+      "source",
+      sourceNode->getDebugDescription({.maximumDepth = 1, .format = false})
+    ));
   }
 
   SharedDebugStringConvertibleList propsList = props_->getDebugProps();

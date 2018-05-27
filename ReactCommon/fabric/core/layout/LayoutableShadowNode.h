@@ -13,6 +13,7 @@
 
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -88,20 +89,23 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual SharedLayoutableShadowNodeList getChildren() const = 0;
+  virtual SharedLayoutableShadowNodeList getLayoutableChildNodes() const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
-   * Default implementation does nothing and returns `child`.
    */
-  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child);
+  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) = 0;
 
   /*
    * Sets layout metrics for the shadow node.
    * Returns true if the metrics are different from previous ones.
    */
   virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+#pragma mark - DebugStringConvertible
+
+  SharedDebugStringConvertibleList getDebugProps() const;
 
 private:
   LayoutMetrics layoutMetrics_ {};

@@ -27,17 +27,12 @@
 {
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  // Avoid the home pill (in portrait mode) and notch (in landscape mode) on iPhoneX.
+  // Avoid the home pill (in portrait mode)
+  // TODO: Support rotation, anchor to left and right without breaking frame x coordinate (T27974328).
   if (@available(iOS 11.0, *)) {
     if (self.window) {
       [_safeAreaContainer.bottomAnchor
        constraintLessThanOrEqualToSystemSpacingBelowAnchor:self.window.safeAreaLayoutGuide.bottomAnchor
-       multiplier:1.0f].active = YES;
-      [_safeAreaContainer.leftAnchor
-       constraintGreaterThanOrEqualToSystemSpacingAfterAnchor:self.window.safeAreaLayoutGuide.leftAnchor
-       multiplier:1.0f].active = YES;
-      [_safeAreaContainer.rightAnchor
-       constraintLessThanOrEqualToSystemSpacingAfterAnchor:self.window.safeAreaLayoutGuide.rightAnchor
        multiplier:1.0f].active = YES;
     }
   }

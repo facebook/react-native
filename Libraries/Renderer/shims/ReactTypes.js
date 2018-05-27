@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule ReactTypes
  */
 
 export type ReactNode =
@@ -62,7 +61,7 @@ export type ReactProvider<T> = {
 
 export type ReactProviderType<T> = {
   $$typeof: Symbol | number,
-  context: ReactContext<T>,
+  _context: ReactContext<T>,
 };
 
 export type ReactConsumer<T> = {
@@ -72,7 +71,7 @@ export type ReactConsumer<T> = {
   ref: null,
   props: {
     children: (value: T) => ReactNodeList,
-    bits?: number,
+    unstable_observedBits?: number,
   },
 };
 
@@ -85,10 +84,13 @@ export type ReactContext<T> = {
   _defaultValue: T,
 
   _currentValue: T,
+  _currentValue2: T,
   _changedBits: number,
+  _changedBits2: number,
 
   // DEV only
   _currentRenderer?: Object | null,
+  _currentRenderer2?: Object | null,
 };
 
 export type ReactPortal = {

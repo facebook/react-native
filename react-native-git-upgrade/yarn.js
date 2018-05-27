@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const execSync = require('child_process').execSync;
@@ -22,7 +25,9 @@ function getYarnVersionIfAvailable() {
     if (process.platform.startsWith('win')) {
       yarnVersion = (execSync('yarn --version').toString() || '').trim();
     } else {
-      yarnVersion = (execSync('yarn --version 2>/dev/null').toString() || '').trim();
+      yarnVersion = (
+        execSync('yarn --version 2>/dev/null').toString() || ''
+      ).trim();
     }
   } catch (error) {
     return null;

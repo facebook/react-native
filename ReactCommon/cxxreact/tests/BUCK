@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "IS_OSS_BUILD", "react_native_xplat_target")
 
 TEST_SRCS = [
     "RecoverableErrorTest.cpp",
@@ -11,44 +11,45 @@ TEST_SRCS = [
 ]
 
 if not IS_OSS_BUILD:
-    load("@xplat//build_defs:fb_xplat_cxx.bzl", "cxx_test")
+    load("@xplat//build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
     load("@xplat//configurations/buck/android:jni_instrumentation_test", "jni_instrumentation_test_lib")
     load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
+
     jni_instrumentation_test_lib(
-        name = 'tests',
-        class_under_test = 'com/facebook/react/XplatBridgeTest',
-        soname = 'libxplat-bridge.so',
+        name = "tests",
+        class_under_test = "com/facebook/react/XplatBridgeTest",
+        soname = "libxplat-bridge.so",
         srcs = TEST_SRCS,
         compiler_flags = [
-            '-fexceptions',
-            '-frtti',
-            '-std=c++14',
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
         ],
         deps = [
-            'xplat//third-party/linker_lib:android',
-            'xplat//third-party/gmock:gtest',
-            react_native_xplat_target('cxxreact:bridge'),
-        ],
+            "xplat//third-party/linker_lib:android",
+            "xplat//third-party/gmock:gtest",
+            react_native_xplat_target("cxxreact:bridge"),
+        ] + ANDROID_JSC_DEPS,
         visibility = [
-            'fbandroid//instrumentation_tests/...'
+            "fbandroid//instrumentation_tests/...",
         ],
     )
 
-    cxx_test(
-        name = 'tests',
+    fb_xplat_cxx_test(
+        name = "tests",
         srcs = TEST_SRCS,
         compiler_flags = [
-            '-fexceptions',
-            '-frtti',
+            "-fexceptions",
+            "-frtti",
         ],
         platforms = APPLE,
         deps = [
-            'xplat//folly:molly',
-            'xplat//third-party/gmock:gtest',
-            react_native_xplat_target('cxxreact:bridge'),
-            react_native_xplat_target('jschelpers:jschelpers'),
-        ],
+            "xplat//folly:molly",
+            "xplat//third-party/gmock:gtest",
+            react_native_xplat_target("cxxreact:bridge"),
+            react_native_xplat_target("jschelpers:jschelpers"),
+        ] + APPLE_JSC_DEPS,
         visibility = [
-            react_native_xplat_target('cxxreact/...'),
+            react_native_xplat_target("cxxreact/..."),
         ],
     )

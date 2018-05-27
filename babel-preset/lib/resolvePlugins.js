@@ -21,7 +21,7 @@ function resolvePlugins(plugins, prefix) {
 /**
  * Manually resolve a single Babel plugin.
  */
-function resolvePlugin(plugin, prefix = 'babel-plugin-') {
+function resolvePlugin(plugin, prefix = '@babel/plugin-') {
   // Normalise plugin to an array.
   if (!Array.isArray(plugin)) {
     plugin = [plugin];

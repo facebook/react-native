@@ -31,6 +31,8 @@ struct DebugStringConvertibleOptions {
 class DebugStringConvertible {
 
 public:
+  virtual ~DebugStringConvertible() = default;
+
   // Returns a name of the object.
   // Default implementation returns "Node".
   virtual std::string getDebugName() const;

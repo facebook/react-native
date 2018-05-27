@@ -18,6 +18,10 @@ std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConve
   std::string childrenString = "";
 
   for (auto child : getDebugChildren()) {
+    if (!child) {
+      continue;
+    }
+
     childrenString += child->getDebugDescription(options, depth + 1);
   }
 
@@ -32,6 +36,10 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
   std::string propsString = "";
 
   for (auto prop : getDebugProps()) {
+    if (!prop) {
+      continue;
+    }
+
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
     auto children = prop->getDebugPropsDescription(options, depth + 1);
@@ -50,10 +58,10 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
 std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
   std::string nameString = getDebugName();
   std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(options, depth + 1);
-  std::string propsString = getDebugPropsDescription(options, depth /* The first-level props are considered as same-depth things. */);
+  std::string childrenString = getDebugChildrenDescription(options, depth);
+  std::string propsString = getDebugPropsDescription(options, depth);
 
-  std::string leading = options.format ? std::string(depth, '\t') : "";
+  std::string leading = options.format ? std::string(depth * 2, ' ') : "";
   std::string trailing = options.format ? "\n" : "";
 
   return leading + "<" + nameString +

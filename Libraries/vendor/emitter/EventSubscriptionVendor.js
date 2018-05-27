@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EventSubscriptionVendor
+ * @format
  * @flow
  */
+
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
@@ -18,7 +19,6 @@ import type EventSubscription from 'EventSubscription';
  * subscribed to a particular event type.
  */
 class EventSubscriptionVendor {
-
   _subscriptionsForType: Object;
   _currentSubscription: ?EventSubscription;
 
@@ -34,10 +34,13 @@ class EventSubscriptionVendor {
    * @param {EventSubscription} subscription
    */
   addSubscription(
-    eventType: string, subscription: EventSubscription): EventSubscription {
+    eventType: string,
+    subscription: EventSubscription,
+  ): EventSubscription {
     invariant(
       subscription.subscriber === this,
-      'The subscriber of the subscription is incorrectly set.');
+      'The subscriber of the subscription is incorrectly set.',
+    );
     if (!this._subscriptionsForType[eventType]) {
       this._subscriptionsForType[eventType] = [];
     }
@@ -91,7 +94,7 @@ class EventSubscriptionVendor {
    * @returns {?array}
    */
   getSubscriptionsForType(eventType: string): ?[EventSubscription] {
-   return this._subscriptionsForType[eventType];
+    return this._subscriptionsForType[eventType];
   }
 }
 
