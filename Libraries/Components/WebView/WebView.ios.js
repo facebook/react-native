@@ -388,7 +388,7 @@ class WebView extends React.Component {
        */
       props: PropTypes.object,
       /*
-       * Set the ViewManager to use for communcation with the native side.
+       * Set the ViewManager to use for communication with the native side.
        * @platform ios
        */
       viewManager: PropTypes.object,
