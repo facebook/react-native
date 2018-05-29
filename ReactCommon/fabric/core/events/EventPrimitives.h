@@ -22,5 +22,11 @@ enum class EventPriority {
   Deferred = AsynchronousBatched,
 };
 
+// `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
+// raw pointers. We use `struct {} *` trick to differentiate them in compiler's
+// eyes to ensure type safety.
+using EventTarget = struct {} *;
+using EventHandler = struct {} *;
+
 } // namespace react
 } // namespace facebook
