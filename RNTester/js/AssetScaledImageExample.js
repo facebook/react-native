@@ -1,28 +1,25 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule AssetScaledImageExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Image,
-  StyleSheet,
-  View,
-  ScrollView
-} = ReactNative;
+var {Image, StyleSheet, View, ScrollView} = ReactNative;
 
-class AssetScaledImageExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class AssetScaledImageExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
-    asset: this.props.asset
+    asset: this.props.asset,
   };
 
   render() {
@@ -30,16 +27,16 @@ class AssetScaledImageExample extends React.Component<$FlowFixMeProps, $FlowFixM
     return (
       <ScrollView>
         <View style={styles.row}>
-          <Image source={image} style={styles.imageWide}/>
+          <Image source={image} style={styles.imageWide} />
         </View>
         <View style={styles.row}>
-          <Image source={image} style={styles.imageThumb}/>
-          <Image source={image} style={styles.imageThumb}/>
-          <Image source={image} style={styles.imageThumb}/>
+          <Image source={image} style={styles.imageThumb} />
+          <Image source={image} style={styles.imageThumb} />
+          <Image source={image} style={styles.imageThumb} />
         </View>
         <View style={styles.row}>
-          <Image source={image} style={styles.imageT1}/>
-          <Image source={image} style={styles.imageT2}/>
+          <Image source={image} style={styles.imageT1} />
+          <Image source={image} style={styles.imageT2} />
         </View>
       </ScrollView>
     );
@@ -88,5 +85,6 @@ var styles = StyleSheet.create({
 });
 
 exports.title = '<AssetScaledImageExample>';
-exports.description = 'Example component that displays the automatic scaling capabilities of the <Image /> tag';
+exports.description =
+  'Example component that displays the automatic scaling capabilities of the <Image /> tag';
 module.exports = AssetScaledImageExample;

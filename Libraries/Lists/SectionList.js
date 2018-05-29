@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SectionList
  * @flow
  * @format
  */
@@ -71,7 +68,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  renderItem: (info: {
+  renderItem?: (info: {
     item: Item,
     index: number,
     section: SectionT,
@@ -187,11 +184,10 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   legacyImplementation?: ?boolean,
 };
 
-export type Props<SectionT> = {
-  ...$Exact<RequiredProps<SectionT>>,
-  ...$Exact<OptionalProps<SectionT>>,
-  ...$Exact<VirtualizedSectionListProps<SectionT>>,
-};
+export type Props<SectionT> = RequiredProps<SectionT> &
+  OptionalProps<SectionT> &
+  VirtualizedSectionListProps<SectionT>;
+
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
   stickySectionHeadersEnabled: Platform.OS === 'ios',
@@ -221,7 +217,7 @@ type DefaultProps = typeof defaultProps;
  *     <SectionList
  *       renderItem={({item}) => <ListItem title={item} />}
  *       renderSectionHeader={({section}) => <Header title={section.title} />}
- *       sections={[ // homogenous rendering between sections
+ *       sections={[ // homogeneous rendering between sections
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
  *         {data: [...], title: ...},
@@ -282,12 +278,13 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   /**
-   * Tells the list an interaction has occured, which should trigger viewability calculations, e.g.
+   * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
    * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
    * taps on items or by navigation actions.
    */
   recordInteraction() {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    // $FlowFixMe Found when typing ListView
     listRef && listRef.recordInteraction();
   }
 
@@ -329,6 +326,9 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     const List = this.props.legacyImplementation
       ? MetroListView
       : VirtualizedSectionList;
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
     return <List {...this.props} ref={this._captureRef} />;
   }
 

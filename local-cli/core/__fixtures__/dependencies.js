@@ -1,4 +1,6 @@
-const fs = require('fs');
+/** @format */
+
+const fs = require.requireActual('fs');
 const path = require('path');
 const android = require('./android');
 

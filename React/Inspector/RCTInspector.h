@@ -15,6 +15,7 @@
 @interface RCTInspectorPage : NSObject
 @property (nonatomic, readonly) NSInteger id;
 @property (nonatomic, readonly) NSString *title;
+@property (nonatomic, readonly) NSString *vm;
 @end
 
 @interface RCTInspector : NSObject

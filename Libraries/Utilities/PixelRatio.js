@@ -1,17 +1,16 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PixelRatio
+ * @format
  * @flow
  */
+
 'use strict';
 
-var Dimensions = require('Dimensions');
+const Dimensions = require('Dimensions');
 
 /**
  * PixelRatio class gives access to the device pixel density.
@@ -111,7 +110,7 @@ class PixelRatio {
    * exactly (8.33 * 3) = 25 pixels.
    */
   static roundToNearestPixel(layoutSize: number): number {
-    var ratio = PixelRatio.get();
+    const ratio = PixelRatio.get();
     return Math.round(layoutSize * ratio) / ratio;
   }
 

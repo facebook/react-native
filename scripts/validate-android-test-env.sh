@@ -18,14 +18,14 @@ if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
 
   if [ -d "/opt/facebook" ]; then
-    SUGGESTED="b9b76a3a5a086eb440a26d1db9b0731875975099"
+    BUCK_SUGGESTED_COMMIT_FB="b9b76a3a5a086eb440a26d1db9b0731875975099"
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
     echo "the open source version of Buck forbids that."
     echo
     echo "You can try setting:"
     echo
-    echo "export BUCKVERSION=${SUGGESTED}"
+    echo "export BUCKVERSION=${BUCK_SUGGESTED_COMMIT_FB}"
     echo
     echo "in your .bashrc or .bash_profile to fix this."
     echo
@@ -33,12 +33,19 @@ if [ -z "$(buck --version)" ]; then
     echo "your machine, you can just scope it to a single script, for example"
     echo "by running something like:"
     echo
-    echo "BUCKVERSION=${SUGGESTED} $0"
+    echo "BUCKVERSION=${BUCK_SUGGESTED_COMMIT_FB} $0"
     echo
   else
     echo "I don't know what's wrong, but calling 'buck --version' should work."
   fi
   exit 1
+else
+  BUCK_EXPECTED_VERSION="buck version d743d2d0229852ce7c029ec257532d8916f6b2b7"
+  if [ "$(buck --version)" != "$BUCK_EXPECTED_VERSION" ]; then
+    if [ ! -d "/opt/facebook" ]; then
+      echo "Warning: The test suite expects ${BUCK_EXPECTED_VERSION} to be installed"
+    fi
+  fi
 fi
 
 # BUILD_TOOLS_VERSION is in a format like "23.0.1"
@@ -54,6 +61,11 @@ if [ ! -e "$PLATFORM_DIR" ]; then
   echo "Specifically, the directory $PLATFORM_DIR does not exist."
   echo "You probably need to specify the right version using the SDK Manager from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "If you are using Android SDK Tools from the command line, you may need to run:"
+  echo
+  echo "  sdkmanager \"platform-tools\" \"platform-tools;android-$MAJOR\""
+  echo
+  echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1
 fi
 
@@ -64,6 +76,11 @@ if [ ! -e "$BT_DIR" ]; then
   echo "Specifically, the directory $BT_DIR does not exist."
   echo "You probably need to explicitly install the correct version of the Android SDK Build Tools from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
+  echo "If you are using Android SDK Tools from the command line, you may need to run:"
+  echo
+  echo "  sdkmanager \"platform-tools\" \"build-tools;android-$BUILD_TOOLS_VERSION\""
+  echo
+  echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1
 fi
 
@@ -80,7 +97,11 @@ if [ -n "$(which csrutil)" ]; then
       echo "See https://our.intern.facebook.com/intern/dex/installing-java-8/ for instructions on installing Java 8 on FB laptops."
     else
       echo "Check out http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html ."
-      echo "Be sure that you set JAVA_HOME and PATH correctly."
+      echo "Be sure that you set JAVA_HOME and PATH correctly in your .bashrc or equivalent. Example:"
+      echo
+      echo "  export JAVA_HOME=path/to/java"
+      echo "  export PATH=\$PATH:\$JAVA_HOME/bin"
+      echo
     fi
     echo "After installing Java, run 'buck kill' and 'buck clean'."
     exit 1

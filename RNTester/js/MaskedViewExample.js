@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule MaskedViewExample
  */
+
 'use strict';
 
 const React = require('react');
@@ -53,7 +52,7 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
           timing: 750,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
 
     Animated.loop(
@@ -61,7 +60,7 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
         toValue: 360,
         timing: 2000,
         useNativeDriver: true,
-      })
+      }),
     ).start();
   }
 
@@ -69,18 +68,16 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
     return (
       <RNTesterPage title="<MaskedViewIOS>">
         <RNTesterBlock title="Basic Mask">
-          <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
+          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
             <MaskedViewIOS
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               maskElement={
                 <View style={styles.maskContainerStyle}>
-                  <Text style={styles.maskTextStyle}>
-                    Basic Mask
-                  </Text>
+                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
                 </View>
               }>
-              <View style={{ flex: 1, backgroundColor: 'blue' }} />
-              <View style={{ flex: 1, backgroundColor: 'red' }} />
+              <View style={{flex: 1, backgroundColor: 'blue'}} />
+              <View style={{flex: 1, backgroundColor: 'red'}} />
             </MaskedViewIOS>
           </View>
         </RNTesterBlock>
@@ -93,11 +90,11 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
               backgroundColor: '#eeeeee',
             }}>
             <MaskedViewIOS
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               maskElement={
                 <View style={styles.maskContainerStyle}>
                   <Image
-                    style={{ height: 200, width: 200 }}
+                    style={{height: 200, width: 200}}
                     source={require('./imageMask.png')}
                   />
                 </View>
@@ -105,7 +102,7 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
               <View style={styles.maskContainerStyle}>
                 <Image
                   resizeMode="cover"
-                  style={{ width: 200, height: 200 }}
+                  style={{width: 200, height: 200}}
                   source={{
                     uri:
                       'https://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif',
@@ -116,18 +113,16 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
           </View>
         </RNTesterBlock>
         <RNTesterBlock title="Animated Mask">
-          <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
+          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
             <MaskedViewIOS
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               maskElement={
                 <Animated.View
                   style={[
                     styles.maskContainerStyle,
-                    { transform: [{ scale: this._maskScaleAnimatedValue }] },
+                    {transform: [{scale: this._maskScaleAnimatedValue}]},
                   ]}>
-                  <Text style={styles.maskTextStyle}>
-                    Basic Mask
-                  </Text>
+                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
                 </Animated.View>
               }>
               <Animated.View
@@ -142,33 +137,25 @@ class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
                     },
                   ],
                 }}>
-                <View style={{ flex: 1, backgroundColor: 'blue' }} />
-                <View style={{ flex: 1, backgroundColor: 'red' }} />
+                <View style={{flex: 1, backgroundColor: 'blue'}} />
+                <View style={{flex: 1, backgroundColor: 'red'}} />
               </Animated.View>
             </MaskedViewIOS>
           </View>
         </RNTesterBlock>
         <RNTesterBlock title="Mask w/ Changing Children">
-          <View style={{ width: 300, height: 300, alignSelf: 'center' }}>
+          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
             <MaskedViewIOS
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               maskElement={
                 <View style={styles.maskContainerStyle}>
-                  <Text style={styles.maskTextStyle}>
-                    Basic Mask
-                  </Text>
+                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
                 </View>
               }>
               {this.state.alternateChildren
                 ? [
-                    <View
-                      key={1}
-                      style={{ flex: 1, backgroundColor: 'blue' }}
-                    />,
-                    <View
-                      key={2}
-                      style={{ flex: 1, backgroundColor: 'red' }}
-                    />,
+                    <View key={1} style={{flex: 1, backgroundColor: 'blue'}} />,
+                    <View key={2} style={{flex: 1, backgroundColor: 'red'}} />,
                   ]
                 : null}
             </MaskedViewIOS>

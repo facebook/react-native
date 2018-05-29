@@ -1,24 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule AsyncStorageExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  AsyncStorage,
-  PickerIOS,
-  Text,
-  View
-} = ReactNative;
+var {AsyncStorage, PickerIOS, Text, View} = ReactNative;
 var PickerItemIOS = PickerIOS.Item;
 
 var STORAGE_KEY = '@AsyncStorageExample:key';
@@ -37,7 +31,7 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
   _loadInitialState = async () => {
     try {
       var value = await AsyncStorage.getItem(STORAGE_KEY);
-      if (value !== null){
+      if (value !== null) {
         this.setState({selectedValue: value});
         this._appendMessage('Recovered selection from disk: ' + value);
       } else {
@@ -52,35 +46,27 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
     var color = this.state.selectedValue;
     return (
       <View>
-        <PickerIOS
-          selectedValue={color}
-          onValueChange={this._onValueChange}>
-          {COLORS.map((value) => (
-            <PickerItemIOS
-              key={value}
-              value={value}
-              label={value}
-            />
+        <PickerIOS selectedValue={color} onValueChange={this._onValueChange}>
+          {COLORS.map(value => (
+            <PickerItemIOS key={value} value={value} label={value} />
           ))}
         </PickerIOS>
         <Text>
           {'Selected: '}
-          <Text style={{color}}>
-            {this.state.selectedValue}
-          </Text>
+          <Text style={{color}}>{this.state.selectedValue}</Text>
         </Text>
-        <Text>{' '}</Text>
+        <Text> </Text>
         <Text onPress={this._removeStorage}>
           Press here to remove from storage.
         </Text>
-        <Text>{' '}</Text>
+        <Text> </Text>
         <Text>Messages:</Text>
-        {this.state.messages.map((m) => <Text key={m}>{m}</Text>)}
+        {this.state.messages.map(m => <Text key={m}>{m}</Text>)}
       </View>
     );
   }
 
-  _onValueChange = async (selectedValue) => {
+  _onValueChange = async selectedValue => {
     this.setState({selectedValue});
     try {
       await AsyncStorage.setItem(STORAGE_KEY, selectedValue);
@@ -99,7 +85,7 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
     }
   };
 
-  _appendMessage = (message) => {
+  _appendMessage = message => {
     this.setState({messages: this.state.messages.concat(message)});
   };
 }
@@ -109,6 +95,8 @@ exports.description = 'Asynchronous local disk storage.';
 exports.examples = [
   {
     title: 'Basics - getItem, setItem, removeItem',
-    render(): React.Element<any> { return <BasicStorageExample />; }
+    render(): React.Element<any> {
+      return <BasicStorageExample />;
+    },
   },
 ];

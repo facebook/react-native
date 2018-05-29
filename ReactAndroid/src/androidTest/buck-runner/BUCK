@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "KEYSTORE_TARGET", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_binary")
 
 # We are running instrumentation tests in simple mode: app code and instrumentation are in the same APK
 # Currently you need to run these commands to execute tests:
@@ -7,9 +7,9 @@ include_defs("//ReactAndroid/DEFS")
 # gradle :ReactAndroid:packageReactNdkLibsForBuck
 # buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 # ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
-android_binary(
+rn_android_binary(
     name = "instrumentation-tests",
-    keystore = "//keystores:debug",
+    keystore = KEYSTORE_TARGET,
     manifest = "AndroidManifest.xml",
     deps = [
         react_native_dep("android_res/com/facebook/catalyst/appcompat:appcompat"),

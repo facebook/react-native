@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
@@ -18,20 +16,14 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @providesModule NavigatorIOSBarStyleExample
+ * @format
  */
 
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  NavigatorIOS,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
-} = ReactNative;
+var {NavigatorIOS, StatusBar, StyleSheet, Text, View} = ReactNative;
 
 class EmptyPage extends React.Component<{
   text: string,
@@ -39,9 +31,7 @@ class EmptyPage extends React.Component<{
   render() {
     return (
       <View style={styles.emptyPage}>
-        <Text style={styles.emptyPageText}>
-          {this.props.text}
-        </Text>
+        <Text style={styles.emptyPageText}>{this.props.text}</Text>
       </View>
     );
   }

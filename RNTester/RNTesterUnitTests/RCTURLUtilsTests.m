@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -88,6 +86,19 @@
   NSURL *URL = nil;
   NSURL *result = RCTURLByReplacingQueryParam(URL, @"foo", @"bar");
   XCTAssertNil(result);
+}
+
+- (void)testIsLocalAssetsURLParam
+{
+  NSString *libraryAssetsPath = [RCTLibraryPath() stringByAppendingPathComponent:@"assets/foo.png"];
+  NSURL *libraryAssetsURL = [NSURL fileURLWithPath:libraryAssetsPath];
+  XCTAssertTrue(RCTIsLocalAssetURL(libraryAssetsURL));
+  NSString *bundleAssetsPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets/foo.png"];
+  NSURL *bundleAssetsURL = [NSURL fileURLWithPath:bundleAssetsPath];
+  XCTAssertTrue(RCTIsLocalAssetURL(bundleAssetsURL));
+  NSString *otherAssetsPath = @"/assets/foo.png";
+  NSURL *otherAssetsURL = [NSURL fileURLWithPath:otherAssetsPath];
+  XCTAssertFalse(RCTIsLocalAssetURL(otherAssetsURL));
 }
 
 @end

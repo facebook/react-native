@@ -20,7 +20,7 @@ public class YogaNodePool {
 
     synchronized (sInitLock) {
       if (sPool == null) {
-        sPool = new ClearableSynchronizedPool<YogaNode>(1024);
+        sPool = new ClearableSynchronizedPool<>(1024);
       }
       return sPool;
     }

@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Promise
+ * @format
  * @flow
  */
+
 'use strict';
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -43,7 +42,7 @@ if (__DEV__) {
         (stack == null ? '' : stack);
       console.warn(warning);
     },
-    onHandled: (id) => {
+    onHandled: id => {
       const warning =
         `Promise Rejection Handled (id: ${id})\n` +
         'This means you can ignore any previous messages of the form ' +

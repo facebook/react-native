@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_java_annotation_processor", "rn_java_library")
 
-java_annotation_processor(
+rn_java_annotation_processor(
     name = "processing",
     does_not_affect_abi = True,
     processor_class = "com.facebook.react.processing.ReactPropertyProcessor",
@@ -12,7 +12,7 @@ java_annotation_processor(
     ],
 )
 
-java_library(
+rn_java_library(
     name = "processing-lib",
     srcs = glob(["*.java"]),
     source = "7",

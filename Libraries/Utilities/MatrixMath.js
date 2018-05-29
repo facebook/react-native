@@ -1,75 +1,71 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule MatrixMath
+ * @format
  * @noflow
  */
+
 /* eslint-disable space-infix-ops */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * Memory conservative (mutative) matrix math utilities. Uses "command"
  * matrices, which are reusable.
  */
-var MatrixMath = {
+const MatrixMath = {
   createIdentityMatrix: function() {
-    return [
-      1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1
-    ];
+    return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   },
 
   createCopy: function(m) {
     return [
-      m[0],  m[1],  m[2],  m[3],
-      m[4],  m[5],  m[6],  m[7],
-      m[8],  m[9],  m[10], m[11],
-      m[12], m[13], m[14], m[15],
+      m[0],
+      m[1],
+      m[2],
+      m[3],
+      m[4],
+      m[5],
+      m[6],
+      m[7],
+      m[8],
+      m[9],
+      m[10],
+      m[11],
+      m[12],
+      m[13],
+      m[14],
+      m[15],
     ];
   },
 
   createOrthographic: function(left, right, bottom, top, near, far) {
-    var a = 2 / (right - left);
-    var b = 2 / (top - bottom);
-    var c = -2 / (far - near);
+    const a = 2 / (right - left);
+    const b = 2 / (top - bottom);
+    const c = -2 / (far - near);
 
-    var tx = -(right + left) / (right - left);
-    var ty = -(top + bottom) / (top - bottom);
-    var tz = -(far + near) / (far - near);
+    const tx = -(right + left) / (right - left);
+    const ty = -(top + bottom) / (top - bottom);
+    const tz = -(far + near) / (far - near);
 
-    return [
-        a,  0,  0,  0,
-        0,  b,  0,  0,
-        0,  0,  c,  0,
-        tx, ty, tz, 1
-    ];
+    return [a, 0, 0, 0, 0, b, 0, 0, 0, 0, c, 0, tx, ty, tz, 1];
   },
 
   createFrustum: function(left, right, bottom, top, near, far) {
-    var r_width  = 1 / (right - left);
-    var r_height = 1 / (top - bottom);
-    var r_depth  = 1 / (near - far);
-    var x = 2 * (near * r_width);
-    var y = 2 * (near * r_height);
-    var A = (right + left) * r_width;
-    var B = (top + bottom) * r_height;
-    var C = (far + near) * r_depth;
-    var D = 2 * (far * near * r_depth);
-    return [
-      x, 0, 0, 0,
-      0, y, 0, 0,
-      A, B, C,-1,
-      0, 0, D, 0,
-    ];
+    const r_width = 1 / (right - left);
+    const r_height = 1 / (top - bottom);
+    const r_depth = 1 / (near - far);
+    const x = 2 * (near * r_width);
+    const y = 2 * (near * r_height);
+    const A = (right + left) * r_width;
+    const B = (top + bottom) * r_height;
+    const C = (far + near) * r_depth;
+    const D = 2 * (far * near * r_depth);
+    return [x, 0, 0, 0, 0, y, 0, 0, A, B, C, -1, 0, 0, D, 0];
   },
 
   /**
@@ -79,20 +75,15 @@ var MatrixMath = {
    * @param fovInRadians - field of view in randians
    */
   createPerspective: function(fovInRadians, aspect, near, far) {
-    var h = 1 / Math.tan(fovInRadians / 2);
-    var r_depth  = 1 / (near - far);
-    var C = (far + near) * r_depth;
-    var D = 2 * (far * near * r_depth);
-    return [
-      h/aspect, 0, 0, 0,
-      0, h, 0, 0,
-      0, 0, C,-1,
-      0, 0, D, 0,
-    ];
+    const h = 1 / Math.tan(fovInRadians / 2);
+    const r_depth = 1 / (near - far);
+    const C = (far + near) * r_depth;
+    const D = 2 * (far * near * r_depth);
+    return [h / aspect, 0, 0, 0, 0, h, 0, 0, 0, 0, C, -1, 0, 0, D, 0];
   },
 
   createTranslate2d: function(x, y) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseTranslate2dCommand(mat, x, y);
     return mat;
   },
@@ -109,7 +100,7 @@ var MatrixMath = {
   },
 
   createScale: function(factor) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseScaleCommand(mat, factor);
     return mat;
   },
@@ -164,7 +155,7 @@ var MatrixMath = {
   },
 
   createRotateZ: function(radians) {
-    var mat = MatrixMath.createIdentityMatrix();
+    const mat = MatrixMath.createIdentityMatrix();
     MatrixMath.reuseRotateZCommand(mat, radians);
     return mat;
   },
@@ -178,56 +169,104 @@ var MatrixMath = {
   },
 
   multiplyInto: function(out, a, b) {
-    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
-      a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
-      a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
-      a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+    const a00 = a[0],
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3],
+      a10 = a[4],
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7],
+      a20 = a[8],
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11],
+      a30 = a[12],
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
 
-    var b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
-    out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+    let b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
+    out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 
-    b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
-    out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+    b0 = b[4];
+    b1 = b[5];
+    b2 = b[6];
+    b3 = b[7];
+    out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 
-    b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
-    out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+    b0 = b[8];
+    b1 = b[9];
+    b2 = b[10];
+    b3 = b[11];
+    out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 
-    b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
-    out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+    b0 = b[12];
+    b1 = b[13];
+    b2 = b[14];
+    b3 = b[15];
+    out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+    out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+    out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+    out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
   },
 
   determinant(matrix: Array<number>): number {
-    var [
-      m00, m01, m02, m03,
-      m10, m11, m12, m13,
-      m20, m21, m22, m23,
-      m30, m31, m32, m33
+    const [
+      m00,
+      m01,
+      m02,
+      m03,
+      m10,
+      m11,
+      m12,
+      m13,
+      m20,
+      m21,
+      m22,
+      m23,
+      m30,
+      m31,
+      m32,
+      m33,
     ] = matrix;
     return (
-      m03 * m12 * m21 * m30 - m02 * m13 * m21 * m30 -
-      m03 * m11 * m22 * m30 + m01 * m13 * m22 * m30 +
-      m02 * m11 * m23 * m30 - m01 * m12 * m23 * m30 -
-      m03 * m12 * m20 * m31 + m02 * m13 * m20 * m31 +
-      m03 * m10 * m22 * m31 - m00 * m13 * m22 * m31 -
-      m02 * m10 * m23 * m31 + m00 * m12 * m23 * m31 +
-      m03 * m11 * m20 * m32 - m01 * m13 * m20 * m32 -
-      m03 * m10 * m21 * m32 + m00 * m13 * m21 * m32 +
-      m01 * m10 * m23 * m32 - m00 * m11 * m23 * m32 -
-      m02 * m11 * m20 * m33 + m01 * m12 * m20 * m33 +
-      m02 * m10 * m21 * m33 - m00 * m12 * m21 * m33 -
-      m01 * m10 * m22 * m33 + m00 * m11 * m22 * m33
+      m03 * m12 * m21 * m30 -
+      m02 * m13 * m21 * m30 -
+      m03 * m11 * m22 * m30 +
+      m01 * m13 * m22 * m30 +
+      m02 * m11 * m23 * m30 -
+      m01 * m12 * m23 * m30 -
+      m03 * m12 * m20 * m31 +
+      m02 * m13 * m20 * m31 +
+      m03 * m10 * m22 * m31 -
+      m00 * m13 * m22 * m31 -
+      m02 * m10 * m23 * m31 +
+      m00 * m12 * m23 * m31 +
+      m03 * m11 * m20 * m32 -
+      m01 * m13 * m20 * m32 -
+      m03 * m10 * m21 * m32 +
+      m00 * m13 * m21 * m32 +
+      m01 * m10 * m23 * m32 -
+      m00 * m11 * m23 * m32 -
+      m02 * m11 * m20 * m33 +
+      m01 * m12 * m20 * m33 +
+      m02 * m10 * m21 * m33 -
+      m00 * m12 * m21 * m33 -
+      m01 * m10 * m22 * m33 +
+      m00 * m11 * m22 * m33
     );
   },
 
@@ -239,61 +278,178 @@ var MatrixMath = {
    * http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
    */
   inverse(matrix: Array<number>): Array<number> {
-    var det = MatrixMath.determinant(matrix);
+    const det = MatrixMath.determinant(matrix);
     if (!det) {
       return matrix;
     }
-    var [
-      m00, m01, m02, m03,
-      m10, m11, m12, m13,
-      m20, m21, m22, m23,
-      m30, m31, m32, m33
+    const [
+      m00,
+      m01,
+      m02,
+      m03,
+      m10,
+      m11,
+      m12,
+      m13,
+      m20,
+      m21,
+      m22,
+      m23,
+      m30,
+      m31,
+      m32,
+      m33,
     ] = matrix;
     return [
-      (m12*m23*m31 - m13*m22*m31 + m13*m21*m32 - m11*m23*m32 - m12*m21*m33 + m11*m22*m33) / det,
-      (m03*m22*m31 - m02*m23*m31 - m03*m21*m32 + m01*m23*m32 + m02*m21*m33 - m01*m22*m33) / det,
-      (m02*m13*m31 - m03*m12*m31 + m03*m11*m32 - m01*m13*m32 - m02*m11*m33 + m01*m12*m33) / det,
-      (m03*m12*m21 - m02*m13*m21 - m03*m11*m22 + m01*m13*m22 + m02*m11*m23 - m01*m12*m23) / det,
-      (m13*m22*m30 - m12*m23*m30 - m13*m20*m32 + m10*m23*m32 + m12*m20*m33 - m10*m22*m33) / det,
-      (m02*m23*m30 - m03*m22*m30 + m03*m20*m32 - m00*m23*m32 - m02*m20*m33 + m00*m22*m33) / det,
-      (m03*m12*m30 - m02*m13*m30 - m03*m10*m32 + m00*m13*m32 + m02*m10*m33 - m00*m12*m33) / det,
-      (m02*m13*m20 - m03*m12*m20 + m03*m10*m22 - m00*m13*m22 - m02*m10*m23 + m00*m12*m23) / det,
-      (m11*m23*m30 - m13*m21*m30 + m13*m20*m31 - m10*m23*m31 - m11*m20*m33 + m10*m21*m33) / det,
-      (m03*m21*m30 - m01*m23*m30 - m03*m20*m31 + m00*m23*m31 + m01*m20*m33 - m00*m21*m33) / det,
-      (m01*m13*m30 - m03*m11*m30 + m03*m10*m31 - m00*m13*m31 - m01*m10*m33 + m00*m11*m33) / det,
-      (m03*m11*m20 - m01*m13*m20 - m03*m10*m21 + m00*m13*m21 + m01*m10*m23 - m00*m11*m23) / det,
-      (m12*m21*m30 - m11*m22*m30 - m12*m20*m31 + m10*m22*m31 + m11*m20*m32 - m10*m21*m32) / det,
-      (m01*m22*m30 - m02*m21*m30 + m02*m20*m31 - m00*m22*m31 - m01*m20*m32 + m00*m21*m32) / det,
-      (m02*m11*m30 - m01*m12*m30 - m02*m10*m31 + m00*m12*m31 + m01*m10*m32 - m00*m11*m32) / det,
-      (m01*m12*m20 - m02*m11*m20 + m02*m10*m21 - m00*m12*m21 - m01*m10*m22 + m00*m11*m22) / det
+      (m12 * m23 * m31 -
+        m13 * m22 * m31 +
+        m13 * m21 * m32 -
+        m11 * m23 * m32 -
+        m12 * m21 * m33 +
+        m11 * m22 * m33) /
+        det,
+      (m03 * m22 * m31 -
+        m02 * m23 * m31 -
+        m03 * m21 * m32 +
+        m01 * m23 * m32 +
+        m02 * m21 * m33 -
+        m01 * m22 * m33) /
+        det,
+      (m02 * m13 * m31 -
+        m03 * m12 * m31 +
+        m03 * m11 * m32 -
+        m01 * m13 * m32 -
+        m02 * m11 * m33 +
+        m01 * m12 * m33) /
+        det,
+      (m03 * m12 * m21 -
+        m02 * m13 * m21 -
+        m03 * m11 * m22 +
+        m01 * m13 * m22 +
+        m02 * m11 * m23 -
+        m01 * m12 * m23) /
+        det,
+      (m13 * m22 * m30 -
+        m12 * m23 * m30 -
+        m13 * m20 * m32 +
+        m10 * m23 * m32 +
+        m12 * m20 * m33 -
+        m10 * m22 * m33) /
+        det,
+      (m02 * m23 * m30 -
+        m03 * m22 * m30 +
+        m03 * m20 * m32 -
+        m00 * m23 * m32 -
+        m02 * m20 * m33 +
+        m00 * m22 * m33) /
+        det,
+      (m03 * m12 * m30 -
+        m02 * m13 * m30 -
+        m03 * m10 * m32 +
+        m00 * m13 * m32 +
+        m02 * m10 * m33 -
+        m00 * m12 * m33) /
+        det,
+      (m02 * m13 * m20 -
+        m03 * m12 * m20 +
+        m03 * m10 * m22 -
+        m00 * m13 * m22 -
+        m02 * m10 * m23 +
+        m00 * m12 * m23) /
+        det,
+      (m11 * m23 * m30 -
+        m13 * m21 * m30 +
+        m13 * m20 * m31 -
+        m10 * m23 * m31 -
+        m11 * m20 * m33 +
+        m10 * m21 * m33) /
+        det,
+      (m03 * m21 * m30 -
+        m01 * m23 * m30 -
+        m03 * m20 * m31 +
+        m00 * m23 * m31 +
+        m01 * m20 * m33 -
+        m00 * m21 * m33) /
+        det,
+      (m01 * m13 * m30 -
+        m03 * m11 * m30 +
+        m03 * m10 * m31 -
+        m00 * m13 * m31 -
+        m01 * m10 * m33 +
+        m00 * m11 * m33) /
+        det,
+      (m03 * m11 * m20 -
+        m01 * m13 * m20 -
+        m03 * m10 * m21 +
+        m00 * m13 * m21 +
+        m01 * m10 * m23 -
+        m00 * m11 * m23) /
+        det,
+      (m12 * m21 * m30 -
+        m11 * m22 * m30 -
+        m12 * m20 * m31 +
+        m10 * m22 * m31 +
+        m11 * m20 * m32 -
+        m10 * m21 * m32) /
+        det,
+      (m01 * m22 * m30 -
+        m02 * m21 * m30 +
+        m02 * m20 * m31 -
+        m00 * m22 * m31 -
+        m01 * m20 * m32 +
+        m00 * m21 * m32) /
+        det,
+      (m02 * m11 * m30 -
+        m01 * m12 * m30 -
+        m02 * m10 * m31 +
+        m00 * m12 * m31 +
+        m01 * m10 * m32 -
+        m00 * m11 * m32) /
+        det,
+      (m01 * m12 * m20 -
+        m02 * m11 * m20 +
+        m02 * m10 * m21 -
+        m00 * m12 * m21 -
+        m01 * m10 * m22 +
+        m00 * m11 * m22) /
+        det,
     ];
   },
 
   /**
    * Turns columns into rows and rows into columns.
    */
-   transpose(m: Array<number>): Array<number> {
+  transpose(m: Array<number>): Array<number> {
     return [
-      m[0], m[4], m[8],  m[12],
-      m[1], m[5], m[9],  m[13],
-      m[2], m[6], m[10], m[14],
-      m[3], m[7], m[11], m[15]
+      m[0],
+      m[4],
+      m[8],
+      m[12],
+      m[1],
+      m[5],
+      m[9],
+      m[13],
+      m[2],
+      m[6],
+      m[10],
+      m[14],
+      m[3],
+      m[7],
+      m[11],
+      m[15],
     ];
   },
 
   /**
    * Based on: http://tog.acm.org/resources/GraphicsGems/gemsii/unmatrix.c
    */
-  multiplyVectorByMatrix(
-    v: Array<number>,
-    m: Array<number>
-  ): Array<number> {
-    var [vx, vy, vz, vw] = v;
+  multiplyVectorByMatrix(v: Array<number>, m: Array<number>): Array<number> {
+    const [vx, vy, vz, vw] = v;
     return [
-      vx * m[0] + vy * m[4] + vz * m[8]  + vw * m[12],
-      vx * m[1] + vy * m[5] + vz * m[9]  + vw * m[13],
+      vx * m[0] + vy * m[4] + vz * m[8] + vw * m[12],
+      vx * m[1] + vy * m[5] + vz * m[9] + vw * m[13],
       vx * m[2] + vy * m[6] + vz * m[10] + vw * m[14],
-      vx * m[3] + vy * m[7] + vz * m[11] + vw * m[15]
+      vx * m[3] + vy * m[7] + vz * m[11] + vw * m[15],
     ];
   },
 
@@ -301,22 +457,15 @@ var MatrixMath = {
    * From: https://code.google.com/p/webgl-mjs/source/browse/mjs.js
    */
   v3Length(a: Array<number>): number {
-    return Math.sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
+    return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
   },
 
   /**
    * Based on: https://code.google.com/p/webgl-mjs/source/browse/mjs.js
    */
-   v3Normalize(
-     vector: Array<number>,
-     v3Length: number
-    ): Array<number> {
-    var im = 1 / (v3Length || MatrixMath.v3Length(vector));
-    return [
-      vector[0] * im,
-      vector[1] * im,
-      vector[2] * im
-    ];
+  v3Normalize(vector: Array<number>, v3Length: number): Array<number> {
+    const im = 1 / (v3Length || MatrixMath.v3Length(vector));
+    return [vector[0] * im, vector[1] * im, vector[2] * im];
   },
 
   /**
@@ -324,9 +473,7 @@ var MatrixMath = {
    * From: https://code.google.com/p/webgl-mjs/source/browse/mjs.js
    */
   v3Dot(a, b) {
-    return a[0] * b[0] +
-           a[1] * b[1] +
-           a[2] * b[2];
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   },
 
   /**
@@ -337,12 +484,12 @@ var MatrixMath = {
     a: Array<number>,
     b: Array<number>,
     aScale: number,
-    bScale: number
+    bScale: number,
   ): Array<number> {
     return [
       aScale * a[0] + bScale * b[0],
       aScale * a[1] + bScale * b[1],
-      aScale * a[2] + bScale * b[2]
+      aScale * a[2] + bScale * b[2],
     ];
   },
 
@@ -354,7 +501,7 @@ var MatrixMath = {
     return [
       a[1] * b[2] - a[2] * b[1],
       a[2] * b[0] - a[0] * b[2],
-      a[0] * b[1] - a[1] * b[0]
+      a[0] * b[1] - a[1] * b[0],
     ];
   },
 
@@ -375,14 +522,14 @@ var MatrixMath = {
    * roll  === bank               === x-axis
    */
   quaternionToDegreesXYZ(q: Array<number>, matrix, row): Array<number> {
-    var [qx, qy, qz, qw] = q;
-    var qw2 = qw * qw;
-    var qx2 = qx * qx;
-    var qy2 = qy * qy;
-    var qz2 = qz * qz;
-    var test = qx * qy + qz * qw;
-    var unit = qw2 + qx2 + qy2 + qz2;
-    var conv = 180 / Math.PI;
+    const [qx, qy, qz, qw] = q;
+    const qw2 = qw * qw;
+    const qx2 = qx * qx;
+    const qy2 = qy * qy;
+    const qz2 = qz * qz;
+    const test = qx * qy + qz * qw;
+    const unit = qw2 + qx2 + qy2 + qz2;
+    const conv = 180 / Math.PI;
 
     if (test > 0.49999 * unit) {
       return [0, 2 * Math.atan2(qx, qw) * conv, 90];
@@ -393,14 +540,12 @@ var MatrixMath = {
 
     return [
       MatrixMath.roundTo3Places(
-        Math.atan2(2*qx*qw-2*qy*qz,1-2*qx2-2*qz2) * conv
+        Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx2 - 2 * qz2) * conv,
       ),
       MatrixMath.roundTo3Places(
-        Math.atan2(2*qy*qw-2*qx*qz,1-2*qy2-2*qz2) * conv
+        Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy2 - 2 * qz2) * conv,
       ),
-      MatrixMath.roundTo3Places(
-        Math.asin(2*qx*qy+2*qz*qw) * conv
-      )
+      MatrixMath.roundTo3Places(Math.asin(2 * qx * qy + 2 * qz * qw) * conv),
     ];
   },
 
@@ -409,8 +554,8 @@ var MatrixMath = {
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round
    */
   roundTo3Places(n: number): number {
-    var arr = n.toString().split('e');
-    return Math.round(arr[0] + 'e' + (arr[1] ? (+arr[1] - 3) : 3)) * 0.001;
+    const arr = n.toString().split('e');
+    return Math.round(arr[0] + 'e' + (arr[1] ? +arr[1] - 3 : 3)) * 0.001;
   },
 
   /**
@@ -425,31 +570,30 @@ var MatrixMath = {
    * http://tog.acm.org/resources/GraphicsGems/gemsii/unmatrix.c
    */
   decomposeMatrix(transformMatrix: Array<number>): ?Object {
-
     invariant(
       transformMatrix.length === 16,
       'Matrix decomposition needs a list of 3d matrix values, received %s',
-      transformMatrix
+      transformMatrix,
     );
 
     // output values
     var perspective = [];
-    var quaternion = [];
-    var scale = [];
-    var skew = [];
-    var translation = [];
+    const quaternion = [];
+    const scale = [];
+    const skew = [];
+    const translation = [];
 
     // create normalized, 2d array matrix
     // and normalized 1d array perspectiveMatrix with redefined 4th column
     if (!transformMatrix[15]) {
       return;
     }
-    var matrix = [];
-    var perspectiveMatrix = [];
+    const matrix = [];
+    const perspectiveMatrix = [];
     for (var i = 0; i < 4; i++) {
       matrix.push([]);
-      for (var j = 0; j < 4; j++) {
-        var value = transformMatrix[(i * 4) + j] / transformMatrix[15];
+      for (let j = 0; j < 4; j++) {
+        const value = transformMatrix[i * 4 + j] / transformMatrix[15];
         matrix[i].push(value);
         perspectiveMatrix.push(j === 3 ? 0 : value);
       }
@@ -465,24 +609,22 @@ var MatrixMath = {
     if (matrix[0][3] !== 0 || matrix[1][3] !== 0 || matrix[2][3] !== 0) {
       // rightHandSide is the right hand side of the equation.
       // rightHandSide is a vector, or point in 3d space relative to the origin.
-      var rightHandSide = [
+      const rightHandSide = [
         matrix[0][3],
         matrix[1][3],
         matrix[2][3],
-        matrix[3][3]
+        matrix[3][3],
       ];
 
       // Solve the equation by inverting perspectiveMatrix and multiplying
       // rightHandSide by the inverse.
-      var inversePerspectiveMatrix = MatrixMath.inverse(
-        perspectiveMatrix
-      );
-      var transposedInversePerspectiveMatrix = MatrixMath.transpose(
-        inversePerspectiveMatrix
+      const inversePerspectiveMatrix = MatrixMath.inverse(perspectiveMatrix);
+      const transposedInversePerspectiveMatrix = MatrixMath.transpose(
+        inversePerspectiveMatrix,
       );
       var perspective = MatrixMath.multiplyVectorByMatrix(
         rightHandSide,
-        transposedInversePerspectiveMatrix
+        transposedInversePerspectiveMatrix,
       );
     } else {
       // no perspective
@@ -497,13 +639,9 @@ var MatrixMath = {
 
     // Now get scale and shear.
     // 'row' is a 3 element array of 3 component vectors
-    var row = [];
+    const row = [];
     for (i = 0; i < 3; i++) {
-      row[i] = [
-        matrix[i][0],
-        matrix[i][1],
-        matrix[i][2]
-      ];
+      row[i] = [matrix[i][0], matrix[i][1], matrix[i][2]];
     }
 
     // Compute X scale factor and normalize first row.
@@ -538,7 +676,7 @@ var MatrixMath = {
     // At this point, the matrix (in rows) is orthonormal.
     // Check for a coordinate system flip.  If the determinant
     // is -1, then negate the matrix and the scaling factors.
-    var pdum3 = MatrixMath.v3Cross(row[1], row[2]);
+    const pdum3 = MatrixMath.v3Cross(row[1], row[2]);
     if (MatrixMath.v3Dot(row[0], pdum3) < 0) {
       for (i = 0; i < 3; i++) {
         scale[i] *= -1;
@@ -569,17 +707,27 @@ var MatrixMath = {
     }
 
     // correct for occasional, weird Euler synonyms for 2d rotation
-    var rotationDegrees;
+    let rotationDegrees;
     if (
-      quaternion[0] < 0.001 && quaternion[0] >= 0 &&
-      quaternion[1] < 0.001 && quaternion[1] >= 0
+      quaternion[0] < 0.001 &&
+      quaternion[0] >= 0 &&
+      quaternion[1] < 0.001 &&
+      quaternion[1] >= 0
     ) {
       // this is a 2d rotation on the z-axis
-      rotationDegrees = [0, 0, MatrixMath.roundTo3Places(
-        Math.atan2(row[0][1], row[0][0]) * 180 / Math.PI
-      )];
+      rotationDegrees = [
+        0,
+        0,
+        MatrixMath.roundTo3Places(
+          Math.atan2(row[0][1], row[0][0]) * 180 / Math.PI,
+        ),
+      ];
     } else {
-      rotationDegrees = MatrixMath.quaternionToDegreesXYZ(quaternion, matrix, row);
+      rotationDegrees = MatrixMath.quaternionToDegreesXYZ(
+        quaternion,
+        matrix,
+        row,
+      );
     }
 
     // expose both base data and convenience names
@@ -600,7 +748,6 @@ var MatrixMath = {
       translateY: translation[1],
     };
   },
-
 };
 
 module.exports = MatrixMath;

@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppContainer
  * @format
  * @flow
  */
@@ -24,25 +21,24 @@ const View = require('View');
 type Context = {
   rootTag: number,
 };
-type Props = {|
-  /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-   * suppresses an error when upgrading Flow's support for React. To see the
-   * error delete this comment and run Flow. */
-  children?: React.Children,
+
+type Props = $ReadOnly<{|
+  children?: React.Node,
   rootTag: number,
-  WrapperComponent?: ?React.ComponentType<*>,
-|};
-type State = {
-  inspector: ?React.Element<any>,
+  WrapperComponent?: ?React.ComponentType<any>,
+|}>;
+
+type State = {|
+  inspector: ?React.Node,
   mainKey: number,
-};
+|};
 
 class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     mainKey: 1,
   };
-  _mainRef: ?React.Element<any>;
+  _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
 
   static childContextTypes = {
@@ -84,7 +80,7 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   componentWillUnmount(): void {
-    if (this._subscription) {
+    if (this._subscription != null) {
       this._subscription.remove();
     }
   }
@@ -105,9 +101,6 @@ class AppContainer extends React.Component<Props, State> {
         pointerEvents="box-none"
         style={styles.appContainer}
         ref={ref => {
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */
           this._mainRef = ref;
         }}>
         {this.props.children}
@@ -115,7 +108,7 @@ class AppContainer extends React.Component<Props, State> {
     );
 
     const Wrapper = this.props.WrapperComponent;
-    if (Wrapper) {
+    if (Wrapper != null) {
       innerView = <Wrapper>{innerView}</Wrapper>;
     }
     return (

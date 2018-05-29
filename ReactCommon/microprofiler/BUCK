@@ -1,21 +1,22 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS.bzl", "GLOG_DEP", "cxx_library")
 
 cxx_library(
     name = "microprofiler",
     srcs = [
         "MicroProfiler.cpp",
     ],
+    header_namespace = "microprofiler",
+    exported_headers = [
+        "MicroProfiler.h",
+    ],
     compiler_flags = [
         "-Wall",
         "-Werror",
         "-std=c++11",
         "-fexceptions",
-    ],
-    exported_headers = [
-        "MicroProfiler.h",
+        "-fno-data-sections",
     ],
     force_static = True,
-    header_namespace = "microprofiler",
     visibility = [
         "PUBLIC",
     ],

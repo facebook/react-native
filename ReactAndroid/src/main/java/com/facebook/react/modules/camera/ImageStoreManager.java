@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.camera;
@@ -78,25 +76,32 @@ public class ImageStoreManager extends ReactContextBaseJavaModule {
         ContentResolver contentResolver = getReactApplicationContext().getContentResolver();
         Uri uri = Uri.parse(mUri);
         InputStream is = contentResolver.openInputStream(uri);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Base64OutputStream b64os = new Base64OutputStream(baos, Base64.DEFAULT);
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int bytesRead;
         try {
-          while ((bytesRead = is.read(buffer)) > -1) {
-            b64os.write(buffer, 0, bytesRead);
-          }
-          mSuccess.invoke(baos.toString());
+          mSuccess.invoke(convertInputStreamToBase64OutputStream(is));
         } catch (IOException e) {
           mError.invoke(e.getMessage());
         } finally {
           closeQuietly(is);
-          closeQuietly(b64os); // this also closes baos
         }
       } catch (FileNotFoundException e) {
         mError.invoke(e.getMessage());
       }
     }
+  }
+
+  String convertInputStreamToBase64OutputStream(InputStream is) throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
+    byte[] buffer = new byte[BUFFER_SIZE];
+    int bytesRead;
+    try {
+      while ((bytesRead = is.read(buffer)) > -1) {
+        b64os.write(buffer, 0, bytesRead);
+      }
+    } finally {
+      closeQuietly(b64os); // this also closes baos and flushes the final content to it
+    }
+    return baos.toString();
   }
 
   private static void closeQuietly(Closeable closeable) {

@@ -1,7 +1,8 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
-android_library(
+rn_android_library(
     name = "powermock",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":javassist",
         ":mockito-all",
@@ -16,10 +17,9 @@ android_library(
         ":xpp3",
         ":xstream",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-core",
     binary_jar = ":download-powermock-core",
     visibility = ["//ReactAndroid/..."],
@@ -31,7 +31,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-core:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-api-mockito",
     binary_jar = ":download-powermock-api-mockito",
     visibility = ["//ReactAndroid/..."],
@@ -43,7 +43,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-api-mockito:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-api-support",
     binary_jar = ":download-powermock-api-support",
     visibility = ["//ReactAndroid/..."],
@@ -55,7 +55,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-api-support:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-module-junit4-rule",
     binary_jar = ":download-powermock-module-junit4-rule",
     visibility = ["//ReactAndroid/..."],
@@ -67,7 +67,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-module-junit4-rule:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-classloading-xstream",
     binary_jar = ":download-powermock-classloading-xstream",
     visibility = ["//ReactAndroid/..."],
@@ -79,7 +79,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-classloading-xstream:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-classloading-base",
     binary_jar = ":download-powermock-classloading-base",
     visibility = ["//ReactAndroid/..."],
@@ -91,7 +91,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-classloading-base:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "xstream",
     binary_jar = ":download-xstream",
     visibility = ["//ReactAndroid/..."],
@@ -103,7 +103,7 @@ remote_file(
     url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "powermock-reflect",
     binary_jar = ":download-powermock-reflect",
     visibility = ["//ReactAndroid/..."],
@@ -115,7 +115,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-reflect:jar:1.6.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "javassist",
     binary_jar = ":download-javassist",
     visibility = ["//ReactAndroid/..."],
@@ -127,7 +127,7 @@ remote_file(
     url = "mvn:org.javassist:javassist:jar:3.20.0-GA",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "mockito-all",
     binary_jar = ":download-mockito-all",
     visibility = ["//ReactAndroid/..."],
@@ -139,7 +139,7 @@ remote_file(
     url = "mvn:org.mockito:mockito-all:jar:1.10.19",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "xmlpull",
     binary_jar = ":download-xmlpull",
     visibility = ["//ReactAndroid/..."],
@@ -151,7 +151,7 @@ remote_file(
     url = "mvn:xmlpull:xmlpull:jar:1.1.3.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "xpp3",
     binary_jar = ":download-xpp3",
     visibility = ["//ReactAndroid/..."],

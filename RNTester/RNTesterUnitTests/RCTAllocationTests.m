@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -184,16 +182,16 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   @autoreleasepool {
     bridge = [[RCTBridge alloc] initWithBundleURL:_bundleURL moduleProvider:nil launchOptions:nil];
     batchedBridge = bridge.batchedBridge;
-    XCTAssertTrue([batchedBridge isValid], @"RCTBatchedBridge should be valid");
+    XCTAssertTrue([batchedBridge isValid], @"RCTBridge impl should be valid");
     [bridge reload];
   }
 
   RCT_RUN_RUNLOOP_WHILE(batchedBridge != nil)
 
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
-  XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
+  XCTAssertNil(batchedBridge, @"RCTBridge impl should have been deallocated");
 
-  // Wait to complete the test until the new batchedbridge is also deallocated
+  // Wait to complete the test until the new bridge impl is also deallocated
   @autoreleasepool {
     batchedBridge = bridge.batchedBridge;
     [bridge invalidate];

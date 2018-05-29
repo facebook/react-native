@@ -21,7 +21,7 @@ public class ReactViewBackgroundManager {
 
   private ReactViewBackgroundDrawable getOrCreateReactViewBackground() {
     if (mReactBackgroundDrawable == null) {
-      mReactBackgroundDrawable = new ReactViewBackgroundDrawable();
+      mReactBackgroundDrawable = new ReactViewBackgroundDrawable(mView.getContext());
       Drawable backgroundDrawable = mView.getBackground();
       ViewHelper.setBackground(
           mView, null); // required so that drawable callback is cleared before we add the

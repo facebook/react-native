@@ -1,25 +1,20 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule ToolbarAndroidExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
 
 var nativeImageSource = require('nativeImageSource');
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {StyleSheet, Text, View} = ReactNative;
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
 
@@ -48,13 +43,14 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
             navIcon={nativeImageSource({
               android: 'ic_menu_black_24dp',
               width: 48,
-              height: 48
+              height: 48,
             })}
             onActionSelected={this._onActionSelected}
             onIconClicked={() => this.setState({actionText: 'Icon clicked'})}
             style={styles.toolbar}
             subtitle={this.state.actionText}
-            title="Toolbar" />
+            title="Toolbar"
+          />
           <Text>{this.state.actionText}</Text>
         </RNTesterBlock>
         <RNTesterBlock title="Toolbar with logo & custom title view (a View with Switch+Text)">
@@ -62,14 +58,16 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
             logo={nativeImageSource({
               android: 'launcher_icon',
               width: 132,
-              height: 144
+              height: 144,
             })}
             style={styles.toolbar}>
-            <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
+            <View
+              style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
               <Switch
                 value={this.state.toolbarSwitch}
-                onValueChange={(value) => this.setState({'toolbarSwitch': value})} />
-              <Text>{'\'Tis but a switch'}</Text>
+                onValueChange={value => this.setState({toolbarSwitch: value})}
+              />
+              <Text>{"'Tis but a switch"}</Text>
             </View>
           </ToolbarAndroid>
         </RNTesterBlock>
@@ -77,7 +75,8 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
           <ToolbarAndroid
             actions={toolbarActions}
             style={styles.toolbar}
-            subtitle="There be no icon here" />
+            subtitle="There be no icon here"
+          />
         </RNTesterBlock>
         <RNTesterBlock title="Toolbar with navIcon & logo, no title">
           <ToolbarAndroid
@@ -85,50 +84,57 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
             logo={nativeImageSource({
               android: 'launcher_icon',
               width: 132,
-              height: 144
+              height: 144,
             })}
             navIcon={nativeImageSource({
               android: 'ic_menu_black_24dp',
               width: 48,
-              height: 48
+              height: 48,
             })}
-            style={styles.toolbar} />
+            style={styles.toolbar}
+          />
         </RNTesterBlock>
         <RNTesterBlock title="Toolbar with custom title colors">
           <ToolbarAndroid
             navIcon={nativeImageSource({
               android: 'ic_menu_black_24dp',
               width: 48,
-              height: 48
+              height: 48,
             })}
             onIconClicked={() => this.setState({colorProps: {}})}
             title="Wow, such toolbar"
             style={styles.toolbar}
             subtitle="Much native"
-            {...this.state.colorProps} />
+            {...this.state.colorProps}
+          />
           <Text>
-            Touch the icon to reset the custom colors to the default (theme-provided) ones.
+            Touch the icon to reset the custom colors to the default
+            (theme-provided) ones.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Toolbar with remote logo & navIcon">
           <ToolbarAndroid
-            actions={[{title: 'Bunny', icon: require('./bunny.png'), show: 'always'}]}
+            actions={[
+              {title: 'Bunny', icon: require('./bunny.png'), show: 'always'},
+            ]}
             logo={require('./hawk.png')}
             navIcon={require('./bunny.png')}
             title="Bunny and Hawk"
-            style={styles.toolbar} />
+            style={styles.toolbar}
+          />
         </RNTesterBlock>
         <RNTesterBlock title="Toolbar with custom overflowIcon">
           <ToolbarAndroid
             actions={toolbarActions}
             overflowIcon={require('./bunny.png')}
-            style={styles.toolbar} />
+            style={styles.toolbar}
+          />
         </RNTesterBlock>
       </RNTesterPage>
     );
   }
 
-  _onActionSelected = (position) => {
+  _onActionSelected = position => {
     this.setState({
       actionText: 'Selected ' + toolbarActions[position].title,
     });
@@ -136,17 +142,25 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 var toolbarActions = [
-  {title: 'Create', icon: nativeImageSource({
-    android: 'ic_create_black_48dp',
-    width: 96,
-    height: 96
-  }), show: 'always'},
+  {
+    title: 'Create',
+    icon: nativeImageSource({
+      android: 'ic_create_black_48dp',
+      width: 96,
+      height: 96,
+    }),
+    show: 'always',
+  },
   {title: 'Filter'},
-  {title: 'Settings', icon: nativeImageSource({
-    android: 'ic_settings_black_48dp',
-    width: 96,
-    height: 96
-  }), show: 'always'},
+  {
+    title: 'Settings',
+    icon: nativeImageSource({
+      android: 'ic_settings_black_48dp',
+      width: 96,
+      height: 96,
+    }),
+    show: 'always',
+  },
 ];
 
 var styles = StyleSheet.create({

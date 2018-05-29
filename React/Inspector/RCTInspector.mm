@@ -3,8 +3,8 @@
 
 #if RCT_DEV
 
-#include <jschelpers/InspectorInterfaces.h>
 #include <jschelpers/JavaScriptCore.h>
+#include <jsinspector/InspectorInterfaces.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
@@ -38,9 +38,11 @@ private:
 @interface RCTInspectorPage () {
   NSInteger _id;
   NSString *_title;
+  NSString *_vm;
 }
 - (instancetype)initWithId:(NSInteger)id
-                     title:(NSString *)title;
+                     title:(NSString *)title
+                     vm:(NSString *)vm;
 @end
 
 @interface RCTInspectorLocalConnection () {
@@ -49,17 +51,9 @@ private:
 - (instancetype)initWithConnection:(std::unique_ptr<ILocalConnection>)connection;
 @end
 
-// Only safe to call with Custom JSC. Custom JSC check must occur earlier
-// in the stack
 static IInspector *getInstance()
 {
-  static dispatch_once_t onceToken;
-  static IInspector *s_inspector;
-  dispatch_once(&onceToken, ^{
-    s_inspector = customJSCWrapper()->JSInspectorGetInstance();
-  });
-
-  return s_inspector;
+  return &facebook::react::getInspectorInstance();
 }
 
 @implementation RCTInspector
@@ -72,7 +66,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray<RCTInspectorPage *> *array = [NSMutableArray arrayWithCapacity:pages.size()];
   for (size_t i = 0; i < pages.size(); i++) {
     RCTInspectorPage *pageWrapper = [[RCTInspectorPage alloc] initWithId:pages[i].id
-                                                                   title:@(pages[i].title.c_str())];
+                                                                   title:@(pages[i].title.c_str())
+                                                                   vm:@(pages[i].vm.c_str())];
     [array addObject:pageWrapper];
 
   }
@@ -94,10 +89,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (instancetype)initWithId:(NSInteger)id
                      title:(NSString *)title
+                        vm:(NSString *)vm
 {
   if (self = [super init]) {
     _id = id;
     _title = title;
+    _vm = vm;
   }
   return self;
 }

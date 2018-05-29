@@ -1,0 +1,76 @@
+load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
+load("//ReactNative:DEFS.bzl", "ANDROID", "APPLE", "IS_OSS_BUILD", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+APPLE_COMPILER_FLAGS = []
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "flags", "get_static_library_ios_flags")
+
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
+
+rn_xplat_cxx_library(
+    name = "debug",
+    srcs = glob(
+        ["**/*.cpp"],
+        excludes = glob(["tests/**/*.cpp"]),
+    ),
+    headers = glob(
+        ["**/*.h"],
+        excludes = glob(["tests/**/*.h"]),
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "fabric/debug",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_tests = [
+        ":tests",
+    ],
+    force_static = True,
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [],
+    visibility = ["PUBLIC"],
+    deps = [
+        "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:headers_only",
+        "xplat//folly:memory",
+        "xplat//folly:molly",
+    ],
+)
+
+if not IS_OSS_BUILD:
+    load("@xplat//build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
+
+    fb_xplat_cxx_test(
+        name = "tests",
+        srcs = glob(["tests/**/*.cpp"]),
+        headers = glob(["tests/**/*.h"]),
+        contacts = ["oncall+react_native@xmail.facebook.com"],
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        platforms = APPLE,
+        deps = [
+            "xplat//folly:molly",
+            "xplat//third-party/gmock:gtest",
+            ":debug",
+        ],
+    )

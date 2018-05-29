@@ -1,15 +1,15 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
-android_library(
+rn_android_library(
     name = "junit",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":hamcrest",
         ":junit-core",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "junit-core",
     binary_jar = ":download-junit",
     visibility = ["//ReactAndroid/..."],
@@ -21,7 +21,7 @@ remote_file(
     url = "mvn:junit:junit:jar:4.12",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "hamcrest",
     binary_jar = ":download-hamcrest",
     visibility = ["//ReactAndroid/..."],

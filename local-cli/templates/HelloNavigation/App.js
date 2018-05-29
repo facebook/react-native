@@ -1,13 +1,13 @@
-'use strict';
-
 /**
  * This is an example React Native app demonstrates ListViews, text input and
  * navigation between a few screens.
  * https://github.com/facebook/react-native
+ *
+ * @format
  */
 
-import React, { Component } from 'react';
-import { StackNavigator } from 'react-navigation';
+import React, {Component} from 'react';
+import {StackNavigator} from 'react-navigation';
 
 import HomeScreenTabNavigator from './views/HomeScreenTabNavigator';
 import ChatScreen from './views/chat/ChatScreen';

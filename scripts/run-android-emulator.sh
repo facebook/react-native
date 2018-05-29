@@ -5,7 +5,8 @@
 # The only reason to use this config is that it represents a known-good
 # virtual device configuration.
 # This is useful for running integration tests on a local machine.
-# TODO: make continuous integration use the precise same setup
+
+THIS_DIR=$(dirname "$0")
 
 STATE=`adb get-state`
 
@@ -14,6 +15,11 @@ if [ -n "$STATE" ]; then
     exit 1
 fi
 
-echo "Creating virtual device..."
-echo no | android create avd -n testAVD -f -t android-23 --abi default/x86
-emulator -avd testAVD
+echo "Installing packages"
+source "${THIS_DIR}/android-setup.sh" && getAndroidPackages
+
+echo "Creating Android virtual device..."
+source "${THIS_DIR}/android-setup.sh" && createAVD
+
+echo "Launching Android virtual device..."
+source "${THIS_DIR}/android-setup.sh" && launchAVD

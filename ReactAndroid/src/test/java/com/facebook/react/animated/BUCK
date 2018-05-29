@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
 
 rn_robolectric_test(
     name = "animated",
@@ -19,6 +19,7 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/animated:animated"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/com/facebook/react/bridge:testhelpers"),
     ],

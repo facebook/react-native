@@ -1,10 +1,10 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_java_library")
 
-java_library(
+rn_java_library(
     name = "java",
     srcs = glob(["**/*.java"]),
     visibility = ["PUBLIC"],
     deps = [
-        "//java/com/facebook/proguard/annotations:annotations",
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
     ],
 )

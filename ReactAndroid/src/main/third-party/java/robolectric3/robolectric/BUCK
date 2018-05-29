@@ -1,7 +1,8 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
 
-android_library(
+rn_android_library(
     name = "robolectric",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":android-all-4.1.2_r1-robolectric-0",
         ":bouncycastle",
@@ -17,10 +18,9 @@ android_library(
         react_native_dep("third-party/java/asm:asm"),
         react_native_dep("third-party/java/sqlite:sqlite"),
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "robolectric-core",
     binary_jar = ":robolectric-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -32,7 +32,7 @@ remote_file(
     url = "mvn:org.robolectric:robolectric:jar:3.0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "robolectric-resources",
     binary_jar = ":robolectric-resources-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -44,7 +44,7 @@ remote_file(
     url = "mvn:org.robolectric:robolectric-resources:jar:3.0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "robolectric-annotations",
     binary_jar = ":robolectric-annotations-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -56,7 +56,7 @@ remote_file(
     url = "mvn:org.robolectric:robolectric-annotations:jar:3.0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "robolectric-utils",
     binary_jar = ":robolectric-utils-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -68,7 +68,7 @@ remote_file(
     url = "mvn:org.robolectric:robolectric-utils:jar:3.0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "bouncycastle",
     binary_jar = ":bouncycastle-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -80,7 +80,7 @@ remote_file(
     url = "mvn:org.bouncycastle:bcprov-jdk16:jar:1.46",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "vtd-xml",
     binary_jar = ":vtd-xml-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -92,7 +92,7 @@ remote_file(
     url = "mvn:com.ximpleware:vtd-xml:jar:2.11",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "icu",
     binary_jar = ":icu-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -104,7 +104,7 @@ remote_file(
     url = "mvn:com.ibm.icu:icu4j:jar:53.1",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "android-all-4.1.2_r1-robolectric-0",  # name defines filename used by robolectric in runtime
     binary_jar = ":robolectric-android-all-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -115,7 +115,7 @@ prebuilt_jar(
 export_file(
     name = "robolectric-android-all-binary-jar",
     src = ":robolectric-android-all-binary-remote-jar",
-    out = "android-all-4.1.2_r1-robolectric-0.jar",  # name defines filename used by robolectric in runtime
+    out = "../android-all-4.1.2_r1-robolectric-0.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -124,7 +124,7 @@ remote_file(
     url = "mvn:org.robolectric:android-all:jar:4.1.2_r1-robolectric-0",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "json-20080701",  # name defines filename used by robolectric in runtime
     binary_jar = ":json-jar",
     visibility = ["//ReactAndroid/..."],
@@ -133,7 +133,7 @@ prebuilt_jar(
 export_file(
     name = "json-jar",
     src = ":json-remote-jar",
-    out = "json-20080701.jar",  # name defines filename used by robolectric in runtime
+    out = "../json-20080701.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -142,7 +142,7 @@ remote_file(
     url = "mvn:org.json:json:jar:20080701",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "tagsoup-1.2",  # name defines filename used by robolectric in runtime
     binary_jar = ":tagsoup-jar",
     visibility = ["//ReactAndroid/..."],
@@ -151,7 +151,7 @@ prebuilt_jar(
 export_file(
     name = "tagsoup-jar",
     src = ":tagsoup-remote-jar",
-    out = "tagsoup-1.2.jar",  # name defines filename used by robolectric in runtime
+    out = "../tagsoup-1.2.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(
@@ -160,7 +160,7 @@ remote_file(
     url = "mvn:org.ccil.cowan.tagsoup:tagsoup:jar:1.2",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "shadows-core-3.0-16",  # name defines filename used by robolectric in runtime
     binary_jar = ":robolectric-shadows-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -169,7 +169,7 @@ prebuilt_jar(
 export_file(
     name = "robolectric-shadows-binary-jar",
     src = ":robolectric-shadows-binary-remote-jar",
-    out = "shadows-core-3.0-16.jar",  # name defines filename used by robolectric in runtime
+    out = "../shadows-core-3.0-16.jar",  # name defines filename used by robolectric in runtime
 )
 
 remote_file(

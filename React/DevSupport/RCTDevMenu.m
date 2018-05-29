@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDevMenu.h"
@@ -16,6 +14,10 @@
 #import "RCTUtils.h"
 
 #if RCT_DEV
+
+#if RCT_ENABLE_INSPECTOR
+#import "RCTInspectorDevServerHelper.h"
+#endif
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
@@ -199,17 +201,35 @@ RCT_EXPORT_MODULE()
     [bridge reload];
   }]];
 
+  if (devSettings.isNuclideDebuggingAvailable) {
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"Debug JS in Nuclide %@", @"\U0001F4AF"] handler:^{
+#if RCT_ENABLE_INSPECTOR
+      [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
+#endif
+    }]];
+  }
+
   if (!devSettings.isRemoteDebuggingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
       UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
         message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
         preferredStyle:UIAlertControllerStyleAlert];
+      __weak typeof(alertController) weakAlertController = alertController;
+      [alertController addAction:
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+      }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
     }]];
   } else {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
+      NSString *title = devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
+      if (devSettings.isNuclideDebuggingAvailable) {
+        return [NSString stringWithFormat:@"%@ %@", title, @"\U0001F645"];
+      } else {
+        return title;
+      }
     } handler:^{
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
     }]];
@@ -224,7 +244,20 @@ RCT_EXPORT_MODULE()
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
       return devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
     } handler:^{
-      devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      if (devSettings.isDebuggingRemotely) {
+        UIAlertController *alertController = [UIAlertController
+          alertControllerWithTitle:@"Systrace Unavailable"
+          message:@"You need to stop remote JS debugging to enable Systrace"
+          preferredStyle:UIAlertControllerStyleAlert];
+        __weak typeof(alertController) weakAlertController = alertController;
+        [alertController addAction:
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+      } else {
+        devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+      }
     }]];
   }
 
@@ -237,8 +270,6 @@ RCT_EXPORT_MODULE()
   }
 
   if (devSettings.isJSCSamplingProfilerAvailable) {
-    // Note: bridge.jsContext is not implemented in the old bridge, so this code is
-    // duplicated in RCTJSCExecutor
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
       [devSettings toggleJSCSamplingProfiler];
     }]];

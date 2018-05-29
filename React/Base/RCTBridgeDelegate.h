@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTJavaScriptLoader.h>
@@ -41,39 +39,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 
 /**
- * Customize how bridge native modules are initialized.
- *
- * By default all modules are created lazily except those that have constants to export
- * or require main thread initialization. If you want to limit the set of native
- * modules that this should be considered for, implement this method.
- *
- * Return nil to whitelist all modules found. Modules passed in extraModulesForBridge:
- * are automatically whitelisted.
- *
- * @experimental
- */
-- (NSArray<Class> *)whitelistedModulesForBridge:(RCTBridge *)bridge;
-
-/**
- * When loading initial JavaScript, do so synchronously when the bridge is created iff
- * this returns true.  Otherwise, the JS will be fetched on a network thread, and
- * executed on the JS thread.  Currently used only by C++ bridge.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeLoadJavaScriptSynchronously:(RCTBridge *)bridge;
-
-/**
- * When initializing native modules that require main thread initialization, the bridge
- * will default to dispatch module creation blocks asynchrously. If we're blockingly
- * waiting on the main thread to finish bridge creation on the main thread, this will
- * deadlock. Override this method to initialize modules synchronously instead.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeInitializeNativeModulesSynchronously:(RCTBridge *)bridge;
-
-/**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
  * previously called facebook::react::setCustomJSCWrapper.
@@ -81,20 +46,6 @@
  * @experimental
  */
 - (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
-
-/**
- * Configure whether the legacy RCTBatchedBridge or new RCTCxxBridge
- * should be used.  If this method is implemented and the specified
- * bridge is not linked in, startup will fail.  If this method is not
- * implemented, the implementation will default to RCTBatchedBridge,
- * but if it is not linked in, will try RCTCxxBridge instead.  If
- * neither bridge is linked in, startup will fail.  This order will be
- * reversed in the near future, as the legacy bridge is closer to
- * being removed.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeUseCxxBridge:(RCTBridge *)bridge;
 
 /**
 * The bridge will call this method when a module been called from JS

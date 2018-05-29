@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule SwipeableListViewExample
  */
+
 'use strict';
 
 var React = require('react');
@@ -30,7 +29,7 @@ var SwipeableListViewSimpleExample = createReactClass({
   displayName: 'SwipeableListViewSimpleExample',
   statics: {
     title: '<SwipeableListView>',
-    description: 'Performant, scrollable, swipeable list of data.'
+    description: 'Performant, scrollable, swipeable list of data.',
   },
 
   getInitialState: function() {
@@ -42,7 +41,7 @@ var SwipeableListViewSimpleExample = createReactClass({
 
   _pressData: ({}: {[key: number]: boolean}),
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     this._pressData = {};
   },
 
@@ -55,15 +54,24 @@ var SwipeableListViewSimpleExample = createReactClass({
         <SwipeableListView
           dataSource={this.state.dataSource}
           maxSwipeDistance={100}
-          renderQuickActions={
-            (rowData: Object, sectionID: string, rowID: string) => {
-            return (<View style={styles.actionsContainer}>
-              <TouchableHighlight onPress={() => {
-                Alert.alert('Tips', 'You could do something with this row: ' + rowData.text);
-              }}>
-                <Text>Remove</Text>
-              </TouchableHighlight>
-            </View>);
+          renderQuickActions={(
+            rowData: Object,
+            sectionID: string,
+            rowID: string,
+          ) => {
+            return (
+              <View style={styles.actionsContainer}>
+                <TouchableHighlight
+                  onPress={() => {
+                    Alert.alert(
+                      'Tips',
+                      'You could do something with this row: ' + rowData.text,
+                    );
+                  }}>
+                  <Text>Remove</Text>
+                </TouchableHighlight>
+              </View>
+            );
           }}
           renderRow={this._renderRow}
           renderSeparator={this._renderSeperator}
@@ -72,7 +80,12 @@ var SwipeableListViewSimpleExample = createReactClass({
     );
   },
 
-  _renderRow: function(rowData: Object, sectionID: number, rowID: number, highlightRow: (sectionID: number, rowID: number) => void) {
+  _renderRow: function(
+    rowData: Object,
+    sectionID: number,
+    rowID: number,
+    highlightRow: (sectionID: number, rowID: number) => void,
+  ) {
     var rowHash = Math.abs(hashCode(rowData.id));
     var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
@@ -112,13 +125,20 @@ var SwipeableListViewSimpleExample = createReactClass({
     dataBlob['Section 0'] = {};
     for (var ii = 0; ii < 100; ii++) {
       var pressedText = pressData[ii] ? ' (pressed)' : '';
-      dataBlob[sectionIDs[0]]['Row ' + ii] = {id: 'Row ' + ii, text: 'Row ' + ii + pressedText};
+      dataBlob[sectionIDs[0]]['Row ' + ii] = {
+        id: 'Row ' + ii,
+        text: 'Row ' + ii + pressedText,
+      };
       rowIDs[0].push('Row ' + ii);
     }
     return [dataBlob, sectionIDs, rowIDs];
   },
 
-  _renderSeperator: function(sectionID: number, rowID: number, adjacentRowHighlighted: bool) {
+  _renderSeperator: function(
+    sectionID: number,
+    rowID: number,
+    adjacentRowHighlighted: boolean,
+  ) {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -128,7 +148,7 @@ var SwipeableListViewSimpleExample = createReactClass({
         }}
       />
     );
-  }
+  },
 });
 
 var THUMB_URLS = [
@@ -144,14 +164,15 @@ var THUMB_URLS = [
   require('./Thumbnails/poke.png'),
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
-  ];
-var LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
+];
+var LOREM_IPSUM =
+  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
 
 /* eslint no-bitwise: 0 */
 var hashCode = function(str) {
   var hash = 15;
   for (var ii = str.length - 1; ii >= 0; ii--) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(ii);
+    hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };

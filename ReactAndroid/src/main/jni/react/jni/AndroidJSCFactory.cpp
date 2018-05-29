@@ -13,6 +13,7 @@
 
 #include "JSCPerfLogging.h"
 #include "JSLogging.h"
+#include "JReactMarker.h"
 
 using namespace facebook::jni;
 
@@ -20,53 +21,6 @@ namespace facebook {
 namespace react {
 
 namespace {
-
-class JReactMarker : public JavaClass<JReactMarker> {
- public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactMarker;";
-
-  static void logMarker(const std::string& marker) {
-    static auto cls = javaClassStatic();
-    static auto meth = cls->getStaticMethod<void(std::string)>("logMarker");
-    meth(cls, marker);
-  }
-
-  static void logMarker(const std::string& marker, const std::string& tag) {
-    static auto cls = javaClassStatic();
-    static auto meth = cls->getStaticMethod<void(std::string, std::string)>("logMarker");
-    meth(cls, marker, tag);
-  }
-};
-
-void logPerfMarker(const ReactMarker::ReactMarkerId markerId, const char* tag) {
-  switch (markerId) {
-    case ReactMarker::RUN_JS_BUNDLE_START:
-      JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag);
-      break;
-    case ReactMarker::RUN_JS_BUNDLE_STOP:
-      JReactMarker::logMarker("RUN_JS_BUNDLE_END", tag);
-      break;
-    case ReactMarker::CREATE_REACT_CONTEXT_STOP:
-      JReactMarker::logMarker("CREATE_REACT_CONTEXT_END");
-      break;
-    case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
-      JReactMarker::logMarker("loadApplicationScript_startStringConvert");
-      break;
-    case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
-      JReactMarker::logMarker("loadApplicationScript_endStringConvert");
-      break;
-    case ReactMarker::NATIVE_MODULE_SETUP_START:
-      JReactMarker::logMarker("NATIVE_MODULE_SETUP_START", tag);
-      break;
-    case ReactMarker::NATIVE_MODULE_SETUP_STOP:
-      JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
-      break;
-    case ReactMarker::NATIVE_REQUIRE_START:
-    case ReactMarker::NATIVE_REQUIRE_STOP:
-      // These are not used on Android.
-      break;
-  }
-}
 
 ExceptionHandling::ExtractedEror extractJniError(const std::exception& ex, const char *context) {
   auto jniEx = dynamic_cast<const jni::JniException *>(&ex);
@@ -120,13 +74,36 @@ JSValueRef nativePerformanceNow(
   return Value::makeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
+JSValueRef nativeLoggingHook(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef* exception) {
+  android_LogPriority logLevel = ANDROID_LOG_DEBUG;
+  if (argumentCount > 1) {
+    int level = (int)Value(ctx, arguments[1]).asNumber();
+    // The lowest log level we get from JS is 0. We shift and cap it to be
+    // in the range the Android logging method expects.
+    logLevel = std::min(
+      static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
+      ANDROID_LOG_FATAL);
+  }
+  if (argumentCount > 0) {
+    String message = Value(ctx, arguments[0]).toString();
+    reactAndroidLoggingHook(message.str(), logLevel);
+  }
+  return Value::makeUndefined(ctx);
+}
+
 }
 
 namespace detail {
 
 void injectJSCExecutorAndroidPlatform() {
   // Inject some behavior into react/
-  ReactMarker::logTaggedMarker = logPerfMarker;
+  JReactMarker::setLogPerfMarkerIfNeeded();
   ExceptionHandling::platformErrorExtractor = extractJniError;
   JSCNativeHooks::loggingHook = nativeLoggingHook;
   JSCNativeHooks::nowHook = nativePerformanceNow;

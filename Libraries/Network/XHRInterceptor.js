@@ -1,27 +1,26 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule XHRInterceptor
+ * @format
  */
- 'use strict';
+
+'use strict';
 
 const XMLHttpRequest = require('XMLHttpRequest');
 const originalXHROpen = XMLHttpRequest.prototype.open;
 const originalXHRSend = XMLHttpRequest.prototype.send;
 const originalXHRSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
 
-var openCallback;
-var sendCallback;
-var requestHeaderCallback;
-var headerReceivedCallback;
-var responseCallback;
+let openCallback;
+let sendCallback;
+let requestHeaderCallback;
+let headerReceivedCallback;
+let responseCallback;
 
-var isInterceptorEnabled = false;
+let isInterceptorEnabled = false;
 
 /**
  * A network interceptor which monkey-patches XMLHttpRequest methods
@@ -99,43 +98,48 @@ const XHRInterceptor = {
         sendCallback(data, this);
       }
       if (this.addEventListener) {
-        this.addEventListener('readystatechange', () => {
-          if (!isInterceptorEnabled) {
-            return;
-          }
-          if (this.readyState === this.HEADERS_RECEIVED) {
-            const contentTypeString = this.getResponseHeader('Content-Type');
-            const contentLengthString =
-              this.getResponseHeader('Content-Length');
-            let responseContentType, responseSize;
-            if (contentTypeString) {
-              responseContentType = contentTypeString.split(';')[0];
+        this.addEventListener(
+          'readystatechange',
+          () => {
+            if (!isInterceptorEnabled) {
+              return;
             }
-            if (contentLengthString) {
-              responseSize = parseInt(contentLengthString, 10);
-            }
-            if (headerReceivedCallback) {
-              headerReceivedCallback(
-                responseContentType,
-                responseSize,
-                this.getAllResponseHeaders(),
-                this,
+            if (this.readyState === this.HEADERS_RECEIVED) {
+              const contentTypeString = this.getResponseHeader('Content-Type');
+              const contentLengthString = this.getResponseHeader(
+                'Content-Length',
               );
+              let responseContentType, responseSize;
+              if (contentTypeString) {
+                responseContentType = contentTypeString.split(';')[0];
+              }
+              if (contentLengthString) {
+                responseSize = parseInt(contentLengthString, 10);
+              }
+              if (headerReceivedCallback) {
+                headerReceivedCallback(
+                  responseContentType,
+                  responseSize,
+                  this.getAllResponseHeaders(),
+                  this,
+                );
+              }
             }
-          }
-          if (this.readyState === this.DONE) {
-            if (responseCallback) {
-              responseCallback(
-                this.status,
-                this.timeout,
-                this.response,
-                this.responseURL,
-                this.responseType,
-                this,
-              );
+            if (this.readyState === this.DONE) {
+              if (responseCallback) {
+                responseCallback(
+                  this.status,
+                  this.timeout,
+                  this.response,
+                  this.responseURL,
+                  this.responseType,
+                  this,
+                );
+              }
             }
-          }
-        }, false);
+          },
+          false,
+        );
       }
       originalXHRSend.apply(this, arguments);
     };

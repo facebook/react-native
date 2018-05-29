@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule YellowBox
  * @flow
  * @format
  */
@@ -107,6 +104,9 @@ function sprintf(format, ...args) {
 }
 
 function updateWarningMap(...args): void {
+  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.68 was deployed. To see the error delete this comment
+   * and run Flow. */
   if (console.disableYellowBox) {
     return;
   }
@@ -171,7 +171,7 @@ function ensureSymbolicatedWarning(warning: string): void {
 
 function isWarningIgnored(warning: string): boolean {
   const isIgnored = IGNORED_WARNINGS.some((ignoredWarning: string) =>
-    warning.startsWith(ignoredWarning),
+    warning.includes(ignoredWarning),
   );
 
   if (isIgnored) {
@@ -180,6 +180,9 @@ function isWarningIgnored(warning: string): boolean {
 
   // DEPRECATED
   return (
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     Array.isArray(console.ignoredYellowBox) &&
     console.ignoredYellowBox.some(ignorePrefix =>
       warning.startsWith(String(ignorePrefix)),
@@ -381,6 +384,9 @@ class YellowBox extends React.Component<
   }
 
   render() {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (console.disableYellowBox || this.state.warningMap.size === 0) {
       return null;
     }
@@ -398,7 +404,8 @@ class YellowBox extends React.Component<
           onDismissAll={() => this.dismissWarning(null)}
           onMinimize={() => this.setState({inspecting: null})}
           toggleStacktrace={() =>
-            this.setState({stacktraceVisible: !stacktraceVisible})}
+            this.setState({stacktraceVisible: !stacktraceVisible})
+          }
         />
       ) : null;
 
@@ -445,7 +452,7 @@ const rowHeight = 46;
 const elevation =
   Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
     width: '100%',

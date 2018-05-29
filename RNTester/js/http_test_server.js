@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule http_test_server
+ * @format
  */
 'use strict';
 
@@ -30,11 +28,7 @@ const app = connect();
 
 app.use(function(req, res) {
   console.log('received request');
-  const cookieOptions = {
-    //httpOnly: true, // the cookie is not accessible by the user (javascript,...)
-    secure: false, // allow HTTP
-  };
-  res.cookie('wstest', 'OK', cookieOptions);
+  res.setHeader('Set-Cookie', ['wstest=OK; Path=/']);
   res.end('Cookie has been set!\n');
 });
 

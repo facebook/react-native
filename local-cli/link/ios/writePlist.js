@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 const plistParser = require('plist');
 const getPlistPath = require('./getPlistPath');
 const fs = require('fs');
@@ -19,6 +28,6 @@ module.exports = function writePlist(project, sourceDir, plist) {
   // Ref: https://github.com/facebook/react-native/issues/11668
   return fs.writeFileSync(
     plistPath,
-    plistParser.build(plist, { indent: '\t', offset: -1 }) + '\n'
+    plistParser.build(plist, {indent: '\t', offset: -1}) + '\n',
   );
 };

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -32,7 +30,12 @@ typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
  * after the application has loaded. This is used to hide the `loadingView`, and
  * is a good indicator that the application is ready to use.
  */
-extern NSString *const RCTContentDidAppearNotification;
+#if defined(__cplusplus)
+extern "C"
+#else
+extern
+#endif
+NSString *const RCTContentDidAppearNotification;
 
 /**
  * Native view used to host React-managed views within the app. Can be used just
@@ -59,6 +62,7 @@ extern NSString *const RCTContentDidAppearNotification;
                        moduleName:(NSString *)moduleName
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
+
 
 /**
  * The name of the JavaScript module to execute within the

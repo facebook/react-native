@@ -3,19 +3,18 @@
 
   "parser": "babel-eslint",
 
-  "ecmaFeatures": {
-    "jsx": true
-  },
-
   "env": {
     "es6": true,
-    "jasmine": true,
+    "jest": true,
   },
 
   "plugins": [
+    "eslint-comments",
     "flowtype",
     "prettier",
-    "react"
+    "react",
+    "react-native",
+    "jest"
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -57,31 +56,15 @@
   },
 
   "rules": {
-  // Flow Plugin
-  // The following rules are made available via `eslint-plugin-flowtype`
-    "flowtype/define-flow-type": 1,
-    "flowtype/use-flow-type": 1,
-
   // General
-
-    // This must be disallowed in this repo because the minimum supported
-    // version of node is 4 which doesn't support trailing commas.
-    // Once the minimum supported version is 8 or greater this can be changed
-    "comma-dangle": [2, {            // disallow trailing commas in object literals
-        "arrays": "ignore",
-        "objects": "ignore",
-        "imports": "ignore",
-        "exports": "ignore",
-        "functions": "never"
-    }],
-
+    "comma-dangle": [1, "always-multiline"], // allow or disallow trailing commas
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
     "no-const-assign": 2,            // disallow assignment to const-declared variables
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger
-    "no-dupe-keys": 1,               // disallow duplicate keys when creating object literals
+    "no-dupe-keys": 2,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block
     "no-extra-boolean-cast": 1,      // disallow double-negation boolean casts in a boolean context
@@ -95,7 +78,7 @@
     "no-regex-spaces": 1,            // disallow multiple spaces in a regular expression literal
     "no-reserved-keys": 0,           // disallow reserved words being used as object literal keys (off by default)
     "no-sparse-arrays": 1,           // disallow sparse arrays
-    "no-unreachable": 1,             // disallow unreachable statements after a return, throw, continue, or break statement
+    "no-unreachable": 2,             // disallow unreachable statements after a return, throw, continue, or break statement
     "use-isnan": 1,                  // disallow comparisons with the value NaN
     "valid-jsdoc": 0,                // Ensure JSDoc comments are valid (off by default)
     "valid-typeof": 1,               // Ensure that the results of typeof are compared against a valid string
@@ -116,7 +99,7 @@
     "no-div-regex": 1,               // disallow division operators explicitly at beginning of regular expression (off by default)
     "no-else-return": 0,             // disallow else after a return in an if (off by default)
     "no-eq-null": 0,                 // disallow comparisons to null without a type-checking operator (off by default)
-    "no-eval": 1,                    // disallow use of eval()
+    "no-eval": 2,                    // disallow use of eval()
     "no-extend-native": 1,           // disallow adding to native types
     "no-extra-bind": 1,              // disallow unnecessary function binding
     "no-fallthrough": 1,             // disallow fallthrough of case statements
@@ -129,7 +112,7 @@
     "no-multi-str": 0,               // disallow use of multiline strings
     "no-native-reassign": 0,         // disallow reassignments of native objects
     "no-new": 1,                     // disallow use of new operator when not part of the assignment or comparison
-    "no-new-func": 1,                // disallow use of new operator for Function object
+    "no-new-func": 2,                // disallow use of new operator for Function object
     "no-new-wrappers": 1,            // disallows creating new instances of String,Number, and Boolean
     "no-octal": 1,                   // disallow use of octal literals
     "no-octal-escape": 1,            // disallow use of octal escape sequences in string literals, such as var foo = "Copyright \251";
@@ -174,6 +157,18 @@
     "no-restricted-modules": 1,      // restrict usage of specified node modules (off by default)
     "no-sync": 0,                    // disallow use of synchronous methods (off by default)
 
+  // ESLint Comments Plugin
+  // The following rules are made available via `eslint-plugin-eslint-comments`
+    "eslint-comments/no-aggregating-enable": 1, // disallows eslint-enable comments for multiple eslint-disable comments
+    "eslint-comments/no-unlimited-disable": 1, // disallows eslint-disable comments without rule names
+    "eslint-comments/no-unused-disable": 1, // disallow disables that don't cover any errors
+    "eslint-comments/no-unused-enable": 1, // // disallow enables that don't enable anything or enable rules that weren't disabled
+
+  // Flow Plugin
+  // The following rules are made available via `eslint-plugin-flowtype`
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+
   // Prettier Plugin
   // https://github.com/prettier/eslint-plugin-prettier
     "prettier/prettier": [2, "fb", "@format"],
@@ -183,12 +178,12 @@
 
     "key-spacing": 0,
     "keyword-spacing": 1,            // enforce spacing before and after keywords
-    "jsx-quotes": [1, "prefer-double"],
+    "jsx-quotes": [1, "prefer-double"], // enforces the usage of double quotes for all JSX attribute values which doesn’t contain a double quote
     "comma-spacing": 0,
     "no-multi-spaces": 0,
     "brace-style": 0,                // enforce one true brace style (off by default)
     "camelcase": 0,                  // require camel case names
-    "consistent-this": [1, "self"],            // enforces consistent naming when capturing the current execution context (off by default)
+    "consistent-this": 1,            // enforces consistent naming when capturing the current execution context (off by default)
     "eol-last": 1,                   // enforce newline at the end of file, with no multiple empty lines
     "func-names": 0,                 // require function expressions to have a name (off by default)
     "func-style": 0,                 // enforces use of function declarations or expressions (off by default)
@@ -196,6 +191,7 @@
     "new-parens": 1,                 // disallow the omission of parentheses when invoking a constructor with no arguments
     "no-nested-ternary": 0,          // disallow nested ternary expressions (off by default)
     "no-array-constructor": 1,       // disallow use of the Array constructor
+    "no-empty-character-class": 1,   // disallow the use of empty character classes in regular expressions
     "no-lonely-if": 0,               // disallow if as the only statement in an else block (off by default)
     "no-new-object": 1,              // disallow use of the Object constructor
     "no-spaced-func": 1,             // disallow space between function identifier and application
@@ -244,6 +240,34 @@
     "react/prop-types": 0,
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/wrap-multilines": 0
-  }
+    "react/wrap-multilines": 0,
+
+  // React-Native Plugin
+  // The following rules are made available via `eslint-plugin-react-native`
+
+    "react-native/no-inline-styles": 1,
+
+  // Jest Plugin
+  // The following rules are made available via `eslint-plugin-jest`.
+    "jest/no-disabled-tests": 1,
+    "jest/no-focused-tests": 1,
+    "jest/no-identical-title": 1,
+    "jest/valid-expect": 1,
+  },
+
+  "overrides": [
+    {
+      "files": [
+        "local-cli/**/*.js",
+      ],
+      "rules": {
+        "lint/extra-arrow-initializer": 0,
+        "no-alert": 0,
+        "no-console-disallow": 0,
+      },
+      "env": {
+        "node": true,
+      },
+    },
+  ],
 }

@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule NativeAnimatedHelper
  * @flow
  * @format
  */
@@ -147,6 +144,18 @@ const API = {
 const STYLES_WHITELIST = {
   opacity: true,
   transform: true,
+  borderRadius: true,
+  borderBottomEndRadius: true,
+  borderBottomLeftRadius: true,
+  borderBottomRightRadius: true,
+  borderBottomStartRadius: true,
+  borderTopEndRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderTopStartRadius: true,
+  /* ios styles */
+  shadowOpacity: true,
+  shadowRadius: true,
   /* legacy android transform properties */
   scaleX: true,
   scaleY: true,
@@ -166,18 +175,40 @@ const TRANSFORM_WHITELIST = {
   perspective: true,
 };
 
+const SUPPORTED_INTERPOLATION_PARAMS = {
+  inputRange: true,
+  outputRange: true,
+  extrapolate: true,
+  extrapolateRight: true,
+  extrapolateLeft: true,
+};
+
+function addWhitelistedStyleProp(prop: string): void {
+  STYLES_WHITELIST[prop] = true;
+}
+
+function addWhitelistedTransformProp(prop: string): void {
+  TRANSFORM_WHITELIST[prop] = true;
+}
+
+function addWhitelistedInterpolationParam(param: string): void {
+  SUPPORTED_INTERPOLATION_PARAMS[param] = true;
+}
+
 function validateTransform(configs: Array<Object>): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
-        `Property '${config.property}' is not supported by native animated module`,
+        `Property '${
+          config.property
+        }' is not supported by native animated module`,
       );
     }
   });
 }
 
 function validateStyles(styles: Object): void {
-  for (var key in styles) {
+  for (const key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(
         `Style property '${key}' is not supported by native animated module`,
@@ -187,14 +218,7 @@ function validateStyles(styles: Object): void {
 }
 
 function validateInterpolation(config: Object): void {
-  var SUPPORTED_INTERPOLATION_PARAMS = {
-    inputRange: true,
-    outputRange: true,
-    extrapolate: true,
-    extrapolateRight: true,
-    extrapolateLeft: true,
-  };
-  for (var key in config) {
+  for (const key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
       throw new Error(
         `Interpolation property '${key}' is not supported by native animated module`,
@@ -237,6 +261,9 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
 
 module.exports = {
   API,
+  addWhitelistedStyleProp,
+  addWhitelistedTransformProp,
+  addWhitelistedInterpolationParam,
   validateStyles,
   validateTransform,
   validateInterpolation,

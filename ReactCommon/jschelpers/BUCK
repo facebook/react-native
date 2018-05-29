@@ -1,7 +1,6 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_INTERNAL_DEPS", "APPLE", "APPLE_JSC_INTERNAL_DEPS", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
-    "InspectorInterfaces.h",
     "JavaScriptCore.h",
     "JSCHelpers.h",
     "JSCWrapper.h",
@@ -35,16 +34,20 @@ rn_xplat_cxx_library(
         "-fvisibility=hidden",
         "-std=c++1y",
     ],
-    exported_deps = [
-        react_native_xplat_target("privatedata:privatedata"),
-    ],
-    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
+    fbandroid_deps = ANDROID_JSC_INTERNAL_DEPS,
+    fbobjc_deps = APPLE_JSC_INTERNAL_DEPS,
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],
-    deps = JSC_INTERNAL_DEPS + [
+    deps = [
         "xplat//folly:molly",
+        "xplat//third-party/glog:glog",
+        react_native_xplat_target("privatedata:privatedata"),
+    ],
+    exported_deps = [
+        react_native_xplat_target("privatedata:privatedata"),
     ],
 )
 
@@ -60,9 +63,9 @@ rn_xplat_cxx_library(
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_inherited_buck_flags = STATIC_LIBRARY_IOS_FLAGS,
     fbobjc_srcs = ["systemJSCWrapper.cpp"],
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <cxxreact/JSExecutor.h>
 
 namespace folly {
 

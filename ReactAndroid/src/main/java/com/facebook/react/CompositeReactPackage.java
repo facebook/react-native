@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -98,16 +96,15 @@ public class CompositeReactPackage extends ReactInstancePackage
     return new ArrayList<>(viewManagerMap.values());
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<String> getViewManagerNames(ReactApplicationContext reactContext) {
     Set<String> uniqueNames = new HashSet<>();
     for (ReactPackage reactPackage : mChildReactPackages) {
       if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
         List<String> names =
-            ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(reactContext);
+            ((ViewManagerOnDemandReactPackage) reactPackage)
+                .getViewManagerNames(reactContext);
         if (names != null) {
           uniqueNames.addAll(names);
         }
@@ -116,18 +113,16 @@ public class CompositeReactPackage extends ReactInstancePackage
     return new ArrayList<>(uniqueNames);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public @Nullable ViewManager createViewManager(
-      ReactApplicationContext reactContext, String viewManagerName) {
+  public @Nullable ViewManager createViewManager(ReactApplicationContext reactContext, String viewManagerName) {
     ListIterator<ReactPackage> iterator = mChildReactPackages.listIterator(mChildReactPackages.size());
     while (iterator.hasPrevious()) {
       ReactPackage reactPackage = iterator.previous();
       if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
         ViewManager viewManager =
-          ((ViewManagerOnDemandReactPackage) reactPackage).createViewManager(reactContext, viewManagerName);
+            ((ViewManagerOnDemandReactPackage) reactPackage)
+                .createViewManager(reactContext, viewManagerName);
         if (viewManager != null) {
           return viewManager;
         }

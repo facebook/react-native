@@ -1,21 +1,20 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheetValidation
+ * @format
  * @flow
  */
+
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const TextStylePropTypes = require('TextStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 // Hardcoded because this is a legit case but we don't want to load it from
 // a private API. We might likely want to unify style sheet creation with how it
@@ -24,23 +23,18 @@ var invariant = require('fbjs/lib/invariant');
 const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 class StyleSheetValidation {
-  static validateStyleProp(prop, style, caller) {
+  static validateStyleProp(prop: string, style: Object, caller: string) {
     if (!__DEV__) {
       return;
     }
     if (allStylePropTypes[prop] === undefined) {
-      var message1 = '"' + prop + '" is not a valid style property.';
-      var message2 = '\nValid style props: ' +
+      const message1 = '"' + prop + '" is not a valid style property.';
+      const message2 =
+        '\nValid style props: ' +
         JSON.stringify(Object.keys(allStylePropTypes).sort(), null, '  ');
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
-      /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.56 was deployed. To see
-       * the error delete this comment and run Flow. */
       styleError(message1, style, caller, message2);
     }
-    var error = allStylePropTypes[prop](
+    const error = allStylePropTypes[prop](
       style,
       prop,
       caller,
@@ -49,41 +43,43 @@ class StyleSheetValidation {
       ReactPropTypesSecret,
     );
     if (error) {
-      /* $FlowFixMe(>=0.56.0 site=react_native_oss) This comment suppresses an
-       * error found when Flow v0.56 was deployed. To see the error delete this
-       * comment and run Flow. */
-      /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error found when Flow v0.56 was deployed. To see
-       * the error delete this comment and run Flow. */
       styleError(error.message, style, caller);
     }
   }
 
-  static validateStyle(name, styles) {
+  static validateStyle(name: string, styles: Object) {
     if (!__DEV__) {
       return;
     }
-    for (var prop in styles[name]) {
-      StyleSheetValidation.validateStyleProp(prop, styles[name], 'StyleSheet ' + name);
+    for (const prop in styles[name]) {
+      StyleSheetValidation.validateStyleProp(
+        prop,
+        styles[name],
+        'StyleSheet ' + name,
+      );
     }
   }
 
   static addValidStylePropTypes(stylePropTypes) {
-    for (var key in stylePropTypes) {
+    for (const key in stylePropTypes) {
       allStylePropTypes[key] = stylePropTypes[key];
     }
   }
 }
 
-var styleError = function(message1, style, caller?, message2?) {
+const styleError = function(message1, style, caller?, message2?) {
   invariant(
     false,
-    message1 + '\n' + (caller || '<<unknown>>') + ': ' +
-    JSON.stringify(style, null, '  ') + (message2 || '')
+    message1 +
+      '\n' +
+      (caller || '<<unknown>>') +
+      ': ' +
+      JSON.stringify(style, null, '  ') +
+      (message2 || ''),
   );
 };
 
-var allStylePropTypes = {};
+const allStylePropTypes = {};
 
 StyleSheetValidation.addValidStylePropTypes(ImageStylePropTypes);
 StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);

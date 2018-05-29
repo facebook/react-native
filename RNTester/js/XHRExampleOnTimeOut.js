@@ -1,24 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule XHRExampleOnTimeOut
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} = ReactNative;
+var {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
 class XHRExampleOnTimeOut extends React.Component<any, any> {
   xhr: XMLHttpRequest;
@@ -27,7 +21,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
     super(props);
     this.state = {
       status: '',
-      loading: false
+      loading: false,
     };
   }
 
@@ -36,7 +30,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
 
     var xhr = this.xhr || new XMLHttpRequest();
 
-    xhr.onerror = ()=> {
+    xhr.onerror = () => {
       console.log('Status ', xhr.status);
       console.log('Error ', xhr.responseText);
     };
@@ -44,7 +38,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
     xhr.ontimeout = () => {
       this.setState({
         status: xhr.responseText,
-        loading: false
+        loading: false,
       });
     };
 
@@ -77,7 +71,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
         style={styles.wrapper}
         onPress={this.loadTimeOutRequest.bind(this)}>
         <View style={styles.button}>
-         <Text>Make Time Out Request</Text>
+          <Text>Make Time Out Request</Text>
         </View>
       </TouchableHighlight>
     );

@@ -1,10 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -21,12 +21,7 @@
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
 
-const {
-   echo,
-   exec,
-   exit,
-   ls,
-} = require('shelljs');
+const {echo, exec, exit, ls} = require('shelljs');
 
 const argv = require('yargs').argv;
 const numberOfRetries = argv.retries || 1;
@@ -36,33 +31,39 @@ const path = require('path');
 // Flaky tests ignored on Circle CI. They still run internally at fb.
 const ignoredTests = [
   'ReactScrollViewTestCase',
-  'ReactHorizontalScrollViewTestCase'
+  'ReactHorizontalScrollViewTestCase',
 ];
 
 // ReactAndroid/src/androidTest/java/com/facebook/react/tests/ReactHorizontalScrollViewTestCase.java
 const testClasses = ls(`${argv.path}/*.java`)
-.map(javaFile => {
-  // ReactHorizontalScrollViewTestCase
-  return path.basename(javaFile, '.java');
-}).filter(className => {
-  return ignoredTests.indexOf(className) === -1;
-}).map(className => {
-  // com.facebook.react.tests.ReactHorizontalScrollViewTestCase
-  return argv.package + '.' + className;
-});
+  .map(javaFile => {
+    // ReactHorizontalScrollViewTestCase
+    return path.basename(javaFile, '.java');
+  })
+  .filter(className => {
+    return ignoredTests.indexOf(className) === -1;
+  })
+  .map(className => {
+    // com.facebook.react.tests.ReactHorizontalScrollViewTestCase
+    return argv.package + '.' + className;
+  });
 
 let exitCode = 0;
-testClasses.forEach((testClass) => {
-  if (tryExecNTimes(
-    () => {
+testClasses.forEach(testClass => {
+  if (
+    tryExecNTimes(() => {
       echo(`Starting ${testClass}`);
       // any faster means Circle CI crashes
       exec('sleep 10s');
-      return exec(`./scripts/run-instrumentation-tests-via-adb-shell.sh ${argv.package} ${testClass}`).code;
-    },
-    numberOfRetries)) {
-      echo(`${testClass} failed ${numberOfRetries} times`);
-      exitCode = 1;
+      return exec(
+        `./scripts/run-instrumentation-tests-via-adb-shell.sh ${
+          argv.package
+        } ${testClass}`,
+      ).code;
+    }, numberOfRetries)
+  ) {
+    echo(`${testClass} failed ${numberOfRetries} times`);
+    exitCode = 1;
   }
 });
 

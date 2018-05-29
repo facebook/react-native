@@ -1,20 +1,15 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <JavaScriptCore/JavaScript.h>
-
-#if WITH_FBJSCEXTENSIONS
-#include <jsc_stringref.h>
-#endif
 
 #if defined(JSCINTERNAL) || (!defined(__APPLE__))
 #define JSC_IMPORT extern "C"
@@ -32,21 +27,34 @@ namespace react {
 }
 }
 
-JSC_IMPORT facebook::react::IInspector* JSInspectorGetInstance();
+JSC_IMPORT void JSGlobalContextEnableDebugger(
+    JSGlobalContextRef ctx,
+    facebook::react::IInspector &globalInspector,
+    const char *title,
+    const std::function<bool()> &checkIsInspectedRemote);
+JSC_IMPORT void JSGlobalContextDisableDebugger(
+    JSGlobalContextRef ctx,
+    facebook::react::IInspector &globalInspector);
 
 // This is used to substitute an alternate JSC implementation for
 // testing. These calls must all be ABI compatible with the standard JSC.
-JSC_IMPORT void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
 JSC_IMPORT JSValueRef JSEvaluateBytecodeBundle(JSContextRef, JSObjectRef, int, JSStringRef, JSValueRef*);
 JSC_IMPORT bool JSSamplingProfilerEnabled();
 JSC_IMPORT void JSStartSamplingProfilingOnMainJSCThread(JSGlobalContextRef);
 JSC_IMPORT JSValueRef JSPokeSamplingProfiler(JSContextRef);
+#ifdef __cplusplus
+extern "C" {
+#endif
+JSC_IMPORT void configureJSCForIOS(std::string); // TODO: replace with folly::dynamic once supported
 JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
+#ifdef __cplusplus
+}
+#endif
 
 #if defined(__APPLE__)
-#import <objc/objc.h>
-#import <JavaScriptCore/JSStringRefCF.h>
-#import <string>
+#include <objc/objc.h>
+#include <JavaScriptCore/JSStringRefCF.h>
+#include <string>
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -91,6 +99,7 @@ struct JSCWrapper {
 
   // JSClass
   JSC_WRAPPER_METHOD(JSClassCreate);
+  JSC_WRAPPER_METHOD(JSClassRetain);
   JSC_WRAPPER_METHOD(JSClassRelease);
 
   // JSObject
@@ -131,13 +140,15 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToObject);
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
+  JSC_WRAPPER_METHOD(JSValueIsNull);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);
   JSC_WRAPPER_METHOD(JSPokeSamplingProfiler);
   JSC_WRAPPER_METHOD(JSStartSamplingProfilingOnMainJSCThread);
 
-  JSC_WRAPPER_METHOD(JSInspectorGetInstance);
+  JSC_WRAPPER_METHOD(JSGlobalContextEnableDebugger);
+  JSC_WRAPPER_METHOD(JSGlobalContextDisableDebugger);
 
   JSC_WRAPPER_METHOD(configureJSCForIOS);
 

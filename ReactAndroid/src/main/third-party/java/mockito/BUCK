@@ -1,15 +1,15 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
-android_library(
+rn_android_library(
     name = "mockito",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":mockito-core",
         ":objenesis",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "mockito-core",
     binary_jar = ":mockito-binary-jar",
     visibility = ["//ReactAndroid/..."],
@@ -21,7 +21,7 @@ remote_file(
     url = "mvn:org.mockito:mockito-core:jar:1.10.19",
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "objenesis",
     binary_jar = ":objenesis-binary-jar",
     visibility = ["//ReactAndroid/..."],

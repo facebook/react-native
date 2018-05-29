@@ -1,30 +1,26 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule DatePickerIOSExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  DatePickerIOS,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} = ReactNative;
+var {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
 
-class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class DatePickerExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   static defaultProps = {
     date: new Date(),
-    timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+    timeZoneOffsetInHours: -1 * new Date().getTimezoneOffset() / 60,
   };
 
   state = {
@@ -32,11 +28,11 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
     timeZoneOffsetInHours: this.props.timeZoneOffsetInHours,
   };
 
-  onDateChange = (date) => {
+  onDateChange = date => {
     this.setState({date: date});
   };
 
-  onTimezoneChange = (event) => {
+  onTimezoneChange = event => {
     var offset = parseInt(event.nativeEvent.text, 10);
     if (isNaN(offset)) {
       return;
@@ -50,11 +46,11 @@ class DatePickerExample extends React.Component<$FlowFixMeProps, $FlowFixMeState
     return (
       <View>
         <WithLabel label="Value:">
-          <Text>{
-            this.state.date.toLocaleDateString() +
-            ' ' +
-            this.state.date.toLocaleTimeString()
-          }</Text>
+          <Text>
+            {this.state.date.toLocaleDateString() +
+              ' ' +
+              this.state.date.toLocaleTimeString()}
+          </Text>
         </WithLabel>
         <WithLabel label="Timezone:">
           <TextInput
@@ -96,9 +92,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
     return (
       <View style={styles.labelContainer}>
         <View style={styles.labelView}>
-          <Text style={styles.label}>
-            {this.props.label}
-          </Text>
+          <Text style={styles.label}>{this.props.label}</Text>
         </View>
         {this.props.children}
       </View>
@@ -110,9 +104,7 @@ class Heading extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.headingContainer}>
-        <Text style={styles.heading}>
-          {this.props.label}
-        </Text>
+        <Text style={styles.heading}>{this.props.label}</Text>
       </View>
     );
   }
@@ -122,12 +114,13 @@ exports.displayName = (undefined: ?string);
 exports.title = '<DatePickerIOS>';
 exports.description = 'Select dates and times using the native UIDatePicker.';
 exports.examples = [
-{
-  title: '<DatePickerIOS>',
-  render: function(): React.Element<any> {
-    return <DatePickerExample />;
+  {
+    title: '<DatePickerIOS>',
+    render: function(): React.Element<any> {
+      return <DatePickerExample />;
+    },
   },
-}];
+];
 
 var styles = StyleSheet.create({
   textinput: {

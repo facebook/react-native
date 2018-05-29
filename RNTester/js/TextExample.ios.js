@@ -1,21 +1,20 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule TextExample
  */
+
 'use strict';
 
 const Platform = require('Platform');
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {Image, Text, View, LayoutAnimation, Button} = ReactNative;
+var {Image, Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,
@@ -223,6 +222,77 @@ var AdjustingFontSize = createReactClass({
     );
   },
 });
+
+class TextBaseLineLayoutExample extends React.Component<*, *> {
+  render() {
+    var texts = [];
+    for (var i = 9; i >= 0; i--) {
+      texts.push(
+        <Text key={i} style={{fontSize: 8 + i * 5, backgroundColor: '#eee'}}>
+          {i}
+        </Text>,
+      );
+    }
+
+    const marker = (
+      <View style={{width: 20, height: 20, backgroundColor: 'gray'}} />
+    );
+    const subtitleStyle = {fontSize: 16, marginTop: 8, fontWeight: 'bold'};
+
+    return (
+      <View>
+        <Text style={subtitleStyle}>{'Nested <Text/>s:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text>{texts}</Text>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'Array of <Text/>s in <View>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          {texts}
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text selectable={true}>
+            Some text.
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                backgroundColor: '#eee',
+              }}>
+              {marker}
+              <Text>Text inside View.</Text>
+              {marker}
+            </View>
+          </Text>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput style={{margin: 0, padding: 0}}>{texts}</TextInput>
+          {marker}
+        </View>
+
+        <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <TextInput multiline={true} style={{margin: 0, padding: 0}}>
+            {texts}
+          </TextInput>
+          {marker}
+        </View>
+      </View>
+    );
+  }
+}
 
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
@@ -513,8 +583,33 @@ exports.examples = [
           <Text style={{letterSpacing: 9, marginTop: 5}}>
             letterSpacing = 9
           </Text>
+          <View style={{flexDirection: 'row'}}>
+            <Text
+              style={{
+                fontSize: 12,
+                letterSpacing: 2,
+                backgroundColor: 'fuchsia',
+                marginTop: 5,
+              }}>
+              With size and background color
+            </Text>
+          </View>
           <Text style={{letterSpacing: -1, marginTop: 5}}>
             letterSpacing = -1
+          </Text>
+          <Text
+            style={{
+              letterSpacing: 3,
+              backgroundColor: '#dddddd',
+              marginTop: 5,
+            }}>
+            [letterSpacing = 3]
+            <Text style={{letterSpacing: 0, backgroundColor: '#bbbbbb'}}>
+              [Nested letterSpacing = 0]
+            </Text>
+            <Text style={{letterSpacing: 6, backgroundColor: '#eeeeee'}}>
+              [Nested letterSpacing = 6]
+            </Text>
           </Text>
         </View>
       );
@@ -525,7 +620,7 @@ exports.examples = [
     render: function() {
       return (
         <Text>
-          A {'generated'} {' '} {'string'} and    some &nbsp;&nbsp;&nbsp; spaces
+          A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
         </Text>
       );
     },
@@ -644,8 +739,9 @@ exports.examples = [
             </Text>
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={'{'}false{'}"'}{' '}
-            prop.
+            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
+              '{'
+            }false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20}}>
             This text will not scale.
@@ -748,6 +844,31 @@ exports.examples = [
     },
   },
   {
+    title: 'Nested content',
+    render: function() {
+      return (
+        <Text>
+          This text has a view
+          <View style={{borderColor: 'red', borderWidth: 1}}>
+            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
+            <Text style={{borderColor: 'green', borderWidth: 1}}>
+              another text inside.
+            </Text>
+            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
+              And moreover, it has another view
+              <View style={{borderColor: 'red', borderWidth: 1}}>
+                <Text style={{borderColor: 'blue', borderWidth: 1}}>
+                  with another text inside!
+                </Text>
+              </View>
+            </Text>
+          </View>
+          Because we need to go deeper.
+        </Text>
+      );
+    },
+  },
+  {
     title: 'Dynamic Font Size Adjustment',
     render: function(): React.Element<any> {
       return <AdjustingFontSize />;
@@ -757,6 +878,49 @@ exports.examples = [
     title: 'Text Align with RTL',
     render: function() {
       return <TextAlignRTLExample />;
+    },
+  },
+  {
+    title: "Text `alignItems: 'baseline'` style",
+    render: function() {
+      return <TextBaseLineLayoutExample />;
+    },
+  },
+  {
+    title: 'Transform',
+    render: function() {
+      return (
+        <View>
+          <Text style={{textTransform: 'uppercase'}}>
+            This text should be uppercased.
+          </Text>
+          <Text style={{textTransform: 'lowercase'}}>
+            This TEXT SHOULD be lowercased.
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            This text should be CAPITALIZED.
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            Mixed: <Text style={{textTransform: 'uppercase'}}>uppercase </Text>
+            <Text style={{textTransform: 'lowercase'}}>LoWeRcAsE </Text>
+            <Text style={{textTransform: 'capitalize'}}>
+              capitalize each word
+            </Text>
+          </Text>
+          <Text>
+            Should be "ABC":
+            <Text style={{textTransform: 'uppercase'}}>
+              a<Text>b</Text>c
+            </Text>
+          </Text>
+          <Text>
+            Should be "AbC":
+            <Text style={{textTransform: 'uppercase'}}>
+              a<Text style={{textTransform: 'none'}}>b</Text>c
+            </Text>
+          </Text>
+        </View>
+      );
     },
   },
 ];

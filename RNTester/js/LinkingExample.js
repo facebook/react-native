@@ -1,25 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule LinkingExample
+ * @format
  */
+
 'use strict';
 
 var React = require('react');
 var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
-var {
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} = ReactNative;
+var {Linking, StyleSheet, Text, TouchableOpacity, View} = ReactNative;
 var RNTesterBlock = require('./RNTesterBlock');
 
 class OpenURLButton extends React.Component {
@@ -32,15 +25,14 @@ class OpenURLButton extends React.Component {
       if (supported) {
         Linking.openURL(this.props.url);
       } else {
-        console.log('Don\'t know how to open URI: ' + this.props.url);
+        console.log("Don't know how to open URI: " + this.props.url);
       }
     });
   };
 
   render() {
     return (
-      <TouchableOpacity
-        onPress={this.handleClick}>
+      <TouchableOpacity onPress={this.handleClick}>
         <View style={styles.button}>
           <Text style={styles.text}>Open {this.props.url}</Text>
         </View>

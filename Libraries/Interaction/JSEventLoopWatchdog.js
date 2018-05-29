@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule JSEventLoopWatchdog
+ * @format
  * @flow
  */
+
 'use strict';
 
 const infoLog = require('infoLog');
@@ -63,14 +62,15 @@ const JSEventLoopWatchdog = {
         stallCount++;
         totalStallTime += stallTime;
         longestStall = Math.max(longestStall, stallTime);
-        let msg = `JSEventLoopWatchdog: JS thread busy for ${busyTime}ms. ` +
+        let msg =
+          `JSEventLoopWatchdog: JS thread busy for ${busyTime}ms. ` +
           `${totalStallTime}ms in ${stallCount} stalls so far. `;
-        handlers.forEach((handler) => {
+        handlers.forEach(handler => {
           msg += handler.onStall({lastInterval, busyTime}) || '';
         });
         infoLog(msg);
       }
-      handlers.forEach((handler) => {
+      handlers.forEach(handler => {
         handler.onIterate && handler.onIterate();
       });
       lastInterval = now;

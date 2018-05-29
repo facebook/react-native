@@ -1,14 +1,14 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
-android_library(
+rn_android_library(
     name = "sqlite",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":sqlite4java",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "sqlite4java",
     binary_jar = ":download-sqlite4java",
     visibility = ["//ReactAndroid/..."],

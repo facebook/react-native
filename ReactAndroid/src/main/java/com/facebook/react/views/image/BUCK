@@ -1,16 +1,17 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
 IMAGE_EVENT_FILES = [
     "ImageLoadEvent.java",
 ]
 
-android_library(
+rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
     provided_deps = [
         react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
+    required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
         react_native_dep("third-party/java/jsr-305:jsr-305"),
@@ -19,15 +20,12 @@ android_library(
     ],
 )
 
-android_library(
+rn_android_library(
     name = "image",
     srcs = glob(
         ["*.java"],
         excludes = IMAGE_EVENT_FILES,
     ),
-    exported_deps = [
-        ":imageevents",
-    ],
     provided_deps = [
         react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
@@ -50,5 +48,8 @@ android_library(
         react_native_target("java/com/facebook/react/modules/fresco:fresco"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/imagehelper:withmultisource"),
+    ],
+    exported_deps = [
+        ":imageevents",
     ],
 )

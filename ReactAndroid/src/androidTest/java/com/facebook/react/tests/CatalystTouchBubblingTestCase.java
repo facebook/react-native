@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.tests;
@@ -44,7 +42,7 @@ import com.facebook.react.testing.StringRecordingModule;
  * | +----------------------------------------------------------------------------------+  |
  * +---------------------------------------------------------------------------------------+
  *
- * Then in each test case we eiter tap the center of a particular view (from A to E) or we start
+ * Then in each test case we either tap the center of a particular view (from A to E) or we start
  * a gesture in one view and end it with another.
  * View with names in brackets (e.g. {D}) have touch handlers set whereas all other views are not
  * declared to handler touch events.

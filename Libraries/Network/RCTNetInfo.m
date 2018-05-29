@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTNetInfo.h"
@@ -43,6 +41,7 @@ static NSString *const RCTReachabilityStateCell = @"cell";
   NSString *_effectiveConnectionType;
   NSString *_statusDeprecated;
   NSString *_host;
+  BOOL _isObserving;
 }
 
 RCT_EXPORT_MODULE()
@@ -50,6 +49,61 @@ RCT_EXPORT_MODULE()
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
   RCTNetInfo *self = (__bridge id)info;
+  if ([self setReachabilityStatus:flags] && self->_isObserving) {
+    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": self->_connectionType,
+                                                             @"effectiveConnectionType": self->_effectiveConnectionType,
+                                                             @"network_info": self->_statusDeprecated}];
+  }
+}
+
+#pragma mark - Lifecycle
+
+- (instancetype)initWithHost:(NSString *)host
+{
+  RCTAssertParam(host);
+  RCTAssert(![host hasPrefix:@"http"], @"Host value should just contain the domain, not the URL scheme.");
+
+  if ((self = [self init])) {
+    _host = [host copy];
+  }
+  return self;
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"networkStatusDidChange"];
+}
+
+- (void)startObserving
+{
+  _isObserving = YES;
+  _connectionType = RCTConnectionTypeUnknown;
+  _effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
+  _statusDeprecated = RCTReachabilityStateUnknown;
+  _reachability = [self getReachabilityRef];
+}
+
+- (void)stopObserving
+{
+  _isObserving = NO;
+  if (_reachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(_reachability);
+  }
+}
+
+- (SCNetworkReachabilityRef)getReachabilityRef
+{
+  SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
+  SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
+  SCNetworkReachabilitySetCallback(reachability, RCTReachabilityCallback, &context);
+  SCNetworkReachabilityScheduleWithRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    
+  return reachability;
+}
+
+- (BOOL)setReachabilityStatus:(SCNetworkReachabilityFlags)flags
+{
   NSString *connectionType = RCTConnectionTypeUnknown;
   NSString *effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
   NSString *status = RCTReachabilityStateUnknown;
@@ -98,47 +152,10 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
     self->_connectionType = connectionType;
     self->_effectiveConnectionType = effectiveConnectionType;
     self->_statusDeprecated = status;
-    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": connectionType,
-                                                             @"effectiveConnectionType": effectiveConnectionType,
-                                                             @"network_info": status}];
+    return YES;
   }
-}
-
-#pragma mark - Lifecycle
-
-- (instancetype)initWithHost:(NSString *)host
-{
-  RCTAssertParam(host);
-  RCTAssert(![host hasPrefix:@"http"], @"Host value should just contain the domain, not the URL scheme.");
-
-  if ((self = [self init])) {
-    _host = [host copy];
-  }
-  return self;
-}
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[@"networkStatusDidChange"];
-}
-
-- (void)startObserving
-{
-  _connectionType = RCTConnectionTypeUnknown;
-  _effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
-  _statusDeprecated = RCTReachabilityStateUnknown;
-  _reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
-  SCNetworkReachabilityContext context = { 0, ( __bridge void *)self, NULL, NULL, NULL };
-  SCNetworkReachabilitySetCallback(_reachability, RCTReachabilityCallback, &context);
-  SCNetworkReachabilityScheduleWithRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-}
-
-- (void)stopObserving
-{
-  if (_reachability) {
-    SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-    CFRelease(_reachability);
-  }
+  
+  return NO;
 }
 
 #pragma mark - Public API
@@ -146,6 +163,9 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
+  SCNetworkReachabilityRef reachability = [self getReachabilityRef];
+  SCNetworkReachabilityUnscheduleFromRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+  CFRelease(reachability);
   resolve(@{@"connectionType": _connectionType ?: RCTConnectionTypeUnknown,
             @"effectiveConnectionType": _effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
             @"network_info": _statusDeprecated ?: RCTReachabilityStateUnknown});

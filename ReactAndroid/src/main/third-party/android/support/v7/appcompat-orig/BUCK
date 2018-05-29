@@ -1,36 +1,36 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
 # While BUCK behaves properly and extracts them into android.support.v7.appcompat package.
 # We want to support both Gradle and BUCK builds so we hack a bit how BUCK extracts resources.
-# Besides that we still need JAVA classes from appcompat-v7.aar, that is why android_library
+# Besides that we still need JAVA classes from appcompat-v7.aar, that is why rn_android_library
 # extracts classes.jar but the trick is that we can't take full appcompat.aar because resources
 # extracted from it by BUCK would conflict with resources we use under Gradelified package
 # All this mumbo jumbo will go away after t10182713
 
-android_library(
+rn_android_library(
     name = "appcompat",
-    exported_deps = [
-        ":classes-for-react-native",
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         ":res-for-appcompat",
     ],
+    exported_deps = [
+        ":classes-for-react-native",
+    ],
 )
 
 # still used by appcompat library internally, so we need both during the build
-android_resource(
+rn_android_resource(
     name = "res-for-appcompat",
     package = "android.support.v7.appcompat",
     res = ":res-unpacker-cmd",
     visibility = ["//ReactAndroid/..."],
 )
 
-prebuilt_jar(
+rn_prebuilt_jar(
     name = "classes-for-react-native",
     binary_jar = ":classes-unpacker-cmd",
     visibility = ["//ReactAndroid/..."],

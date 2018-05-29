@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.view;
@@ -42,7 +40,13 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
   private static final int[] SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL,
+    Spacing.LEFT,
+    Spacing.RIGHT,
+    Spacing.TOP,
+    Spacing.BOTTOM,
+    Spacing.START,
+    Spacing.END,
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
@@ -52,14 +56,33 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
+  @ReactProp(name = "hasTVPreferredFocus")
+  public void setTVPreferredFocus(ReactViewGroup view, boolean hasTVPreferredFocus) {
+    if (hasTVPreferredFocus) {
+      view.setFocusable(true);
+      view.setFocusableInTouchMode(true);
+      view.requestFocus();
+    }
+  }
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
       ViewProps.BORDER_TOP_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_START_RADIUS,
+      ViewProps.BORDER_TOP_END_RADIUS,
+      ViewProps.BORDER_BOTTOM_START_RADIUS,
+      ViewProps.BORDER_BOTTOM_END_RADIUS,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
+      borderRadius = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
@@ -127,17 +150,27 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
   }
 
-  @ReactPropGroup(names = {
+  @ReactPropGroup(
+    names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
       ViewProps.BORDER_RIGHT_WIDTH,
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+      ViewProps.BORDER_START_WIDTH,
+      ViewProps.BORDER_END_WIDTH,
+    },
+    defaultFloat = YogaConstants.UNDEFINED
+  )
   public void setBorderWidth(ReactViewGroup view, int index, float width) {
+    if (!YogaConstants.isUndefined(width) && width < 0) {
+      width = YogaConstants.UNDEFINED;
+    }
+
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
+
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
@@ -147,7 +180,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       ViewProps.BORDER_LEFT_COLOR,
       ViewProps.BORDER_RIGHT_COLOR,
       ViewProps.BORDER_TOP_COLOR,
-      ViewProps.BORDER_BOTTOM_COLOR
+      ViewProps.BORDER_BOTTOM_COLOR,
+      ViewProps.BORDER_START_COLOR,
+      ViewProps.BORDER_END_COLOR
     },
     customType = "Color"
   )

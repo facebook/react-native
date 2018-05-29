@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.location;
@@ -16,7 +14,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
-
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -24,13 +22,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
-import com.facebook.react.common.ReactConstants;
-import com.facebook.common.logging.FLog;
-
 import javax.annotation.Nullable;
 
 /**
@@ -126,9 +121,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
           (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
       String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
       if (provider == null) {
-        error.invoke(PositionError.buildError(
-                PositionError.PERMISSION_DENIED,
-                "No location provider available."));
+        error.invoke(
+            PositionError.buildError(
+                PositionError.POSITION_UNAVAILABLE, "No location provider available."));
         return;
       }
       Location location = locationManager.getLastKnownLocation(provider);
@@ -162,7 +157,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
           (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
       String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
       if (provider == null) {
-        emitError(PositionError.PERMISSION_DENIED, "No location provider available.");
+        emitError(PositionError.POSITION_UNAVAILABLE, "No location provider available.");
         return;
       }
       if (!provider.equals(mWatchedProvider)) {

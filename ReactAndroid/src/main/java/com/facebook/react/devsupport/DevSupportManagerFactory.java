@@ -1,22 +1,20 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
-
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Constructor;
 
 import android.content.Context;
 
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+
+import java.lang.reflect.Constructor;
+
+import javax.annotation.Nullable;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses
@@ -31,14 +29,14 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
       Context applicationContext,
-      ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate,
       int minNumShakes) {
 
     return create(
       applicationContext,
-      reactInstanceCommandsHandler,
+      reactInstanceManagerHelper,
       packagerPathForJSBundleName,
       enableOnCreate,
       null,
@@ -48,7 +46,7 @@ public class DevSupportManagerFactory {
 
   public static DevSupportManager create(
     Context applicationContext,
-    ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+    ReactInstanceManagerDevHelper reactInstanceManagerHelper,
     @Nullable String packagerPathForJSBundleName,
     boolean enableOnCreate,
     @Nullable RedBoxHandler redBoxHandler,
@@ -71,7 +69,7 @@ public class DevSupportManagerFactory {
       Constructor constructor =
         devSupportManagerClass.getConstructor(
           Context.class,
-          ReactInstanceDevCommandsHandler.class,
+          ReactInstanceManagerDevHelper.class,
           String.class,
           boolean.class,
           RedBoxHandler.class,
@@ -79,7 +77,7 @@ public class DevSupportManagerFactory {
           int.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
-        reactInstanceCommandsHandler,
+        reactInstanceManagerHelper,
         packagerPathForJSBundleName,
         true,
         redBoxHandler,
