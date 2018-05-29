@@ -146,6 +146,7 @@ const TouchableNativeFeedback = createReactClass({
 
   getDefaultProps: function() {
     return {
+      accessibilityComponentType: 'button',
       background: this.SelectableBackground(),
     };
   },

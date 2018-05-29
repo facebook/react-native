@@ -141,6 +141,13 @@ const TouchableWithoutFeedback = ((createReactClass({
     hitSlop: EdgeInsetsPropType,
   },
 
+  getDefaultProps: function() {
+    return {
+      accessibilityComponentType: 'button',
+      accessibilityTraits: 'button'
+    };
+  },
+
   getInitialState: function() {
     return this.touchableGetInitialState();
   },

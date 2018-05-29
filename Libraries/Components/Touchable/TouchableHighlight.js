@@ -30,6 +30,8 @@ import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 
 const DEFAULT_PROPS = {
+  accessibilityComponentType: 'button',
+  accessibilityTraits: 'button',
   activeOpacity: 0.85,
   delayPressOut: 100,
   underlayColor: 'black',

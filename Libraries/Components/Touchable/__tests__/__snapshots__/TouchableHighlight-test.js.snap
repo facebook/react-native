@@ -2,9 +2,9 @@
 
 exports[`TouchableHighlight renders correctly 1`] = `
 <View
-  accessibilityComponentType={undefined}
+  accessibilityComponentType="button"
   accessibilityLabel={undefined}
-  accessibilityTraits={undefined}
+  accessibilityTraits="button"
   accessible={true}
   hasTVPreferredFocus={undefined}
   hitSlop={undefined}

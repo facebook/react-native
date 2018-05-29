@@ -81,7 +81,12 @@ const TouchableBounce = ((createReactClass({
   },
 
   getDefaultProps: function() {
-    return {releaseBounciness: 10, releaseVelocity: 10};
+    return {
+      accessibilityComponentType: 'button',
+      accessibilityTraits: 'button',
+      releaseBounciness: 10,
+      releaseVelocity: 10,
+    };
   },
 
   getInitialState: function(): State {
