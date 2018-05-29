@@ -22,11 +22,15 @@ enum class EventPriority {
   Deferred = AsynchronousBatched,
 };
 
-// `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
-// raw pointers. We use `struct {} *` trick to differentiate them in compiler's
-// eyes to ensure type safety.
-using EventTarget = struct {} *;
-using EventHandler = struct {} *;
+/* `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
+ * raw pointers. We use `struct {} *` trick to differentiate them in compiler's
+ * eyes to ensure type safety.
+ * These structs must have names (and the names must be exported)
+ * to allow consistent template (e.g. `std::function`) instantiating
+ * across different modules.
+ */
+using EventTarget = struct EventTargetDummyStruct {} *;
+using EventHandler = struct EventHandlerDummyStruct {} *;
 
 } // namespace react
 } // namespace facebook

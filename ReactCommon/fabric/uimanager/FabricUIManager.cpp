@@ -78,7 +78,7 @@ FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDesc
 
 FabricUIManager::~FabricUIManager() {
   if (eventHandler_) {
-    releaseEventTargetFunction_(eventHandler_);
+    releaseEventHandlerFunction_(eventHandler_);
   }
 }
 
@@ -106,11 +106,11 @@ void FabricUIManager::setReleaseEventHandlerFunction(std::function<ReleaseEventH
   releaseEventHandlerFunction_ = releaseEventHandlerFunction;
 }
 
-void *FabricUIManager::createEventTarget(void *instanceHandle) {
+EventTarget FabricUIManager::createEventTarget(const InstanceHandle &instanceHandle) const {
   return createEventTargetFunction_(instanceHandle);
 }
 
-void FabricUIManager::dispatchEvent(void *eventTarget, const std::string &type, const folly::dynamic &payload) {
+void FabricUIManager::dispatchEvent(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const {
   dispatchEventFunction_(
     eventHandler_,
     eventTarget,
@@ -119,12 +119,12 @@ void FabricUIManager::dispatchEvent(void *eventTarget, const std::string &type, 
   );
 }
 
-void FabricUIManager::releaseEventTarget(void *eventTarget) {
+void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
   releaseEventTargetFunction_(eventTarget);
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, InstanceHandle instanceHandle) {
-  isLoggingEnabled && LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag" << rootTag << ", props: " << props << ")";
+  isLoggingEnabled && LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag: " << rootTag << ", props: " << props << ")";
 
   ComponentName componentName = componentNameByReactViewName(viewName);
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[componentName];
@@ -251,8 +251,8 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
   }
 }
 
-void FabricUIManager::registerEventHandler(void *eventHandler) {
-  isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler)";
+void FabricUIManager::registerEventHandler(const EventHandler &eventHandler) {
+  isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler: " << eventHandler << ")";
   eventHandler_ = eventHandler;
 }
 

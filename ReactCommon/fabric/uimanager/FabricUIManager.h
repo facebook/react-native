@@ -18,10 +18,10 @@
 namespace facebook {
 namespace react {
 
-using CreateEventTargetFunction = void *(void *instanceHandle);
-using DispatchEventFunction = void (void *eventHandler, void *eventTarget, std::string type, folly::dynamic payload);
-using ReleaseEventTargetFunction = void (void *eventTarget);
-using ReleaseEventHandlerFunction = void (void *eventHandler);
+using CreateEventTargetFunction = EventTarget (InstanceHandle instanceHandle);
+using DispatchEventFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
+using ReleaseEventTargetFunction = void (EventTarget eventTarget);
+using ReleaseEventHandlerFunction = void (EventHandler eventHandler);
 
 class FabricUIManager {
 public:
@@ -51,9 +51,9 @@ public:
 
 #pragma mark - Native-facing Interface
 
-  void *createEventTarget(void *instanceHandle);
-  void dispatchEvent(void *eventTarget, const std::string &type, const folly::dynamic &payload);
-  void releaseEventTarget(void *eventTarget);
+  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const;
+  void dispatchEvent(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
+  void releaseEventTarget(const EventTarget &eventTarget) const;
 
 #pragma mark - JavaScript/React-facing Interface
 
@@ -66,13 +66,13 @@ public:
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
   void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
-  void registerEventHandler(void *eventHandler);
+  void registerEventHandler(const EventHandler &eventHandler);
 
 private:
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  void *eventHandler_;
+  EventHandler eventHandler_;
   std::function<CreateEventTargetFunction> createEventTargetFunction_;
   std::function<DispatchEventFunction> dispatchEventFunction_;
   std::function<ReleaseEventTargetFunction> releaseEventTargetFunction_;

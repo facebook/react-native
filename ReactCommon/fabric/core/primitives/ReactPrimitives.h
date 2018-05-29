@@ -19,7 +19,7 @@ namespace react {
  * `Tag` and `InstanceHandle` are used to address React Native components.
  */
 using Tag = int32_t;
-using InstanceHandle = void *;
+using InstanceHandle = struct InstanceHandleDummyStruct {} *;
 
 /*
  * `RawProps` represents untyped map with props comes from JavaScript side.
