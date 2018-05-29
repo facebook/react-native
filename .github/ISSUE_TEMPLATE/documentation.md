@@ -1,8 +1,10 @@
 ---
 name: 📖 Documentation Issue
-about: Report issues with the docs at https://github.com/facebook/react-native-website/issues
+about: Report issues with the docs at https://github.com/facebook/react-native-website/issues.
 
 ---
+
+--------------^ Click "Preview" for a nicer view!
 
 GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native.
 
