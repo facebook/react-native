@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -81,7 +81,7 @@ describe('Easing', () => {
 
   function sampleEasingFunction(easing) {
     const DURATION = 300;
-    const tickCount = Math.round(DURATION * 60 / 1000);
+    const tickCount = Math.round((DURATION * 60) / 1000);
     const samples = [];
     for (let i = 0; i <= tickCount; i++) {
       samples.push(easing(i / tickCount));

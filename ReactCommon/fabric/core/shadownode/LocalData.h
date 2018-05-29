@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <folly/dynamic.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -25,11 +26,13 @@ using SharedLocalData = std::shared_ptr<const LocalData>;
  * All `LocalData` objects *must* be immutable (sealed) when they became
  * a part of the shadow tree.
  */
-class LocalData:
-  public Sealable,
-  public DebugStringConvertible {
+class LocalData : public Sealable, public DebugStringConvertible {
+ public:
+  virtual ~LocalData() = default;
 
-  // Nothing.
+  virtual folly::dynamic getDynamic() const {
+    return folly::dynamic::object();
+  }
 };
 
 } // namespace react

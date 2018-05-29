@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -160,8 +160,11 @@ function runOnSimulator(xcodeProject, args, scheme) {
      * it will not boot the "default" device, but the one we set. If the app is already running,
      * this flag has no effect.
      */
+    const activeDeveloperDir = child_process
+      .execFileSync('xcode-select', ['-p'], {encoding: 'utf8'})
+      .trim();
     child_process.execFileSync('open', [
-      '/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app',
+      `${activeDeveloperDir}/Applications/Simulator.app`,
       '--args',
       '-CurrentDeviceUDID',
       selectedSimulator.udid,
@@ -406,8 +409,10 @@ module.exports = {
   options: [
     {
       command: '--simulator [string]',
-      description: 'Explicitly set simulator to use',
-      default: 'iPhone 6',
+      description:
+        'Explicitly set simulator to use. Optionally include iOS version between' +
+        'parenthesis at the end to match an exact version: "iPhone 6 (10.0)"',
+      default: 'iPhone X',
     },
     {
       command: '--configuration [string]',

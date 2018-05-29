@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,17 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
 class ToastExample extends React.Component<{}, $FlowFixMeState> {
   static title = 'Toast Example';
-  static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
+  static description =
+    'Example that demonstrates the use of an Android Toast to provide feedback.';
   state = {};
 
   render() {
@@ -116,7 +117,7 @@ class ToastExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },

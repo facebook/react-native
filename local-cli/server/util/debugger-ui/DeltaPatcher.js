@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,10 +27,10 @@
   class DeltaPatcher {
     constructor() {
       this._lastBundle = {
-        pre: new Map(),
-        post: new Map(),
+        revisionId: undefined,
+        pre: '',
+        post: '',
         modules: new Map(),
-        id: undefined,
       };
       this._initialized = false;
       this._lastNumModifiedFiles = 0;
@@ -51,44 +51,50 @@
     /**
      * Applies a Delta Bundle to the current bundle.
      */
-    applyDelta(deltaBundle) {
-      // Make sure that the first received delta is a fresh one.
-      if (!this._initialized && !deltaBundle.reset) {
+    applyDelta(bundle) {
+      // Make sure that the first received bundle is a base.
+      if (!this._initialized && !bundle.base) {
         throw new Error(
-          'DeltaPatcher should receive a fresh Delta when being initialized',
+          'DeltaPatcher should receive a base Bundle when being initialized',
         );
       }
 
       this._initialized = true;
 
-      // Reset the current delta when we receive a fresh delta.
-      if (deltaBundle.reset) {
-        this._lastBundle = {
-          pre: new Map(),
-          post: new Map(),
-          modules: new Map(),
-          id: undefined,
-        };
-      }
+      // Reset the current bundle when we receive a base bundle.
+      if (bundle.base) {
+        this._lastNumModifiedFiles = bundle.modules.length;
 
-      this._lastNumModifiedFiles =
-        deltaBundle.pre.size + deltaBundle.post.size + deltaBundle.delta.size;
+        this._lastBundle = {
+          revisionId: bundle.revisionId,
+          pre: bundle.pre,
+          post: bundle.post,
+          modules: new Map(bundle.modules),
+        };
+      } else {
+        this._lastNumModifiedFiles =
+          bundle.modules.length + bundle.deleted.length;
+
+        this._lastBundle.revisionId = bundle.revisionId;
+
+        for (const [key, value] of bundle.modules) {
+          this._lastBundle.modules.set(key, value);
+        }
+
+        for (const id of bundle.deleted) {
+          this._lastBundle.modules.delete(id);
+        }
+      }
 
       if (this._lastNumModifiedFiles > 0) {
         this._lastModifiedDate = new Date();
       }
 
-      this._patchMap(this._lastBundle.pre, deltaBundle.pre);
-      this._patchMap(this._lastBundle.post, deltaBundle.post);
-      this._patchMap(this._lastBundle.modules, deltaBundle.delta);
-
-      this._lastBundle.id = deltaBundle.id;
-
       return this;
     }
 
-    getLastBundleId() {
-      return this._lastBundle.id;
+    getLastRevisionId() {
+      return this._lastBundle.revisionId;
     }
 
     /**
@@ -107,20 +113,10 @@
 
     getAllModules() {
       return [].concat(
-        Array.from(this._lastBundle.pre.values()),
+        [this._lastBundle.pre],
         Array.from(this._lastBundle.modules.values()),
-        Array.from(this._lastBundle.post.values()),
+        [this._lastBundle.post],
       );
-    }
-
-    _patchMap(original, patch) {
-      for (const [key, value] of patch.entries()) {
-        if (value == null) {
-          original.delete(key);
-        } else {
-          original.set(key, value);
-        }
-      }
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,6 @@ import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactRawTextManager;
@@ -77,7 +76,7 @@ public class CatalystUIManagerTestCase extends ReactIntegrationTestCase {
         new ReactTextViewManager(),
         new ReactRawTextManager());
     uiManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -123,9 +124,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      Activity currentActivity = getCurrentActivity();
-      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
-        mDialog.dismiss();
+      if (mDialog.isShowing()) {
+        Activity dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+        if (dialogContext == null || !dialogContext.isFinishing()) {
+          mDialog.dismiss();
+        }
       }
       mDialog = null;
 

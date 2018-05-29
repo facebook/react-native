@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,7 +91,7 @@ bool YGFloatArrayEqual(
 }
 
 // This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
-float YGFloatSanitize(const float& val);
+float YGFloatSanitize(const float val);
 
 // This function unwraps optional and returns YGUndefined if not defined or
 // op.value otherwise

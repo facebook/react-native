@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,7 +27,8 @@ const RNTesterPage = require('./RNTesterPage');
 
 class KeyboardAvoidingViewExample extends React.Component {
   static title = '<KeyboardAvoidingView>';
-  static description = 'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
+  static description =
+    'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
 
   state = {
     behavior: 'padding',

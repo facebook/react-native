@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -75,8 +75,7 @@ function copy(src, dest, callback) {
     if (err) {
       return callback(err);
     }
-    fs
-      .createReadStream(src)
+    fs.createReadStream(src)
       .pipe(fs.createWriteStream(dest))
       .on('finish', callback);
   });

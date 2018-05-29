@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -22,7 +22,8 @@ const Item = Picker.Item;
 
 class PickerExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<Picker>';
-  static description = 'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
+  static description =
+    'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
 
   state = {
     selected1: 'key1',
@@ -122,7 +123,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   picker: {
     width: 100,
   },

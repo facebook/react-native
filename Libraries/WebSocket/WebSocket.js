@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -145,7 +145,12 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(url, protocols, {headers}, this._socketId);
+    WebSocketModule.connect(
+      url,
+      protocols,
+      {headers},
+      this._socketId,
+    );
   }
 
   get binaryType(): ?BinaryType {
@@ -168,10 +173,6 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       }
     }
     this._binaryType = binaryType;
-  }
-
-  get binaryType(): ?BinaryType {
-    return this._binaryType;
   }
 
   close(code?: number, reason?: string): void {

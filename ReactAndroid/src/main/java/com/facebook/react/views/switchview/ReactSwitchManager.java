@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,19 +12,19 @@ import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -44,34 +44,8 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
       initMeasureFunction();
     }
 
-    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopy() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy();
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren();
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    protected ReactSwitchShadowNode copy() {
-      return new ReactSwitchShadowNode(this);
     }
 
     @Override
@@ -88,7 +62,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
         reactSwitch.setShowText(false);
         final int spec = View.MeasureSpec.makeMeasureSpec(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+            0,
             View.MeasureSpec.UNSPECIFIED);
         reactSwitch.measure(spec, spec);
         mWidth = reactSwitch.getMeasuredWidth();

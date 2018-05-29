@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -7,6 +10,10 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -42,7 +49,7 @@ public:
   virtual ~JSExecutorFactory() {}
 };
 
-class JSExecutor {
+class RN_EXPORT JSExecutor {
 public:
   /**
    * Execute an application script bundle in the JS context.

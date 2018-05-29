@@ -1,10 +1,15 @@
 /**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * BezierEasing - use bezier curve for transition easing function
  * https://github.com/gre/bezier-easing
  *
  * @copyright 2014-2015 Gaetan Renaudeau. MIT License.
- * @noflow
  * @emails oncall+react_native
+ * @flow
  * @format
  */
 
@@ -39,7 +44,7 @@ function allEquals(be1, be2, samples, assertion) {
 function repeat(n) {
   return function(f) {
     for (let i = 0; i < n; ++i) {
-      f(i);
+      f();
     }
   };
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AccessibilityInfo,
   StyleSheet,
   Text,
@@ -20,10 +20,10 @@ var {
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-var importantForAccessibilityValues = [
+const importantForAccessibilityValues = [
   'auto',
   'yes',
   'no',
@@ -114,17 +114,79 @@ class AccessibilityAndroidExample extends React.Component {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Touchable with component type = button">
+        <RNTesterBlock title="Touchable with accessibilityRole = button">
           <TouchableWithoutFeedback
             onPress={() =>
               ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
             }
-            accessibilityComponentType="button">
+            accessibilityRole="button">
             <View style={styles.embedded}>
               <Text>Click me</Text>
               <Text>Or not</Text>
             </View>
           </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Disabled Touchable with accessibilityRole = button">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="button"
+            accessibilityStates={['disabled']}
+            disabled={true}>
+            <View>
+              <Text>I am disabled</Text>
+              <Text>Clicking me will not trigger any action.</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Touchable with accessibilityRole = button and accessibilityHint">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="button"
+            accessibilityHint="Triggers
+            Toasts">
+            <View>
+              <Text>Click Me!</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityStates={['selected']}
+            accessibilityHint="accessibility hint">
+            <Text>Accessible view with hint, role, and state</Text>
+            <Text style={{color: 'gray'}}>
+              Talkback will say: accessibility hint button, selected{' '}
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with label, hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityLabel="accessibility Label"
+            accessibilityRole="button"
+            accessibilityStates={['selected']}
+            accessibilityHint="accessibility Hint">
+            <Text>Accessible view with label, hint, role, and state</Text>
+            <Text style={{color: 'gray'}}>
+              Talkback will say: accessibility label, hint button, selected{' '}
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with no other properties set">
+          <View accessible={true}>
+            <Text>This accessible view has no label, so the text is read.</Text>
+          </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="LiveRegion">
@@ -231,7 +293,7 @@ class AccessibilityAndroidExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   embedded: {
     backgroundColor: 'yellow',
     padding: 10,

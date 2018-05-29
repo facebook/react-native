@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Platform, Switch, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Switch, Text, View} = ReactNative;
 
 class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -59,17 +59,21 @@ class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
       <View>
         <Switch
           onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
-          onTintColor="#00ff00"
           style={{marginBottom: 10}}
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
           onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
-          onTintColor="#00ff00"
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorTrueSwitchIsOn}
         />
       </View>
@@ -121,7 +125,7 @@ class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var examples = [
+const examples = [
   {
     title: 'Switches can be set to true or false',
     render(): React.Element<any> {

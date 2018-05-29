@@ -13,7 +13,9 @@ import java.util.List;
 /**
  * Provides UIImplementation to use in {@link UIManagerModule}.
  */
+@Deprecated
 public class UIImplementationProvider {
+
   public UIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
       UIManagerModule.ViewManagerResolver viewManagerResolver,
@@ -25,7 +27,7 @@ public class UIImplementationProvider {
         eventDispatcher,
         minTimeLeftInFrameForNonBatchedOperationMs);
   }
-  
+
   public UIImplementation createUIImplementation(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,

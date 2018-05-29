@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,20 +10,20 @@
 'use strict';
 
 const Animated = require('Animated');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
-const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
+const React = require('React');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const ViewPropTypes = require('ViewPropTypes');
+
+const createReactClass = require('create-react-class');
 
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
-
-type Event = Object;
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {PressEvent} from 'CoreEventTypes';
 
 type State = {
   animationID: ?number,
@@ -35,8 +35,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?Function,
-  onPressAnimationComplete?: ?Function,
+  onPressWithCompletion?: ?(fn: () => void) => void,
+  onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
   releaseBounciness?: ?number,
@@ -56,7 +56,6 @@ const TouchableBounce = ((createReactClass({
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
-
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
     // to update UI before starting the animation.
@@ -70,14 +69,14 @@ const TouchableBounce = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: EdgeInsetsPropType,
+    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
     releaseVelocity: PropTypes.number.isRequired,
     releaseBounciness: PropTypes.number.isRequired,
     /**
      * Style to apply to the container/underlay. Most commonly used to make sure
      * rounded corners match the wrapped component.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
   },
 
   getDefaultProps: function() {
@@ -95,7 +94,7 @@ const TouchableBounce = ((createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function,
+    callback?: ?() => void,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -109,17 +108,17 @@ const TouchableBounce = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -147,7 +146,7 @@ const TouchableBounce = ((createReactClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
-  touchableGetHitSlop: function(): ?Object {
+  touchableGetHitSlop: function(): ?EdgeInsetsProp {
     return this.props.hitSlop;
   },
 
@@ -161,8 +160,9 @@ const TouchableBounce = ((createReactClass({
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}

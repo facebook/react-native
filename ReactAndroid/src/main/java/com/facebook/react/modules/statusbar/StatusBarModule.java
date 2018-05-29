@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,10 +34,11 @@ import javax.annotation.Nullable;
 /**
  * {@link NativeModule} that allows changing the appearance of the status bar.
  */
-@ReactModule(name = "StatusBarManager")
+@ReactModule(name = StatusBarModule.NAME)
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String HEIGHT_KEY = "HEIGHT";
+  public static final String NAME = "StatusBarManager";
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -45,7 +46,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "StatusBarManager";
+    return NAME;
   }
 
   @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
 
 class DatePickerExample extends React.Component<
   $FlowFixMeProps,
@@ -20,7 +20,7 @@ class DatePickerExample extends React.Component<
 > {
   static defaultProps = {
     date: new Date(),
-    timeZoneOffsetInHours: -1 * new Date().getTimezoneOffset() / 60,
+    timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
   };
 
   state = {
@@ -33,7 +33,7 @@ class DatePickerExample extends React.Component<
   };
 
   onTimezoneChange = event => {
-    var offset = parseInt(event.nativeEvent.text, 10);
+    const offset = parseInt(event.nativeEvent.text, 10);
     if (isNaN(offset)) {
       return;
     }
@@ -122,7 +122,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textinput: {
     height: 26,
     width: 50,

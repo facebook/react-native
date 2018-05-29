@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -806,9 +806,11 @@ static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
     case kCGColorSpaceModelLab:
     case kCGColorSpaceModelPattern:
     case kCGColorSpaceModelUnknown:
+    // TODO: kCGColorSpaceModelXYZ should be added sometime after Xcode 10 release.
+    default:
     {
 
-#ifdef RCT_DEBUG
+#if RCT_DEBUG
       //unsupported format
       RCTLogError(@"Unsupported color model: %i", model);
 #endif
@@ -897,4 +899,15 @@ NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *p
   }
   components.queryItems = queryItems;
   return components.URL;
+}
+
+RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s)
+{
+  if ([s hasPrefix:@"RK"]) {
+    return [s substringFromIndex:2];
+  } else if ([s hasPrefix:@"RCT"]) {
+    return [s substringFromIndex:3];
+  }
+
+  return s;
 }

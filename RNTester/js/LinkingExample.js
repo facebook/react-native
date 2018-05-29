@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,17 +9,22 @@
 
 'use strict';
 
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {Linking, StyleSheet, Text, TouchableOpacity, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
+const React = require('react');
+const {
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} = require('react-native');
 
-class OpenURLButton extends React.Component {
-  static propTypes = {
-    url: PropTypes.string,
-  };
+const RNTesterBlock = require('./RNTesterBlock');
 
+type Props = $ReadOnly<{|
+  url?: ?string,
+|}>;
+
+class OpenURLButton extends React.Component<Props> {
   handleClick = () => {
     Linking.canOpenURL(this.props.url).then(supported => {
       if (supported) {
@@ -59,13 +64,7 @@ class IntentAndroidExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 10,
-    paddingTop: 30,
-  },
+const styles = StyleSheet.create({
   button: {
     padding: 10,
     backgroundColor: '#3B5998',

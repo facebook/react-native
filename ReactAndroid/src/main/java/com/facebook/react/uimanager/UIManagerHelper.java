@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.uimanager;
 
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
@@ -26,18 +33,9 @@ public class UIManagerHelper {
    */
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
     CatalystInstance catalystInstance = context.getCatalystInstance();
-    UIManager uiManager;
-    switch (uiManagerType) {
-      case FABRIC:
-        uiManager = catalystInstance.getJSIModule(UIManager.class);
-        break;
-      case DEFAULT:
-        uiManager = catalystInstance.getNativeModule(UIManagerModule.class);
-        break;
-      default:
-        throw new IllegalArgumentException("Invalid UIManagerType: " + uiManagerType);
-    }
-    return uiManager;
+    return uiManagerType == FABRIC ?
+      catalystInstance.getJSIModule(UIManager.class) :
+      catalystInstance.getNativeModule(UIManagerModule.class);
   }
 
 }
