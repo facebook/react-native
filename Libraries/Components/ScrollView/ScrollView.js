@@ -626,6 +626,13 @@ const ScrollView = createReactClass({
     this._headerLayoutYs = new Map();
   },
 
+  UNSAFE_componentWillReceiveProps: function(nextProps: Props) {
+    this._scrollAnimatedValue.setOffset(
+      // $FlowFixMe
+      nextProps.contentInset ? nextProps.contentInset.top : 0,
+    );
+  },
+
   componentDidMount: function() {
     this._updateAnimatedNodeAttachment();
   },
