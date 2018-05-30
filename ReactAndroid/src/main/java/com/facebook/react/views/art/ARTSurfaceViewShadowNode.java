@@ -15,7 +15,9 @@ import android.graphics.Color;
 import android.view.Surface;
 import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
+import android.view.SurfaceHolder;
 import android.view.TextureView;
+
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -29,7 +31,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * Shadow node for ART virtual tree root - ARTSurfaceView
  */
 public class ARTSurfaceViewShadowNode extends LayoutShadowNode
-  implements TextureView.SurfaceTextureListener {
+  implements SurfaceHolder.Callback {
 
   private @Nullable Surface mSurface;
 
@@ -97,21 +99,17 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-    mSurface = new Surface(surface);
+  public void surfaceCreated(SurfaceHolder holder) {
+    mSurface = holder.getSurface();
     drawOutput();
   }
 
   @Override
-  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-    surface.release();
+  public void surfaceDestroyed(SurfaceHolder holder) {
     mSurface = null;
-    return true;
   }
 
   @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
-  @Override
-  public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
 }

@@ -16,7 +16,7 @@ import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
 import android.view.Surface;
-import android.view.TextureView;
+import android.view.SurfaceHolder;
 
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -25,8 +25,9 @@ import com.facebook.react.views.art.ARTVirtualNode;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaUnit;
 
+
 /* package */ class FlatARTSurfaceViewShadowNode extends FlatShadowNode
-    implements AndroidView, TextureView.SurfaceTextureListener {
+    implements AndroidView, SurfaceHolder.Callback {
   private boolean mPaddingChanged = false;
   private @Nullable Surface mSurface;
 
@@ -123,21 +124,16 @@ import com.facebook.yoga.YogaUnit;
   }
 
   @Override
-  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-    mSurface = new Surface(surface);
+  public void surfaceCreated(SurfaceHolder holder) {
+    mSurface = holder.getSurface();
     drawOutput();
   }
 
   @Override
-  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-    surface.release();
+  public void surfaceDestroyed(SurfaceHolder holder) {
     mSurface = null;
-    return true;
   }
 
   @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
-
-  @Override
-  public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 }
