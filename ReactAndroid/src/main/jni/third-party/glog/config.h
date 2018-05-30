@@ -132,7 +132,7 @@
 #define PACKAGE_NAME "glog"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "glog 0.3.3"
+#define PACKAGE_STRING "glog 0.3.5"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "glog"
@@ -141,7 +141,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.3.3"
+#define PACKAGE_VERSION "0.3.5"
 
 /* How to access the PC from a struct ucontext */
 /* #undef PC_FROM_UCONTEXT */
@@ -163,7 +163,7 @@
 #define TEST_SRC_DIR "."
 
 /* Version number of package */
-#define VERSION "0.3.3"
+#define VERSION "0.3.5"
 
 /* Stops putting the code inside the Google namespace */
 #define _END_GOOGLE_NAMESPACE_ }
