@@ -423,6 +423,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public void unmountReactApplication() {
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
+      mReactInstanceManager = null;
       mIsAttachedToInstance = false;
     }
     mShouldLogContentAppeared = false;

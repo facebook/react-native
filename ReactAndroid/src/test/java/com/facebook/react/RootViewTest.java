@@ -195,4 +195,15 @@ public class RootViewTest {
         MotionEvent.obtain(50, new Date().getTime(), MotionEvent.ACTION_HOVER_MOVE, 0, 0, 0));
     verifyNoMoreInteractions(eventDispatcher);
   }
+
+  @Test
+  public void testRemountApplication() {
+    ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
+
+    ReactRootView rootView = new ReactRootView(mReactContext);
+
+    rootView.startReactApplication(instanceManager, "");
+    rootView.unmountReactApplication();
+    rootView.startReactApplication(instanceManager, "");
+  }
 }
