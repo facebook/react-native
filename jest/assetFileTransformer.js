@@ -21,7 +21,10 @@ module.exports = {
   // the Jest snapshot.
   process: (_, filename) =>
     `module.exports = {
-      testUri: ${JSON.stringify(path.relative(__dirname, filename).replace(/\\/g, '/'))}
+      testUri: 
+        ${JSON.stringify(
+          path.relative(__dirname, filename).replace(/\\/g, '/'),
+        )}
     };`,
   getCacheKey: createCacheKeyFunction([__filename]),
 };
