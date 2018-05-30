@@ -33,7 +33,8 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -Wall -Werror -fexceptions -frtti
+LOCAL_CFLAGS += -Wall -Werror -fexceptions -frtti -Wno-unused-lambda-capture
+
 CXX11_FLAGS := -std=c++14
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
