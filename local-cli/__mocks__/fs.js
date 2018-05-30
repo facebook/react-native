@@ -9,7 +9,7 @@
 
 'use strict';
 
-const fs = new (require('metro-memory-fs'))({cwd: process.cwd});
+const fs = new (require('metro-memory-fs'))();
 
 function setMockFilesystem(object) {
   fs.reset();
