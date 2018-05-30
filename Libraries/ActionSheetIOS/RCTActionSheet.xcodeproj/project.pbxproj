@@ -141,7 +141,6 @@
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
-					"-Wno-deprecated-declarations",
 				);
 			};
 			name = Debug;
@@ -183,7 +182,6 @@
 				WARNING_CFLAGS = (
 					"-Werror",
 					"-Wall",
-					"-Wno-deprecated-declarations",
 				);
 			};
 			name = Release;
