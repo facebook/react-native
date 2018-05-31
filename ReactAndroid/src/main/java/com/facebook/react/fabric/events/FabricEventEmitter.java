@@ -17,6 +17,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
@@ -26,21 +27,23 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.Scheduler;
 import com.facebook.react.fabric.Work;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.ECLAIR)
-public class FabricEventEmitter implements RCTEventEmitter {
+public class FabricEventEmitter implements RCTEventEmitter, Closeable {
 
   private static final String TAG = FabricEventEmitter.class.getSimpleName();
 
   private final FabricUIManager mFabricUIManager;
   private final Scheduler mScheduler;
 
-  public FabricEventEmitter(Scheduler scheduler, FabricUIManager fabricUIManager) {
-    mScheduler = scheduler;
+  public FabricEventEmitter(ReactApplicationContext context, FabricUIManager fabricUIManager) {
+    mScheduler = new Scheduler(context);
     mFabricUIManager = fabricUIManager;
   }
 
@@ -49,6 +52,11 @@ public class FabricEventEmitter implements RCTEventEmitter {
     //TODO get instanceHandle associated with targetTag.
     int instanceHandle = targetTag;
     mScheduler.scheduleWork(new FabricUIManagerWork(instanceHandle, eventName, params) );
+  }
+
+  @Override
+  public void close() {
+    mScheduler.shutdown();
   }
 
   private class FabricUIManagerWork implements Work {

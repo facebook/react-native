@@ -97,7 +97,7 @@ public class EventDispatcher implements LifecycleEventListener,
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private volatile @Nullable ReactEventEmitter mRCTEventEmitter = new ReactEventEmitter();
+  private volatile @Nullable ReactEventEmitter mReactEventEmitter = new ReactEventEmitter();
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
 
@@ -123,7 +123,7 @@ public class EventDispatcher implements LifecycleEventListener,
           event.getEventName(),
           event.getUniqueID());
     }
-    if (mRCTEventEmitter != null) {
+    if (mReactEventEmitter != null) {
       // If the host activity is paused, the frame callback may not be currently
       // posted. Ensure that it is so that this event gets delivered promptly.
       mCurrentFrameCallback.maybePostFromNonUI();
@@ -162,6 +162,7 @@ public class EventDispatcher implements LifecycleEventListener,
   @Override
   public void onHostDestroy() {
     stopFrameCallback();
+    mReactEventEmitter.stop();
   }
 
   public void onCatalystInstanceDestroyed() {
@@ -251,7 +252,7 @@ public class EventDispatcher implements LifecycleEventListener,
   }
 
   public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
-    mRCTEventEmitter.register(uiManagerType, eventEmitter);
+    mReactEventEmitter.register(uiManagerType, eventEmitter);
   }
 
   private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {
@@ -331,7 +332,7 @@ public class EventDispatcher implements LifecycleEventListener,
             "ScheduleDispatchFrameCallback",
             mHasDispatchScheduledCount.getAndIncrement());
         mHasDispatchScheduled = false;
-        Assertions.assertNotNull(mRCTEventEmitter);
+        Assertions.assertNotNull(mReactEventEmitter);
         synchronized (mEventsToDispatchLock) {
           // We avoid allocating an array and iterator, and "sorting" if we don't need to.
           // This occurs when the size of mEventsToDispatch is zero or one.
@@ -348,7 +349,7 @@ public class EventDispatcher implements LifecycleEventListener,
                 Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
                 event.getEventName(),
                 event.getUniqueID());
-            event.dispatch(mRCTEventEmitter);
+            event.dispatch(mReactEventEmitter);
             event.dispose();
           }
           clearEventsToDispatch();
