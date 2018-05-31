@@ -10,6 +10,7 @@ import android.widget.CompoundButton;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -25,7 +26,7 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext
-              .<EventDispatcher>getEventDispatcher()
+              .getNativeModule(UIManagerModule.class).getEventDispatcher()
               .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
         }
       };

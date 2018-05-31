@@ -1078,8 +1078,6 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
     final ReactApplicationContext reactContext = new ReactApplicationContext(mApplicationContext);
 
-    reactContext.setEventDispatcher(new EventDispatcher(reactContext));
-
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
         ? mNativeModuleCallExceptionHandler
         : mDevSupportManager;

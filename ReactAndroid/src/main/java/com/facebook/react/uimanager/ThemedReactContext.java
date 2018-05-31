@@ -7,7 +7,6 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.react.bridge.EventDispatcher;
 import javax.annotation.Nullable;
 
 import android.app.Activity;
@@ -16,8 +15,6 @@ import android.content.Context;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.LifecycleEventListener;
-
-//
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor.
@@ -55,10 +52,5 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public @Nullable Activity getCurrentActivity() {
     return mReactApplicationContext.getCurrentActivity();
-  }
-
-  @Override
-  public <T extends EventDispatcher> T getEventDispatcher() {
-    return mReactApplicationContext.getEventDispatcher();
   }
 }

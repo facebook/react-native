@@ -9,6 +9,7 @@ package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import com.facebook.react.uimanager.UIManagerModule;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -686,7 +687,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static void dispatchEvent(WebView webView, Event event) {
     ReactContext reactContext = (ReactContext) webView.getContext();
     EventDispatcher eventDispatcher =
-      reactContext.<EventDispatcher>getEventDispatcher();
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     eventDispatcher.dispatchEvent(event);
   }
 }

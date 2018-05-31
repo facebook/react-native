@@ -39,7 +39,6 @@ public class ReactContext extends ContextWrapper {
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
-  private @Nullable EventDispatcher mEventDispatcher;
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
   private @Nullable MessageQueueThread mUiMessageQueueThread;
@@ -351,11 +350,4 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
 
-  public <T extends EventDispatcher> T getEventDispatcher() {
-    return (T) mEventDispatcher;
-  }
-
-  public void setEventDispatcher(EventDispatcher eventDispatcher) {
-    mEventDispatcher = eventDispatcher;
-  }
 }

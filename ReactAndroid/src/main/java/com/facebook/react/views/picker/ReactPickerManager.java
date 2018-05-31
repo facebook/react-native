@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -86,7 +87,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     picker.setOnSelectListener(
             new PickerEventEmitter(
                     picker,
-                    reactContext.<EventDispatcher>getEventDispatcher()));
+                    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
   }
 
   private static class ReactPickerAdapter extends ArrayAdapter<ReadableMap> {

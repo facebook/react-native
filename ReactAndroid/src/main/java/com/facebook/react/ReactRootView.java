@@ -194,7 +194,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
   }
 
@@ -280,7 +280,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
   }
 

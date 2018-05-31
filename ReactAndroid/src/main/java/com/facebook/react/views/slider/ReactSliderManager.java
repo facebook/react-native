@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -107,7 +108,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         @Override
         public void onProgressChanged(SeekBar seekbar, int progress, boolean fromUser) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext.<EventDispatcher>getEventDispatcher().dispatchEvent(
+          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSliderEvent(
                   seekbar.getId(),
                   ((ReactSlider) seekbar).toRealProgress(progress),
@@ -121,7 +122,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         @Override
         public void onStopTrackingTouch(SeekBar seekbar) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext.<EventDispatcher>getEventDispatcher().dispatchEvent(
+          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSlidingCompleteEvent(
                   seekbar.getId(),
                   ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));

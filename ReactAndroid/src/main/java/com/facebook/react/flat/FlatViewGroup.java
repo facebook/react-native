@@ -31,6 +31,7 @@ import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.image.ImageLoadEvent;
 import java.lang.ref.WeakReference;
@@ -126,7 +127,7 @@ import javax.annotation.Nullable;
       }
 
       ReactContext reactContext = ((ReactContext) view.getContext());
-      reactContext.<EventDispatcher>getEventDispatcher().dispatchEvent(
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
           new ImageLoadEvent(reactTag, imageLoadEvent));
     }
   }

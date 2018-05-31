@@ -56,8 +56,7 @@ import javax.annotation.Nullable;
  * EVENT_TYPE_ID_MASK =  0x0000ffff00000000
  * COALESCING_KEY_MASK = 0xffff000000000000
  */
-public class EventDispatcher implements LifecycleEventListener,
-  com.facebook.react.bridge.EventDispatcher {
+public class EventDispatcher implements LifecycleEventListener {
 
   private static final Comparator<Event> EVENT_COMPARATOR = new Comparator<Event>() {
     @Override

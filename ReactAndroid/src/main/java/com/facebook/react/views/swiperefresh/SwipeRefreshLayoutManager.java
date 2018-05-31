@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -88,7 +89,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            reactContext.<EventDispatcher>getEventDispatcher()
+            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
                 .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });

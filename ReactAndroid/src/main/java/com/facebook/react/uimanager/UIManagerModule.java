@@ -130,7 +130,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = reactContext.getEventDispatcher();
+    mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mUIImplementation =
@@ -150,7 +150,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = reactContext.getEventDispatcher();
+    mEventDispatcher = new EventDispatcher(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mUIImplementation =
@@ -704,10 +704,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
   }
 
-  /**
-   * This method is deprecated, use {@link ReactContext#getEventDispatcher()}.
-   */
-  @Deprecated
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }

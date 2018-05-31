@@ -12,6 +12,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -71,7 +72,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       ThemedReactContext reactContext,
       final ReactModalHostView view) {
     final EventDispatcher dispatcher =
-      reactContext.<EventDispatcher>getEventDispatcher();
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     view.setOnRequestCloseListener(
       new ReactModalHostView.OnRequestCloseListener() {
         @Override

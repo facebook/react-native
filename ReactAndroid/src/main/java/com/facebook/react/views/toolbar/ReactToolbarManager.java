@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -117,7 +118,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactToolbar view) {
-    final EventDispatcher mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
+    final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     view.setNavigationOnClickListener(
         new View.OnClickListener() {
           @Override

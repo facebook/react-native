@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import javax.annotation.Nullable;
 
@@ -64,7 +65,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
       final ReactEditText editText
   ) {
     super(target, false);
-    mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
+    mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mEditText = editText;
   }
 

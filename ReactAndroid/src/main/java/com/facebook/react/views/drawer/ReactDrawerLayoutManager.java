@@ -19,6 +19,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -51,7 +52,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerListener(
         new DrawerEventEmitter(
             view,
-            reactContext.<EventDispatcher>getEventDispatcher()));
+            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
   }
 
   @Override
