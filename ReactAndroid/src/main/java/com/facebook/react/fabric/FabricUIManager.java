@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.GuardedRunnable;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -58,17 +59,22 @@ public class FabricUIManager implements UIManager, JSHandler {
   private final ReactApplicationContext mReactApplicationContext;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIViewOperationQueue mUIViewOperationQueue;
+  private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private volatile int mCurrentBatch = 0;
-  private FabricReconciler mFabricReconciler;
+  private final FabricReconciler mFabricReconciler;
+  // TODO: Initialize new Binding (waiting for C++ implemenation to be landed)
+  private FabricBinding mBinding;
+  private JavaScriptContextHolder mContext;
 
   public FabricUIManager(
       ReactApplicationContext reactContext, ViewManagerRegistry viewManagerRegistry) {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mReactApplicationContext = reactContext;
     mViewManagerRegistry = viewManagerRegistry;
+    mNativeViewHierarchyManager = new NativeViewHierarchyManager(viewManagerRegistry);
     mUIViewOperationQueue =
         new UIViewOperationQueue(
-            reactContext, new NativeViewHierarchyManager(viewManagerRegistry), 0);
+            reactContext, mNativeViewHierarchyManager, 0);
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
   }
 
@@ -483,4 +489,14 @@ public class FabricUIManager implements UIManager, JSHandler {
     // -> call to C++
   }
 
+  public long createEventTarget(int targetTag) throws IllegalStateException {
+    long instanceHandle = mNativeViewHierarchyManager.getInstanceHandle(targetTag);
+    if (instanceHandle == 0) {
+      throw new IllegalStateException("View with targetTag " + targetTag + " does not exist.");
+    }
+
+    // TODO: uncomment after diff including Binding is landed
+    // return mBinding.createEventTarget(mContext.get(), instanceHandle);
+    return 0;
+  }
 }

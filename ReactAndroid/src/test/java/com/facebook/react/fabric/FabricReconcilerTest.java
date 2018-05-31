@@ -109,6 +109,7 @@ public class FabricReconcilerTest {
       node = new ReactShadowNodeImpl();
     }
     node.setReactTag(tag);
+    node.setViewClassName("View");
     node.setThemedContext(mock(ThemedReactContext.class));
     return node;
   }

@@ -96,6 +96,22 @@ public class UIViewOperationQueue {
     }
   }
 
+
+  private final class UpdateInstanceHandleOperation extends ViewOperation {
+
+    private final long mInstanceHandle;
+
+    private UpdateInstanceHandleOperation(int tag, long instanceHandle) {
+      super(tag);
+      mInstanceHandle = instanceHandle;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.updateInstanceHandle(mTag, mInstanceHandle);
+    }
+  }
+
   /**
    * Operation for updating native view's position and size. The operation is not created directly
    * by a {@link UIManagerModule} call from JS. Instead it gets inflated using computed position
@@ -680,6 +696,10 @@ public class UIViewOperationQueue {
           viewClassName,
           initialProps));
     }
+  }
+
+  public void enqueueUpdateInstanceHandle(int reactTag, long instanceHandle) {
+    mOperations.add(new UpdateInstanceHandleOperation(reactTag, instanceHandle));
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
