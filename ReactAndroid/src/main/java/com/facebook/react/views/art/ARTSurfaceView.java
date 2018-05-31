@@ -8,13 +8,14 @@
 package com.facebook.react.views.art;
 
 import android.content.Context;
-import android.view.SurfaceView;
+import android.view.TextureView;
 
 /**
  * Custom {@link View} implementation that draws an ARTSurface React view and its children.
  */
-public class ARTSurfaceView extends SurfaceView {
+public class ARTSurfaceView extends TextureView {
   public ARTSurfaceView(Context context) {
     super(context);
+    setOpaque(false);
   }
 }

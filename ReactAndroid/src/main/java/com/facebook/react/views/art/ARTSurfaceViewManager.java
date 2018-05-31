@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.art;
 
-import android.view.SurfaceHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -61,7 +60,7 @@ public class ARTSurfaceViewManager extends
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.getHolder().addCallback((ARTSurfaceViewShadowNode) extraData);
+    root.setSurfaceTextureListener((ARTSurfaceViewShadowNode) extraData);
   }
 
   @Override

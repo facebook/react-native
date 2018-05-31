@@ -7,14 +7,12 @@
 
 package com.facebook.react.flat;
 
-import android.view.SurfaceHolder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.art.ARTSurfaceView;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaNode;
-
 
 public class FlatARTSurfaceViewManager extends
   BaseViewManager<ARTSurfaceView, FlatARTSurfaceViewShadowNode> {
@@ -57,6 +55,6 @@ public class FlatARTSurfaceViewManager extends
 
   @Override
   public void updateExtraData(ARTSurfaceView root, Object extraData) {
-    root.getHolder().addCallback((FlatARTSurfaceViewShadowNode) extraData);
+    root.setSurfaceTextureListener((FlatARTSurfaceViewShadowNode) extraData);
   }
 }
