@@ -1,6 +1,6 @@
 
 [android]
-  target = android-26
+  target = Google Inc.:Google APIs:23
 
 [download]
   max_number_of_retries = 3
