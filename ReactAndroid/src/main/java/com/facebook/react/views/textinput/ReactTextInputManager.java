@@ -34,7 +34,6 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -694,7 +693,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactTextInputTextWatcher(
         final ReactContext reactContext,
         final ReactEditText editText) {
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
       mEditText = editText;
       mPreviousText = null;
     }
@@ -752,7 +751,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new View.OnFocusChangeListener() {
           public void onFocusChange(View v, boolean hasFocus) {
             EventDispatcher eventDispatcher =
-                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+                reactContext.<EventDispatcher>getEventDispatcher();
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
@@ -789,7 +788,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               // Additionally we always generate a `submit` event.
 
               EventDispatcher eventDispatcher =
-                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+                  reactContext.<EventDispatcher>getEventDispatcher();
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
@@ -818,7 +817,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactContentSizeWatcher(ReactEditText editText) {
       mEditText = editText;
       ReactContext reactContext = (ReactContext) editText.getContext();
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
     }
 
     @Override
@@ -857,7 +856,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactSelectionWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = (ReactContext) editText.getContext();
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
     }
 
     @Override
@@ -889,7 +888,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public ReactScrollWatcher(ReactEditText editText) {
       mReactEditText = editText;
       ReactContext reactContext = (ReactContext) editText.getContext();
-      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
     }
 
     @Override

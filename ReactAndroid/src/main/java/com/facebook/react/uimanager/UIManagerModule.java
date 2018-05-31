@@ -26,6 +26,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
@@ -703,6 +704,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.setViewHierarchyUpdateDebugListener(listener);
   }
 
+  /**
+   * This method is deprecated, use {@link ReactContext#getEventDispatcher()}.
+   */
+  @Deprecated
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }

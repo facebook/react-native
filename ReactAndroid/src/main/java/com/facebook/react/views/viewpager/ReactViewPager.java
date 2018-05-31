@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import java.util.ArrayList;
@@ -159,7 +158,7 @@ public class ReactViewPager extends ViewPager {
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
-    mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    mEventDispatcher = reactContext.<EventDispatcher>getEventDispatcher();
     mIsCurrentItemFromJs = false;
     setOnPageChangeListener(new PageChangeListener());
     setAdapter(new Adapter());

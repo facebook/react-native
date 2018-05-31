@@ -370,7 +370,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     private EventDispatcher getEventDispatcher() {
       ReactContext reactContext = getReactContext();
-      return reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      return reactContext.<EventDispatcher>getEventDispatcher();
     }
   }
 }

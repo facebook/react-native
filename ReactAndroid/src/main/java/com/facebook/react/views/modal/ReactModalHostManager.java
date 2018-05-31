@@ -7,18 +7,15 @@
 
 package com.facebook.react.views.modal;
 
-import java.util.Map;
-
 import android.content.DialogInterface;
-
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.Map;
 
 /**
  * View manager for {@link ReactModalHostView} components.
@@ -74,7 +71,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
       ThemedReactContext reactContext,
       final ReactModalHostView view) {
     final EventDispatcher dispatcher =
-      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+      reactContext.<EventDispatcher>getEventDispatcher();
     view.setOnRequestCloseListener(
       new ReactModalHostView.OnRequestCloseListener() {
         @Override

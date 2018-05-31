@@ -9,10 +9,9 @@ package com.facebook.react.views.scroll;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Helper class that deals with emitting Scroll Events.
@@ -69,7 +68,7 @@ public class ReactScrollViewHelper {
     }
 
     ReactContext reactContext = (ReactContext) scrollView.getContext();
-    reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
+    reactContext.<EventDispatcher>getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
             scrollView.getId(),
             scrollEventType,

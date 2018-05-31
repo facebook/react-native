@@ -7,16 +7,10 @@
 
 package com.facebook.react.views.drawer;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
@@ -25,7 +19,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -33,6 +26,9 @@ import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
+import java.lang.reflect.Method;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View Manager for {@link ReactDrawerLayout} components.
@@ -55,7 +51,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerListener(
         new DrawerEventEmitter(
             view,
-            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
+            reactContext.<EventDispatcher>getEventDispatcher()));
   }
 
   @Override

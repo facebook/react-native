@@ -7,24 +7,21 @@
 
 package com.facebook.react.views.swiperefresh;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
+import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
 
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-
-import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
@@ -91,7 +88,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
+            reactContext.<EventDispatcher>getEventDispatcher()
                 .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });
