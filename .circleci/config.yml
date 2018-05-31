@@ -672,3 +672,11 @@ workflows:
   #         filters: *filter-ignore-gh-pages
   #         requires:
   #           - checkout_code
+
+experimental:
+  notify:
+    webhooks:
+      - url: https://code.facebook.com/circle/webhook/
+    branches:
+      only:
+        - master
