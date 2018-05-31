@@ -2,7 +2,10 @@ load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_
 
 rn_android_library(
     name = "fabric",
-    srcs = glob(["*.java"]),
+    srcs = glob([
+        "*.java",
+        "events/*.java",
+    ]),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],

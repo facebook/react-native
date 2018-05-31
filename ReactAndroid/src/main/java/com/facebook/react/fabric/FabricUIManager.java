@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -48,7 +49,7 @@ import javax.annotation.Nullable;
  * API.
  */
 @SuppressWarnings("unused") // used from JNI
-public class FabricUIManager implements UIManager {
+public class FabricUIManager implements UIManager, JSHandler {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
   private static final boolean DEBUG = true;
@@ -475,4 +476,11 @@ public class FabricUIManager implements UIManager {
       throw new RuntimeException(ex.getMessage(), t);
     }
   }
+
+  @Override
+  public void invoke(int instanceHandle, String name, WritableMap params) {
+    Log.e(TAG, "Invoking '" + name + "' on instanceHandle: '" + instanceHandle  + "' from FabricUIManager.");
+    // -> call to C++
+  }
+
 }
