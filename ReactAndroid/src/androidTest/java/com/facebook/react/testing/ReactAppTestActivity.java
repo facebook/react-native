@@ -261,7 +261,7 @@ public class ReactAppTestActivity extends FragmentActivity
                   List<ViewManager> viewManagers =
                     mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext);
                   FabricUIManager fabricUIManager =
-                    new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers));
+                    new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers), jsContext);
                   new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
                   return fabricUIManager;
                 }

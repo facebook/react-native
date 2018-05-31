@@ -10,6 +10,6 @@ import com.facebook.react.bridge.WritableMap;
 
 public interface JSHandler {
 
-  void invoke(int instanceHandle, String name, WritableMap params);
+  void invoke(long instanceHandle, String name, WritableMap params);
 
 }

@@ -49,9 +49,8 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
 
   @Override
   public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap params) {
-    //TODO get instanceHandle associated with targetTag.
-    int instanceHandle = targetTag;
-    mScheduler.scheduleWork(new FabricUIManagerWork(instanceHandle, eventName, params) );
+    long eventTarget = mFabricUIManager.createEventTarget(targetTag);
+    mScheduler.scheduleWork(new FabricUIManagerWork(eventTarget, eventName, params));
   }
 
   @Override
@@ -60,19 +59,26 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
   }
 
   private class FabricUIManagerWork implements Work {
-    private final int mInstanceHandle;
+    private final long mEventTarget;
     private final String mEventName;
     private final WritableMap mParams;
 
-    public FabricUIManagerWork(int instanceHandle, String eventName, @Nullable WritableMap params) {
-      mInstanceHandle = instanceHandle;
+    public FabricUIManagerWork(long eventTarget, String eventName, @Nullable WritableMap params) {
+      mEventTarget = eventTarget;
       mEventName = eventName;
       mParams = params;
     }
 
     @Override
     public void run() {
-      mFabricUIManager.invoke(mInstanceHandle, mEventName, mParams);
+      try {
+        mFabricUIManager.invoke(mEventTarget, mEventName, mParams);
+      } catch (Throwable t) {
+        Log.e(TAG, "Error sending event " + mEventName, t);
+        //TODO: manage exception properly
+      } finally{
+        mFabricUIManager.releaseEventTarget(mEventTarget);
+      }
     }
   }
 

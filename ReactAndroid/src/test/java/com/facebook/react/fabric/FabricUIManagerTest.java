@@ -3,8 +3,10 @@ package com.facebook.react.fabric;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static com.facebook.react.bridge.InstanceHandleHelper.randomInstanceHandle;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -49,8 +51,8 @@ public class FabricUIManagerTest {
         Arrays.<ViewManager>asList(
             new ReactViewManager(), new ReactTextViewManager(), new ReactRawTextManager());
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
-
-    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
+    JavaScriptContextHolder jsContext = mock(JavaScriptContextHolder.class);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext);
   }
 
   @Test

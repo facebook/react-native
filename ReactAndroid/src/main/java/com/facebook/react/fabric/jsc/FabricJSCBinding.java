@@ -28,13 +28,17 @@ public class FabricJSCBinding implements FabricBinding {
 
   private static native HybridData initHybrid();
 
-  private native long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
+  @Override
+  public native long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
 
-  private native void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
+  @Override
+  public native void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
 
-  private native void releaseEventHandler(long jsContextNativePointer, long eventHandlerPointer);
+  @Override
+  public native void releaseEventHandler(long jsContextNativePointer, long eventHandlerPointer);
 
-  private native void dispatchEventToTarget(
+  @Override
+  public native void dispatchEventToTarget(
     long jsContextNativePointer,
     long eventHandlerPointer,
     long eventTargetPointer,
@@ -50,6 +54,7 @@ public class FabricJSCBinding implements FabricBinding {
 
   @Override
   public void installFabric(JavaScriptContextHolder jsContext, FabricUIManager fabricModule) {
+    fabricModule.setBinding(this);
     installFabric(jsContext.get(), fabricModule);
   }
 }

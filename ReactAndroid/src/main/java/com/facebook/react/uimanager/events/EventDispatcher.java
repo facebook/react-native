@@ -115,7 +115,7 @@ public class EventDispatcher implements LifecycleEventListener,
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
     }
-
+    
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
       Systrace.startAsyncFlow(

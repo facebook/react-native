@@ -5,6 +5,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -41,7 +42,8 @@ public class FabricReconcilerTest {
     reactContext.initializeWithInstance(catalystInstance);
     List<ViewManager> viewManagers = new ArrayList<>();
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
-    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
+    JavaScriptContextHolder jsContext = mock(JavaScriptContextHolder.class);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext);
     mMockUIViewOperationQueue = new MockUIViewOperationQueue(reactContext);
     mFabricReconciler = new FabricReconciler(mMockUIViewOperationQueue);
   }
