@@ -98,6 +98,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       ReactShadowNode rootNode = getRootNode(rootTag);
       node.setRootTag(rootNode.getReactTag());
       node.setViewClassName(viewName);
+      node.setInstanceHandle(instanceHandle);
       node.setReactTag(reactTag);
       node.setThemedContext(rootNode.getThemedContext());
 
@@ -139,8 +140,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       Log.d(TAG, "cloneNode \n\tnode: " + node);
     }
     try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone = node.mutableCopy();
+      ReactShadowNode clone = node.mutableCopy(instanceHandle);
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -160,8 +160,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
     }
     try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone = node.mutableCopyWithNewChildren();
+      ReactShadowNode clone = node.mutableCopyWithNewChildren(instanceHandle);
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -182,9 +181,8 @@ public class FabricUIManager implements UIManager, JSHandler {
       Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
     }
     try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone =
-          node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
+      ReactShadowNode clone = node.mutableCopyWithNewProps(instanceHandle,
+            newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -206,9 +204,8 @@ public class FabricUIManager implements UIManager, JSHandler {
       Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
     }
     try {
-      // TODO: Pass new instanceHandle
       ReactShadowNode clone =
-          node.mutableCopyWithNewChildrenAndProps(
+          node.mutableCopyWithNewChildrenAndProps(instanceHandle,
               newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -244,7 +241,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
       //TODO: T27926878 avoid cloning shared child
       if (child.getParent() != null) {
-        child = child.mutableCopy();
+        child = child.mutableCopy(child.getInstanceHandle());
       }
       parent.addChildAt(child, parent.getChildCount());
     } catch (Throwable t) {
@@ -315,7 +312,7 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   private ReactShadowNode calculateDiffingAndCreateNewRootNode(
     ReactShadowNode currentRootShadowNode, List<ReactShadowNode> newChildList) {
-    ReactShadowNode newRootShadowNode = currentRootShadowNode.mutableCopyWithNewChildren();
+    ReactShadowNode newRootShadowNode = currentRootShadowNode.mutableCopyWithNewChildren(currentRootShadowNode.getInstanceHandle());
     for (ReactShadowNode child : newChildList) {
       appendChild(newRootShadowNode, child);
     }
@@ -489,10 +486,10 @@ public class FabricUIManager implements UIManager, JSHandler {
     // -> call to C++
   }
 
-  public long createEventTarget(int targetTag) throws IllegalStateException {
-    long instanceHandle = mNativeViewHierarchyManager.getInstanceHandle(targetTag);
+  public long createEventTarget(int reactTag) throws IllegalStateException {
+    long instanceHandle = mNativeViewHierarchyManager.getInstanceHandle(reactTag);
     if (instanceHandle == 0) {
-      throw new IllegalStateException("View with targetTag " + targetTag + " does not exist.");
+      throw new IllegalStateException("View with reactTag " + reactTag + " does not exist.");
     }
 
     // TODO: uncomment after diff including Binding is landed

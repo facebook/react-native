@@ -55,15 +55,15 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopy() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy();
+    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren();
+    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }

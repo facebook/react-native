@@ -81,7 +81,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
               + parentReactShadowNode + " index: " + childIndex);
         }
 
-        ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy();
+        ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy(oldReactShadowNode.getInstanceHandle());
         parentReactShadowNode.replaceChild(newNode, childIndex);
         return newNode.mYogaNode;
       }
@@ -114,6 +114,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private ReactShadowNode mOriginalReactShadowNode = null;
 
   private @Nullable ReactStylesDiffMap mNewProps;
+  private long mInstanceHandle;
 
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0);
@@ -166,11 +167,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
+  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
     ReactShadowNodeImpl copy = copy();
     Assertions.assertCondition(
         getClass() == copy.getClass(),
         "Copied shadow node must use the same class");
+    copy.mInstanceHandle = instanceHandle;
     if (mYogaNode != null) {
       copy.mYogaNode = mYogaNode.clone();
       copy.mYogaNode.setData(copy);
@@ -185,8 +187,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
     ReactShadowNodeImpl copy = copy();
+    copy.mInstanceHandle = instanceHandle;
     Assertions.assertCondition(
         getClass() == copy.getClass(),
         "Copied shadow node must use the same class");
@@ -204,8 +207,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps) {
-    ReactShadowNodeImpl copy = mutableCopy();
+  public ReactShadowNodeImpl mutableCopyWithNewProps(long instanceHandle,
+      @Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopy(instanceHandle);
     if (newProps != null) {
       copy.updateProperties(newProps);
       copy.mNewProps = newProps;
@@ -214,8 +218,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps) {
-    ReactShadowNodeImpl copy = mutableCopyWithNewChildren();
+  public ReactShadowNodeImpl mutableCopyWithNewChildrenAndProps(long instanceHandle,
+      @Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopyWithNewChildren(instanceHandle);
     if (newProps != null) {
       copy.updateProperties(newProps);
       copy.mNewProps = newProps;
@@ -1106,5 +1111,15 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void setOriginalReactShadowNode(ReactShadowNode node) {
     mOriginalReactShadowNode = node;
+  }
+
+  @Override
+  public long getInstanceHandle() {
+    return mInstanceHandle;
+  }
+
+  @Override
+  public void setInstanceHandle(long instanceHandle) {
+    mInstanceHandle = instanceHandle;
   }
 }

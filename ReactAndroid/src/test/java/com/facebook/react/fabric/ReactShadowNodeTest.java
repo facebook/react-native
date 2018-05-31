@@ -13,7 +13,7 @@ public class ReactShadowNodeTest {
   @Test(expected = AssertionError.class)
   public void testClonedInstance() {
     TestReactShadowNode node = new TestReactShadowNode();
-    node.mutableCopy();
+    node.mutableCopy(node.getInstanceHandle());
   }
 
   private static class TestReactShadowNode extends ReactShadowNodeImpl {}

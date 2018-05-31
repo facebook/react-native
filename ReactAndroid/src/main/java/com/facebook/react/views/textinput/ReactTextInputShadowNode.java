@@ -65,8 +65,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   @Override
-  public ReactTextInputShadowNode mutableCopy() {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy();
+  public ReactTextInputShadowNode mutableCopy(long instanceHandle) {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy(instanceHandle);
     node.initMeasureFunction();
     ThemedReactContext themedContext = getThemedContext();
     if (themedContext != null) {
@@ -80,8 +80,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   }
 
   @Override
-  public ReactTextInputShadowNode mutableCopyWithNewChildren() {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren();
+  public ReactTextInputShadowNode mutableCopyWithNewChildren(long instanceHandle) {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
     node.initMeasureFunction();
     ThemedReactContext themedContext = getThemedContext();
     if (themedContext != null) {

@@ -120,17 +120,20 @@ public class FabricReconciler {
     int reactTag = node.getReactTag();
     if (DEBUG) {
       Log.d(
-          TAG,
-          "manageChildren.enqueueUpdateProperties " +
-              "\n\ttag: " + reactTag +
-              "\n\tviewClass: " + node.getViewClass() +
-              "\n\tnewProps: " + node.getNewProps());
+        TAG,
+        "manageChildren.enqueueUpdateProperties " +
+          "\n\ttag: " + reactTag +
+          "\n\tviewClass: " + node.getViewClass() +
+          "\n\tinstanceHandle: " + node.getInstanceHandle() +
+          "\n\tnewProps: " + node.getNewProps());
     }
 
     if (node.getNewProps() != null) {
       uiViewOperationQueue.enqueueUpdateProperties(
         reactTag, node.getViewClass(), node.getNewProps());
     }
-  }
 
+    uiViewOperationQueue.enqueueUpdateInstanceHandle(
+      reactTag, node.getInstanceHandle());
+  }
 }
