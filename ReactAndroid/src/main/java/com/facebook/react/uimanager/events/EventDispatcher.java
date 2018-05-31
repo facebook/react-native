@@ -7,16 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.util.LongSparseArray;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,6 +17,12 @@ import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * Class responsible for dispatching UI events to JS. The main purpose of this class is to act as an
@@ -59,7 +56,8 @@ import com.facebook.systrace.Systrace;
  * EVENT_TYPE_ID_MASK =  0x0000ffff00000000
  * COALESCING_KEY_MASK = 0xffff000000000000
  */
-public class EventDispatcher implements LifecycleEventListener {
+public class EventDispatcher implements LifecycleEventListener,
+  com.facebook.react.bridge.EventDispatcher {
 
   private static final Comparator<Event> EVENT_COMPARATOR = new Comparator<Event>() {
     @Override
@@ -99,7 +97,7 @@ public class EventDispatcher implements LifecycleEventListener {
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private volatile @Nullable RCTEventEmitter mRCTEventEmitter;
+  private volatile @Nullable ReactEventEmitter mRCTEventEmitter = new ReactEventEmitter();
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
 
@@ -153,9 +151,6 @@ public class EventDispatcher implements LifecycleEventListener {
 
   @Override
   public void onHostResume() {
-    if (mRCTEventEmitter == null) {
-      mRCTEventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
-    }
     mCurrentFrameCallback.maybePostFromNonUI();
   }
 
@@ -253,6 +248,10 @@ public class EventDispatcher implements LifecycleEventListener {
     return viewTag |
         (((long) eventTypeId) & 0xffff) << 32 |
         (((long) coalescingKey) & 0xffff) << 48;
+  }
+
+  public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
+    mRCTEventEmitter.register(uiManagerType, eventEmitter);
   }
 
   private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {

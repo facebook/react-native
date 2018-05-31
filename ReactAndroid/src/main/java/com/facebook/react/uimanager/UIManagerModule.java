@@ -9,12 +9,11 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
-
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 
 import android.content.ComponentCallbacks2;
-import android.content.res.Configuration;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
@@ -42,6 +41,7 @@ import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcher(reactContext);
+    mEventDispatcher = reactContext.getEventDispatcher();
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mUIImplementation =
@@ -149,7 +149,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    mEventDispatcher = new EventDispatcher(reactContext);
+    mEventDispatcher = reactContext.getEventDispatcher();
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mUIImplementation =
@@ -182,10 +182,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    mEventDispatcher.registerEventEmitter(
+      DEFAULT,
+      getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   @Override
   public void onHostResume() {
+
     mUIImplementation.onHostResume();
   }
 

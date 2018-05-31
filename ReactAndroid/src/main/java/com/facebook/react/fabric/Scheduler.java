@@ -22,6 +22,7 @@ public class Scheduler {
   public void scheduleWork(Work work) {
     // TODO T26717866 this method needs to be implemented. The current implementation is just for
     // testing purpose.
+
     work.run();
   }
 
