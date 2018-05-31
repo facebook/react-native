@@ -20,7 +20,7 @@
   },
   "jest": {
     "transform": {
-      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
+      "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
