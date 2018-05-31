@@ -56,6 +56,6 @@ python_binary(
 
 remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "7d659f671541394a8bc2b9f909950aa2a5ec87ff",
-    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1",
+    sha1 = "da5771a9ac6e8f3a461360eed3c6f921dc7580fd",
+    url = "mvn:com.android.support:appcompat-v7:aar:26.1.0",
 )
