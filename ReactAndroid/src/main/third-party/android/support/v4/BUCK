@@ -5,9 +5,27 @@ android_library(
       ":lib-support-v4-support-core-utils",
       ":lib-support-v4-support-core-ui",
       ":lib-support-v4-support-media-compat",
-      ":lib-support-v4-support-fragment"
+      ":lib-support-v4-support-fragment",
+      ":android-lifecycle-runtime",
+      ":android-lifecycle-common.jar",
+      ":android-lifecycle-core.jar"
     ],
     visibility = ["PUBLIC"],
+)
+
+prebuilt_jar(
+    name = "android-lifecycle-common.jar",
+    binary_jar = ":android-lifecycle-common-jar"
+)
+
+prebuilt_jar(
+    name = "android-lifecycle-core.jar",
+    binary_jar = ":android-lifecycle-core-jar"
+)
+
+android_prebuilt_aar(
+    name = "android-lifecycle-runtime",
+    aar = ":android-lifecycle-runtime-aar",
 )
 
 android_prebuilt_aar(
@@ -33,6 +51,24 @@ android_prebuilt_aar(
 android_prebuilt_aar(
     name = "lib-support-v4-support-fragment",
     aar = ":lib-support-v4-support-fragment-aar",
+)
+
+remote_file(
+  name = "android-lifecycle-runtime-aar",
+  sha1 = "30c60a8a357ee1321ffd0c9f08ef54b24045cd10",
+  url = "mvn:android.arch.lifecycle:runtime:aar:1.0.0"
+)
+
+remote_file(
+  name = "android-lifecycle-common-jar",
+  sha1 = "e414a4cb28434e25c4f6aa71426eb20cf4874ae9",
+  url = "mvn:android.arch.lifecycle:common:jar:1.0.0"
+)
+
+remote_file(
+  name = "android-lifecycle-core-jar",
+  sha1 = "a2d487452376193fc8c103dd2b9bd5f2b1b44563",
+  url = "mvn:android.arch.core:common:jar:1.0.0"
 )
 
 remote_file(
