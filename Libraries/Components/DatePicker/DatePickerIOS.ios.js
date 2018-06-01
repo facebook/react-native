@@ -40,6 +40,7 @@ type Props = $ReadOnly<{|
   minimumDate?: ?Date,
   minuteInterval?: ?(1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30),
   mode?: ?('date' | 'time' | 'datetime'),
+  onChange?: ?(event: Event) => void,
   onDateChange: (date: Date) => void,
   timeZoneOffsetInMinutes?: ?number,
 |}>;
@@ -74,6 +75,15 @@ const DatePickerIOS = ((createReactClass({
      * to allow you to have native be source of truth.
      */
     initialDate: PropTypes.instanceOf(Date),
+
+    /**
+     * Date change handler.
+     *
+     * This is called when the user changes the date or time in the UI.
+     * The first and only argument is an Event. For getting the date the picker
+     * was changed to, use onDateChange instead.
+     */
+    onChange: PropTypes.func,
 
     /**
      * Date change handler.
@@ -144,7 +154,6 @@ const DatePickerIOS = ((createReactClass({
     const nativeTimeStamp = event.nativeEvent.timestamp;
     this.props.onDateChange &&
       this.props.onDateChange(new Date(nativeTimeStamp));
-    // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
   },
 
@@ -193,16 +202,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', {
-  propTypes: {
-    ...DatePickerIOS.propTypes,
-    date: PropTypes.number,
-    locale: PropTypes.string,
-    minimumDate: PropTypes.number,
-    maximumDate: PropTypes.number,
-    onDateChange: () => null,
-    onChange: PropTypes.func,
-  },
-});
+const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
 
 module.exports = DatePickerIOS;
