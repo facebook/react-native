@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include <fabric/attributedstring/TextPrimitives.h>
+#include <fabric/attributedstring/primitives.h>
 #include <fabric/core/LayoutPrimitives.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/debug/DebugStringConvertible.h>

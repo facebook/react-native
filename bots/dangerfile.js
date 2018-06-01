@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -11,7 +13,7 @@ const fs = require('fs');
 const includes = require('lodash.includes');
 const minimatch = require('minimatch');
 
-const { danger, fail, markdown, message, warn } = require('danger');
+const {danger, fail, markdown, message, warn} = require('danger');
 
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
@@ -22,13 +24,16 @@ if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
 const packageChanged = includes(danger.git.modified_files, 'package.json');
 if (packageChanged) {
   const title = ':lock: package.json';
-  const idea = 'Changes were made to package.json. ' +
+  const idea =
+    'Changes were made to package.json. ' +
     'This will require a manual import by a Facebook employee.';
   warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if a test plan is missing.
-const includesTestPlan = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('test plan');
+const includesTestPlan =
+  danger.github.pr.body &&
+  danger.github.pr.body.toLowerCase().includes('test plan');
 if (!includesTestPlan) {
   const title = ':clipboard: Test Plan';
   const idea = 'This PR appears to be missing a Test Plan.';
@@ -36,9 +41,13 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[\s?(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\s?\]\s*?\[\s?(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\s?\]\s*?\[(.*)\]\s*?\-\s*?(.*)/ig;
-const includesReleaseNotes = danger.github.pr.body && danger.github.pr.body.toLowerCase().includes('release notes');
-const correctlyFormattedReleaseNotes = releaseNotesRegex.test(danger.github.pr.body);
+const releaseNotesRegex = /\[\s?(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\s?\]\s*?\[\s?(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\s?\]\s*?\[(.*)\]\s*?\-\s*?(.*)/gi;
+const includesReleaseNotes =
+  danger.github.pr.body &&
+  danger.github.pr.body.toLowerCase().includes('release notes');
+const correctlyFormattedReleaseNotes = releaseNotesRegex.test(
+  danger.github.pr.body,
+);
 
 if (!includesReleaseNotes) {
   const title = ':clipboard: Release Notes';
@@ -54,11 +63,20 @@ if (!includesReleaseNotes) {
 var bigPRThreshold = 600;
 if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   const title = ':exclamation: Big PR';
-  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.github.pr.additions + danger.github.pr.deletions} lines.`;
+  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger
+    .github.pr.additions + danger.github.pr.deletions} lines.`;
   warn(`${title} - <i>${idea}</i>`);
-} else if (danger.git.modified_files + danger.git.added_files + danger.git.deleted_files > bigPRThreshold) {
+} else if (
+  danger.git.modified_files +
+    danger.git.added_files +
+    danger.git.deleted_files >
+  bigPRThreshold
+) {
   const title = ':exclamation: Big PR';
-  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger.git.modified_files + danger.git.added_files + danger.git.deleted_files} files.`;
+  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger
+    .git.modified_files +
+    danger.git.added_files +
+    danger.git.deleted_files} files.`;
   warn(`${title} - <i>${idea}</i>`);
 }
 
@@ -68,10 +86,12 @@ const isMergeRefMaster = danger.github.pr.base.ref === 'master';
 const isMergeRefStable = danger.github.pr.base.ref.indexOf('-stable') !== -1;
 if (!isMergeRefMaster && isMergeRefStable) {
   const title = ':grey_question: Base Branch';
-  const idea = 'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';
+  const idea =
+    'The base branch for this PR is something other than `master`. Are you sure you want to merge these changes into a stable release? If you are interested in backporting updates to an older release, the suggested approach is to land those changes on `master` first and then cherry-pick the commits into the branch for that release. The [Releases Guide](https://github.com/facebook/react-native/blob/master/Releases.md) has more information.';
   warn(`${title} - <i>${idea}</i>`);
 } else if (!isMergeRefMaster && !isMergeRefStable) {
   const title = ':exclamation: Base Branch';
-  const idea = 'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
+  const idea =
+    'The base branch for this PR is something other than `master`. [Are you sure you want to target something other than the `master` branch?](http://facebook.github.io/react-native/docs/contributing.html#pull-requests)';
   fail(`${title} - <i>${idea}</i>`);
 }

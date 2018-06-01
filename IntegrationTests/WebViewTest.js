@@ -9,18 +9,18 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {WebView} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {WebView} = ReactNative;
 
-var {TestModule} = ReactNative.NativeModules;
+const {TestModule} = ReactNative.NativeModules;
 
 class WebViewTest extends React.Component {
   render() {
-    var firstMessageReceived = false;
-    var secondMessageReceived = false;
+    let firstMessageReceived = false;
+    let secondMessageReceived = false;
     function processMessage(e) {
-      var message = e.nativeEvent.data;
+      const message = e.nativeEvent.data;
       if (message === 'First') {
         firstMessageReceived = true;
       }
@@ -41,7 +41,7 @@ class WebViewTest extends React.Component {
         throw new Error('First message got lost');
       }
     }
-    var html =
+    const html =
       'Hello world' +
       '<script>' +
       "window.setTimeout(function(){window.postMessage('First'); window.postMessage('Second')}, 0)" +
@@ -56,7 +56,7 @@ class WebViewTest extends React.Component {
       );
     }, 10000);
 
-    var source = {
+    const source = {
       html: html,
     };
 

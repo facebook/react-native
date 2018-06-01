@@ -1,5 +1,3 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -338,7 +336,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
-         , nullptr
       ));
     }
   } else {

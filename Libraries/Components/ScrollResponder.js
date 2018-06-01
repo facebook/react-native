@@ -207,8 +207,8 @@ const ScrollResponderMixin = {
       !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
     if (
       keyboardNeverPersistTaps &&
-      currentlyFocusedTextInput != null
-      /* && !TextInputState.isTextInput(e.target) */
+      currentlyFocusedTextInput != null &&
+      !TextInputState.isTextInput(e.target)
     ) {
       return true;
     }

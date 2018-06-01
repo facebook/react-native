@@ -1,9 +1,16 @@
-// Copyright 2015-present Facebook. All Rights Reserved.
+// Copyright (c) 2015-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 buildscript {
     repositories {
         jcenter()
         mavenLocal()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
@@ -18,6 +25,10 @@ allprojects {
     repositories {
         jcenter()
         mavenLocal()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
 
         def androidSdk = System.getenv("ANDROID_SDK")
         maven {

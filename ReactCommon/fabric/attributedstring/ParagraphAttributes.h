@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include <fabric/attributedstring/TextPrimitives.h>
+#include <fabric/attributedstring/primitives.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/graphics/Geometry.h>
 
@@ -39,7 +39,7 @@ public:
   int maximumNumberOfLines {0};
 
   /*
-   * In case if a text cannot fit given boudaures, defines a place where
+   * In case if a text cannot fit given boundaries, defines a place where
    * an ellipsize should be placed.
    */
   EllipsizeMode ellipsizeMode {EllipsizeMode::Clip};

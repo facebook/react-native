@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "FBJNI_TARGET", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "ANDROID", "IS_OSS_BUILD")
+load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "AndroidJSCFactory.h",

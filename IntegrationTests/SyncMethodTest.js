@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
 
 const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
 

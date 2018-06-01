@@ -10,14 +10,14 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {NativeAppEventEmitter, StyleSheet, Text, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {NativeAppEventEmitter, StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var deepDiffer = require('deepDiffer');
+const deepDiffer = require('deepDiffer');
 
-var TEST_PAYLOAD = {foo: 'bar'};
+const TEST_PAYLOAD = {foo: 'bar'};
 
 type AppEvent = {data: Object, ts: number};
 type State = {
@@ -31,7 +31,7 @@ class AppEventsTest extends React.Component<{}, State> {
 
   componentDidMount() {
     NativeAppEventEmitter.addListener('testEvent', this.receiveEvent);
-    var event = {data: TEST_PAYLOAD, ts: Date.now()};
+    const event = {data: TEST_PAYLOAD, ts: Date.now()};
     TestModule.sendAppEvent('testEvent', event);
     this.setState({sent: event});
   }
@@ -40,7 +40,7 @@ class AppEventsTest extends React.Component<{}, State> {
     if (deepDiffer(event.data, TEST_PAYLOAD)) {
       throw new Error('Received wrong event: ' + JSON.stringify(event));
     }
-    var elapsed = Date.now() - event.ts + 'ms';
+    const elapsed = Date.now() - event.ts + 'ms';
     this.setState({received: event, elapsed}, () => {
       TestModule.markTestCompleted();
     });
@@ -57,7 +57,7 @@ class AppEventsTest extends React.Component<{}, State> {
 
 AppEventsTest.displayName = 'AppEventsTest';
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     margin: 40,
   },

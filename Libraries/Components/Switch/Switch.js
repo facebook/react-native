@@ -14,6 +14,7 @@ const ColorPropType = require('ColorPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
@@ -21,10 +22,29 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
-type DefaultProps = {
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+const RCTSwitch =
+  Platform.OS === 'android'
+    ? requireNativeComponent('AndroidSwitch')
+    : requireNativeComponent('RCTSwitch');
+
+type DefaultProps = $ReadOnly<{|
   value: boolean,
   disabled: boolean,
-};
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  value?: ?boolean,
+  disabled?: ?boolean,
+  onValueChange?: ?Function,
+  testID?: ?string,
+  tintColor?: ?ColorValue,
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
+|}>;
 
 /**
  * Renders a boolean input.
@@ -144,21 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-if (Platform.OS === 'android') {
-  var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
-    nativeOnly: {
-      onChange: true,
-      on: true,
-      enabled: true,
-      trackTintColor: true,
-    },
-  });
-} else {
-  var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
-    nativeOnly: {
-      onChange: true,
-    },
-  });
-}
-
-module.exports = Switch;
+module.exports = ((Switch: any): Class<ReactNative.NativeComponent<Props>>);

@@ -25,6 +25,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREA
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
@@ -79,13 +80,13 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1012,7 +1013,7 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = rootView.isFabric() ? catalystInstance.getJSIModule(UIManager.class) : catalystInstance.getNativeModule(UIManagerModule.class);
+    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.invokeJSEntryPoint();
@@ -1038,7 +1039,7 @@ public class ReactInstanceManager {
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.detachViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
-    if (rootView.isFabric()) {
+    if (rootView.getUIManagerType() == FABRIC) {
       catalystInstance.getJSModule(ReactFabric.class)
         .unmountComponentAtNode(rootView.getId());
     } else {

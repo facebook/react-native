@@ -19,9 +19,9 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
   fontProperties.size = textAttributes.fontSize;
-  fontProperties.style = textAttributes.fontStyle.has_value() ? RCTFontStyleFromFontStyle(textAttributes.fontStyle.value()) : RCTFontStyleUndefined;
-  fontProperties.variant = textAttributes.fontVariant.has_value() ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value()) : RCTFontVariantDefault;
-  fontProperties.weight = textAttributes.fontWeight.has_value() ? CGFloat(textAttributes.fontWeight.value()) : NAN;
+  fontProperties.style = textAttributes.fontStyle.hasValue() ? RCTFontStyleFromFontStyle(textAttributes.fontStyle.value()) : RCTFontStyleUndefined;
+  fontProperties.variant = textAttributes.fontVariant.hasValue() ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value()) : RCTFontVariantDefault;
+  fontProperties.weight = textAttributes.fontWeight.hasValue() ? CGFloat(textAttributes.fontWeight.value()) : NAN;
   fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
 
   return RCTFontWithFontProperties(fontProperties);
@@ -82,7 +82,7 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   // Paragraph Style
   NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
   BOOL isParagraphStyleUsed = NO;
-  if (textAttributes.alignment.has_value()) {
+  if (textAttributes.alignment.hasValue()) {
     TextAlignment textAlignment = textAttributes.alignment.value_or(TextAlignment::Natural);
     if (textAttributes.layoutDirection.value_or(LayoutDirection::LeftToRight) == LayoutDirection::RightToLeft) {
       if (textAlignment == TextAlignment::Right) {
@@ -97,7 +97,7 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
     isParagraphStyleUsed = YES;
   }
 
-  if (textAttributes.baseWritingDirection.has_value()) {
+  if (textAttributes.baseWritingDirection.hasValue()) {
     paragraphStyle.baseWritingDirection =
       RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
     isParagraphStyleUsed = YES;
@@ -151,7 +151,7 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   }
 
   // Shadow
-  if (textAttributes.textShadowOffset.has_value()) {
+  if (textAttributes.textShadowOffset.hasValue()) {
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize {textShadowOffset.x, textShadowOffset.y};

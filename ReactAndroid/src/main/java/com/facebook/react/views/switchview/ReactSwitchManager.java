@@ -12,19 +12,19 @@ import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -56,15 +56,15 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopy() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy();
+    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren();
+    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }

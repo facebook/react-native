@@ -8,29 +8,21 @@
 #include "RawTextProps.h"
 
 #include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
 
-void RawTextProps::apply(const RawProps &rawProps) {
-  Props::apply(rawProps);
-
-  applyRawProp(rawProps, "text", text_);
-}
-
-#pragma mark - Getters
-
-std::string RawTextProps::getText() const {
-  return text_;
-}
+RawTextProps::RawTextProps(const RawTextProps &sourceProps, const RawProps &rawProps):
+  Props(sourceProps, rawProps),
+  text(convertRawProp(rawProps, "text", sourceProps.text)) {};
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("text", text_));
-  return list;
+  return {
+    debugStringConvertibleItem("text", text)
+  };
 }
 
 } // namespace react

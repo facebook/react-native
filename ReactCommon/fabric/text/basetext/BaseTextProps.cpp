@@ -7,61 +7,61 @@
 
 #include "BaseTextProps.h"
 
-#include <fabric/attributedstring/textValuesConversions.h>
+#include <fabric/attributedstring/conversions.h>
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/graphicValuesConversions.h>
-#include <fabric/text/propsConversions.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
 
-void BaseTextProps::apply(const RawProps &rawProps) {
+static TextAttributes convertRawProp(const RawProps &rawProps, const TextAttributes defaultTextAttributes) {
+  TextAttributes textAttributes;
+
   // Color
-  applyRawProp(rawProps, "color", textAttributes_.foregroundColor);
-  applyRawProp(rawProps, "backgroundColor", textAttributes_.backgroundColor);
-  applyRawProp(rawProps, "opacity", textAttributes_.opacity);
+  textAttributes.foregroundColor = convertRawProp(rawProps, "color", defaultTextAttributes.foregroundColor);
+  textAttributes.backgroundColor = convertRawProp(rawProps, "backgroundColor", defaultTextAttributes.backgroundColor);
+  textAttributes.opacity = convertRawProp(rawProps, "opacity", defaultTextAttributes.opacity);
 
   // Font
-  applyRawProp(rawProps, "fontFamily", textAttributes_.fontFamily);
-  applyRawProp(rawProps, "fontSize", textAttributes_.fontSize);
-  applyRawProp(rawProps, "fontSizeMultiplier", textAttributes_.fontSizeMultiplier);
-  applyRawProp(rawProps, "fontWeight", textAttributes_.fontWeight);
-  applyRawProp(rawProps, "fontStyle", textAttributes_.fontStyle);
-  applyRawProp(rawProps, "fontVariant", textAttributes_.fontVariant);
-  applyRawProp(rawProps, "allowFontScaling", textAttributes_.allowFontScaling);
-  applyRawProp(rawProps, "letterSpacing", textAttributes_.letterSpacing);
+  textAttributes.fontFamily = convertRawProp(rawProps, "fontFamily", defaultTextAttributes.fontFamily);
+  textAttributes.fontSize = convertRawProp(rawProps, "fontSize", defaultTextAttributes.fontSize);
+  textAttributes.fontSizeMultiplier = convertRawProp(rawProps, "fontSizeMultiplier", defaultTextAttributes.fontSizeMultiplier);
+  textAttributes.fontWeight = convertRawProp(rawProps, "fontWeight", defaultTextAttributes.fontWeight);
+  textAttributes.fontStyle = convertRawProp(rawProps, "fontStyle", defaultTextAttributes.fontStyle);
+  textAttributes.fontVariant = convertRawProp(rawProps, "fontVariant", defaultTextAttributes.fontVariant);
+  textAttributes.allowFontScaling = convertRawProp(rawProps, "allowFontScaling", defaultTextAttributes.allowFontScaling);
+  textAttributes.letterSpacing = convertRawProp(rawProps, "letterSpacing", defaultTextAttributes.letterSpacing);
 
   // Paragraph
-  applyRawProp(rawProps, "lineHeight", textAttributes_.lineHeight);
-  applyRawProp(rawProps, "alignment", textAttributes_.alignment);
-  applyRawProp(rawProps, "baseWritingDirection", textAttributes_.baseWritingDirection);
+  textAttributes.lineHeight = convertRawProp(rawProps, "lineHeight", defaultTextAttributes.lineHeight);
+  textAttributes.alignment = convertRawProp(rawProps, "alignment", defaultTextAttributes.alignment);
+  textAttributes.baseWritingDirection = convertRawProp(rawProps, "baseWritingDirection", defaultTextAttributes.baseWritingDirection);
 
   // Decoration
-  applyRawProp(rawProps, "textDecorationColor", textAttributes_.textDecorationColor);
-  applyRawProp(rawProps, "textDecorationLineType", textAttributes_.textDecorationLineType);
-  applyRawProp(rawProps, "textDecorationLineStyle", textAttributes_.textDecorationLineStyle);
-  applyRawProp(rawProps, "textDecorationLinePattern", textAttributes_.textDecorationLinePattern);
+  textAttributes.textDecorationColor = convertRawProp(rawProps, "textDecorationColor", defaultTextAttributes.textDecorationColor);
+  textAttributes.textDecorationLineType = convertRawProp(rawProps, "textDecorationLineType", defaultTextAttributes.textDecorationLineType);
+  textAttributes.textDecorationLineStyle = convertRawProp(rawProps, "textDecorationLineStyle", defaultTextAttributes.textDecorationLineStyle);
+  textAttributes.textDecorationLinePattern = convertRawProp(rawProps, "textDecorationLinePattern", defaultTextAttributes.textDecorationLinePattern);
 
   // Shadow
-  applyRawProp(rawProps, "textShadowOffset", textAttributes_.textShadowOffset);
-  applyRawProp(rawProps, "textShadowRadius", textAttributes_.textShadowRadius);
-  applyRawProp(rawProps, "textShadowColor", textAttributes_.textShadowColor);
+  textAttributes.textShadowOffset = convertRawProp(rawProps, "textShadowOffset", defaultTextAttributes.textShadowOffset);
+  textAttributes.textShadowRadius = convertRawProp(rawProps, "textShadowRadius", defaultTextAttributes.textShadowRadius);
+  textAttributes.textShadowColor = convertRawProp(rawProps, "textShadowColor", defaultTextAttributes.textShadowColor);
 
   // Special
-  applyRawProp(rawProps, "isHighlighted", textAttributes_.isHighlighted);
+  textAttributes.isHighlighted = convertRawProp(rawProps, "isHighlighted", defaultTextAttributes.isHighlighted);
+
+  return textAttributes;
 }
 
-#pragma mark - Getters
-
-TextAttributes BaseTextProps::getTextAttributes() const {
-  return textAttributes_;
-}
+BaseTextProps::BaseTextProps(const BaseTextProps &sourceProps, const RawProps &rawProps):
+  textAttributes(convertRawProp(rawProps, sourceProps.textAttributes)) {};
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
-  return textAttributes_.getDebugProps();
+  return textAttributes.getDebugProps();
 }
 
 } // namespace react

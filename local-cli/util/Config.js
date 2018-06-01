@@ -78,6 +78,8 @@ const Config = {
     getModulesRunBeforeMainModule: () => [
       require.resolve('../../Libraries/Core/InitializeCore'),
     ],
+    getTransformModulePath: () =>
+      require.resolve('metro/src/reactNativeTransformer'),
   }: ConfigT),
 
   find(startDir: string): ConfigT {

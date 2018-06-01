@@ -25,7 +25,9 @@ class TextProps:
   public BaseTextProps {
 
 public:
-  void apply(const RawProps &rawProps) override;
+
+  TextProps() = default;
+  TextProps(const TextProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - DebugStringConvertible
 

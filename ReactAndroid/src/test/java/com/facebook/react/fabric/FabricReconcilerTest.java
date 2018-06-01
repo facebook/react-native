@@ -1,21 +1,22 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 package com.facebook.react.fabric;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.fabric.FabricReconciler;
-import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewAtIndex;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class FabricReconcilerTest {
     reactContext.initializeWithInstance(catalystInstance);
     List<ViewManager> viewManagers = new ArrayList<>();
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
-    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
+    JavaScriptContextHolder jsContext = mock(JavaScriptContextHolder.class);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext);
     mMockUIViewOperationQueue = new MockUIViewOperationQueue(reactContext);
     mFabricReconciler = new FabricReconciler(mMockUIViewOperationQueue);
   }
@@ -112,6 +114,7 @@ public class FabricReconcilerTest {
       node = new ReactShadowNodeImpl();
     }
     node.setReactTag(tag);
+    node.setViewClassName("View");
     node.setThemedContext(mock(ThemedReactContext.class));
     return node;
   }

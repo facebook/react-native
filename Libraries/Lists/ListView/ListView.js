@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const InternalListViewType = require('InternalListViewType');
 const ListViewDataSource = require('ListViewDataSource');
 const Platform = require('Platform');
 const React = require('React');
@@ -18,25 +19,42 @@ const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const ScrollView = require('ScrollView');
 const ScrollResponder = require('ScrollResponder');
 const StaticRenderer = require('StaticRenderer');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const TimerMixin = require('react-timer-mixin');
 const View = require('View');
-
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const cloneReferencedElement = require('react-clone-referenced-element');
 const createReactClass = require('create-react-class');
 const isEmpty = require('isEmpty');
 const merge = require('merge');
+
+import type {Props as ScrollViewProps} from 'ScrollView';
 
 const DEFAULT_PAGE_SIZE = 1;
 const DEFAULT_INITIAL_ROWS = 10;
 const DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 const DEFAULT_END_REACHED_THRESHOLD = 1000;
 const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+
+type Props = $ReadOnly<{|
+  ...ScrollViewProps,
+
+  dataSource: ListViewDataSource,
+  renderSeparator?: ?Function,
+  renderRow: Function,
+  initialListSize?: ?number,
+  onEndReached?: ?Function,
+  onEndReachedThreshold?: ?number,
+  pageSize?: ?number,
+  renderFooter?: ?Function,
+  renderHeader?: ?Function,
+  renderSectionHeader?: ?Function,
+  renderScrollComponent?: ?Function,
+  scrollRenderAheadDistance?: ?number,
+  onChangeVisibleRows?: ?Function,
+  removeClippedSubviews?: ?boolean,
+  stickySectionHeadersEnabled?: ?boolean,
+  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  enableEmptySections?: ?boolean,
+|}>;
 
 /**
  * DEPRECATED - use one of the new list components, such as [`FlatList`](docs/flatlist.html)
@@ -99,7 +117,7 @@ const ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
-  _scrollComponent: (null: any),
+  _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
   _prevRenderedRowsCount: 0,
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
@@ -423,9 +441,6 @@ const ListView = createReactClass({
       const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
-          /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
-           * an error found when Flow v0.54 was deployed. To see the error
-           * delete this comment and run Flow. */
           const warning = require('fbjs/lib/warning');
           warning(
             false,
@@ -565,7 +580,7 @@ const ListView = createReactClass({
       );
   },
 
-  _setScrollComponentRef: function(scrollComponent: Object) {
+  _setScrollComponentRef: function(scrollComponent) {
     this._scrollComponent = scrollComponent;
   },
 
@@ -762,4 +777,4 @@ const ListView = createReactClass({
   },
 });
 
-module.exports = ListView;
+module.exports = ((ListView: any): Class<InternalListViewType<Props>>);

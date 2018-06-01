@@ -7,9 +7,11 @@
 
 #include "TextAttributes.h"
 
-#include <fabric/graphics/debugStringConvertibleUtils.h>
-#include <fabric/graphics/graphicValuesConversions.h>
-#include "debugStringConvertibleUtils.h"
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/core/conversions.h>
+#include <fabric/graphics/conversions.h>
+
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -24,38 +26,36 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily : fontFamily;
   fontSize = !isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
   fontSizeMultiplier = !isnan(textAttributes.fontSizeMultiplier) ? textAttributes.fontSizeMultiplier : fontSizeMultiplier;
-  fontWeight = textAttributes.fontWeight.has_value() ? textAttributes.fontWeight : fontWeight;
-  fontStyle = textAttributes.fontStyle.has_value() ? textAttributes.fontStyle : fontStyle;
-  fontVariant = textAttributes.fontVariant.has_value() ? textAttributes.fontVariant : fontVariant;
-  allowFontScaling = textAttributes.allowFontScaling.has_value() ? textAttributes.allowFontScaling : allowFontScaling;
+  fontWeight = textAttributes.fontWeight.hasValue() ? textAttributes.fontWeight : fontWeight;
+  fontStyle = textAttributes.fontStyle.hasValue() ? textAttributes.fontStyle : fontStyle;
+  fontVariant = textAttributes.fontVariant.hasValue() ? textAttributes.fontVariant : fontVariant;
+  allowFontScaling = textAttributes.allowFontScaling.hasValue() ? textAttributes.allowFontScaling : allowFontScaling;
   letterSpacing = !isnan(textAttributes.letterSpacing) ? textAttributes.letterSpacing : letterSpacing;
 
   // Paragraph Styles
   lineHeight = !isnan(textAttributes.lineHeight) ? textAttributes.lineHeight : lineHeight;
-  alignment = textAttributes.alignment.has_value() ? textAttributes.alignment : alignment;
-  baseWritingDirection = textAttributes.baseWritingDirection.has_value() ? textAttributes.baseWritingDirection : baseWritingDirection;
+  alignment = textAttributes.alignment.hasValue() ? textAttributes.alignment : alignment;
+  baseWritingDirection = textAttributes.baseWritingDirection.hasValue() ? textAttributes.baseWritingDirection : baseWritingDirection;
 
   // Decoration
   textDecorationColor = textAttributes.textDecorationColor ? textAttributes.textDecorationColor : textDecorationColor;
-  textDecorationLineType = textAttributes.textDecorationLineType.has_value() ? textAttributes.textDecorationLineType : textDecorationLineType;
-  textDecorationLineStyle = textAttributes.textDecorationLineStyle.has_value() ? textAttributes.textDecorationLineStyle : textDecorationLineStyle;
-  textDecorationLinePattern = textAttributes.textDecorationLinePattern.has_value() ? textAttributes.textDecorationLinePattern : textDecorationLinePattern;
+  textDecorationLineType = textAttributes.textDecorationLineType.hasValue() ? textAttributes.textDecorationLineType : textDecorationLineType;
+  textDecorationLineStyle = textAttributes.textDecorationLineStyle.hasValue() ? textAttributes.textDecorationLineStyle : textDecorationLineStyle;
+  textDecorationLinePattern = textAttributes.textDecorationLinePattern.hasValue() ? textAttributes.textDecorationLinePattern : textDecorationLinePattern;
 
   // Shadow
-  textShadowOffset = textAttributes.textShadowOffset.has_value() ? textAttributes.textShadowOffset.value() : textShadowOffset;
+  textShadowOffset = textAttributes.textShadowOffset.hasValue() ? textAttributes.textShadowOffset.value() : textShadowOffset;
   textShadowRadius = !isnan(textAttributes.textShadowRadius) ? textAttributes.textShadowRadius : textShadowRadius;
   textShadowColor = textAttributes.textShadowColor ? textAttributes.textShadowColor : textShadowColor;
 
   // Special
-  isHighlighted = textAttributes.isHighlighted.has_value() ? textAttributes.isHighlighted : isHighlighted;
-  layoutDirection = textAttributes.layoutDirection.has_value() ? textAttributes.layoutDirection : layoutDirection;
+  isHighlighted = textAttributes.isHighlighted.hasValue() ? textAttributes.isHighlighted : isHighlighted;
+  layoutDirection = textAttributes.layoutDirection.hasValue() ? textAttributes.layoutDirection : layoutDirection;
 }
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
-  // TODO: Implement all fields.
-
   return {
     // Color
     debugStringConvertibleItem("backgroundColor", backgroundColor),
@@ -68,20 +68,20 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
     debugStringConvertibleItem("fontSizeMultiplier", fontSizeMultiplier),
     debugStringConvertibleItem("fontWeight", fontWeight),
     debugStringConvertibleItem("fontStyle", fontStyle),
-    //debugStringConvertibleItem("fontVariant", fontVariant),
+    debugStringConvertibleItem("fontVariant", fontVariant),
     debugStringConvertibleItem("allowFontScaling", allowFontScaling),
     debugStringConvertibleItem("letterSpacing", letterSpacing),
 
     // Paragraph Styles
     debugStringConvertibleItem("lineHeight", lineHeight),
-    //debugStringConvertibleItem("alignment", alignment),
-    //debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
+    debugStringConvertibleItem("alignment", alignment),
+    debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
 
     // Decoration
     debugStringConvertibleItem("textDecorationColor", textDecorationColor),
-    //debugStringConvertibleItem("textDecorationLineType", textDecorationLineType),
-    //debugStringConvertibleItem("textDecorationLineStyle", textDecorationLineStyle),
-    //debugStringConvertibleItem("textDecorationLinePattern", textDecorationLinePattern),
+    debugStringConvertibleItem("textDecorationLineType", textDecorationLineType),
+    debugStringConvertibleItem("textDecorationLineStyle", textDecorationLineStyle),
+    debugStringConvertibleItem("textDecorationLinePattern", textDecorationLinePattern),
 
     // Shadow
     debugStringConvertibleItem("textShadowOffset", textShadowOffset),
@@ -90,7 +90,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
 
     // Special
     debugStringConvertibleItem("isHighlighted", isHighlighted),
-    //debugStringConvertibleItem("layoutDirection", layoutDirection),
+    debugStringConvertibleItem("layoutDirection", layoutDirection),
   };
 }
 

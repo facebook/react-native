@@ -22,19 +22,22 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
-class TabBarIOS extends React.Component<
-  ViewProps & {
-    style?: DangerouslyImpreciseStyleProp,
-    unselectedTintColor?: string,
-    tintColor?: string,
-    unselectedItemTintColor?: string,
-    barTintColor?: string,
-    barStyle?: 'default' | 'black',
-    translucent?: boolean,
-    itemPositioning?: 'fill' | 'center' | 'auto',
-    children: React.Node,
-  },
-> {
+const RCTTabBar = requireNativeComponent('RCTTabBar');
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  style?: DangerouslyImpreciseStyleProp,
+  unselectedTintColor?: string,
+  tintColor?: string,
+  unselectedItemTintColor?: string,
+  barTintColor?: string,
+  barStyle?: 'default' | 'black',
+  translucent?: boolean,
+  itemPositioning?: 'fill' | 'center' | 'auto',
+  children: React.Node,
+|}>;
+
+class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
   static propTypes = {
@@ -100,7 +103,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-const RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

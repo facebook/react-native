@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const AsyncStorage = require('AsyncStorage');
@@ -27,12 +29,12 @@ const {
   StyleSheet,
   Text,
   View,
-  SafeAreaView
+  SafeAreaView,
 } = ReactNative;
 
-import type { RNTesterExample } from './RNTesterList.ios';
-import type { RNTesterAction } from './RNTesterActions';
-import type { RNTesterNavigationState } from './RNTesterNavigationReducer';
+import type {RNTesterExample} from './RNTesterList.ios';
+import type {RNTesterAction} from './RNTesterActions';
+import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 
 type Props = {
   exampleFromAppetizeParams: string,
@@ -40,15 +42,17 @@ type Props = {
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
-const Header = ({ onBack, title }: { onBack?: () => mixed, title: string }) => (
+const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
   <SafeAreaView style={styles.headerContainer}>
     <View style={styles.header}>
       <View style={styles.headerCenter}>
         <Text style={styles.title}>{title}</Text>
       </View>
-      {onBack && <View style={styles.headerLeft}>
-        <Button title="Back" onPress={onBack} />
-      </View>}
+      {onBack && (
+        <View style={styles.headerLeft}>
+          <Button title="Back" onPress={onBack} />
+        </View>
+      )}
     </View>
   </SafeAreaView>
 );
@@ -59,9 +63,11 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   }
 
   componentDidMount() {
-    Linking.getInitialURL().then((url) => {
+    Linking.getInitialURL().then(url => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
-        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const exampleAction = URIActionMap(
+          this.props.exampleFromAppetizeParams,
+        );
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
         if (err || !storedString) {
@@ -78,14 +84,14 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       });
     });
 
-    Linking.addEventListener('url', (url) => {
+    Linking.addEventListener('url', url => {
       this._handleAction(URIActionMap(url));
     });
   }
 
   _handleBack = () => {
     this._handleAction(RNTesterActions.Back());
-  }
+  };
 
   _handleAction = (action: ?RNTesterAction) => {
     if (!action) {
@@ -93,12 +99,11 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     const newState = RNTesterNavigationReducer(this.state, action);
     if (this.state !== newState) {
-      this.setState(
-        newState,
-        () => AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state))
+      this.setState(newState, () =>
+        AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state)),
       );
     }
-  }
+  };
 
   render() {
     if (!this.state) {
@@ -107,11 +112,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     if (this.state.openExample) {
       const Component = RNTesterList.Modules[this.state.openExample];
       if (Component.external) {
-        return (
-          <Component
-            onExampleExit={this._handleBack}
-          />
-        );
+        return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
           <View style={styles.exampleContainer}>
@@ -120,7 +121,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           </View>
         );
       }
-
     }
     return (
       <View style={styles.exampleContainer}>
@@ -145,10 +145,9 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 40,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
-  headerLeft: {
-  },
+  headerLeft: {},
   headerCenter: {
     flex: 1,
     position: 'absolute',
@@ -166,26 +165,35 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('SetPropertiesExampleApp', () => require('./SetPropertiesExampleApp'));
-AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () => require('./RootViewSizeFlexibilityExampleApp'));
+AppRegistry.registerComponent('SetPropertiesExampleApp', () =>
+  require('./SetPropertiesExampleApp'),
+);
+AppRegistry.registerComponent('RootViewSizeFlexibilityExampleApp', () =>
+  require('./RootViewSizeFlexibilityExampleApp'),
+);
 AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
 
 // Register suitable examples for snapshot tests
-RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach((Example: RNTesterExample) => {
-  const ExampleModule = Example.module;
-  if (ExampleModule.displayName) {
-    class Snapshotter extends React.Component<{}> {
-      render() {
-        return (
-          <SnapshotViewIOS>
-            <RNTesterExampleContainer module={ExampleModule} />
-          </SnapshotViewIOS>
-        );
+RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
+  (Example: RNTesterExample) => {
+    const ExampleModule = Example.module;
+    if (ExampleModule.displayName) {
+      class Snapshotter extends React.Component<{}> {
+        render() {
+          return (
+            <SnapshotViewIOS>
+              <RNTesterExampleContainer module={ExampleModule} />
+            </SnapshotViewIOS>
+          );
+        }
       }
-    }
 
-    AppRegistry.registerComponent(ExampleModule.displayName, () => Snapshotter);
-  }
-});
+      AppRegistry.registerComponent(
+        ExampleModule.displayName,
+        () => Snapshotter,
+      );
+    }
+  },
+);
 
 module.exports = RNTesterApp;

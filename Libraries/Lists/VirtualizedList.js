@@ -757,7 +757,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-header'}
           key="$header">
           <View onLayout={this._onLayoutHeader} style={inversionStyle}>
-            {element}
+            {
+              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              element
+            }
           </View>
         </VirtualizedCellWrapper>,
       );
@@ -890,7 +893,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={this._getCellKey() + '-footer'}
           key="$footer">
           <View onLayout={this._onLayoutFooter} style={inversionStyle}>
-            {element}
+            {
+              // $FlowFixMe - Typing ReactNativeComponent revealed errors
+              element
+            }
           </View>
         </VirtualizedCellWrapper>,
       );
@@ -924,6 +930,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
+      // $FlowFixMe Invalid prop usage
       {
         ref: this._captureScrollRef,
       },
@@ -1007,6 +1014,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
+      // $FlowFixMe - Typing ReactNativeComponent revealed errors
       return <View {...props} />;
     } else if (onRefresh) {
       invariant(
@@ -1016,6 +1024,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           '`',
       );
       return (
+        // $FlowFixMe Invalid prop usage
         <ScrollView
           {...props}
           refreshControl={
@@ -1032,6 +1041,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         />
       );
     } else {
+      // $FlowFixMe Invalid prop usage
       return <ScrollView {...props} />;
     }
   };

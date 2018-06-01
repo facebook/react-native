@@ -2,10 +2,10 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "sqlite",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":sqlite4java",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_prebuilt_jar(

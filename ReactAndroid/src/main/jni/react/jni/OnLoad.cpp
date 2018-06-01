@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include <string>
 
@@ -34,7 +37,7 @@ class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHold
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeMap* jscConfig) {
-    return makeCxxInstance(makeAndroidJSCExecutorFactory(jscConfig->consume(), nullptr));
+    return makeCxxInstance(makeAndroidJSCExecutorFactory(jscConfig->consume()));
   }
 
   static void registerNatives() {

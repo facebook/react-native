@@ -7,19 +7,11 @@
 
 #include "TextProps.h"
 
-#include <fabric/attributedstring/textValuesConversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/graphicValuesConversions.h>
-#include <fabric/text/propsConversions.h>
-
 namespace facebook {
 namespace react {
 
-void TextProps::apply(const RawProps &rawProps) {
-  Props::apply(rawProps);
-  BaseTextProps::apply(rawProps);
-}
+TextProps::TextProps(const TextProps &sourceProps, const RawProps &rawProps):
+  BaseTextProps::BaseTextProps(sourceProps, rawProps) {};
 
 #pragma mark - DebugStringConvertible
 

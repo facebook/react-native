@@ -25,16 +25,19 @@ type KeyboardEventName =
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
 
-export type KeyboardEvent = {|
-  +duration?: number,
-  +easing?: string,
-  +endCoordinates: {|
-    +width: number,
-    +height: number,
-    +screenX: number,
-    +screenY: number,
-  |},
-|};
+type ScreenRect = $ReadOnly<{|
+  screenX: number,
+  screenY: number,
+  width: number,
+  height: number,
+|}>;
+
+export type KeyboardEvent = $ReadOnly<{|
+  duration?: number,
+  easing?: string,
+  endCoordinates: ScreenRect,
+  startCoordinates?: ScreenRect,
+|}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;
 

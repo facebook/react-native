@@ -10,13 +10,13 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
+const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var deepDiffer = require('deepDiffer');
+const deepDiffer = require('deepDiffer');
 
 function debug(...args) {
   // console.log.apply(null, arguments);
@@ -42,7 +42,7 @@ type State = {
   containerStyle?: Style,
 };
 
-var LayoutEventsTest = createReactClass({
+const LayoutEventsTest = createReactClass({
   displayName: 'LayoutEventsTest',
   getInitialState(): State {
     return {
@@ -93,7 +93,7 @@ var LayoutEventsTest = createReactClass({
   },
   compare: function(node: string, measured: any, onLayout: any): void {
     if (deepDiffer(measured, onLayout)) {
-      var data = {measured, onLayout};
+      const data = {measured, onLayout};
       throw new Error(
         node +
           ' onLayout mismatch with measure ' +
@@ -114,9 +114,9 @@ var LayoutEventsTest = createReactClass({
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
   },
   render: function() {
-    var viewStyle = [styles.view, this.state.viewStyle];
-    var textLayout = this.state.textLayout || {width: '?', height: '?'};
-    var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    const viewStyle = [styles.view, this.state.viewStyle];
+    const textLayout = this.state.textLayout || {width: '?', height: '?'};
+    const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     debug('viewLayout', this.state.viewLayout);
     return (
       <View style={[styles.container, this.state.containerStyle]}>
@@ -141,7 +141,7 @@ var LayoutEventsTest = createReactClass({
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     margin: 40,
   },

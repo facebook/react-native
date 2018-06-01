@@ -13,12 +13,12 @@
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {Text, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
+const React = require('react');
+const PropTypes = require('prop-types');
+const ReactNative = require('react-native');
+const {Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class IntegrationTestHarnessTest extends React.Component<
   {

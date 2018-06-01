@@ -14,6 +14,8 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
+
 type Props = ViewProps & {
   children: any,
 };
@@ -33,13 +35,5 @@ class SafeAreaView extends React.Component<Props> {
     return <RCTSafeAreaView {...this.props} />;
   }
 }
-
-const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView', {
-  name: 'RCTSafeAreaView',
-  displayName: 'RCTSafeAreaView',
-  propTypes: {
-    ...ViewPropTypes,
-  },
-});
 
 module.exports = SafeAreaView;

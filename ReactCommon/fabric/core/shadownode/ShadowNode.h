@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include <fabric/core/EventHandlers.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
@@ -29,7 +30,12 @@ using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
-using ShadowNodeCloneFunction = std::function<SharedShadowNode(SharedShadowNode shadowNode, SharedProps props, SharedShadowNodeSharedList children)>;
+using ShadowNodeCloneFunction = std::function<SharedShadowNode(
+  const SharedShadowNode &shadowNode,
+  const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
+  const SharedShadowNodeSharedList &children
+)>;
 
 class ShadowNode:
   public virtual Sealable,
@@ -43,16 +49,17 @@ public:
   ShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
-    const SharedProps &props = SharedProps(),
-    const SharedShadowNodeSharedList &children = SharedShadowNodeSharedList(),
-    const ShadowNodeCloneFunction &cloneFunction = nullptr
+    const SharedProps &props,
+    const SharedEventHandlers &eventHandlers,
+    const SharedShadowNodeSharedList &children,
+    const ShadowNodeCloneFunction &cloneFunction
   );
 
   ShadowNode(
     const SharedShadowNode &shadowNode,
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const SharedProps &props,
+    const SharedEventHandlers &eventHandlers,
+    const SharedShadowNodeSharedList &children
   );
 
   /*
@@ -70,9 +77,9 @@ public:
 
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
+  SharedEventHandlers getEventHandlers() const;
   Tag getTag() const;
   Tag getRootTag() const;
-  InstanceHandle getInstanceHandle() const;
 
   /*
    * Returns the node which was used as a prototype in clone constructor.
@@ -135,8 +142,8 @@ public:
 protected:
   Tag tag_;
   Tag rootTag_;
-  InstanceHandle instanceHandle_;
   SharedProps props_;
+  SharedEventHandlers eventHandlers_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
   SharedLocalData localData_;

@@ -38,7 +38,7 @@ std::string ParagraphLocalData::getDebugName() const {
 
 SharedDebugStringConvertibleList ParagraphLocalData::getDebugProps() const {
   return {
-    debugStringConvertibleItem("attributedString", attributedString_)
+    debugStringConvertibleItem("attributedString", attributedString_, "")
   };
 }
 

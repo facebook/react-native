@@ -23,15 +23,15 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 ShadowNode::ShadowNode(
   const Tag &tag,
   const Tag &rootTag,
-  const InstanceHandle &instanceHandle,
   const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
   const SharedShadowNodeSharedList &children,
   const ShadowNodeCloneFunction &cloneFunction
 ):
   tag_(tag),
   rootTag_(rootTag),
-  instanceHandle_(instanceHandle),
   props_(props),
+  eventHandlers_(eventHandlers),
   children_(std::make_shared<SharedShadowNodeList>(*children)),
   cloneFunction_(cloneFunction),
   revision_(1) {}
@@ -39,12 +39,13 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
   const SharedShadowNode &shadowNode,
   const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
   const SharedShadowNodeSharedList &children
 ):
   tag_(shadowNode->tag_),
   rootTag_(shadowNode->rootTag_),
-  instanceHandle_(shadowNode->instanceHandle_),
   props_(props ? props : shadowNode->props_),
+  eventHandlers_(eventHandlers ? eventHandlers : shadowNode->eventHandlers_),
   children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
   sourceNode_(shadowNode),
   localData_(shadowNode->localData_),
@@ -56,7 +57,7 @@ SharedShadowNode ShadowNode::clone(
   const SharedShadowNodeSharedList &children
 ) const {
   assert(cloneFunction_);
-  return cloneFunction_(shared_from_this(), props_, children_);
+  return cloneFunction_(shared_from_this(), props_, eventHandlers_, children_);
 }
 
 #pragma mark - Getters
@@ -69,16 +70,16 @@ SharedProps ShadowNode::getProps() const {
   return props_;
 }
 
+SharedEventHandlers ShadowNode::getEventHandlers() const {
+  return eventHandlers_;
+}
+
 Tag ShadowNode::getTag() const {
   return tag_;
 }
 
 Tag ShadowNode::getRootTag() const {
   return rootTag_;
-}
-
-InstanceHandle ShadowNode::getInstanceHandle() const {
-  return instanceHandle_;
 }
 
 SharedShadowNode ShadowNode::getSourceNode() const {
@@ -146,6 +147,7 @@ bool ShadowNode::operator==(const ShadowNode& rhs) const {
     tag_ == rhs.tag_ &&
     rootTag_ == rhs.rootTag_ &&
     props_ == rhs.props_ &&
+    eventHandlers_ == rhs.eventHandlers_ &&
     localData_ == rhs.localData_;
 }
 
@@ -180,10 +182,6 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
   SharedDebugStringConvertibleList list = {};
 
   list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", std::to_string(tag_)));
-
-  if (instanceHandle_) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("handle", std::to_string((size_t)instanceHandle_)));
-  }
 
   SharedShadowNode sourceNode = getSourceNode();
   if (sourceNode) {

@@ -1,31 +1,36 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "Scheduler.h"
 
 #include <fabric/core/LayoutContext.h>
+#include <fabric/scrollview/ScrollViewComponentDescriptor.h>
+#include <fabric/text/ParagraphComponentDescriptor.h>
+#include <fabric/text/RawTextComponentDescriptor.h>
+#include <fabric/text/TextComponentDescriptor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/text/ParagraphComponentDescriptor.h>
-#include <fabric/text/TextComponentDescriptor.h>
-#include <fabric/text/RawTextComponentDescriptor.h>
 #include <fabric/view/ViewComponentDescriptor.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/ViewShadowNode.h>
 
+#include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
 
 namespace facebook {
 namespace react {
 
 Scheduler::Scheduler() {
-  auto componentDescriptorRegistry = std::make_shared<ComponentDescriptorRegistry>();
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>());
-  componentDescriptorRegistry->registerComponentDescriptor(std::make_shared<RawTextComponentDescriptor>());
+  auto &&eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
+  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher);
 
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
+
+  eventDispatcher->setUIManager(uiManager_);
+  eventDispatcher_ = eventDispatcher;
 }
 
 Scheduler::~Scheduler() {
@@ -77,7 +82,7 @@ void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const Tr
 }
 
 #pragma mark - UIManagerDelegate
-  
+
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
   auto &&iterator = shadowTreeRegistry_.find(rootTag);
   auto &&shadowTree = iterator->second;

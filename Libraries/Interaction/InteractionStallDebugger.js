@@ -12,15 +12,11 @@
 
 const BridgeSpyStallHandler = require('BridgeSpyStallHandler');
 const JSEventLoopWatchdog = require('JSEventLoopWatchdog');
-const ReactPerfStallHandler = require('ReactPerfStallHandler');
 
 const InteractionStallDebugger = {
-  install: function(options: {thresholdMS: number}) {
+  install(options: {thresholdMS: number}): void {
     JSEventLoopWatchdog.install(options);
     BridgeSpyStallHandler.register();
-    if (__DEV__) {
-      ReactPerfStallHandler.register();
-    }
   },
 };
 

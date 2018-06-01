@@ -9,6 +9,7 @@ package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import com.facebook.react.uimanager.UIManagerModule;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -29,17 +30,15 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.CookieManager;
-
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -48,11 +47,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
@@ -61,9 +60,14 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
-
-import org.json.JSONObject;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Manages instances of {@link WebView}

@@ -12,20 +12,18 @@
 
 const PropTypes = require('prop-types');
 
-const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-
-const EdgeInsetsPropType = (createStrictShapeTypeChecker({
+const EdgeInsetsPropType = PropTypes.shape({
   top: PropTypes.number,
   left: PropTypes.number,
   bottom: PropTypes.number,
   right: PropTypes.number,
-}): ReactPropsCheckType & ReactPropsChainableTypeChecker);
+});
 
-export type EdgeInsetsProp = {|
-  +top: number,
-  +left: number,
-  +bottom: number,
-  +right: number,
-|};
+export type EdgeInsetsProp = $ReadOnly<{|
+  top?: ?number,
+  left?: ?number,
+  bottom?: ?number,
+  right?: ?number,
+|}>;
 
 module.exports = EdgeInsetsPropType;

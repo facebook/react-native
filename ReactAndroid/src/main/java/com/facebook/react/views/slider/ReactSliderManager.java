@@ -13,7 +13,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -23,11 +22,11 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-
 import java.util.Map;
 
 /**
@@ -64,15 +63,15 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopy() {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy();
+    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }
 
     @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren();
+    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
       reactShadowNode.initMeasureFunction();
       return reactShadowNode;
     }

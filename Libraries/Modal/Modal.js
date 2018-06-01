@@ -22,7 +22,9 @@ const View = require('View');
 
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
-const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+
+const RCTModalHostView = requireNativeComponent('RCTModalHostView');
+
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModules.ModalManager
     ? new NativeEventEmitter(NativeModules.ModalManager)

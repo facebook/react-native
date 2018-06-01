@@ -181,7 +181,7 @@ class WebView extends React.Component {
      * List of origin strings to allow being navigated to. The strings allow
      * wildcards and get matched against *just* the origin (not the full URL).
      * If the user taps to navigate to a new page but the new page is not in
-     * this whitelist, the URL will be oppened by the Android OS.
+     * this whitelist, the URL will be opened by the Android OS.
      * The default whitelisted origins are "http://*" and "https://*".
      */
     originWhitelist: PropTypes.arrayOf(PropTypes.string),
@@ -225,7 +225,7 @@ class WebView extends React.Component {
        */
       props: PropTypes.object,
       /*
-       * Set the ViewManager to use for communcation with the native side.
+       * Set the ViewManager to use for communication with the native side.
        * @platform ios
        */
       viewManager: PropTypes.object,

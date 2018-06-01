@@ -12,6 +12,7 @@
 
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const ViewPropTypes = require('ViewPropTypes');
@@ -19,10 +20,25 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {ViewProps} from 'ViewPropTypes';
+
+const RCTSegmentedControl = requireNativeComponent('RCTSegmentedControl');
+
 type DefaultProps = {
-  values: Array<string>,
+  values: $ReadOnlyArray<string>,
   enabled: boolean,
 };
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  values?: ?$ReadOnlyArray<string>,
+  selectedIndex?: ?number,
+  onValueChange?: ?Function,
+  onChange?: ?Function,
+  enabled?: ?boolean,
+  tintColor?: ?string,
+  momentary?: ?boolean,
+|}>;
 
 const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
 
@@ -125,9 +141,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTSegmentedControl = requireNativeComponent(
-  'RCTSegmentedControl',
-  SegmentedControlIOS,
-);
-
-module.exports = SegmentedControlIOS;
+module.exports = ((SegmentedControlIOS: any): Class<
+  ReactNative.NativeComponent<Props>,
+>);

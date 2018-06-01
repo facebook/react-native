@@ -24,19 +24,16 @@ class RawTextProps:
 
 public:
 
-  void apply(const RawProps &rawProps) override;
+  RawTextProps() = default;
+  RawTextProps(const RawTextProps &sourceProps, const RawProps &rawProps);
 
-#pragma mark - Getters
+#pragma mark - Props
 
-  std::string getText() const;
+  const std::string text {""};
 
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
-
-private:
-
-  std::string text_ {""};
 };
 
 } // namespace react

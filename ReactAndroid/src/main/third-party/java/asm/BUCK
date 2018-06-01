@@ -2,6 +2,7 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "asm",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":asm-analysis",
         ":asm-commons",
@@ -9,7 +10,6 @@ rn_android_library(
         ":asm-tree",
         ":asm-util",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_prebuilt_jar(

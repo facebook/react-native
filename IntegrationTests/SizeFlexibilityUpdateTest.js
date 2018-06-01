@@ -9,21 +9,21 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
-var Subscribable = require('Subscribable');
-var {View} = ReactNative;
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
+const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
+const Subscribable = require('Subscribable');
+const {View} = ReactNative;
 
-var {TestModule} = ReactNative.NativeModules;
+const {TestModule} = ReactNative.NativeModules;
 
-var reactViewWidth = 111;
-var reactViewHeight = 222;
+const reactViewWidth = 111;
+const reactViewHeight = 222;
 
-var finalState = false;
+let finalState = false;
 
-var SizeFlexibilityUpdateTest = createReactClass({
+const SizeFlexibilityUpdateTest = createReactClass({
   displayName: 'SizeFlexibilityUpdateTest',
   mixins: [Subscribable.Mixin],
 

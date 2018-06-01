@@ -10,7 +10,6 @@
 
 'use strict';
 
-const ImageResizeMode = require('ImageResizeMode');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
@@ -132,8 +131,6 @@ const Image = createReactClass({
   },
 
   statics: {
-    resizeMode: ImageResizeMode,
-
     getSize(
       url: string,
       success: (width: number, height: number) => void,

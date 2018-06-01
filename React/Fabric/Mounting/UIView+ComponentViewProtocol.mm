@@ -31,6 +31,11 @@
   // Default implementation does nothing.
 }
 
+- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData
 {

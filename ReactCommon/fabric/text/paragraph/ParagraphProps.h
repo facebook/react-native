@@ -32,30 +32,25 @@ class ParagraphProps:
   public BaseTextProps {
 
 public:
+  ParagraphProps() = default;
+  ParagraphProps(const ParagraphProps &sourceProps, const RawProps &rawProps);
 
-  void apply(const RawProps &rawProps) override;
-
-#pragma mark - Getters
+#pragma mark - Props
 
   /*
-   * Returns `ParagraphAttributes` object which has all prop values that affect
-   * visual representation of the paragraph.
+   * Contains all prop values that affect visual representation of the paragraph.
    */
-  ParagraphAttributes getParagraphAttributes() const;
+  const ParagraphAttributes paragraphAttributes {};
 
   /*
    * Defines can the text be selected (and copied) or not.
    */
-  bool getIsSelectable() const;
+  const bool isSelectable {false};
 
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
 
-private:
-
-  ParagraphAttributes paragraphAttributes_ {};
-  bool isSelectable_ {false};
 };
 
 } // namespace react

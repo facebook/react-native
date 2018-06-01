@@ -22,27 +22,17 @@ namespace react {
 class BaseTextProps {
 public:
 
-  /*
-   * Same semantic as `Props::apply(...)`.
-   */
-  void apply(const RawProps &rawProps);
+  BaseTextProps() = default;
+  BaseTextProps(const BaseTextProps &sourceProps, const RawProps &rawProps);
 
-#pragma mark - Getters
+#pragma mark - Props
 
-  /*
-   * Returns all props values as `TextAttributes` object.
-   */
-  TextAttributes getTextAttributes() const;
+  const TextAttributes textAttributes {};
 
 #pragma mark - DebugStringConvertible (partially)
 
   SharedDebugStringConvertibleList getDebugProps() const;
-
-private:
-
-  TextAttributes textAttributes_;
 };
 
 } // namespace react
 } // namespace facebook
-

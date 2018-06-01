@@ -12,11 +12,14 @@
 
 const PropTypes = require('prop-types');
 
-const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-
-const PointPropType = createStrictShapeTypeChecker({
+const PointPropType = PropTypes.shape({
   x: PropTypes.number,
   y: PropTypes.number,
 });
+
+export type PointProp = $ReadOnly<{
+  x: number,
+  y: number,
+}>;
 
 module.exports = PointPropType;

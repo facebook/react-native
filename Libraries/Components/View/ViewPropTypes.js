@@ -35,9 +35,47 @@ const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-// There's no easy way to create a different type if (Platform.isTVOS):
-// so we must include TVViewProps
-export type ViewProps = {
+type DirectEventProps = $ReadOnly<{|
+  onAccessibilityAction?: Function,
+  onAccessibilityTap?: Function,
+  onLayout?: ?(event: LayoutEvent) => void,
+  onMagicTap?: Function,
+|}>;
+
+type TouchEventProps = $ReadOnly<{|
+  onTouchCancel?: ?Function,
+  onTouchCancelCapture?: ?Function,
+  onTouchEnd?: ?Function,
+  onTouchEndCapture?: ?Function,
+  onTouchMove?: ?Function,
+  onTouchMoveCapture?: ?Function,
+  onTouchStart?: ?Function,
+  onTouchStartCapture?: ?Function,
+|}>;
+
+type GestureResponderEventProps = $ReadOnly<{|
+  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponderCapture?: ?Function,
+  onResponderGrant?: ?Function,
+  onResponderMove?: ?Function,
+  onResponderReject?: ?Function,
+  onResponderRelease?: ?Function,
+  onResponderStart?: ?Function,
+  onResponderTerminate?: ?Function,
+  onResponderTerminationRequest?: ?Function,
+  onStartShouldSetResponder?: ?Function,
+  onStartShouldSetResponderCapture?: ?Function,
+|}>;
+
+export type ViewProps = $ReadOnly<{|
+  ...DirectEventProps,
+  ...GestureResponderEventProps,
+  ...TouchEventProps,
+
+  // There's no easy way to create a different type if (Platform.isTVOS):
+  // so we must include TVViewProps
+  ...TVViewProps,
+
   accessible?: boolean,
   accessibilityLabel?:
     | null
@@ -53,22 +91,8 @@ export type ViewProps = {
   accessibilityViewIsModal?: boolean,
   accessibilityElementsHidden?: boolean,
   children?: ?React.Node,
-  onAccessibilityAction?: Function,
-  onAccessibilityTap?: Function,
-  onMagicTap?: Function,
   testID?: ?string,
   nativeID?: string,
-  onLayout?: ?(event: LayoutEvent) => void,
-  onResponderGrant?: ?Function,
-  onResponderMove?: ?Function,
-  onResponderReject?: ?Function,
-  onResponderRelease?: ?Function,
-  onResponderTerminate?: ?Function,
-  onResponderTerminationRequest?: ?Function,
-  onStartShouldSetResponder?: ?Function,
-  onStartShouldSetResponderCapture?: ?Function,
-  onMoveShouldSetResponder?: ?Function,
-  onMoveShouldSetResponderCapture?: ?Function,
   hitSlop?: ?EdgeInsetsProp,
   pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
   style?: stylePropType,
@@ -77,7 +101,7 @@ export type ViewProps = {
   shouldRasterizeIOS?: boolean,
   collapsable?: boolean,
   needsOffscreenAlphaCompositing?: boolean,
-} & TVViewProps;
+|}>;
 
 module.exports = {
   /**

@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @noflow
+ * @flow
  */
 
 'use strict';
-
-// Note (avik): add @flow when Flow supports spread properties in propTypes
 
 const Animated = require('Animated');
 const Easing = require('Easing');
@@ -25,9 +23,24 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const flattenStyle = require('flattenStyle');
 
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {ViewStyleProp} from 'StyleSheet';
+
 type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+type TVProps = $ReadOnly<{|
+  hasTVPreferredFocus?: ?boolean,
+  tvParallaxProperties?: ?Object,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...TouchableWithoutFeedbackProps,
+  ...TVProps,
+  activeOpacity?: ?number,
+  style?: ?ViewStyleProp,
+|}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -117,7 +130,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  *
  */
-const TouchableOpacity = createReactClass({
+const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
@@ -269,6 +282,6 @@ const TouchableOpacity = createReactClass({
       </Animated.View>
     );
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableOpacity;

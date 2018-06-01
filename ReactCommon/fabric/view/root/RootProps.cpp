@@ -7,39 +7,36 @@
 
 #include "RootProps.h"
 
-#include "yogaValuesConversions.h"
+#include <fabric/view/conversions.h>
+
+#include "YogaLayoutableShadowNode.h"
 
 namespace facebook {
 namespace react {
 
-void RootProps::applyLayoutConstraints(const LayoutConstraints &layoutConstraints) {
-  ensureUnsealed();
-
-  layoutConstraints_ = layoutConstraints;
-
-  yogaStyle_.minDimensions[YGDimensionWidth] =
+static YGStyle yogaStyleFromLayoutConstraints(const LayoutConstraints &layoutConstraints) {
+  YGStyle yogaStyle;
+  yogaStyle.minDimensions[YGDimensionWidth] =
     yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle_.minDimensions[YGDimensionHeight] =
+  yogaStyle.minDimensions[YGDimensionHeight] =
     yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
 
-  yogaStyle_.maxDimensions[YGDimensionWidth] =
+  yogaStyle.maxDimensions[YGDimensionWidth] =
     yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle_.maxDimensions[YGDimensionHeight] =
+  yogaStyle.maxDimensions[YGDimensionHeight] =
     yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
+
+  return yogaStyle;
 }
 
-void RootProps::applyLayoutContext(const LayoutContext &layoutContext) {
-  ensureUnsealed();
-  layoutContext_ = layoutContext;
-}
-
-LayoutConstraints RootProps::getLayoutConstraints() const {
-  return layoutConstraints_;
-}
-
-LayoutContext RootProps::getLayoutContext() const {
-  return layoutContext_;
-}
+RootProps::RootProps(
+  const RootProps &sourceProps,
+  const LayoutConstraints &layoutConstraints,
+  const LayoutContext &layoutContext
+):
+  ViewProps(yogaStyleFromLayoutConstraints(layoutConstraints)),
+  layoutConstraints(layoutConstraints),
+  layoutContext(layoutContext) {};
 
 } // namespace react
 } // namespace facebook

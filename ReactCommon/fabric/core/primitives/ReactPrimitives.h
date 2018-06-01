@@ -19,7 +19,7 @@ namespace react {
  * `Tag` and `InstanceHandle` are used to address React Native components.
  */
 using Tag = int32_t;
-using InstanceHandle = void *;
+using InstanceHandle = struct InstanceHandleDummyStruct {} *;
 
 /*
  * `RawProps` represents untyped map with props comes from JavaScript side.
@@ -27,15 +27,6 @@ using InstanceHandle = void *;
 // TODO(T26954420): Use iterator as underlying type for RawProps.
 using RawProps = std::map<std::string, folly::dynamic>;
 using SharedRawProps = std::shared_ptr<const RawProps>;
-
-/*
- * Components event handlers.
- * Something which usually called from JavaScript side.
- */
-using BubblingEventHandler = void (*)(void);
-using SharedBubblingEventHandler = std::shared_ptr<BubblingEventHandler>;
-using DirectEventHandler = void (*)(void);
-using SharedDirectEventHandler = std::shared_ptr<DirectEventHandler>;
 
 /*
  * Universal component handle which allows to refer to `ComponentDescriptor`s

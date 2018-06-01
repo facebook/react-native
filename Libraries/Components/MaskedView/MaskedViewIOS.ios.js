@@ -17,7 +17,11 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
-type Props = ViewProps & {
+const RCTMaskedView = requireNativeComponent('RCTMaskedView');
+
+type Props = {
+  ...ViewProps,
+
   children: any,
   /**
    * Should be a React element to be rendered and applied as the
@@ -94,13 +98,5 @@ class MaskedViewIOS extends React.Component<Props> {
     );
   }
 }
-
-const RCTMaskedView = requireNativeComponent('RCTMaskedView', {
-  name: 'RCTMaskedView',
-  displayName: 'RCTMaskedView',
-  propTypes: {
-    ...ViewPropTypes,
-  },
-});
 
 module.exports = MaskedViewIOS;

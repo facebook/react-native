@@ -1,19 +1,25 @@
 aliases:
   # Cache Management
-  - &restore-cache-yarn
+  - &restore-yarn-cache
     keys:
-      - v1-yarn-{{ arch }}-{{ checksum "package.json" }}
-      - v1-yarn-{{ arch }}-
-  - &save-cache-yarn
+      - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
+      - v1-yarn-cache-{{ arch }}
+  - &save-yarn-cache
+    paths:
+      - ~/.cache/yarn
+    key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
+
+  - &restore-node-modules
+    keys:
+      - v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
+  - &save-node-modules
     paths:
       - node_modules
-      - ~/.cache/yarn
-    key: v1-yarn-{{ arch }}-{{ checksum "package.json" }}
+    key: v2-node-modules-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-cache-analysis
     keys:
       - v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
-      - v1-analysis-dependencies-{{ arch }}-
   - &save-cache-analysis
     paths:
       - bots/node_modules
@@ -22,12 +28,11 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      - v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-
+      - v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-{{ arch }}-api-26-alpha-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
 
   - &restore-cache-gradle
     keys:
@@ -44,33 +49,30 @@ aliases:
 
   - &restore-cache-apt
     keys:
-      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
-      # Fallback in case checksum fails
-      - v1-apt-{{ arch }}-{{ .Branch }}-
+      - v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
       # Fallback in case this is a first-time run on a fork
-      - v1-apt-{{ arch }}-master-
+      - v1-apt-master-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
   - &save-cache-apt
     paths:
       - ~/vendor/apt
-    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
+    key: v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
-      - v3-android-ndk-{{ arch }}-r10e-
+      - v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-ndk-{{ arch }}-r10e-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-buck
     keys:
-      - v3-buck-{{ arch }}-v2018.02.16.01
+      - v3-buck-{{ arch }}-v2018.03.26.01
   - &save-cache-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-{{ arch }}-v2018.02.16.01
+    key: v3-buck-{{ arch }}-v2018.03.26.01
 
   - &restore-cache-watchman
     keys:
@@ -117,7 +119,7 @@ aliases:
   # Dependency Management
   - &install-ndk
     name: Install Android NDK
-    command: source scripts/circle-ci-android-setup.sh && getAndroidNDK
+    command: source scripts/android-setup.sh && getAndroidNDK
 
   - &yarn
     |
@@ -138,7 +140,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.03.26.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -174,7 +176,7 @@ aliases:
 
   - &install-android-packages
     name: Install Android SDK Packages
-    command: source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    command: source scripts/android-setup.sh && getAndroidPackages
 
   - &install-android-build-dependencies
     name: Install Android Build Dependencies
@@ -223,16 +225,16 @@ aliases:
 
   - &create-avd
     name: Create Android Virtual Device
-    command: source scripts/circle-ci-android-setup.sh && createAVD
+    command: source scripts/android-setup.sh && createAVD
 
   - &launch-avd
     name: Launch Android Virtual Device in Background
-    command: source scripts/circle-ci-android-setup.sh && launchAVD
+    command: source scripts/android-setup.sh && launchAVD
     background: true
 
   - &wait-for-avd
     name: Wait for Android Virtual Device
-    command: source scripts/circle-ci-android-setup.sh && waitForAVD
+    command: source scripts/android-setup.sh && waitForAVD
 
   - &build-js-bundle
     name: Build JavaScript Bundle
@@ -253,7 +255,7 @@ aliases:
       if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
         echo "JavaScript bundle missing, cannot run instrumentation tests. Verify build-js-bundle step completed successfully."; exit 1;
       fi
-      source scripts/circle-ci-android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+      source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
   - &collect-android-test-results
     name: Collect Test Results
@@ -326,9 +328,9 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
 
       # Basic checks against the checkout, cache...
       - run: *run-sanity-checks
@@ -359,24 +361,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native
-
-      - run: *run-js-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Runs JavaScript tests on Node 6
-  test_javascript_node6_compatibility:
-    <<: *defaults
-    docker:
-      - image: circleci/node:6
-    steps:
-      - checkout
-      - run: *setup-artifacts
-
-      - restore-cache: *restore-cache-yarn
-      - run: *yarn
-      - save-cache: *save-cache-yarn
 
       - run: *run-js-tests
 
@@ -473,9 +457,9 @@ jobs:
       - run: *gradle-download-deps
       - save-cache: *save-cache-gradle-downloads
 
-      - restore-cache: *restore-cache-yarn
+      - restore-cache: *restore-yarn-cache
       - run: *yarn
-      - save-cache: *save-cache-yarn
+      - save-cache: *save-yarn-cache
 
       - run:
           name: Publish React Native Package
@@ -624,10 +608,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Test JavaScript using Node 6, the minimum supported version
-      - test_javascript_node6_compatibility:
-          filters: *filter-ignore-gh-pages
-
       # Test Android
       - test_android:
           filters: *filter-ignore-gh-pages
@@ -692,3 +672,11 @@ workflows:
   #         filters: *filter-ignore-gh-pages
   #         requires:
   #           - checkout_code
+
+experimental:
+  notify:
+    webhooks:
+      - url: https://code.facebook.com/circle/webhook/
+    branches:
+      only:
+        - master

@@ -8,18 +8,12 @@
 #pragma once
 
 #include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/text/TextProps.h>
 #include <fabric/text/TextShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-class TextComponentDescriptor: public ConcreteComponentDescriptor<TextShadowNode> {
-public:
-  ComponentName getComponentName() const override {
-    return "Text";
-  }
-};
+using TextComponentDescriptor = ConcreteComponentDescriptor<TextShadowNode>;
 
 } // namespace react
 } // namespace facebook

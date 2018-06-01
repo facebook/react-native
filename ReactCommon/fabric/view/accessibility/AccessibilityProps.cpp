@@ -12,20 +12,7 @@
 namespace facebook {
 namespace react {
 
-void AccessibilityProps::apply(const RawProps &rawProps) {
-  for (auto const &pair : rawProps) {
-    auto const &name = pair.first;
-    auto const &value = pair.second;
-
-#define ACCESSIBILITY_PROPERTY(stringName, variableName, accessor, convertor) \
-  if (name == #stringName) { \
-    variableName = convertor(value accessor); \
-    continue; \
-  }
-
-    ACCESSIBILITY_PROPERTY(accessibilityLabel, accessibilityLabel_, .asString(),)
-  }
-}
+AccessibilityProps::AccessibilityProps(const AccessibilityProps &sourceProps, const RawProps &rawProps) {}
 
 } // namespace react
 } // namespace facebook

@@ -117,9 +117,11 @@ class SwipeableListView extends React.Component<Props, State> {
 
   render(): React.Node {
     return (
+      // $FlowFixMe Found when typing ListView
       <ListView
         {...this.props}
         ref={ref => {
+          // $FlowFixMe Found when typing ListView
           this._listViewRef = ref;
         }}
         dataSource={this.state.dataSource.getDataSource()}

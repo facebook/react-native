@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -17,7 +19,9 @@ const BABEL_ENABLED_PATHS = ['local-cli'];
  * support Flow type annotations.
  */
 function setupBabel() {
-  babelRegisterOnly(babelRegisterOnly.buildRegExps(__dirname, BABEL_ENABLED_PATHS));
+  babelRegisterOnly(
+    babelRegisterOnly.buildRegExps(__dirname, BABEL_ENABLED_PATHS),
+  );
 }
 
 module.exports = setupBabel;

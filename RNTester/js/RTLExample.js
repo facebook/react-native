@@ -484,7 +484,7 @@ class RTLExample extends React.Component<any, State> {
           <RNTesterBlock
             title={'Controlling Animation'}
             description={'Animation direction according to layout'}>
-            <View Style={styles.view}>
+            <View style={styles.view}>
               <AnimationBlock
                 onPress={this._linearTap}
                 imgStyle={{

@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 
@@ -49,9 +49,9 @@ class WebSocketTest extends React.Component<{}, State> {
   };
 
   _waitFor = (condition: any, timeout: any, callback: any) => {
-    var remaining = timeout;
-    var t;
-    var timeoutFunction = function() {
+    let remaining = timeout;
+    let t;
+    const timeoutFunction = function() {
       if (condition()) {
         callback(true);
         return;
@@ -121,7 +121,7 @@ class WebSocketTest extends React.Component<{}, State> {
   }
 
   testConnect = () => {
-    var component = this;
+    const component = this;
     component._connect();
     component._waitFor(component._socketIsConnected, 5, function(
       connectSucceeded,
@@ -135,7 +135,7 @@ class WebSocketTest extends React.Component<{}, State> {
   };
 
   testSendAndReceive = () => {
-    var component = this;
+    const component = this;
     component._sendTestMessage();
     component._waitFor(component._receivedTestExpectedResponse, 5, function(
       messageReceived,
@@ -149,7 +149,7 @@ class WebSocketTest extends React.Component<{}, State> {
   };
 
   testDisconnect = () => {
-    var component = this;
+    const component = this;
     component._disconnect();
     component._waitFor(component._socketIsDisconnected, 5, function(
       disconnectSucceeded,
