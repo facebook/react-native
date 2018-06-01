@@ -12,12 +12,13 @@
 namespace facebook {
 namespace react {
 
-EventHandlers::EventHandlers(InstanceHandle instanceHandle, SharedEventDispatcher eventDispatcher):
+EventHandlers::EventHandlers(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
   instanceHandle_(instanceHandle),
+  tag_(tag),
   eventDispatcher_(eventDispatcher) {}
 
 void EventHandlers::dispatchEvent(
-  const std::string &name,
+  const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
@@ -26,8 +27,13 @@ void EventHandlers::dispatchEvent(
     return;
   }
 
+  // Mixing `target` into `payload`.
+  assert(payload.isObject());
+  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
+  extendedPayload.merge_patch(payload);
+
   // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(instanceHandle_, name, payload, priority);
+  eventDispatcher->dispatchEvent(instanceHandle_, type, extendedPayload, priority);
 }
 
 } // namespace react

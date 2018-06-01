@@ -113,9 +113,10 @@ public:
   };
 
   virtual SharedEventHandlers createEventHandlers(
-    const InstanceHandle &instanceHandle
+    const InstanceHandle &instanceHandle,
+    const Tag &tag
   ) const override {
-    return std::make_shared<ConcreteEventHandlers>(instanceHandle, eventDispatcher_);
+    return std::make_shared<ConcreteEventHandlers>(instanceHandle, tag, eventDispatcher_);
   }
 
 protected:

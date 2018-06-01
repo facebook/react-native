@@ -32,8 +32,8 @@ using SharedEventHandlers = std::shared_ptr<const EventHandlers>;
 class EventHandlers {
 
 public:
-  EventHandlers(InstanceHandle instanceHandle, SharedEventDispatcher eventDispatcher);
   virtual ~EventHandlers() = default;
+  EventHandlers(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher);
 
 protected:
 
@@ -42,14 +42,15 @@ protected:
    * Is used by particular subclasses only.
    */
   void dispatchEvent(
-    const std::string &name,
-    const folly::dynamic &payload = {},
+    const std::string &type,
+    const folly::dynamic &payload = folly::dynamic::object(),
     const EventPriority &priority = EventPriority::AsynchronousBatched
   ) const;
 
 private:
 
   InstanceHandle instanceHandle_;
+  Tag tag_;
   std::weak_ptr<const EventDispatcher> eventDispatcher_;
 };
 

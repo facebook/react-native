@@ -18,7 +18,7 @@ namespace react {
 ShadowTree::ShadowTree(Tag rootTag):
   rootTag_(rootTag) {
 
-  auto &&noopEventHandlers = std::make_shared<const ViewEventHandlers>(nullptr, nullptr);
+  auto &&noopEventHandlers = std::make_shared<const ViewEventHandlers>(nullptr, rootTag, nullptr);
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     rootTag,
     rootTag,

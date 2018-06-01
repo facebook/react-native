@@ -85,7 +85,8 @@ public:
    * shadow nodes.
    */
   virtual SharedEventHandlers createEventHandlers(
-    const InstanceHandle &instanceHandle
+    const InstanceHandle &instanceHandle,
+    const Tag &tag
   ) const = 0;
 };
 
