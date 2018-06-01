@@ -67,12 +67,12 @@ aliases:
 
   - &restore-cache-buck
     keys:
-      - v3-buck-{{ arch }}-v2018.02.16.01
+      - v3-buck-{{ arch }}-v2018.03.26.01
   - &save-cache-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-{{ arch }}-v2018.02.16.01
+    key: v3-buck-{{ arch }}-v2018.03.26.01
 
   - &restore-cache-watchman
     keys:
@@ -140,7 +140,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.02.16.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.03.26.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
