@@ -15,6 +15,8 @@
 #import "RCTUIManager.h"
 #import "UIView+React.h"
 
+NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
+
 @implementation RCTRootContentView
 
 - (instancetype)initWithFrame:(CGRect)frame
