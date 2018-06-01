@@ -29,15 +29,6 @@ using RawProps = std::map<std::string, folly::dynamic>;
 using SharedRawProps = std::shared_ptr<const RawProps>;
 
 /*
- * Components event handlers.
- * Something which usually called from JavaScript side.
- */
-using BubblingEventHandler = void (*)(void);
-using SharedBubblingEventHandler = std::shared_ptr<BubblingEventHandler>;
-using DirectEventHandler = void (*)(void);
-using SharedDirectEventHandler = std::shared_ptr<DirectEventHandler>;
-
-/*
  * Universal component handle which allows to refer to `ComponentDescriptor`s
  * in maps efficiently.
  * Practically, it's something that concrete ShadowNode and concrete
