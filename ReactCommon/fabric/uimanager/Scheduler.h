@@ -73,7 +73,7 @@ private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
-  std::shared_ptr<SchedulerEventDispatcher> eventDispatcher_;
+  SharedSchedulerEventDispatcher eventDispatcher_;
 };
 
 } // namespace react

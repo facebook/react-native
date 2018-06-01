@@ -9,10 +9,15 @@
 
 #include <fabric/core/EventDispatcher.h>
 #include <fabric/core/EventPrimitives.h>
+#include <fabric/uimanager/FabricUIManager.h>
 #include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
+
+class SchedulerEventDispatcher;
+
+using SharedSchedulerEventDispatcher = std::shared_ptr<const SchedulerEventDispatcher>;
 
 /*
  * Concrete EventDispatcher.
@@ -22,12 +27,24 @@ class SchedulerEventDispatcher final:
 
 public:
 
+  void setUIManager(std::shared_ptr<const FabricUIManager> uiManager);
+
+#pragma mark - EventDispatcher
+
+  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
+
+  void releaseEventTarget(const EventTarget &eventTarget) const override;
+
   void dispatchEvent(
-    const InstanceHandle &instanceHandle,
-    const std::string &name,
+    const EventTarget &eventTarget,
+    const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority
   ) const override;
+
+private:
+
+  std::shared_ptr<const FabricUIManager> uiManager_;
 };
 
 } // namespace react

@@ -10,13 +10,37 @@
 namespace facebook {
 namespace react {
 
+// TODO(T29874519): Get rid of "top" prefix once and for all.
+/*
+ * Capitalizes the first letter of the event type and adds "top" prefix
+ * (e.g. "layout" becames "topLayout").
+ */
+static std::string normalizeEventType(const std::string &type) {
+  std::string prefixedType = type;
+  prefixedType[0] = toupper(prefixedType[0]);
+  prefixedType.insert(0, "top");
+  return prefixedType;
+}
+
+void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) {
+  uiManager_ = uiManager;
+}
+
+EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &instanceHandle) const {
+  return uiManager_->createEventTarget(instanceHandle);
+}
+
+void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
+  uiManager_->releaseEventTarget(eventTarget);
+}
+
 void SchedulerEventDispatcher::dispatchEvent(
-  const InstanceHandle &instanceHandle,
-  const std::string &name,
+  const EventTarget &eventTarget,
+  const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  // Some future magic here.
+  uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
 }
 
 } // namespace react
