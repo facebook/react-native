@@ -62,6 +62,8 @@ fi
 # Set up the nodenv node version manager if present
 if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
   eval "$("$HOME/.nodenv/bin/nodenv" init -)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; then
+  eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
 fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
