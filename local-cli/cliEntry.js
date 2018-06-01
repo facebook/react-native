@@ -35,9 +35,9 @@ commander.version(pkg.version);
 const defaultOptParser = val => val;
 
 const handleError = err => {
-  console.error();
+  console.error('********************');
   console.error(err.message || err);
-  console.error();
+  console.error(err.stack);
   process.exit(1);
 };
 

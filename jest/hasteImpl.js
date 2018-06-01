@@ -12,12 +12,12 @@
 
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
+const ROOT = path.join(__dirname, '..').replace(/\\/g, '/');
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*\/__(mocks|tests)__\/.*/,
-  /^Libraries\/Animated\/src\/polyfills\/.*/,
-  /^Libraries\/Renderer\/fb\/.*/,
+  /^Libraries\/Animated\/src\/polyfills\/.*/i,
+  /^Libraries\/Renderer\/fb\/.*/i,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [
@@ -45,6 +45,10 @@ const haste = {
     filePath /*: string */,
     sourceCode /*: ?string */,
   ) /*: string | void */ {
+    if (filePath[1] === ':') {
+      filePath = filePath[0].toLowerCase() + filePath.substr(1);
+    }
+    filePath = filePath.replace(/\\/g, '/');
     if (!isHastePath(filePath)) {
       return undefined;
     }
@@ -54,6 +58,7 @@ const haste = {
       filePath,
     );
 
+    console.log('hasteid', hasteName);
     return hasteName;
   },
 };
