@@ -18,7 +18,7 @@ LABEL Description="This image provides a base Android development environment fo
 # set default build arguments
 ARG ANDROID_TOOLS_VERSION=25.2.5
 ARG BUCK_VERSION=v2018.02.16.01
-ARG NDK_VERSION=10e
+ARG NDK_VERSION=16
 ARG NODE_VERSION=8.10.0
 ARG WATCHMAN_VERSION=4.9.0
 
