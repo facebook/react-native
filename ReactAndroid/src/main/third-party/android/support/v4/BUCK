@@ -1,11 +1,70 @@
-android_prebuilt_aar(
+android_library(
     name = "lib-support-v4",
-    aar = ":lib-support-v4-binary-aar",
+    deps = [
+      ":lib-support-v4-support-compat",
+      ":lib-support-v4-support-core-utils",
+      ":lib-support-v4-support-core-ui",
+      ":lib-support-v4-support-media-compat",
+      ":lib-support-v4-support-fragment"
+    ]
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-compat",
+    aar = ":lib-support-v4-support-compat-aar",
     visibility = ["PUBLIC"],
 )
 
+android_prebuilt_aar(
+  name = "lib-support-v4-support-core-utils",
+  aar = ":lib-support-v4-support-core-utils-aar",
+  visibility = ["PUBLIC"],
+)
+
+android_prebuilt_aar(
+  name = "lib-support-v4-support-core-ui",
+  aar = ":lib-support-v4-support-core-ui-aar",
+  visibility = ["PUBLIC"],
+)
+
+android_prebuilt_aar(
+  name = "lib-support-v4-support-media-compat",
+  aar = ":lib-support-v4-support-media-compat-aar",
+  visibility = ["PUBLIC"],
+)
+
+android_prebuilt_aar(
+  name = "lib-support-v4-support-fragment",
+  aar = ":lib-support-v4-support-fragment-aar",
+  visibility = ["PUBLIC"],
+)
+
 remote_file(
-    name = "lib-support-v4-binary-aar",
-    sha1 = "444114b772e5eee3e66f9236ace4acc1964a33b8",
-    url = "mvn:com.android.support:support-v4:aar:26.1.0",
+    name = "lib-support-v4-support-compat-aar",
+    sha1 = "1e1c8ffc01d277d8f01dfd11d5d2ce3a2af4b98c",
+    url = "mvn:com.android.support:support-compat:aar:26.1.0",
+)
+
+remote_file(
+    name = "lib-support-v4-support-core-utils-aar",
+    sha1 = "1bfaae21c4d5c5532c5e732071e9ce234cd58cff",
+    url = "mvn:com.android.support:support-core-utils:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-core-ui-aar",
+  sha1 = "e306308d54052a1ded7bf9c2f5c2fdf5152a1f22",
+  url = "mvn:com.android.support:support-core-ui:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-media-compat-aar",
+  sha1 = "09fb587f27cde19aa8f2e50c5c9ee645d9aec44d",
+  url = "mvn:com.android.support:support-media-compat:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-fragment-aar",
+  sha1 = "ddacf369bb98dd6558606558de8ddcd53895cf91",
+  url = "mvn:com.android.support:support-fragment:aar:26.1.0",
 )
