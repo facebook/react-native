@@ -1,42 +1,38 @@
 android_library(
     name = "lib-support-v4",
-    deps = [
+    exported_deps = [
       ":lib-support-v4-support-compat",
       ":lib-support-v4-support-core-utils",
       ":lib-support-v4-support-core-ui",
       ":lib-support-v4-support-media-compat",
       ":lib-support-v4-support-fragment"
-    ]
+    ],
+    visibility = ["PUBLIC"],
 )
 
 android_prebuilt_aar(
     name = "lib-support-v4-support-compat",
     aar = ":lib-support-v4-support-compat-aar",
-    visibility = ["PUBLIC"],
 )
 
 android_prebuilt_aar(
-  name = "lib-support-v4-support-core-utils",
-  aar = ":lib-support-v4-support-core-utils-aar",
-  visibility = ["PUBLIC"],
+    name = "lib-support-v4-support-core-utils",
+    aar = ":lib-support-v4-support-core-utils-aar",
 )
 
 android_prebuilt_aar(
-  name = "lib-support-v4-support-core-ui",
-  aar = ":lib-support-v4-support-core-ui-aar",
-  visibility = ["PUBLIC"],
+    name = "lib-support-v4-support-core-ui",
+    aar = ":lib-support-v4-support-core-ui-aar",
 )
 
 android_prebuilt_aar(
-  name = "lib-support-v4-support-media-compat",
-  aar = ":lib-support-v4-support-media-compat-aar",
-  visibility = ["PUBLIC"],
+    name = "lib-support-v4-support-media-compat",
+    aar = ":lib-support-v4-support-media-compat-aar",
 )
 
 android_prebuilt_aar(
-  name = "lib-support-v4-support-fragment",
-  aar = ":lib-support-v4-support-fragment-aar",
-  visibility = ["PUBLIC"],
+    name = "lib-support-v4-support-fragment",
+    aar = ":lib-support-v4-support-fragment-aar",
 )
 
 remote_file(
