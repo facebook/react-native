@@ -29,6 +29,8 @@ import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTSlider = requireNativeComponent('RCTSlider');
+
 type Event = Object;
 
 type IOSProps = $ReadOnly<{|
@@ -305,15 +307,5 @@ if (Platform.OS === 'ios') {
     slider: {},
   });
 }
-
-let options = {};
-if (Platform.OS === 'android') {
-  options = {
-    nativeOnly: {
-      enabled: true,
-    },
-  };
-}
-const RCTSlider = requireNativeComponent('RCTSlider', Slider, options);
 
 module.exports = ((Slider: any): Class<ReactNative.NativeComponent<Props>>);

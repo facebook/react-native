@@ -22,6 +22,8 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
+
 type Event = Object;
 
 type Props = $ReadOnly<{|
@@ -176,7 +178,5 @@ const styles = StyleSheet.create({
     height: 216,
   },
 });
-
-const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
 
 module.exports = DatePickerIOS;

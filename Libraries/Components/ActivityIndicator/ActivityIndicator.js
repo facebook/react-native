@@ -11,7 +11,6 @@
 'use strict';
 
 const Platform = require('Platform');
-const ProgressBarAndroid = require('ProgressBarAndroid');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
@@ -21,7 +20,10 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
 
-let RCTActivityIndicator;
+const RCTActivityIndicator =
+  Platform.OS === 'android'
+    ? require('ProgressBarAndroid')
+    : requireNativeComponent('RCTActivityIndicatorView');
 
 const GRAY = '#999999';
 
@@ -98,11 +100,7 @@ const ActivityIndicator = (
 
   return (
     <View onLayout={onLayout} style={[styles.container, style]}>
-      {Platform.OS === 'ios' ? (
-        <RCTActivityIndicator {...nativeProps} />
-      ) : (
-        <ProgressBarAndroid {...nativeProps} />
-      )}
+      <RCTActivityIndicator {...nativeProps} />
     </View>
   );
 };
@@ -119,14 +117,6 @@ ActivityIndicatorWithRef.defaultProps = {
   size: 'small',
 };
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
-
-if (Platform.OS === 'ios') {
-  RCTActivityIndicator = requireNativeComponent(
-    'RCTActivityIndicatorView',
-    null,
-    {nativeOnly: {activityIndicatorViewStyle: true}},
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

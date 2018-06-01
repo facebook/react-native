@@ -45,6 +45,28 @@ import type {PointProp} from 'PointPropType';
 
 import type {ColorValue} from 'StyleSheetTypes';
 
+let AndroidScrollView;
+let AndroidHorizontalScrollContentView;
+let AndroidHorizontalScrollView;
+let RCTScrollView;
+let RCTScrollContentView;
+
+if (Platform.OS === 'android') {
+  AndroidScrollView = requireNativeComponent('RCTScrollView');
+  AndroidHorizontalScrollView = requireNativeComponent(
+    'AndroidHorizontalScrollView',
+  );
+  AndroidHorizontalScrollContentView = requireNativeComponent(
+    'AndroidHorizontalScrollContentView',
+  );
+} else if (Platform.OS === 'ios') {
+  RCTScrollView = requireNativeComponent('RCTScrollView');
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
+} else {
+  RCTScrollView = requireNativeComponent('RCTScrollView');
+  RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
+}
+
 type TouchableProps = $ReadOnly<{|
   onTouchStart?: (event: PressEvent) => void,
   onTouchMove?: (event: PressEvent) => void,
@@ -1073,57 +1095,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
-let nativeOnlyProps,
-  AndroidScrollView,
-  AndroidHorizontalScrollContentView,
-  AndroidHorizontalScrollView,
-  RCTScrollView,
-  RCTScrollContentView;
-if (Platform.OS === 'android') {
-  nativeOnlyProps = {
-    nativeOnly: {
-      sendMomentumEvents: true,
-    },
-  };
-  AndroidScrollView = requireNativeComponent(
-    'RCTScrollView',
-    (ScrollView: React.ComponentType<any>),
-    nativeOnlyProps,
-  );
-  AndroidHorizontalScrollView = requireNativeComponent(
-    'AndroidHorizontalScrollView',
-    (ScrollView: React.ComponentType<any>),
-    nativeOnlyProps,
-  );
-  AndroidHorizontalScrollContentView = requireNativeComponent(
-    'AndroidHorizontalScrollContentView',
-  );
-} else if (Platform.OS === 'ios') {
-  nativeOnlyProps = {
-    nativeOnly: {
-      onMomentumScrollBegin: true,
-      onMomentumScrollEnd: true,
-      onScrollBeginDrag: true,
-      onScrollEndDrag: true,
-    },
-  };
-  RCTScrollView = requireNativeComponent(
-    'RCTScrollView',
-    (ScrollView: React.ComponentType<any>),
-    nativeOnlyProps,
-  );
-  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
-} else {
-  nativeOnlyProps = {
-    nativeOnly: {},
-  };
-  RCTScrollView = requireNativeComponent(
-    'RCTScrollView',
-    null,
-    nativeOnlyProps,
-  );
-  RCTScrollContentView = requireNativeComponent('RCTScrollContentView', View);
-}
 
 module.exports = TypedScrollView;

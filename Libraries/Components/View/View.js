@@ -10,11 +10,8 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('React');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const TextAncestor = require('TextAncestor');
-const ViewPropTypes = require('ViewPropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
@@ -31,31 +28,7 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-const RCTView = requireNativeComponent(
-  'RCTView',
-  {
-    propTypes: ViewPropTypes,
-  },
-  {
-    nativeOnly: {
-      nativeBackgroundAndroid: true,
-      nativeForegroundAndroid: true,
-    },
-  },
-);
-
-if (__DEV__) {
-  const UIManager = require('UIManager');
-  const viewConfig =
-    (UIManager.viewConfigs && UIManager.viewConfigs.RCTView) || {};
-  for (const prop in viewConfig.nativeProps) {
-    if (!ViewPropTypes[prop] && !ReactNativeStyleAttributes[prop]) {
-      throw new Error(
-        'View is missing propType for native prop `' + prop + '`',
-      );
-    }
-  }
-}
+const RCTView = requireNativeComponent('RCTView');
 
 let ViewToExport = RCTView;
 if (__DEV__) {

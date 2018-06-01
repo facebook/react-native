@@ -23,6 +23,8 @@ const resolveAssetSource = require('resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
+const RCTImageView = requireNativeComponent('RCTImageView');
+
 /**
  * A React component for displaying different types of images,
  * including network images, static resources, temporary local images, and
@@ -138,7 +140,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
-
-const RCTImageView = requireNativeComponent('RCTImageView', Image);
 
 module.exports = Image;

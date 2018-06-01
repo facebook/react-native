@@ -40,23 +40,21 @@ let AndroidTextInput;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
+if (Platform.OS === 'android') {
+  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+} else if (Platform.OS === 'ios') {
+  RCTMultilineTextInputView = requireNativeComponent(
+    'RCTMultilineTextInputView',
+  );
+  RCTSinglelineTextInputView = requireNativeComponent(
+    'RCTSinglelineTextInputView',
+  );
+}
+
 const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-if (Platform.OS === 'android') {
-  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-} else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = requireNativeComponent(
-    'RCTMultilineTextInputView',
-    null,
-  );
-  RCTSinglelineTextInputView = requireNativeComponent(
-    'RCTSinglelineTextInputView',
-    null,
-  );
-}
 
 type Event = Object;
 type Selection = {
