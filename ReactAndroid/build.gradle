@@ -159,6 +159,7 @@ task downloadNdkBuildDependencies {
   dependsOn downloadFolly
   dependsOn downloadGlog
   dependsOn downloadJSCHeaders
+  dependsOn downloadJSC
 }
 
 def getNdkBuildName() {
