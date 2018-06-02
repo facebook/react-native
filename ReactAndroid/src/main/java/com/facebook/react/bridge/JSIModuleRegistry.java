@@ -25,4 +25,9 @@ public class JSIModuleRegistry {
     }
   }
 
+  public void notifyJSInstanceDestroy() {
+    for (JSIModuleHolder moduleHolder : mModules.values()) {
+      moduleHolder.notifyJSInstanceDestroy();
+    }
+  }
 }

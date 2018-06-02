@@ -28,4 +28,9 @@ public interface NotThreadSafeBridgeIdleDebugListener {
    * Called when the bridge was in an idle state and executes a JS call or callback.
    */
   void onTransitionToBridgeBusy();
+
+  /**
+   * Called when the bridge is destroyed
+   */
+  void onBridgeDestroyed();
 }

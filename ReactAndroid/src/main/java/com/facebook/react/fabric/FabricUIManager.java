@@ -29,7 +29,6 @@ import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
-import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
@@ -84,10 +83,6 @@ public class FabricUIManager implements UIManager, JSHandler {
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
     mEventDispatcher = eventDispatcher;
     mJSContext = jsContext;
-
-    FabricEventEmitter eventEmitter =
-      new FabricEventEmitter(reactContext, this);
-    eventDispatcher.registerEventEmitter(FABRIC, eventEmitter);
   }
 
   public void setBinding(FabricBinding binding) {
@@ -536,6 +531,18 @@ public class FabricUIManager implements UIManager, JSHandler {
         "Dispatching event for target: " + eventTarget);
     }
     mBinding.dispatchEventToTarget(mJSContext.get(), mEventHandlerPointer, eventTarget, name, (WritableNativeMap) params);
+  }
+
+  @Override
+  public void initialize() {
+    FabricEventEmitter eventEmitter =
+      new FabricEventEmitter(mReactApplicationContext, this);
+    mEventDispatcher.registerEventEmitter(FABRIC, eventEmitter);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    mBinding.releaseEventHandler(mJSContext.get(), mEventHandlerPointer);
   }
 
 }

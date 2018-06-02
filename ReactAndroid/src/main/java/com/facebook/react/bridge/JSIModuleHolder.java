@@ -16,8 +16,15 @@ public class JSIModuleHolder {
           return mModule;
         }
         mModule = mSpec.getJSIModuleProvider().get();
+        mModule.initialize();
       }
     }
     return mModule;
+  }
+
+  public void notifyJSInstanceDestroy() {
+    if (mModule != null) {
+      mModule.onCatalystInstanceDestroy();
+    }
   }
 }
