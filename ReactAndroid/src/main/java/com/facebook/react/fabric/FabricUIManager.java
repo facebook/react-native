@@ -487,7 +487,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     long context = mJSContext.get();
     long eventTarget = mBinding.createEventTarget(context, instanceHandle);
     if (DEBUG) {
-      Log.e(
+      Log.d(
         TAG,
         "Created EventTarget: " + eventTarget + " for tag: " + reactTag + " with instanceHandle: " + instanceHandle);
     }
@@ -509,7 +509,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @Override
   public void invoke(long eventTarget, String name, WritableMap params) {
     if (DEBUG) {
-      Log.e(
+      Log.d(
         TAG,
         "Dispatching event for target: " + eventTarget);
     }
