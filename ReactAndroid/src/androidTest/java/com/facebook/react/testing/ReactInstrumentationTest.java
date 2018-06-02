@@ -25,6 +25,8 @@ import com.facebook.react.testing.idledetection.IdleWaiter;
 public abstract class ReactInstrumentationTest extends
     ActivityInstrumentationTestCase2<ReactAppTestActivity> implements IdleWaiter {
 
+  protected StringRecordingModule mRecordingModule;
+
   public ReactInstrumentationTest() {
     super(ReactAppTestActivity.class);
   }
@@ -36,6 +38,7 @@ public abstract class ReactInstrumentationTest extends
     Intent intent = new Intent();
     intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
     setActivityIntent(intent);
+    mRecordingModule = new StringRecordingModule();
     final ReactAppTestActivity activity = getActivity();
     activity.loadBundle(
         createReactInstanceSpecForTest(),
@@ -95,7 +98,7 @@ public abstract class ReactInstrumentationTest extends
    * Override this method to provide extra native modules to be loaded before the app starts
    */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return new ReactInstanceSpecForTest();
+    return new ReactInstanceSpecForTest().addNativeModule(mRecordingModule);
   }
 
   /**

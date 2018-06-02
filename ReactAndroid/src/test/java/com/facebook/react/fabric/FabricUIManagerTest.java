@@ -13,6 +13,7 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
@@ -55,7 +56,8 @@ public class FabricUIManagerTest {
             new ReactViewManager(), new ReactTextViewManager(), new ReactRawTextManager());
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
     JavaScriptContextHolder jsContext = mock(JavaScriptContextHolder.class);
-    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext);
+    EventDispatcher eventDispatcher = mock(EventDispatcher.class);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext, eventDispatcher);
   }
 
   @Test

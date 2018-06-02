@@ -26,6 +26,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.Scheduler;
 import com.facebook.react.fabric.Work;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.io.Closeable;
 import java.io.IOException;
@@ -48,9 +49,13 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
   }
 
   @Override
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap params) {
-    long eventTarget = mFabricUIManager.createEventTarget(targetTag);
-    mScheduler.scheduleWork(new FabricUIManagerWork(eventTarget, eventName, params));
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
+    try {
+      long eventTarget = mFabricUIManager.createEventTarget(reactTag);
+      mScheduler.scheduleWork(new FabricUIManagerWork(eventTarget, eventName, params));
+    } catch (IllegalViewOperationException e) {
+      Log.e(TAG, "Unable to emmit event for tag " + reactTag, e);
+    }
   }
 
   @Override

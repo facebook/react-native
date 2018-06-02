@@ -37,7 +37,9 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.Arrays;
@@ -265,8 +267,10 @@ public class ReactAppTestActivity extends FragmentActivity
                         public FabricUIManager get() {
                           List<ViewManager> viewManagers =
                             mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext);
+                          EventDispatcher eventDispatcher =
+                            reactApplicationContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
                           FabricUIManager fabricUIManager =
-                            new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers), jsContext);
+                            new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers), jsContext, eventDispatcher);
                           new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
                           return fabricUIManager;
                         }

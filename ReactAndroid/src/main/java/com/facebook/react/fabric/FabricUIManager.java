@@ -10,6 +10,7 @@ package com.facebook.react.fabric;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.util.Log;
 import android.view.View;
@@ -24,9 +25,11 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
@@ -37,6 +40,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -61,13 +65,15 @@ public class FabricUIManager implements UIManager, JSHandler {
   private final JavaScriptContextHolder mJSContext;
   private volatile int mCurrentBatch = 0;
   private final FabricReconciler mFabricReconciler;
+  private final EventDispatcher mEventDispatcher;
   private FabricBinding mBinding;
   private long mEventHandlerPointer;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
-      JavaScriptContextHolder jsContext) {
+      JavaScriptContextHolder jsContext,
+      EventDispatcher eventDispatcher) {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mReactApplicationContext = reactContext;
     mViewManagerRegistry = viewManagerRegistry;
@@ -76,7 +82,12 @@ public class FabricUIManager implements UIManager, JSHandler {
         new UIViewOperationQueue(
             reactContext, mNativeViewHierarchyManager, 0);
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
+    mEventDispatcher = eventDispatcher;
     mJSContext = jsContext;
+
+    FabricEventEmitter eventEmitter =
+      new FabricEventEmitter(reactContext, this);
+    eventDispatcher.registerEventEmitter(FABRIC, eventEmitter);
   }
 
   public void setBinding(FabricBinding binding) {
@@ -355,7 +366,18 @@ public class FabricUIManager implements UIManager, JSHandler {
     if (mRootShadowNodeRegistry.getNode(tag) == null) {
       boolean frameDidChange =
           node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
+      // Notify JS about layout event if requested
+      // and if the position or dimensions actually changed
+      // (consistent with iOS and Android Default implementation).
+      if (frameDidChange && node.shouldNotifyOnLayout()) {
+        mUIViewOperationQueue.enqueueOnLayoutEvent(tag,
+          node.getScreenX(),
+          node.getScreenY(),
+          node.getScreenWidth(),
+          node.getScreenHeight());
+      }
     }
+
     // Set the reference to the OriginalReactShadowNode to NULL, as the tree is already committed
     // and we do not need to hold references to the previous tree anymore
     node.setOriginalReactShadowNode(null);
