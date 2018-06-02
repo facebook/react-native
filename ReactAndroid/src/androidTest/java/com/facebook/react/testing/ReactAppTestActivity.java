@@ -21,8 +21,9 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSIModule;
-import com.facebook.react.bridge.JSIModuleHolder;
-import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSIModuleProvider;
+import com.facebook.react.bridge.JSIModuleSpec;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -244,29 +245,35 @@ public class ReactAppTestActivity extends FragmentActivity
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
         .setInitialLifecycleState(mLifecycleState)
-        .setJSIModulesProvider(
-          new JSIModulesProvider() {
-            @Override
-            public List<JSIModuleHolder> getJSIModules(
-              final ReactApplicationContext reactApplicationContext,
-              final JavaScriptContextHolder jsContext) {
-              return Arrays.<JSIModuleHolder>asList(new JSIModuleHolder() {
-                @Override
-                public Class<? extends JSIModule> getJSIModuleClass() {
-                  return UIManager.class;
-                }
+        .setJSIModulesPackage(
+            new JSIModulePackage() {
+              @Override
+              public List<JSIModuleSpec> getJSIModules(
+                  final ReactApplicationContext reactApplicationContext,
+                  final JavaScriptContextHolder jsContext) {
+                return Arrays.<JSIModuleSpec>asList(
+                  new JSIModuleSpec() {
+                    @Override
+                    public Class<? extends JSIModule> getJSIModuleClass() {
+                      return UIManager.class;
+                    }
 
-                @Override
-                public FabricUIManager getJSIModule() {
-                  List<ViewManager> viewManagers =
-                    mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext);
-                  FabricUIManager fabricUIManager =
-                    new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers), jsContext);
-                  new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
-                  return fabricUIManager;
-                }
-              });
-            }})
+                    @Override
+                    public JSIModuleProvider getJSIModuleProvider() {
+                      return new JSIModuleProvider() {
+                        @Override
+                        public FabricUIManager get() {
+                          List<ViewManager> viewManagers =
+                            mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext);
+                          FabricUIManager fabricUIManager =
+                            new FabricUIManager(reactApplicationContext, new ViewManagerRegistry(viewManagers), jsContext);
+                          new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
+                          return fabricUIManager;
+                        }
+                      };
+                    }
+                  });
+              }})
         .setUIImplementationProvider(uiImplementationProvider);
 
     final CountDownLatch latch = new CountDownLatch(1);

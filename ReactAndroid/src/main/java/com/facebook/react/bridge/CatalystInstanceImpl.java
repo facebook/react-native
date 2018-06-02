@@ -464,7 +464,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
-  public void addJSIModules(List<JSIModuleHolder> jsiModules) {
+  public void addJSIModules(List<JSIModuleSpec> jsiModules) {
     mJSIModuleRegistry.registerModules(jsiModules);
   }
 
