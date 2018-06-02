@@ -249,17 +249,10 @@ const Slider = createReactClass({
   },
 
   render: function() {
-    const {style, onValueChange, onSlidingComplete, ...props} = this.props;
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.style = [styles.slider, style];
+    const style = StyleSheet.compose(styles.slider, this.props.style);
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onValueChange =
-      onValueChange &&
+    const onValueChange =
+      this.props.onValueChange &&
       ((event: Event) => {
         let userEvent = true;
         if (Platform.OS === 'android') {
@@ -267,26 +260,27 @@ const Slider = createReactClass({
           // dragging the slider.
           userEvent = event.nativeEvent.fromUser;
         }
-        onValueChange && userEvent && onValueChange(event.nativeEvent.value);
+        this.props.onValueChange &&
+          userEvent &&
+          this.props.onValueChange(event.nativeEvent.value);
       });
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onChange = props.onValueChange;
+    const onChange = onValueChange;
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onSlidingComplete =
-      onSlidingComplete &&
+    const onSlidingComplete =
+      this.props.onSlidingComplete &&
       ((event: Event) => {
-        onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
+        this.props.onSlidingComplete &&
+          this.props.onSlidingComplete(event.nativeEvent.value);
       });
 
     return (
       <RCTSlider
-        {...props}
+        {...this.props}
+        style={style}
+        onChange={onChange}
+        onSlidingComplete={onSlidingComplete}
+        onValueChange={onValueChange}
         enabled={!this.props.disabled}
         onStartShouldSetResponder={() => true}
         onResponderTerminationRequest={() => false}
