@@ -10,18 +10,11 @@
 
 'use strict';
 
-const Image = require('Image');
-const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const ReactNative = require('ReactNative');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const Platform = require('Platform');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ImageSource} from 'ImageSource';
@@ -200,88 +193,64 @@ type Props = $ReadOnly<{|
  *```
  *
  */
-const Slider = createReactClass({
-  displayName: 'Slider',
-  mixins: [NativeMethodsMixin],
+const Slider = (
+  props: $ReadOnly<{|
+    ...Props,
+    forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
+  |}>,
+) => {
+  const style = StyleSheet.compose(styles.slider, props.style);
 
-  propTypes: {
-    ...ViewPropTypes,
-    style: ViewPropTypes.style,
-    value: PropTypes.number,
-    step: PropTypes.number,
-    minimumValue: PropTypes.number,
-    maximumValue: PropTypes.number,
-    minimumTrackTintColor: ColorPropType,
-    maximumTrackTintColor: ColorPropType,
-    disabled: PropTypes.bool,
-    trackImage: Image.propTypes.source,
-    minimumTrackImage: Image.propTypes.source,
-    maximumTrackImage: Image.propTypes.source,
-    thumbImage: Image.propTypes.source,
-    thumbTintColor: ColorPropType,
-    onValueChange: PropTypes.func,
-    onSlidingComplete: PropTypes.func,
-    testID: PropTypes.string,
-  },
+  const onValueChange =
+    props.onValueChange &&
+    ((event: Event) => {
+      let userEvent = true;
+      if (Platform.OS === 'android') {
+        // On Android there's a special flag telling us the user is
+        // dragging the slider.
+        userEvent = event.nativeEvent.fromUser;
+      }
+      props.onValueChange &&
+        userEvent &&
+        props.onValueChange(event.nativeEvent.value);
+    });
 
-  getDefaultProps: function(): any {
-    return {
-      disabled: false,
-      value: 0,
-      minimumValue: 0,
-      maximumValue: 1,
-      step: 0,
-    };
-  },
+  const onChange = onValueChange;
 
-  viewConfig: {
-    uiViewClassName: 'RCTSlider',
-    validAttributes: {
-      ...ReactNativeViewAttributes.RCTView,
-      value: true,
-    },
-  },
+  const onSlidingComplete =
+    props.onSlidingComplete &&
+    ((event: Event) => {
+      props.onSlidingComplete &&
+        props.onSlidingComplete(event.nativeEvent.value);
+    });
 
-  render: function() {
-    const style = StyleSheet.compose(styles.slider, this.props.style);
+  return (
+    <RCTSlider
+      {...props}
+      style={style}
+      onChange={onChange}
+      onSlidingComplete={onSlidingComplete}
+      onValueChange={onValueChange}
+      enabled={!props.disabled}
+      onStartShouldSetResponder={() => true}
+      onResponderTerminationRequest={() => false}
+    />
+  );
+};
 
-    const onValueChange =
-      this.props.onValueChange &&
-      ((event: Event) => {
-        let userEvent = true;
-        if (Platform.OS === 'android') {
-          // On Android there's a special flag telling us the user is
-          // dragging the slider.
-          userEvent = event.nativeEvent.fromUser;
-        }
-        this.props.onValueChange &&
-          userEvent &&
-          this.props.onValueChange(event.nativeEvent.value);
-      });
-
-    const onChange = onValueChange;
-
-    const onSlidingComplete =
-      this.props.onSlidingComplete &&
-      ((event: Event) => {
-        this.props.onSlidingComplete &&
-          this.props.onSlidingComplete(event.nativeEvent.value);
-      });
-
-    return (
-      <RCTSlider
-        {...this.props}
-        style={style}
-        onChange={onChange}
-        onSlidingComplete={onSlidingComplete}
-        onValueChange={onValueChange}
-        enabled={!this.props.disabled}
-        onStartShouldSetResponder={() => true}
-        onResponderTerminationRequest={() => false}
-      />
-    );
-  },
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const SliderWithRef = React.forwardRef((props: Props, ref) => {
+  return <Slider {...props} forwardedRef={ref} />;
 });
+
+SliderWithRef.defaultProps = {
+  disabled: false,
+  value: 0,
+  minimumValue: 0,
+  maximumValue: 1,
+  step: 0,
+};
+SliderWithRef.displayName = 'Slider';
 
 let styles;
 if (Platform.OS === 'ios') {
@@ -296,4 +265,4 @@ if (Platform.OS === 'ios') {
   });
 }
 
-module.exports = ((Slider: any): Class<ReactNative.NativeComponent<Props>>);
+module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);
