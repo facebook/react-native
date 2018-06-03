@@ -34,13 +34,35 @@ const RCTSlider = requireNativeComponent('RCTSlider');
 type Event = Object;
 
 type IOSProps = $ReadOnly<{|
+  /**
+   * Assigns a single image for the track. Only static images are supported.
+   * The center pixel of the image will be stretched to fill the track.
+   */
   trackImage?: ?ImageSource,
+
+  /**
+   * Assigns a minimum track image. Only static images are supported. The
+   * rightmost pixel of the image will be stretched to fill the track.
+   */
   minimumTrackImage?: ?ImageSource,
+
+  /**
+   * Assigns a maximum track image. Only static images are supported. The
+   * leftmost pixel of the image will be stretched to fill the track.
+   */
   maximumTrackImage?: ?ImageSource,
+
+  /**
+   * Sets an image for the thumb. Only static images are supported.
+   */
   thumbImage?: ?ImageSource,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  /**
+   * Color of the foreground switch grip.
+   * @platform android
+   */
   thumbTintColor?: ?ColorValue,
 |}>;
 
@@ -48,16 +70,73 @@ type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
+
+  /**
+   * Used to style and layout the `Slider`.  See `StyleSheet.js` and
+   * `ViewStylePropTypes.js` for more info.
+   */
   style?: ?ViewStyleProp,
+
+  /**
+   * Initial value of the slider. The value should be between minimumValue
+   * and maximumValue, which default to 0 and 1 respectively.
+   * Default value is 0.
+   *
+   * *This is not a controlled component*, you don't need to update the
+   * value during dragging.
+   */
   value?: ?number,
+
+  /**
+   * Step value of the slider. The value should be
+   * between 0 and (maximumValue - minimumValue).
+   * Default value is 0.
+   */
   step?: ?number,
+
+  /**
+   * Initial minimum value of the slider. Default value is 0.
+   */
   minimumValue?: ?number,
+
+  /**
+   * Initial maximum value of the slider. Default value is 1.
+   */
   maximumValue?: ?number,
+
+  /**
+   * The color used for the track to the left of the button.
+   * Overrides the default blue gradient image on iOS.
+   */
   minimumTrackTintColor?: ?ColorValue,
+
+  /**
+   * The color used for the track to the right of the button.
+   * Overrides the default blue gradient image on iOS.
+   */
   maximumTrackTintColor?: ?ColorValue,
+
+  /**
+   * If true the user won't be able to move the slider.
+   * Default value is false.
+   */
   disabled?: ?boolean,
+
+  /**
+   * Callback continuously called while the user is dragging the slider.
+   */
   onValueChange?: ?Function,
+
+  /**
+   * Callback that is called when the user releases the slider,
+   * regardless if the value has changed. The current value is passed
+   * as an argument to the callback handler.
+   */
   onSlidingComplete?: ?Function,
+
+  /**
+   * Used to locate this view in UI automation tests.
+   */
   testID?: ?string,
 |}>;
 
@@ -127,106 +206,21 @@ const Slider = createReactClass({
 
   propTypes: {
     ...ViewPropTypes,
-
-    /**
-     * Used to style and layout the `Slider`.  See `StyleSheet.js` and
-     * `ViewStylePropTypes.js` for more info.
-     */
     style: ViewPropTypes.style,
-
-    /**
-     * Initial value of the slider. The value should be between minimumValue
-     * and maximumValue, which default to 0 and 1 respectively.
-     * Default value is 0.
-     *
-     * *This is not a controlled component*, you don't need to update the
-     * value during dragging.
-     */
     value: PropTypes.number,
-
-    /**
-     * Step value of the slider. The value should be
-     * between 0 and (maximumValue - minimumValue).
-     * Default value is 0.
-     */
     step: PropTypes.number,
-
-    /**
-     * Initial minimum value of the slider. Default value is 0.
-     */
     minimumValue: PropTypes.number,
-
-    /**
-     * Initial maximum value of the slider. Default value is 1.
-     */
     maximumValue: PropTypes.number,
-
-    /**
-     * The color used for the track to the left of the button.
-     * Overrides the default blue gradient image on iOS.
-     */
     minimumTrackTintColor: ColorPropType,
-
-    /**
-     * The color used for the track to the right of the button.
-     * Overrides the default blue gradient image on iOS.
-     */
     maximumTrackTintColor: ColorPropType,
-
-    /**
-     * If true the user won't be able to move the slider.
-     * Default value is false.
-     */
     disabled: PropTypes.bool,
-
-    /**
-     * Assigns a single image for the track. Only static images are supported.
-     * The center pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
     trackImage: Image.propTypes.source,
-
-    /**
-     * Assigns a minimum track image. Only static images are supported. The
-     * rightmost pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
     minimumTrackImage: Image.propTypes.source,
-
-    /**
-     * Assigns a maximum track image. Only static images are supported. The
-     * leftmost pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
     maximumTrackImage: Image.propTypes.source,
-
-    /**
-     * Sets an image for the thumb. Only static images are supported.
-     * @platform ios
-     */
     thumbImage: Image.propTypes.source,
-
-    /**
-     * Color of the foreground switch grip.
-     * @platform android
-     */
     thumbTintColor: ColorPropType,
-
-    /**
-     * Callback continuously called while the user is dragging the slider.
-     */
     onValueChange: PropTypes.func,
-
-    /**
-     * Callback that is called when the user releases the slider,
-     * regardless if the value has changed. The current value is passed
-     * as an argument to the callback handler.
-     */
     onSlidingComplete: PropTypes.func,
-
-    /**
-     * Used to locate this view in UI automation tests.
-     */
     testID: PropTypes.string,
   },
 
