@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <unordered_set>
-
 #include <fabric/graphics/Geometry.h>
 
 namespace facebook {
