@@ -156,7 +156,7 @@ RCT_EXPORT_MODULE()
   if (!_locationConfiguration.skipPermissionRequests) {
     [self requestAuthorization];
   }
-  
+
   if (!_locationManager) {
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
@@ -203,8 +203,9 @@ RCT_EXPORT_METHOD(requestAuthorization)
     _locationManager.delegate = self;
   }
 
+  // No need any more below code block. Issue: https://github.com/facebook/react-native/issues/19057
   // Request location access permission
-  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
+  /*if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
     [_locationManager requestAlwaysAuthorization];
 
@@ -218,7 +219,7 @@ RCT_EXPORT_METHOD(requestAuthorization)
   } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
     [_locationManager requestWhenInUseAuthorization];
-  }
+  }*/
 }
 
 RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
