@@ -224,11 +224,11 @@ public class NativeViewHierarchyManager {
   public long getInstanceHandle(int reactTag) {
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
-      throw new IllegalArgumentException("Unable to find view for tag: " + reactTag);
+      throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
     }
     Long instanceHandle = (Long) view.getTag(R.id.view_tag_instance_handle);
     if (instanceHandle == null) {
-      throw new IllegalArgumentException("Unable to find instanceHandle for tag: " + reactTag);
+      throw new IllegalViewOperationException("Unable to find instanceHandle for tag: " + reactTag);
     }
     return instanceHandle;
   }

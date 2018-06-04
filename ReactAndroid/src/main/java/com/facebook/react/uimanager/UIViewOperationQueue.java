@@ -96,6 +96,38 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class EmitOnLayoutEventOperation extends ViewOperation {
+
+    private final int mScreenX;
+    private final int mScreenY;
+    private final int mScreenWidth;
+    private final int mScreenHeight;
+
+    public EmitOnLayoutEventOperation(
+        int tag,
+        int screenX,
+        int screenY,
+        int screenWidth,
+        int screenHeight) {
+      super(tag);
+      mScreenX = screenX;
+      mScreenY = screenY;
+      mScreenWidth = screenWidth;
+      mScreenHeight = screenHeight;
+    }
+
+    @Override
+    public void execute() {
+      mReactApplicationContext.getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(OnLayoutEvent.obtain(
+          mTag,
+          mScreenX,
+          mScreenY,
+          mScreenWidth,
+          mScreenHeight));
+    }
+  }
 
   private final class UpdateInstanceHandleOperation extends ViewOperation {
 
@@ -705,6 +737,16 @@ public class UIViewOperationQueue {
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
+
+  public void enqueueOnLayoutEvent(
+    int tag,
+    int screenX,
+    int screenY,
+    int screenWidth,
+    int screenHeight) {
+    mOperations.add(new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
+  }
+
 
   public void enqueueUpdateLayout(
       int parentTag,
