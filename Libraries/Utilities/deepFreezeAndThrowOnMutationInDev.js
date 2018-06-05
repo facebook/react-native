@@ -42,7 +42,7 @@ function deepFreezeAndThrowOnMutationInDev(object: Object) {
 
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
-      if (object.hasOwnProperty(key)) {
+      if (Object.hasOwnProperty.call(object, key)) {
         object.__defineGetter__(key, identity.bind(null, object[key]));
         object.__defineSetter__(key, throwOnImmutableMutation.bind(null, key));
       }
@@ -53,7 +53,7 @@ function deepFreezeAndThrowOnMutationInDev(object: Object) {
 
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
-      if (object.hasOwnProperty(key)) {
+      if (Object.hasOwnProperty.call(object, key)) {
         deepFreezeAndThrowOnMutationInDev(object[key]);
       }
     }
