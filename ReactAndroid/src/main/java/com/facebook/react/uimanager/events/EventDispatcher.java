@@ -161,7 +161,6 @@ public class EventDispatcher implements LifecycleEventListener {
   @Override
   public void onHostDestroy() {
     stopFrameCallback();
-    mReactEventEmitter.stop();
   }
 
   public void onCatalystInstanceDestroyed() {
@@ -252,6 +251,10 @@ public class EventDispatcher implements LifecycleEventListener {
 
   public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
     mReactEventEmitter.register(uiManagerType, eventEmitter);
+  }
+
+  public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
+    mReactEventEmitter.unregister(uiManagerType);
   }
 
   private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {

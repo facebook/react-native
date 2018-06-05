@@ -31,6 +31,10 @@ public class ReactEventEmitter implements RCTEventEmitter {
     mEventEmitters.put(uiManagerType, eventEmitter);
   }
 
+  public void unregister(@UIManagerType int uiManagerType) {
+    mEventEmitters.remove(uiManagerType);
+  }
+
   @Override
   public void receiveEvent(int targetReactTag, String eventName, @Nullable WritableMap event) {
     getEventEmitter(targetReactTag).receiveEvent(targetReactTag, eventName, event);
@@ -51,18 +55,5 @@ public class ReactEventEmitter implements RCTEventEmitter {
   private RCTEventEmitter getEventEmitter(int reactTag) {
     int type = ViewUtil.getUIManagerType(reactTag);
     return mEventEmitters.get(type);
-  }
-
-  public void stop() {
-    for (int i = 0 ; i < mEventEmitters.size() ; i++) {
-      RCTEventEmitter eventEmitter = mEventEmitters.valueAt(i);
-      if (eventEmitter instanceof Closeable) {
-        try {
-          ((Closeable) eventEmitter).close();
-        } catch (IOException e) {
-          Log.i(TAG, "Exception when closing EventEmitter: " + eventEmitter, e);
-        }
-      }
-    }
   }
 }

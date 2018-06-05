@@ -66,6 +66,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   private final FabricReconciler mFabricReconciler;
   private final EventDispatcher mEventDispatcher;
   private FabricBinding mBinding;
+  private final FabricEventEmitter mFabricEventEmitter;
   private long mEventHandlerPointer;
 
   public FabricUIManager(
@@ -81,6 +82,8 @@ public class FabricUIManager implements UIManager, JSHandler {
         new UIViewOperationQueue(
             reactContext, mNativeViewHierarchyManager, 0);
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
+    mFabricEventEmitter =
+      new FabricEventEmitter(mReactApplicationContext, this);
     mEventDispatcher = eventDispatcher;
     mJSContext = jsContext;
   }
@@ -537,12 +540,14 @@ public class FabricUIManager implements UIManager, JSHandler {
   public void initialize() {
     FabricEventEmitter eventEmitter =
       new FabricEventEmitter(mReactApplicationContext, this);
-    mEventDispatcher.registerEventEmitter(FABRIC, eventEmitter);
+    mEventDispatcher.registerEventEmitter(FABRIC, mFabricEventEmitter);
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
     mBinding.releaseEventHandler(mJSContext.get(), mEventHandlerPointer);
+    mEventDispatcher.unregisterEventEmitter(FABRIC);
+    mFabricEventEmitter.close();
   }
 
 }
