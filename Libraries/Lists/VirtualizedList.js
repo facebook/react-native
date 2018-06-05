@@ -1074,6 +1074,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     } else {
       this._frames[cellKey].inLayout = true;
     }
+
+    const childListKeys = this._cellKeysToChildListKeys.get(cellKey);
+    if (childListKeys) {
+      for (let childKey of childListKeys) {
+        const childList = this._nestedChildLists.get(childKey);
+        childList &&
+          childList.ref &&
+          childList.ref.measureLayoutRelativeToContainingList();
+      }
+    }
+
     this._computeBlankness();
   }
 
@@ -1084,7 +1095,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _measureLayoutRelativeToContainingList(): void {
+  measureLayoutRelativeToContainingList(): void {
     UIManager.measureLayout(
       ReactNative.findNodeHandle(this),
       ReactNative.findNodeHandle(
@@ -1113,7 +1124,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
-      this._measureLayoutRelativeToContainingList();
+      this.measureLayoutRelativeToContainingList();
     } else {
       this._scrollMetrics.visibleLength = this._selectLength(
         e.nativeEvent.layout,
