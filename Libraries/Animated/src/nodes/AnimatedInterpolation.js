@@ -278,7 +278,7 @@ function checkValidInputRange(arr: Array<number>) {
   invariant(arr.length >= 2, 'inputRange must have at least 2 elements');
   for (let i = 1; i < arr.length; ++i) {
     invariant(
-      arr[i] >= arr[i - 1],
+      arr[i] > arr[i - 1],
       /* $FlowFixMe(>=0.13.0) - In the addition expression below this comment,
        * one or both of the operands may be something that doesn't cleanly
        * convert to a string, like undefined, null, and object, etc. If you really
