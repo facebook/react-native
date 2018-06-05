@@ -285,7 +285,7 @@ function checkValidInputRange(arr: Array<number>) {
        * mean this implicit string conversion, you can do something like
        * String(myThing)
        */
-      'inputRange must be monotonically increasing ' + arr,
+      'inputRange must be monotonically non-decreasing ' + arr,
     );
   }
 }
