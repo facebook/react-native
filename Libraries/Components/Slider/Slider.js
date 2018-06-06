@@ -199,7 +199,10 @@ const Slider = (
     forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
   |}>,
 ) => {
-  const style = StyleSheet.compose(styles.slider, props.style);
+  const style = StyleSheet.compose(
+    styles.slider,
+    props.style,
+  );
 
   const onValueChange =
     props.onValueChange &&

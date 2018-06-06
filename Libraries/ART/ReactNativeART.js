@@ -297,7 +297,7 @@ function insertOffsetsIntoArray(stops, targetArray, atIndex, multi, reverse) {
   let i = 0;
   if ('length' in stops) {
     while (i < stops.length) {
-      offsetNumber = i / (stops.length - 1) * multi;
+      offsetNumber = (i / (stops.length - 1)) * multi;
       targetArray[atIndex + i] = reverse ? 1 - offsetNumber : offsetNumber;
       i++;
     }
@@ -530,7 +530,7 @@ function LinearGradient(stops, x1, y1, x2, y2) {
   const type = LINEAR_GRADIENT;
 
   if (arguments.length < 5) {
-    const angle = (x1 == null ? 270 : x1) * Math.PI / 180;
+    const angle = ((x1 == null ? 270 : x1) * Math.PI) / 180;
 
     let x = Math.cos(angle);
     let y = -Math.sin(angle);

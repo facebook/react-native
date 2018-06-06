@@ -81,7 +81,7 @@ describe('Easing', () => {
 
   function sampleEasingFunction(easing) {
     const DURATION = 300;
-    const tickCount = Math.round(DURATION * 60 / 1000);
+    const tickCount = Math.round((DURATION * 60) / 1000);
     const samples = [];
     for (let i = 0; i <= tickCount; i++) {
       samples.push(easing(i / tickCount));

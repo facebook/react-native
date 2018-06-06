@@ -94,7 +94,7 @@ var SwipeableListViewSimpleExample = createReactClass({
           <View style={styles.row}>
             <Image style={styles.thumb} source={imgSource} />
             <Text style={styles.text}>
-              {rowData.id + ' - ' + LOREM_IPSUM.substr(0, rowHash % 301 + 10)}
+              {rowData.id + ' - ' + LOREM_IPSUM.substr(0, (rowHash % 301) + 10)}
             </Text>
           </View>
         </View>

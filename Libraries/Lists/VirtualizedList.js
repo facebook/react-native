@@ -1369,7 +1369,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.63 was deployed. To see the error delete
        * this comment and run Flow. */
-      this.props.onEndReachedThreshold * visibleLength / 2;
+      (this.props.onEndReachedThreshold * visibleLength) / 2;
     // Mark as high priority if we're close to the start of the first item
     // But only if there are items before the first rendered item
     if (first > 0) {

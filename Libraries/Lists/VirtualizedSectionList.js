@@ -457,7 +457,7 @@ class ItemWithSeparator extends React.Component<
   static getDerivedStateFromProps(
     props: ItemWithSeparatorProps,
     prevState: ItemWithSeparatorState,
-  ): ?ItemWithSeparatorState  {
+  ): ?ItemWithSeparatorState {
     return {
       separatorProps: {
         ...prevState.separatorProps,

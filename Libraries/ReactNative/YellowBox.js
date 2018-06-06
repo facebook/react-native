@@ -424,13 +424,14 @@ class YellowBox extends React.Component<
     ];
     return (
       <View style={inspector ? styles.fullScreen : listStyle}>
-        {!inspector && rows.length > 0 && (
-          <TouchableHighlight
-            style={styles.dismissAllContainer}
-            onPress={() => this.dismissWarning(null)}>
-            <Text style={styles.dismissAll}>Dismiss All</Text>
-          </TouchableHighlight>
-        )}
+        {!inspector &&
+          rows.length > 0 && (
+            <TouchableHighlight
+              style={styles.dismissAllContainer}
+              onPress={() => this.dismissWarning(null)}>
+              <Text style={styles.dismissAll}>Dismiss All</Text>
+            </TouchableHighlight>
+          )}
         <ScrollView style={listStyle} scrollsToTop={false}>
           {rows}
         </ScrollView>

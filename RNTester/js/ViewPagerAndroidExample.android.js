@@ -81,7 +81,7 @@ class ProgressBar extends React.Component {
   render() {
     var fractionalPosition =
       this.props.progress.position + this.props.progress.offset;
-    var progressBarSize = fractionalPosition / (PAGES - 1) * this.props.size;
+    var progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
     return (
       <View style={[styles.progressBarContainer, {width: this.props.size}]}>
         <View style={[styles.progressBar, {width: progressBarSize}]} />
@@ -92,7 +92,8 @@ class ProgressBar extends React.Component {
 
 class ViewPagerAndroidExample extends React.Component {
   static title = '<ViewPagerAndroid>';
-  static description = 'Container that allows to flip left and right between child views.';
+  static description =
+    'Container that allows to flip left and right between child views.';
 
   state = {
     page: 0,

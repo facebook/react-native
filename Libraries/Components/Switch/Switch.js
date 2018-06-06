@@ -134,7 +134,10 @@ class Switch extends React.Component<Props> {
               : this.props.tintColor,
           }
         : {
-            style: StyleSheet.compose(styles.rctSwitchIOS, this.props.style),
+            style: StyleSheet.compose(
+              styles.rctSwitchIOS,
+              this.props.style,
+            ),
           };
 
     return (

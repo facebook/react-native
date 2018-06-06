@@ -19,7 +19,8 @@ var RNTesterPage = require('RNTesterPage');
 
 class ToastExample extends React.Component<{}, $FlowFixMeState> {
   static title = 'Toast Example';
-  static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
+  static description =
+    'Example that demonstrates the use of an Android Toast to provide feedback.';
   state = {};
 
   render() {
