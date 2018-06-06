@@ -38,9 +38,13 @@ module.exports = function linkAssetsIOS(files, projectConfig) {
       .map(file => file.basename);
   }
 
-  addResourceFile(assets.image);
-
-  const fonts = addResourceFile(assets.font);
+  let fonts = [];
+  for (const type in assets) {
+    let result = addResourceFile(assets[type]);
+    if (type === 'font') {
+      fonts = result;
+    }
+  }
 
   const existingFonts = plist.UIAppFonts || [];
   const allFonts = [...existingFonts, ...fonts];
