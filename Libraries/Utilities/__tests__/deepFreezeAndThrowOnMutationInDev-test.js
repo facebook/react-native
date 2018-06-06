@@ -26,6 +26,13 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
   });
 
+  it('should not throw on object without prototype', () => {
+    __DEV__ = true;
+    var o = Object.create(null);
+    o.key = 'Value';
+    expect(() => deepFreezeAndThrowOnMutationInDev(o)).not.toThrow();
+  });
+
   it('should throw on mutation in dev with strict', () => {
     'use strict';
     __DEV__ = true;
