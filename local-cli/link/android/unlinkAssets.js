@@ -14,20 +14,28 @@ const groupFilesByType = require('../groupFilesByType');
 /**
  * Copies each file from an array of assets provided to targetPath directory
  *
- * For now, the only types of files that are handled are:
+ * The final path is based on the type of the asset: 
  * - Fonts (otf, ttf) - copied to targetPath/fonts under original name
+ * - Others - copied to targetPath under original name
  */
 module.exports = function unlinkAssetsAndroid(files, project) {
   const assets = groupFilesByType(files);
 
-  (assets.font || []).forEach(file => {
-    const filePath = path.join(
-      project.assetsPath,
-      'fonts',
-      path.basename(file),
-    );
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+  for (const type in assets) {
+    if (type === 'font') {
+      assets[type].forEach(file => {
+        const filePath = path.join(project.assetsPath, 'fonts', path.basename(file));
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      })
+    } else {
+      assets[type].forEach(file => {
+        const filePath = path.join(project.assetsPath, path.basename(file));
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      })
     }
-  });
+  }
 };
