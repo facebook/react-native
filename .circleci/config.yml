@@ -567,9 +567,9 @@ jobs:
       - run:
           name: Analyze Pull Request
           command: |
-            # DANGER_GITHUB_API_TOKEN=Facebook-Open-Source-Bot public_repo access token
+            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots && DANGER_GITHUB_API_TOKEN="b186c9a82bab3b08ec80""c0818117619eec6f281a" yarn danger
+              cd bots && DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
             else
               echo "Skipping pull request analysis."
             fi
