@@ -172,10 +172,10 @@ describe('VirtualizedList', () => {
           <VirtualizedList
             data={['A', 'B', 'C']}
             getItem={(data, index) => data[index]}
-            getItemCount={data => data.length}        
+            getItemCount={data => data.length}
             keyExtractor={imageId => imageId}
             horizontal={true}
-            renderItem={({ item: imageId}) => {
+            renderItem={({item: imageId}) => {
               return <item title={imageId} />;
             }}
           />
