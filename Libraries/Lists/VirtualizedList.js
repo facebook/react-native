@@ -1013,10 +1013,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _defaultRenderScrollComponent = props => {
     const onRefresh = props.onRefresh;
-    if (this._isNestedWithSameOrientation()) {
-      // $FlowFixMe - Typing ReactNativeComponent revealed errors
-      return <View {...props} />;
-    } else if (onRefresh) {
+    if (onRefresh) {
       invariant(
         typeof props.refreshing === 'boolean',
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +

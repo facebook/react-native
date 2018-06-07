@@ -160,6 +160,31 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('handles nested horizontal lists', () => {
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[1, 2, 3]}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+        keyExtractor={dataNumer => dataNumer.toString()}
+        horizontal={true}
+        renderItem={outerInfo => (
+          <VirtualizedList
+            data={['A', 'B', 'C']}
+            getItem={(data, index) => data[index]}
+            getItemCount={data => data.length}        
+            keyExtractor={imageId => imageId}
+            horizontal={true}
+            renderItem={({ item: imageId}) => {
+              return <item title={imageId} />;
+            }}
+          />
+        )}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+
   it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
     const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
