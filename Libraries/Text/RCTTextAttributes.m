@@ -88,7 +88,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[NSFontAttributeName] = font;
   }
 
-  // Colors
+  // Color
   UIColor *effectiveForegroundColor = self.effectiveForegroundColor;
 
   if (_foregroundColor || !isnan(_opacity)) {
@@ -199,6 +199,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   return effectiveForegroundColor;
+}
+
+- (UIColor *)effectiveBackgroundColor
+{
+  UIColor *effectiveBackgroundColor = _backgroundColor;// ?: [[UIColor whiteColor] colorWithAlphaComponent:0];
+
+  if (effectiveBackgroundColor && !isnan(_opacity)) {
+    effectiveBackgroundColor = [effectiveBackgroundColor colorWithAlphaComponent:CGColorGetAlpha(effectiveBackgroundColor.CGColor) * _opacity];
+  }
+
+  return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
 - (NSString *)applyTextAttributesToText:(NSString *)text
