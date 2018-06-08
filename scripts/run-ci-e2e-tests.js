@@ -199,11 +199,15 @@ try {
         exec('sleep 10s');
         if (argv.tvos) {
           return exec(
-            'xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}',
+            'xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty --report junit --output ~/react-native/reports/junit/' +
+              iosTestType +
+              '-e2e-xcodebuild-results.xml && exit ${PIPESTATUS[0]}',
           ).code;
         } else {
           return exec(
-            'xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}',
+            'xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.0" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty --report junit --output ~/react-native/reports/junit/' +
+              iosTestType +
+              '-e2e-xcodebuild-results.xml && exit ${PIPESTATUS[0]}',
           ).code;
         }
       }, numberOfRetries)
