@@ -96,13 +96,14 @@ public class EventDispatcher implements LifecycleEventListener {
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private volatile @Nullable ReactEventEmitter mReactEventEmitter = new ReactEventEmitter();
+  private volatile ReactEventEmitter mReactEventEmitter;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
 
   public EventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
+    mReactEventEmitter = new ReactEventEmitter(mReactContext);
   }
 
   /**
