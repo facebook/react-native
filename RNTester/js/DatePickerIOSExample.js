@@ -20,7 +20,7 @@ class DatePickerExample extends React.Component<
 > {
   static defaultProps = {
     date: new Date(),
-    timeZoneOffsetInHours: -1 * new Date().getTimezoneOffset() / 60,
+    timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
   };
 
   state = {

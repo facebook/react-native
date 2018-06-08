@@ -18,6 +18,6 @@ module.exports = function makeBuildPatch(name) {
   return {
     installPattern,
     pattern: /[^ \t]dependencies {(\r\n|\n)/,
-    patch: `    compile project(':${normalizedProjectName}')\n`
+    patch: `    compile project(':${normalizedProjectName}')\n`,
   };
 };

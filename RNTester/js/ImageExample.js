@@ -158,7 +158,7 @@ var NetworkImageExample = createReactClass({
         onProgress={e =>
           this.setState({
             progress: Math.round(
-              100 * e.nativeEvent.loaded / e.nativeEvent.total,
+              (100 * e.nativeEvent.loaded) / e.nativeEvent.total,
             ),
           })
         }

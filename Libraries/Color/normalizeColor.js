@@ -188,7 +188,7 @@ function parse255(str: string): number {
 
 function parse360(str: string): number {
   const int = parseFloat(str);
-  return ((int % 360 + 360) % 360) / 360;
+  return (((int % 360) + 360) % 360) / 360;
 }
 
 function parse1(str: string): number {

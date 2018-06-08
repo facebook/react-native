@@ -60,7 +60,8 @@ class TextInputBar extends React.PureComponent<*, *> {
 
 class InputAccessoryViewExample extends React.Component<*> {
   static title = '<InputAccessoryView>';
-  static description = 'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
+  static description =
+    'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
 
   render() {
     return (

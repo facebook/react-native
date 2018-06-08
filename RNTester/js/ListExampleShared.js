@@ -38,7 +38,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
-      text: LOREM_IPSUM.substr(0, itemHash % 301 + 20),
+      text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
       key: String(ii),
       pressed: false,
     });

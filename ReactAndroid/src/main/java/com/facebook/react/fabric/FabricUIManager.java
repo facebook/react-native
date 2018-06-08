@@ -15,6 +15,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.util.Log;
 import android.view.View;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -51,6 +52,7 @@ import javax.annotation.Nullable;
  * API.
  */
 @SuppressWarnings("unused") // used from JNI
+@DoNotStrip
 public class FabricUIManager implements UIManager, JSHandler {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
@@ -66,6 +68,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   private final FabricReconciler mFabricReconciler;
   private final EventDispatcher mEventDispatcher;
   private FabricBinding mBinding;
+  private final FabricEventEmitter mFabricEventEmitter;
   private long mEventHandlerPointer;
 
   public FabricUIManager(
@@ -81,6 +84,8 @@ public class FabricUIManager implements UIManager, JSHandler {
         new UIViewOperationQueue(
             reactContext, mNativeViewHierarchyManager, 0);
     mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
+    mFabricEventEmitter =
+      new FabricEventEmitter(mReactApplicationContext, this);
     mEventDispatcher = eventDispatcher;
     mJSContext = jsContext;
   }
@@ -91,6 +96,7 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   /** Creates a new {@link ReactShadowNode} */
   @Nullable
+  @DoNotStrip
   public ReactShadowNode createNode(
       int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
     if (DEBUG) {
@@ -142,6 +148,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    *     including its children set (note that the children nodes will not be cloned).
    */
   @Nullable
+  @DoNotStrip
   public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNode \n\tnode: " + node);
@@ -162,6 +169,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    *     children set will be empty.
    */
   @Nullable
+  @DoNotStrip
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
       Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
@@ -182,6 +190,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    *     props will be overridden with the {@link ReadableMap} received by parameter.
    */
   @Nullable
+  @DoNotStrip
   public ReactShadowNode cloneNodeWithNewProps(
       ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
@@ -205,6 +214,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    *     children set will be empty.
    */
   @Nullable
+  @DoNotStrip
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
@@ -239,6 +249,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    * ReactShadowNode}.
    */
   @Nullable
+  @DoNotStrip
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     if (DEBUG) {
       Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
@@ -260,6 +271,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    * @return an empty {@link List<ReactShadowNode>} that will be used to append the {@link
    *     ReactShadowNode} elements of the root. Typically this List will contain one element.
    */
+  @DoNotStrip
   public List<ReactShadowNode> createChildSet(int rootTag) {
     if (DEBUG) {
       Log.d(TAG, "createChildSet rootTag: " + rootTag);
@@ -270,10 +282,12 @@ public class FabricUIManager implements UIManager, JSHandler {
   /**
    * Adds the {@link ReactShadowNode} to the {@link List<ReactShadowNode>} received by parameter.
    */
+  @DoNotStrip
   public void appendChildToSet(List<ReactShadowNode> childList, ReactShadowNode child) {
     childList.add(child);
   }
 
+  @DoNotStrip
   public synchronized void completeRoot(int rootTag, @Nullable List<ReactShadowNode> childList) {
     try {
       childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
@@ -380,6 +394,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   }
 
   @Override
+  @DoNotStrip
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
       final T rootView) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
@@ -406,6 +421,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   }
 
   @Override
+  @DoNotStrip
   public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
     ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
     if (rootNode == null) {
@@ -455,7 +471,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
    * parameters.
    */
-  public void updateRootView(
+  private void updateRootView(
       ReactShadowNode node, int widthMeasureSpec, int heightMeasureSpec) {
     int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
     int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
@@ -499,6 +515,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   }
 
   @Nullable
+  @DoNotStrip
   public long createEventTarget(int reactTag) {
     long instanceHandle = mNativeViewHierarchyManager.getInstanceHandle(reactTag);
     long context = mJSContext.get();
@@ -511,19 +528,23 @@ public class FabricUIManager implements UIManager, JSHandler {
     return eventTarget;
   }
 
+  @DoNotStrip
   public void registerEventHandler(long eventHandlerPointer) {
     mEventHandlerPointer = eventHandlerPointer;
   }
 
+  @DoNotStrip
   public void releaseEventTarget(long eventTargetPointer) {
     mBinding.releaseEventTarget(mJSContext.get(), eventTargetPointer);
   }
 
+  @DoNotStrip
   public void releaseEventHandler(long eventHandlerPointer) {
     mBinding.releaseEventHandler(mJSContext.get(), eventHandlerPointer);
   }
 
   @Override
+  @DoNotStrip
   public void invoke(long eventTarget, String name, WritableMap params) {
     if (DEBUG) {
       Log.d(
@@ -537,12 +558,14 @@ public class FabricUIManager implements UIManager, JSHandler {
   public void initialize() {
     FabricEventEmitter eventEmitter =
       new FabricEventEmitter(mReactApplicationContext, this);
-    mEventDispatcher.registerEventEmitter(FABRIC, eventEmitter);
+    mEventDispatcher.registerEventEmitter(FABRIC, mFabricEventEmitter);
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
     mBinding.releaseEventHandler(mJSContext.get(), mEventHandlerPointer);
+    mEventDispatcher.unregisterEventEmitter(FABRIC);
+    mFabricEventEmitter.close();
   }
 
 }

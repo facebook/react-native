@@ -96,13 +96,14 @@ public class EventDispatcher implements LifecycleEventListener {
 
   private Event[] mEventsToDispatch = new Event[16];
   private int mEventsToDispatchSize = 0;
-  private volatile @Nullable ReactEventEmitter mReactEventEmitter = new ReactEventEmitter();
+  private volatile ReactEventEmitter mReactEventEmitter;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
 
   public EventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
+    mReactEventEmitter = new ReactEventEmitter(mReactContext);
   }
 
   /**
@@ -161,7 +162,6 @@ public class EventDispatcher implements LifecycleEventListener {
   @Override
   public void onHostDestroy() {
     stopFrameCallback();
-    mReactEventEmitter.stop();
   }
 
   public void onCatalystInstanceDestroyed() {
@@ -252,6 +252,10 @@ public class EventDispatcher implements LifecycleEventListener {
 
   public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
     mReactEventEmitter.register(uiManagerType, eventEmitter);
+  }
+
+  public void unregisterEventEmitter(@UIManagerType int uiManagerType) {
+    mReactEventEmitter.unregister(uiManagerType);
   }
 
   private class ScheduleDispatchFrameCallback extends ChoreographerCompat.FrameCallback {
