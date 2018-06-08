@@ -12,6 +12,12 @@
 
 #import "RCTSafeAreaViewLocalData.h"
 
+@interface RCTSafeAreaView ()
+
+@property (nonatomic, copy) RCTBubblingEventBlock onInsetsChange;
+
+@end
+
 @implementation RCTSafeAreaView {
   __weak RCTBridge *_bridge;
   UIEdgeInsets _currentSafeAreaInsets;
@@ -56,6 +62,14 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
   RCTSafeAreaViewLocalData *localData =
     [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
   [_bridge.uiManager setLocalData:localData forView:self];
+
+  if (_onInsetsChange) {
+    _onInsetsChange(@{ @"insets": @{
+                           @"left": @(safeAreaInsets.left),
+                           @"top": @(safeAreaInsets.top),
+                           @"right": @(safeAreaInsets.right),
+                           @"bottom": @(safeAreaInsets.right) } });
+  }
 }
 
 #endif
