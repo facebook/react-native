@@ -15,16 +15,13 @@ const requireNativeComponent = require('requireNativeComponent');
 import PropTypes from 'prop-types';
 import type {ViewProps} from 'ViewPropTypes';
 
-const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView', {
-  nativeOnly: {
-    onInsetsChange: PropTypes.func,
-  },
-});
+const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
 
-type Props = ViewProps & {
+type Props = $ReadOnly<{|
+  ...ViewProps,
   children: any,
   onInsetsChange?: ?Function,
-};
+|}>;
 
 /**
  * Renders nested content and automatically applies paddings reflect the portion of the view

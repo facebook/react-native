@@ -24,13 +24,18 @@ exports.title = '<SafeAreaView>';
 exports.description =
   'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.';
 
+type Insets = {left: number, top: number, right: number, bottom: number} | void;
+
 class SafeAreaViewExample extends React.Component<
   {},
-  {|modalVisible: boolean|},
+  {|
+    modalVisible: boolean,
+    insets: Insets,
+  |},
 > {
   state = {
     modalVisible: false,
-    safeAreaViewInsets: undefined,
+    insets: undefined,
   };
 
   _setModalVisible = visible => {
