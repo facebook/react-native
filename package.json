@@ -148,6 +148,7 @@
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
+    "babel-preset-react-native": "^5.0.0",
     "base64-js": "^1.1.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
