@@ -639,7 +639,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         try {
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(function () {" +
+          String code = "(function () {" +
             "var event;" +
             "var data = " + eventInitDict.toString() + ";" +
             "try {" +
@@ -649,7 +649,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
             "}" +
             "document.dispatchEvent(event);" +
-          "})();");
+          "})();";
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            root.evaluateJavascript(code, null);
+          } else {
+            root.loadUrl("javascript:" + code);
+          }
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
