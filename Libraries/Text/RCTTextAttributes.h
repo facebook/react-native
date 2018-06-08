@@ -76,9 +76,10 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 - (CGFloat)effectiveFontSizeMultiplier;
 
 /**
- * Foreground colors with opacity and right defaults.
+ * Foreground and background colors with opacity and right defaults.
  */
 - (UIColor *)effectiveForegroundColor;
+- (UIColor *)effectiveBackgroundColor;
 
 /**
  * Text transformed per 'none', 'uppercase', 'lowercase', 'capitalize'

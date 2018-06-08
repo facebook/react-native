@@ -95,6 +95,10 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[NSForegroundColorAttributeName] = effectiveForegroundColor;
   }
 
+  if (_backgroundColor || !isnan(_opacity)) {
+    attributes[NSBackgroundColorAttributeName] = self.effectiveBackgroundColor;
+  }
+
   // Kerning
   if (!isnan(_letterSpacing)) {
     attributes[NSKernAttributeName] = @(_letterSpacing);
@@ -199,6 +203,17 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   return effectiveForegroundColor;
+}
+
+- (UIColor *)effectiveBackgroundColor
+{
+  UIColor *effectiveBackgroundColor = _backgroundColor;// ?: [[UIColor whiteColor] colorWithAlphaComponent:0];
+
+  if (effectiveBackgroundColor && !isnan(_opacity)) {
+    effectiveBackgroundColor = [effectiveBackgroundColor colorWithAlphaComponent:CGColorGetAlpha(effectiveBackgroundColor.CGColor) * _opacity];
+  }
+
+  return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
 - (NSString *)applyTextAttributesToText:(NSString *)text
