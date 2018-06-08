@@ -12,7 +12,7 @@
 using namespace facebook::react;
 
 TEST(ComponentDescriptorTest, createShadowNode) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   ASSERT_EQ(descriptor->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
@@ -20,40 +20,40 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node = descriptor->createShadowNode(9, 1, (void *)NULL, props);
+  SharedShadowNode node = descriptor->createShadowNode(9, 1, nullptr, props);
 
   ASSERT_EQ(node->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
-  ASSERT_STREQ(node->getProps()->getNativeId().c_str(), "abc");
+  ASSERT_STREQ(node->getProps()->nativeId.c_str(), "abc");
 }
 
 TEST(ComponentDescriptorTest, cloneShadowNode) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node = descriptor->createShadowNode(9, 1, (void *)NULL, props);
+  SharedShadowNode node = descriptor->createShadowNode(9, 1, nullptr, props);
   SharedShadowNode cloned = descriptor->cloneShadowNode(node);
 
   ASSERT_EQ(cloned->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(cloned->getComponentName().c_str(), "Test");
   ASSERT_EQ(cloned->getTag(), 9);
   ASSERT_EQ(cloned->getRootTag(), 1);
-  ASSERT_STREQ(cloned->getProps()->getNativeId().c_str(), "abc");
+  ASSERT_STREQ(cloned->getProps()->nativeId.c_str(), "abc");
 }
 
 TEST(ComponentDescriptorTest, appendChild) {
-  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>();
+  SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
   RawProps raw;
   raw["nativeID"] = "abc";
   SharedProps props = descriptor->cloneProps(nullptr, raw);
-  SharedShadowNode node1 = descriptor->createShadowNode(1, 1, (void *)NULL, props);
-  SharedShadowNode node2 = descriptor->createShadowNode(2, 1, (void *)NULL, props);
-  SharedShadowNode node3 = descriptor->createShadowNode(3, 1, (void *)NULL, props);
+  SharedShadowNode node1 = descriptor->createShadowNode(1, 1, nullptr, props);
+  SharedShadowNode node2 = descriptor->createShadowNode(2, 1, nullptr, props);
+  SharedShadowNode node3 = descriptor->createShadowNode(3, 1, nullptr, props);
 
   descriptor->appendChild(node1, node2);
   descriptor->appendChild(node1, node3);

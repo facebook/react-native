@@ -27,6 +27,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -306,6 +307,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       view.setScrollWatcher(null);
     }
+  }
+
+  @ReactProp(name = "onKeyPress", defaultBoolean = false)
+  public void setOnKeyPress(final ReactEditText view, boolean onKeyPress) {
+    view.setOnKeyPress(onKeyPress);
   }
 
   // Sets the letter spacing as an absolute point size.

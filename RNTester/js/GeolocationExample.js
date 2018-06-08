@@ -4,18 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
-'use strict';
 
+'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {StyleSheet, Text, View} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Geolocation';
@@ -27,7 +24,7 @@ exports.examples = [
     render: function(): React.Element<any> {
       return <GeolocationExample />;
     },
-  }
+  },
 ];
 
 class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
@@ -40,14 +37,14 @@ class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      position => {
         var initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      (error) => alert(JSON.stringify(error)),
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+      error => alert(JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
-    this.watchID = navigator.geolocation.watchPosition((position) => {
+    this.watchID = navigator.geolocation.watchPosition(position => {
       var lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
     });

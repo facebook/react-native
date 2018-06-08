@@ -14,8 +14,8 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 public interface RCTEventEmitter extends JavaScriptModule {
-  public void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);
-  public void receiveTouches(
+  void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);
+  void receiveTouches(
       String eventName,
       WritableArray touches,
       WritableArray changedIndices);

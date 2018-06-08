@@ -349,4 +349,5 @@ public class ReactContext extends ContextWrapper {
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
+
 }

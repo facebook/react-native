@@ -3,11 +3,14 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
-const getFirstProject = (project) => project.getFirstProject().firstProject;
+const getFirstProject = project => project.getFirstProject().firstProject;
 
-const findGroup = (group, name) => group.children.find(group => group.comment === name);
+const findGroup = (group, name) =>
+  group.children.find(group => group.comment === name);
 
 /**
  * Returns group from .xcodeproj if one exists, null otherwise

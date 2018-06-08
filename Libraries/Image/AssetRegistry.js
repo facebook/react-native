@@ -21,7 +21,7 @@ export type PackagerAsset = {
   +type: string,
 };
 
-var assets: Array<PackagerAsset> = [];
+const assets: Array<PackagerAsset> = [];
 
 function registerAsset(asset: PackagerAsset): number {
   // `push` returns new array length, so the first asset will

@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const findProject = require('./findProject');
@@ -15,7 +18,7 @@ const path = require('path');
  * For libraries specified without an extension, add '.tbd' for those that
  * start with 'lib' and '.framework' to the rest.
  */
-const mapSharedLibaries = (libraries) => {
+const mapSharedLibaries = libraries => {
   return libraries.map(name => {
     if (path.extname(name)) {
       return name;

@@ -2,11 +2,11 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_prebuilt_aar", 
 
 rn_android_library(
     name = "textlayoutbuilder",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":staticlayoutproxy",
         ":textlayoutbuilder-base",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_android_prebuilt_aar(

@@ -81,7 +81,6 @@ public class DevServerHelper {
     void onPackagerReloadCommand();
     void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
-    void onPokeSamplingProfilerCommand(final Responder responder);
   }
 
   public interface SymbolicationListener {
@@ -161,12 +160,6 @@ public class DevServerHelper {
           @Override
           public void onRequest(@Nullable Object params, Responder responder) {
             commandListener.onCaptureHeapCommand(responder);
-          }
-        });
-        handlers.put("pokeSamplingProfiler", new RequestOnlyHandler() {
-          @Override
-          public void onRequest(@Nullable Object params, Responder responder) {
-            commandListener.onPokeSamplingProfilerCommand(responder);
           }
         });
         handlers.putAll(new FileIoHandler().handlers());

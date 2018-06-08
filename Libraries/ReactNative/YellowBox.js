@@ -247,7 +247,6 @@ const WarningInspector = ({
   warning,
   stacktraceVisible,
   onDismiss,
-  onDismissAll,
   onMinimize,
   toggleStacktrace,
 }) => {
@@ -300,13 +299,6 @@ const WarningInspector = ({
             style={styles.inspectorButton}
             underlayColor="transparent">
             <Text style={styles.inspectorButtonText}>Dismiss</Text>
-          </TouchableHighlight>
-          <TouchableHighlight
-            activeOpacity={0.5}
-            onPress={onDismissAll}
-            style={styles.inspectorButton}
-            underlayColor="transparent">
-            <Text style={styles.inspectorButtonText}>Dismiss All</Text>
           </TouchableHighlight>
         </View>
       </SafeAreaView>
@@ -392,6 +384,8 @@ class YellowBox extends React.Component<
     }
     const ScrollView = require('ScrollView');
     const View = require('View');
+    const Text = require('Text');
+    const TouchableHighlight = require('TouchableHighlight');
 
     const {inspecting, stacktraceVisible} = this.state;
     const inspector =
@@ -401,7 +395,6 @@ class YellowBox extends React.Component<
           warning={inspecting}
           stacktraceVisible={stacktraceVisible}
           onDismiss={() => this.dismissWarning(inspecting)}
-          onDismissAll={() => this.dismissWarning(null)}
           onMinimize={() => this.setState({inspecting: null})}
           toggleStacktrace={() =>
             this.setState({stacktraceVisible: !stacktraceVisible})
@@ -431,6 +424,14 @@ class YellowBox extends React.Component<
     ];
     return (
       <View style={inspector ? styles.fullScreen : listStyle}>
+        {!inspector &&
+          rows.length > 0 && (
+            <TouchableHighlight
+              style={styles.dismissAllContainer}
+              onPress={() => this.dismissWarning(null)}>
+              <Text style={styles.dismissAll}>Dismiss All</Text>
+            </TouchableHighlight>
+          )}
         <ScrollView style={listStyle} scrollsToTop={false}>
           {rows}
         </ScrollView>
@@ -452,7 +453,7 @@ const rowHeight = 46;
 const elevation =
   Platform.OS === 'android' ? Number.MAX_SAFE_INTEGER : undefined;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   fullScreen: {
     height: '100%',
     width: '100%',
@@ -534,6 +535,19 @@ var styles = StyleSheet.create({
     top: Platform.OS === 'android' ? 5 : 7,
     marginLeft: 15,
     marginRight: 15,
+  },
+  dismissAllContainer: {
+    height: 20,
+    justifyContent: 'center',
+    marginTop: -30,
+    marginRight: 5,
+    backgroundColor: backgroundColor(0.95),
+    alignSelf: 'flex-end',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  dismissAll: {
+    color: 'white',
   },
 });
 

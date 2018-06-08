@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "YOGA_TARGET", "react_native_dep", "react_native_target")
+load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "uimanager",
@@ -11,11 +11,6 @@ rn_android_library(
         ],
         excludes = ["DisplayMetricsHolder.java"],
     ),
-    exported_deps = [
-        ":DisplayMetrics",
-        react_native_dep("third-party/java/jsr-305:jsr-305"),
-        react_native_target("java/com/facebook/react/uimanager/common:common"),
-    ],
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/android/support-annotations:android-support-annotations"),
@@ -43,6 +38,11 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/util:util"),
         react_native_target("java/com/facebook/react/uimanager/common:common"),
         react_native_target("res:uimanager"),
+    ],
+    exported_deps = [
+        ":DisplayMetrics",
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/uimanager/common:common"),
     ],
 )
 

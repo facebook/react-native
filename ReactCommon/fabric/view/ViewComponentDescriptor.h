@@ -13,12 +13,7 @@
 namespace facebook {
 namespace react {
 
-class ViewComponentDescriptor: public ConcreteComponentDescriptor<ViewShadowNode> {
-public:
-  ComponentName getComponentName() const override {
-    return "View";
-  }
-};
+using ViewComponentDescriptor = ConcreteComponentDescriptor<ViewShadowNode>;
 
 } // namespace react
 } // namespace facebook
