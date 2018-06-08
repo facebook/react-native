@@ -292,18 +292,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
-    compile 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.9.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
-    compile 'com.facebook.soloader:soloader:0.3.0'
-    compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-    compile 'com.squareup.okio:okio:1.14.0'
-    compile 'org.webkit:android-jsc:r174650'
+    implementation fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
+    implementation 'com.facebook.fresco:fresco:1.9.0'
+    implementation 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
+    implementation 'com.facebook.soloader:soloader:0.3.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+    implementation 'com.squareup.okio:okio:1.14.0'
+    implementation 'org.webkit:android-jsc:r174650'
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

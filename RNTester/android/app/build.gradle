@@ -135,9 +135,9 @@ android {
 }
 
 dependencies {
-    api fileTree(dir: 'libs', include: ['*.jar'])
-    api 'com.android.support:appcompat-v7:27.0.2'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     // Build React Native from source
-    api project(':ReactAndroid')
+    implementation project(':ReactAndroid')
 }
