@@ -148,7 +148,7 @@
         return;
       }
 
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.pointSize / 2.0;
+      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.lineHeight / 2.0;
 
       [attributedText addAttribute:NSBaselineOffsetAttributeName
                              value:@(baseLineOffset)
