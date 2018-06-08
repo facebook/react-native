@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @providesModule SafeAreaView
  * @flow
  * @format
  */
@@ -12,12 +13,18 @@ const React = require('React');
 const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
 
+import PropTypes from 'prop-types';
 import type {ViewProps} from 'ViewPropTypes';
 
-const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
+const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView', {
+  nativeOnly: {
+    onInsetsChange: PropTypes.func,
+  },
+});
 
 type Props = ViewProps & {
   children: any,
+  onInsetsChange?: ?Function,
 };
 
 /**
@@ -29,6 +36,12 @@ type Props = ViewProps & {
 class SafeAreaView extends React.Component<Props> {
   static propTypes = {
     ...ViewPropTypes,
+    /**
+     * Callback that is called when the safe area view insets changed.
+     * This will be called with
+     * `{ nativeEvent: { insets: { left, top, right, bottom } } }`.
+     */
+    onInsetsChange: PropTypes.func,
   };
 
   render() {

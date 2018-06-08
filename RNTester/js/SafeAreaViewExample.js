@@ -30,10 +30,15 @@ class SafeAreaViewExample extends React.Component<
 > {
   state = {
     modalVisible: false,
+    safeAreaViewInsets: undefined,
   };
 
   _setModalVisible = visible => {
     this.setState({modalVisible: visible});
+  };
+
+  _onSafeAreaViewInsetsChange = event => {
+    this.setState({insets: event.nativeEvent.insets});
   };
 
   render() {
@@ -45,8 +50,14 @@ class SafeAreaViewExample extends React.Component<
           animationType="slide"
           supportedOrientations={['portrait', 'landscape']}>
           <View style={styles.modal}>
-            <SafeAreaView style={styles.safeArea}>
+            <SafeAreaView
+              style={styles.safeArea}
+              onInsetsChange={this._onSafeAreaViewInsetsChange}>
               <View style={styles.safeAreaContent}>
+                <Text>
+                  {this.state.insets &&
+                    `safeAreaViewInsets:\n${JSON.stringify(this.state.insets)}`}
+                </Text>
                 <Button
                   onPress={this._setModalVisible.bind(this, false)}
                   title="Close"

@@ -25,4 +25,6 @@ RCT_EXPORT_MODULE()
   return [RCTSafeAreaShadowView new];
 }
 
+RCT_EXPORT_VIEW_PROPERTY(onInsetsChange, RCTBubblingEventBlock)
+
 @end
