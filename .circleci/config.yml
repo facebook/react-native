@@ -376,7 +376,7 @@ jobs:
 
       - run: xcrun instruments -w "iPhone 5s (11.2)" || true
       # See https://github.com/Homebrew/homebrew-core/issues/26358.
-      - run: brew upgrade python > /dev/null
+      - run: brew upgrade --cleanup python > /dev/null
       - run: brew install watchman
       - run: *run-objc-ios-tests
 
@@ -392,7 +392,7 @@ jobs:
 
       - run: xcrun instruments -w "Apple TV 1080p (11.2)" || true
       # See https://github.com/Homebrew/homebrew-core/issues/26358.
-      - run: brew upgrade python > /dev/null
+      - run: brew upgrade --cleanup python > /dev/null
       - run: brew install watchman
       - run: *run-objc-tvos-tests
 
