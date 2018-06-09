@@ -316,7 +316,7 @@ android_defaults: &android_defaults
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.2.0"
+    xcode: "9.4.0"
 
 version: 2
 jobs:
@@ -374,9 +374,8 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "iPhone 5s (11.2)" || true
+      - run: xcrun instruments -w "iPhone 5s (11.4)" || true
       # See https://github.com/Homebrew/homebrew-core/issues/26358.
-      - run: brew upgrade python > /dev/null
       - run: brew install watchman
       - run: *run-objc-ios-tests
 
@@ -390,9 +389,8 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "Apple TV 1080p (11.2)" || true
+      - run: xcrun instruments -w "Apple TV (11.4)" || true
       # See https://github.com/Homebrew/homebrew-core/issues/26358.
-      - run: brew upgrade python > /dev/null
       - run: brew install watchman
       - run: *run-objc-tvos-tests
 
@@ -406,7 +404,7 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "iPhone 5s (11.2)" || true
+      - run: xcrun instruments -w "iPhone 5s (11.4)" || true
       - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
