@@ -67,4 +67,9 @@ using namespace facebook::react;
   return YES;
 }
 
+- (SharedEventHandlers)touchEventHandlers
+{
+  return _eventHandlers;
+}
+
 @end

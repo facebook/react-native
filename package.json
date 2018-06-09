@@ -210,7 +210,7 @@
     "eslint-plugin-flowtype": "2.43.0",
     "eslint-plugin-jest": "21.8.0",
     "eslint-plugin-prettier": "2.6.0",
-    "eslint-plugin-react": "7.6.1",
+    "eslint-plugin-react": "7.8.2",
     "eslint-plugin-react-native": "^3.2.1",
     "flow-bin": "^0.73.0",
     "jest": "23.1.0",
