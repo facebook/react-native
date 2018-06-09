@@ -21,7 +21,7 @@ using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
 
 /*
  * Abstract class that represent event-delivery infrastructure.
- * Particular `EventHandlers` clases use an object of this class to invoke
+ * Particular `EventEmitter` clases use an object of this class to invoke
  * events.
  */
 class EventDispatcher {

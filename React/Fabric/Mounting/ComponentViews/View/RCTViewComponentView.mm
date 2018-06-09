@@ -8,7 +8,7 @@
 #import "RCTViewComponentView.h"
 
 #import <fabric/view/ViewProps.h>
-#import <fabric/view/ViewEventHandlers.h>
+#import <fabric/view/ViewEventEmitter.h>
 
 
 using namespace facebook::react;
@@ -33,10 +33,10 @@ using namespace facebook::react;
   // TODO: Implement all sutable non-layout <View> props.
 }
 
-- (void)updateEventHandlers:(SharedEventHandlers)eventHandlers
+- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<const ViewEventHandlers>(eventHandlers));
-  _eventHandlers = std::static_pointer_cast<const ViewEventHandlers>(eventHandlers);
+  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
 }
 
 - (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
@@ -51,25 +51,25 @@ using namespace facebook::react;
 
 - (BOOL)accessibilityActivate
 {
-  _eventHandlers->onAccessibilityTap();
+  _eventEmitter->onAccessibilityTap();
   return YES;
 }
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  _eventHandlers->onAccessibilityMagicTap();
+  _eventEmitter->onAccessibilityMagicTap();
   return YES;
 }
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  _eventHandlers->onAccessibilityAction([action.name cStringUsingEncoding:NSASCIIStringEncoding]);
+  _eventEmitter->onAccessibilityAction([action.name cStringUsingEncoding:NSASCIIStringEncoding]);
   return YES;
 }
 
-- (SharedEventHandlers)touchEventHandlers
+- (SharedEventEmitter)touchEventEmitter
 {
-  return _eventHandlers;
+  return _eventEmitter;
 }
 
 @end

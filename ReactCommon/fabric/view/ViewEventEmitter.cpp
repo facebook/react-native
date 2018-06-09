@@ -5,28 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ViewEventHandlers.h"
+#include "ViewEventEmitter.h"
 
 namespace facebook {
 namespace react {
 
 #pragma mark - Accessibility
 
-void ViewEventHandlers::onAccessibilityAction(const std::string &name) const {
+void ViewEventEmitter::onAccessibilityAction(const std::string &name) const {
   dispatchEvent("accessibilityAction", folly::dynamic::object("action", name));
 }
 
-void ViewEventHandlers::onAccessibilityTap() const {
+void ViewEventEmitter::onAccessibilityTap() const {
   dispatchEvent("accessibilityTap");
 }
 
-void ViewEventHandlers::onAccessibilityMagicTap() const {
+void ViewEventEmitter::onAccessibilityMagicTap() const {
   dispatchEvent("magicTap");
 }
 
 #pragma mark - Layout
 
-void ViewEventHandlers::onLayout(const LayoutMetrics &layoutMetrics) const {
+void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
   folly::dynamic payload = folly::dynamic::object();
   auto &&frame = layoutMetrics.frame;
   payload["layout"] = folly::dynamic::object
@@ -71,19 +71,19 @@ static folly::dynamic touchEventPayload(const TouchEvent &event) {
   return object;
 }
 
-void ViewEventHandlers::onTouchStart(const TouchEvent &event) const {
+void ViewEventEmitter::onTouchStart(const TouchEvent &event) const {
   dispatchEvent("touchStart", touchEventPayload(event));
 }
 
-void ViewEventHandlers::onTouchMove(const TouchEvent &event) const {
+void ViewEventEmitter::onTouchMove(const TouchEvent &event) const {
   dispatchEvent("touchMove", touchEventPayload(event));
 }
 
-void ViewEventHandlers::onTouchEnd(const TouchEvent &event) const {
+void ViewEventEmitter::onTouchEnd(const TouchEvent &event) const {
   dispatchEvent("touchEnd", touchEventPayload(event));
 }
 
-void ViewEventHandlers::onTouchCancel(const TouchEvent &event) const {
+void ViewEventEmitter::onTouchCancel(const TouchEvent &event) const {
   dispatchEvent("touchCancel", touchEventPayload(event));
 }
 

@@ -11,7 +11,7 @@
 #import <fabric/graphics/Geometry.h>
 #import <fabric/scrollview/ScrollViewLocalData.h>
 #import <fabric/scrollview/ScrollViewProps.h>
-#import <fabric/scrollview/ScrollViewEventHandlers.h>
+#import <fabric/scrollview/ScrollViewEventEmitter.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
@@ -135,47 +135,47 @@ using namespace facebook::react;
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScroll([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScroll([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollBegin([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 @end
