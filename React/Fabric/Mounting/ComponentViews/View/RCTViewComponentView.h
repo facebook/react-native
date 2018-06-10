@@ -9,10 +9,10 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/EventHandlers.h>
+#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
-#import <fabric/view/ViewEventHandlers.h>
+#import <fabric/view/ViewEventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protected
   facebook::react::LayoutMetrics _layoutMetrics;
   facebook::react::SharedProps _props;
-  facebook::react::SharedViewEventHandlers _eventHandlers;
+  facebook::react::SharedViewEventEmitter _eventEmitter;
 }
 
 @end

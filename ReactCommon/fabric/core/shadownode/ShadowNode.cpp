@@ -24,14 +24,14 @@ ShadowNode::ShadowNode(
   const Tag &tag,
   const Tag &rootTag,
   const SharedProps &props,
-  const SharedEventHandlers &eventHandlers,
+  const SharedEventEmitter &eventEmitter,
   const SharedShadowNodeSharedList &children,
   const ShadowNodeCloneFunction &cloneFunction
 ):
   tag_(tag),
   rootTag_(rootTag),
   props_(props),
-  eventHandlers_(eventHandlers),
+  eventEmitter_(eventEmitter),
   children_(std::make_shared<SharedShadowNodeList>(*children)),
   cloneFunction_(cloneFunction),
   revision_(1) {}
@@ -39,13 +39,13 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
   const SharedShadowNode &shadowNode,
   const SharedProps &props,
-  const SharedEventHandlers &eventHandlers,
+  const SharedEventEmitter &eventEmitter,
   const SharedShadowNodeSharedList &children
 ):
   tag_(shadowNode->tag_),
   rootTag_(shadowNode->rootTag_),
   props_(props ? props : shadowNode->props_),
-  eventHandlers_(eventHandlers ? eventHandlers : shadowNode->eventHandlers_),
+  eventEmitter_(eventEmitter ? eventEmitter : shadowNode->eventEmitter_),
   children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
   sourceNode_(shadowNode),
   localData_(shadowNode->localData_),
@@ -57,7 +57,7 @@ SharedShadowNode ShadowNode::clone(
   const SharedShadowNodeSharedList &children
 ) const {
   assert(cloneFunction_);
-  return cloneFunction_(shared_from_this(), props_, eventHandlers_, children_);
+  return cloneFunction_(shared_from_this(), props_, eventEmitter_, children_);
 }
 
 #pragma mark - Getters
@@ -70,8 +70,8 @@ SharedProps ShadowNode::getProps() const {
   return props_;
 }
 
-SharedEventHandlers ShadowNode::getEventHandlers() const {
-  return eventHandlers_;
+SharedEventEmitter ShadowNode::getEventEmitter() const {
+  return eventEmitter_;
 }
 
 Tag ShadowNode::getTag() const {
@@ -147,7 +147,7 @@ bool ShadowNode::operator==(const ShadowNode& rhs) const {
     tag_ == rhs.tag_ &&
     rootTag_ == rhs.rootTag_ &&
     props_ == rhs.props_ &&
-    eventHandlers_ == rhs.eventHandlers_ &&
+    eventEmitter_ == rhs.eventEmitter_ &&
     localData_ == rhs.localData_;
 }
 

@@ -9,17 +9,17 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/core/EventHandlers.h>
+#import <fabric/core/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Updates event handlers of a component view.
  */
-@interface RCTUpdateEventHandlersMountItem : NSObject <RCTMountItemProtocol>
+@interface RCTUpdateEventEmitterMountItem : NSObject <RCTMountItemProtocol>
 
 - (instancetype)initWithTag:(ReactTag)tag
-              eventHandlers:(facebook::react::SharedEventHandlers)eventHandlers;
+              eventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 @end
 

@@ -29,8 +29,8 @@ class ConcreteComponentDescriptor: public ComponentDescriptor {
   using SharedShadowNodeT = std::shared_ptr<const ShadowNodeT>;
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
   using SharedConcreteProps = typename ShadowNodeT::SharedConcreteProps;
-  using ConcreteEventHandlers = typename ShadowNodeT::ConcreteEventHandlers;
-  using SharedConcreteEventHandlers = typename ShadowNodeT::SharedConcreteEventHandlers;
+  using ConcreteEventEmitter = typename ShadowNodeT::ConcreteEventEmitter;
+  using SharedConcreteEventEmitter = typename ShadowNodeT::SharedConcreteEventEmitter;
 
 public:
   ConcreteComponentDescriptor(SharedEventDispatcher eventDispatcher):
@@ -58,17 +58,17 @@ public:
   SharedShadowNode createShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const SharedEventHandlers &eventHandlers,
+    const SharedEventEmitter &eventEmitter,
     const SharedProps &props
   ) const override {
     assert(std::dynamic_pointer_cast<const ConcreteProps>(props));
-    assert(std::dynamic_pointer_cast<const ConcreteEventHandlers>(eventHandlers));
+    assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter));
 
     auto &&shadowNode = std::make_shared<ShadowNodeT>(
       tag,
       rootTag,
       std::static_pointer_cast<const ConcreteProps>(props),
-      std::static_pointer_cast<const ConcreteEventHandlers>(eventHandlers),
+      std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),
       ShadowNode::emptySharedShadowNodeSharedList(),
       getCloneFunction()
     );
@@ -80,7 +80,7 @@ public:
   SharedShadowNode cloneShadowNode(
     const SharedShadowNode &sourceShadowNode,
     const SharedProps &props = nullptr,
-    const SharedEventHandlers &eventHandlers = nullptr,
+    const SharedEventEmitter &eventEmitter = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const override {
     assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
@@ -88,7 +88,7 @@ public:
     auto &&shadowNode = std::make_shared<ShadowNodeT>(
       std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
       std::static_pointer_cast<const ConcreteProps>(props),
-      std::static_pointer_cast<const ConcreteEventHandlers>(eventHandlers),
+      std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),
       children
     );
 
@@ -112,11 +112,11 @@ public:
     return ShadowNodeT::Props(rawProps, props);
   };
 
-  virtual SharedEventHandlers createEventHandlers(
+  virtual SharedEventEmitter createEventEmitter(
     const InstanceHandle &instanceHandle,
     const Tag &tag
   ) const override {
-    return std::make_shared<ConcreteEventHandlers>(instanceHandle, tag, eventDispatcher_);
+    return std::make_shared<ConcreteEventEmitter>(instanceHandle, tag, eventDispatcher_);
   }
 
 protected:
@@ -133,9 +133,9 @@ private:
 
   ShadowNodeCloneFunction getCloneFunction() const {
     if (!cloneFunction_) {
-      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventHandlers &eventHandlers, const SharedShadowNodeSharedList &children) {
+      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventEmitter &eventEmitter, const SharedShadowNodeSharedList &children) {
         assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
-        return this->cloneShadowNode(shadowNode, props, eventHandlers, children);
+        return this->cloneShadowNode(shadowNode, props, eventEmitter, children);
       };
     }
 

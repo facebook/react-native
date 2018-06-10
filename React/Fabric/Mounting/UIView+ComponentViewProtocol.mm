@@ -31,7 +31,7 @@
   // Default implementation does nothing.
 }
 
-- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter
 {
   // Default implementation does nothing.
 }

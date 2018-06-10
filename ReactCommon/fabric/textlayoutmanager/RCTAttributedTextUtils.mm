@@ -154,7 +154,7 @@ static NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   if (textAttributes.textShadowOffset.hasValue()) {
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
-    shadow.shadowOffset = CGSize {textShadowOffset.x, textShadowOffset.y};
+    shadow.shadowOffset = CGSize {textShadowOffset.width, textShadowOffset.height};
     shadow.shadowBlurRadius = textAttributes.textShadowRadius;
     shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
     attributes[NSShadowAttributeName] = shadow;

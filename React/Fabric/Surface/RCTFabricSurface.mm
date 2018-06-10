@@ -17,7 +17,7 @@
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
 #import <React/RCTSurfaceView.h>
-#import <React/RCTTouchHandler.h>
+#import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
@@ -39,7 +39,7 @@
 
   // The Main thread only
   RCTSurfaceView *_Nullable _view;
-  RCTTouchHandler *_Nullable _touchHandler;
+  RCTSurfaceTouchHandler *_Nullable _touchHandler;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -70,6 +70,8 @@
     _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
+
+    _touchHandler = [RCTSurfaceTouchHandler new];
 
     [self _run];
   }
@@ -102,6 +104,7 @@
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    [_touchHandler attachToView:_view];
   }
 
   return _view;

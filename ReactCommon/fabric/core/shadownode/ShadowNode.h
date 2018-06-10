@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/EventHandlers.h>
+#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
@@ -33,7 +33,7 @@ using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using ShadowNodeCloneFunction = std::function<SharedShadowNode(
   const SharedShadowNode &shadowNode,
   const SharedProps &props,
-  const SharedEventHandlers &eventHandlers,
+  const SharedEventEmitter &eventEmitter,
   const SharedShadowNodeSharedList &children
 )>;
 
@@ -50,7 +50,7 @@ public:
     const Tag &tag,
     const Tag &rootTag,
     const SharedProps &props,
-    const SharedEventHandlers &eventHandlers,
+    const SharedEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children,
     const ShadowNodeCloneFunction &cloneFunction
   );
@@ -58,7 +58,7 @@ public:
   ShadowNode(
     const SharedShadowNode &shadowNode,
     const SharedProps &props,
-    const SharedEventHandlers &eventHandlers,
+    const SharedEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children
   );
 
@@ -77,7 +77,7 @@ public:
 
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
-  SharedEventHandlers getEventHandlers() const;
+  SharedEventEmitter getEventEmitter() const;
   Tag getTag() const;
   Tag getRootTag() const;
 
@@ -143,7 +143,7 @@ protected:
   Tag tag_;
   Tag rootTag_;
   SharedProps props_;
-  SharedEventHandlers eventHandlers_;
+  SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
   SharedLocalData localData_;

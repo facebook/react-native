@@ -12,6 +12,7 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 import android.util.Log;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -24,8 +25,11 @@ public class ReactEventEmitter implements RCTEventEmitter {
 
   private static final String TAG = ReactEventEmitter.class.getSimpleName();
   private final SparseArray<RCTEventEmitter> mEventEmitters = new SparseArray<>();
+  private final ReactApplicationContext mReactContext;
 
-  public ReactEventEmitter() { }
+  public ReactEventEmitter(ReactApplicationContext reactContext) {
+    mReactContext = reactContext;
+  }
 
   public void register(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
     mEventEmitters.put(uiManagerType, eventEmitter);
@@ -48,12 +52,16 @@ public class ReactEventEmitter implements RCTEventEmitter {
 
     Assertions.assertCondition(touches.size() > 0);
 
-    int targetReactTag = touches.getMap(0).getInt(TARGET_KEY);
-    getEventEmitter(targetReactTag).receiveTouches(eventName, touches, changedIndices);
+    int reactTag = touches.getMap(0).getInt(TARGET_KEY);
+    getEventEmitter(reactTag).receiveTouches(eventName, touches, changedIndices);
   }
 
   private RCTEventEmitter getEventEmitter(int reactTag) {
     int type = ViewUtil.getUIManagerType(reactTag);
-    return mEventEmitters.get(type);
+    RCTEventEmitter eventEmitter = mEventEmitters.get(type);
+    if (eventEmitter == null) {
+      eventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+    }
+    return eventEmitter;
   }
 }

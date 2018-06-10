@@ -20,7 +20,7 @@ class ViewShadowNode;
 using SharedViewShadowNode = std::shared_ptr<const ViewShadowNode>;
 
 class ViewShadowNode final:
-  public ConcreteViewShadowNode<ViewProps, ViewEventHandlers> {
+  public ConcreteViewShadowNode<ViewProps, ViewEventEmitter> {
 
 public:
 

@@ -1,3 +1,12 @@
+/**
+* Copyright (c) 2015-present, Facebook, Inc.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*
+* @format
+*/
+
 // Fork of https://github.com/github/fetch/blob/master/fetch.js that does not
 // use reponseType: 'blob' by default. RN already has specific native implementations
 // for different response types so there is no need to add the extra blob overhead.
