@@ -13,9 +13,10 @@ ROOT=$(dirname "$SCRIPTS")
 
 cd "$ROOT"
 
+TEST_NAME="tvOS"
 SCHEME="RNTester-tvOS"
 SDK="appletvsimulator"
-DESTINATION="platform=tvOS Simulator,name=Apple TV 1080p,OS=10.2"
+DESTINATION="platform=tvOS Simulator,name=Apple TV,OS=11.4"
 
 # If there's a "test" argument, pass it to the test script.
 . ./scripts/objc-test.sh $1
