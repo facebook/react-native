@@ -237,7 +237,7 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
-  if (Platform.isTVOS) {
+  if (Platform.isTV) {
     return null;
   }
   return (
