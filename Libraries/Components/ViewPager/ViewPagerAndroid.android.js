@@ -19,6 +19,8 @@ const ViewPropTypes = require('ViewPropTypes');
 const dismissKeyboard = require('dismissKeyboard');
 const requireNativeComponent = require('requireNativeComponent');
 
+const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager');
+
 const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
@@ -254,10 +256,5 @@ class ViewPagerAndroid extends React.Component<{
     );
   }
 }
-
-const NativeAndroidViewPager = requireNativeComponent(
-  'AndroidViewPager',
-  ViewPagerAndroid,
-);
 
 module.exports = ViewPagerAndroid;

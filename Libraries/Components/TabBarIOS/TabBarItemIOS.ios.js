@@ -143,6 +143,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTTabBarItem = requireNativeComponent('RCTTabBarItem', TabBarItemIOS);
+const RCTTabBarItem = requireNativeComponent('RCTTabBarItem');
 
 module.exports = TabBarItemIOS;

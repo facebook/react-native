@@ -12,7 +12,6 @@
 const ColorPropType = require('ColorPropType');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
 const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
@@ -115,15 +114,7 @@ class ProgressBarAndroid extends React.Component {
   }
 }
 
-const AndroidProgressBar = requireNativeComponent(
-  'AndroidProgressBar',
-  ProgressBarAndroid,
-  {
-    nativeOnly: {
-      animating: true,
-    },
-  },
-);
+const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
 
 module.exports = React.forwardRef((props, ref) => (
   <ProgressBarAndroid {...props} forwardedRef={ref} />
