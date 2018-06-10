@@ -194,10 +194,8 @@ type Props = $ReadOnly<{|
  *
  */
 const Slider = (
-  props: $ReadOnly<{|
-    ...Props,
-    forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
-  |}>,
+  props: Props,
+  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
 ) => {
   const style = StyleSheet.compose(
     styles.slider,
@@ -230,6 +228,7 @@ const Slider = (
   return (
     <RCTSlider
       {...props}
+      ref={forwardedRef}
       style={style}
       onChange={onChange}
       onSlidingComplete={onSlidingComplete}
@@ -242,9 +241,7 @@ const Slider = (
 };
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const SliderWithRef = React.forwardRef((props: Props, ref) => {
-  return <Slider {...props} forwardedRef={ref} />;
-});
+const SliderWithRef = React.forwardRef(Slider);
 
 SliderWithRef.defaultProps = {
   disabled: false,
