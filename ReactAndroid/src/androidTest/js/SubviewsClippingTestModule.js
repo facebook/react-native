@@ -11,14 +11,13 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ScrollView = require('ScrollView');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var ClippableView = requireNativeComponent('ClippableView', null);
+var ClippableView = requireNativeComponent('ClippableView');
 
 class ClippingSample1 extends React.Component {
   render() {

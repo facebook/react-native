@@ -5,23 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "EventHandlers.h"
+#include "EventEmitter.h"
 
 #include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
 
-EventHandlers::EventHandlers(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
+EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
   instanceHandle_(instanceHandle),
   tag_(tag),
   eventDispatcher_(eventDispatcher) {}
 
-EventHandlers::~EventHandlers() {
+EventEmitter::~EventEmitter() {
   releaseEventTargetIfNeeded();
 }
 
-void EventHandlers::dispatchEvent(
+void EventEmitter::dispatchEvent(
   const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
@@ -42,7 +42,7 @@ void EventHandlers::dispatchEvent(
   eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
 }
 
-void EventHandlers::createEventTargetIfNeeded() const {
+void EventEmitter::createEventTargetIfNeeded() const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   if (eventTarget_) {
@@ -54,7 +54,7 @@ void EventHandlers::createEventTargetIfNeeded() const {
   eventTarget_ = eventDispatcher->createEventTarget(instanceHandle_);
 }
 
-void EventHandlers::releaseEventTargetIfNeeded() const {
+void EventEmitter::releaseEventTargetIfNeeded() const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   if (!eventTarget_) {

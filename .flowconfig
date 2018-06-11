@@ -25,6 +25,11 @@
 ; Ignore metro
 .*/node_modules/metro/.*
 
+; These should not be required directly
+; require from fbjs/lib instead: require('fbjs/lib/invariant')
+.*/node_modules/invariant/.*
+.*/node_modules/warning/.*
+
 [include]
 
 [libs]
@@ -69,4 +74,4 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
-^0.73.0
+^0.74.0

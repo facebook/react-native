@@ -18,6 +18,8 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
+
 type DefaultProps = {
   value: boolean,
   disabled: boolean,
@@ -152,14 +154,6 @@ let styles = StyleSheet.create({
   rctCheckBox: {
     height: 32,
     width: 32,
-  },
-});
-
-let RCTCheckBox = requireNativeComponent('AndroidCheckBox', CheckBox, {
-  nativeOnly: {
-    onChange: true,
-    on: true,
-    enabled: true,
   },
 });
 

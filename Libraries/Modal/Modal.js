@@ -90,7 +90,7 @@ class Modal extends React.Component<Object> {
      * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
      */
     onRequestClose:
-      Platform.isTVOS || Platform.OS === 'android'
+      Platform.isTV || Platform.OS === 'android'
         ? PropTypes.func.isRequired
         : PropTypes.func,
     /**

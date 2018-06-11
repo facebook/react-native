@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProps:(facebook::react::SharedProps)props
            oldProps:(facebook::react::SharedProps)oldProps;
 
-- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers;
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;

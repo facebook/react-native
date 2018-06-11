@@ -34,7 +34,7 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
-  ASSERT_EQ(node->getEventHandlers(), nullptr);
+  ASSERT_EQ(node->getEventEmitter(), nullptr);
   TestShadowNode *nodePtr = node.get();
   ASSERT_EQ(node->getComponentHandle(), typeid(*nodePtr).hash_code());
   ASSERT_EQ(node->getSourceNode(), nullptr);
@@ -54,7 +54,7 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
-  ASSERT_EQ(node->getEventHandlers(), nullptr);
+  ASSERT_EQ(node->getEventEmitter(), nullptr);
   ASSERT_EQ(node2->getSourceNode(), node);
 }
 
@@ -128,7 +128,7 @@ TEST(ShadowNodeTest, handleCloneFunction) {
     std::make_shared<const TestProps>(),
     nullptr,
     ShadowNode::emptySharedShadowNodeSharedList(),
-    [](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventHandlers &eventHandlers, const SharedShadowNodeSharedList &children) {
+    [](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventEmitter &eventEmitter, const SharedShadowNodeSharedList &children) {
       return std::make_shared<const TestShadowNode>(
         std::static_pointer_cast<const TestShadowNode>(shadowNode),
         props,

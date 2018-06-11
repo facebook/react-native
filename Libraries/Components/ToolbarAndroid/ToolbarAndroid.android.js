@@ -13,7 +13,6 @@ const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 const ColorPropType = require('ColorPropType');
@@ -207,10 +206,6 @@ const ToolbarAndroid = createReactClass({
   },
 });
 
-const NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
-  nativeOnly: {
-    nativeActions: true,
-  },
-});
+const NativeToolbar = requireNativeComponent('ToolbarAndroid');
 
 module.exports = ToolbarAndroid;

@@ -53,6 +53,10 @@ YGNodeRef YGNode::getOwner() const {
   return owner_;
 }
 
+YGNodeRef YGNode::getParent() const {
+  return getOwner();
+}
+
 YGVector YGNode::getChildren() const {
   return children_;
 }

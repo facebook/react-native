@@ -20,7 +20,7 @@
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
-#import "RCTUpdateEventHandlersMountItem.h"
+#import "RCTUpdateEventEmitterMountItem.h"
 #import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
 
@@ -71,9 +71,9 @@ using namespace facebook::react;
                                                                   oldProps:nullptr
                                                                   newProps:instruction.getNewChildNode()->getProps()]];
 
-        // EventHandlers
-        [mountItems addObject:[[RCTUpdateEventHandlersMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
-                                                                     eventHandlers:instruction.getNewChildNode()->getEventHandlers()]];
+        // EventEmitter
+        [mountItems addObject:[[RCTUpdateEventEmitterMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                     eventEmitter:instruction.getNewChildNode()->getEventEmitter()]];
 
         // LocalData
         if (instruction.getNewChildNode()->getLocalData()) {
@@ -124,11 +124,11 @@ using namespace facebook::react;
           [mountItems addObject:mountItem];
         }
 
-        // EventHandlers
-        if (oldShadowNode->getEventHandlers() != newShadowNode->getEventHandlers()) {
-          RCTUpdateEventHandlersMountItem *mountItem =
-            [[RCTUpdateEventHandlersMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
-                                                   eventHandlers:instruction.getOldChildNode()->getEventHandlers()];
+        // EventEmitter
+        if (oldShadowNode->getEventEmitter() != newShadowNode->getEventEmitter()) {
+          RCTUpdateEventEmitterMountItem *mountItem =
+            [[RCTUpdateEventEmitterMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
+                                                   eventEmitter:instruction.getOldChildNode()->getEventEmitter()];
           [mountItems addObject:mountItem];
         }
 
