@@ -156,7 +156,7 @@ RCT_EXPORT_MODULE()
   if (!_locationConfiguration.skipPermissionRequests) {
     [self requestAuthorization];
   }
-
+  
   if (!_locationManager) {
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
@@ -202,24 +202,21 @@ RCT_EXPORT_METHOD(requestAuthorization)
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
   }
-
-  // No need any more below code block. Issue: https://github.com/facebook/react-native/issues/19057
-  // Request location access permission
-  /*if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
-    [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-    [_locationManager requestAlwaysAuthorization];
-
-    // On iOS 9+ we also need to enable background updates
-    NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
-    if (backgroundModes && [backgroundModes containsObject:@"location"]) {
-      if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
-        [_locationManager setAllowsBackgroundLocationUpdates:YES];
+    
+  if ([CLLocationManager locationServicesEnabled]) {
+      switch ([CLLocationManager authorizationStatus]) {
+          case kCLAuthorizationStatusAuthorizedWhenInUse:
+          case kCLAuthorizationStatusNotDetermined:
+              _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+              [_locationManager requestWhenInUseAuthorization];
+              break;
+          default:
+              break;
       }
-    }
-  } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
-    [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-    [_locationManager requestWhenInUseAuthorization];
-  }*/
+  } else {
+      _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+      [_locationManager requestWhenInUseAuthorization];
+  }
 }
 
 RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
