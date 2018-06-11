@@ -325,11 +325,17 @@ const TouchableMixin = {
       evt.dispatchConfig = {};
       if (myTag === evt.tag) {
         if (evt.eventType === 'focus') {
-          cmp.touchableHandleActivePressIn &&
+          if (cmp.touchableHandleActivePressIn) {
+            console.warn('Using `touchableHandleActivePressIn` or `onPressIn` to listen for focus events is deprecated. Use `touchableHandleFocus` or `onFocus` instead.');
             cmp.touchableHandleActivePressIn(evt);
+          }
+          cmp.touchableHandleFocus(evt);
         } else if (evt.eventType === 'blur') {
-          cmp.touchableHandleActivePressOut &&
+          if (cmp.touchableHandleActivePressOut) {
+            console.warn('Using `touchableHandleActivePressOut` or `onPressOut` to listen for blur events is deprecated. Use `touchableHandleBlur` or `onBlur` instead.');
             cmp.touchableHandleActivePressOut(evt);
+          }
+          cmp.touchableHandleBlur(evt);
         } else if (evt.eventType === 'select') {
           cmp.touchableHandlePress &&
             !cmp.props.disabled &&
@@ -526,6 +532,27 @@ const TouchableMixin = {
       this._cancelLongPressDelayTimeout();
       this._receiveSignal(Signals.LEAVE_PRESS_RECT, e);
     }
+  },
+
+  /**
+   * Invoked when the item receives focus. Mixers might override this to
+   * visually distinguish the `VisualRect` so that the user knows that it
+   * currently has the focus. Most platforms only support a single element being
+   * focused at a time, in which case there may have been a previously focused
+   * element that was blurred just prior to this.
+   */
+  touchableHandleFocus: function (e: Event) {
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  /**
+   * Invoked when the item loses focus. Mixers might override this to
+   * visually distinguish the `VisualRect` so that the user knows that it
+   * no longer has focus. Most platforms only support a single element being
+   * focused at a time, in which case the focus may have moved to another.
+   */
+  touchableHandleBlur: function (e: Event) {
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   // ==== Abstract Application Callbacks ====
