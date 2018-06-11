@@ -198,7 +198,7 @@ aliases:
   # eslint sometimes runs into trouble generating the reports
   - &run-lint-checks
     name: Lint code
-    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/js-lint-results.xml
+    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
     when: always
 
   - &run-flow-checks
@@ -274,6 +274,14 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
       mkdir -p ~/react-native/reports/outputs/
 
+  - &boot-simulator-iphone
+    name: Boot iPhone Simulator
+    command: xcrun simctl boot "iPhone 5s" || true
+
+  - &boot-simulator-appletv
+    name: Boot Apple TV Simulator
+    command: xcrun simctl boot "Apple TV" || true
+
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
@@ -282,9 +290,13 @@ aliases:
     name: tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh test
 
+  - &run-e2e-tests
+    name: End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --ios --tvos --js --retries 3;
+
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --ios --js --retries 3;
+    command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
     name: tvOS End-to-End Test Suite
@@ -374,8 +386,7 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "iPhone 5s (11.4)" || true
-      # See https://github.com/Homebrew/homebrew-core/issues/26358.
+      - run: *boot-simulator-iphone
       - run: brew install watchman
       - run: *run-objc-ios-tests
 
@@ -389,8 +400,7 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "Apple TV (11.4)" || true
-      # See https://github.com/Homebrew/homebrew-core/issues/26358.
+      - run: *boot-simulator-appletv
       - run: brew install watchman
       - run: *run-objc-tvos-tests
 
@@ -398,13 +408,27 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Runs end to end tests
-  test_ios_e2e:
+  test_end_to_end:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
-      - run: xcrun instruments -w "iPhone 5s (11.4)" || true
+      - run: *boot-simulator-iphone
+
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+
+      - run:
+          name: Install Node 8
+          command: |
+            brew install node@8
+            brew link node@8
+            node -v
+
       - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
@@ -623,7 +647,7 @@ workflows:
             - checkout_code
 
       # End-to-end tests
-      - test_ios_e2e:
+      - test_end_to_end:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -670,11 +694,3 @@ workflows:
   #         filters: *filter-ignore-gh-pages
   #         requires:
   #           - checkout_code
-
-experimental:
-  notify:
-    webhooks:
-      - url: https://code.facebook.com/circle/webhook/
-    branches:
-      only:
-        - master

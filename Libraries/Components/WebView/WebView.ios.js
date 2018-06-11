@@ -109,18 +109,6 @@ const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
-  static get extraNativeComponentConfig() {
-    return {
-      nativeOnly: {
-        onLoadingStart: true,
-        onLoadingError: true,
-        onLoadingFinish: true,
-        onMessage: true,
-        messagingEnabled: PropTypes.bool,
-      },
-    };
-  }
-
   static propTypes = {
     ...ViewPropTypes,
 
@@ -651,11 +639,7 @@ class WebView extends React.Component {
   };
 }
 
-const RCTWebView = requireNativeComponent(
-  'RCTWebView',
-  WebView,
-  WebView.extraNativeComponentConfig,
-);
+const RCTWebView = requireNativeComponent('RCTWebView');
 
 const styles = StyleSheet.create({
   container: {

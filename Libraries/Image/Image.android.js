@@ -29,6 +29,9 @@ const resolveAssetSource = require('resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
 
+const RKImage = requireNativeComponent('RCTImageView');
+const RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage');
+
 let _requestId = 1;
 function generateRequestId() {
   return _requestId++;
@@ -277,21 +280,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
-
-const cfg = {
-  nativeOnly: {
-    src: true,
-    headers: true,
-    defaultSrc: true,
-    loadingIndicatorSrc: true,
-    shouldNotifyLoadEvents: true,
-  },
-};
-const RKImage = requireNativeComponent('RCTImageView', Image, cfg);
-const RCTTextInlineImage = requireNativeComponent(
-  'RCTTextInlineImage',
-  Image,
-  cfg,
-);
 
 module.exports = Image;
