@@ -133,30 +133,37 @@
     return;
   }
 
-  [attributedText beginEditing];
-
+  __block CGFloat maximumFontLineHeight = 0;
+  
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:
-    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
-      if (!font) {
-        return;
-      }
-
-      if (maximumLineHeight <= font.lineHeight) {
-        return;
-      }
-
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.lineHeight / 2.0;
-
-      [attributedText addAttribute:NSBaselineOffsetAttributeName
-                             value:@(baseLineOffset)
-                             range:range];
+   ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+     if (!font) {
+       return;
      }
-   ];
-
-   [attributedText endEditing];
+     
+     if (maximumFontLineHeight <= font.lineHeight) {
+       maximumFontLineHeight = font.lineHeight;
+     }
+     
+   }
+  ];
+  
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
+  
+  [attributedText beginEditing];
+  
+  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
+  
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
+  
+  [attributedText endEditing];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
