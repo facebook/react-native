@@ -563,6 +563,11 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
+      - run:
+          name: Build Android RNTester
+          command: |
+            ./gradlew RNTester:android:app:assembleRelease
+
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
