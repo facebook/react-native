@@ -428,6 +428,9 @@ function getNativeLogFunction(level) {
         INSPECTOR_FRAMES_TO_SKIP,
       );
     }
+    if (groupStack.length) {
+      str = groupFormat('', str);
+    }
     global.nativeLoggingHook(str, logLevel);
   };
 }
@@ -501,6 +504,27 @@ function consoleTablePolyfill(rows) {
   global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.info);
 }
 
+const GROUP_PAD = '\u2502'; // Box light vertical
+const GROUP_OPEN = '\u2510'; // Box light down+left
+const GROUP_CLOSE = '\u2518'; // Box light up+left
+
+const groupStack = [];
+
+function groupFormat(prefix, msg) {
+  // Insert group formatting before the console message
+  return groupStack.join('') + prefix + ' ' + (msg || '');
+}
+
+function consoleGroupPolyfill(label) {
+  global.nativeLoggingHook(groupFormat(GROUP_OPEN, label), LOG_LEVELS.info);
+  groupStack.push(GROUP_PAD);
+}
+
+function consoleGroupEndPolyfill() {
+  groupStack.pop();
+  global.nativeLoggingHook(groupFormat(GROUP_CLOSE), LOG_LEVELS.info);
+}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   global.console = {
@@ -511,6 +535,8 @@ if (global.nativeLoggingHook) {
     trace: getNativeLogFunction(LOG_LEVELS.trace),
     debug: getNativeLogFunction(LOG_LEVELS.trace),
     table: consoleTablePolyfill,
+    group: consoleGroupPolyfill,
+    groupEnd: consoleGroupEndPolyfill,
   };
 
   // If available, also call the original `console` method since that is
