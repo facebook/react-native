@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Custom.Theme.AppCompat.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="customSeekBarStyle">@style/CustomSeekBar</item>
+  </style>
+
+
+</resources>

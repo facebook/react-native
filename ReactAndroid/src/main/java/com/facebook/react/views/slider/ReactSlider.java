@@ -56,6 +56,10 @@ public class ReactSlider extends SeekBar {
     super(context, attrs, style);
   }
 
+  public ReactSlider(Context context) {
+    super(context);
+  }
+
   /* package */ void setMaxValue(double max) {
     mMaxValue = max;
     updateAll();

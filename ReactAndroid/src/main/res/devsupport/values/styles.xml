@@ -13,4 +13,9 @@
     <item name="android:windowEnterAnimation">@anim/catalyst_push_up_in</item>
     <item name="android:windowExitAnimation">@anim/catalyst_push_up_out</item>
   </style>
+
+  <style name="CustomSeekBar" parent="Base.Widget.AppCompat.SeekBar">
+    <item name="android:thumb">@drawable/my_seekbar_thumb_material_anim</item>
+  </style>
+
 </resources>
