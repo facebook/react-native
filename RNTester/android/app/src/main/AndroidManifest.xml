@@ -17,8 +17,7 @@
   <uses-permission android:name="android.permission.READ_CALENDAR"/>
 
   <uses-sdk
-    android:minSdkVersion="16"
-    android:targetSdkVersion="23" />
+    android:minSdkVersion="16" />
 
   <!--
   android:icon is used to display launcher icon on mobile devices.
