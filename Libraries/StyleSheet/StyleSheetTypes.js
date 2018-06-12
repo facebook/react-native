@@ -92,10 +92,10 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
 export type ____TransformStyle_Internal = $ReadOnly<{|
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
-    | {|+rotate: string|}
-    | {|+rotateX: string|}
-    | {|+rotateY: string|}
-    | {|+rotateZ: string|}
+    | {|+rotate: string | AnimatedNode|}
+    | {|+rotateX: string | AnimatedNode|}
+    | {|+rotateY: string | AnimatedNode|}
+    | {|+rotateZ: string | AnimatedNode|}
     | {|+scale: number | AnimatedNode|}
     | {|+scaleX: number | AnimatedNode|}
     | {|+scaleY: number | AnimatedNode|}
