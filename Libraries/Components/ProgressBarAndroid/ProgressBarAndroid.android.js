@@ -4,60 +4,41 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  * @format
  */
 
 'use strict';
 
+const ColorPropType = require('ColorPropType');
+const PropTypes = require('prop-types');
 const React = require('React');
+const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
-const RCTAndroidProgressBar = requireNativeComponent('AndroidProgressBar');
+const STYLE_ATTRIBUTES = [
+  'Horizontal',
+  'Normal',
+  'Small',
+  'Large',
+  'Inverse',
+  'SmallInverse',
+  'LargeInverse',
+];
 
-import type {NativeComponent} from 'ReactNative';
-import type {ViewProps} from 'ViewPropTypes';
+const indeterminateType = function(props, propName, componentName, ...rest) {
+  const checker = function() {
+    const indeterminate = props[propName];
+    const styleAttr = props.styleAttr;
+    if (!indeterminate && styleAttr !== 'Horizontal') {
+      return new Error(
+        'indeterminate=false is only valid for styleAttr=Horizontal',
+      );
+    }
+  };
 
-type Props = $ReadOnly<{|
-  ...ViewProps,
-
-  /**
-   * Style of the ProgressBar and whether it shows indeterminate progress (e.g. spinner).
-   *
-   * `indeterminate` can only be false if `styleAttr` is Horizontal, and requires a
-   * `progress` value.
-   */
-  ...
-    | {|
-        styleAttr: 'Horizontal',
-        indeterminate: false,
-        progress: number,
-      |}
-    | {|
-        typeAttr:
-          | 'Horizontal'
-          | 'Normal'
-          | 'Small'
-          | 'Large'
-          | 'Inverse'
-          | 'SmallInverse'
-          | 'LargeInverse',
-        indeterminate: true,
-      |},
-  /**
-   * Whether to show the ProgressBar (true, the default) or hide it (false).
-   */
-  animating?: ?boolean,
-  /**
-   * Color of the progress bar.
-   */
-  color?: ?string,
-  /**
-   * Used to locate this view in end-to-end tests.
-   */
-  testID?: ?string,
-|}>;
+  return PropTypes.bool(props, propName, componentName, ...rest) || checker();
+};
 
 /**
  * React component that wraps the Android-only `ProgressBar`. This component is
@@ -82,20 +63,59 @@ type Props = $ReadOnly<{|
  * },
  * ```
  */
-const ProgressBarAndroid = (
-  props: Props,
-  forwardedRef: ?React.Ref<'RCTAndroidProgressBar'>,
-) => {
-  return <RCTAndroidProgressBar {...props} ref={forwardedRef} />;
-};
-ProgressBarAndroid.displayName = 'ProgressBarAndroid'; // TODO(T30332650) remove bug workaround
+class ProgressBarAndroid extends React.Component {
+  static propTypes = {
+    ...ViewPropTypes,
 
-ProgressBarAndroid.defaultProps = {
-  styleAttr: 'Normal',
-  indeterminate: true,
-  animating: true,
-};
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
+    /**
+     * Style of the ProgressBar. One of:
+     *
+     * - Horizontal
+     * - Normal (default)
+     * - Small
+     * - Large
+     * - Inverse
+     * - SmallInverse
+     * - LargeInverse
+     */
+    styleAttr: PropTypes.oneOf(STYLE_ATTRIBUTES),
+    /**
+     * Whether to show the ProgressBar (true, the default) or hide it (false).
+     */
+    animating: PropTypes.bool,
+    /**
+     * If the progress bar will show indeterminate progress. Note that this
+     * can only be false if styleAttr is Horizontal.
+     */
+    indeterminate: indeterminateType,
+    /**
+     * The progress value (between 0 and 1).
+     */
+    progress: PropTypes.number,
+    /**
+     * Color of the progress bar.
+     */
+    color: ColorPropType,
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID: PropTypes.string,
+  };
 
-module.exports = (ProgressBarAndroidToExport: Class<NativeComponent<Props>>);
+  static defaultProps = {
+    styleAttr: 'Normal',
+    indeterminate: true,
+    animating: true,
+  };
+
+  render() {
+    const {forwardedRef, ...props} = this.props;
+    return <AndroidProgressBar {...props} ref={forwardedRef} />;
+  }
+}
+
+const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
+
+module.exports = React.forwardRef((props, ref) => (
+  <ProgressBarAndroid {...props} forwardedRef={ref} />
+));

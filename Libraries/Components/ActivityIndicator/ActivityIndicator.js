@@ -70,10 +70,12 @@ type Props = $ReadOnly<{|
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
 const ActivityIndicator = (
-  props: Props,
-  forwardedRef: ?React.Ref<'RCTActivityIndicatorView'>,
+  props: $ReadOnly<{|
+    ...Props,
+    forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
+  |}>,
 ) => {
-  const {onLayout, style, ...restProps} = props;
+  const {onLayout, style, forwardedRef, ...restProps} = props;
   let sizeStyle;
 
   switch (props.size) {
@@ -97,19 +99,16 @@ const ActivityIndicator = (
   };
 
   return (
-    <View
-      onLayout={onLayout}
-      style={StyleSheet.compose(
-        styles.container,
-        style,
-      )}>
+    <View onLayout={onLayout} style={[styles.container, style]}>
       <RCTActivityIndicator {...nativeProps} />
     </View>
   );
 };
-ActivityIndicator.displayName = 'ActivityIndicator'; // TODO(T30332650) remove workaround for hermes bug
+
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
+const ActivityIndicatorWithRef = React.forwardRef((props: Props, ref) => {
+  return <ActivityIndicator {...props} forwardedRef={ref} />;
+});
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
@@ -117,6 +116,7 @@ ActivityIndicatorWithRef.defaultProps = {
   hidesWhenStopped: true,
   size: 'small',
 };
+ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {
