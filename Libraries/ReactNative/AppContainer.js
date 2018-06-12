@@ -127,4 +127,11 @@ const styles = StyleSheet.create({
   },
 });
 
+if (__DEV__) {
+  if (!global.__RCTProfileIsProfiling) {
+    const YellowBox = require('YellowBox');
+    YellowBox.install();
+  }
+}
+
 module.exports = AppContainer;
