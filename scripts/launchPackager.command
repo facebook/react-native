@@ -12,5 +12,7 @@ clear
 THIS_DIR=$(dirname "$0")
 . "$THIS_DIR/packager.sh"
 
-echo "Process terminated. Press <enter> to close the window"
-read
+if [[ -z "$CI" ]]; then
+  echo "Process terminated. Press <enter> to close the window"
+  read
+fi
