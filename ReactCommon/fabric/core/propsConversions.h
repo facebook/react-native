@@ -17,7 +17,11 @@ namespace facebook {
 namespace react {
 
 inline void fromDynamic(const folly::dynamic &value, bool &result) { result = value.getBool(); }
-inline void fromDynamic(const folly::dynamic &value, int &result) { result = value.getInt(); }
+inline void fromDynamic(const folly::dynamic &value, int &result) {
+  // All numbers from JS are treated as double, and JS cannot represent int64 in practice.
+  // So this always converts the value to int64 instead.
+  result = value.asInt();
+}
 inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>

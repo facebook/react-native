@@ -201,7 +201,7 @@ inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = { folly::to<float>(stringValue.substr(stringValue.length() - 1)), YGUnitPercent };
+        result = { folly::to<float>(stringValue.substr(0, stringValue.length() - 1)), YGUnitPercent };
         return;
       } else {
         result = { folly::to<float>(stringValue), YGUnitPoint };
