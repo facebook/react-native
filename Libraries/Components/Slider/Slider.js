@@ -239,6 +239,7 @@ const Slider = (
     />
   );
 };
+Slider.displayName = 'Slider'; // TODO(T30332650) remove bug workaround
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const SliderWithRef = React.forwardRef(Slider);
@@ -250,19 +251,9 @@ SliderWithRef.defaultProps = {
   maximumValue: 1,
   step: 0,
 };
-SliderWithRef.displayName = 'Slider';
 
-let styles;
-if (Platform.OS === 'ios') {
-  styles = StyleSheet.create({
-    slider: {
-      height: 40,
-    },
-  });
-} else {
-  styles = StyleSheet.create({
-    slider: {},
-  });
-}
+const styles = StyleSheet.create({
+  slider: Platform.OS === 'ios' ? {height: 40} : {},
+});
 
 module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);
