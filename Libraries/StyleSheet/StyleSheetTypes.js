@@ -185,8 +185,8 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'proportional-nums',
   >,
   textShadowOffset?: $ReadOnly<{|
-    width?: number,
-    height?: number,
+    width: number,
+    height: number,
   |}>,
   textShadowRadius?: number,
   textShadowColor?: ColorValue,
