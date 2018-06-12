@@ -88,6 +88,7 @@ async function buildBundle(
     extraNodeModules: config.extraNodeModules,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
+    getResolverMainFields: config.getResolverMainFields,
     getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
     hasteImplModulePath: config.hasteImplModulePath,

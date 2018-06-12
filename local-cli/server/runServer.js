@@ -187,6 +187,7 @@ function getPackagerServer(args, config, reporter) {
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
+    getResolverMainFields: config.getResolverMainFields,
     getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
     hasteImplModulePath: config.hasteImplModulePath,
