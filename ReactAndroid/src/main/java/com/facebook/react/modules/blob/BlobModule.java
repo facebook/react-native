@@ -133,7 +133,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
     new NetworkingModule.ResponseHandler() {
       @Override
       public boolean supports(String responseType) {
-        return "blob".equals(responseType));
+        return "blob".equals(responseType);
       }
 
       @Override
