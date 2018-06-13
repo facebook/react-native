@@ -344,7 +344,6 @@ jobs:
   checkout_code:
     <<: *js_defaults
     steps:
-      -
       - checkout
       - run: *setup-artifacts
 
