@@ -12,6 +12,7 @@
 
 const Platform = require('Platform');
 const React = require('React');
+const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UTFSequence = require('UTFSequence');
@@ -37,21 +38,23 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
       : `Occurrence ${props.selectedIndex + 1} of ${props.warnings.length}`;
 
   return (
-    <View style={styles.header}>
-      <YellowBoxInspectorHeaderButton
-        disabled={props.warnings[prevIndex] == null}
-        label={UTFSequence.TRIANGLE_LEFT}
-        onPress={() => props.onSelectIndex(prevIndex)}
-      />
-      <View style={styles.headerTitle}>
-        <Text style={styles.headerTitleText}>{titleText}</Text>
+    <SafeAreaView style={styles.root}>
+      <View style={styles.header}>
+        <YellowBoxInspectorHeaderButton
+          disabled={props.warnings[prevIndex] == null}
+          label={UTFSequence.TRIANGLE_LEFT}
+          onPress={() => props.onSelectIndex(prevIndex)}
+        />
+        <View style={styles.headerTitle}>
+          <Text style={styles.headerTitleText}>{titleText}</Text>
+        </View>
+        <YellowBoxInspectorHeaderButton
+          disabled={props.warnings[nextIndex] == null}
+          label={UTFSequence.TRIANGLE_RIGHT}
+          onPress={() => props.onSelectIndex(nextIndex)}
+        />
       </View>
-      <YellowBoxInspectorHeaderButton
-        disabled={props.warnings[nextIndex] == null}
-        label={UTFSequence.TRIANGLE_RIGHT}
-        onPress={() => props.onSelectIndex(nextIndex)}
-      />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -63,6 +66,10 @@ const YellowBoxInspectorHeaderButton = (
   |}>,
 ): React.Node => (
   <YellowBoxPressable
+    backgroundColor={{
+      default: 'transparent',
+      pressed: YellowBoxStyle.getHighlightColor(1),
+    }}
     onPress={props.disabled ? null : props.onPress}
     style={styles.headerButton}>
     {props.disabled ? null : (
@@ -72,6 +79,9 @@ const YellowBoxInspectorHeaderButton = (
 );
 
 const styles = StyleSheet.create({
+  root: {
+    backgroundColor: YellowBoxStyle.getBackgroundColor(0.95),
+  },
   header: {
     flexDirection: 'row',
     height: Platform.select({
@@ -92,7 +102,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     alignItems: 'center',
-    backgroundColor: YellowBoxStyle.getBackgroundColor(0.95),
     flex: 1,
     justifyContent: 'center',
   },
