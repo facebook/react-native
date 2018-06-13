@@ -1,11 +1,102 @@
-android_prebuilt_aar(
+android_library(
     name = "lib-support-v4",
-    aar = ":lib-support-v4-binary-aar",
+    exported_deps = [
+      ":lib-support-v4-support-compat",
+      ":lib-support-v4-support-core-utils",
+      ":lib-support-v4-support-core-ui",
+      ":lib-support-v4-support-media-compat",
+      ":lib-support-v4-support-fragment",
+      ":android-lifecycle-runtime",
+      ":android-lifecycle-common.jar",
+      ":android-lifecycle-core.jar"
+    ],
     visibility = ["PUBLIC"],
 )
 
+prebuilt_jar(
+    name = "android-lifecycle-common.jar",
+    binary_jar = ":android-lifecycle-common-jar"
+)
+
+prebuilt_jar(
+    name = "android-lifecycle-core.jar",
+    binary_jar = ":android-lifecycle-core-jar"
+)
+
+android_prebuilt_aar(
+    name = "android-lifecycle-runtime",
+    aar = ":android-lifecycle-runtime-aar",
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-compat",
+    aar = ":lib-support-v4-support-compat-aar",
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-core-utils",
+    aar = ":lib-support-v4-support-core-utils-aar",
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-core-ui",
+    aar = ":lib-support-v4-support-core-ui-aar",
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-media-compat",
+    aar = ":lib-support-v4-support-media-compat-aar",
+)
+
+android_prebuilt_aar(
+    name = "lib-support-v4-support-fragment",
+    aar = ":lib-support-v4-support-fragment-aar",
+)
+
 remote_file(
-    name = "lib-support-v4-binary-aar",
-    sha1 = "9e8da0e4ecf9f63258c7fbd273889252cba2d0c3",
-    url = "mvn:com.android.support:support-v4:aar:23.0.1",
+  name = "android-lifecycle-runtime-aar",
+  sha1 = "30c60a8a357ee1321ffd0c9f08ef54b24045cd10",
+  url = "mvn:android.arch.lifecycle:runtime:aar:1.0.0"
+)
+
+remote_file(
+  name = "android-lifecycle-common-jar",
+  sha1 = "e414a4cb28434e25c4f6aa71426eb20cf4874ae9",
+  url = "mvn:android.arch.lifecycle:common:jar:1.0.0"
+)
+
+remote_file(
+  name = "android-lifecycle-core-jar",
+  sha1 = "a2d487452376193fc8c103dd2b9bd5f2b1b44563",
+  url = "mvn:android.arch.core:common:jar:1.0.0"
+)
+
+remote_file(
+    name = "lib-support-v4-support-compat-aar",
+    sha1 = "1e1c8ffc01d277d8f01dfd11d5d2ce3a2af4b98c",
+    url = "mvn:com.android.support:support-compat:aar:26.1.0",
+)
+
+remote_file(
+    name = "lib-support-v4-support-core-utils-aar",
+    sha1 = "1bfaae21c4d5c5532c5e732071e9ce234cd58cff",
+    url = "mvn:com.android.support:support-core-utils:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-core-ui-aar",
+  sha1 = "e306308d54052a1ded7bf9c2f5c2fdf5152a1f22",
+  url = "mvn:com.android.support:support-core-ui:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-media-compat-aar",
+  sha1 = "09fb587f27cde19aa8f2e50c5c9ee645d9aec44d",
+  url = "mvn:com.android.support:support-media-compat:aar:26.1.0",
+)
+
+remote_file(
+  name = "lib-support-v4-support-fragment-aar",
+  sha1 = "ddacf369bb98dd6558606558de8ddcd53895cf91",
+  url = "mvn:com.android.support:support-fragment:aar:26.1.0",
 )
