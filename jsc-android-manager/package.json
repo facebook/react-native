@@ -3,6 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "jsc-android": "^216113.0.0"
+    "jsc-android": "224109.0.0"
   }
 }
