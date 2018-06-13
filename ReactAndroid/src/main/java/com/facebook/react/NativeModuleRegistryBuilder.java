@@ -80,8 +80,7 @@ public class NativeModuleRegistryBuilder {
         }
 
         String name = moduleHolder.getName();
-        boolean canOverride = moduleHolder.getCanOverrideExistingModule();
-        putModuleTypeAndHolderToModuleMaps(type, name, canOverride, moduleHolder);
+        putModuleTypeAndHolderToModuleMaps(type, name, moduleHolder);
       }
     } else {
       FLog.d(
@@ -106,20 +105,17 @@ public class NativeModuleRegistryBuilder {
   public void addNativeModule(NativeModule nativeModule) {
     String name = nativeModule.getName();
     Class<? extends NativeModule> type = nativeModule.getClass();
-    boolean canOverride = nativeModule.canOverrideExistingModule();
-
-    putModuleTypeAndHolderToModuleMaps(type, name, canOverride, new ModuleHolder(nativeModule));
+    putModuleTypeAndHolderToModuleMaps(type, name, new ModuleHolder(nativeModule));
   }
 
   private void putModuleTypeAndHolderToModuleMaps(Class<? extends NativeModule> type, String underName,
-                                                  boolean canOverrideExistingModule,
                                                   ModuleHolder moduleHolder) throws IllegalStateException {
     if (namesToType.containsKey(underName)) {
       Class<? extends NativeModule> existingNativeModule = namesToType.get(underName);
-      if (!canOverrideExistingModule) {
+      if (!moduleHolder.getCanOverrideExistingModule()) {
         throw new IllegalStateException("Native module " + type.getSimpleName() +
           " tried to override " + existingNativeModule.getSimpleName() + " for module name " +
-          underName + ". Check the getPackages() method in MainApplications.java, it might be " +
+          underName + ". Check the getPackages() method in MainApplication.java, it might be " +
           "that module is being created twice. " +
           "If this was your intention, set canOverrideExistingModule=true");
       }
