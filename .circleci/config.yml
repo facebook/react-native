@@ -558,15 +558,16 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
 
-      # Collect Results
-      - run: *collect-android-test-results
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
+      # Build Android RNTester
       - run:
           name: Build Android RNTester
           command: |
             ./gradlew RNTester:android:app:assembleRelease
+
+      # Collect Results
+      - run: *collect-android-test-results
+      - store_test_results:
+          path: ~/react-native/reports/junit
 
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
