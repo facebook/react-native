@@ -14,14 +14,10 @@ React Native follows a monthly release train. Every month, a new branch created 
 | 0.40.0  | 1st of December     | 1st of January   |
 | 0.41.0  | 1st of January      | 1st of February  |
 | 0.42.0  | 1st of February     | 1st of March     |
-| 0.43.0  | 1st of March        | 1st of April     |
-| 0.44.0  | 1st of April        | 1st of May       |
-| 0.45.0  | 1st of May          | 1st of June      |
-| 0.46.0  | 1st of June         | 1st of July      |
-| 0.47.0  | 1st of July         | 1st of August    |
-| 0.48.0  | 1st of August       | 1st of September |
-| 0.49.0  | 1st of September    | 1st of October   |
-| 0.50.0  | 1st of October      | 1st of November  |
+|  ...    |       ...           |      ...         |
+| 0.56.0  | 1st of June         | 1st of July      |
+| 0.57.0  | 1st of July         | 1st of August    |
+| 0.58.0  | 1st of August       | 1st of October   |
 | ...     | ...                 | ...              |
 
 -------------------
@@ -31,6 +27,7 @@ React Native follows a monthly release train. Every month, a new branch created 
 ### Prerequisites
 
 The following are required for the local test suite to run:
+
 - macOS with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
 - At least 0.2.0 [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally
 
@@ -38,8 +35,8 @@ The following are required for the local test suite to run:
 
 Before cutting a release branch, make sure [Circle](https://circleci.com/gh/facebook/react-native) CI system is green.
 
-
 Before executing the following script, make sure you have:
+
 - An Android emulator / Genymotion device running
 - No packager running in any of the projects
 
@@ -57,18 +54,15 @@ Run:
 
 ```bash
 git checkout -b <version_you_are_releasing>-stable
-# e.g. git checkout -b 0.50-stable
+# e.g. git checkout -b 0.57-stable
 
 ./scripts/bump-oss-version.js <exact-version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.50.0-rc
-# You can use the --remote option to specify a Git remote other than the default "origin"
-git push --tags
-git push
+# e.g. ./scripts/bump-oss-version.js 0.57.0-rc.0
 ```
 
-Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.50.0-rc`) and tag `next` meaning that this version will not be installed for users by default.
+Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0-rc.0`) and tag `next` meaning that this version will not be installed for users by default.
 
-Go to [Circle CI](https://circleci.com/gh/facebook/react-native) and look for the build triggered by your push (e.g. _0.50-stable, [0.50.0] Bump version numbers_), then scroll down to the npm publish step to verify the package was published successfully (the build will be red if not).
+Go to [Circle CI](https://circleci.com/gh/facebook/workflows/react-native) and look for the `tests` workflow triggered by your push (e.g. _0.57-stable, [0.57.0] Bump version numbers_). Once the workflow passes all tests, you can "accept" the `deploy` workflow to publish the release to npm.
 
 ### Step 3: Write the release notes
 
@@ -89,7 +83,9 @@ Sometimes commit messages might be really short / confusing - try rewording them
 - `Fix logging reported by RUN_JS_BUNDLE` -> `Fix systrace logging of RUN_JS_BUNDLE event`
 - `Fixes hot code reloading issue` -> `Fix an edge case in hot module reloading`
 
-Before posting the list of changes, consider asking one of contributors for their opinion. Once everything is ready, post the release notes: https://github.com/facebook/react-native/releases
+Open a pull request against CHANGELOG.md at https://github.com/react-native-community/react-native-releases and ask for feedback.
+
+Once everything is ready, create a new release at https://github.com/facebook/react-native/releases and link to the release notes.
 
 **Important**: For release candidate releases, make sure to check "This is a pre-release".
 
@@ -177,7 +173,7 @@ Go to https://github.com/facebook/react-native/releases and find the release not
 
 A stable release is promoted roughly a month after the release branch is cut (refer to the schedule above). The release may be delayed for several reasons, including major issues in the release candidate. Make sure that all bug fixes that have been nominated in your tracking issue have been addressed as needed. Avoid cherry-picking commits that have not been vetted in the release candidate phase at this point.
 
-Once you are sure that the release is solid, perform the following steps. Note that they're similar to the steps you may have followed earlier when patching the release candidate, but we're not cherry-picking any additional commits at this point. 
+Once you are sure that the release is solid, perform the following steps. Note that they're similar to the steps you may have followed earlier when patching the release candidate, but we're not cherry-picking any additional commits at this point.
 
 ### Step 1: Check out the release branch
 
