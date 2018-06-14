@@ -325,16 +325,8 @@ const TouchableMixin = {
       evt.dispatchConfig = {};
       if (myTag === evt.tag) {
         if (evt.eventType === 'focus') {
-          if (cmp.touchableHandleActivePressIn) {
-            console.warn('Using `touchableHandleActivePressIn` or `onPressIn` to listen for focus events is deprecated. Use `touchableHandleFocus` or `onFocus` instead.');
-            cmp.touchableHandleActivePressIn(evt);
-          }
           cmp.touchableHandleFocus(evt);
         } else if (evt.eventType === 'blur') {
-          if (cmp.touchableHandleActivePressOut) {
-            console.warn('Using `touchableHandleActivePressOut` or `onPressOut` to listen for blur events is deprecated. Use `touchableHandleBlur` or `onBlur` instead.');
-            cmp.touchableHandleActivePressOut(evt);
-          }
           cmp.touchableHandleBlur(evt);
         } else if (evt.eventType === 'select') {
           cmp.touchableHandlePress &&
