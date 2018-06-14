@@ -80,19 +80,7 @@ public class NativeModuleRegistryBuilder {
         }
 
         String name = moduleHolder.getName();
-        if (namesToType.containsKey(name)) {
-          Class<? extends NativeModule> existingNativeModule = namesToType.get(name);
-          if (!moduleHolder.getCanOverrideExistingModule()) {
-            throw new IllegalStateException("Native module " + type.getSimpleName() +
-              " tried to override " + existingNativeModule.getSimpleName() + " for module name " +
-              name + ". If this was your intention, set canOverrideExistingModule=true");
-          }
-
-          mModules.remove(existingNativeModule);
-        }
-
-        namesToType.put(name, type);
-        mModules.put(type, moduleHolder);
+        putModuleTypeAndHolderToModuleMaps(type, name, moduleHolder);
       }
     } else {
       FLog.d(
@@ -117,19 +105,25 @@ public class NativeModuleRegistryBuilder {
   public void addNativeModule(NativeModule nativeModule) {
     String name = nativeModule.getName();
     Class<? extends NativeModule> type = nativeModule.getClass();
-    if (namesToType.containsKey(name)) {
-      Class<? extends NativeModule> existingModule = namesToType.get(name);
-      if (!nativeModule.canOverrideExistingModule()) {
+    putModuleTypeAndHolderToModuleMaps(type, name, new ModuleHolder(nativeModule));
+  }
+
+  private void putModuleTypeAndHolderToModuleMaps(Class<? extends NativeModule> type, String underName,
+                                                  ModuleHolder moduleHolder) throws IllegalStateException {
+    if (namesToType.containsKey(underName)) {
+      Class<? extends NativeModule> existingNativeModule = namesToType.get(underName);
+      if (!moduleHolder.getCanOverrideExistingModule()) {
         throw new IllegalStateException("Native module " + type.getSimpleName() +
-          " tried to override " + existingModule.getSimpleName() + " for module name " +
-          name + ". If this was your intention, set canOverrideExistingModule=true");
+          " tried to override " + existingNativeModule.getSimpleName() + " for module name " +
+          underName + ". Check the getPackages() method in MainApplication.java, it might be " +
+          "that module is being created twice. " +
+          "If this was your intention, set canOverrideExistingModule=true");
       }
 
-      mModules.remove(existingModule);
+      mModules.remove(existingNativeModule);
     }
 
-    namesToType.put(name, type);
-    ModuleHolder moduleHolder = new ModuleHolder(nativeModule);
+    namesToType.put(underName, type);
     mModules.put(type, moduleHolder);
   }
 
