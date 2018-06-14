@@ -10,11 +10,7 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const RCTLog = require('RCTLog');
 const React = require('React');
-const YellowBoxList = require('YellowBoxList');
-const YellowBoxRegistry = require('YellowBoxRegistry');
 
 import type {Category} from 'YellowBoxCategory';
 import type {Registry, Subscription} from 'YellowBoxRegistry';
@@ -24,7 +20,7 @@ type State = {|
   registry: ?Registry,
 |};
 
-const {error, warn} = console;
+let YellowBox;
 
 /**
  * YellowBox displays warnings at the bottom of the screen.
@@ -44,89 +40,118 @@ const {error, warn} = console;
  * Strings supplied to `YellowBox.ignoreWarnings` only need to be a substring of
  * the ignored warning messages.
  */
-class YellowBox extends React.Component<Props, State> {
-  static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
-    YellowBoxRegistry.addIgnorePatterns(patterns);
-  }
+if (__DEV__) {
+  const Platform = require('Platform');
+  const RCTLog = require('RCTLog');
+  const YellowBoxList = require('YellowBoxList');
+  const YellowBoxRegistry = require('YellowBoxRegistry');
 
-  static install(): void {
-    (console: any).error = function(...args) {
-      error.call(console, ...args);
-      // Show YellowBox for the `warning` module.
-      if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
+  const {error, warn} = console;
+
+  // eslint-disable-next-line no-shadow
+  YellowBox = class YellowBox extends React.Component<Props, State> {
+    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+      YellowBoxRegistry.addIgnorePatterns(patterns);
+    }
+
+    static install(): void {
+      (console: any).error = function(...args) {
+        error.call(console, ...args);
+        // Show YellowBox for the `warning` module.
+        if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
+          registerWarning(...args);
+        }
+      };
+
+      (console: any).warn = function(...args) {
+        warn.call(console, ...args);
         registerWarning(...args);
+      };
+
+      if ((console: any).disableYellowBox === true) {
+        YellowBoxRegistry.setDisabled(true);
       }
+      (Object.defineProperty: any)(console, 'disableYellowBox', {
+        configurable: true,
+        get: () => YellowBoxRegistry.isDisabled(),
+        set: value => YellowBoxRegistry.setDisabled(value),
+      });
+
+      if (Platform.isTesting) {
+        (console: any).disableYellowBox = true;
+      }
+
+      RCTLog.setWarningHandler((...args) => {
+        registerWarning(...args);
+      });
+    }
+
+    static uninstall(): void {
+      (console: any).error = error;
+      (console: any).warn = error;
+      delete (console: any).disableYellowBox;
+    }
+
+    _subscription: ?Subscription;
+
+    state = {
+      registry: null,
     };
 
-    (console: any).warn = function(...args) {
-      warn.call(console, ...args);
-      registerWarning(...args);
+    render(): React.Node {
+      // TODO: Ignore warnings that fire when rendering `YellowBox` itself.
+      return this.state.registry == null ? null : (
+        <YellowBoxList
+          onDismiss={this._handleDismiss}
+          onDismissAll={this._handleDismissAll}
+          registry={this.state.registry}
+        />
+      );
+    }
+
+    componentDidMount(): void {
+      this._subscription = YellowBoxRegistry.observe(registry => {
+        this.setState({registry});
+      });
+    }
+
+    componentWillUnmount(): void {
+      if (this._subscription != null) {
+        this._subscription.unsubscribe();
+      }
+    }
+
+    _handleDismiss = (category: Category): void => {
+      YellowBoxRegistry.delete(category);
     };
 
-    if ((console: any).disableYellowBox === true) {
-      YellowBoxRegistry.setDisabled(true);
+    _handleDismissAll(): void {
+      YellowBoxRegistry.clear();
     }
-    (Object.defineProperty: any)(console, 'disableYellowBox', {
-      configurable: true,
-      get: () => YellowBoxRegistry.isDisabled(),
-      set: value => YellowBoxRegistry.setDisabled(value),
-    });
-
-    if (Platform.isTesting) {
-      (console: any).disableYellowBox = true;
-    }
-
-    RCTLog.setWarningHandler((...args) => {
-      registerWarning(...args);
-    });
-  }
-
-  static uninstall(): void {
-    (console: any).error = error;
-    (console: any).warn = error;
-    delete (console: any).disableYellowBox;
-  }
-
-  _subscription: ?Subscription;
-
-  state = {
-    registry: null,
   };
 
-  render() {
-    // TODO: Ignore warnings that fire when rendering `YellowBox` itself.
-    return this.state.registry == null ? null : (
-      <YellowBoxList
-        onDismiss={this._handleDismiss}
-        onDismissAll={this._handleDismissAll}
-        registry={this.state.registry}
-      />
-    );
+  function registerWarning(...args): void {
+    YellowBoxRegistry.add({args, framesToPop: 2});
   }
-
-  componentDidMount(): void {
-    this._subscription = YellowBoxRegistry.observe(registry => {
-      this.setState({registry});
-    });
-  }
-
-  componentWillUnmount(): void {
-    if (this._subscription != null) {
-      this._subscription.unsubscribe();
+} else {
+  // eslint-disable-next-line no-shadow
+  YellowBox = class YellowBox extends React.Component<Props> {
+    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+      // Do nothing.
     }
-  }
 
-  _handleDismiss = (category: Category): void => {
-    YellowBoxRegistry.delete(category);
+    static install(): void {
+      // Do nothing.
+    }
+
+    static uninstall(): void {
+      // Do nothing.
+    }
+
+    render(): React.Node {
+      return null;
+    }
   };
-
-  _handleDismissAll(): void {
-    YellowBoxRegistry.clear();
-  }
-}
-
-function registerWarning(...args): void {
-  YellowBoxRegistry.add({args, framesToPop: 2});
 }
 
 module.exports = YellowBox;
