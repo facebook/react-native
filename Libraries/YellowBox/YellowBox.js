@@ -130,12 +130,11 @@ if (__DEV__) {
     }
   };
 
-  function registerWarning(...args): void {
+  const registerWarning = (...args): void => {
     YellowBoxRegistry.add({args, framesToPop: 2});
-  }
+  };
 } else {
-  // eslint-disable-next-line no-shadow
-  YellowBox = class YellowBox extends React.Component<Props> {
+  YellowBox = class extends React.Component<Props> {
     static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
       // Do nothing.
     }
