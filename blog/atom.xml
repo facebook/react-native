@@ -2,11 +2,25 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2018-05-07T06:00:00Z</updated>
+    <updated>2018-06-14T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[State of React Native 2018]]></title>
+        <id>https://facebook.github.io/react-native/blog/2018/06/14/state-of-react-native-2018.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/06/14/state-of-react-native-2018.html">
+        </link>
+        <updated>2018-06-14T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>It's been a while since we last published a status update about React Native.</p>
+<p>At Facebook, we're using React Native more than ever and for many important projects. One of our most popular products is Marketplace, one of the top-level tabs in our app</p>
+]]></summary>
+        <author>
+            <name>Sophie Alpert</name>
+            <uri>https://github.com/sophiebits</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Using TypeScript with React Native]]></title>
         <id>https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native.html</id>

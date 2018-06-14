@@ -4,7 +4,7 @@
         <title>React Native Blog</title>
         <link>https://facebook.github.io/react-native/blog</link>
         <description>The best place to stay up-to-date with the latest React Native news and events.</description>
-        <lastBuildDate>Mon, 07 May 2018 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 14 Jun 2018 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -12,6 +12,15 @@
             <url>https://facebook.github.io/react-native/img/header_logo.png</url>
             <link>https://facebook.github.io/react-native/blog</link>
         </image>
+        <item>
+            <title><![CDATA[State of React Native 2018]]></title>
+            <link>https://facebook.github.io/react-native/blog/2018/06/14/state-of-react-native-2018.html</link>
+            <guid>https://facebook.github.io/react-native/blog/2018/06/14/state-of-react-native-2018.html</guid>
+            <pubDate>Thu, 14 Jun 2018 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>It's been a while since we last published a status update about React Native.</p>
+<p>At Facebook, we're using React Native more than ever and for many important projects. One of our most popular products is Marketplace, one of the top-level tabs in our app</p>
+]]></description>
+        </item>
         <item>
             <title><![CDATA[Using TypeScript with React Native]]></title>
             <link>https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native.html</link>
