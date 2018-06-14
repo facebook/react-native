@@ -15,7 +15,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import static android.view.ViewGroup.LayoutParams;
 
 /**
- * Wrapper Client for {@link WebViewConfig}. It overrides methods for geolocation permissions,
+ * Wrapper Client for {@link WebChromeClient}. It overrides methods for geolocation permissions,
  * console messages (which were previously overwritten ad hoc in {@link ReactWebViewManager}) and
  * onShowCustomView and onHideCustomView for handling fullscreen move
  */
