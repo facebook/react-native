@@ -104,7 +104,7 @@ Now that the release is out in the open, go ahead and create a GitHub issue titl
 
 -------------------
 
-## How to release an RC update (e.g. 0.50.0-rc.1, 0.50.0-rc.2)
+## How to release an RC update (e.g. 0.57.0-rc.1, 0.57.0-rc.2)
 
 The release is now in the open, people are finding bugs, and fixes have landed in master. People have been nominating fixes in the issue you created above. Use your best judgment to decide which commits merit an RC update. It's a good idea to do a new RC release when several small and non-risky bugs have been fixed. Having a few RC releases can also help people bisect in case we cherry-pick a bad commit by mistake.
 
@@ -117,10 +117,10 @@ Follow these steps to check out the release branch:
 
 ```bash
 git checkout <version_you_are_patching>-stable
-# e.g. git checkout 0.50-stable
+# e.g. git checkout 0.57-stable
 
 git pull origin <version_you_are_patching>-stable
-# e.g. git pull origin 0.50-stable
+# e.g. git pull origin 0.57-stable
 ```
 
 > If you don't have a local checkout of the release branch, you can run the following instead:
@@ -148,27 +148,18 @@ If everything worked, run the following to bump the version number:
 
 ```bash
 ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.50.0-rc.1
+# e.g. ./scripts/bump-oss-version.js 0.57.0-rc.1
 ```
 
-### Step 5: Push to GitHub
+Again, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0-rc.1`).
 
-Finally, push the new tags and commits to GitHub:
+### Step 5: Update the release notes
 
-```
-git push --tags
-git push
-````
-
-Again, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.50.0-rc.1`).
-
-### Step 6: Update the release notes
-
-Go to https://github.com/facebook/react-native/releases and find the release notes for this release candidate. Edit them so that they now point to the tag that you've just created. We want single release notes per version. For example, if there is v0.50.0-rc and you just released v0.50.0-rc.1, the release notes should live on the v0.50.0-rc.1 tag at https://github.com/facebook/react-native/tags
+Go to https://github.com/facebook/react-native/releases and find the release notes for this release candidate. Edit them so that they now point to the tag that you've just created. We want single release notes per version. For example, if there is v0.57.0-rc and you just released v0.57.0-rc.1, the release notes should live on the v0.57.0-rc.1 tag at https://github.com/facebook/react-native/tags
 
 -------------------
 
-## How to do the final stable release (e.g. 0.50.0, 0.50.1)
+## How to do the final stable release (e.g. 0.57.0, 0.57.1)
 
 A stable release is promoted roughly a month after the release branch is cut (refer to the schedule above). The release may be delayed for several reasons, including major issues in the release candidate. Make sure that all bug fixes that have been nominated in your tracking issue have been addressed as needed. Avoid cherry-picking commits that have not been vetted in the release candidate phase at this point.
 
@@ -178,10 +169,10 @@ Once you are sure that the release is solid, perform the following steps. Note t
 
 ```bash
 git checkout <version_you_are_patching>-stable
-# e.g. git checkout 0.50-stable
+# e.g. git checkout 0.57-stable
 
 git pull origin <version_you_are_patching>-stable
-# e.g. git pull origin 0.50-stable
+# e.g. git pull origin 0.57-stable
 ```
 
 > If you don't have a local checkout of the release branch, you can run the following instead:
@@ -201,28 +192,18 @@ If everything worked:
 
 ```bash
 ./scripts/bump-oss-version.js <exact_version_you_are_releasing>
-# e.g. ./scripts/bump-oss-version.js 0.50.0
+# e.g. ./scripts/bump-oss-version.js 0.57.0
 ```
 
-### Step 4: Push to GitHub
+As with the release candidate, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0`).
 
-Finally, push the new tags and commits to GitHub:
-
-```
-git push --tags
-git push
-```
-
-As with the release candidate, Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.50.0`).
-
-Go to [Circle CI](https://circleci.com/gh/facebook/react-native) and look for the build triggered by your push (e.g. _0.50-stable, [0.50.0] Bump version numbers_), then scroll down to the npm publish step to verify the package was published successfully (the build will be red if not).
+Go to [Circle CI](https://circleci.com/gh/facebook/react-native) and look for the build triggered by your push (e.g. _0.57-stable, [0.57.0] Bump version numbers_), then scroll down to the npm publish step to verify the package was published successfully (the build will be red if not).
 
 This will now become the latest release, and will be installed by users by default. At this point, the website will be updated and the docs for this release will be displayed by default.
 
-### Step 5: Update the release notes
+### Step 4: Update the release notes
 
-Once you see that the website is displaying the version that you have just created, you will need to update the release notes. Move the release notes from the release candidate, to the tag that you've just created. We want single release notes per version. For example, if there is v0.50.0-rc and later we release v0.50.0, the release notes should live on v0.50.0:
-https://github.com/facebook/react-native/tags
+Go to https://github.com/facebook/react-native/releases and find the release notes for this release candidate. Edit them so that they now point to the tag that you've just created. We want single release notes per version. For example, if there is v0.57.0 and you just released v0.57.1, the release notes should live on the v0.57.1 tag at https://github.com/facebook/react-native/tags
 
 For non-RC releases: Uncheck the box "This is a pre-release" and publish the notes.
 
