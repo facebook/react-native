@@ -126,9 +126,9 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 }
 
 task downloadJSCHeaders(type: Download) {
-    // in sync with webkit SVN revision 174650
-    def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/38b15a3ba3c1b0798f2036f7cea36ffdc096202e/Source/JavaScriptCore/API/'
-    def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
+    // in sync with webkit SVN revision 224110
+    def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/7d54617067ba6f2333f1b0b46dc39eea9e32a529/Source/JavaScriptCore/API/'
+    def jscHeaderFiles = ['JavaScript.h', 'JSTypedArray.h','JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSRetainPtr.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
     def output = new File(downloadsDir, 'jsc')
     output.mkdirs()
     src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
