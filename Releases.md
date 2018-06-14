@@ -29,7 +29,7 @@ React Native follows a monthly release train. Every month, a new branch created 
 The following are required for the local test suite to run:
 
 - macOS with [Android dev environment set up](https://github.com/facebook/react-native/blob/master/ReactAndroid/README.md)
-- At least 0.2.0 [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally
+- [react-native-cli](https://www.npmjs.com/package/react-native-cli) installed globally (v0.2.0 or newer)
 
 ### Step 1: Check everything works
 
@@ -56,13 +56,12 @@ Run:
 git checkout -b <version_you_are_releasing>-stable
 # e.g. git checkout -b 0.57-stable
 
-./scripts/bump-oss-version.js <exact-version_you_are_releasing>
+./scripts/bump-oss-version.js <exact_version_you_are_releasing>
 # e.g. ./scripts/bump-oss-version.js 0.57.0-rc.0
+#  or  ./scripts/bump-oss-version.js 0.58.0
 ```
 
 Circle CI will automatically run the tests and publish to npm with the version you have specified (e.g `0.57.0-rc.0`) and tag `next` meaning that this version will not be installed for users by default.
-
-Go to [Circle CI](https://circleci.com/gh/facebook/workflows/react-native) and look for the `tests` workflow triggered by your push (e.g. _0.57-stable, [0.57.0] Bump version numbers_). Once the workflow passes all tests, you can "accept" the `deploy` workflow to publish the release to npm.
 
 ### Step 3: Write the release notes
 
