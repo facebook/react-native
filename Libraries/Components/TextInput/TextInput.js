@@ -86,12 +86,12 @@ export type KeyboardType =
   | 'numeric'
   | 'phone-pad'
   | 'number-pad'
+  | 'decimal-pad'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
   | 'url'
   | 'name-phone-pad'
-  | 'decimal-pad'
   | 'twitter'
   | 'web-search'
   // Android-only
@@ -388,6 +388,7 @@ const TextInput = createReactClass({
      * - `default`
      * - `numeric`
      * - `number-pad`
+     * - `decimal-pad`
      * - `email-address`
      * - `phone-pad`
      *
@@ -399,7 +400,6 @@ const TextInput = createReactClass({
      * - `numbers-and-punctuation`
      * - `url`
      * - `name-phone-pad`
-     * - `decimal-pad`
      * - `twitter`
      * - `web-search`
      *
