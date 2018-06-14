@@ -652,6 +652,20 @@ workflows:
           requires:
             - checkout_code
 
+      # Only runs on vX.X.X tags if all tests are green
+      - publish_npm_package:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+          requires:
+            - test_javascript
+            - test_ios
+            - test_tvos
+            - test_end_to_end
+            - analyze
+
   # Only runs on PRs
   analyze:
     jobs:
@@ -664,16 +678,6 @@ workflows:
           filters: *filter-ignore-master-stable
           requires:
             - checkout_code
-
-  # Only runs on vX.X.X tags
-  deploy:
-    jobs:
-      - publish_npm_package:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
 
   # These tests are flaky or are yet to be fixed. They are placed on their own
