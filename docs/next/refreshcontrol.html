@@ -22,7 +22,7 @@
     };
   }
 
-  _onRefresh() {
+  _onRefresh = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">refreshing</span>: <span class="hljs-literal">true</span>});
     fetchData().then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
       <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">refreshing</span>: <span class="hljs-literal">false</span>});
@@ -35,7 +35,7 @@
         refreshControl={
           &lt;RefreshControl
             refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh.bind(this)}
+            onRefresh={this._onRefresh}
           /&gt;
         }
         ...
