@@ -26,6 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
   facebook::react::SharedViewEventEmitter _eventEmitter;
 }
 
+/**
+ * Represents the `UIView` instance that is being automatically attached to
+ * the component view and laid out using on `layoutMetrics` (especially `size`
+ * and `padding`) of the component.
+ * This view must not be a component view; it's just a convenient way
+ * to embed/bridge pure native views as component views.
+ * Defaults to `nil`. Assing `nil` to remove view as subview.
+ */
+@property (nonatomic, strong, nullable) UIView *contentView;
+
 @end
 
 NS_ASSUME_NONNULL_END

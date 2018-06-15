@@ -14,6 +14,28 @@
 using namespace facebook::react;
 
 @implementation RCTViewComponentView
+- (void)setContentView:(UIView *)contentView
+{
+  if (_contentView) {
+    [_contentView removeFromSuperview];
+  }
+
+  _contentView = contentView;
+
+  if (_contentView) {
+    [self addSubview:_contentView];
+  }
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+
+  if (_contentView) {
+    _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+  }
+}
+
 
 - (void)updateProps:(SharedProps)props
            oldProps:(SharedProps)oldProps
@@ -42,9 +64,10 @@ using namespace facebook::react;
 - (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
+  _layoutMetrics = layoutMetrics;
+
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
-  _layoutMetrics = layoutMetrics;
 }
 
 #pragma mark - Accessibility Events
