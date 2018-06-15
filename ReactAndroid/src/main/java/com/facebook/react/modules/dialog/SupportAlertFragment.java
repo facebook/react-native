@@ -21,16 +21,7 @@ import android.support.v4.app.DialogFragment;
  */
 public class SupportAlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-  private final @Nullable DialogModule.AlertFragmentListener mListener;
-
-  public SupportAlertFragment() {
-      mListener = null;
-  }
-
-  public SupportAlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
-    mListener = listener;
-    setArguments(arguments);
-  }
+  private @Nullable DialogModule.AlertFragmentListener mListener;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -50,5 +41,9 @@ public class SupportAlertFragment extends DialogFragment implements DialogInterf
     if (mListener != null) {
       mListener.onDismiss(dialog);
     }
+  }
+
+  /*package*/ void setAlertFragmentListener(@Nullable DialogModule.AlertFragmentListener alertFragmentListener) {
+    mListener = alertFragmentListener;
   }
 }

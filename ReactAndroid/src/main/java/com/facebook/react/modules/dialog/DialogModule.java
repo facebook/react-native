@@ -131,7 +131,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
           actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
 
       if (isUsingSupportLibrary()) {
-        SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
+        SupportAlertFragment alertFragment = new SupportAlertFragment();
+        alertFragment.setArguments(arguments);
+        alertFragment.setAlertFragmentListener(actionListener);
         if (isInForeground) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
@@ -141,7 +143,10 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
           mFragmentToShow = alertFragment;
         }
       } else {
-        AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
+        AlertFragment alertFragment = new AlertFragment();
+        alertFragment.setArguments(arguments);
+        alertFragment.setAlertFragmentListener(actionListener);
+
         if (isInForeground) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));

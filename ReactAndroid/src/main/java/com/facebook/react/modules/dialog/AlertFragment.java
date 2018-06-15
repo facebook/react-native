@@ -28,16 +28,7 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   /* package */ static final String ARG_BUTTON_NEUTRAL = "button_neutral";
   /* package */ static final String ARG_ITEMS = "items";
 
-  private final @Nullable DialogModule.AlertFragmentListener mListener;
-
-  public AlertFragment() {
-      mListener = null;
-  }
-
-  public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
-    mListener = listener;
-    setArguments(arguments);
-  }
+  private @Nullable DialogModule.AlertFragmentListener mListener;
 
   public static Dialog createDialog(
       Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
@@ -83,5 +74,9 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
     if (mListener != null) {
       mListener.onDismiss(dialog);
     }
+  }
+
+  /*package*/ void setAlertFragmentListener(@Nullable DialogModule.AlertFragmentListener alertFragmentListener) {
+    mListener = alertFragmentListener;
   }
 }
