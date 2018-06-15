@@ -18,6 +18,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
+def ndkJobs = System.getenv("BUILD_THREADS")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
@@ -221,7 +222,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
+            '--jobs', ndkJobs ?: project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
