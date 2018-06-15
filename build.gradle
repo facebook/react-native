@@ -35,4 +35,12 @@ allprojects {
             url "$androidSdk/extras/m2repository/"
         }
     }
+
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.facebook.soloader') {
+                details.useVersion "0.3.0"
+            }
+        }
+    }
 }
