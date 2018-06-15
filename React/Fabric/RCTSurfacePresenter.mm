@@ -8,16 +8,15 @@
 #import "RCTSurfacePresenter.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTScheduler.h>
-#import <React/RCTMountingManager.h>
-#import <React/RCTFabricSurface.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTMountingManagerDelegate.h>
-#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTComponentViewRegistry.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTMountingManager.h>
+#import <React/RCTMountingManagerDelegate.h>
+#import <React/RCTScheduler.h>
+#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
-
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
 
@@ -81,6 +80,11 @@ using namespace facebook::react;
   [self stopSurface:surface];
   [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
   [_surfaceRegistry unregisterSurface:surface];
+}
+
+- (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
+{
+  return [_surfaceRegistry surfaceForRootTag:rootTag];
 }
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
