@@ -36,6 +36,14 @@ using namespace facebook::react;
   }
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
+    return [super pointInside:point withEvent:event];
+  }
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  return CGRectContainsPoint(hitFrame, point);
+}
 
 - (void)updateProps:(SharedProps)props
            oldProps:(SharedProps)oldProps
@@ -53,6 +61,11 @@ using namespace facebook::react;
   }
 
   // TODO: Implement all sutable non-layout <View> props.
+  // `hitSlop`
+  if (oldViewProps.hitSlop != newViewProps.hitSlop) {
+    self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+  }
+
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
     self.nativeId = [NSString stringWithCString:newViewProps.nativeId.c_str()

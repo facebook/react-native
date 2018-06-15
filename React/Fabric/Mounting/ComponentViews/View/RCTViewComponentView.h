@@ -45,6 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable) NSString *nativeId;
 
+/**
+ * Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
 @end
 
 NS_ASSUME_NONNULL_END
