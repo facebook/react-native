@@ -10,6 +10,7 @@
 #import <fabric/view/ViewProps.h>
 #import <fabric/view/ViewEventEmitter.h>
 
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 
@@ -56,14 +57,48 @@ using namespace facebook::react;
   auto oldViewProps = *std::dynamic_pointer_cast<const ViewProps>(oldProps);
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(props);
 
+  // `opacity`
+  if (oldViewProps.opacity != newViewProps.opacity) {
+    self.layer.opacity = (CGFloat)newViewProps.opacity;
+  }
+
+  // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    self.backgroundColor = [UIColor colorWithCGColor:newViewProps.backgroundColor.get()];
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+  }
+
+  // `foregroundColor`
+  if (oldViewProps.foregroundColor != newViewProps.foregroundColor) {
+    self.foregroundColor = RCTUIColorFromSharedColor(newViewProps.foregroundColor);
+  }
+
+  // `backfaceVisibility`
+  if (oldViewProps.backfaceVisibility != newViewProps.backfaceVisibility) {
+    self.layer.doubleSided = newViewProps.backfaceVisibility;
+  }
+
+  // `shouldRasterize`
+  if (oldViewProps.shouldRasterize != newViewProps.shouldRasterize) {
+    self.layer.shouldRasterize = newViewProps.shouldRasterize;
+    self.layer.rasterizationScale = newViewProps.shouldRasterize ? [UIScreen mainScreen].scale : 1.0;
+  }
+
+  // `pointerEvents`
+  if (oldViewProps.pointerEvents != newViewProps.pointerEvents) {
+    self.userInteractionEnabled = newViewProps.pointerEvents != PointerEventsMode::None;
+  }
+
   }
 
   // TODO: Implement all sutable non-layout <View> props.
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
     self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+  }
+
+  // `zIndex`
+  if (oldViewProps.zIndex != newViewProps.zIndex) {
+    self.layer.zPosition = (CGFloat)newViewProps.zIndex;
   }
 
   // `nativeId`

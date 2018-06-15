@@ -46,6 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *nativeId;
 
 /**
+ * Provides access to `foregroundColor` prop of the component.
+ * Must be used by subclasses only.
+ */
+@property (nonatomic, strong, nullable) UIColor *foregroundColor;
+
+/**
  * Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
