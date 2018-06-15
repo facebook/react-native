@@ -122,8 +122,13 @@ aliases:
     command: source scripts/android-setup.sh && getAndroidNDK
 
   - &yarn
-    |
-      yarn install --non-interactive --cache-folder ~/.cache/yarn
+    name: Run Yarn
+    command: |
+      # Skip yarn install on metro bump commits as the package is not yet
+      # available on npm
+      if [[ $(echo "$GIT_COMMIT_DESC" | grep -c "Bump metro@") -eq 0 ]]; then
+        yarn install --non-interactive --cache-folder ~/.cache/yarn
+      fi
 
   - &install-yarn
     name: Install Yarn
@@ -304,6 +309,8 @@ aliases:
 
 defaults: &defaults
   working_directory: ~/react-native
+  environment:
+    - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
 
 js_defaults: &js_defaults
   <<: *defaults
