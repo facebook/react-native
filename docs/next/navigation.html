@@ -23,10 +23,10 @@
 </code></pre>
 <p>Then you can quickly create an app with a home screen and a profile screen:</p>
 <pre><code class="hljs"><span class="hljs-keyword">import</span> {
-  StackNavigator,
+  createStackNavigator,
 } from <span class="hljs-string">'react-navigation'</span>;
 
-const App = StackNavigator({
+const App = createStackNavigator({
   Home: { screen: HomeScreen },
   Profile: { screen: ProfileScreen },
 });
