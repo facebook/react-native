@@ -299,7 +299,7 @@ dependencies {
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:1.9.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
-    compile 'com.facebook.soloader:soloader:0.5.0'
+    compile 'com.facebook.soloader:soloader:0.3.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
