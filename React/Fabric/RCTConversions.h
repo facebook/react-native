@@ -35,6 +35,28 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(facebook::react::EdgeInsets ed
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
+
+inline CATransform3D RCTCATransform3DFromTransformMatrix(facebook::react::Transform transformMatrix) {
+  return {
+    (CGFloat)transformMatrix.matrix[0],
+    (CGFloat)transformMatrix.matrix[1],
+    (CGFloat)transformMatrix.matrix[2],
+    (CGFloat)transformMatrix.matrix[3],
+    (CGFloat)transformMatrix.matrix[4],
+    (CGFloat)transformMatrix.matrix[5],
+    (CGFloat)transformMatrix.matrix[6],
+    (CGFloat)transformMatrix.matrix[7],
+    (CGFloat)transformMatrix.matrix[8],
+    (CGFloat)transformMatrix.matrix[9],
+    (CGFloat)transformMatrix.matrix[10],
+    (CGFloat)transformMatrix.matrix[11],
+    (CGFloat)transformMatrix.matrix[12],
+    (CGFloat)transformMatrix.matrix[13],
+    (CGFloat)transformMatrix.matrix[14],
+    (CGFloat)transformMatrix.matrix[15]
+  };
+}
+
 inline facebook::react::Point RCTPointFromCGPoint(CGPoint point) {
   return {point.x, point.y};
 }

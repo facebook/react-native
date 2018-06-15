@@ -110,6 +110,10 @@ using namespace facebook::react;
     self.userInteractionEnabled = newViewProps.pointerEvents != PointerEventsMode::None;
   }
 
+  // `transform`
+  if (oldViewProps.transform != newViewProps.transform) {
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+    self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
   // TODO: Implement all sutable non-layout <View> props.
