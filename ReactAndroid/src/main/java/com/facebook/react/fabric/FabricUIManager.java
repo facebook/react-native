@@ -12,8 +12,10 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
-import android.util.Log;
 import android.view.View;
+import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
@@ -26,6 +28,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -56,7 +59,7 @@ import javax.annotation.Nullable;
 public class FabricUIManager implements UIManager, JSHandler {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
 
   private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
   private final ReactApplicationContext mReactApplicationContext;
@@ -100,7 +103,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   public ReactShadowNode createNode(
       int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
     if (DEBUG) {
-      Log.d(TAG, "createNode \n\ttag: " + reactTag +
+      FLog.d(TAG, "createNode \n\ttag: " + reactTag +
           "\n\tviewName: " + viewName +
           "\n\trootTag: " + rootTag +
           "\n\tprops: " + props);
@@ -151,7 +154,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
-      Log.d(TAG, "cloneNode \n\tnode: " + node);
+      FLog.d(TAG, "cloneNode \n\tnode: " + node);
     }
     try {
       ReactShadowNode clone = node.mutableCopy(instanceHandle);
@@ -172,7 +175,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
     if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
+      FLog.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
     }
     try {
       ReactShadowNode clone = node.mutableCopyWithNewChildren(instanceHandle);
@@ -194,7 +197,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   public ReactShadowNode cloneNodeWithNewProps(
       ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
+      FLog.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
     }
     try {
       ReactShadowNode clone = node.mutableCopyWithNewProps(instanceHandle,
@@ -218,7 +221,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
       ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
     if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
+      FLog.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
     }
     try {
       ReactShadowNode clone =
@@ -252,7 +255,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
     if (DEBUG) {
-      Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
+      FLog.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
     }
     try {
       // If the child to append is shared with another tree (child.getParent() != null),
@@ -274,7 +277,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public List<ReactShadowNode> createChildSet(int rootTag) {
     if (DEBUG) {
-      Log.d(TAG, "createChildSet rootTag: " + rootTag);
+      FLog.d(TAG, "createChildSet rootTag: " + rootTag);
     }
     return new ArrayList<>(1);
   }
@@ -292,7 +295,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     try {
       childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
       if (DEBUG) {
-        Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
+        FLog.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
       }
       ReactShadowNode currentRootShadowNode = getRootNode(rootTag);
       Assertions.assertNotNull(
@@ -302,7 +305,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       currentRootShadowNode = calculateDiffingAndCreateNewRootNode(currentRootShadowNode, childList);
 
       if (DEBUG) {
-        Log.d(
+        FLog.d(
           TAG,
           "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
       }
@@ -339,16 +342,17 @@ public class FabricUIManager implements UIManager, JSHandler {
     }
 
     if (DEBUG) {
-      Log.d(
+      FLog.d(
         TAG,
         "ReactShadowNodeHierarchy before calculateLayout: " + newRootShadowNode.getHierarchyInfo());
     }
 
     notifyOnBeforeLayoutRecursive(newRootShadowNode);
+
     newRootShadowNode.calculateLayout();
 
     if (DEBUG) {
-      Log.d(
+      FLog.d(
         TAG,
         "ReactShadowNodeHierarchy after calculateLayout: " + newRootShadowNode.getHierarchyInfo());
     }
@@ -425,7 +429,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
     ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
     if (rootNode == null) {
-      Log.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+      FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
       return;
     }
     updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
@@ -439,7 +443,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
     ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
     if (rootNode == null) {
-      Log.w(
+      FLog.w(
         ReactConstants.TAG,
         "Tried to update size of non-existent tag: " + rootTag);
       return;
@@ -509,7 +513,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       // a RuntimeException
       context.handleException(new RuntimeException(t));
     } catch (Exception ex) {
-      Log.e(TAG, "Exception while executing a Fabric method", t);
+      FLog.e(TAG, "Exception while executing a Fabric method", t);
       throw new RuntimeException(ex.getMessage(), t);
     }
   }
@@ -521,7 +525,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     long context = mJSContext.get();
     long eventTarget = mBinding.createEventTarget(context, instanceHandle);
     if (DEBUG) {
-      Log.d(
+      FLog.d(
         TAG,
         "Created EventTarget: " + eventTarget + " for tag: " + reactTag + " with instanceHandle: " + instanceHandle);
     }
@@ -547,7 +551,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public void invoke(long eventTarget, String name, WritableMap params) {
     if (DEBUG) {
-      Log.d(
+      FLog.d(
         TAG,
         "Dispatching event for target: " + eventTarget);
     }

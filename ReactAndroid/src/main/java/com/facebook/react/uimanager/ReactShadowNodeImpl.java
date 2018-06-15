@@ -8,8 +8,11 @@ package com.facebook.react.uimanager;
 
 import static java.lang.System.arraycopy;
 
-import android.util.Log;
+import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -59,7 +62,7 @@ import javax.annotation.Nullable;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
   private static final String TAG = ReactShadowNodeImpl.class.getSimpleName();
   private static final YogaConfig sYogaConfig;
   static {
@@ -75,7 +78,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
         Assertions.assertNotNull(oldReactShadowNode);
 
         if (DEBUG) {
-          Log.d(
+          FLog.d(
             TAG,
             "YogaNode started cloning: oldYogaNode: " + oldReactShadowNode + " - parent: "
               + parentReactShadowNode + " index: " + childIndex);
