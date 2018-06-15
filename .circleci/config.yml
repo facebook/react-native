@@ -655,8 +655,7 @@ workflows:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
-            branches:
-              ignore: /.*/
+            branches: *filter-only-stable
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
