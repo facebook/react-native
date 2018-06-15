@@ -81,7 +81,7 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, UIManager {
+    OnBatchCompleteListener, LifecycleEventListener, UIManager {
 
   /**
    * Enables lazy discovery of a specific {@link ViewManager} by its name.
@@ -284,6 +284,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         return eventName;
       }
     };
+  }
+
+  @Override
+  public void profileNextBatch() {
+    mUIImplementation.profileNextBatch();
   }
 
   @Override

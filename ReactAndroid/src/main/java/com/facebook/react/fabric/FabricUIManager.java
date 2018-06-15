@@ -12,6 +12,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
+import android.os.SystemClock;
 import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
@@ -19,6 +20,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -48,6 +50,7 @@ import com.facebook.yoga.YogaDirection;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -73,6 +76,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   private FabricBinding mBinding;
   private final FabricEventEmitter mFabricEventEmitter;
   private long mEventHandlerPointer;
+  private long mLastCalculateLayoutTime = 0;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -293,6 +297,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @DoNotStrip
   public synchronized void completeRoot(int rootTag, @Nullable List<ReactShadowNode> childList) {
     try {
+      long startTime = SystemClock.uptimeMillis();
       childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
       if (DEBUG) {
         FLog.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
@@ -312,7 +317,7 @@ public class FabricUIManager implements UIManager, JSHandler {
 
       applyUpdatesRecursive(currentRootShadowNode, 0, 0);
       mUIViewOperationQueue.dispatchViewUpdates(
-        mCurrentBatch++, System.currentTimeMillis(), System.currentTimeMillis());
+        mCurrentBatch++, startTime, mLastCalculateLayoutTime);
 
       mRootShadowNodeRegistry.replaceNode(currentRootShadowNode);
     } catch (Exception e) {
@@ -349,7 +354,12 @@ public class FabricUIManager implements UIManager, JSHandler {
 
     notifyOnBeforeLayoutRecursive(newRootShadowNode);
 
-    newRootShadowNode.calculateLayout();
+    long startTime = SystemClock.uptimeMillis();
+    try {
+      newRootShadowNode.calculateLayout();
+    } finally{
+      mLastCalculateLayoutTime = SystemClock.uptimeMillis() - startTime;
+    }
 
     if (DEBUG) {
       FLog.d(
@@ -572,4 +582,14 @@ public class FabricUIManager implements UIManager, JSHandler {
     mFabricEventEmitter.close();
   }
 
+  @Override
+  public void profileNextBatch() {
+    mUIViewOperationQueue.profileNextBatch();
+  }
+
+  @Override
+  public Map<String, Long> getPerformanceCounters() {
+    // TODO change profiling when enabling multi-thread rendering.
+    return mUIViewOperationQueue.getProfiledBatchPerfCounters();
+  }
 }

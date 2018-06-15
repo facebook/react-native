@@ -5,7 +5,7 @@ import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 
 import javax.annotation.Nullable;
 
-public interface UIManager extends JSIModule {
+public interface UIManager extends JSIModule, PerformanceCounter {
 
   /**
    * Registers a new root view.
