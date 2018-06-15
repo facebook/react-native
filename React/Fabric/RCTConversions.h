@@ -7,7 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import <fabric/graphics/Color.h>
 #import <fabric/graphics/Geometry.h>
+#import <fabric/view/primitives.h>
+
+inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
+}
+
+inline CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
+}
 
 inline CGPoint RCTCGPointFromPoint(facebook::react::Point point) {
   return {point.x, point.y};
