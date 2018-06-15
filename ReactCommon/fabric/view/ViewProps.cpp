@@ -10,6 +10,7 @@
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 #include <fabric/graphics/conversions.h>
+#include <fabric/view/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -20,10 +21,22 @@ ViewProps::ViewProps(const YGStyle &yogaStyle):
 ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   Props(sourceProps, rawProps),
   YogaStylableProps(sourceProps, rawProps),
-  zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),
   opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity)),
-  foregroundColor(convertRawProp(rawProps, "color", sourceProps.foregroundColor)),
-  backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)) {};
+  foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
+  backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
+  borderWidth(convertRawProp(rawProps, "borderWidth", sourceProps.borderWidth)),
+  borderRadus(convertRawProp(rawProps, "borderRadus", sourceProps.borderRadus)),
+  borderColor(convertRawProp(rawProps, "borderColor", sourceProps.borderColor)),
+  borderStyle(convertRawProp(rawProps, "borderStyle", sourceProps.borderStyle)),
+  shadowColor(convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor)),
+  shadowOffset(convertRawProp(rawProps, "shadowOffset", sourceProps.shadowOffset)),
+  shadowOpacity(convertRawProp(rawProps, "shadowOpacity", sourceProps.shadowOpacity)),
+  shadowRadius(convertRawProp(rawProps, "shadowRadius", sourceProps.shadowRadius)),
+  backfaceVisibility(convertRawProp(rawProps, "backfaceVisibility", sourceProps.backfaceVisibility)),
+  shouldRasterize(convertRawProp(rawProps, "shouldRasterize", sourceProps.shouldRasterize)),
+  zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),
+  pointerEvents(convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
+  hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)) {};
 
 #pragma mark - DebugStringConvertible
 

@@ -10,8 +10,9 @@
 #include <fabric/core/Props.h>
 #include <fabric/graphics/Geometry.h>
 #include <fabric/graphics/Color.h>
-#include <fabric/view/YogaStylableProps.h>
 #include <fabric/view/AccessibilityProps.h>
+#include <fabric/view/primitives.h>
+#include <fabric/view/YogaStylableProps.h>
 
 namespace facebook {
 namespace react {
@@ -33,14 +34,31 @@ public:
 
 #pragma mark - Props
 
-  const int zIndex {0};
+  // Color
   const Float opacity {1};
-
   const SharedColor foregroundColor {nullptr};
   const SharedColor backgroundColor {nullptr};
 
+  // Borders
+  const EdgeInsets borderWidth {};
+  const CornerInsets borderRadus {};
+  const SharedColor borderColor {};
+  const BorderStyle borderStyle {};
+
+  // Shadow
   const SharedColor shadowColor {nullptr};
-  const Point shadowOffset {};
+  const Size shadowOffset {};
+  const Float shadowOpacity {};
+  const Float shadowRadius {};
+
+  // Transform
+  const bool backfaceVisibility {false};
+  const bool shouldRasterize {false};
+  const int zIndex {0};
+
+  // Events
+  const PointerEventsMode pointerEvents {};
+  const EdgeInsets hitSlop {};
 
 #pragma mark - DebugStringConvertible
 

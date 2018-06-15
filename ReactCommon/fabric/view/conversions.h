@@ -9,6 +9,7 @@
 
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/graphics/Geometry.h>
+#include <fabric/view/primitives.h>
 #include <folly/dynamic.h>
 #include <folly/Conv.h>
 #include <yoga/Yoga.h>
@@ -223,6 +224,25 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
       return;
     }
   }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, PointerEventsMode &result) {
+  assert(value.isString());
+  auto stringValue = value.asString();
+  if (stringValue == "auto") { result = PointerEventsMode::Auto; return; }
+  if (stringValue == "none") { result = PointerEventsMode::None; return; }
+  if (stringValue == "box-none") { result = PointerEventsMode::BoxNone; return; }
+  if (stringValue == "box-only") { result = PointerEventsMode::BoxOnly; return; }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
+  assert(value.isString());
+  auto stringValue = value.asString();
+  if (stringValue == "solid") { result = BorderStyle::Solid; return; }
+  if (stringValue == "dotted") { result = BorderStyle::Dotted; return; }
+  if (stringValue == "dashed") { result = BorderStyle::Dashed; return; }
   abort();
 }
 
