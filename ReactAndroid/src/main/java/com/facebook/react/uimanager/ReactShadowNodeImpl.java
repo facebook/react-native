@@ -14,6 +14,8 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
@@ -72,21 +74,29 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       public YogaNode cloneNode(YogaNode oldYogaNode,
           YogaNode parent,
           int childIndex) {
-        ReactShadowNodeImpl parentReactShadowNode = (ReactShadowNodeImpl) parent.getData();
-        Assertions.assertNotNull(parentReactShadowNode);
-        ReactShadowNodeImpl oldReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
-        Assertions.assertNotNull(oldReactShadowNode);
+        SystraceMessage.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "FabricReconciler.YogaNodeCloneFunction")
+          .flush();
+        try {
+          ReactShadowNodeImpl parentReactShadowNode = (ReactShadowNodeImpl) parent.getData();
+          Assertions.assertNotNull(parentReactShadowNode);
+          ReactShadowNodeImpl oldReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
+          Assertions.assertNotNull(oldReactShadowNode);
 
-        if (DEBUG) {
-          FLog.d(
-            TAG,
-            "YogaNode started cloning: oldYogaNode: " + oldReactShadowNode + " - parent: "
-              + parentReactShadowNode + " index: " + childIndex);
+          if (DEBUG) {
+            FLog.d(
+              TAG,
+              "YogaNode started cloning: oldYogaNode: " + oldReactShadowNode + " - parent: "
+                + parentReactShadowNode + " index: " + childIndex);
+          }
+
+          ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy(oldReactShadowNode.getInstanceHandle());
+          parentReactShadowNode.replaceChild(newNode, childIndex);
+          return newNode.mYogaNode;
+        } finally{
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
         }
-
-        ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy(oldReactShadowNode.getInstanceHandle());
-        parentReactShadowNode.replaceChild(newNode, childIndex);
-        return newNode.mYogaNode;
       }
     });
   }
