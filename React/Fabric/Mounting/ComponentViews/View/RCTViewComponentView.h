@@ -36,6 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable) UIView *contentView;
 
+/**
+ * Provides access to `nativeId` prop of the component.
+ * It might be used by subclasses (which need to refer to the view from
+ * other platform-specific external views or systems by some id) or
+ * by debugging/inspection tools.
+ * Defaults to `nil`.
+ */
+@property (nonatomic, strong, nullable) NSString *nativeId;
+
 @end
 
 NS_ASSUME_NONNULL_END

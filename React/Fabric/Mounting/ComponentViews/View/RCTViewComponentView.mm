@@ -53,6 +53,11 @@ using namespace facebook::react;
   }
 
   // TODO: Implement all sutable non-layout <View> props.
+  // `nativeId`
+  if (oldViewProps.nativeId != newViewProps.nativeId) {
+    self.nativeId = [NSString stringWithCString:newViewProps.nativeId.c_str()
+                                       encoding:NSASCIIStringEncoding];
+  }
 }
 
 - (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
