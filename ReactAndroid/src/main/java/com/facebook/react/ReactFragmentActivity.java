@@ -19,9 +19,11 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
- * Base Activity for React Native applications. Like {@link ReactActivity} but extends
- * {@link FragmentActivity} instead of {@link android.app.Activity}.
+ * @deprecated
+ * ReactFragmentActivity will be removed in 0.57 release.
+ * Use {@link ReactActivity} instead.
  */
+@Deprecated
 public abstract class ReactFragmentActivity extends FragmentActivity implements
   DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
