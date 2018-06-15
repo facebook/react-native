@@ -558,6 +558,12 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
 
+      # Build Android RNTester
+      - run:
+          name: Build Android RNTester
+          command: |
+            ./gradlew RNTester:android:app:assembleRelease
+
       # Collect Results
       - run: *collect-android-test-results
       - store_test_results:
