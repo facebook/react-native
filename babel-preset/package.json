@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-native",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Babel preset for React Native applications",
   "main": "index.js",
   "repository": "https://github.com/facebook/react-native/tree/master/babel-preset",
@@ -41,6 +41,6 @@
     "@babel/plugin-transform-template-literals": "7.0.0-beta.47",
     "@babel/plugin-transform-unicode-regex": "7.0.0-beta.47",
     "@babel/template": "7.0.0-beta.47",
-    "metro-babel7-plugin-react-transform": "^0.38.1"
+    "metro-babel7-plugin-react-transform": "^0.39.1"
   }
 }
