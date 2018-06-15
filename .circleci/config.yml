@@ -662,13 +662,15 @@ workflows:
       - publish_npm_package:
           filters:
             branches:
-              ignore: /.*/
+              only:
+                - /.*-stable/
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
             - test_javascript
             - test_ios
             - test_tvos
+            - test_android
             - test_end_to_end
             - analyze
 
