@@ -117,10 +117,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Remove tag attribute to ensure correct attributed string comparison.
   NSMutableAttributedString *const backedTextInputViewTextCopy = [self.backedTextInputView.attributedText mutableCopy];
   NSMutableAttributedString *const attributedTextCopy = [attributedText mutableCopy];
-  
+
   [backedTextInputViewTextCopy removeAttribute:RCTTextAttributesTagAttributeName
                                          range:NSMakeRange(0, backedTextInputViewTextCopy.length)];
-  
+
   [attributedTextCopy removeAttribute:RCTTextAttributesTagAttributeName
                                 range:NSMakeRange(0, attributedTextCopy.length)];
   
@@ -129,9 +129,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (eventLag == 0 && textNeedsUpdate) {
     UITextRange *selection = self.backedTextInputView.selectedTextRange;
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
-    
+
     self.backedTextInputView.attributedText = attributedText;
-    
+
     if (selection.empty) {
       // Maintaining a cursor position relative to the end of the old text.
       NSInteger offsetStart =
@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [self.backedTextInputView setSelectedTextRange:[self.backedTextInputView textRangeFromPosition:position toPosition:position]
                                       notifyDelegate:YES];
     }
-    
+
     [self updateLocalData];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", self.backedTextInputView.attributedText.string, (long long)eventLag);
