@@ -101,9 +101,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (BOOL)textOf:(NSAttributedString*)newText equals:(NSAttributedString*)oldText{
   UITextInputMode *currentInputMode =  self.backedTextInputView.textInputMode;
   if ([currentInputMode.primaryLanguage isEqualToString:@"dictation"]) {
-    // when the dication is running we cant update the attibuted text on the backed up text view
-    // because setting the attributed string will kill the dictation. This means that we cant impose the
-    // settings on a dication.
+    // When the dictation is running we can't update the attibuted text on the backed up text view
+    // because setting the attributed string will kill the dictation. This means that we can't impose
+    // the settings on a dictation.
     return ([newText.string isEqualToString:oldText.string]);
   } else {
     return ([newText isEqualToAttributedString:oldText]);
