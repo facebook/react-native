@@ -32,6 +32,7 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   shadowOffset(convertRawProp(rawProps, "shadowOffset", sourceProps.shadowOffset)),
   shadowOpacity(convertRawProp(rawProps, "shadowOpacity", sourceProps.shadowOpacity)),
   shadowRadius(convertRawProp(rawProps, "shadowRadius", sourceProps.shadowRadius)),
+  transform(convertRawProp(rawProps, "transform", sourceProps.transform)),
   backfaceVisibility(convertRawProp(rawProps, "backfaceVisibility", sourceProps.backfaceVisibility)),
   shouldRasterize(convertRawProp(rawProps, "shouldRasterize", sourceProps.shouldRasterize)),
   zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),

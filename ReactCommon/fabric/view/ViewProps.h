@@ -52,6 +52,7 @@ public:
   const Float shadowRadius {};
 
   // Transform
+  const Transform transform {};
   const bool backfaceVisibility {false};
   const bool shouldRasterize {false};
   const int zIndex {0};
