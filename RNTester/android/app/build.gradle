@@ -121,10 +121,6 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
-
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
