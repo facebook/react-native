@@ -55,10 +55,6 @@
 # See libs/proxy/src/main/java/com/facebook/fbui/textlayoutbuilder/proxy for details.
 -dontwarn android.text.StaticLayout
 
-# So loader
--keep class com.facebook.soloader.SoLoader {*;}
--dontwarn com.facebook.soloader.SoLoader
-
 # okhttp
 
 -keepattributes Signature
