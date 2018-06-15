@@ -72,6 +72,28 @@ using namespace facebook::react;
     self.foregroundColor = RCTUIColorFromSharedColor(newViewProps.foregroundColor);
   }
 
+  // `shadowColor`
+  if (oldViewProps.shadowColor != newViewProps.shadowColor) {
+    CGColorRef shadowColor = RCTCGColorRefFromSharedColor(newViewProps.shadowColor);
+    self.layer.shadowColor = shadowColor;
+    CGColorRelease(shadowColor);
+  }
+
+  // `shadowOffset`
+  if (oldViewProps.shadowOffset != newViewProps.shadowOffset) {
+    self.layer.shadowOffset = RCTCGSizeFromSize(newViewProps.shadowOffset);
+  }
+
+  // `shadowOpacity`
+  if (oldViewProps.shadowOpacity != newViewProps.shadowOpacity) {
+    self.layer.shadowOpacity = (CGFloat)newViewProps.shadowOpacity;
+  }
+
+  // `shadowRadius`
+  if (oldViewProps.shadowRadius != newViewProps.shadowRadius) {
+    self.layer.shadowRadius = (CGFloat)newViewProps.shadowRadius;
+  }
+
   // `backfaceVisibility`
   if (oldViewProps.backfaceVisibility != newViewProps.backfaceVisibility) {
     self.layer.doubleSided = newViewProps.backfaceVisibility;
