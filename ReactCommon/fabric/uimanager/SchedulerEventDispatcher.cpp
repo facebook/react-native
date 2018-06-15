@@ -22,7 +22,7 @@ static std::string normalizeEventType(const std::string &type) {
   return prefixedType;
 }
 
-void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) {
+void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) const {
   uiManager_ = uiManager;
 }
 

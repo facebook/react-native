@@ -27,7 +27,7 @@ class SchedulerEventDispatcher final:
 
 public:
 
-  void setUIManager(std::shared_ptr<const FabricUIManager> uiManager);
+  void setUIManager(std::shared_ptr<const FabricUIManager> uiManager) const;
 
 #pragma mark - EventDispatcher
 
@@ -42,7 +42,8 @@ public:
 
 private:
 
-  std::shared_ptr<const FabricUIManager> uiManager_;
+  // TODO: consider using std::weak_ptr<> instead for better memory management.
+  mutable std::shared_ptr<const FabricUIManager> uiManager_;
 };
 
 } // namespace react
