@@ -17,9 +17,7 @@ EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag,
   tag_(tag),
   eventDispatcher_(eventDispatcher) {}
 
-EventEmitter::~EventEmitter() {
-  releaseEventTargetIfNeeded();
-}
+EventEmitter::~EventEmitter() {}
 
 void EventEmitter::dispatchEvent(
   const std::string &type,
@@ -31,7 +29,7 @@ void EventEmitter::dispatchEvent(
     return;
   }
 
-  createEventTargetIfNeeded();
+  EventTarget eventTarget = createEventTarget();
 
   // Mixing `target` into `payload`.
   assert(payload.isObject());
@@ -39,31 +37,13 @@ void EventEmitter::dispatchEvent(
   extendedPayload.merge_patch(payload);
 
   // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
+  eventDispatcher->dispatchEvent(eventTarget, type, extendedPayload, priority);
 }
 
-void EventEmitter::createEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (eventTarget_) {
-    return;
-  }
-
+EventTarget EventEmitter::createEventTarget() const {
   auto &&eventDispatcher = eventDispatcher_.lock();
   assert(eventDispatcher);
-  eventTarget_ = eventDispatcher->createEventTarget(instanceHandle_);
-}
-
-void EventEmitter::releaseEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (!eventTarget_) {
-    return;
-  }
-
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  eventDispatcher->releaseEventTarget(eventTarget_);
+  return eventDispatcher->createEventTarget(instanceHandle_);
 }
 
 } // namespace react

@@ -30,16 +30,13 @@ EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &in
   return uiManager_->createEventTarget(instanceHandle);
 }
 
-void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
-  uiManager_->releaseEventTarget(eventTarget);
-}
-
 void SchedulerEventDispatcher::dispatchEvent(
   const EventTarget &eventTarget,
   const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
+  // TODO: Schedule the event based on priority.
   uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
 }
 

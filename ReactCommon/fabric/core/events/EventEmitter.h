@@ -48,14 +48,11 @@ protected:
 
 private:
 
-  void createEventTargetIfNeeded() const;
-  void releaseEventTargetIfNeeded() const;
+  EventTarget createEventTarget() const;
 
   InstanceHandle instanceHandle_;
   Tag tag_;
   std::weak_ptr<const EventDispatcher> eventDispatcher_;
-  mutable EventTarget eventTarget_ {nullptr};
-  mutable std::mutex mutex_;
 };
 
 } // namespace react

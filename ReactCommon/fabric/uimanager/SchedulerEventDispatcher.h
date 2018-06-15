@@ -33,8 +33,6 @@ public:
 
   EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
 
-  void releaseEventTarget(const EventTarget &eventTarget) const override;
-
   void dispatchEvent(
     const EventTarget &eventTarget,
     const std::string &type,
