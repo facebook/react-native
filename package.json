@@ -160,7 +160,7 @@
     "errorhandler": "^1.5.0",
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
-    "fbjs": "0.8.16",
+    "fbjs": "0.8.17",
     "fbjs-scripts": "^0.8.1",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
