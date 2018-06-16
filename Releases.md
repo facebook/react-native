@@ -17,7 +17,7 @@ React Native follows a monthly release train. Every month, a new branch created 
 |  ...    |       ...           |      ...         |
 | 0.56.0  | 1st of June         | 1st of July      |
 | 0.57.0  | 1st of July         | 1st of August    |
-| 0.58.0  | 1st of August       | 1st of October   |
+| 0.58.0  | 1st of August       | 1st of September |
 | ...     | ...                 | ...              |
 
 -------------------
