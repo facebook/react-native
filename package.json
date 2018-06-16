@@ -123,6 +123,7 @@
     "third-party-podspecs"
   ],
   "scripts": {
+    "start": "flow-node ./local-cli/cli.js start -- --reset-cache",
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
