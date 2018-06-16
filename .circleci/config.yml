@@ -569,7 +569,7 @@ jobs:
       - run:
           name: Build Android RNTester
           command: |
-            ./gradlew RNTester:android:app:assembleRelease
+            ./gradlew RNTester:android:app:assembleRelease -Pjobs=$BUILD_THREADS
 
       # Collect Results
       - run: *collect-android-test-results
