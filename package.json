@@ -143,7 +143,7 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.3.2"
+    "react": "16.4.1"
   },
   "dependencies": {
     "absolute-path": "^0.0.0",
@@ -216,8 +216,8 @@
     "jest": "23.1.0",
     "jest-junit": "4.0.0",
     "prettier": "1.13.4",
-    "react": "16.3.2",
-    "react-test-renderer": "16.3.2",
+    "react": "16.4.1",
+    "react-test-renderer": "16.4.1",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   }
