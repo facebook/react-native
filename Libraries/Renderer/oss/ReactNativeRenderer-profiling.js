@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noflow
- * @providesModule ReactNativeRenderer-prod
+ * @providesModule ReactNativeRenderer-profiling
  * @preventMunge
  * @generated
  */
@@ -1809,6 +1809,7 @@ function FiberNode(tag, pendingProps, key, mode) {
   this.lastEffect = this.firstEffect = this.nextEffect = null;
   this.expirationTime = 0;
   this.alternate = null;
+  this.treeBaseTime = this.selfBaseTime = this.actualStartTime = this.actualDuration = 0;
 }
 function createWorkInProgress(current, pendingProps, expirationTime) {
   var workInProgress = current.alternate;
@@ -1827,7 +1828,9 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
       (workInProgress.effectTag = 0),
       (workInProgress.nextEffect = null),
       (workInProgress.firstEffect = null),
-      (workInProgress.lastEffect = null));
+      (workInProgress.lastEffect = null),
+      (workInProgress.actualDuration = 0),
+      (workInProgress.actualStartTime = 0));
   workInProgress.expirationTime = expirationTime;
   workInProgress.child = current.child;
   workInProgress.memoizedProps = current.memoizedProps;
@@ -1836,6 +1839,8 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
   workInProgress.sibling = current.sibling;
   workInProgress.index = current.index;
   workInProgress.ref = current.ref;
+  workInProgress.selfBaseTime = current.selfBaseTime;
+  workInProgress.treeBaseTime = current.treeBaseTime;
   return workInProgress;
 }
 function createFiberFromElement(element, mode, expirationTime) {
@@ -2323,7 +2328,18 @@ function popHostContext(fiber) {
   contextFiberStackCursor.current === fiber &&
     (pop(contextStackCursor$1, fiber), pop(contextFiberStackCursor, fiber));
 }
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var commitTime = 0,
+  timerPausedAt = 0,
+  totalElapsedPauseTime = 0;
+function recordElapsedActualRenderTime(fiber) {
+  fiber.actualDuration = now$1() - totalElapsedPauseTime - fiber.actualDuration;
+}
+function resumeActualRenderTimerIfPaused() {
+  0 < timerPausedAt &&
+    ((totalElapsedPauseTime += now$1() - timerPausedAt), (timerPausedAt = 0));
+}
+var baseStartTime = -1,
+  hasOwnProperty = Object.prototype.hasOwnProperty;
 function is(x, y) {
   return x === y ? 0 !== x || 0 !== y || 1 / x === 1 / y : x !== x && y !== y;
 }
@@ -3277,7 +3293,10 @@ function finishClassComponent(
     );
   shouldUpdate = workInProgress.stateNode;
   ReactCurrentOwner.current = workInProgress;
-  var nextChildren = didCaptureError ? null : shouldUpdate.render();
+  if (didCaptureError) {
+    var nextChildren = null;
+    baseStartTime = -1;
+  } else nextChildren = shouldUpdate.render();
   workInProgress.effectTag |= 1;
   didCaptureError &&
     (reconcileChildrenAtExpirationTime(
@@ -3435,6 +3454,7 @@ function updateContextProvider(current, workInProgress, renderExpirationTime) {
   return workInProgress.child;
 }
 function bailoutOnAlreadyFinishedWork(current, workInProgress) {
+  baseStartTime = -1;
   invariant(
     null === current || workInProgress.child === current.child,
     "Resuming work not yet implemented."
@@ -3460,10 +3480,15 @@ function bailoutOnAlreadyFinishedWork(current, workInProgress) {
   return workInProgress.child;
 }
 function beginWork(current, workInProgress, renderExpirationTime) {
+  workInProgress.mode & 4 &&
+    ((workInProgress.actualDuration =
+      now$1() - workInProgress.actualDuration - totalElapsedPauseTime),
+    (workInProgress.actualStartTime = now$1()));
   if (
     0 === workInProgress.expirationTime ||
     workInProgress.expirationTime > renderExpirationTime
   ) {
+    baseStartTime = -1;
     switch (workInProgress.tag) {
       case 3:
         pushHostRootContext(workInProgress);
@@ -3879,6 +3904,7 @@ function beginWork(current, workInProgress, renderExpirationTime) {
     case 15:
       return (
         (renderExpirationTime = workInProgress.pendingProps),
+        (workInProgress.effectTag |= 4),
         workInProgress.memoizedProps === renderExpirationTime
           ? (current = bailoutOnAlreadyFinishedWork(current, workInProgress))
           : (reconcileChildren(
@@ -3949,6 +3975,7 @@ updateHostText$1 = function(current, workInProgress, oldText, newText) {
 };
 function completeWork(current, workInProgress) {
   var newProps = workInProgress.pendingProps;
+  workInProgress.mode & 4 && recordElapsedActualRenderTime(workInProgress);
   switch (workInProgress.tag) {
     case 1:
       return null;
@@ -4449,6 +4476,15 @@ function commitWork(current, finishedWork) {
     case 3:
       break;
     case 15:
+      instance = finishedWork.memoizedProps.onRender;
+      instance(
+        finishedWork.memoizedProps.id,
+        null === current ? "mount" : "update",
+        finishedWork.actualDuration,
+        finishedWork.treeBaseTime,
+        finishedWork.actualStartTime,
+        commitTime
+      );
       break;
     case 16:
       break;
@@ -4490,6 +4526,7 @@ function createClassErrorUpdate(fiber, errorInfo, expirationTime) {
   return expirationTime;
 }
 function unwindWork(workInProgress) {
+  workInProgress.mode & 4 && recordElapsedActualRenderTime(workInProgress);
   switch (workInProgress.tag) {
     case 2:
       popContextProvider(workInProgress);
@@ -4548,6 +4585,9 @@ function resetStack() {
 
     ) {
       var interruptedWork$jscomp$0 = interruptedWork;
+      interruptedWork$jscomp$0.mode & 4 &&
+        (resumeActualRenderTimerIfPaused(),
+        recordElapsedActualRenderTime(interruptedWork$jscomp$0));
       switch (interruptedWork$jscomp$0.tag) {
         case 2:
           popContextProvider(interruptedWork$jscomp$0);
@@ -4597,12 +4637,23 @@ function completeUnitOfWork(workInProgress$jscomp$0) {
             null !== updateQueue &&
               (newExpirationTime = updateQueue.expirationTime);
         }
-        for (updateQueue = workInProgress.child; null !== updateQueue; )
-          0 !== updateQueue.expirationTime &&
-            (0 === newExpirationTime ||
-              newExpirationTime > updateQueue.expirationTime) &&
-            (newExpirationTime = updateQueue.expirationTime),
-            (updateQueue = updateQueue.sibling);
+        if (workInProgress.mode & 4) {
+          updateQueue = workInProgress.selfBaseTime;
+          for (var child = workInProgress.child; null !== child; )
+            (updateQueue += child.treeBaseTime),
+              0 !== child.expirationTime &&
+                (0 === newExpirationTime ||
+                  newExpirationTime > child.expirationTime) &&
+                (newExpirationTime = child.expirationTime),
+              (child = child.sibling);
+          workInProgress.treeBaseTime = updateQueue;
+        } else
+          for (updateQueue = workInProgress.child; null !== updateQueue; )
+            0 !== updateQueue.expirationTime &&
+              (0 === newExpirationTime ||
+                newExpirationTime > updateQueue.expirationTime) &&
+              (newExpirationTime = updateQueue.expirationTime),
+              (updateQueue = updateQueue.sibling);
         workInProgress.expirationTime = newExpirationTime;
       }
       if (null !== current) return current;
@@ -4640,14 +4691,16 @@ function completeUnitOfWork(workInProgress$jscomp$0) {
   return null;
 }
 function performUnitOfWork(workInProgress) {
-  var next = beginWork(
-    workInProgress.alternate,
-    workInProgress,
-    nextRenderExpirationTime
-  );
-  null === next && (next = completeUnitOfWork(workInProgress));
+  var current = workInProgress.alternate;
+  workInProgress.mode & 4 && (baseStartTime = now$1());
+  current = beginWork(current, workInProgress, nextRenderExpirationTime);
+  workInProgress.mode & 4 &&
+    (-1 !== baseStartTime &&
+      (workInProgress.selfBaseTime = now$1() - baseStartTime),
+    (baseStartTime = -1));
+  null === current && (current = completeUnitOfWork(workInProgress));
   ReactCurrentOwner.current = null;
-  return next;
+  return current;
 }
 function renderRoot(root$jscomp$0, isYieldy) {
   invariant(
@@ -4675,14 +4728,15 @@ function renderRoot(root$jscomp$0, isYieldy) {
   var didFatal = !1;
   do {
     try {
-      if (isYieldy)
+      if (isYieldy) {
         for (; null !== nextUnitOfWork && !shouldYield(); )
           nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
-      else
+        0 === timerPausedAt && (timerPausedAt = now$1());
+      } else
         for (; null !== nextUnitOfWork; )
           nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     } catch (thrownValue) {
-      if (null === nextUnitOfWork)
+      if (((baseStartTime = -1), null === nextUnitOfWork))
         (didFatal = !0), onUncaughtError(thrownValue);
       else {
         invariant(
@@ -5038,6 +5092,7 @@ function performAsyncWork(dl) {
 function performWork(minExpirationTime, dl) {
   deadline = dl;
   findHighestPriorityRoot();
+  resumeActualRenderTimerIfPaused();
   if (null !== deadline)
     for (
       ;
@@ -5106,7 +5161,8 @@ function performWorkOnRoot(root, expirationTime, isYieldy) {
           (isYieldy = root.finishedWork),
           null !== isYieldy &&
             (shouldYield()
-              ? (root.finishedWork = isYieldy)
+              ? ((root.finishedWork = isYieldy),
+                0 === timerPausedAt && (timerPausedAt = now$1()))
               : completeRoot(root, isYieldy, expirationTime))))
     : ((isYieldy = root.finishedWork),
       null !== isYieldy
@@ -5226,6 +5282,7 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
       captureCommitPhaseError(nextEffect, error),
       null !== nextEffect && (nextEffect = nextEffect.nextEffect));
   }
+  commitTime = now$1();
   for (nextEffect = firstBatch; null !== nextEffect; ) {
     current = !1;
     prevProps = void 0;
@@ -5380,6 +5437,7 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
       captureCommitPhaseError(nextEffect, current$jscomp$0),
       null !== nextEffect && (nextEffect = nextEffect.nextEffect));
   }
+  totalElapsedPauseTime = 0;
   isWorking = isCommitting$1 = !1;
   "function" === typeof onCommitRoot &&
     onCommitRoot(finishedWork$jscomp$0.stateNode);
