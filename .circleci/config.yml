@@ -203,13 +203,17 @@ aliases:
   # eslint sometimes runs into trouble generating the reports
   - &run-lint-checks
     name: Lint code
-    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
-    when: always
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
+      fi
 
   - &run-flow-checks
     name: Check for errors in code using Flow
-    command: yarn flow check
-    when: always
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        yarn flow check
+      fi
 
   - &run-sanity-checks
     name: Sanity checks
@@ -281,31 +285,64 @@ aliases:
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: xcrun simctl boot "iPhone 5s" || true
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        xcrun simctl boot "iPhone 5s" || true
+      fi
 
   - &boot-simulator-appletv
     name: Boot Apple TV Simulator
-    command: xcrun simctl boot "Apple TV" || true
+    command: |
+      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        xcrun simctl boot "Apple TV" || true
+      fi
 
   - &run-objc-ios-tests
     name: iOS Test Suite
-    command: ./scripts/objc-test-ios.sh test
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        ./scripts/objc-test-ios.sh test
+      fi
 
   - &run-objc-tvos-tests
     name: tvOS Test Suite
-    command: ./scripts/objc-test-tvos.sh test
+    command: |
+      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        ./scripts/objc-test-tvos.sh test
+      fi
+
+  - &run-podspec-tests
+    name: Test CocoaPods
+    command: |
+      if [ $((2 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        ./scripts/process-podspecs.sh
+      fi
 
   - &run-e2e-tests
     name: End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --ios --tvos --js --retries 3;
+    command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+      fi
 
   - &run-objc-tvos-e2e-tests
     name: tvOS End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+    command: |
+      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+      fi
+
+  - &run-android-e2e-tests
+    name: Android End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+
+  - &run-js-e2e-tests
+    name: JavaScript End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -339,7 +376,6 @@ macos_defaults: &macos_defaults
 
 version: 2
 jobs:
-
   # Set up a Node environment for downstream jobs
   checkout_code:
     <<: *js_defaults
@@ -386,30 +422,21 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs unit tests on iOS devices
-  test_ios:
+  # Runs unit tests on iOS and Apple TV devices
+  test_objc:
     <<: *macos_defaults
+    parallelism: 3
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
-      - run: brew install watchman
-      - run: *run-objc-ios-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Runs unit tests on tvOS devices
-  test_tvos:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
       - run: *boot-simulator-appletv
       - run: brew install watchman
+
+      - run: *run-objc-ios-tests
       - run: *run-objc-tvos-tests
+      - run: *run-podspec-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -417,11 +444,13 @@ jobs:
   # Runs end to end tests
   test_end_to_end:
     <<: *macos_defaults
+    parallelism: 2
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
+      - run: *boot-simulator-appletv
 
       - run:
           name: Configure Environment Variables
@@ -437,18 +466,11 @@ jobs:
             node -v
 
       - run: *run-objc-ios-e2e-tests
+      # Disabled for now
+      # - run: *run-objc-tvos-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
-
-  # Checks podspec
-  test_podspec:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: ./scripts/process-podspecs.sh
 
   # Publishes new version onto npm
   publish_npm_package:
@@ -571,6 +593,10 @@ jobs:
           command: |
             ./gradlew RNTester:android:app:assembleRelease -Pjobs=$BUILD_THREADS
 
+      # Run Android end-to-end tests
+      # Disabled
+      # - run: *run-android-e2e-tests
+
       # Collect Results
       - run: *collect-android-test-results
       - store_test_results:
@@ -626,7 +652,6 @@ workflows:
 
   tests:
     jobs:
-
       # Checkout repo and run Yarn
       - checkout_code:
           filters: *filter-ignore-gh-pages
@@ -650,11 +675,7 @@ workflows:
             - checkout_code
 
       # Test iOS & tvOS
-      - test_ios:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
-      - test_tvos:
+      - test_objc:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -674,8 +695,8 @@ workflows:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
             - test_javascript
-            - test_ios
-            - test_tvos
+            - test_objc
+            - test_android
             - test_end_to_end
             - analyze
 
@@ -691,22 +712,3 @@ workflows:
           filters: *filter-ignore-master-stable
           requires:
             - checkout_code
-
-
-  # These tests are flaky or are yet to be fixed. They are placed on their own
-  # workflow to avoid marking benign PRs as broken.
-  # To run them, uncomment the entire block and open a PR (do not merge).
-  # Once a test is fixed, move the test definition to the 'tests' workflow.
-  # disabled_tests:
-  #   jobs:
-  #     # Checkout repo and run Yarn (pre-req, should succeed)
-  #     - checkout_code:
-  #         filters: *filter-ignore-gh-pages
-
-  #     # The following were DISABLED because they have not run since
-  #     # the migration from Travis, and they have broken since then,
-  #     # CocoaPods
-  #     - test_podspec:
-  #         filters: *filter-ignore-gh-pages
-  #         requires:
-  #           - checkout_code
