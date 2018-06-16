@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
  */
 
 'use strict';
@@ -448,7 +447,7 @@ module.exports = {
     {
       command: '--port [number]',
       default: process.env.RCT_METRO_PORT || 8081,
-      parse: (val: string) => Number(val),
+      parse: (val) => Number(val),
     },
   ],
 };

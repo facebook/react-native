@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
  */
 
 'use strict';
@@ -56,7 +55,7 @@ module.exports = [
       'Specifies the maximum number of workers the worker-pool ' +
       'will spawn for transforming files. This defaults to the number of the ' +
       'cores available on your machine.',
-    parse: (workers: string) => Number(workers),
+    parse: (workers) => Number(workers),
   },
   {
     command: '--sourcemap-output [string]',
