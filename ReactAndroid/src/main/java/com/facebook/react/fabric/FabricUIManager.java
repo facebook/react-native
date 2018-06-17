@@ -639,6 +639,9 @@ public class FabricUIManager implements UIManager, JSHandler {
         TAG,
         "Dispatching event for target: " + eventTarget);
     }
+    if (params == null) {
+      params = new WritableNativeMap();
+    }
     mBinding.dispatchEventToTarget(mJSContext.get(), mEventHandlerPointer, eventTarget, name, (WritableNativeMap) params);
   }
 
