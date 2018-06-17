@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.content.ComponentCallbacks2;
 import android.content.Context;
@@ -39,6 +40,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -585,11 +587,20 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeAnimation(reactTag, animationID);
   }
 
+  @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+    //TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
+    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    int uiManagerType = ViewUtil.getUIManagerType(reactTag);
+    if (uiManagerType != DEFAULT) {
+      UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType).setJSResponder(reactTag, blockNativeResponder);
+    }
+
     mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
+  @Override
   @ReactMethod
   public void clearJSResponder() {
     mUIImplementation.clearJSResponder();
