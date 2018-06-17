@@ -13,6 +13,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -89,7 +90,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
-        SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        ReactSlider reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
         final int spec = View.MeasureSpec.makeMeasureSpec(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             View.MeasureSpec.UNSPECIFIED);

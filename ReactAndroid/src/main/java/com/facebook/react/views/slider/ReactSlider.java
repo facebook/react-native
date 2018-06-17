@@ -8,8 +8,8 @@
 package com.facebook.react.views.slider;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
-import android.widget.SeekBar;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  * Note that the slider is _not_ a controlled component (setValue isn't called
  * during dragging).
  */
-public class ReactSlider extends SeekBar {
+public class ReactSlider extends AppCompatSeekBar {
 
   /**
    * If step is 0 (unset) we default to this total number of steps.
