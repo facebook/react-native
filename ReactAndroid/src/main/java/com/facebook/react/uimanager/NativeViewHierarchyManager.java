@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.os.Build;
-import android.util.Log;
+import com.facebook.common.logging.FLog;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -123,7 +123,7 @@ public class NativeViewHierarchyManager {
     try {
       updateInstanceHandle(resolveView(tag), instanceHandle);
     } catch (IllegalViewOperationException e) {
-      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
     }
   }
 
@@ -138,7 +138,7 @@ public class NativeViewHierarchyManager {
         viewManager.updateProperties(viewToUpdate, props);
       }
     } catch (IllegalViewOperationException e) {
-      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
     }
   }
 
