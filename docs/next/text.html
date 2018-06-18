@@ -157,11 +157,13 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 &lt;/View&gt;
 </code></pre>
 <p>Assuming that <code>MyAppText</code> is a component that simply renders out its children into a <code>Text</code> component with styling, then <code>MyAppHeaderText</code> can be defined as follows:</p>
-<pre><code class="hljs css javascript">class MyAppHeaderText extends Component {
+<pre><code class="hljs css javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyAppHeaderText</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
-    &lt;MyAppText&gt;
-      &lt;Text style={{fontSize: 20}}&gt;{this.props.children}&lt;/Text&gt;
-    &lt;/MyAppText&gt;;
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyAppText</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontSize:</span> <span class="hljs-attr">20</span>}}&gt;</span>{this.props.children}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">MyAppText</span>&gt;</span></span>
+    );
   }
 }
 </code></pre>
