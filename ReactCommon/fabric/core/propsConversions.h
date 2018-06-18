@@ -25,6 +25,16 @@ inline void fromDynamic(const folly::dynamic &value, int &result) {
 inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>
+inline void fromDynamic(const folly::dynamic &value, std::vector<T> &result) {
+  result.clear();
+  T itemResult;
+  for (auto &itemValue : value) {
+    fromDynamic(itemValue, itemResult);
+    result.push_back(itemResult);
+  }
+}
+
+template <typename T>
 inline T convertRawProp(
   const RawProps &rawProps,
   const std::string &name,
