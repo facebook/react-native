@@ -41,7 +41,7 @@ public:
 
   // Borders
   const EdgeInsets borderWidth {};
-  const CornerInsets borderRadus {};
+  const CornerInsets borderRadius {};
   const SharedColor borderColor {};
   const BorderStyle borderStyle {};
 
