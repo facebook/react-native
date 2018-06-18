@@ -84,6 +84,11 @@ inline void fromDynamic(const folly::dynamic &value, Size &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = EdgeInsets {number, number, number, number};
+    return;
+  }
   if (value.isObject()) {
     result = EdgeInsets {
       (Float)value["top"].asDouble(),
@@ -106,6 +111,11 @@ inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, CornerInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = CornerInsets {number, number, number, number};
+    return;
+  }
   if (value.isObject()) {
     result = CornerInsets {
       (Float)value["topLeft"].asDouble(),
