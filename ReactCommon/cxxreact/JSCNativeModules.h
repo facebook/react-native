@@ -1,16 +1,20 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <memory>
 #include <string>
 
-#include <cxxreact/ModuleRegistry.h>
 #include <folly/Optional.h>
 #include <jschelpers/Value.h>
 
 namespace facebook {
 namespace react {
+
+class ModuleRegistry;
 
 /**
  * Holds and creates JS representations of the modules in ModuleRegistry

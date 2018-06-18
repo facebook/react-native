@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -47,43 +48,51 @@ class JsPackagerClient {
   }
 
   sendRequest(method, target, params) {
-    return this.openPromise.then(() => new Promise((resolve, reject) => {
-      const messageId = getMessageId();
-      this.msgCallbacks.set(messageId, {resolve: resolve, reject: reject});
-      this.ws.send(
-        JSON.stringify({
-          version: PROTOCOL_VERSION,
-          target: target,
-          method: method,
-          id: messageId,
-          params: params,
+    return this.openPromise.then(
+      () =>
+        new Promise((resolve, reject) => {
+          const messageId = getMessageId();
+          this.msgCallbacks.set(messageId, {resolve: resolve, reject: reject});
+          this.ws.send(
+            JSON.stringify({
+              version: PROTOCOL_VERSION,
+              target: target,
+              method: method,
+              id: messageId,
+              params: params,
+            }),
+            error => {
+              if (error !== undefined) {
+                this.msgCallbacks.delete(messageId);
+                reject(error);
+              }
+            },
+          );
         }),
-        error => {
-          if (error !== undefined) {
-            this.msgCallbacks.delete(messageId);
-            reject(error);
-          }
-        });
-    }));
+    );
   }
 
   sendNotification(method, target, params) {
-    return this.openPromise.then(() => new Promise((resolve, reject) => {
-      this.ws.send(
-        JSON.stringify({
-          version: PROTOCOL_VERSION,
-          target: target,
-          method: method,
-          params: params,
+    return this.openPromise.then(
+      () =>
+        new Promise((resolve, reject) => {
+          this.ws.send(
+            JSON.stringify({
+              version: PROTOCOL_VERSION,
+              target: target,
+              method: method,
+              params: params,
+            }),
+            error => {
+              if (error !== undefined) {
+                reject(error);
+              } else {
+                resolve();
+              }
+            },
+          );
         }),
-        error => {
-          if (error !== undefined) {
-            reject(error);
-          } else {
-            resolve();
-          }
-        });
-    }));
+    );
   }
 
   sendBroadcast(method, params) {
@@ -92,16 +101,16 @@ class JsPackagerClient {
 
   getPeers() {
     return new Promise((resolve, reject) => {
-      this.sendRequest('getpeers', TARGET_SERVER, undefined).then(
-        response => {
-          if (!response instanceof Map) {
-            reject('Results received from server are of wrong format:\n' +
-                   JSON.stringify(response));
-          } else {
-            resolve(response);
-          }
-        },
-        reject);
+      this.sendRequest('getpeers', TARGET_SERVER, undefined).then(response => {
+        if (!response instanceof Map) {
+          reject(
+            'Results received from server are of wrong format:\n' +
+              JSON.stringify(response),
+          );
+        } else {
+          resolve(response);
+        }
+      }, reject);
     });
   }
 

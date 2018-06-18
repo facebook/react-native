@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -18,12 +19,18 @@ import md5 from 'md5';
  */
 function getAndroidAssetSuffix(scale: number): string {
   switch (scale) {
-    case 0.75: return 'ldpi';
-    case 1: return 'mdpi';
-    case 1.5: return 'hdpi';
-    case 2: return 'xhdpi';
-    case 3: return 'xxhdpi';
-    case 4: return 'xxxhdpi';
+    case 0.75:
+      return 'ldpi';
+    case 1:
+      return 'mdpi';
+    case 1.5:
+      return 'hdpi';
+    case 2:
+      return 'xhdpi';
+    case 3:
+      return 'xxhdpi';
+    case 4:
+      return 'xxxhdpi';
   }
   throw new Error('no such scale');
 }
@@ -46,8 +53,8 @@ function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
   var suffix = getAndroidAssetSuffix(scale);
   if (!suffix) {
     throw new Error(
-      'Don\'t know which android drawable suffix to use for asset: ' +
-      JSON.stringify(asset)
+      "Don't know which android drawable suffix to use for asset: " +
+        JSON.stringify(asset),
     );
   }
   const androidFolder = 'drawable-' + suffix;
@@ -71,5 +78,5 @@ module.exports = {
   getAndroidAssetSuffix: getAndroidAssetSuffix,
   getAndroidResourceFolderName: getAndroidResourceFolderName,
   getAndroidResourceIdentifier: getAndroidResourceIdentifier,
-  getBasePath: getBasePath
+  getBasePath: getBasePath,
 };

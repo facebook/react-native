@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewPropTypes
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
@@ -34,48 +35,75 @@ const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
-// There's no easy way to create a different type if (Platform.isTVOS):
-// so we must include TVViewProps
-export type ViewProps = {
-  accessible?: bool,
-  accessibilityLabel?: null | React$PropType$Primitive<any> | string | Array<any> | any,
-  accessibilityActions?: Array<string>,
-  accessibilityComponentType?: AccessibilityComponentType,
-  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
-  importantForAccessibility?: 'auto'| 'yes'| 'no'| 'no-hide-descendants',
-  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
-  accessibilityViewIsModal?: bool,
-  accessibilityElementsHidden?: bool,
-  children?: ?React.Node,
+type DirectEventProps = $ReadOnly<{|
   onAccessibilityAction?: Function,
   onAccessibilityTap?: Function,
-  onMagicTap?: Function,
-  testID?: ?string,
-  nativeID?: string,
   onLayout?: ?(event: LayoutEvent) => void,
+  onMagicTap?: Function,
+|}>;
+
+type TouchEventProps = $ReadOnly<{|
+  onTouchCancel?: ?Function,
+  onTouchCancelCapture?: ?Function,
+  onTouchEnd?: ?Function,
+  onTouchEndCapture?: ?Function,
+  onTouchMove?: ?Function,
+  onTouchMoveCapture?: ?Function,
+  onTouchStart?: ?Function,
+  onTouchStartCapture?: ?Function,
+|}>;
+
+type GestureResponderEventProps = $ReadOnly<{|
+  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponderCapture?: ?Function,
   onResponderGrant?: ?Function,
   onResponderMove?: ?Function,
   onResponderReject?: ?Function,
   onResponderRelease?: ?Function,
+  onResponderStart?: ?Function,
   onResponderTerminate?: ?Function,
   onResponderTerminationRequest?: ?Function,
   onStartShouldSetResponder?: ?Function,
   onStartShouldSetResponderCapture?: ?Function,
-  onMoveShouldSetResponder?: ?Function,
-  onMoveShouldSetResponderCapture?: ?Function,
+|}>;
+
+export type ViewProps = $ReadOnly<{|
+  ...DirectEventProps,
+  ...GestureResponderEventProps,
+  ...TouchEventProps,
+
+  // There's no easy way to create a different type if (Platform.isTV):
+  // so we must include TVViewProps
+  ...TVViewProps,
+
+  accessible?: boolean,
+  accessibilityLabel?:
+    | null
+    | React$PropType$Primitive<any>
+    | string
+    | Array<any>
+    | any,
+  accessibilityActions?: Array<string>,
+  accessibilityComponentType?: AccessibilityComponentType,
+  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
+  importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
+  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityViewIsModal?: boolean,
+  accessibilityElementsHidden?: boolean,
+  children?: ?React.Node,
+  testID?: ?string,
+  nativeID?: string,
   hitSlop?: ?EdgeInsetsProp,
-  pointerEvents?: null | 'box-none'| 'none'| 'box-only'| 'auto',
+  pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
   style?: stylePropType,
-  removeClippedSubviews?: bool,
-  renderToHardwareTextureAndroid?: bool,
-  shouldRasterizeIOS?: bool,
-  collapsable?: bool,
-  needsOffscreenAlphaCompositing?: bool,
-} & TVViewProps;
+  removeClippedSubviews?: boolean,
+  renderToHardwareTextureAndroid?: boolean,
+  shouldRasterizeIOS?: boolean,
+  collapsable?: boolean,
+  needsOffscreenAlphaCompositing?: boolean,
+|}>;
 
 module.exports = {
-  ...PlatformViewPropTypes,
-
   /**
    * When `true`, indicates that the view is an accessibility element.
    * By default, all the touchable elements are accessible.
@@ -118,11 +146,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityliveregion
    */
-  accessibilityLiveRegion: PropTypes.oneOf([
-    'none',
-    'polite',
-    'assertive',
-  ]),
+  accessibilityLiveRegion: PropTypes.oneOf(['none', 'polite', 'assertive']),
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -364,12 +388,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#pointerevents
    */
-  pointerEvents: PropTypes.oneOf([
-    'box-none',
-    'none',
-    'box-only',
-    'auto',
-  ]),
+  pointerEvents: PropTypes.oneOf(['box-none', 'none', 'box-only', 'auto']),
 
   /**
    * See http://facebook.github.io/react-native/docs/style.html
@@ -428,4 +447,9 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
+
+  /**
+   * Any additional platform-specific view prop types, or prop type overrides.
+   */
+  ...PlatformViewPropTypes,
 };

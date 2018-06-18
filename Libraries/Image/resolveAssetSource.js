@@ -4,24 +4,43 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule resolveAssetSource
- * @flow
  *
  * Resolves an asset into a `source` for `Image`.
+ *
+ * @format
+ * @flow
  */
+
 'use strict';
 
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
 
-import type { ResolvedAssetSource } from 'AssetSourceResolver';
+import type {ResolvedAssetSource} from 'AssetSourceResolver';
 
 let _customSourceTransformer, _serverURL, _scriptURL;
+
 let _sourceCodeScriptURL: ?string;
+function getSourceCodeScriptURL(): ?string {
+  if (_sourceCodeScriptURL) {
+    return _sourceCodeScriptURL;
+  }
+
+  let sourceCode =
+    global.nativeExtensions && global.nativeExtensions.SourceCode;
+  if (!sourceCode) {
+    const NativeModules = require('NativeModules');
+    sourceCode = NativeModules && NativeModules.SourceCode;
+  }
+  _sourceCodeScriptURL = sourceCode.scriptURL;
+  return _sourceCodeScriptURL;
+}
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
-    const match = _sourceCodeScriptURL && _sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
+    const sourceCodeScriptURL = getSourceCodeScriptURL();
+    const match =
+      sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
       // jsBundle was loaded from network
       _serverURL = match[0];
@@ -51,7 +70,7 @@ function _coerceLocalScriptURL(scriptURL: ?string): ?string {
 
 function getScriptURL(): ?string {
   if (_scriptURL === undefined) {
-    _scriptURL = _coerceLocalScriptURL(_sourceCodeScriptURL);
+    _scriptURL = _coerceLocalScriptURL(getSourceCodeScriptURL());
   }
   return _scriptURL;
 }
@@ -71,7 +90,7 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return source;
   }
 
-  var asset = AssetRegistry.getAssetByID(source);
+  const asset = AssetRegistry.getAssetByID(source);
   if (!asset) {
     return null;
   }
@@ -86,13 +105,6 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
   }
   return resolver.defaultAsset();
 }
-
-let sourceCode = global.nativeExtensions && global.nativeExtensions.SourceCode;
-if (!sourceCode) {
-  const NativeModules = require('NativeModules');
-  sourceCode = NativeModules && NativeModules.SourceCode;
-}
-_sourceCodeScriptURL = sourceCode && sourceCode.scriptURL;
 
 module.exports = resolveAssetSource;
 module.exports.pickScale = AssetSourceResolver.pickScale;

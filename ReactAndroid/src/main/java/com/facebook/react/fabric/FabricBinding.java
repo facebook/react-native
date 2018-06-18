@@ -8,9 +8,24 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.NativeMap;
 
 public interface FabricBinding {
 
   void installFabric(JavaScriptContextHolder jsContext, FabricUIManager fabricModule);
+
+  long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
+
+  void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
+
+  void releaseEventHandler(long jsContextNativePointer, long eventHandlerPointer);
+
+  void dispatchEventToTarget(
+    long jsContextNativePointer,
+    long eventHandlerPointer,
+    long eventTargetPointer,
+    String type,
+    NativeMap payload
+  );
 
 }

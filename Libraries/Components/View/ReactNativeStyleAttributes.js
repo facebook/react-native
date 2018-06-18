@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ReactNativeStyleAttributes
+ * @format
  * @flow
  */
 
@@ -28,10 +28,10 @@ const ReactNativeStyleAttributes = {
   ...keyMirror(ImageStylePropTypes),
 };
 
-ReactNativeStyleAttributes.transform = { process: processTransform };
-ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
+ReactNativeStyleAttributes.transform = {process: processTransform};
+ReactNativeStyleAttributes.shadowOffset = {diff: sizesDiffer};
 
-const colorAttributes = { process: processColor };
+const colorAttributes = {process: processColor};
 ReactNativeStyleAttributes.backgroundColor = colorAttributes;
 ReactNativeStyleAttributes.borderBottomColor = colorAttributes;
 ReactNativeStyleAttributes.borderColor = colorAttributes;

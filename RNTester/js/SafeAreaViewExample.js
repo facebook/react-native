@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @providesModule SafeAreaViewExample
  */
 'use strict';
 

@@ -1,5 +1,4 @@
-load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "rn_xplat_cxx_library", "ANDROID_INSPECTOR_FLAGS", "APPLE_INSPECTOR_FLAGS", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "react_native_xplat_target")
+load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE", "APPLE_JSC_DEPS", "IS_OSS_BUILD", "get_android_inspector_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
@@ -8,9 +7,13 @@ CXX_LIBRARY_COMPILER_FLAGS = [
 
 APPLE_COMPILER_FLAGS = []
 
+DEBUG_PREPROCESSOR_FLAGS = []
+
 if not IS_OSS_BUILD:
-    load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_static_library_ios_flags", "flags")
-    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
+    load("@xplat//configurations/buck/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
+    DEBUG_PREPROCESSOR_FLAGS = get_debug_preprocessor_flags()
 
 rn_xplat_cxx_library(
     name = "module",
@@ -89,6 +92,8 @@ CXXREACT_PUBLIC_HEADERS = [
     "JSExecutor.h",
     "JSCExecutor.h",
     "JSCNativeModules.h",
+    "JSCUtils.h",
+    "JSDeltaBundleClient.h",
     "JSIndexedRAMBundle.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
@@ -98,6 +103,7 @@ CXXREACT_PUBLIC_HEADERS = [
     "NativeToJsBridge.h",
     "Platform.h",
     "RAMBundleRegistry.h",
+    "ReactMarker.h",
     "RecoverableError.h",
     "SharedProxyCxxModule.h",
     "SystraceSection.h",
@@ -129,18 +135,21 @@ rn_xplat_cxx_library(
         "-frtti",
     ],
     fbandroid_deps = ANDROID_JSC_DEPS,
-    fbandroid_preprocessor_flags = ANDROID_INSPECTOR_FLAGS + [
+    fbandroid_preprocessor_flags = get_android_inspector_flags() + [
         "-DWITH_JSC_EXTRA_TRACING=1",
         "-DWITH_JSC_MEMORY_PRESSURE=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_deps = APPLE_JSC_DEPS,
+    fbobjc_force_static = True,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
+    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + get_apple_inspector_flags(),
     force_static = True,
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",

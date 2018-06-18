@@ -7,7 +7,6 @@
 
 #include "FabricJSCBinding.h"
 #include <fb/fbjni.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <jschelpers/JavaScriptCore.h>
 #include <jschelpers/Unicode.h>
 
@@ -33,10 +32,15 @@ typedef struct FabricJSCUIManager {
     : wrapperObjectClassRef(classRef)
     , useCustomJSC(customJSC) {
     fabricUiManager = make_global(module);
+    JSC_JSClassRetain(useCustomJSC, wrapperObjectClassRef);
   }
   global_ref<jobject> fabricUiManager;
   JSClassRef wrapperObjectClassRef;
   bool useCustomJSC;
+
+  ~FabricJSCUIManager() {
+    JSC_JSClassRelease(useCustomJSC, wrapperObjectClassRef);
+  }
 } FabricJSCUIManager;
 
 jobject makePlainGlobalRef(jobject object) {
@@ -76,6 +80,15 @@ local_ref<ReadableNativeMap::jhybridobject> JSValueToReadableMapViaJSON(JSContex
   return ReadableNativeMap::newObjectCxxArgs(std::move(dynamicValue));
 }
 
+JSValueRef ReadableMapToJSValueViaJSON(JSContextRef ctx, NativeMap *map) {
+  folly::dynamic dynamicValue = map->consume();
+  auto json = folly::toJson(dynamicValue);
+  JSStringRef jsonRef = JSC_JSStringCreateWithUTF8CString(ctx, json.c_str());
+  auto value = JSC_JSValueMakeFromJSONString(ctx, jsonRef);
+  JSC_JSStringRelease(ctx, jsonRef);
+  return value;
+}
+
 JSValueRef createNode(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
   FabricJSCUIManager *managerWrapper = (FabricJSCUIManager *)JSC_JSObjectGetPrivate(useCustomJSC, function);
   alias_ref<jobject> manager = managerWrapper->fabricUiManager;
@@ -83,17 +96,16 @@ JSValueRef createNode(JSContextRef ctx, JSObjectRef function, JSObjectRef thisOb
 
   static auto createNode =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(jint, jstring, jint, ReadableNativeMap::javaobject)>("createNode");
+      ->getMethod<alias_ref<JShadowNode>(jint, jstring, jint, ReadableNativeMap::javaobject, jlong)>("createNode");
 
   int reactTag = (int)JSC_JSValueToNumber(ctx, arguments[0], NULL);
   auto viewName = JSValueToJString(ctx, arguments[1]);
   int rootTag = (int)JSC_JSValueToNumber(ctx, arguments[2], NULL);
   auto props = JSC_JSValueIsNull(ctx, arguments[3]) ? local_ref<ReadableNativeMap::jhybridobject>(nullptr) :
                JSValueToReadableMapViaJSON(ctx, arguments[3]);;
+  auto instanceHandle = (void *)arguments[4];
 
-  // TODO: Retain object in arguments[4] using a weak ref.
-
-  auto node = createNode(manager, reactTag, viewName.get(), rootTag, props.get());
+  auto node = createNode(manager, reactTag, viewName.get(), rootTag, props.get(), (jlong)instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(node.get()));
 }
@@ -105,10 +117,11 @@ JSValueRef cloneNode(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObj
 
   static auto cloneNode =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject)>("cloneNode");
+      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, jlong)>("cloneNode");
 
   auto previousNode = JSValueToJShadowNode(ctx, arguments[0]);
-  auto newNode = cloneNode(manager, previousNode.get());
+  auto instanceHandle = (void *)arguments[1];
+  auto newNode = cloneNode(manager, previousNode.get(), (jlong)instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(newNode.get()));
 }
@@ -120,10 +133,11 @@ JSValueRef cloneNodeWithNewChildren(JSContextRef ctx, JSObjectRef function, JSOb
 
   static auto cloneNodeWithNewChildren =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject)>("cloneNodeWithNewChildren");
+      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, jlong)>("cloneNodeWithNewChildren");
 
   auto previousNode = JSValueToJShadowNode(ctx, arguments[0]);
-  auto newNode = cloneNodeWithNewChildren(manager, previousNode.get());
+  auto instanceHandle = (void *)arguments[1];
+  auto newNode = cloneNodeWithNewChildren(manager, previousNode.get(), (jlong)instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(newNode.get()));
 }
@@ -135,11 +149,12 @@ JSValueRef cloneNodeWithNewProps(JSContextRef ctx, JSObjectRef function, JSObjec
 
   static auto cloneNodeWithNewProps =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, ReadableNativeMap::javaobject)>("cloneNodeWithNewProps");
+      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, ReadableNativeMap::javaobject, jlong)>("cloneNodeWithNewProps");
 
   auto previousNode = JSValueToJShadowNode(ctx, arguments[0]);
   auto props = JSValueToReadableMapViaJSON(ctx, arguments[1]);
-  auto newNode = cloneNodeWithNewProps(manager, previousNode.get(), props.get());
+  auto instanceHandle = (void *)arguments[2];
+  auto newNode = cloneNodeWithNewProps(manager, previousNode.get(), props.get(), (jlong)instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(newNode.get()));
 }
@@ -151,11 +166,12 @@ JSValueRef cloneNodeWithNewChildrenAndProps(JSContextRef ctx, JSObjectRef functi
 
   static auto cloneNodeWithNewChildrenAndProps =
     jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, ReadableNativeMap::javaobject)>("cloneNodeWithNewChildrenAndProps");
+      ->getMethod<alias_ref<JShadowNode>(JShadowNode::javaobject, ReadableNativeMap::javaobject, jlong)>("cloneNodeWithNewChildrenAndProps");
 
   auto previousNode = JSValueToJShadowNode(ctx, arguments[0]);
   auto props = JSValueToReadableMapViaJSON(ctx, arguments[1]);
-  auto newNode = cloneNodeWithNewChildrenAndProps(manager, previousNode.get(), props.get());
+  auto instanceHandle = (void *)arguments[2];
+  auto newNode = cloneNodeWithNewChildrenAndProps(manager, previousNode.get(), props.get(), (jlong)instanceHandle);
 
   return JSC_JSObjectMake(ctx, classRef, makePlainGlobalRef(newNode.get()));
 }
@@ -223,6 +239,21 @@ JSValueRef completeRoot(JSContextRef ctx, JSObjectRef function, JSObjectRef this
   return JSC_JSValueMakeUndefined(ctx);
 }
 
+JSValueRef registerEventHandler(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+  FabricJSCUIManager *managerWrapper = (FabricJSCUIManager *)JSC_JSObjectGetPrivate(useCustomJSC, function);
+  alias_ref<jobject> manager = managerWrapper->fabricUiManager;
+
+  static auto registerEventHandler =
+    jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+      ->getMethod<void(jlong)>("registerEventHandler");
+
+  auto eventHandler = arguments[0];
+  JSC_JSValueProtect(ctx, eventHandler);
+  registerEventHandler(manager, (jlong)eventHandler);
+
+  return JSC_JSValueMakeUndefined(ctx);
+}
+
 void finalizeJNIObject(JSObjectRef object) {
   // Release whatever global ref object we're storing here.
   jobject globalRef = (jobject)JSC_JSObjectGetPrivate(useCustomJSC, object);
@@ -262,6 +293,68 @@ jni::local_ref<FabricJSCBinding::jhybriddata> FabricJSCBinding::initHybrid(
   return makeCxxInstance();
 }
 
+jlong FabricJSCBinding::createEventTarget(
+  jlong jsContextNativePointer,
+  jlong instanceHandlePointer
+) {
+  JSContextRef context = (JSContextRef)jsContextNativePointer;
+  JSValueRef value = (JSValueRef)instanceHandlePointer;
+  // Retain a strong reference to this object.
+  JSC_JSValueProtect(context, value);
+  return (jlong)((void *)value);
+}
+
+void FabricJSCBinding::releaseEventTarget(
+  jlong jsContextNativePointer,
+  jlong eventTargetPointer
+) {
+  JSContextRef context = (JSContextRef)jsContextNativePointer;
+  JSValueRef value = (JSValueRef)((void *)eventTargetPointer);
+  // Release this object.
+  JSC_JSValueUnprotect(context, value);
+}
+
+void FabricJSCBinding::releaseEventHandler(
+  jlong jsContextNativePointer,
+  jlong eventHandlerPointer
+) {
+  JSContextRef context = (JSContextRef)jsContextNativePointer;
+  JSValueRef value = (JSValueRef)((void *)eventHandlerPointer);
+  // Release this function.
+  JSC_JSValueUnprotect(context, value);
+}
+
+void FabricJSCBinding::dispatchEventToTarget(
+  jlong jsContextNativePointer,
+  jlong eventHandlerPointer,
+  jlong eventTargetPointer,
+  std::string type,
+  NativeMap *payloadMap
+) {
+  JSContextRef context = (JSContextRef)jsContextNativePointer;
+  JSObjectRef eventHandler = (JSObjectRef)((void *)eventHandlerPointer);
+  JSObjectRef eventTarget = (JSObjectRef)((void *)eventTargetPointer);
+
+  JSObjectRef thisArg = (JSObjectRef)JSC_JSValueMakeUndefined(context);
+  JSStringRef typeStr = JSC_JSStringCreateWithUTF8CString(context, type.c_str());
+  JSValueRef typeRef = JSC_JSValueMakeString(context, typeStr);
+  JSC_JSStringRelease(context, typeStr);
+  JSValueRef payloadRef = ReadableMapToJSValueViaJSON(context, payloadMap);
+  JSValueRef args[] = {eventTarget, typeRef, payloadRef};
+  JSValueRef exn;
+  JSValueRef result = JSC_JSObjectCallAsFunction(
+    context,
+    eventHandler,
+    thisArg,
+    3,
+    args,
+    &exn
+  );
+  if (!result) {
+    // TODO: Handle error in exn
+  }
+}
+
 void FabricJSCBinding::installFabric(jlong jsContextNativePointer,
     jni::alias_ref<jobject> fabricModule) {
   JSContextRef context = (JSContextRef)jsContextNativePointer;
@@ -279,10 +372,15 @@ void FabricJSCBinding::installFabric(jlong jsContextNativePointer,
   addFabricMethod(context, fabricModule, classRef, module, "cloneNodeWithNewChildren", cloneNodeWithNewChildren);
   addFabricMethod(context, fabricModule, classRef, module, "cloneNodeWithNewProps", cloneNodeWithNewProps);
   addFabricMethod(context, fabricModule, classRef, module, "cloneNodeWithNewChildrenAndProps", cloneNodeWithNewChildrenAndProps);
+
   addFabricMethod(context, fabricModule, classRef, module, "appendChild", appendChild);
   addFabricMethod(context, fabricModule, classRef, module, "createChildSet", createChildSet);
   addFabricMethod(context, fabricModule, classRef, module, "appendChildToSet", appendChildToSet);
   addFabricMethod(context, fabricModule, classRef, module, "completeRoot", completeRoot);
+
+  addFabricMethod(context, fabricModule, classRef, module, "registerEventHandler", registerEventHandler);
+
+  JSC_JSClassRelease(useCustomJSC, classRef);
 
   JSObjectRef globalObject = JSC_JSContextGetGlobalObject(context);
   JSStringRef globalName = JSC_JSStringCreateWithUTF8CString(context, "nativeFabricUIManager");
@@ -294,6 +392,10 @@ void FabricJSCBinding::registerNatives() {
   registerHybrid({
     makeNativeMethod("initHybrid", FabricJSCBinding::initHybrid),
     makeNativeMethod("installFabric", FabricJSCBinding::installFabric),
+    makeNativeMethod("createEventTarget", FabricJSCBinding::createEventTarget),
+    makeNativeMethod("releaseEventTarget", FabricJSCBinding::releaseEventTarget),
+    makeNativeMethod("releaseEventHandler", FabricJSCBinding::releaseEventHandler),
+    makeNativeMethod("dispatchEventToTarget", FabricJSCBinding::dispatchEventToTarget),
   });
 }
 

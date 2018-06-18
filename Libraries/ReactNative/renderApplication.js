@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule renderApplication
  * @format
  * @flow
  */
@@ -13,7 +12,6 @@
 
 const AppContainer = require('AppContainer');
 const React = require('React');
-const ReactNative = require('ReactNative');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -25,6 +23,7 @@ function renderApplication<Props: Object>(
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<*>,
+  fabric?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
@@ -38,6 +37,9 @@ function renderApplication<Props: Object>(
   // to be async also. To do this, wrap AppContainer with an async marker.
   // For more info see https://fb.me/is-component-async
   if (
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     RootComponent.prototype != null &&
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
@@ -46,7 +48,11 @@ function renderApplication<Props: Object>(
     renderable = <AsyncMode>{renderable}</AsyncMode>;
   }
 
-  ReactNative.render(renderable, rootTag);
+  if (fabric) {
+    require('ReactFabric').render(renderable, rootTag);
+  } else {
+    require('ReactNative').render(renderable, rootTag);
+  }
 }
 
 module.exports = renderApplication;

@@ -12,13 +12,13 @@ LIBS = (
 )
 
 for lib in LIBS:
-  prebuilt_cxx_library(
-    name = lib,
-    header_only = True,
-    exported_platform_linker_flags = [
-      ('android.*', ['-l' + lib]),
-    ],
-    visibility = [
-      'PUBLIC',
-    ],
-  )
+    prebuilt_cxx_library(
+        name = lib,
+        header_only = True,
+        exported_platform_linker_flags = [
+            ("android.*", ["-l" + lib]),
+        ],
+        visibility = [
+            "PUBLIC",
+        ],
+    )

@@ -2,11 +2,11 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "mockito",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":mockito-core",
         ":objenesis",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_prebuilt_jar(

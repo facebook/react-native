@@ -407,7 +407,7 @@ public class NativeViewHierarchyOptimizer {
 
     // Create the view since it doesn't exist in the native hierarchy yet
     mUIViewOperationQueue.enqueueCreateView(
-        node.getRootNode().getThemedContext(),
+        node.getThemedContext(),
         node.getReactTag(),
         node.getViewClass(),
         props);

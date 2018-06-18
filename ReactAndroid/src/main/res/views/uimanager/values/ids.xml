@@ -5,4 +5,7 @@
 
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_native_id"/>
+
+  <!-- tag is used to store the nativeID tag -->
+  <item type="id" name="view_tag_instance_handle"/>
 </resources>

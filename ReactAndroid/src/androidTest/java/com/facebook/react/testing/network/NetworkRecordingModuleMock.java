@@ -47,7 +47,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     mCompleteRequest = completeRequest;
   }
 
-  public static interface RequestListener {
+  public interface RequestListener {
     public void onRequest(String method, String url, ReadableArray header, ReadableMap data);
   }
 

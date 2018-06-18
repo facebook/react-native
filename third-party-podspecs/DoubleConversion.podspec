@@ -12,6 +12,6 @@ Pod::Spec.new do |spec|
   spec.source_files = 'double-conversion/*.{h,cc}'
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "9.0", :tvos => "9.2" }
 
 end

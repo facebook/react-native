@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ProgressBarAndroid
+ * @format
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
 const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
@@ -31,7 +31,9 @@ const indeterminateType = function(props, propName, componentName, ...rest) {
     const indeterminate = props[propName];
     const styleAttr = props.styleAttr;
     if (!indeterminate && styleAttr !== 'Horizontal') {
-      return new Error('indeterminate=false is only valid for styleAttr=Horizontal');
+      return new Error(
+        'indeterminate=false is only valid for styleAttr=Horizontal',
+      );
     }
   };
 
@@ -39,8 +41,8 @@ const indeterminateType = function(props, propName, componentName, ...rest) {
 };
 
 /**
- * React component that wraps the Android-only `ProgressBar`. This component is used to indicate
- * that the app is loading or there is some activity in the app.
+ * React component that wraps the Android-only `ProgressBar`. This component is
+ * used to indicate that the app is loading or there is activity in the app.
  *
  * Example:
  *
@@ -61,7 +63,7 @@ const indeterminateType = function(props, propName, componentName, ...rest) {
  * },
  * ```
  */
-class ProgressBarAndroid extends ReactNative.NativeComponent {
+class ProgressBarAndroid extends React.Component {
   static propTypes = {
     ...ViewPropTypes,
 
@@ -107,18 +109,13 @@ class ProgressBarAndroid extends ReactNative.NativeComponent {
   };
 
   render() {
-    return <AndroidProgressBar {...this.props} />;
+    const {forwardedRef, ...props} = this.props;
+    return <AndroidProgressBar {...props} ref={forwardedRef} />;
   }
 }
 
-const AndroidProgressBar = requireNativeComponent(
-  'AndroidProgressBar',
-  ProgressBarAndroid,
-  {
-    nativeOnly: {
-      animating: true,
-    },
-  }
-);
+const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
 
-module.exports = ProgressBarAndroid;
+module.exports = React.forwardRef((props, ref) => (
+  <ProgressBarAndroid {...props} forwardedRef={ref} />
+));

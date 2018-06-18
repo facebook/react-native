@@ -30,7 +30,7 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
+  protected ReactShadowNodeImpl copy() {
     return new ReactRawTextShadowNode(this);
   }
 

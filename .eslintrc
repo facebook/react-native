@@ -57,18 +57,7 @@
 
   "rules": {
   // General
-
-    // This must be disallowed in this repo because the minimum supported
-    // version of node is 4 which doesn't support trailing commas.
-    // Once the minimum supported version is 8 or greater this can be changed
-    "comma-dangle": [2, {            // disallow trailing commas in object literals
-        "arrays": "ignore",
-        "objects": "ignore",
-        "imports": "ignore",
-        "exports": "ignore",
-        "functions": "never"
-    }],
-
+    "comma-dangle": [1, "always-multiline"], // allow or disallow trailing commas
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
     "no-const-assign": 2,            // disallow assignment to const-declared variables
@@ -269,25 +258,9 @@
   "overrides": [
     {
       "files": [
-        "Libraries/**/*.js",
-        "RNTester/**/*.js",
-        "jest/**/*.js",
-      ],
-      "rules": {
-        // These folders currently run through babel and don't need to be
-        // compatible with node 4
-        "comma-dangle": 0,
-      },
-    },
-    {
-      "files": [
         "local-cli/**/*.js",
       ],
       "rules": {
-        // This folder currently runs through babel and doesn't need to be
-        // compatible with node 4
-        "comma-dangle": 0,
-
         "lint/extra-arrow-initializer": 0,
         "no-alert": 0,
         "no-console-disallow": 0,

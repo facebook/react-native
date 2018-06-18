@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WebSocketInterceptor
+ * @format
  */
- 'use strict';
+
+'use strict';
 
 const RCTWebSocketModule = require('NativeModules').WebSocketModule;
 const NativeEventEmitter = require('NativeEventEmitter');
@@ -105,8 +106,9 @@ const WebSocketInterceptor = {
         if (onMessageCallback) {
           onMessageCallback(
             ev.id,
-            (ev.type === 'binary') ?
-            WebSocketInterceptor._arrayBufferToString(ev.data) : ev.data,
+            ev.type === 'binary'
+              ? WebSocketInterceptor._arrayBufferToString(ev.data)
+              : ev.data,
           );
         }
       }),
@@ -124,7 +126,7 @@ const WebSocketInterceptor = {
         if (onErrorCallback) {
           onErrorCallback(ev.id, {message: ev.message});
         }
-      })
+      }),
     ];
   },
 
@@ -179,14 +181,16 @@ const WebSocketInterceptor = {
     isInterceptorEnabled = true;
   },
 
-   _arrayBufferToString(data) {
+  _arrayBufferToString(data) {
     const value = base64.toByteArray(data).buffer;
     if (value === undefined || value === null) {
       return '(no value)';
     }
-    if (typeof ArrayBuffer !== 'undefined' &&
-        typeof Uint8Array !== 'undefined' &&
-        value instanceof ArrayBuffer) {
+    if (
+      typeof ArrayBuffer !== 'undefined' &&
+      typeof Uint8Array !== 'undefined' &&
+      value instanceof ArrayBuffer
+    ) {
       return `ArrayBuffer {${String(Array.from(new Uint8Array(value)))}}`;
     }
     return value;

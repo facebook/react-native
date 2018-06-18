@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const xcode = require('xcode');
@@ -27,15 +29,21 @@ const removeSharedLibraries = require('./removeSharedLibraries');
  *
  * If library is already unlinked, this action is a no-op.
  */
-module.exports = function unregisterNativeModule(dependencyConfig, projectConfig, iOSDependencies) {
+module.exports = function unregisterNativeModule(
+  dependencyConfig,
+  projectConfig,
+  iOSDependencies,
+) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
-  const dependencyProject = xcode.project(dependencyConfig.pbxprojPath).parseSync();
+  const dependencyProject = xcode
+    .project(dependencyConfig.pbxprojPath)
+    .parseSync();
 
   const libraries = getGroup(project, projectConfig.libraryFolder);
 
   const file = removeProjectFromProject(
     project,
-    path.relative(projectConfig.sourceDir, dependencyConfig.projectPath)
+    path.relative(projectConfig.sourceDir, dependencyConfig.projectPath),
   );
 
   removeProjectFromLibraries(libraries, file);
@@ -50,8 +58,8 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
     dependencyConfig.sharedLibraries,
     iOSDependencies.reduce(
       (libs, dependency) => libs.concat(dependency.sharedLibraries),
-      projectConfig.sharedLibraries
-    )
+      projectConfig.sharedLibraries,
+    ),
   );
 
   removeSharedLibraries(project, sharedLibraries);
@@ -60,12 +68,9 @@ module.exports = function unregisterNativeModule(dependencyConfig, projectConfig
   if (!isEmpty(headers)) {
     removeFromHeaderSearchPaths(
       project,
-      getHeaderSearchPath(projectConfig.sourceDir, headers)
+      getHeaderSearchPath(projectConfig.sourceDir, headers),
     );
   }
 
-  fs.writeFileSync(
-    projectConfig.pbxprojPath,
-    project.writeSync()
-  );
+  fs.writeFileSync(projectConfig.pbxprojPath, project.writeSync());
 };

@@ -4,27 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheet
  * @flow
  * @format
  */
 'use strict';
 
 const PixelRatio = require('PixelRatio');
-const ReactNativePropRegistry = require('ReactNativePropRegistry');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const StyleSheetValidation = require('StyleSheetValidation');
 
 const flatten = require('flattenStyle');
 
 import type {
-  ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   ____Styles_Internal,
+  ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
+  ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
+  ____TextStyle_Internal,
   ____TextStyleProp_Internal,
+  ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-  LayoutStyle,
+  ____LayoutStyle_Internal,
+  ____ShadowStyle_Internal,
+  ____TransformStyle_Internal,
 } from 'StyleSheetTypes';
 
 /**
@@ -66,21 +69,115 @@ export type ImageStyleProp = ____ImageStyleProp_Internal;
  */
 export type DangerouslyImpreciseStyleProp = ____DangerouslyImpreciseStyleProp_Internal;
 
+/**
+ * Utility type for getting the values for specific style keys.
+ *
+ * The following is bad because position is more restrictive than 'string':
+ * ```
+ * type Props = {position: string};
+ * ```
+ *
+ * You should use the following instead:
+ *
+ * ```
+ * type Props = {position: TypeForStyleKey<'position'>};
+ * ```
+ *
+ * This will correctly give you the type 'absolute' | 'relative'
+ */
+export type TypeForStyleKey<
+  +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
+> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for View.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using ViewStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to a View that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type ViewStyle = ____ViewStyle_Internal;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for Text.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using TextStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to a Text that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type TextStyle = ____TextStyle_Internal;
+
+/**
+ * This type is an object of the different possible style
+ * properties that can be specified for Image.
+ *
+ * Note that this isn't a safe way to type a style prop for a component as
+ * results from StyleSheet.create return an internal identifier, not
+ * an object of styles.
+ *
+ * If you want to type the style prop of a function,
+ * consider using ImageStyleProp.
+ *
+ * A reasonable usage of this type is for helper functions that return an
+ * object of styles to pass to an Image that can't be precomputed with
+ * StyleSheet.create.
+ */
+export type ImageStyle = ____ImageStyle_Internal;
+
+/**
+ * WARNING: You probably shouldn't be using this type. This type is an object
+ * with all possible style keys and their values. Note that this isn't
+ * a safe way to type a style prop for a component as results from
+ * StyleSheet.create return an internal identifier, not an object of styles.
+ *
+ * If you want to type the style prop of a function, consider using
+ * ViewStyleProp, TextStyleProp, or ImageStyleProp.
+ *
+ * This should only be used by very core utilities that operate on an object
+ * containing any possible style value.
+ */
+export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
+
+/**
+ * These types are simlilar to the style types above. They are objects of the
+ * possible style keys in that group. For example, ShadowStyle contains
+ * keys like `shadowColor` and `shadowRadius`.
+ */
+export type LayoutStyle = ____LayoutStyle_Internal;
+export type ShadowStyle = ____ShadowStyle_Internal;
+export type TransformStyle = ____TransformStyle_Internal;
+
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFillObject: LayoutStyle = {
+const absoluteFill: LayoutStyle = {
   position: 'absolute',
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill: StyleSheetInternalStyleIdentifier = ReactNativePropRegistry.register(
-  absoluteFillObject,
-); // This also freezes it
+if (__DEV__) {
+  Object.freeze(absoluteFill);
+}
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -153,7 +250,7 @@ module.exports = {
    * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
    * styles.
    */
-  absoluteFill,
+  absoluteFill: (absoluteFill: any), // TODO: This should be updated after we fix downstream Flow sites.
 
   /**
    * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
@@ -167,7 +264,7 @@ module.exports = {
    *     },
    *   });
    */
-  absoluteFillObject,
+  absoluteFillObject: absoluteFill,
 
   /**
    * Combines two styles such that `style2` will override any styles in `style1`.
@@ -261,14 +358,18 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: ____Styles_Internal>(
-    obj: S,
-  ): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
-    const result = {};
-    for (const key in obj) {
-      StyleSheetValidation.validateStyle(key, obj);
-      result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);
+  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => any> {
+    // TODO: This should return S as the return type. But first,
+    // we need to codemod all the callsites that are typing this
+    // return value as a number (even though it was opaque).
+    if (__DEV__) {
+      for (const key in obj) {
+        StyleSheetValidation.validateStyle(key, obj);
+        if (obj[key]) {
+          Object.freeze(obj[key]);
+        }
+      }
     }
-    return result;
+    return obj;
   },
 };

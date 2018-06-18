@@ -4,22 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WebView
+ * @format
  * @noflow
  */
+
 'use strict';
 
 const ActivityIndicator = require('ActivityIndicator');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const React = require('React');
+const Linking = require('Linking');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
+const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
 const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
-const ScrollView = require('ScrollView');
+const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
 const invariant = require('fbjs/lib/invariant');
@@ -54,7 +57,7 @@ type ErrorEvent = {
   domain: any,
   code: any,
   description: any,
-}
+};
 
 type Event = Object;
 
@@ -74,18 +77,10 @@ const defaultRenderLoading = () => (
 );
 const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   <View style={styles.errorContainer}>
-    <Text style={styles.errorTextTitle}>
-      Error loading page
-    </Text>
-    <Text style={styles.errorText}>
-      {'Domain: ' + errorDomain}
-    </Text>
-    <Text style={styles.errorText}>
-      {'Error Code: ' + errorCode}
-    </Text>
-    <Text style={styles.errorText}>
-      {'Description: ' + errorDesc}
-    </Text>
+    <Text style={styles.errorTextTitle}>Error loading page</Text>
+    <Text style={styles.errorText}>{'Domain: ' + errorDomain}</Text>
+    <Text style={styles.errorText}>{'Error Code: ' + errorCode}</Text>
+    <Text style={styles.errorText}>{'Description: ' + errorDesc}</Text>
   </View>
 );
 
@@ -114,30 +109,15 @@ const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
-  static get extraNativeComponentConfig() {
-    return {
-      nativeOnly: {
-        onLoadingStart: true,
-        onLoadingError: true,
-        onLoadingFinish: true,
-        onMessage: true,
-        messagingEnabled: PropTypes.bool,
-      },
-    };
-  }
-
   static propTypes = {
     ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
-      'Use the `source` prop instead.'
+      'Use the `source` prop instead.',
     ),
 
-    url: deprecatedPropType(
-      PropTypes.string,
-      'Use the `source` prop instead.'
-    ),
+    url: deprecatedPropType(PropTypes.string, 'Use the `source` prop instead.'),
 
     /**
      * Loads static html or a uri (with optional headers) in the WebView.
@@ -355,6 +335,15 @@ class WebView extends React.Component {
     mediaPlaybackRequiresUserAction: PropTypes.bool,
 
     /**
+     * List of origin strings to allow being navigated to. The strings allow
+     * wildcards and get matched against *just* the origin (not the full URL).
+     * If the user taps to navigate to a new page but the new page is not in
+     * this whitelist, we will open the URL in Safari.
+     * The default whitelisted origins are "http://*" and "https://*".
+     */
+    originWhitelist: PropTypes.arrayOf(PropTypes.string),
+
+    /**
      * Function that accepts a string that will be passed to the WebView and
      * executed immediately as JavaScript.
      */
@@ -370,11 +359,7 @@ class WebView extends React.Component {
      * - `'compatibility'` -  WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
      * @platform android
      */
-    mixedContentMode: PropTypes.oneOf([
-      'never',
-      'always',
-      'compatibility'
-    ]),
+    mixedContentMode: PropTypes.oneOf(['never', 'always', 'compatibility']),
 
     /**
      * Override the native component used to render the WebView. Enables a custom native
@@ -391,7 +376,7 @@ class WebView extends React.Component {
        */
       props: PropTypes.object,
       /*
-       * Set the ViewManager to use for communcation with the native side.
+       * Set the ViewManager to use for communication with the native side.
        * @platform ios
        */
       viewManager: PropTypes.object,
@@ -399,6 +384,7 @@ class WebView extends React.Component {
   };
 
   static defaultProps = {
+    originWhitelist: WebViewShared.defaultOriginWhitelist,
     scalesPageToFit: true,
   };
 
@@ -421,24 +407,23 @@ class WebView extends React.Component {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
       const errorEvent = this.state.lastErrorEvent;
-      invariant(
-        errorEvent != null,
-        'lastErrorEvent expected to be non-null'
-      );
+      invariant(errorEvent != null, 'lastErrorEvent expected to be non-null');
       otherView = (this.props.renderError || defaultRenderError)(
         errorEvent.domain,
         errorEvent.code,
-        errorEvent.description
+        errorEvent.description,
       );
     } else if (this.state.viewState !== WebViewState.IDLE) {
       console.error(
-        'RCTWebView invalid state encountered: ' + this.state.loading
+        'RCTWebView invalid state encountered: ' + this.state.loading,
       );
     }
 
     const webViewStyles = [styles.container, styles.webView, this.props.style];
-    if (this.state.viewState === WebViewState.LOADING ||
-      this.state.viewState === WebViewState.ERROR) {
+    if (
+      this.state.viewState === WebViewState.LOADING ||
+      this.state.viewState === WebViewState.ERROR
+    ) {
       // if we're in either LOADING or ERROR states, don't show the webView
       webViewStyles.push(styles.hidden);
     }
@@ -447,13 +432,34 @@ class WebView extends React.Component {
 
     const viewManager = nativeConfig.viewManager || RCTWebViewManager;
 
-    const onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
-      const shouldStart = this.props.onShouldStartLoadWithRequest &&
-        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
-      viewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
-    });
+    const compiledWhitelist = (this.props.originWhitelist || []).map(
+      WebViewShared.originWhitelistToRegex,
+    );
+    const onShouldStartLoadWithRequest = (event: Event) => {
+      let shouldStart = true;
+      const {url} = event.nativeEvent;
+      const origin = WebViewShared.extractOrigin(url);
+      const passesWhitelist = compiledWhitelist.some(x =>
+        new RegExp(x).test(origin),
+      );
+      shouldStart = shouldStart && passesWhitelist;
+      if (!passesWhitelist) {
+        Linking.openURL(url);
+      }
+      if (this.props.onShouldStartLoadWithRequest) {
+        shouldStart =
+          shouldStart &&
+          this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      }
+      viewManager.startLoadWithResult(
+        !!shouldStart,
+        event.nativeEvent.lockIdentifier,
+      );
+    };
 
-    const decelerationRate = processDecelerationRate(this.props.decelerationRate);
+    const decelerationRate = processDecelerationRate(
+      this.props.decelerationRate,
+    );
 
     const source = this.props.source || {};
     if (this.props.html) {
@@ -464,9 +470,9 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
-    const NativeWebView = nativeConfig.component || RCTWebView;
+    const NativeWebView = nativeConfig.component || RCTWebView;
 
-    const webView =
+    const webView = (
       <NativeWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
@@ -477,7 +483,9 @@ class WebView extends React.Component {
         scrollEnabled={this.props.scrollEnabled}
         decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
-        automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        automaticallyAdjustContentInsets={
+          this.props.automaticallyAdjustContentInsets
+        }
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
@@ -486,10 +494,13 @@ class WebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
-        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        mediaPlaybackRequiresUserAction={
+          this.props.mediaPlaybackRequiresUserAction
+        }
         dataDetectorTypes={this.props.dataDetectorTypes}
         {...nativeConfig.props}
-      />;
+      />
+    );
 
     return (
       <View style={styles.container}>
@@ -506,7 +517,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goForward,
-      null
+      null,
     );
   };
 
@@ -517,7 +528,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goBack,
-      null
+      null,
     );
   };
 
@@ -529,7 +540,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
-      null
+      null,
     );
   };
 
@@ -540,7 +551,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.stopLoading,
-      null
+      null,
     );
   };
 
@@ -554,25 +565,25 @@ class WebView extends React.Component {
    * document.addEventListener('message', e => { document.title = e.data; });
    * ```
    */
-  postMessage = (data) => {
+  postMessage = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [String(data)]
+      [String(data)],
     );
   };
 
   /**
-  * Injects a javascript string into the referenced WebView. Deliberately does not
-  * return a response because using eval() to return a response breaks this method
-  * on pages with a Content Security Policy that disallows eval(). If you need that
-  * functionality, look into postMessage/onMessage.
-  */
-  injectJavaScript = (data) => {
+   * Injects a javascript string into the referenced WebView. Deliberately does not
+   * return a response because using eval() to return a response breaks this method
+   * on pages with a Content Security Policy that disallows eval(). If you need that
+   * functionality, look into postMessage/onMessage.
+   */
+  injectJavaScript = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.injectJavaScript,
-      [data]
+      [data],
     );
   };
 
@@ -608,7 +619,7 @@ class WebView extends React.Component {
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
-      viewState: WebViewState.ERROR
+      viewState: WebViewState.ERROR,
     });
   };
 
@@ -625,10 +636,10 @@ class WebView extends React.Component {
   _onMessage = (event: Event) => {
     const {onMessage} = this.props;
     onMessage && onMessage(event);
-  }
+  };
 }
 
-const RCTWebView = requireNativeComponent('RCTWebView', WebView, WebView.extraNativeComponentConfig);
+const RCTWebView = requireNativeComponent('RCTWebView');
 
 const styles = StyleSheet.create({
   container: {
@@ -663,7 +674,7 @@ const styles = StyleSheet.create({
   },
   webView: {
     backgroundColor: '#ffffff',
-  }
+  },
 });
 
 module.exports = WebView;

@@ -14,11 +14,12 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
+               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithBridge:bridge
-                                                            moduleName:moduleName
-                                                     initialProperties:initialProperties];
-  return [self initWithSurface:surface];
+  RCTSurface *surface = (RCTSurface *)[[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                    moduleName:moduleName
+                                                             initialProperties:initialProperties];
+  return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
 @end

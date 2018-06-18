@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedInterpolation
  * @flow
  * @format
  */
@@ -286,7 +285,7 @@ function checkValidInputRange(arr: Array<number>) {
        * mean this implicit string conversion, you can do something like
        * String(myThing)
        */
-      'inputRange must be monotonically increasing ' + arr,
+      'inputRange must be monotonically non-decreasing ' + arr,
     );
   }
 }
@@ -350,13 +349,16 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   __transformDataType(range: Array<any>) {
     // Change the string array type to number array
     // So we can reuse the same logic in iOS and Android platform
+    /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.70 was deployed. To see the error delete this
+     * comment and run Flow. */
     return range.map(function(value) {
       if (typeof value !== 'string') {
         return value;
       }
       if (/deg$/.test(value)) {
         const degrees = parseFloat(value) || 0;
-        const radians = degrees * Math.PI / 180.0;
+        const radians = (degrees * Math.PI) / 180.0;
         return radians;
       } else {
         // Assume radians

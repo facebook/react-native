@@ -4,24 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Image
  * @flow
  * @format
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ImageProps = require('ImageProps');
-const ImageResizeMode = require('ImageResizeMode');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
 
 const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
@@ -29,6 +22,8 @@ const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
+
+const RCTImageView = requireNativeComponent('RCTImageView');
 
 /**
  * A React component for displaying different types of images,
@@ -42,7 +37,6 @@ const Image = createReactClass({
   propTypes: ImageProps,
 
   statics: {
-    resizeMode: ImageResizeMode,
     /**
      * Retrieve the width and height (in pixels) of an image prior to displaying it.
      *
@@ -146,7 +140,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
-
-const RCTImageView = requireNativeComponent('RCTImageView', Image);
 
 module.exports = Image;

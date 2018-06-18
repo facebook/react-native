@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+/** @format */
+
+import React, {Component} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -11,18 +13,17 @@ import ListItem from '../../components/ListItem';
 import Backend from '../../lib/Backend';
 
 export default class ChatListScreen extends Component {
-
   static navigationOptions = {
     title: 'Chats',
     header: Platform.OS === 'ios' ? undefined : null,
-    tabBarIcon: ({ tintColor }) => (
+    tabBarIcon: ({tintColor}) => (
       <Image
         // Using react-native-vector-icons works here too
         source={require('./chat-icon.png')}
         style={[styles.icon, {tintColor: tintColor}]}
       />
     ),
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -33,7 +34,7 @@ export default class ChatListScreen extends Component {
 
   async componentDidMount() {
     const chatList = await Backend.fetchChatList();
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       chatList,
       isLoading: false,
     }));
@@ -41,7 +42,7 @@ export default class ChatListScreen extends Component {
 
   // Binding the function so it can be passed to FlatList below
   // and 'this' works properly inside renderItem
-  renderItem = ({ item }) => {
+  renderItem = ({item}) => {
     return (
       <ListItem
         label={item}
@@ -53,7 +54,7 @@ export default class ChatListScreen extends Component {
         }}
       />
     );
-  }
+  };
 
   render() {
     if (this.state.isLoading) {

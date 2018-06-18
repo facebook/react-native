@@ -4,20 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule mergeHelpers
  *
  * requiresPolyfills: Array.isArray
+ *
+ * @format
  */
 
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * Maximum number of levels to traverse. Will catch circular structures.
  * @const
  */
-var MAX_MERGE_DEPTH = 36;
+const MAX_MERGE_DEPTH = 36;
 
 /**
  * We won't worry about edge cases like new String('x') or new Boolean(true).
@@ -25,12 +26,11 @@ var MAX_MERGE_DEPTH = 36;
  * @param {*} o The item/object/value to test.
  * @return {boolean} true iff the argument is a terminal.
  */
-var isTerminal = function(o) {
+const isTerminal = function(o) {
   return typeof o !== 'object' || o instanceof Date || o === null;
 };
 
-var mergeHelpers = {
-
+const mergeHelpers = {
   MAX_MERGE_DEPTH: MAX_MERGE_DEPTH,
 
   isTerminal: isTerminal,
@@ -58,7 +58,7 @@ var mergeHelpers = {
       Array.isArray(one) && Array.isArray(two),
       'Tried to merge arrays, instead got %s and %s.',
       one,
-      two
+      two,
     );
   },
 
@@ -78,7 +78,7 @@ var mergeHelpers = {
     invariant(
       !isTerminal(arg) && !Array.isArray(arg),
       'Tried to merge an object, instead got %s.',
-      arg
+      arg,
     );
   },
 
@@ -89,7 +89,7 @@ var mergeHelpers = {
     invariant(
       (!isTerminal(arg) || typeof arg === 'function') && !Array.isArray(arg),
       'Tried to merge into an object, instead got %s.',
-      arg
+      arg,
     );
   },
 
@@ -103,7 +103,7 @@ var mergeHelpers = {
     invariant(
       level < MAX_MERGE_DEPTH,
       'Maximum deep merge depth exceeded. You may be attempting to merge ' +
-      'circular structures in an unsupported way.'
+        'circular structures in an unsupported way.',
     );
   },
 
@@ -116,7 +116,7 @@ var mergeHelpers = {
     invariant(
       strategy === undefined || strategy in mergeHelpers.ArrayStrategies,
       'You must provide an array strategy to deep merge functions to ' +
-      'instruct the deep merge how to resolve merging two arrays.'
+        'instruct the deep merge how to resolve merging two arrays.',
     );
   },
 
@@ -132,7 +132,6 @@ var mergeHelpers = {
     Concat: 'Concat',
     IndexByIndex: 'IndexByIndex',
   },
-
 };
 
 module.exports = mergeHelpers;
