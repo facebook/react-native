@@ -262,9 +262,9 @@ inline void fromDynamic(const folly::dynamic &value, Transform &result) {
     } else if (operation == "translate") {
       transformMatrix = transformMatrix * Transform::Translate(parameters[0].asDouble(), parameters[1].asDouble(), 0);
     } else if (operation == "translateX") {
-      transformMatrix = transformMatrix * Transform::Translate(parameters[0].asDouble(), 0, 0);
+      transformMatrix = transformMatrix * Transform::Translate(parameters.asDouble(), 0, 0);
     } else if (operation == "translateY") {
-      transformMatrix = transformMatrix * Transform::Translate(0, parameters[0].asDouble(), 0);
+      transformMatrix = transformMatrix * Transform::Translate(0, parameters.asDouble(), 0);
     } else if (operation == "skewX") {
       transformMatrix = transformMatrix * Transform::Skew(parameters.asDouble(), 0);
     } else if (operation == "skewY") {
