@@ -25,7 +25,7 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
   backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
   borderWidth(convertRawProp(rawProps, "borderWidth", sourceProps.borderWidth)),
-  borderRadus(convertRawProp(rawProps, "borderRadus", sourceProps.borderRadus)),
+  borderRadius(convertRawProp(rawProps, "borderRadius", sourceProps.borderRadius)),
   borderColor(convertRawProp(rawProps, "borderColor", sourceProps.borderColor)),
   borderStyle(convertRawProp(rawProps, "borderStyle", sourceProps.borderStyle)),
   shadowColor(convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor)),
