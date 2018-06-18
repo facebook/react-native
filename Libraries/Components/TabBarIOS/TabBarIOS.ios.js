@@ -89,7 +89,7 @@ class TabBarIOS extends React.Component<ViewProps & {
         barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}
-        hidden={this.props.hidden !== false}>
+        hidden={!!this.props.hidden}>
         {this.props.children}
       </RCTTabBar>
     );
