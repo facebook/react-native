@@ -538,6 +538,10 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
+        //FIXME by GYB desc: crash View.getId() on a null object
+        if (child == null) {
+          continue;
+        }
         if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
