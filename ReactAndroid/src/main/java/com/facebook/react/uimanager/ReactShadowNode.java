@@ -71,13 +71,13 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   /**
    * @return a mutable copy of the {@link ReactShadowNode}
    */
-  T mutableCopy();
+  T mutableCopy(long instanceHandle);
 
-  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
+  T mutableCopyWithNewProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
 
-  T mutableCopyWithNewChildren();
+  T mutableCopyWithNewChildren(long instanceHandle);
 
-  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
+  T mutableCopyWithNewChildrenAndProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -373,4 +373,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   @Nullable ReactShadowNode getOriginalReactShadowNode();
 
   void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
+
+  long getInstanceHandle();
+
+  void setInstanceHandle(long instanceHandle);
 }

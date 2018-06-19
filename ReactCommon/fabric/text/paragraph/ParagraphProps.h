@@ -12,6 +12,7 @@
 
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/core/Props.h>
+#include <fabric/text/BaseTextProps.h>
 #include <fabric/view/ViewProps.h>
 
 namespace facebook {
@@ -27,33 +28,29 @@ using SharedParagraphProps = std::shared_ptr<const ParagraphProps>;
  * object.
  */
 class ParagraphProps:
-  public ViewProps {
+  public ViewProps,
+  public BaseTextProps {
 
 public:
+  ParagraphProps() = default;
+  ParagraphProps(const ParagraphProps &sourceProps, const RawProps &rawProps);
 
-  void apply(const RawProps &rawProps) override;
-
-#pragma mark - Getters
+#pragma mark - Props
 
   /*
-   * Returns `ParagraphAttributes` object which has all prop values that affect
-   * visual representation of the paragraph.
+   * Contains all prop values that affect visual representation of the paragraph.
    */
-  ParagraphAttributes getParagraphAttributes() const;
+  const ParagraphAttributes paragraphAttributes {};
 
   /*
    * Defines can the text be selected (and copied) or not.
    */
-  bool getIsSelectable() const;
+  const bool isSelectable {false};
 
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;
 
-private:
-
-  ParagraphAttributes paragraphAttributes_ {};
-  bool isSelectable_ {false};
 };
 
 } // namespace react

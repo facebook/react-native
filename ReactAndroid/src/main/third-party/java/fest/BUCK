@@ -2,11 +2,11 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "fest",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":fest-core",
         ":fest-util",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_prebuilt_jar(

@@ -535,6 +535,10 @@ YGNodeRef YGNodeGetOwner(const YGNodeRef node) {
   return node->getOwner();
 }
 
+YGNodeRef YGNodeGetParent(const YGNodeRef node) {
+  return node->getOwner();
+}
+
 void YGNodeMarkDirty(const YGNodeRef node) {
   YGAssertWithNode(
       node,

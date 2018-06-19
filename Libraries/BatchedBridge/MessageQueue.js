@@ -37,18 +37,15 @@ const TRACE_TAG_REACT_APPS = 1 << 17;
 
 const DEBUG_INFO_LIMIT = 32;
 
-// Work around an initialization order issue
-let JSTimers = null;
-
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [number[], number[], any[], number];
   _successCallbacks: {[key: number]: ?Function};
   _failureCallbacks: {[key: number]: ?Function};
   _callID: number;
-  _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
+  _immediatesCallback: ?() => void;
 
   _debugInfo: {[number]: [number, number]};
   _remoteModuleTable: {[number]: string};
@@ -64,6 +61,7 @@ class MessageQueue {
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = new Date().getTime();
+    this._immediatesCallback = null;
 
     if (__DEV__) {
       this._debugInfo = {};
@@ -248,10 +246,9 @@ class MessageQueue {
     const now = new Date().getTime();
     if (
       global.nativeFlushQueueImmediate &&
-      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-        this._inCall === 0)
+      now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
-      var queue = this._queue;
+      const queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
       global.nativeFlushQueueImmediate(queue);
@@ -281,12 +278,18 @@ class MessageQueue {
     }
   }
 
+  // For JSTimers to register its callback. Otherwise a circular dependency
+  // between modules is introduced. Note that only one callback may be
+  // registered at a time.
+  setImmediatesCallback(fn: () => void) {
+    this._immediatesCallback = fn;
+  }
+
   /**
    * Private methods
    */
 
   __guard(fn: () => void) {
-    this._inCall++;
     if (this.__shouldPauseOnThrow()) {
       fn();
     } else {
@@ -296,7 +299,6 @@ class MessageQueue {
         ErrorUtils.reportFatalError(error);
       }
     }
-    this._inCall--;
   }
 
   // MessageQueue installs a global handler to catch all exceptions where JS users can register their own behavior
@@ -307,21 +309,16 @@ class MessageQueue {
   __shouldPauseOnThrow() {
     return (
       // $FlowFixMe
-      (typeof DebuggerInternal !== 'undefined' &&
-        DebuggerInternal.shouldPauseOnThrow === true) || // eslint-disable-line no-undef
-      // FIXME(festevezga) Remove once T24034309 is rolled out internally
-      // $FlowFixMe
-      (typeof __fbUninstallRNGlobalErrorHandler !== 'undefined' &&
-        __fbUninstallRNGlobalErrorHandler === true) // eslint-disable-line no-undef
+      typeof DebuggerInternal !== 'undefined' &&
+      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
     );
   }
 
   __callImmediates() {
     Systrace.beginEvent('JSTimers.callImmediates()');
-    if (!JSTimers) {
-      JSTimers = require('JSTimers');
+    if (this._immediatesCallback != null) {
+      this._immediatesCallback();
     }
-    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 

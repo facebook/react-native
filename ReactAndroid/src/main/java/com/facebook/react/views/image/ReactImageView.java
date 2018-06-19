@@ -30,7 +30,6 @@ import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.drawable.RoundedColorDrawable;
-
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -53,7 +52,6 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -234,8 +232,7 @@ public class ReactImageView extends GenericDraweeView {
     if (!shouldNotify) {
       mControllerListener = null;
     } else {
-      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).
-        getNativeModule(UIManagerModule.class).getEventDispatcher();
+      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override

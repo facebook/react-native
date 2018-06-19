@@ -7,11 +7,6 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -26,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
@@ -34,11 +28,15 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.image.ImageLoadEvent;
-import com.facebook.react.uimanager.ReactClippingViewGroup;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * A view that the {@link FlatShadowNode} hierarchy maps to.  Can mount and draw native views as
@@ -129,8 +127,7 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
       }
 
       ReactContext reactContext = ((ReactContext) view.getContext());
-      UIManagerModule uiManagerModule = reactContext.getNativeModule(UIManagerModule.class);
-      uiManagerModule.getEventDispatcher().dispatchEvent(
+      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
           new ImageLoadEvent(reactTag, imageLoadEvent));
     }
   }

@@ -25,7 +25,7 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
     _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
     if (RCT_NSASSERT) { \
       [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
-        file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
+        file:(NSString * _Nonnull)@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
     } \
   } \
 } while (false)

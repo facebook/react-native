@@ -82,6 +82,7 @@ const JSCWrapper* systemJSCWrapper() {
       .JSStringRetain = JSStringRetain,
 
       .JSClassCreate = JSClassCreate,
+      .JSClassRetain = JSClassRetain,
       .JSClassRelease = JSClassRelease,
 
       .JSObjectCallAsConstructor = JSObjectCallAsConstructor,

@@ -266,7 +266,7 @@ class SpringAnimation extends Animation {
       position =
         this._toValue -
         envelope *
-          ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
+          (((v0 + zeta * omega0 * x0) / omega1) * Math.sin(omega1 * t) +
             x0 * Math.cos(omega1 * t));
       // This looks crazy -- it's actually just the derivative of the
       // oscillation function
@@ -274,7 +274,7 @@ class SpringAnimation extends Animation {
         zeta *
           omega0 *
           envelope *
-          (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
+          ((Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0)) / omega1 +
             x0 * Math.cos(omega1 * t)) -
         envelope *
           (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -

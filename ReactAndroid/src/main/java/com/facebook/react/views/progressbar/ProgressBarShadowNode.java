@@ -53,8 +53,8 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopyWithNewChildren();
+  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
     node.initMeasureFunction();
     return node;
   }
@@ -64,8 +64,8 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
-    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopy();
+  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopy(instanceHandle);
     node.initMeasureFunction();
     return node;
   }

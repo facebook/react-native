@@ -8,16 +8,19 @@
 #import "RCTSurfacePresenter.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTCxxExceptionManager.h>
-#import <React/RCTScheduler.h>
-#import <React/RCTMountingManager.h>
-#import <React/RCTFabricSurface.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTMountingManagerDelegate.h>
-#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTComponentViewRegistry.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTMountingManager.h>
+#import <React/RCTMountingManagerDelegate.h>
+#import <React/RCTScheduler.h>
+#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
+#import <fabric/core/LayoutContext.h>
+#import <fabric/core/LayoutConstraints.h>
+
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 
@@ -25,7 +28,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSurfacePresenter {
-  std::shared_ptr<ExceptionManager> _exceptionManager;
   RCTScheduler *_scheduler;
   RCTMountingManager *_mountingManager;
   RCTBridge *_bridge;
@@ -39,22 +41,24 @@ using namespace facebook::react;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
 
-    _exceptionManager = std::make_shared<RCTCxxExceptionManager>();
-
     _scheduler = [[RCTScheduler alloc] init];
     _scheduler.delegate = self;
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleBridgeWillReloadNotification:)
+                                                 name:RCTBridgeWillReloadNotification
+                                               object:_bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleJavaScriptDidLoadNotification:)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:_bridge];
   }
 
   return self;
-}
-
-- (std::shared_ptr<ExceptionManager>)exceptionManager
-{
-  return _exceptionManager;
 }
 
 - (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
@@ -85,6 +89,39 @@ using namespace facebook::react;
   [self stopSurface:surface];
   [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
   [_surfaceRegistry unregisterSurface:surface];
+}
+
+- (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
+{
+  return [_surfaceRegistry surfaceForRootTag:rootTag];
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  return [_scheduler measureWithLayoutConstraints:layoutConstraints
+                                    layoutContext:layoutContext
+                                          rootTag:surface.rootTag];
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  [_scheduler constraintLayoutWithLayoutConstraints:layoutConstraints
+                                      layoutContext:layoutContext
+                                            rootTag:surface.rootTag];
 }
 
 - (void)runSurface:(RCTFabricSurface *)surface
@@ -122,10 +159,26 @@ using namespace facebook::react;
 
   UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
 
-  // FIXME: Remove this.
-  rootComponentView.frame = CGRectMake(0, 0, 400, 400);
-
   surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
+}
+
+#pragma mark - Bridge events
+
+- (void)handleBridgeWillReloadNotification:(NSNotification *)notification
+{
+  // TODO: Define a lifecycle contract for the pieces involved here including the scheduler, mounting manager, and
+  // the surface registry. For now simply recreate the scheduler on reload.
+  // The goal is to deallocate the Scheduler and its underlying references before the JS runtime is destroyed.
+  _scheduler = [[RCTScheduler alloc] init];
+  _scheduler.delegate = self;
+}
+
+- (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
+{
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  if (bridge != _batchedBridge) {
+    _batchedBridge = bridge;
+  }
 }
 
 @end
@@ -135,11 +188,6 @@ using namespace facebook::react;
 - (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
   return _scheduler.uiManager_DO_NOT_USE;
-}
-
-- (std::shared_ptr<facebook::react::ExceptionManager>)exceptionManager_DO_NOT_USE
-{
-  return _exceptionManager;
 }
 
 @end

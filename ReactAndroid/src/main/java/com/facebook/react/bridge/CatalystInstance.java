@@ -101,5 +101,5 @@ public interface CatalystInstance
    */
   JavaScriptContextHolder getJavaScriptContextHolder();
 
-  void addJSIModules(List<JSIModuleHolder> jsiModules);
+  void addJSIModules(List<JSIModuleSpec> jsiModules);
 }

@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const path = require('path');
@@ -19,19 +21,19 @@ const last = require('lodash').last;
  *
  * Check `getHeaderSearchPath.spec.js` for more use-cases.
  */
-const getOuterDirectory = (directories) =>
+const getOuterDirectory = directories =>
   directories.reduce((topDir, currentDir) => {
     const currentFolders = currentDir.split(path.sep);
     const topMostFolders = topDir.split(path.sep);
 
-    if (currentFolders.length === topMostFolders.length
-      && last(currentFolders) !== last(topMostFolders)) {
+    if (
+      currentFolders.length === topMostFolders.length &&
+      last(currentFolders) !== last(topMostFolders)
+    ) {
       return currentFolders.slice(0, -1).join(path.sep);
     }
 
-    return currentFolders.length < topMostFolders.length
-      ? currentDir
-      : topDir;
+    return currentFolders.length < topMostFolders.length ? currentDir : topDir;
   });
 
 /**
@@ -49,11 +51,12 @@ const getOuterDirectory = (directories) =>
  * every folder of it to locate correct headers.
  */
 module.exports = function getHeaderSearchPath(sourceDir, headers) {
-  const directories = union(
-    headers.map(path.dirname)
-  );
+  const directories = union(headers.map(path.dirname));
 
   return directories.length === 1
     ? `"$(SRCROOT)${path.sep}${path.relative(sourceDir, directories[0])}"`
-    : `"$(SRCROOT)${path.sep}${path.relative(sourceDir, getOuterDirectory(directories))}/**"`;
+    : `"$(SRCROOT)${path.sep}${path.relative(
+        sourceDir,
+        getOuterDirectory(directories),
+      )}/**"`;
 };

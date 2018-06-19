@@ -2,6 +2,7 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "powermock",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":javassist",
         ":mockito-all",
@@ -16,7 +17,6 @@ rn_android_library(
         ":xpp3",
         ":xstream",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_prebuilt_jar(

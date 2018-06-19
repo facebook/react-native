@@ -18,7 +18,7 @@ const HmrServer = require('metro/src/HmrServer');
 
 const {Terminal} = require('metro-core');
 
-const attachWebsocketServer = require('./util/attachWebsocketServer');
+const attachWebsocketServer = require('metro/src/lib/attachWebsocketServer');
 const compression = require('compression');
 const connect = require('connect');
 const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
@@ -187,6 +187,7 @@ function getPackagerServer(args, config, reporter) {
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
     getPolyfills: config.getPolyfills,
+    getResolverMainFields: config.getResolverMainFields,
     getRunModuleStatement: config.getRunModuleStatement,
     getTransformOptions: config.getTransformOptions,
     hasteImplModulePath: config.hasteImplModulePath,

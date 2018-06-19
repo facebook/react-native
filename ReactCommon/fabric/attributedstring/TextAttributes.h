@@ -9,7 +9,7 @@
 
 #include <limits>
 
-#include <fabric/attributedstring/TextPrimitives.h>
+#include <fabric/attributedstring/primitives.h>
 #include <fabric/core/LayoutPrimitives.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/debug/DebugStringConvertible.h>
@@ -57,7 +57,8 @@ public:
   folly::Optional<TextDecorationLinePattern> textDecorationLinePattern {};
 
   // Shadow
-  folly::Optional<Point> textShadowOffset {};
+  // TODO: Use `Point` type instead of `Size` for `textShadowOffset` attribute.
+  folly::Optional<Size> textShadowOffset {};
   Float textShadowRadius {std::numeric_limits<Float>::quiet_NaN()};
   SharedColor textShadowColor {nullptr};
 

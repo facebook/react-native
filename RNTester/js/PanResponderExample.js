@@ -4,18 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow weak
  */
+
 'use strict';
 
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {
-  PanResponder,
-  StyleSheet,
-  View,
-} = ReactNative;
+var {PanResponder, StyleSheet, View} = ReactNative;
 
 var CIRCLE_SIZE = 80;
 
@@ -24,14 +22,15 @@ var PanResponderExample = createReactClass({
 
   statics: {
     title: 'PanResponder Sample',
-    description: 'Shows the use of PanResponder to provide basic gesture handling.',
+    description:
+      'Shows the use of PanResponder to provide basic gesture handling.',
   },
 
   _panResponder: {},
   _previousLeft: 0,
   _previousTop: 0,
   _circleStyles: {},
-  circle: (null : ?{ setNativeProps(props: Object): void }),
+  circle: (null: ?{setNativeProps(props: Object): void}),
 
   UNSAFE_componentWillMount: function() {
     this._panResponder = PanResponder.create({
@@ -49,7 +48,7 @@ var PanResponderExample = createReactClass({
         left: this._previousLeft,
         top: this._previousTop,
         backgroundColor: 'green',
-      }
+      },
     };
   },
 
@@ -59,10 +58,9 @@ var PanResponderExample = createReactClass({
 
   render: function() {
     return (
-      <View
-        style={styles.container}>
+      <View style={styles.container}>
         <View
-          ref={(circle) => {
+          ref={circle => {
             this.circle = circle;
           }}
           style={styles.circle}
@@ -86,12 +84,18 @@ var PanResponderExample = createReactClass({
     this.circle && this.circle.setNativeProps(this._circleStyles);
   },
 
-  _handleStartShouldSetPanResponder: function(e: Object, gestureState: Object): boolean {
+  _handleStartShouldSetPanResponder: function(
+    e: Object,
+    gestureState: Object,
+  ): boolean {
     // Should we become active when the user presses down on the circle?
     return true;
   },
 
-  _handleMoveShouldSetPanResponder: function(e: Object, gestureState: Object): boolean {
+  _handleMoveShouldSetPanResponder: function(
+    e: Object,
+    gestureState: Object,
+  ): boolean {
     // Should we become active when the user moves a touch over the circle?
     return true;
   },

@@ -33,6 +33,10 @@
   UIView<RCTComponentViewProtocol> *childComponentView = [registry componentViewByTag:_childTag];
   UIView<RCTComponentViewProtocol> *parentComponentView = [registry componentViewByTag:_parentTag];
 
+  if (childComponentView == nil || parentComponentView == nil) {
+    return;
+  }
+
   [parentComponentView mountChildComponentView:childComponentView
                                          index:_index];
 }

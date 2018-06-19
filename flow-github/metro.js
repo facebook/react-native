@@ -5,13 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
+ * @format
  */
 
 declare module 'metro' {
-  declare module.exports: any;
-}
-
-declare module 'metro/src/lib/TerminalReporter' {
   declare module.exports: any;
 }
 
@@ -19,6 +16,14 @@ declare module 'metro/src/HmrServer' {
   declare module.exports: any;
 }
 
+declare module 'metro/src/lib/attachWebsocketServer' {
+  declare module.exports: any;
+}
+
 declare module 'metro/src/lib/bundle-modules/HMRClient' {
+  declare module.exports: any;
+}
+
+declare module 'metro/src/lib/TerminalReporter' {
   declare module.exports: any;
 }

@@ -63,7 +63,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(EllipsizeMode elli
    [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
 }
 
-
 - (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
                                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                                size:(CGSize)size

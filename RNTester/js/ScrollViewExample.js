@@ -39,6 +39,7 @@ exports.examples = [
         <View>
           <ScrollView
             ref={scrollView => {
+              // $FlowFixMe Invalid prop usage
               _scrollView = scrollView;
             }}
             automaticallyAdjustContentInsets={false}
@@ -80,7 +81,7 @@ exports.examples = [
         title: string,
         additionalStyles: typeof StyleSheet,
       ) {
-        let _scrollView: ScrollView;
+        let _scrollView: ?ScrollView;
         return (
           <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
@@ -96,18 +97,21 @@ exports.examples = [
             <Button
               label="Scroll to start"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.scrollTo({x: 0});
               }}
             />
             <Button
               label="Scroll to end"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.scrollToEnd({animated: true});
               }}
             />
             <Button
               label="Flash scroll indicators"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.flashScrollIndicators();
               }}
             />

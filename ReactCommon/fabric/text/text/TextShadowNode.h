@@ -11,6 +11,7 @@
 #include <fabric/attributedstring/TextAttributes.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/ShadowNode.h>
+#include <fabric/text/BaseTextShadowNode.h>
 #include <fabric/text/TextProps.h>
 #include <fabric/text/TextShadowNode.h>
 
@@ -22,18 +23,14 @@ class TextShadowNode;
 using SharedTextShadowNode = std::shared_ptr<const TextShadowNode>;
 
 class TextShadowNode:
-  public ConcreteShadowNode<TextProps> {
+  public ConcreteShadowNode<TextProps>,
+  public BaseTextShadowNode {
 
 public:
 
   using ConcreteShadowNode::ConcreteShadowNode;
 
   ComponentName getComponentName() const override;
-
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString(const TextAttributes &baseTextAttributes) const;
 };
 
 } // namespace react

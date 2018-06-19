@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -6,7 +9,6 @@
 #include <memory>
 
 #include <cxxreact/NativeToJsBridge.h>
-#include <jschelpers/Value.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -66,9 +68,7 @@ public:
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);
-#endif
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

@@ -9,10 +9,12 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.content.ComponentCallbacks2;
-import android.content.res.Configuration;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
@@ -25,6 +27,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
@@ -37,8 +40,11 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
@@ -77,7 +83,7 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, UIManager {
+    OnBatchCompleteListener, LifecycleEventListener, UIManager {
 
   /**
    * Enables lazy discovery of a specific {@link ViewManager} by its name.
@@ -179,10 +185,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    mEventDispatcher.registerEventEmitter(
+      DEFAULT,
+      getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   @Override
   public void onHostResume() {
+
     mUIImplementation.onHostResume();
   }
 
@@ -276,6 +286,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         return eventName;
       }
     };
+  }
+
+  @Override
+  public void profileNextBatch() {
+    mUIImplementation.profileNextBatch();
   }
 
   @Override
@@ -572,21 +587,38 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeAnimation(reactTag, animationID);
   }
 
+  @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+    //TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
+    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    int uiManagerType = ViewUtil.getUIManagerType(reactTag);
+    if (uiManagerType != DEFAULT) {
+      UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType).setJSResponder(reactTag, blockNativeResponder);
+    }
+
     mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
+  @Override
   @ReactMethod
   public void clearJSResponder() {
     mUIImplementation.clearJSResponder();
   }
 
   @ReactMethod
-  public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
+  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    //TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
+    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
+    UIManagerHelper.getUIManager(getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+      .dispatchCommand(reactTag, commandId, commandArgs);
+  }
+
+  @Override
+  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
-  
+
   @ReactMethod
   public void playTouchSound() {
     AudioManager audioManager = (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);

@@ -7,10 +7,7 @@
 
 package com.facebook.react.views.modal;
 
-import java.util.Map;
-
 import android.content.DialogInterface;
-
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -19,6 +16,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.Map;
 
 /**
  * View manager for {@link ReactModalHostView} components.

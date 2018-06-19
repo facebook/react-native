@@ -26,25 +26,16 @@ using SharedParagraphShadowNode = std::shared_ptr<const ParagraphShadowNode>;
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
- * Note some Hierarchical constraints:
- *  * <Paragraph> component must have only one <Text> component.
- *  * <Text> component might have nested <Text>, <RawText>, and <View>-like
- *    components.
- *  * <RawText> component must not have any children.
  */
 class ParagraphShadowNode:
-  public ConcreteViewShadowNode<ParagraphProps> {
+  public ConcreteViewShadowNode<ParagraphProps>,
+  public BaseTextShadowNode {
 
 public:
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   ComponentName getComponentName() const override;
-
-  /*
-   * Returns a single nested <Text> shadow node.
-   */
-  SharedTextShadowNode getTextChildNode() const;
 
   /*
    * Returns a `AttributedString` which represents text content of the node.

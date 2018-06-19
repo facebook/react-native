@@ -82,10 +82,8 @@ const TreeMutationInstruction TreeMutationInstruction::Replace(
   SharedShadowNode newChildNode,
   int index
 ) {
-  assert(parentNode);
   assert(oldChildNode);
   assert(newChildNode);
-  assert(index != -1);
 
   return TreeMutationInstruction(
     Replacement,

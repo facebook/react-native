@@ -13,15 +13,8 @@
 namespace facebook {
 namespace react {
 
-void Props::apply(const RawProps &rawProps) {
-  ensureUnsealed();
-
-  applyRawProp(rawProps, "nativeID", nativeId_);
-}
-
-const std::string &Props::getNativeId() const {
-  return nativeId_;
-}
+Props::Props(const Props &sourceProps, const RawProps &rawProps):
+  nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId)) {};
 
 } // namespace react
 } // namespace facebook

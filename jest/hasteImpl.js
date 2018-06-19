@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -13,20 +14,20 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 
-const BLACKLISTED_PATTERNS/*: Array<RegExp>*/ = [
+const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*\/__(mocks|tests)__\/.*/,
   /^Libraries\/Animated\/src\/polyfills\/.*/,
   /^Libraries\/Renderer\/fb\/.*/,
 ];
 
-const WHITELISTED_PREFIXES/*: Array<string>*/ = [
+const WHITELISTED_PREFIXES /*: Array<string> */ = [
   'IntegrationTests',
   'Libraries',
   'ReactAndroid',
   'RNTester',
 ];
 
-const NAME_REDUCERS/*: Array<[RegExp, string]>*/ = [
+const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
   [/^(?:.*\/)?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
@@ -41,23 +42,23 @@ const haste = {
    *                       filePath is not a haste module
    */
   getHasteName(
-    filePath/*: string*/,
-    sourceCode/* : ?string*/
-  )/*: (string | void)*/ {
+    filePath /*: string */,
+    sourceCode /*: ?string */,
+  ) /*: string | void */ {
     if (!isHastePath(filePath)) {
       return undefined;
     }
 
     const hasteName = NAME_REDUCERS.reduce(
       (name, [pattern, replacement]) => name.replace(pattern, replacement),
-      filePath
+      filePath,
     );
 
     return hasteName;
   },
 };
 
-function isHastePath(filePath/*: string*/)/*: bool*/ {
+function isHastePath(filePath /*: string */) /*: boolean */ {
   if (!filePath.endsWith('.js') && !filePath.endsWith('.js.flow')) {
     return false;
   }
