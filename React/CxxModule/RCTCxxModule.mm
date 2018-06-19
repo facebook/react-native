@@ -21,10 +21,7 @@ using namespace facebook::react;
   std::unique_ptr<facebook::xplat::module::CxxModule> _module;
 }
 
-+ (NSString *)moduleName
-{
-  return @"";
-}
+RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
