@@ -40,9 +40,6 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
-
 - (id<RCTBackedTextInputViewProtocol>)backedTextInputView
 {
   return _backedTextInputView;
