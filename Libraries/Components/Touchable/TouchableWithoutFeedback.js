@@ -43,6 +43,7 @@ export type Props = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
   accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,

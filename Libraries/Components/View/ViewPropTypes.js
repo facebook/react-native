@@ -83,6 +83,7 @@ export type ViewProps = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
