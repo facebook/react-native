@@ -45,7 +45,6 @@ if (__DEV__) {
       </TextAncestor.Consumer>
     );
   };
-  View.displayName = 'View'; // TODO(T30332650) remove bug workaround
   // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
   ViewToExport = React.forwardRef(View);
 }
