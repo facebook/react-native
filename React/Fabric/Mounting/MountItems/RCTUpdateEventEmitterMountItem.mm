@@ -5,23 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUpdateEventHandlersMountItem.h"
+#import "RCTUpdateEventEmitterMountItem.h"
 
 #import "RCTComponentViewRegistry.h"
 
 using namespace facebook::react;
 
-@implementation RCTUpdateEventHandlersMountItem {
+@implementation RCTUpdateEventEmitterMountItem {
   ReactTag _tag;
-  SharedEventHandlers _eventHandlers;
+  SharedEventEmitter _eventEmitter;
 }
 
 - (instancetype)initWithTag:(ReactTag)tag
-              eventHandlers:(SharedEventHandlers)eventHandlers
+              eventEmitter:(SharedEventEmitter)eventEmitter
 {
   if (self = [super init]) {
     _tag = tag;
-    _eventHandlers = eventHandlers;
+    _eventEmitter = eventEmitter;
   }
 
   return self;
@@ -31,7 +31,7 @@ using namespace facebook::react;
 {
   UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:_tag];
 
-  [componentView updateEventHandlers:_eventHandlers];
+  [componentView updateEventEmitter:_eventEmitter];
 }
 
 @end

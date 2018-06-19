@@ -21,7 +21,7 @@ using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
 
 /*
  * Abstract class that represent event-delivery infrastructure.
- * Particular `EventHandlers` clases use an object of this class to invoke
+ * Particular `EventEmitter` clases use an object of this class to invoke
  * events.
  */
 class EventDispatcher {
@@ -29,8 +29,6 @@ class EventDispatcher {
 public:
 
   virtual EventTarget createEventTarget(const InstanceHandle &instanceHandle) const = 0;
-
-  virtual void releaseEventTarget(const EventTarget &eventTarget) const = 0;
 
   /*
    * Dispatches "raw" event using some event-delivery infrastructure.

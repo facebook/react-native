@@ -5,23 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "EventHandlers.h"
+#include "EventEmitter.h"
 
 #include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
 
-EventHandlers::EventHandlers(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
+EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
   instanceHandle_(instanceHandle),
   tag_(tag),
   eventDispatcher_(eventDispatcher) {}
 
-EventHandlers::~EventHandlers() {
-  releaseEventTargetIfNeeded();
-}
+EventEmitter::~EventEmitter() {}
 
-void EventHandlers::dispatchEvent(
+void EventEmitter::dispatchEvent(
   const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
@@ -31,7 +29,7 @@ void EventHandlers::dispatchEvent(
     return;
   }
 
-  createEventTargetIfNeeded();
+  EventTarget eventTarget = createEventTarget();
 
   // Mixing `target` into `payload`.
   assert(payload.isObject());
@@ -39,31 +37,13 @@ void EventHandlers::dispatchEvent(
   extendedPayload.merge_patch(payload);
 
   // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
+  eventDispatcher->dispatchEvent(eventTarget, type, extendedPayload, priority);
 }
 
-void EventHandlers::createEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (eventTarget_) {
-    return;
-  }
-
+EventTarget EventEmitter::createEventTarget() const {
   auto &&eventDispatcher = eventDispatcher_.lock();
   assert(eventDispatcher);
-  eventTarget_ = eventDispatcher->createEventTarget(instanceHandle_);
-}
-
-void EventHandlers::releaseEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (!eventTarget_) {
-    return;
-  }
-
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  eventDispatcher->releaseEventTarget(eventTarget_);
+  return eventDispatcher->createEventTarget(instanceHandle_);
 }
 
 } // namespace react

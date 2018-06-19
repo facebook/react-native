@@ -81,6 +81,17 @@ const QuickPerformanceLogger = {
     }
   },
 
+  markerPoint(
+    markerId: number,
+    name: string,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
+    if (global.nativeQPLMarkerPoint) {
+      global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp);
+    }
+  },
+
   currentTimestamp(): number {
     if (global.nativeQPLTimestamp) {
       return global.nativeQPLTimestamp();

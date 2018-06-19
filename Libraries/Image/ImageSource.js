@@ -10,17 +10,16 @@
 'use strict';
 
 // This is to sync with ImageSourcePropTypes.js.
-
 type ImageURISource = $ReadOnly<{|
-  uri?: string,
-  bundle?: string,
-  method?: string,
-  headers?: Object,
-  body?: string,
-  cache?: 'default' | 'reload' | 'force-cache' | 'only-if-cached',
-  width?: number,
-  height?: number,
-  scale?: number,
+  uri?: ?string,
+  bundle?: ?string,
+  method?: ?string,
+  headers?: ?Object,
+  body?: ?string,
+  cache?: ?('default' | 'reload' | 'force-cache' | 'only-if-cached'),
+  width?: ?number,
+  height?: ?number,
+  scale?: ?number,
 |}>;
 
 export type ImageSource = ImageURISource | number | Array<ImageURISource>;

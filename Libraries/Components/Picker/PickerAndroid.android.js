@@ -21,6 +21,9 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 const processColor = require('processColor');
 const requireNativeComponent = require('requireNativeComponent');
 
+const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
+const DialogPicker = requireNativeComponent('AndroidDialogPicker');
+
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
@@ -157,23 +160,5 @@ const styles = StyleSheet.create({
     height: 50,
   },
 });
-
-const cfg = {
-  nativeOnly: {
-    items: true,
-    selected: true,
-  },
-};
-
-const DropdownPicker = requireNativeComponent(
-  'AndroidDropdownPicker',
-  PickerAndroid,
-  cfg,
-);
-const DialogPicker = requireNativeComponent(
-  'AndroidDialogPicker',
-  PickerAndroid,
-  cfg,
-);
 
 module.exports = PickerAndroid;

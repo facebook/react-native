@@ -7,7 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import <fabric/graphics/Color.h>
 #import <fabric/graphics/Geometry.h>
+#import <fabric/view/primitives.h>
+
+inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
+}
+
+inline CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
+}
 
 inline CGPoint RCTCGPointFromPoint(facebook::react::Point point) {
   return {point.x, point.y};
@@ -23,6 +33,28 @@ inline CGRect RCTCGRectFromRect(facebook::react::Rect rect) {
 
 inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(facebook::react::EdgeInsets edgeInsets) {
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
+}
+
+
+inline CATransform3D RCTCATransform3DFromTransformMatrix(facebook::react::Transform transformMatrix) {
+  return {
+    (CGFloat)transformMatrix.matrix[0],
+    (CGFloat)transformMatrix.matrix[1],
+    (CGFloat)transformMatrix.matrix[2],
+    (CGFloat)transformMatrix.matrix[3],
+    (CGFloat)transformMatrix.matrix[4],
+    (CGFloat)transformMatrix.matrix[5],
+    (CGFloat)transformMatrix.matrix[6],
+    (CGFloat)transformMatrix.matrix[7],
+    (CGFloat)transformMatrix.matrix[8],
+    (CGFloat)transformMatrix.matrix[9],
+    (CGFloat)transformMatrix.matrix[10],
+    (CGFloat)transformMatrix.matrix[11],
+    (CGFloat)transformMatrix.matrix[12],
+    (CGFloat)transformMatrix.matrix[13],
+    (CGFloat)transformMatrix.matrix[14],
+    (CGFloat)transformMatrix.matrix[15]
+  };
 }
 
 inline facebook::react::Point RCTPointFromCGPoint(CGPoint point) {

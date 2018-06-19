@@ -188,6 +188,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
 }
 
+- (std::shared_ptr<MessageQueueThread>)jsMessageThread
+{
+  return _jsMessageThread;
+}
+
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;

@@ -8,16 +8,15 @@
 #import "RCTSurfacePresenter.h"
 
 #import <React/RCTAssert.h>
-#import <React/RCTScheduler.h>
-#import <React/RCTMountingManager.h>
-#import <React/RCTFabricSurface.h>
 #import <React/RCTBridge+Private.h>
-#import <React/RCTMountingManagerDelegate.h>
-#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTComponentViewRegistry.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTMountingManager.h>
+#import <React/RCTMountingManagerDelegate.h>
+#import <React/RCTScheduler.h>
+#import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
-
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
 
@@ -48,6 +47,15 @@ using namespace facebook::react;
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleBridgeWillReloadNotification:)
+                                                 name:RCTBridgeWillReloadNotification
+                                               object:_bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleJavaScriptDidLoadNotification:)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:_bridge];
   }
 
   return self;
@@ -81,6 +89,11 @@ using namespace facebook::react;
   [self stopSurface:surface];
   [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
   [_surfaceRegistry unregisterSurface:surface];
+}
+
+- (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
+{
+  return [_surfaceRegistry surfaceForRootTag:rootTag];
 }
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
@@ -147,6 +160,25 @@ using namespace facebook::react;
   UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
 
   surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
+}
+
+#pragma mark - Bridge events
+
+- (void)handleBridgeWillReloadNotification:(NSNotification *)notification
+{
+  // TODO: Define a lifecycle contract for the pieces involved here including the scheduler, mounting manager, and
+  // the surface registry. For now simply recreate the scheduler on reload.
+  // The goal is to deallocate the Scheduler and its underlying references before the JS runtime is destroyed.
+  _scheduler = [[RCTScheduler alloc] init];
+  _scheduler.delegate = self;
+}
+
+- (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
+{
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  if (bridge != _batchedBridge) {
+    _batchedBridge = bridge;
+  }
 }
 
 @end

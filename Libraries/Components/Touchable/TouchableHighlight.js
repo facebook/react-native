@@ -269,7 +269,7 @@ const TouchableHighlight = ((createReactClass({
 
   touchableHandlePress: function(e: PressEvent) {
     clearTimeout(this._hideTimeout);
-    if (!Platform.isTVOS) {
+    if (!Platform.isTV) {
       this._showUnderlay();
       this._hideTimeout = setTimeout(
         this._hideUnderlay,

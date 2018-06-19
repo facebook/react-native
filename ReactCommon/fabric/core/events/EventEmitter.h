@@ -17,9 +17,9 @@
 namespace facebook {
 namespace react {
 
-class EventHandlers;
+class EventEmitter;
 
-using SharedEventHandlers = std::shared_ptr<const EventHandlers>;
+using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
 
 /*
  * Base class for all particular typed event handlers.
@@ -28,11 +28,11 @@ using SharedEventHandlers = std::shared_ptr<const EventHandlers>;
  *
  * TODO: Reconsider naming of all event-related things.
  */
-class EventHandlers {
+class EventEmitter {
 
 public:
-  EventHandlers(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher);
-  virtual ~EventHandlers();
+  EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher);
+  virtual ~EventEmitter();
 
 protected:
 
@@ -48,14 +48,11 @@ protected:
 
 private:
 
-  void createEventTargetIfNeeded() const;
-  void releaseEventTargetIfNeeded() const;
+  EventTarget createEventTarget() const;
 
   InstanceHandle instanceHandle_;
   Tag tag_;
   std::weak_ptr<const EventDispatcher> eventDispatcher_;
-  mutable EventTarget eventTarget_ {nullptr};
-  mutable std::mutex mutex_;
 };
 
 } // namespace react

@@ -22,16 +22,12 @@ static std::string normalizeEventType(const std::string &type) {
   return prefixedType;
 }
 
-void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) {
+void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) const {
   uiManager_ = uiManager;
 }
 
 EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &instanceHandle) const {
   return uiManager_->createEventTarget(instanceHandle);
-}
-
-void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
-  uiManager_->releaseEventTarget(eventTarget);
 }
 
 void SchedulerEventDispatcher::dispatchEvent(
@@ -40,6 +36,7 @@ void SchedulerEventDispatcher::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
+  // TODO: Schedule the event based on priority.
   uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
 }
 

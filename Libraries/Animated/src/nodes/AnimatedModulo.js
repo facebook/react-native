@@ -32,7 +32,7 @@ class AnimatedModulo extends AnimatedWithChildren {
 
   __getValue(): number {
     return (
-      (this._a.__getValue() % this._modulus + this._modulus) % this._modulus
+      ((this._a.__getValue() % this._modulus) + this._modulus) % this._modulus
     );
   }
 

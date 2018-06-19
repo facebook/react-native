@@ -18,7 +18,8 @@ var NUM_ITEMS = 20;
 
 class ScrollViewSimpleExample extends React.Component<{}> {
   static title = '<ScrollView>';
-  static description = 'Component that enables scrolling through child components.';
+  static description =
+    'Component that enables scrolling through child components.';
 
   makeItems = (nItems: number, styles): Array<any> => {
     var items = [];

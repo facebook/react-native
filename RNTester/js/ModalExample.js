@@ -94,7 +94,7 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   renderSwitch() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (
@@ -191,7 +191,7 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
   renderPickers() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (

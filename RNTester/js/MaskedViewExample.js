@@ -24,7 +24,8 @@ const {
 
 class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<MaskedViewIOS>';
-  static description = 'Renders the child view with a mask specified in the `renderMask` prop.';
+  static description =
+    'Renders the child view with a mask specified in the `renderMask` prop.';
 
   state = {
     alternateChildren: true,

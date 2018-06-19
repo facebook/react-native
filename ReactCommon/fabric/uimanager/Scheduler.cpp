@@ -35,6 +35,7 @@ Scheduler::Scheduler() {
 
 Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
+  eventDispatcher_->setUIManager(nullptr);
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {

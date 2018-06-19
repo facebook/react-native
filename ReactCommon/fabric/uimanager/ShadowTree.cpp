@@ -18,12 +18,12 @@ namespace react {
 ShadowTree::ShadowTree(Tag rootTag):
   rootTag_(rootTag) {
 
-  auto &&noopEventHandlers = std::make_shared<const ViewEventHandlers>(nullptr, rootTag, nullptr);
+  auto &&noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, nullptr);
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     rootTag,
     rootTag,
     RootShadowNode::defaultSharedProps(),
-    noopEventHandlers,
+    noopEventEmitter,
     ShadowNode::emptySharedShadowNodeSharedList(),
     nullptr
   );
@@ -108,11 +108,11 @@ void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instruction
         type == TreeMutationInstruction::Replacement
     ) {
       auto &&newShadowNode = instruction.getNewChildNode();
-      auto &&eventHandlers = newShadowNode->getEventHandlers();
-      auto &&viewEventHandlers = std::dynamic_pointer_cast<const ViewEventHandlers>(eventHandlers);
+      auto &&eventEmitter = newShadowNode->getEventEmitter();
+      auto &&viewEventEmitter = std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter);
 
-      // Checking if particular shadow node supports `onLayout` event (part of `ViewEventHandlers`).
-      if (viewEventHandlers) {
+      // Checking if particular shadow node supports `onLayout` event (part of `ViewEventEmitter`).
+      if (viewEventEmitter) {
         // Now we know that both (old and new) shadow nodes must be `LayoutableShadowNode` subclasses.
         assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode));
         // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
@@ -132,7 +132,7 @@ void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instruction
           }
         }
 
-        viewEventHandlers->onLayout(newLayoutableShadowNode->getLayoutMetrics());
+        viewEventEmitter->onLayout(newLayoutableShadowNode->getLayoutMetrics());
       }
     }
   }

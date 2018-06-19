@@ -98,10 +98,6 @@ void FabricUIManager::setDispatchEventFunction(std::function<DispatchEventFuncti
   dispatchEventFunction_ = dispatchEventFunction;
 }
 
-void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction) {
-  releaseEventTargetFunction_ = releaseEventTargetFunction;
-}
-
 void FabricUIManager::setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction) {
   releaseEventHandlerFunction_ = releaseEventHandlerFunction;
 }
@@ -119,10 +115,6 @@ void FabricUIManager::dispatchEvent(const EventTarget &eventTarget, const std::s
   );
 }
 
-void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
-  releaseEventTargetFunction_(eventTarget);
-}
-
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, InstanceHandle instanceHandle) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag: " << rootTag << ", props: " << props << ")";
 
@@ -134,7 +126,7 @@ SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int 
     componentDescriptor->createShadowNode(
       tag,
       rootTag,
-      componentDescriptor->createEventHandlers(instanceHandle, tag),
+      componentDescriptor->createEventEmitter(instanceHandle, tag),
       componentDescriptor->cloneProps(nullptr, rawProps)
     );
 
@@ -155,7 +147,7 @@ SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode, 
     componentDescriptor->cloneShadowNode(
       shadowNode,
       nullptr,
-      componentDescriptor->createEventHandlers(instanceHandle, shadowNode->getTag()),
+      componentDescriptor->createEventEmitter(instanceHandle, shadowNode->getTag()),
       nullptr
     );
 
@@ -172,7 +164,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNod
     componentDescriptor->cloneShadowNode(
       shadowNode,
       nullptr,
-      componentDescriptor->createEventHandlers(instanceHandle, shadowNode->getTag()),
+      componentDescriptor->createEventEmitter(instanceHandle, shadowNode->getTag()),
       ShadowNode::emptySharedShadowNodeSharedList()
     );
 
@@ -190,7 +182,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &
     componentDescriptor->cloneShadowNode(
       shadowNode,
       componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
-      componentDescriptor->createEventHandlers(instanceHandle, shadowNode->getTag()),
+      componentDescriptor->createEventEmitter(instanceHandle, shadowNode->getTag()),
       nullptr
     );
 
@@ -208,7 +200,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedS
     componentDescriptor->cloneShadowNode(
       shadowNode,
       componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
-      componentDescriptor->createEventHandlers(instanceHandle, shadowNode->getTag()),
+      componentDescriptor->createEventEmitter(instanceHandle, shadowNode->getTag()),
       ShadowNode::emptySharedShadowNodeSharedList()
     );
 

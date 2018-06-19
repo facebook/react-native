@@ -20,7 +20,6 @@ namespace react {
 
 using CreateEventTargetFunction = EventTarget (InstanceHandle instanceHandle);
 using DispatchEventFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
-using ReleaseEventTargetFunction = void (EventTarget eventTarget);
 using ReleaseEventHandlerFunction = void (EventHandler eventHandler);
 
 class FabricUIManager {
@@ -46,14 +45,12 @@ public:
    */
   void setCreateEventTargetFunction(std::function<CreateEventTargetFunction> createEventTargetFunction);
   void setDispatchEventFunction(std::function<DispatchEventFunction> dispatchEventFunction);
-  void setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction);
   void setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction);
 
 #pragma mark - Native-facing Interface
 
   EventTarget createEventTarget(const InstanceHandle &instanceHandle) const;
   void dispatchEvent(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
-  void releaseEventTarget(const EventTarget &eventTarget) const;
 
 #pragma mark - JavaScript/React-facing Interface
 
@@ -75,7 +72,6 @@ private:
   EventHandler eventHandler_;
   std::function<CreateEventTargetFunction> createEventTargetFunction_;
   std::function<DispatchEventFunction> dispatchEventFunction_;
-  std::function<ReleaseEventTargetFunction> releaseEventTargetFunction_;
   std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction_;
 };
 

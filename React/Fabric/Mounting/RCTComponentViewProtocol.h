@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/EventHandlers.h>
+#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LocalData.h>
 #import <fabric/core/Props.h>
 #import <fabric/core/LayoutMetrics.h>
@@ -55,10 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * Called for updating component's event handlers set.
- * Receiver must cache `eventHandlers` object inside and use it for emitting
+ * Receiver must cache `eventEmitter` object inside and use it for emitting
  * events when needed.
  */
-- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers;
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 /*
  * Called for updating component's layout metrics.

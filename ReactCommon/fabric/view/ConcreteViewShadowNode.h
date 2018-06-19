@@ -12,7 +12,7 @@
 #include <fabric/core/ShadowNode.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <fabric/view/AccessibleShadowNode.h>
-#include <fabric/view/ViewEventHandlers.h>
+#include <fabric/view/ViewEventEmitter.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/YogaLayoutableShadowNode.h>
 
@@ -24,9 +24,9 @@ namespace react {
  * as <View> and similar basic behaviour).
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
-template <typename ViewPropsT = ViewProps, typename ViewEventHandlersT = ViewEventHandlers>
+template <typename ViewPropsT = ViewProps, typename ViewEventEmitterT = ViewEventEmitter>
 class ConcreteViewShadowNode:
-  public ConcreteShadowNode<ViewPropsT, ViewEventHandlersT>,
+  public ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>,
   public AccessibleShadowNode,
   public YogaLayoutableShadowNode {
 
@@ -38,23 +38,23 @@ public:
 
   using ConcreteViewProps = ViewPropsT;
   using SharedConcreteViewProps = std::shared_ptr<const ViewPropsT>;
-  using ConcreteViewEventHandlers = ViewEventHandlersT;
-  using SharedConcreteViewEventHandlers = std::shared_ptr<const ViewEventHandlersT>;
+  using ConcreteViewEventEmitter = ViewEventEmitterT;
+  using SharedConcreteViewEventEmitter = std::shared_ptr<const ViewEventEmitterT>;
   using SharedConcreteViewShadowNode = std::shared_ptr<const ConcreteViewShadowNode>;
 
   ConcreteViewShadowNode(
     const Tag &tag,
     const Tag &rootTag,
     const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventHandlers &eventHandlers,
+    const SharedConcreteViewEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children,
     const ShadowNodeCloneFunction &cloneFunction
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventHandlersT>(
+    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
       tag,
       rootTag,
       props,
-      eventHandlers,
+      eventEmitter,
       children,
       cloneFunction
     ),
@@ -69,13 +69,13 @@ public:
   ConcreteViewShadowNode(
     const SharedConcreteViewShadowNode &shadowNode,
     const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventHandlers &eventHandlers,
+    const SharedConcreteViewEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventHandlersT>(
+    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
       shadowNode,
       props,
-      eventHandlers,
+      eventEmitter,
       children
     ),
     AccessibleShadowNode(

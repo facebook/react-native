@@ -18,7 +18,12 @@ module.exports = (moduleName, instanceMethods) => {
 
   const Component = class extends SuperClass {
     render() {
-      const name = RealComponent.displayName || RealComponent.name;
+      const name =
+        RealComponent.displayName ||
+        RealComponent.name ||
+        (RealComponent.render // handle React.forwardRef
+          ? RealComponent.render.displayName || RealComponent.render.name
+          : 'Unknown');
 
       const props = Object.assign({}, RealComponent.defaultProps);
 
