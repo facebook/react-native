@@ -14,7 +14,7 @@ namespace react {
 
 struct Transform {
   std::array<Float, 16> matrix {{
-    0, 0, 0, 0,
+    1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
     0, 0, 0, 1
