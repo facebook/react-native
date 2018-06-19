@@ -23,5 +23,6 @@ allprojects {
         maven {
             url "$androidSdk/extras/m2repository/"
         }
+        maven { url 'http://depot.sankuai.com/nexus/content/groups/public' }
     }
 }

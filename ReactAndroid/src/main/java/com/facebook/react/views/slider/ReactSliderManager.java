@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -24,6 +25,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.logan.RNLog;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -37,8 +39,11 @@ import java.util.Map;
  * Note that the slider is _not_ a controlled component.
  */
 public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
-
-  private static final int STYLE = android.R.attr.seekBarStyle;
+  public static final String TAG = "ReactSliderManager";
+//  private static final int STYLE = android.R.attr.seekBarStyle;
+  private static final int STYLE = R.attr.customSeekBarStyle;
+//  private static final int STYLE = android.R.style.Widget_SeekBar;
+//  private static final int STYLE = android.R.style.Widget_Material_SeekBar;
 
   private static final String REACT_CLASS = "RCTSlider";
 
@@ -61,7 +66,10 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
+//        RNLog.i(TAG, "current style is " + STYLE);
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+
+//        SeekBar reactSlider = new ReactSlider(getThemedContext());
         final int spec = View.MeasureSpec.makeMeasureSpec(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             View.MeasureSpec.UNSPECIFIED);
@@ -119,6 +127,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @Override
   protected ReactSlider createViewInstance(ThemedReactContext context) {
     return new ReactSlider(context, null, STYLE);
+//    return new ReactSlider(context);
   }
 
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)

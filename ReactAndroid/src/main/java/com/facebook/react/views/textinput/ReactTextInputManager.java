@@ -384,16 +384,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
     // Drawable.mutate() can sometimes crash due to an AOSP bug:
     // See https://code.google.com/p/android/issues/detail?id=191754 for more info
-    Drawable background = view.getBackground();
-    Drawable drawableToMutate = background.getConstantState() != null ?
-      background.mutate() :
-      background;
-
-    if (underlineColor == null) {
-      drawableToMutate.clearColorFilter();
-    } else {
-      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-    }
+    //FIXME by GYB desc: 这个问题暂时不生效
+//    Drawable background = view.getBackground();
+//    Drawable drawableToMutate = background.getConstantState() != null ?
+//      background.mutate() :
+//      background;
+//
+//    if (underlineColor == null) {
+//      drawableToMutate.clearColorFilter();
+//    } else {
+//      drawableToMutate.setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+//    }
   }
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
