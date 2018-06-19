@@ -586,14 +586,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    //TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
-    // the dispatchViewManagerCommand() method is supported by Fabric JS API.
-    int uiManagerType = ViewUtil.getUIManagerType(reactTag);
-    if (uiManagerType != DEFAULT) {
-      UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType).setJSResponder(reactTag, blockNativeResponder);
-    } else {
-      mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
-    }
+    mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
   @Override
