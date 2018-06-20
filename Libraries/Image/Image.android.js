@@ -14,6 +14,7 @@ const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
@@ -32,9 +33,147 @@ const {ImageLoader} = NativeModules;
 const RKImage = requireNativeComponent('RCTImageView');
 const RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage');
 
+import type {ImageProps as ImagePropsType} from 'ImageProps';
+
 let _requestId = 1;
 function generateRequestId() {
   return _requestId++;
+}
+
+const ImageProps = {
+  ...ViewPropTypes,
+  style: StyleSheetPropType(ImageStylePropTypes),
+  /**
+   * See https://facebook.github.io/react-native/docs/image.html#source
+   */
+  source: PropTypes.oneOfType([
+    PropTypes.shape({
+      uri: PropTypes.string,
+      headers: PropTypes.objectOf(PropTypes.string),
+    }),
+    // Opaque type returned by require('./image.jpg')
+    PropTypes.number,
+    // Multiple sources
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        uri: PropTypes.string,
+        width: PropTypes.number,
+        height: PropTypes.number,
+        headers: PropTypes.objectOf(PropTypes.string),
+      }),
+    ),
+  ]),
+  /**
+   * blurRadius: the blur radius of the blur filter added to the image
+   *
+   * See https://facebook.github.io/react-native/docs/image.html#blurradius
+   */
+  blurRadius: PropTypes.number,
+  /**
+   * See https://facebook.github.io/react-native/docs/image.html#defaultsource
+   */
+  defaultSource: PropTypes.number,
+  /**
+   * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
+   */
+  loadingIndicatorSource: PropTypes.oneOfType([
+    PropTypes.shape({
+      uri: PropTypes.string,
+    }),
+    // Opaque type returned by require('./image.jpg')
+    PropTypes.number,
+  ]),
+  progressiveRenderingEnabled: PropTypes.bool,
+  fadeDuration: PropTypes.number,
+  /**
+   * Invoked on load start
+   */
+  onLoadStart: PropTypes.func,
+  /**
+   * Invoked on load error
+   */
+  onError: PropTypes.func,
+  /**
+   * Invoked when load completes successfully
+   */
+  onLoad: PropTypes.func,
+  /**
+   * Invoked when load either succeeds or fails
+   */
+  onLoadEnd: PropTypes.func,
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID: PropTypes.string,
+  /**
+   * The mechanism that should be used to resize the image when the image's dimensions
+   * differ from the image view's dimensions. Defaults to `auto`.
+   *
+   * See https://facebook.github.io/react-native/docs/image.html#resizemethod
+   */
+  resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
+  /**
+   * Determines how to resize the image when the frame doesn't match the raw
+   * image dimensions.
+   *
+   * See https://facebook.github.io/react-native/docs/image.html#resizemode
+   */
+  resizeMode: PropTypes.oneOf([
+    'cover',
+    'contain',
+    'stretch',
+    'repeat',
+    'center',
+  ]),
+};
+
+function getSize(
+  url: string,
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  return ImageLoader.getSize(url)
+    .then(function(sizes) {
+      success(sizes.width, sizes.height);
+    })
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image: ' + url);
+        },
+    );
+}
+
+function prefetch(url: string, callback: ?Function) {
+  const requestId = generateRequestId();
+  callback && callback(requestId);
+  return ImageLoader.prefetchImage(url, requestId);
+}
+
+function abortPrefetch(requestId: number) {
+  ImageLoader.abortRequest(requestId);
+}
+
+/**
+ * Perform cache interrogation.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+async function queryCache(
+  urls: Array<string>,
+): Promise<Map<string, 'memory' | 'disk'>> {
+  return await ImageLoader.queryCache(urls);
+}
+
+declare class ImageComponentType extends ReactNative.NativeComponent<
+  ImagePropsType,
+> {
+  static getSize: typeof getSize;
+  static prefetch: typeof prefetch;
+  static abortPrefetch: typeof abortPrefetch;
+  static queryCache: typeof queryCache;
+  static resolveAssetSource: typeof resolveAssetSource;
+  static propTypes: typeof ImageProps;
 }
 
 /**
@@ -46,110 +185,10 @@ function generateRequestId() {
  */
 const Image = createReactClass({
   displayName: 'Image',
-  propTypes: {
-    ...ViewPropTypes,
-    style: StyleSheetPropType(ImageStylePropTypes),
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#source
-     */
-    source: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-        headers: PropTypes.objectOf(PropTypes.string),
-      }),
-      // Opaque type returned by require('./image.jpg')
-      PropTypes.number,
-      // Multiple sources
-      PropTypes.arrayOf(
-        PropTypes.shape({
-          uri: PropTypes.string,
-          width: PropTypes.number,
-          height: PropTypes.number,
-          headers: PropTypes.objectOf(PropTypes.string),
-        }),
-      ),
-    ]),
-    /**
-     * blurRadius: the blur radius of the blur filter added to the image
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#blurradius
-     */
-    blurRadius: PropTypes.number,
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#defaultsource
-     */
-    defaultSource: PropTypes.number,
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
-     */
-    loadingIndicatorSource: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-      }),
-      // Opaque type returned by require('./image.jpg')
-      PropTypes.number,
-    ]),
-    progressiveRenderingEnabled: PropTypes.bool,
-    fadeDuration: PropTypes.number,
-    /**
-     * Invoked on load start
-     */
-    onLoadStart: PropTypes.func,
-    /**
-     * Invoked on load error
-     */
-    onError: PropTypes.func,
-    /**
-     * Invoked when load completes successfully
-     */
-    onLoad: PropTypes.func,
-    /**
-     * Invoked when load either succeeds or fails
-     */
-    onLoadEnd: PropTypes.func,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
-    /**
-     * The mechanism that should be used to resize the image when the image's dimensions
-     * differ from the image view's dimensions. Defaults to `auto`.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resizemethod
-     */
-    resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
-    /**
-     * Determines how to resize the image when the frame doesn't match the raw
-     * image dimensions.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resizemode
-     */
-    resizeMode: PropTypes.oneOf([
-      'cover',
-      'contain',
-      'stretch',
-      'repeat',
-      'center',
-    ]),
-  },
+  propTypes: ImageProps,
 
   statics: {
-    getSize(
-      url: string,
-      success: (width: number, height: number) => void,
-      failure?: (error: any) => void,
-    ) {
-      return ImageLoader.getSize(url)
-        .then(function(sizes) {
-          success(sizes.width, sizes.height);
-        })
-        .catch(
-          failure ||
-            function() {
-              console.warn('Failed to get size for image: ' + url);
-            },
-        );
-    },
+    getSize,
 
     /**
      * Prefetches a remote image for later use by downloading it to the disk
@@ -157,31 +196,21 @@ const Image = createReactClass({
      *
      * See https://facebook.github.io/react-native/docs/image.html#prefetch
      */
-    prefetch(url: string, callback: ?Function) {
-      const requestId = generateRequestId();
-      callback && callback(requestId);
-      return ImageLoader.prefetchImage(url, requestId);
-    },
+    prefetch,
 
     /**
      * Abort prefetch request.
      *
      * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
      */
-    abortPrefetch(requestId: number) {
-      ImageLoader.abortRequest(requestId);
-    },
+    abortPrefetch,
 
     /**
      * Perform cache interrogation.
      *
      * See https://facebook.github.io/react-native/docs/image.html#querycache
      */
-    async queryCache(
-      urls: Array<string>,
-    ): Promise<Map<string, 'memory' | 'disk'>> {
-      return await ImageLoader.queryCache(urls);
-    },
+    queryCache,
 
     /**
      * Resolves an asset reference into an object.
@@ -281,4 +310,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Image;
+module.exports = ((Image: any): Class<ImageComponentType>);
