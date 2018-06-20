@@ -48,9 +48,9 @@ module.exports = (moduleName, instanceMethods) => {
     }
   };
 
-  if (RealComponent.propTypes != null) {
-    Component.propTypes = RealComponent.propTypes;
-  }
+  Object.keys(RealComponent).forEach(classStatic => {
+    Component[classStatic] = RealComponent[classStatic];
+  });
 
   if (instanceMethods != null) {
     Object.assign(Component.prototype, instanceMethods);
