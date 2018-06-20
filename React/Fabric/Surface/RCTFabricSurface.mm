@@ -298,16 +298,22 @@
 {
   // TODO: Move the bridge lifecycle handling up to the RCTSurfacePresenter.
 
-  // Note: this covers only JS reloads.
-  [self _setStage:RCTSurfaceStageModuleDidLoad];
-  [self _run];
+  // Note: this covers both JS reloads and initial load after the bridge starts.
+  // When it's not a reload, surface should already be running since we run it immediately in the initializer, so do
+  // nothing.
+  // When it's a reload, we rely on the `RCTJavaScriptWillStartLoadingNotification` notification to reset the stage,
+  // then we need to run the surface and update its size.
+  if (!RCTSurfaceStageIsRunning(_stage)) {
+    [self _setStage:RCTSurfaceStageModuleDidLoad];
+    [self _run];
 
-  // After a reload surfacePresenter needs to know the last min/max size for this surface, because the surface hosting
-  // view was already attached to the ViewController's view.
-  // TODO: Find a better automatic way.
-  [_surfacePresenter setMinimumSize:_minimumSize
-                        maximumSize:_maximumSize
-                            surface:self];
+    // After a reload surfacePresenter needs to know the last min/max size for this surface, because the surface hosting
+    // view was already attached to the ViewController's view.
+    // TODO: Find a better automatic way.
+    [_surfacePresenter setMinimumSize:_minimumSize
+                          maximumSize:_maximumSize
+                              surface:self];
+  }
 }
 
 @end
