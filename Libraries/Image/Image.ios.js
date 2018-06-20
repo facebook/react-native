@@ -85,8 +85,8 @@ let Image = (
     }
   }
 
-  const resizeMode = props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-  const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+  const resizeMode = props.resizeMode || style.resizeMode;
+  const tintColor = style.tintColor;
 
   if (props.src != null) {
     console.warn(
