@@ -73,5 +73,28 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
+[lints]
+all=warn
+
+# There is an ESLint rule for this
+unclear-type=off
+
+sketchy-null=off
+sketchy-null-number=warn
+sketchy-null-mixed=warn
+
+# This is noisy for now. We *do* still want to warn on importing types
+# from untyped files, which is covered by untyped-type-import
+untyped-import=off
+
+[strict]
+deprecated-type
+nonstrict-import
+sketchy-null
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+
 [version]
 ^0.74.0
