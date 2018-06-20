@@ -53,6 +53,11 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
 {
   [_mountingManager mutateComponentViewTreeWithMutationInstructions:instructions
