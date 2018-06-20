@@ -15,8 +15,8 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TOUCHES_KEY;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -29,8 +29,6 @@ import com.facebook.react.fabric.Work;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.io.Closeable;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -54,7 +52,7 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
       long eventTarget = mFabricUIManager.createEventTarget(reactTag);
       mScheduler.scheduleWork(new FabricUIManagerWork(eventTarget, eventName, params));
     } catch (IllegalViewOperationException e) {
-      Log.e(TAG, "Unable to emmit event for tag " + reactTag, e);
+      FLog.e(TAG, "Unable to emmit event for tag " + reactTag, e);
     }
   }
 
@@ -79,7 +77,7 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
       try {
         mFabricUIManager.invoke(mEventTarget, mEventName, mParams);
       } catch (Throwable t) {
-        Log.e(TAG, "Error sending event " + mEventName, t);
+        FLog.e(TAG, "Error sending event " + mEventName, t);
         //TODO: manage exception properly
       } finally{
         mFabricUIManager.releaseEventTarget(mEventTarget);
@@ -109,7 +107,7 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
       int rootNodeID = 0;
       int target = nativeEvent.getInt(TARGET_KEY);
       if (target < 1) {
-        Log.e(TAG,"A view is reporting that a touch occurred on tag zero.");
+        FLog.e(TAG,"A view is reporting that a touch occurred on tag zero.");
       } else {
         rootNodeID = target;
       }

@@ -8,7 +8,7 @@
 #import "RCTSurfaceTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <fabric/view/ViewEventHandlers.h>
+#import <fabric/view/ViewEventEmitter.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 
@@ -47,7 +47,7 @@ private:
 };
 
 @protocol RCTTouchableComponentViewProtocol <NSObject>
-  - (SharedViewEventHandlers)touchEventHandlers;
+  - (SharedViewEventEmitter)touchEventEmitter;
 @end
 
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 struct ActiveTouch {
   Touch touch;
-  SharedViewEventHandlers eventHandlers;
+  SharedViewEventEmitter eventEmitter;
 
   struct Hasher {
     size_t operator()(const ActiveTouch &activeTouch) const {
@@ -95,8 +95,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
 
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventHandlers)]) {
-    activeTouch.eventHandlers = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventHandlers];
+  if ([componentView respondsToSelector:@selector(touchEventEmitter)]) {
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitter];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 
@@ -217,23 +217,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedViewEventHandlers> uniqueEventHandlers = {};
+  std::unordered_set<SharedViewEventEmitter> uniqueEventEmitter = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (UITouch *touch in touches) {
     auto &&activeTouch = _activeTouches[touch];
 
-    if (!activeTouch.eventHandlers) {
+    if (!activeTouch.eventEmitter) {
       continue;
     }
 
     changedActiveTouches.insert(activeTouch);
     event.changedTouches.insert(activeTouch.touch);
-    uniqueEventHandlers.insert(activeTouch.eventHandlers);
+    uniqueEventEmitter.insert(activeTouch.eventEmitter);
   }
 
   for (auto &&pair : _activeTouches) {
-    if (!pair.second.eventHandlers) {
+    if (!pair.second.eventEmitter) {
       continue;
     }
 
@@ -247,27 +247,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     event.touches.insert(pair.second.touch);
   }
 
-  for (auto &&eventHandlers : uniqueEventHandlers) {
+  for (auto &&eventEmitter : uniqueEventEmitter) {
     event.targetTouches.clear();
 
     for (auto &&pair : _activeTouches) {
-      if (pair.second.eventHandlers == eventHandlers) {
+      if (pair.second.eventEmitter == eventEmitter) {
         event.targetTouches.insert(pair.second.touch);
       }
     }
 
     switch (eventType) {
       case RCTTouchEventTypeTouchStart:
-        eventHandlers->onTouchStart(event);
+        eventEmitter->onTouchStart(event);
         break;
       case RCTTouchEventTypeTouchMove:
-        eventHandlers->onTouchMove(event);
+        eventEmitter->onTouchMove(event);
         break;
       case RCTTouchEventTypeTouchEnd:
-        eventHandlers->onTouchEnd(event);
+        eventEmitter->onTouchEnd(event);
         break;
       case RCTTouchEventTypeTouchCancel:
-        eventHandlers->onTouchCancel(event);
+        eventEmitter->onTouchCancel(event);
         break;
     }
   }

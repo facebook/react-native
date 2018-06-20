@@ -6,7 +6,7 @@
  *
  * @format
  * @preventMunge
- * @flow
+ * @flow strict
  */
 
 'use strict';

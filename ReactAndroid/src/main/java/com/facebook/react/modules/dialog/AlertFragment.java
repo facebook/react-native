@@ -9,6 +9,7 @@ package com.facebook.react.modules.dialog;
 
 import javax.annotation.Nullable;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -34,6 +35,7 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
       mListener = null;
   }
 
+  @SuppressLint("ValidFragment")
   public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
     mListener = listener;
     setArguments(arguments);

@@ -5,32 +5,32 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ScrollViewEventHandlers.h"
+#include "ScrollViewEventEmitter.h"
 
 namespace facebook {
 namespace react {
 
-void ScrollViewEventHandlers::onScroll(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScroll(const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scroll", scrollViewMetrics);
 }
 
-void ScrollViewEventHandlers::onScrollBeginDrag(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScrollBeginDrag(const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollBeginDrag", scrollViewMetrics);
 }
 
-void ScrollViewEventHandlers::onScrollEndDrag(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScrollEndDrag(const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollEndDrag", scrollViewMetrics);
 }
 
-void ScrollViewEventHandlers::onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollBegin", scrollViewMetrics);
 }
 
-void ScrollViewEventHandlers::onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollEnd", scrollViewMetrics);
 }
 
-void ScrollViewEventHandlers::dispatchScrollViewEvent(const std::string &name, const ScrollViewMetrics &scrollViewMetrics, const folly::dynamic &payload) const {
+void ScrollViewEventEmitter::dispatchScrollViewEvent(const std::string &name, const ScrollViewMetrics &scrollViewMetrics, const folly::dynamic &payload) const {
   folly::dynamic compoundPayload = folly::dynamic::object();
 
   compoundPayload["contentOffset"] = folly::dynamic::object

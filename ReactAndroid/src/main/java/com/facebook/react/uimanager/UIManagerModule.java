@@ -24,9 +24,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
-import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
@@ -81,7 +79,7 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = UIManagerModule.NAME)
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener, PerformanceCounter, UIManager {
+    OnBatchCompleteListener, LifecycleEventListener, UIManager {
 
   /**
    * Enables lazy discovery of a specific {@link ViewManager} by its name.
@@ -284,6 +282,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         return eventName;
       }
     };
+  }
+
+  @Override
+  public void profileNextBatch() {
+    mUIImplementation.profileNextBatch();
   }
 
   @Override
@@ -580,11 +583,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.removeAnimation(reactTag, animationID);
   }
 
+  @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
+  @Override
   @ReactMethod
   public void clearJSResponder() {
     mUIImplementation.clearJSResponder();

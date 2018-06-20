@@ -9,8 +9,8 @@
 #include <memory>
 
 #include <fabric/graphics/Geometry.h>
-#include <fabric/core/EventHandlers.h>
-#include <fabric/view/ViewEventHandlers.h>
+#include <fabric/core/EventEmitter.h>
+#include <fabric/view/ViewEventEmitter.h>
 
 #include <folly/dynamic.h>
 
@@ -26,16 +26,16 @@ public:
   Float zoomScale;
 };
 
-class ScrollViewEventHandlers;
+class ScrollViewEventEmitter;
 
-using SharedScrollViewEventHandlers = std::shared_ptr<const ScrollViewEventHandlers>;
+using SharedScrollViewEventEmitter = std::shared_ptr<const ScrollViewEventEmitter>;
 
-class ScrollViewEventHandlers:
-  public ViewEventHandlers {
+class ScrollViewEventEmitter:
+  public ViewEventEmitter {
 
 public:
 
-  using ViewEventHandlers::ViewEventHandlers;
+  using ViewEventEmitter::ViewEventEmitter;
 
   void onScroll(const ScrollViewMetrics &scrollViewMetrics) const;
   void onScrollBeginDrag(const ScrollViewMetrics &scrollViewMetrics) const;

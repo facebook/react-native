@@ -75,10 +75,13 @@ module.exports = {
       default: [],
     },
     {
-      command: '--projectRoots [list]',
-      description: 'override the root(s) to be used by the packager',
+      command: '--watchFolders [list]',
+      description:
+        'Sepcify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getProjectRoots(),
+      default: (config: ConfigT) => {
+        return config.getProjectRoots ? config.getProjectRoots() : undefined;
+      },
     },
     {
       command: '--assetExts [list]',

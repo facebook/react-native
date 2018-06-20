@@ -125,5 +125,25 @@ struct EdgeInsets {
   }
 };
 
+/*
+ * CornerInsets
+ */
+struct CornerInsets {
+  Float topLeft {0};
+  Float topRight {0};
+  Float bottomLeft {0};
+  Float bottomRight {0};
+
+  bool operator ==(const CornerInsets& rhs) const {
+    return
+    std::tie(this->topLeft, this->topRight, this->bottomLeft, this->bottomRight) ==
+    std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
+  }
+
+  bool operator !=(const CornerInsets& rhs) const {
+    return !(*this == rhs);
+  }
+};
+
 } // namespace react
 } // namespace facebook

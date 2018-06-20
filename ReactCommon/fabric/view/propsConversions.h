@@ -53,7 +53,7 @@ static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &defaultVa
   yogaStyle.alignContent = convertRawProp(rawProps, "alignContent", defaultValue.alignContent);
   yogaStyle.alignItems = convertRawProp(rawProps, "alignItems", defaultValue.alignItems);
   yogaStyle.alignSelf = convertRawProp(rawProps, "alignSelf", defaultValue.alignSelf);
-  yogaStyle.positionType = convertRawProp(rawProps, "positionType", defaultValue.positionType);
+  yogaStyle.positionType = convertRawProp(rawProps, "position", defaultValue.positionType);
   yogaStyle.flexWrap = convertRawProp(rawProps, "flexWrap", defaultValue.flexWrap);
   yogaStyle.overflow = convertRawProp(rawProps, "overflow", defaultValue.overflow);
   yogaStyle.display = convertRawProp(rawProps, "display", defaultValue.display);

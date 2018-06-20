@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include <fabric/core/EventHandlers.h>
+#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/core/ReactPrimitives.h>
 
@@ -97,16 +97,16 @@ struct TouchEvent {
   Touches targetTouches;
 };
 
-class ViewEventHandlers;
+class ViewEventEmitter;
 
-using SharedViewEventHandlers = std::shared_ptr<const ViewEventHandlers>;
+using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
 
-class ViewEventHandlers:
-  public EventHandlers {
+class ViewEventEmitter:
+  public EventEmitter {
 
 public:
 
-  using EventHandlers::EventHandlers;
+  using EventEmitter::EventEmitter;
 
 #pragma mark - Accessibility
 

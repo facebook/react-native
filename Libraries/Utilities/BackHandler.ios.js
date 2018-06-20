@@ -53,7 +53,7 @@ function emptyFunction() {}
  */
 let BackHandler;
 
-if (Platform.isTVOS) {
+if (Platform.isTV) {
   const _tvEventHandler = new TVEventHandler();
   const _backPressSubscriptions = new Set();
 

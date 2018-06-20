@@ -1041,7 +1041,7 @@ const ScrollView = createReactClass({
         return (
           // $FlowFixMe Invalid prop usage
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
-            {Platform.isTVOS ? null : refreshControl}
+            {Platform.isTV ? null : refreshControl}
             {contentContainer}
           </ScrollViewClass>
         );

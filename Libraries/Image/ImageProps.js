@@ -16,35 +16,63 @@ const ImageStylePropTypes = require('ImageStylePropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 
+import type {DimensionValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
 import type {ImageSource} from 'ImageSource';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {LayoutEvent, SyntheticEvent} from 'CoreEventTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ImageStyleProp} from 'StyleSheet';
 
-export type ImageProps = {
-  accessible?: boolean,
-  accessibilityLabel?: ?(string | Array<any> | any),
-  blurRadius?: number,
-  capInsets?: ?EdgeInsetsProp,
+type OnLoadEvent = SyntheticEvent<
+  $ReadOnly<{|
+    // Only on Android
+    uri?: string,
 
-  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
-  onLayout?: ?(event: LayoutEvent) => void,
-  onLoad?: ?() => void,
-  onLoadEnd?: ?() => void,
-  onLoadStart?: ?() => void,
-  resizeMethod?: ?('auto' | 'resize' | 'scale'),
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
-  source?: ?ImageSource,
-  style?: ImageStyleProp,
-  testID?: ?string,
+    source: $ReadOnly<{|
+      width: number,
+      height: number,
+      url: string,
+    |}>,
+  |}>,
+>;
 
-  // ios
+type IOSImageProps = $ReadOnly<{|
   defaultSource?: ?ImageSource,
   onPartialLoad?: ?() => void,
   onProgress?: ?(
     event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
   ) => void,
-};
+|}>;
+
+type AndroidImageProps = $ReadOnly<{|
+  loadingIndicatorSource?: ?(number | $ReadOnly<{|uri: string|}>),
+  progressiveRenderingEnabled?: ?boolean,
+  fadeDuration?: ?number,
+|}>;
+
+export type ImageProps = {|
+  ...ViewProps,
+  ...IOSImageProps,
+  ...AndroidImageProps,
+  blurRadius?: number,
+  capInsets?: ?EdgeInsetsProp,
+
+  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
+  onLoad?: ?(event: OnLoadEvent) => void,
+  onLoadEnd?: ?() => void,
+  onLoadStart?: ?() => void,
+  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  source?: ?ImageSource,
+  style?: ImageStyleProp,
+
+  // Can be set via props or style, for now
+  height?: DimensionValue,
+  width?: DimensionValue,
+  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+
+  src?: empty,
+  children?: empty,
+|};
 
 module.exports = {
   /**

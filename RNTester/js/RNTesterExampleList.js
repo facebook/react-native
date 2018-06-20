@@ -80,7 +80,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
        * comment and run Flow. */
       this.props.disableSearch ||
       (filterRegex.test(example.module.title) &&
-        (!Platform.isTVOS || example.supportsTVOS));
+        (!Platform.isTV || example.supportsTVOS));
 
     const sections = [
       {

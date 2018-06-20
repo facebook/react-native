@@ -7,11 +7,16 @@
 
 package com.facebook.react.fabric;
 
-import android.util.Log;
+import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.react.common.ArrayUtils;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewAtIndex;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,7 +28,8 @@ import javax.annotation.Nullable;
 public class FabricReconciler {
 
   private static final String TAG = FabricReconciler.class.getSimpleName();
-  private static final boolean DEBUG = true;
+    private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder
+    .getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_RECONCILER);
 
   private UIViewOperationQueue uiViewOperationQueue;
 
@@ -32,9 +38,18 @@ public class FabricReconciler {
   }
 
   public void manageChildren(ReactShadowNode previousRootShadowNode, ReactShadowNode newRootShadowNode) {
-    List<ReactShadowNode> prevList =
-      previousRootShadowNode == null ? null :  previousRootShadowNode.getChildrenList();
-    manageChildren(newRootShadowNode, prevList, newRootShadowNode.getChildrenList());
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "FabricReconciler.manageChildren")
+      .flush();
+
+    try {
+      List<ReactShadowNode> prevList =
+        previousRootShadowNode == null ? null :  previousRootShadowNode.getChildrenList();
+      manageChildren(newRootShadowNode, prevList, newRootShadowNode.getChildrenList());
+    } finally{
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   private void manageChildren(
@@ -104,7 +119,7 @@ public class FabricReconciler {
       ViewAtIndex[] viewsToAddArray = viewsToAdd.toArray(new ViewAtIndex[viewsToAdd.size()]);
       int[] tagsToDeleteArray = ArrayUtils.copyListToArray(tagsToDelete);
       if (DEBUG) {
-        Log.d(
+        FLog.d(
             TAG,
             "manageChildren.enqueueManageChildren parent: " + parent.getReactTag() +
                 "\n\tIndices2Remove: " + Arrays.toString(indicesToRemoveArray) +
@@ -119,7 +134,7 @@ public class FabricReconciler {
   private void enqueueUpdateProperties(ReactShadowNode node) {
     int reactTag = node.getReactTag();
     if (DEBUG) {
-      Log.d(
+      FLog.d(
         TAG,
         "manageChildren.enqueueUpdateProperties " +
           "\n\ttag: " + reactTag +
