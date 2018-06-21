@@ -5,6 +5,7 @@
 
 #include "JavaModuleWrapper.h"
 
+#include <boost/core/ignore_unused.hpp>
 #include <fb/fbjni.h>
 #include <folly/json.h>
 #include <cxxreact/CxxModule.h>
@@ -94,6 +95,7 @@ void JavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& param
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
     #endif
+    boost::ignore_unused(callId);
     invokeMethod(
       wrapper_,
       static_cast<jint>(reactMethodId),
@@ -170,6 +172,7 @@ void NewJavaNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& pa
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
     #endif
+    boost::ignore_unused(callId);
     invokeInner(reactMethodId, std::move(params));
   });
 }
