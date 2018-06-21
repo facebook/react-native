@@ -10,7 +10,6 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const UIManager = require('UIManager');
 
@@ -21,51 +20,25 @@ const pointsDiffer = require('pointsDiffer');
 const processColor = require('processColor');
 const resolveAssetSource = require('resolveAssetSource');
 const sizesDiffer = require('sizesDiffer');
-const verifyPropTypes = require('verifyPropTypes');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
-type ComponentInterface =
-  | React$ComponentType<any>
-  | $ReadOnly<{
-      propTypes?: $ReadOnly<{
-        [propName: string]: mixed,
-      }>,
-    }>;
-
-type ExtraOptions = $ReadOnly<{|
-  nativeOnly?: $ReadOnly<{
-    [propName: string]: boolean,
-  }>,
-|}>;
-
 /**
- * Used to create React components that directly wrap native component
- * implementations.  Config information is extracted from data exported from the
- * UIManager module.  You should also wrap the native component in a
- * hand-written component with full propTypes definitions and other
- * documentation - pass the hand-written component in as `componentInterface` to
- * verify all the native props are documented via `propTypes`.
+ * Creates values that can be used like React components which represent native
+ * view managers. You should create JavaScript modules that wrap these values so
+ * that the results are memoized. Example:
  *
- * If some native props shouldn't be exposed in the wrapper interface, you can
- * pass null for `componentInterface` and call `verifyPropTypes` directly
- * with `nativePropsToIgnore`;
+ *   const View = requireNativeComponent('RCTView');
  *
- * Common types are lined up with the appropriate prop differs with
- * `TypeToDifferMap`.  Non-scalar types not in the map default to `deepDiffer`.
  */
-const requireNativeComponent = (
-  viewName: string,
-  componentInterface?: ?ComponentInterface,
-  extraConfig?: ?ExtraOptions,
-): string =>
-  createReactNativeComponentClass(viewName, () => {
-    const viewConfig = UIManager[viewName];
+const requireNativeComponent = (uiViewClassName: string): string =>
+  createReactNativeComponentClass(uiViewClassName, () => {
+    const viewConfig = UIManager[uiViewClassName];
 
     invariant(
       viewConfig != null && viewConfig.NativeProps != null,
       'requireNativeComponent: "%s" was not found in the UIManager.',
-      viewName,
+      uiViewClassName,
     );
 
     // TODO: This seems like a whole lot of runtime initialization for every
@@ -94,14 +67,14 @@ const requireNativeComponent = (
       }
     }
 
-    const viewAttributes = {};
+    const validAttributes = {};
 
     for (const key in nativeProps) {
       const typeName = nativeProps[key];
       const diff = getDifferForType(typeName);
       const process = getProcessorForType(typeName);
 
-      viewAttributes[key] =
+      validAttributes[key] =
         diff == null && process == null ? true : {diff, process};
     }
 
@@ -109,23 +82,14 @@ const requireNativeComponent = (
     // props. This makes it so we allow style properties in the `style` prop.
     // TODO: Move style properties into a `style` prop and disallow them as
     // top-level props on the native side.
-    viewAttributes.style = ReactNativeStyleAttributes;
+    validAttributes.style = ReactNativeStyleAttributes;
 
     Object.assign(viewConfig, {
-      uiViewClassName: viewName,
-      validAttributes: viewAttributes,
-      propTypes:
-        componentInterface == null ? null : componentInterface.propTypes,
+      uiViewClassName,
+      validAttributes,
       bubblingEventTypes,
       directEventTypes,
     });
-
-    if (__DEV__) {
-      verifyPropTypes(
-        viewConfig,
-        extraConfig == null ? null : extraConfig.nativeOnly,
-      );
-    }
 
     if (!hasAttachedDefaultEventTypes) {
       attachDefaultEventTypes(viewConfig);

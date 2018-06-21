@@ -193,8 +193,9 @@ class Circle extends React.Component<any, any> {
 
 class AnExApp extends React.Component<any, any> {
   static title = 'Animated - Gratuitous App';
-  static description = 'Bunch of Animations - tap a circle to ' +
-  'open a view with more animations, or longPress and drag to reorder circles.';
+  static description =
+    'Bunch of Animations - tap a circle to ' +
+    'open a view with more animations, or longPress and drag to reorder circles.';
 
   _onMove: (position: Point) => void;
   constructor(props: any): void {

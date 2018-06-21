@@ -35,9 +35,6 @@ public:
   const AccessibilityTraits accessibilityTraits {AccessibilityTraits::None};
   const bool accessibilityViewIsModal {false};
   const bool accessibilityElementsHidden {false};
-  const SharedDirectEventHandler onAccessibilityAction {nullptr};
-  const SharedDirectEventHandler onAccessibilityTap {nullptr};
-  const SharedDirectEventHandler onMagicTap {nullptr};
 };
 
 } // namespace react

@@ -131,7 +131,7 @@ class Easing {
    * http://easings.net/#easeInSine
    */
   static sin(t: number) {
-    return 1 - Math.cos(t * Math.PI / 2);
+    return 1 - Math.cos((t * Math.PI) / 2);
   }
 
   /**
@@ -164,7 +164,7 @@ class Easing {
    */
   static elastic(bounciness: number = 1): (t: number) => number {
     const p = bounciness * Math.PI;
-    return t => 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
+    return t => 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
   }
 
   /**

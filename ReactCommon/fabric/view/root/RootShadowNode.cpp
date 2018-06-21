@@ -22,8 +22,7 @@ void RootShadowNode::layout() {
 
   // This is the rare place where shadow node must layout (set `layoutMetrics`)
   // itself because there is no a parent node which usually should do it.
-  YGNode *yogaNode = const_cast<YGNode *>(yogaNode_.get());
-  setLayoutMetrics(layoutMetricsFromYogaNode(*yogaNode));
+  setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
 }
 
 } // namespace react

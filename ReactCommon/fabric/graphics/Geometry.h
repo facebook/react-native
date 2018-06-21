@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -118,6 +121,26 @@ struct EdgeInsets {
   }
 
   bool operator !=(const EdgeInsets& rhs) const {
+    return !(*this == rhs);
+  }
+};
+
+/*
+ * CornerInsets
+ */
+struct CornerInsets {
+  Float topLeft {0};
+  Float topRight {0};
+  Float bottomLeft {0};
+  Float bottomRight {0};
+
+  bool operator ==(const CornerInsets& rhs) const {
+    return
+    std::tie(this->topLeft, this->topRight, this->bottomLeft, this->bottomRight) ==
+    std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
+  }
+
+  bool operator !=(const CornerInsets& rhs) const {
     return !(*this == rhs);
   }
 };

@@ -23,11 +23,11 @@ function escapePath(pathname) {
   return '"' + pathname + '"';
 }
 
-function launchDevTools({host, projectRoots}, isChromeConnected) {
+function launchDevTools({host, watchFolders}, isChromeConnected) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
-    var projects = projectRoots.map(escapePath).join(' ');
+    var projects = watchFolders.map(escapePath).join(' ');
     var command = customDebugger + ' ' + projects;
     console.log('Starting custom debugger by executing: ' + command);
     exec(command, function(error, stdout, stderr) {

@@ -75,8 +75,7 @@ function copy(src, dest, callback) {
     if (err) {
       return callback(err);
     }
-    fs
-      .createReadStream(src)
+    fs.createReadStream(src)
       .pipe(fs.createWriteStream(dest))
       .on('finish', callback);
   });

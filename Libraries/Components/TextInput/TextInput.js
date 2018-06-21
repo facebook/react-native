@@ -40,23 +40,21 @@ let AndroidTextInput;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
+if (Platform.OS === 'android') {
+  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+} else if (Platform.OS === 'ios') {
+  RCTMultilineTextInputView = requireNativeComponent(
+    'RCTMultilineTextInputView',
+  );
+  RCTSinglelineTextInputView = requireNativeComponent(
+    'RCTSinglelineTextInputView',
+  );
+}
+
 const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-if (Platform.OS === 'android') {
-  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-} else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = requireNativeComponent(
-    'RCTMultilineTextInputView',
-    null,
-  );
-  RCTSinglelineTextInputView = requireNativeComponent(
-    'RCTSinglelineTextInputView',
-    null,
-  );
-}
 
 type Event = Object;
 type Selection = {
@@ -88,12 +86,12 @@ export type KeyboardType =
   | 'numeric'
   | 'phone-pad'
   | 'number-pad'
+  | 'decimal-pad'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
   | 'url'
   | 'name-phone-pad'
-  | 'decimal-pad'
   | 'twitter'
   | 'web-search'
   // Android-only
@@ -390,6 +388,7 @@ const TextInput = createReactClass({
      * - `default`
      * - `numeric`
      * - `number-pad`
+     * - `decimal-pad`
      * - `email-address`
      * - `phone-pad`
      *
@@ -401,7 +400,6 @@ const TextInput = createReactClass({
      * - `numbers-and-punctuation`
      * - `url`
      * - `name-phone-pad`
-     * - `decimal-pad`
      * - `twitter`
      * - `web-search`
      *

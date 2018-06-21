@@ -22,7 +22,8 @@ const Item = Picker.Item;
 
 class PickerExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<Picker>';
-  static description = 'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
+  static description =
+    'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
 
   state = {
     selected1: 'key1',

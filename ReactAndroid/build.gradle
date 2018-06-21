@@ -1,4 +1,7 @@
-// Copyright 2015-present Facebook. All Rights Reserved.
+// Copyright (c) 2015-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -243,7 +246,7 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
@@ -292,7 +295,7 @@ android {
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile 'com.facebook.fresco:fresco:1.9.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'

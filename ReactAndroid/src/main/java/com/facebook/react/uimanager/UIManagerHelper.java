@@ -26,18 +26,9 @@ public class UIManagerHelper {
    */
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
     CatalystInstance catalystInstance = context.getCatalystInstance();
-    UIManager uiManager;
-    switch (uiManagerType) {
-      case FABRIC:
-        uiManager = catalystInstance.getJSIModule(UIManager.class);
-        break;
-      case DEFAULT:
-        uiManager = catalystInstance.getNativeModule(UIManagerModule.class);
-        break;
-      default:
-        throw new IllegalArgumentException("Invalid UIManagerType: " + uiManagerType);
-    }
-    return uiManager;
+    return uiManagerType == FABRIC ?
+      catalystInstance.getJSIModule(UIManager.class) :
+      catalystInstance.getNativeModule(UIManagerModule.class);
   }
 
 }

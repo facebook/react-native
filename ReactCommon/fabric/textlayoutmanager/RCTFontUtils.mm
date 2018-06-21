@@ -7,6 +7,7 @@
 
 #import "RCTFontUtils.h"
 
+#import <cmath>
 #import <mutex>
 
 static RCTFontProperties RCTDefaultFontProperties() {
@@ -55,6 +56,25 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant) {
   return @[];
 }
 
+static UIFontWeight RCTUIFontWeightFromFloat(CGFloat fontWeight) {
+  // Note: Even if the underlying type of `UIFontWeight` is `CGFloat`
+  // and UIKit uses the same numerical notation, we have to use exact
+  // `UIFontWeight*` constants to make it work properly (because
+  // float values comparison is tricky).
+  static UIFontWeight weights[] = {
+    /* ~100 */ UIFontWeightUltraLight,
+    /* ~200 */ UIFontWeightThin,
+    /* ~300 */ UIFontWeightLight,
+    /* ~400 */ UIFontWeightRegular,
+    /* ~500 */ UIFontWeightMedium,
+    /* ~600 */ UIFontWeightSemibold,
+    /* ~700 */ UIFontWeightBold,
+    /* ~800 */ UIFontWeightHeavy,
+    /* ~900 */ UIFontWeightBlack
+  };
+  return weights[std::llround((fontWeight / 100) - 1)];
+}
+
 static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties) {
   static NSCache *fontCache;
   static std::mutex fontCacheMutex;
@@ -72,7 +92,7 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
 
   if (!font) {
     font = [UIFont systemFontOfSize:fontProperties.size
-                             weight:fontProperties.weight];
+                             weight:RCTUIFontWeightFromFloat(fontProperties.weight)];
 
     if (fontProperties.variant == RCTFontStyleItalic) {
       UIFontDescriptor *fontDescriptor = [font fontDescriptor];
@@ -114,7 +134,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
 
       if (!font) {
         // Failback to system font.
-        font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+        font = [UIFont systemFontOfSize:effectiveFontSize weight:RCTUIFontWeightFromFloat(fontProperties.weight)];
       }
     } else {
       // Get the closest font that matches the given weight for the fontFamily

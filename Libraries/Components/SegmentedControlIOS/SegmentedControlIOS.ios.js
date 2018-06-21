@@ -22,6 +22,8 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTSegmentedControl = requireNativeComponent('RCTSegmentedControl');
+
 type DefaultProps = {
   values: $ReadOnlyArray<string>,
   enabled: boolean,
@@ -138,11 +140,6 @@ const styles = StyleSheet.create({
     height: 28,
   },
 });
-
-const RCTSegmentedControl = requireNativeComponent(
-  'RCTSegmentedControl',
-  SegmentedControlIOS,
-);
 
 module.exports = ((SegmentedControlIOS: any): Class<
   ReactNative.NativeComponent<Props>,

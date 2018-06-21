@@ -324,12 +324,12 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <Text style={{fontFamily: Platform.isTVOS ? 'Times' : 'Cochin'}}>
+          <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
             Cochin
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Cochin',
+              fontFamily: Platform.isTV ? 'Times' : 'Cochin',
               fontWeight: 'bold',
             }}>
             Cochin bold
@@ -338,12 +338,12 @@ exports.examples = [
           <Text style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}>
             Helvetica bold
           </Text>
-          <Text style={{fontFamily: Platform.isTVOS ? 'Courier' : 'Verdana'}}>
+          <Text style={{fontFamily: Platform.isTV ? 'Courier' : 'Verdana'}}>
             Verdana
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Courier' : 'Verdana',
+              fontFamily: Platform.isTV ? 'Courier' : 'Verdana',
               fontWeight: 'bold',
             }}>
             Verdana bold
@@ -817,14 +817,14 @@ exports.examples = [
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Hoefler Text',
+              fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['oldstyle-nums'],
             }}>
             Old Style nums 0123456789{'\n'}
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Hoefler Text',
+              fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['lining-nums'],
             }}>
             Lining nums 0123456789{'\n'}

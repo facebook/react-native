@@ -78,6 +78,8 @@ struct YGNode {
   // to one YogaTree or nullptr when the YGNode is shared between two or more
   // YogaTrees.
   YGNodeRef getOwner() const;
+  // Deprecated, use getOwner() instead.
+  YGNodeRef getParent() const;
   YGVector getChildren() const;
   uint32_t getChildrenCount() const;
   YGNodeRef getChild(uint32_t index) const;

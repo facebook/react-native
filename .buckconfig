@@ -1,12 +1,13 @@
 
 [android]
-  target = Google Inc.:Google APIs:23
+  target = android-26
 
 [download]
   max_number_of_retries = 3
 
 [maven_repositories]
   central = https://repo1.maven.org/maven2
+  google = https://maven.google.com
 
 [alias]
   rntester = //RNTester/android/app:app

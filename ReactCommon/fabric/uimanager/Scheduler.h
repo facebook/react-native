@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -7,6 +10,7 @@
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
+#include <fabric/uimanager/SchedulerEventDispatcher.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
@@ -69,6 +73,7 @@ private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
+  SharedSchedulerEventDispatcher eventDispatcher_;
 };
 
 } // namespace react

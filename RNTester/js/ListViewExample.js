@@ -70,7 +70,7 @@ var ListViewSimpleExample = createReactClass({
           <View style={styles.row}>
             <Image style={styles.thumb} source={imgSource} />
             <Text style={styles.text}>
-              {rowData + ' - ' + LOREM_IPSUM.substr(0, rowHash % 301 + 10)}
+              {rowData + ' - ' + LOREM_IPSUM.substr(0, (rowHash % 301) + 10)}
             </Text>
           </View>
         </View>

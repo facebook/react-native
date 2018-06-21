@@ -72,7 +72,7 @@ export type ViewProps = $ReadOnly<{|
   ...GestureResponderEventProps,
   ...TouchEventProps,
 
-  // There's no easy way to create a different type if (Platform.isTVOS):
+  // There's no easy way to create a different type if (Platform.isTV):
   // so we must include TVViewProps
   ...TVViewProps,
 

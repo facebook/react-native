@@ -160,8 +160,11 @@ function runOnSimulator(xcodeProject, args, scheme) {
      * it will not boot the "default" device, but the one we set. If the app is already running,
      * this flag has no effect.
      */
+    const activeDeveloperDir = child_process
+      .execFileSync('xcode-select', ['-p'], {encoding: 'utf8'})
+      .trim();
     child_process.execFileSync('open', [
-      '/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app',
+      `${activeDeveloperDir}/Applications/Simulator.app`,
       '--args',
       '-CurrentDeviceUDID',
       selectedSimulator.udid,

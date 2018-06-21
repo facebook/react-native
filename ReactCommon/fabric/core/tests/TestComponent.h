@@ -57,6 +57,8 @@ public:
 
 class TestComponentDescriptor: public ConcreteComponentDescriptor<TestShadowNode> {
 public:
+  using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
+
   // TODO (shergin): Why does this gets repeated here and the shadow node class?
   ComponentName getComponentName() const override {
     return "Test";

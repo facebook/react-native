@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "Scheduler.h"
 
@@ -20,13 +23,19 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler() {
-  auto componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry();
+  auto &&eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
+  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher);
+
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
+
+  eventDispatcher->setUIManager(uiManager_);
+  eventDispatcher_ = eventDispatcher;
 }
 
 Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
+  eventDispatcher_->setUIManager(nullptr);
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
@@ -74,7 +83,7 @@ void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const Tr
 }
 
 #pragma mark - UIManagerDelegate
-  
+
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
   auto &&iterator = shadowTreeRegistry_.find(rootTag);
   auto &&shadowTree = iterator->second;

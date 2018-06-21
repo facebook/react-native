@@ -74,7 +74,7 @@ class TVEventHandlerView extends React.Component<
   }
 
   render() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return (
         <View>
           <TouchableOpacity onPress={() => {}}>

@@ -133,7 +133,7 @@ function _multiplyTransform(
  */
 function _convertToRadians(value: string): number {
   const floatValue = parseFloat(value);
-  return value.indexOf('rad') > -1 ? floatValue : floatValue * Math.PI / 180;
+  return value.indexOf('rad') > -1 ? floatValue : (floatValue * Math.PI) / 180;
 }
 
 function _validateTransforms(transform: Array<Object>): void {

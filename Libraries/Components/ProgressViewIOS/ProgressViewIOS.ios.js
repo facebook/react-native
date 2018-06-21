@@ -25,6 +25,8 @@ import type {ImageSource} from 'ImageSource';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTProgressView = requireNativeComponent('RCTProgressView');
+
 type Props = $ReadOnly<{|
   ...ViewProps,
   progressViewStyle?: ?('default' | 'bar'),
@@ -90,11 +92,6 @@ const styles = StyleSheet.create({
     height: 2,
   },
 });
-
-const RCTProgressView = requireNativeComponent(
-  'RCTProgressView',
-  ProgressViewIOS,
-);
 
 module.exports = ((ProgressViewIOS: any): Class<
   ReactNative.NativeComponent<Props>,

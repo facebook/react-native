@@ -285,7 +285,7 @@ function checkValidInputRange(arr: Array<number>) {
        * mean this implicit string conversion, you can do something like
        * String(myThing)
        */
-      'inputRange must be monotonically increasing ' + arr,
+      'inputRange must be monotonically non-decreasing ' + arr,
     );
   }
 }
@@ -358,7 +358,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       }
       if (/deg$/.test(value)) {
         const degrees = parseFloat(value) || 0;
-        const radians = degrees * Math.PI / 180.0;
+        const radians = (degrees * Math.PI) / 180.0;
         return radians;
       } else {
         // Assume radians

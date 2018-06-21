@@ -26,12 +26,12 @@ remote_file(
 
 rn_android_library(
     name = "imagepipeline",
+    visibility = ["//ReactAndroid/..."],
     exported_deps = [
         ":bolts",
         ":imagepipeline-base",
         ":imagepipeline-core",
     ],
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_android_prebuilt_aar(

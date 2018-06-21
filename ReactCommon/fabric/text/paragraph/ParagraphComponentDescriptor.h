@@ -17,11 +17,13 @@ namespace react {
 /*
  * Descriptor for <Paragraph> component.
  */
-class ParagraphComponentDescriptor: public ConcreteComponentDescriptor<ParagraphShadowNode> {
+class ParagraphComponentDescriptor final:
+  public ConcreteComponentDescriptor<ParagraphShadowNode> {
+
 public:
 
-  ParagraphComponentDescriptor():
-    ConcreteComponentDescriptor<ParagraphShadowNode>() {
+  ParagraphComponentDescriptor(SharedEventDispatcher eventDispatcher):
+    ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
     textLayoutManager_ = std::make_shared<TextLayoutManager>();

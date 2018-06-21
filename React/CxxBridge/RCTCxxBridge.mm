@@ -1,5 +1,3 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -188,6 +186,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 - (JSGlobalContextRef)jsContextRef
 {
   return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
+}
+
+- (std::shared_ptr<MessageQueueThread>)jsMessageThread
+{
+  return _jsMessageThread;
 }
 
 - (BOOL)isInspectable
@@ -873,6 +876,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)reload
 {
+  if (!_valid) {
+    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
   [_parentBridge reload];
 }
 

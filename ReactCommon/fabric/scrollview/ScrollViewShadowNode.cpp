@@ -33,7 +33,7 @@ void ScrollViewShadowNode::updateLocalData() {
 #pragma mark - LayoutableShadowNode
 
 void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
-  ConcreteViewShadowNode<ScrollViewProps>::layout(layoutContext);
+  ConcreteViewShadowNode::layout(layoutContext);
   updateLocalData();
 }
 

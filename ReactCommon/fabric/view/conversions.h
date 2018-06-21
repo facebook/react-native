@@ -9,6 +9,7 @@
 
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/graphics/Geometry.h>
+#include <fabric/view/primitives.h>
 #include <folly/dynamic.h>
 #include <folly/Conv.h>
 #include <yoga/Yoga.h>
@@ -201,7 +202,7 @@ inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = { folly::to<float>(stringValue.substr(stringValue.length() - 1)), YGUnitPercent };
+        result = { folly::to<float>(stringValue.substr(0, stringValue.length() - 1)), YGUnitPercent };
         return;
       } else {
         result = { folly::to<float>(stringValue), YGUnitPoint };
@@ -223,6 +224,73 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
       return;
     }
   }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, Transform &result) {
+  assert(value.isArray());
+  Transform transformMatrix;
+  for (auto &&tranformConfiguration : value) {
+    assert(tranformConfiguration.isObject());
+    auto pair = *tranformConfiguration.items().begin();
+    auto &&operation = pair.first.asString();
+    auto &&parameters = pair.second;
+
+    if (operation == "matrix") {
+      assert(parameters.isArray());
+      assert(parameters.size() == transformMatrix.matrix.size());
+      int i = 0;
+      for (auto item : parameters) {
+        transformMatrix.matrix[i++] = (Float)item.asDouble();
+      }
+    } else if (operation == "perspective") {
+      transformMatrix = transformMatrix * Transform::Perspective((Float)parameters.asDouble());
+    } else if (operation == "rotateX") {
+      transformMatrix = transformMatrix * Transform::Rotate((Float)parameters.asDouble(), 0, 0);
+    } else if (operation == "rotateY") {
+      transformMatrix = transformMatrix * Transform::Rotate(0, (Float)parameters.asDouble(), 0);
+    } else if (operation == "rotateZ") {
+      transformMatrix = transformMatrix * Transform::Rotate(0, 0, (Float)parameters.asDouble());
+    } else if (operation == "scale") {
+      transformMatrix = transformMatrix * Transform::Scale((Float)parameters.asDouble(), (Float)parameters.asDouble(), (Float)parameters.asDouble());
+    } else if (operation == "scaleX") {
+      transformMatrix = transformMatrix * Transform::Scale((Float)parameters.asDouble(), 0, 0);
+    } else if (operation == "scaleY") {
+      transformMatrix = transformMatrix * Transform::Scale(0, (Float)parameters.asDouble(), 0);
+    } else if (operation == "scaleZ") {
+      transformMatrix = transformMatrix * Transform::Scale(0, 0, (Float)parameters.asDouble());
+    } else if (operation == "translate") {
+      transformMatrix = transformMatrix * Transform::Translate(parameters[0].asDouble(), parameters[1].asDouble(), 0);
+    } else if (operation == "translateX") {
+      transformMatrix = transformMatrix * Transform::Translate(parameters.asDouble(), 0, 0);
+    } else if (operation == "translateY") {
+      transformMatrix = transformMatrix * Transform::Translate(0, parameters.asDouble(), 0);
+    } else if (operation == "skewX") {
+      transformMatrix = transformMatrix * Transform::Skew(parameters.asDouble(), 0);
+    } else if (operation == "skewY") {
+      transformMatrix = transformMatrix * Transform::Skew(0, parameters.asDouble());
+    }
+  }
+
+  result = transformMatrix;
+}
+
+inline void fromDynamic(const folly::dynamic &value, PointerEventsMode &result) {
+  assert(value.isString());
+  auto stringValue = value.asString();
+  if (stringValue == "auto") { result = PointerEventsMode::Auto; return; }
+  if (stringValue == "none") { result = PointerEventsMode::None; return; }
+  if (stringValue == "box-none") { result = PointerEventsMode::BoxNone; return; }
+  if (stringValue == "box-only") { result = PointerEventsMode::BoxOnly; return; }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
+  assert(value.isString());
+  auto stringValue = value.asString();
+  if (stringValue == "solid") { result = BorderStyle::Solid; return; }
+  if (stringValue == "dotted") { result = BorderStyle::Dotted; return; }
+  if (stringValue == "dashed") { result = BorderStyle::Dashed; return; }
   abort();
 }
 

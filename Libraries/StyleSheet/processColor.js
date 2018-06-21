@@ -15,7 +15,7 @@ const Platform = require('Platform');
 const normalizeColor = require('normalizeColor');
 
 /* eslint no-bitwise: 0 */
-function processColor(color?: string | number): ?number {
+function processColor(color?: ?(string | number)): ?number {
   if (color === undefined || color === null) {
     return color;
   }

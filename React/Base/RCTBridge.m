@@ -34,9 +34,14 @@ NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
+static dispatch_queue_t RCTModuleClassesSyncQueue;
 NSArray<Class> *RCTGetModuleClasses(void)
 {
-  return RCTModuleClasses;
+  __block NSArray<Class> *result;
+  dispatch_sync(RCTModuleClassesSyncQueue, ^{
+    result = [RCTModuleClasses copy];
+  });
+  return result;
 }
 
 void RCTFBQuickPerformanceLoggerConfigureHooks(__unused JSGlobalContextRef ctx) { }
@@ -51,6 +56,7 @@ void RCTRegisterModule(Class moduleClass)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
+    RCTModuleClassesSyncQueue = dispatch_queue_create("com.facebook.react.ModuleClassesSyncQueue", DISPATCH_QUEUE_CONCURRENT);
   });
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
@@ -58,7 +64,9 @@ void RCTRegisterModule(Class moduleClass)
             moduleClass);
 
   // Register module
-  [RCTModuleClasses addObject:moduleClass];
+  dispatch_barrier_async(RCTModuleClassesSyncQueue, ^{
+    [RCTModuleClasses addObject:moduleClass];
+  });
 }
 
 /**

@@ -7,7 +7,6 @@
 
 #import "RCTAssert.h"
 #import "RCTFont.h"
-#import "RCTFontConstantsOverride.h"
 #import "RCTLog.h"
 
 #import <CoreText/CoreText.h>

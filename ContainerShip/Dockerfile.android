@@ -6,7 +6,8 @@
 # or run tests, as well as unit test failures.
 FROM reactnativeci/android-base:latest
 
-LABEL Description="This image prepares and runs React Native's Android tests." maintainer "Héctor Ramos <hector@fb.com>"
+LABEL Description="This image prepares and runs React Native's Android tests."
+LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""

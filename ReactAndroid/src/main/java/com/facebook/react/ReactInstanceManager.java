@@ -47,7 +47,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -82,6 +82,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
@@ -158,7 +159,7 @@ public class ReactInstanceManager {
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final boolean mLazyNativeModulesEnabled;
-  private final @Nullable JSIModulesProvider mJSIModulesProvider;
+  private final @Nullable JSIModulePackage mJSIModulePackage;
   private List<ViewManager> mViewManagers;
 
   private class ReactContextInitParams {
@@ -207,7 +208,7 @@ public class ReactInstanceManager {
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     int minNumShakes,
     int minTimeLeftInFrameForNonBatchedOperationMs,
-    @Nullable JSIModulesProvider jsiModulesProvider) {
+    @Nullable JSIModulePackage jsiModulePackage) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -255,7 +256,7 @@ public class ReactInstanceManager {
       }
       mPackages.addAll(packages);
     }
-    mJSIModulesProvider = jsiModulesProvider;
+    mJSIModulePackage = jsiModulePackage;
 
     // Instantiate ReactChoreographer in UI thread.
     ReactChoreographer.initialize();
@@ -1101,8 +1102,8 @@ public class ReactInstanceManager {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
     }
-    if (mJSIModulesProvider != null) {
-      catalystInstance.addJSIModules(mJSIModulesProvider
+    if (mJSIModulePackage != null) {
+      catalystInstance.addJSIModules(mJSIModulePackage
         .getJSIModules(reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
 
