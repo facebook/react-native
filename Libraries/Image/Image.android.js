@@ -11,18 +11,15 @@
 'use strict';
 
 const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextAncestor = require('TextAncestor');
 const ViewPropTypes = require('ViewPropTypes');
 
-const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
 const merge = require('merge');
 const requireNativeComponent = require('requireNativeComponent');
@@ -183,126 +180,123 @@ declare class ImageComponentType extends ReactNative.NativeComponent<
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-const Image = createReactClass({
-  displayName: 'Image',
-  propTypes: ImageProps,
+let Image = (
+  props: ImagePropsType,
+  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'RKImage'>,
+) => {
+  const source = resolveAssetSource(props.source);
+  const defaultSource = resolveAssetSource(props.defaultSource);
+  const loadingIndicatorSource = resolveAssetSource(
+    props.loadingIndicatorSource,
+  );
 
-  statics: {
-    getSize,
+  // As opposed to the ios version, here we render `null` when there is no source, source.uri
+  // or source array.
 
-    /**
-     * Prefetches a remote image for later use by downloading it to the disk
-     * cache
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#prefetch
-     */
-    prefetch,
+  if (source && source.uri === '') {
+    console.warn('source.uri should not be an empty string');
+  }
 
-    /**
-     * Abort prefetch request.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
-     */
-    abortPrefetch,
-
-    /**
-     * Perform cache interrogation.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#querycache
-     */
-    queryCache,
-
-    /**
-     * Resolves an asset reference into an object.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
-     */
-    resolveAssetSource: resolveAssetSource,
-  },
-
-  mixins: [NativeMethodsMixin],
-
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  viewConfig: {
-    uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RCTView,
-  },
-
-  render: function() {
-    const source = resolveAssetSource(this.props.source);
-    const defaultSource = resolveAssetSource(this.props.defaultSource);
-    const loadingIndicatorSource = resolveAssetSource(
-      this.props.loadingIndicatorSource,
+  if (props.src) {
+    console.warn(
+      'The <Image> component requires a `source` property rather than `src`.',
     );
+  }
 
-    // As opposed to the ios version, here we render `null` when there is no source, source.uri
-    // or source array.
-
-    if (source && source.uri === '') {
-      console.warn('source.uri should not be an empty string');
-    }
-
-    if (this.props.src) {
-      console.warn(
-        'The <Image> component requires a `source` property rather than `src`.',
-      );
-    }
-
-    if (this.props.children) {
-      throw new Error(
-        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
-      );
-    }
-
-    if (this.props.defaultSource && this.props.loadingIndicatorSource) {
-      throw new Error(
-        'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
-      );
-    }
-
-    if (!source || (!source.uri && !Array.isArray(source))) {
-      return null;
-    }
-
-    let style;
-    let sources;
-    if (source.uri) {
-      const {width, height} = source;
-      style = flattenStyle([{width, height}, styles.base, this.props.style]);
-      sources = [{uri: source.uri}];
-    } else {
-      style = flattenStyle([styles.base, this.props.style]);
-      sources = source;
-    }
-
-    const {onLoadStart, onLoad, onLoadEnd, onError} = this.props;
-    const nativeProps = merge(this.props, {
-      style,
-      shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
-      src: sources,
-      headers: source.headers,
-      defaultSrc: defaultSource ? defaultSource.uri : null,
-      loadingIndicatorSrc: loadingIndicatorSource
-        ? loadingIndicatorSource.uri
-        : null,
-    });
-
-    return (
-      <TextAncestor.Consumer>
-        {hasTextAncestor =>
-          hasTextAncestor ? (
-            <RCTTextInlineImage {...nativeProps} />
-          ) : (
-            <RKImage {...nativeProps} />
-          )
-        }
-      </TextAncestor.Consumer>
+  if (props.children) {
+    throw new Error(
+      'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
     );
-  },
-});
+  }
+
+  if (props.defaultSource && props.loadingIndicatorSource) {
+    throw new Error(
+      'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
+    );
+  }
+
+  if (!source || (!source.uri && !Array.isArray(source))) {
+    return null;
+  }
+
+  let style;
+  let sources;
+  if (source.uri) {
+    const {width, height} = source;
+    style = flattenStyle([{width, height}, styles.base, props.style]);
+    sources = [{uri: source.uri}];
+  } else {
+    style = flattenStyle([styles.base, props.style]);
+    sources = source;
+  }
+
+  const {onLoadStart, onLoad, onLoadEnd, onError} = props;
+  const nativeProps = merge(props, {
+    style,
+    shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+    src: sources,
+    headers: source.headers,
+    defaultSrc: defaultSource ? defaultSource.uri : null,
+    loadingIndicatorSrc: loadingIndicatorSource
+      ? loadingIndicatorSource.uri
+      : null,
+    ref: forwardedRef,
+  });
+
+  return (
+    <TextAncestor.Consumer>
+      {hasTextAncestor =>
+        hasTextAncestor ? (
+          <RCTTextInlineImage {...nativeProps} />
+        ) : (
+          <RKImage {...nativeProps} />
+        )
+      }
+    </TextAncestor.Consumer>
+  );
+};
+
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+Image = React.forwardRef(Image);
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ */
+Image.getSize = getSize;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ */
+Image.prefetch = prefetch;
+
+/**
+ * Abort prefetch request.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
+ */
+Image.abortPrefetch = abortPrefetch;
+
+/**
+ * Perform cache interrogation.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+Image.queryCache = queryCache;
+
+/**
+ * Resolves an asset reference into an object.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
+ */
+Image.resolveAssetSource = resolveAssetSource;
+
+Image.propTypes = ImageProps;
 
 const styles = StyleSheet.create({
   base: {
@@ -310,4 +304,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((Image: any): Class<ImageComponentType>);
+module.exports = (Image: Class<ImageComponentType>);
