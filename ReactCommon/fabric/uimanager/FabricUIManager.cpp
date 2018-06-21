@@ -102,6 +102,10 @@ void FabricUIManager::setReleaseEventHandlerFunction(std::function<ReleaseEventH
   releaseEventHandlerFunction_ = releaseEventHandlerFunction;
 }
 
+void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction) {
+  releaseEventTargetFunction_ = releaseEventTargetFunction;
+}
+
 EventTarget FabricUIManager::createEventTarget(const InstanceHandle &instanceHandle) const {
   return createEventTargetFunction_(instanceHandle);
 }
@@ -113,6 +117,10 @@ void FabricUIManager::dispatchEvent(const EventTarget &eventTarget, const std::s
     const_cast<std::string &>(type),
     const_cast<folly::dynamic &>(payload)
   );
+}
+
+void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
+  releaseEventTargetFunction_(eventTarget);
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, InstanceHandle instanceHandle) {
