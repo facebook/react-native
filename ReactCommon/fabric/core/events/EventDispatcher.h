@@ -39,6 +39,9 @@ public:
     const folly::dynamic &payload,
     const EventPriority &priority
   ) const = 0;
+
+  virtual void releaseEventTarget(const EventTarget &eventTarget) const = 0;
+
 };
 
 } // namespace react

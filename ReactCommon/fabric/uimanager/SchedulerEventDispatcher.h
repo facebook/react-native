@@ -40,6 +40,9 @@ public:
     const EventPriority &priority
   ) const override;
 
+
+  void releaseEventTarget(const EventTarget &eventTarget) const override;
+
 private:
 
   // TODO: consider using std::weak_ptr<> instead for better memory management.

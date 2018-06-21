@@ -27,6 +27,7 @@ void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManage
 }
 
 EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &instanceHandle) const {
+  assert(uiManager_ && "Attempted to create EventTarget after FabricUIManager dies.");
   return uiManager_->createEventTarget(instanceHandle);
 }
 
@@ -36,8 +37,18 @@ void SchedulerEventDispatcher::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
+  if (!uiManager_) {
+    return;
+  }
   // TODO: Schedule the event based on priority.
   uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
+}
+
+void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
+  if (!uiManager_) {
+    return;
+  }
+  uiManager_->releaseEventTarget(eventTarget);
 }
 
 } // namespace react
