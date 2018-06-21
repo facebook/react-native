@@ -11,11 +11,11 @@
 
 const launchEditor = require('../util/launchEditor');
 
-module.exports = function({projectRoots}) {
+module.exports = function({watchFolders}) {
   return function(req, res, next) {
     if (req.url === '/open-stack-frame') {
       const frame = JSON.parse(req.rawBody);
-      launchEditor(frame.file, frame.lineNumber, projectRoots);
+      launchEditor(frame.file, frame.lineNumber, watchFolders);
       res.end('OK');
     } else {
       next();

@@ -80,7 +80,12 @@ public:
   void layoutChildren(LayoutContext layoutContext) override;
 
 protected:
-  std::unique_ptr<YGNode> yogaNode_;
+  /*
+   * All Yoga functions only accept non-const arguments, so we have to mark
+   * Yoga node as `mutable` here to avoid `static_cast`ing the pointer to this
+   * all the time.
+   */
+  mutable YGNode yogaNode_;
 
 private:
   static SharedYogaConfig suitableYogaConfig();

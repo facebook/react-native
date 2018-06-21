@@ -10,16 +10,12 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
-const ReactNative = require('ReactNative');
-const PropTypes = require('prop-types');
-const ViewPropTypes = require('ViewPropTypes');
+const {NativeComponent} = require('ReactNative');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+const nullthrows = require('fbjs/lib/nullthrows');
 
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -33,21 +29,51 @@ if (Platform.OS === 'android') {
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
+type NativeRefreshControlType = Class<NativeComponent<Props>>;
+
+const NativeRefreshControl: NativeRefreshControlType =
+  Platform.OS === 'ios'
+    ? (requireNativeComponent('RCTRefreshControl'): any)
+    : (requireNativeComponent('AndroidSwipeRefreshLayout'): any);
 
 type IOSProps = $ReadOnly<{|
+  /**
+   * The color of the refresh indicator.
+   */
   tintColor?: ?ColorValue,
+  /**
+   * Title color.
+   */
   titleColor?: ?ColorValue,
+  /**
+   * The title displayed under the refresh indicator.
+   */
   title?: ?string,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  /**
+   * Whether the pull to refresh functionality is enabled.
+   */
   enabled?: ?boolean,
+  /**
+   * The colors (at least one) that will be used to draw the refresh indicator.
+   */
   colors?: ?$ReadOnlyArray<ColorValue>,
+  /**
+   * The background color of the refresh indicator.
+   */
   progressBackgroundColor?: ?ColorValue,
+  /**
+   * Size of the refresh indicator, see RefreshControl.SIZE.
+   */
   size?: ?(
     | typeof RefreshLayoutConsts.SIZE.DEFAULT
     | typeof RefreshLayoutConsts.SIZE.LARGE
   ),
+  /**
+   * Progress view top offset
+   */
   progressViewOffset?: ?number,
 |}>;
 
@@ -55,7 +81,15 @@ type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
+
+  /**
+   * Called when the view starts refreshing.
+   */
   onRefresh?: ?Function,
+
+  /**
+   * Whether the view should be indicating an active refresh.
+   */
   refreshing: boolean,
 |}>;
 
@@ -104,87 +138,29 @@ type Props = $ReadOnly<{|
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
-const RefreshControl = createReactClass({
-  displayName: 'RefreshControl',
-  statics: {
-    SIZE: RefreshLayoutConsts.SIZE,
-  },
+class RefreshControl extends React.Component<Props> {
+  static SIZE = RefreshLayoutConsts.SIZE;
 
-  mixins: [NativeMethodsMixin],
-
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * Called when the view starts refreshing.
-     */
-    onRefresh: PropTypes.func,
-    /**
-     * Whether the view should be indicating an active refresh.
-     */
-    refreshing: PropTypes.bool.isRequired,
-    /**
-     * The color of the refresh indicator.
-     * @platform ios
-     */
-    tintColor: ColorPropType,
-    /**
-     * Title color.
-     * @platform ios
-     */
-    titleColor: ColorPropType,
-    /**
-     * The title displayed under the refresh indicator.
-     * @platform ios
-     */
-    title: PropTypes.string,
-    /**
-     * Whether the pull to refresh functionality is enabled.
-     * @platform android
-     */
-    enabled: PropTypes.bool,
-    /**
-     * The colors (at least one) that will be used to draw the refresh indicator.
-     * @platform android
-     */
-    colors: PropTypes.arrayOf(ColorPropType),
-    /**
-     * The background color of the refresh indicator.
-     * @platform android
-     */
-    progressBackgroundColor: ColorPropType,
-    /**
-     * Size of the refresh indicator, see RefreshControl.SIZE.
-     * @platform android
-     */
-    size: PropTypes.oneOf([
-      RefreshLayoutConsts.SIZE.DEFAULT,
-      RefreshLayoutConsts.SIZE.LARGE,
-    ]),
-    /**
-     * Progress view top offset
-     * @platform android
-     */
-    progressViewOffset: PropTypes.number,
-  },
-
-  _nativeRef: (null: any),
-  _lastNativeRefreshing: false,
+  _nativeRef: ?React.ElementRef<NativeRefreshControlType> = null;
+  _lastNativeRefreshing = false;
 
   componentDidMount() {
     this._lastNativeRefreshing = this.props.refreshing;
-  },
+  }
 
-  componentDidUpdate(prevProps: {refreshing: boolean}) {
+  componentDidUpdate(prevProps: Props) {
     // RefreshControl is a controlled component so if the native refreshing
     // value doesn't match the current js refreshing prop update it to
     // the js value.
     if (this.props.refreshing !== prevProps.refreshing) {
       this._lastNativeRefreshing = this.props.refreshing;
     } else if (this.props.refreshing !== this._lastNativeRefreshing) {
-      this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
+      nullthrows(this._nativeRef).setNativeProps({
+        refreshing: this.props.refreshing,
+      });
       this._lastNativeRefreshing = this.props.refreshing;
     }
-  },
+  }
 
   render() {
     return (
@@ -196,9 +172,9 @@ const RefreshControl = createReactClass({
         onRefresh={this._onRefresh}
       />
     );
-  },
+  }
 
-  _onRefresh() {
+  _onRefresh = () => {
     this._lastNativeRefreshing = true;
 
     this.props.onRefresh && this.props.onRefresh();
@@ -206,23 +182,7 @@ const RefreshControl = createReactClass({
     // The native component will start refreshing so force an update to
     // make sure it stays in sync with the js component.
     this.forceUpdate();
-  },
-});
-
-class TypedRefreshControl extends ReactNative.NativeComponent<Props> {
-  static SIZE = RefreshLayoutConsts.SIZE;
+  };
 }
 
-if (Platform.OS === 'ios') {
-  var NativeRefreshControl = requireNativeComponent(
-    'RCTRefreshControl',
-    RefreshControl,
-  );
-} else if (Platform.OS === 'android') {
-  var NativeRefreshControl = requireNativeComponent(
-    'AndroidSwipeRefreshLayout',
-    RefreshControl,
-  );
-}
-
-module.exports = ((RefreshControl: any): Class<TypedRefreshControl>);
+module.exports = RefreshControl;

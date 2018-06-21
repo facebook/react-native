@@ -60,7 +60,6 @@ var NetworkImageCallbackExample = createReactClass({
             this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)
           }
           onLoad={event => {
-            // Currently this image source feature is only available on iOS.
             if (event.nativeEvent.source) {
               const url = event.nativeEvent.source.url;
               this._loadEventFired(
@@ -158,7 +157,7 @@ var NetworkImageExample = createReactClass({
         onProgress={e =>
           this.setState({
             progress: Math.round(
-              100 * e.nativeEvent.loaded / e.nativeEvent.total,
+              (100 * e.nativeEvent.loaded) / e.nativeEvent.total,
             ),
           })
         }

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -76,6 +79,7 @@ private:
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
   void complete(UnsharedRootShadowNode newRootShadowNode);
   bool commit(const SharedRootShadowNode &newRootShadowNode);
+  void emitLayoutEvents(const TreeMutationInstructionList &instructions);
 
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;

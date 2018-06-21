@@ -9,5 +9,5 @@
 
 'use strict';
 
-module.exports.out = () => jest.genMockFn();
-module.exports.err = () => jest.genMockFn();
+module.exports.out = () => jest.fn();
+module.exports.err = () => jest.fn();

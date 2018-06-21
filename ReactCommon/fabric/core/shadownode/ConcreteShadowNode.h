@@ -19,13 +19,15 @@ namespace react {
  * `ConcreteShadowNode` is a default implementation of `ShadowNode` interface
  * with many handy features.
  */
-template <typename PropsT>
+template <typename PropsT, typename EventEmitterT = EventEmitter>
 class ConcreteShadowNode: public ShadowNode {
   static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
 
 public:
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<const PropsT>;
+  using ConcreteEventEmitter = EventEmitterT;
+  using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
 
   static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
@@ -40,16 +42,16 @@ public:
   ConcreteShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
     const SharedConcreteProps &props,
+    const SharedConcreteEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children,
     const ShadowNodeCloneFunction &cloneFunction
   ):
     ShadowNode(
       tag,
       rootTag,
-      instanceHandle,
       (SharedProps)props,
+      eventEmitter,
       children,
       cloneFunction
     ) {};
@@ -57,11 +59,13 @@ public:
   ConcreteShadowNode(
     const SharedConcreteShadowNode &shadowNode,
     const SharedProps &props,
+    const SharedEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children
   ):
     ShadowNode(
       shadowNode,
       (SharedProps)props,
+      eventEmitter,
       children
     ) {}
 

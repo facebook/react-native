@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react;
 
@@ -7,7 +10,7 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -48,7 +51,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
-  private @Nullable JSIModulesProvider mJSIModulesProvider;
+  private @Nullable JSIModulePackage mJSIModulesPackage;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -63,9 +66,9 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setJSIModulesProvider(
-    @Nullable JSIModulesProvider jsiModulesProvider) {
-    mJSIModulesProvider = jsiModulesProvider;
+  public ReactInstanceManagerBuilder setJSIModulesPackage(
+    @Nullable JSIModulePackage jsiModulePackage) {
+    mJSIModulesPackage = jsiModulePackage;
     return this;
   }
 
@@ -281,6 +284,6 @@ public class ReactInstanceManagerBuilder {
         mDevBundleDownloadListener,
         mMinNumShakes,
         mMinTimeLeftInFrameForNonBatchedOperationMs,
-        mJSIModulesProvider);
+      mJSIModulesPackage);
   }
 }

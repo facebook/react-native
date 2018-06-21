@@ -321,9 +321,6 @@ const styles = StyleSheet.create({
 });
 
 // The View that contains both the actual drawer and the main view
-const AndroidDrawerLayout = requireNativeComponent(
-  'AndroidDrawerLayout',
-  DrawerLayoutAndroid,
-);
+const AndroidDrawerLayout = requireNativeComponent('AndroidDrawerLayout');
 
 module.exports = DrawerLayoutAndroid;

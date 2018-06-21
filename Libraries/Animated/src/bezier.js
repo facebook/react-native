@@ -2,9 +2,9 @@
  * BezierEasing - use bezier curve for transition easing function
  * https://github.com/gre/bezier-easing
  *
+ * @flow
  * @format
  * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
- * @noflow
  */
 
 'use strict';
@@ -71,9 +71,13 @@ function newtonRaphsonIterate(aX, aGuessT, mX1, mX2) {
   return aGuessT;
 }
 
-module.exports = function bezier(mX1, mY1, mX2, mY2) {
+module.exports = function bezier(
+  mX1: number,
+  mY1: number,
+  mX2: number,
+  mY2: number,
+) {
   if (!(0 <= mX1 && mX1 <= 1 && 0 <= mX2 && mX2 <= 1)) {
-    // eslint-disable-line yoda
     throw new Error('bezier x values must be in [0, 1] range');
   }
 
@@ -123,7 +127,7 @@ module.exports = function bezier(mX1, mY1, mX2, mY2) {
     }
   }
 
-  return function BezierEasing(x) {
+  return function BezierEasing(x: number): number {
     if (mX1 === mY1 && mX2 === mY2) {
       return x; // linear
     }

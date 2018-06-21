@@ -5,6 +5,7 @@ rn_android_library(
     srcs = glob(["*.java"]),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
     ],
     visibility = [
         "PUBLIC",

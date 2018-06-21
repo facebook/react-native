@@ -22,6 +22,8 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
+const RCTTabBar = requireNativeComponent('RCTTabBar');
+
 type Props = $ReadOnly<{|
   ...ViewProps,
   style?: DangerouslyImpreciseStyleProp,
@@ -101,7 +103,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-const RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

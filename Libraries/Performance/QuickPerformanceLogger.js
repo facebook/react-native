@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -78,6 +78,17 @@ const QuickPerformanceLogger = {
   ): void {
     if (global.nativeQPLMarkerCancel) {
       global.nativeQPLMarkerCancel(markerId, instanceKey);
+    }
+  },
+
+  markerPoint(
+    markerId: number,
+    name: string,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
+    if (global.nativeQPLMarkerPoint) {
+      global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp);
     }
   },
 

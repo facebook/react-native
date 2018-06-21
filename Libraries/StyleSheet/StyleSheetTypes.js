@@ -92,10 +92,10 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
 export type ____TransformStyle_Internal = $ReadOnly<{|
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
-    | {|+rotate: string|}
-    | {|+rotateX: string|}
-    | {|+rotateY: string|}
-    | {|+rotateZ: string|}
+    | {|+rotate: string | AnimatedNode|}
+    | {|+rotateX: string | AnimatedNode|}
+    | {|+rotateY: string | AnimatedNode|}
+    | {|+rotateZ: string | AnimatedNode|}
     | {|+scale: number | AnimatedNode|}
     | {|+scaleX: number | AnimatedNode|}
     | {|+scaleY: number | AnimatedNode|}
@@ -138,23 +138,23 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderRightColor?: ColorValue,
   borderStartColor?: ColorValue,
   borderTopColor?: ColorValue,
-  borderRadius?: number,
-  borderBottomEndRadius?: number,
-  borderBottomLeftRadius?: number,
-  borderBottomRightRadius?: number,
-  borderBottomStartRadius?: number,
-  borderTopEndRadius?: number,
-  borderTopLeftRadius?: number,
-  borderTopRightRadius?: number,
-  borderTopStartRadius?: number,
+  borderRadius?: number | AnimatedNode,
+  borderBottomEndRadius?: number | AnimatedNode,
+  borderBottomLeftRadius?: number | AnimatedNode,
+  borderBottomRightRadius?: number | AnimatedNode,
+  borderBottomStartRadius?: number | AnimatedNode,
+  borderTopEndRadius?: number | AnimatedNode,
+  borderTopLeftRadius?: number | AnimatedNode,
+  borderTopRightRadius?: number | AnimatedNode,
+  borderTopStartRadius?: number | AnimatedNode,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
-  borderWidth?: number,
-  borderBottomWidth?: number,
-  borderEndWidth?: number,
-  borderLeftWidth?: number,
-  borderRightWidth?: number,
-  borderStartWidth?: number,
-  borderTopWidth?: number,
+  borderWidth?: number | AnimatedNode,
+  borderBottomWidth?: number | AnimatedNode,
+  borderEndWidth?: number | AnimatedNode,
+  borderLeftWidth?: number | AnimatedNode,
+  borderRightWidth?: number | AnimatedNode,
+  borderStartWidth?: number | AnimatedNode,
+  borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
 |}>;
@@ -185,8 +185,8 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'proportional-nums',
   >,
   textShadowOffset?: $ReadOnly<{|
-    width?: number,
-    height?: number,
+    width: number,
+    height: number,
   |}>,
   textShadowRadius?: number,
   textShadowColor?: ColorValue,

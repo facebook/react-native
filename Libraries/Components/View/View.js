@@ -10,11 +10,8 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('React');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const TextAncestor = require('TextAncestor');
-const ViewPropTypes = require('ViewPropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
@@ -31,47 +28,27 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-const RCTView = requireNativeComponent(
-  'RCTView',
-  {
-    propTypes: ViewPropTypes,
-  },
-  {
-    nativeOnly: {
-      nativeBackgroundAndroid: true,
-      nativeForegroundAndroid: true,
-    },
-  },
-);
-
-if (__DEV__) {
-  const UIManager = require('UIManager');
-  const viewConfig =
-    (UIManager.viewConfigs && UIManager.viewConfigs.RCTView) || {};
-  for (const prop in viewConfig.nativeProps) {
-    if (!ViewPropTypes[prop] && !ReactNativeStyleAttributes[prop]) {
-      throw new Error(
-        'View is missing propType for native prop `' + prop + '`',
-      );
-    }
-  }
-}
+const RCTView = requireNativeComponent('RCTView');
 
 let ViewToExport = RCTView;
 if (__DEV__) {
+  const View = (props: Props, forwardedRef: ?React.Ref<'RCTView'>) => {
+    return (
+      <TextAncestor.Consumer>
+        {hasTextAncestor => {
+          invariant(
+            !hasTextAncestor,
+            'Nesting of <View> within <Text> is not currently supported.',
+          );
+          return <RCTView {...props} ref={forwardedRef} />;
+        }}
+      </TextAncestor.Consumer>
+    );
+  };
   // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-  ViewToExport = React.forwardRef((props, ref) => (
-    <TextAncestor.Consumer>
-      {hasTextAncestor => {
-        invariant(
-          !hasTextAncestor,
-          'Nesting of <View> within <Text> is not currently supported.',
-        );
-        return <RCTView {...props} ref={ref} />;
-      }}
-    </TextAncestor.Consumer>
-  ));
-  ViewToExport.displayName = 'View';
+  ViewToExport = React.forwardRef(View);
 }
 
-module.exports = ((ViewToExport: any): Class<NativeComponent<ViewProps>>);
+module.exports = ((ViewToExport: $FlowFixMe): Class<
+  NativeComponent<ViewProps>,
+>);

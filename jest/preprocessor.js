@@ -34,14 +34,17 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 babelRegisterOnly([]);
 
 /* $FlowFixMe(site=react_native_oss) */
-const transformer = require('metro/src/transformer.js');
+const transformer = require('metro/src/reactNativeTransformer');
 module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
       // node specific transforms only
       return babelTransformSync(
         src,
-        Object.assign({filename: file}, nodeOptions),
+        Object.assign(
+          {filename: file},
+          {sourceType: 'script', ...nodeOptions, ast: false},
+        ),
       ).code;
     }
 
@@ -115,7 +118,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro/src/transformer.js'),
+    require.resolve('metro/src/reactNativeTransformer'),
     require.resolve('@babel/core/package.json'),
   ]),
 };

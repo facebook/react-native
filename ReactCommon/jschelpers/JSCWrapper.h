@@ -10,7 +10,6 @@
 #include <functional>
 #include <string>
 #include <JavaScriptCore/JavaScript.h>
-#include <jschelpers/JSWeak.h>
 
 #if defined(JSCINTERNAL) || (!defined(__APPLE__))
 #define JSC_IMPORT extern "C"
@@ -78,10 +77,6 @@ struct JSCWrapper {
   // JSContext
   JSC_WRAPPER_METHOD(JSContextGetGlobalContext);
   JSC_WRAPPER_METHOD(JSContextGetGlobalObject);
-  JSC_WRAPPER_METHOD(JSContextGetGroup);
-  JSC_WRAPPER_METHOD(JSContextGroupRetain);
-  JSC_WRAPPER_METHOD(JSContextGroupRelease);
-
   JSC_WRAPPER_METHOD(FBJSContextStartGCTimers);
 
   // JSEvaluate
@@ -146,12 +141,6 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
   JSC_WRAPPER_METHOD(JSValueIsNull);
-
-  // JSWeak
-  JSC_WRAPPER_METHOD(JSWeakCreate);
-  JSC_WRAPPER_METHOD(JSWeakRetain);
-  JSC_WRAPPER_METHOD(JSWeakRelease);
-  JSC_WRAPPER_METHOD(JSWeakGetObject);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);

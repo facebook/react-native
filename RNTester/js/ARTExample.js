@@ -16,7 +16,7 @@ var {ART, Platform, View} = ReactNative;
 
 const {Surface, Path, Group, Transform, Shape} = ART;
 
-var scale = Platform.isTVOS ? 4 : 1;
+var scale = Platform.isTV ? 4 : 1;
 
 class ARTExample extends React.Component<{}> {
   render() {

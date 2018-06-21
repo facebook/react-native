@@ -22,7 +22,9 @@ const View = require('View');
 
 const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
-const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
+
+const RCTModalHostView = requireNativeComponent('RCTModalHostView');
+
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModules.ModalManager
     ? new NativeEventEmitter(NativeModules.ModalManager)
@@ -88,7 +90,7 @@ class Modal extends React.Component<Object> {
      * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
      */
     onRequestClose:
-      Platform.isTVOS || Platform.OS === 'android'
+      Platform.isTV || Platform.OS === 'android'
         ? PropTypes.func.isRequired
         : PropTypes.func,
     /**

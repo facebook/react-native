@@ -12,6 +12,7 @@
 #include <fabric/core/ShadowNode.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <fabric/view/AccessibleShadowNode.h>
+#include <fabric/view/ViewEventEmitter.h>
 #include <fabric/view/ViewProps.h>
 #include <fabric/view/YogaLayoutableShadowNode.h>
 
@@ -23,9 +24,9 @@ namespace react {
  * as <View> and similar basic behaviour).
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
-template <typename ViewPropsT>
+template <typename ViewPropsT = ViewProps, typename ViewEventEmitterT = ViewEventEmitter>
 class ConcreteViewShadowNode:
-  public ConcreteShadowNode<ViewPropsT>,
+  public ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>,
   public AccessibleShadowNode,
   public YogaLayoutableShadowNode {
 
@@ -37,21 +38,23 @@ public:
 
   using ConcreteViewProps = ViewPropsT;
   using SharedConcreteViewProps = std::shared_ptr<const ViewPropsT>;
+  using ConcreteViewEventEmitter = ViewEventEmitterT;
+  using SharedConcreteViewEventEmitter = std::shared_ptr<const ViewEventEmitterT>;
   using SharedConcreteViewShadowNode = std::shared_ptr<const ConcreteViewShadowNode>;
 
   ConcreteViewShadowNode(
     const Tag &tag,
     const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
     const SharedConcreteViewProps &props,
+    const SharedConcreteViewEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children,
     const ShadowNodeCloneFunction &cloneFunction
   ):
-    ConcreteShadowNode<ViewPropsT>(
+    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
       tag,
       rootTag,
-      instanceHandle,
       props,
+      eventEmitter,
       children,
       cloneFunction
     ),
@@ -66,11 +69,13 @@ public:
   ConcreteViewShadowNode(
     const SharedConcreteViewShadowNode &shadowNode,
     const SharedConcreteViewProps &props,
+    const SharedConcreteViewEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children
   ):
-    ConcreteShadowNode<ViewPropsT>(
+    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
       shadowNode,
       props,
+      eventEmitter,
       children
     ),
     AccessibleShadowNode(
