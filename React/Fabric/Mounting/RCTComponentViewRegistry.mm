@@ -10,6 +10,60 @@
 #import <Foundation/NSMapTable.h>
 #import <React/RCTAssert.h>
 
+#define LEGACY_UIMANAGER_INTEGRATION_ENABLED 1
+
+#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
+
+#import <React/RCTUIManager.h>
+#import <React/RCTBridge+Private.h>
+
+/**
+ * Warning: This is a total hack and temporary solution.
+ * Unless we have a pure Fabric-based implementation of UIManager commands
+ * delivery pipeline, we have to leverage existing infra. This code tricks
+ * legacy UIManager by registering all Fabric-managed views in it,
+ * hence existing command-delivery infra can reach "foreign" views using
+ * the old pipeline.
+ */
+@interface RCTUIManager ()
+- (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
+@end
+
+@interface RCTUIManager (Hack)
+
++ (void)registerView:(UIView *)view;
++ (void)unregisterView:(UIView *)view;
+
+@end
+
+@implementation RCTUIManager (Hack)
+
++ (void)registerView:(UIView *)view
+{
+  if (!view) {
+    return;
+  }
+
+  RCTUIManager *uiManager = [[RCTBridge currentBridge] uiManager];
+  view.reactTag = @(view.tag);
+  [uiManager.viewRegistry setObject:view forKey:@(view.tag)];
+}
+
++ (void)unregisterView:(UIView *)view
+{
+  if (!view) {
+    return;
+  }
+
+  RCTUIManager *uiManager = [[RCTBridge currentBridge] uiManager];
+  view.reactTag = nil;
+  [uiManager.viewRegistry removeObjectForKey:@(view.tag)];
+}
+
+@end
+
+#endif
+
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
 
 @implementation RCTComponentViewRegistry {
@@ -37,6 +91,11 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
     [self _dequeueComponentViewWithName:componentName];
   componentView.tag = tag;
   [_registry setObject:componentView forKey:(__bridge id)(void *)tag];
+
+#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
+  [RCTUIManager registerView:componentView];
+#endif
+
   return componentView;
 }
 
@@ -45,6 +104,11 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
                        componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
+
+#ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
+  [RCTUIManager unregisterView:componentView];
+#endif
+
   [_registry removeObjectForKey:(__bridge id)(void *)tag];
   componentView.tag = 0;
   [self _enqueueComponentViewWithName:componentName componentView:componentView];
