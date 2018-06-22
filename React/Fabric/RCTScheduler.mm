@@ -7,6 +7,7 @@
 
 #import "RCTScheduler.h"
 
+#import <fabric/uimanager/ContextContainer.h>
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
 
@@ -41,7 +42,9 @@ private:
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>();
+
+    SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
+    _scheduler = std::make_shared<Scheduler>(contextContainer);
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
