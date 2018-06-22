@@ -126,6 +126,7 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
     auto nonConstYogaLayoutableChild = std::const_pointer_cast<YogaLayoutableShadowNode>(yogaLayoutableChild);
 
     LayoutMetrics childLayoutMetrics = layoutMetricsFromYogaNode(nonConstYogaLayoutableChild->yogaNode_);
+    childLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
     nonConstYogaLayoutableChild->setLayoutMetrics(childLayoutMetrics);
   }
 }
