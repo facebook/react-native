@@ -129,8 +129,8 @@ using namespace facebook::react;
 
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
-    self.nativeId = [NSString stringWithCString:newViewProps.nativeId.c_str()
-                                       encoding:NSASCIIStringEncoding];
+    self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
+  }
   }
 }
 
@@ -165,7 +165,7 @@ using namespace facebook::react;
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  _eventEmitter->onAccessibilityAction([action.name cStringUsingEncoding:NSASCIIStringEncoding]);
+  _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
   return YES;
 }
 

@@ -11,6 +11,14 @@
 #import <fabric/graphics/Geometry.h>
 #import <fabric/view/primitives.h>
 
+inline NSString *_Nullable RCTNSStringFromString(const std::string &string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
+  return [NSString stringWithCString:string.c_str() encoding:encoding];
+}
+
+inline std::string RCTStringFromNSString(NSString *string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
+  return [string cStringUsingEncoding:encoding];
+}
+
 inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor) {
   return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
 }
