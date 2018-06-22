@@ -22,9 +22,10 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler() {
+Scheduler::Scheduler(const SharedContextContainer &contextContainer):
+  contextContainer_(contextContainer) {
   auto &&eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
-  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher);
+  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
 
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
