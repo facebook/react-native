@@ -10,7 +10,6 @@ package com.facebook.react.fabric;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.os.SystemClock;
@@ -22,7 +21,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -41,13 +39,11 @@ import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -295,10 +291,10 @@ public class FabricUIManager implements UIManager, JSHandler {
       "FabricUIManager.appendChild")
       .flush();
     try {
-      // If the child to append is shared with another tree (child.getParent() != null),
+      // If the child to append was already committed (child.isSealed()),
       // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
       //TODO: T27926878 avoid cloning shared child
-      if (child.getParent() != null) {
+      if (child.isSealed()) {
         child = child.mutableCopy(child.getInstanceHandle());
       }
       parent.addChildAt(child, parent.getChildCount());
@@ -474,6 +470,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     // and we do not need to hold references to the previous tree anymore
     node.setOriginalReactShadowNode(null);
     node.markUpdateSeen();
+    node.markAsSealed();
   }
 
   @Override
