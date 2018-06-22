@@ -193,10 +193,22 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       // Virtual ReactShadowNode do not have a YogaNode associated
       copy.mYogaNode = null;
     }
-    copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
     copy.mTotalNativeChildren = mTotalNativeChildren;
-    copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
+    copy.mNativeChildren = copyChildren(mNativeChildren);
+    copy.mChildren = copyChildren(mChildren);
+
     return copy;
+  }
+
+  @Nullable
+  private ArrayList<ReactShadowNodeImpl> copyChildren(@Nullable List<ReactShadowNodeImpl> list){
+    ArrayList<ReactShadowNodeImpl> result = list == null ? null : new ArrayList<>(list);
+    if (result != null) {
+      for (ReactShadowNodeImpl child : result) {
+        child.mParent = null;
+      }
+    }
+    return result;
   }
 
   @Override
