@@ -77,16 +77,23 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   RCTAssertMainQueue();
 
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
-  NSDictionary<NSString *, NSNumber *> *dims = @{
+  typeof (dimensions.window) window = dimensions.window;
+  NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
       @"width": @(window.width),
       @"height": @(window.height),
       @"scale": @(window.scale),
       @"fontScale": @(window.fontScale)
   };
+  typeof (dimensions.screen) screen = dimensions.screen;
+  NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
+      @"width": @(screen.width),
+      @"height": @(screen.height),
+      @"scale": @(screen.scale),
+      @"fontScale": @(screen.fontScale)
+  };
   return @{
-      @"window": dims,
-      @"screen": dims
+      @"window": dimsWindow,
+      @"screen": dimsScreen
   };
 }
 
