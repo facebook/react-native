@@ -19,26 +19,18 @@
 namespace facebook {
 namespace react {
 
-SharedYogaConfig YogaLayoutableShadowNode::suitableYogaConfig() {
-  static SharedYogaConfig sharedYogaConfig;
-
-  if (!sharedYogaConfig) {
-    sharedYogaConfig = std::shared_ptr<YGConfig>(YGConfigNew());
-    sharedYogaConfig->cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
-  }
-
-  return sharedYogaConfig;
-}
-
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   const SharedYogaStylableProps &props,
   const SharedShadowNodeSharedList &children
 ):
-  yogaNode_({}) {
+  yogaNode_({}),
+  yogaConfig_(nullptr) {
+
   assert(props);
   assert(children);
 
-  yogaNode_.setConfig(suitableYogaConfig().get());
+  initializeYogaConfig(yogaConfig_);
+  yogaNode_.setConfig(&yogaConfig_);
   yogaNode_.setStyle(props->yogaStyle);
   yogaNode_.setContext(this);
   yogaNode_.setDirty(true);
@@ -51,8 +43,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   const SharedYogaStylableProps &props,
   const SharedShadowNodeSharedList &children
 ):
-  yogaNode_(shadowNode->yogaNode_) {
-  yogaNode_.setConfig(suitableYogaConfig().get());
+  yogaNode_(shadowNode->yogaNode_),
+  yogaConfig_(nullptr) {
+
+  initializeYogaConfig(yogaConfig_);
+  yogaNode_.setConfig(&yogaConfig_);
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
   yogaNode_.setDirty(true);
@@ -110,6 +105,17 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   if (!getIsLayoutClean()) {
     ensureUnsealed();
+
+    /*
+     * In Yoga, every single Yoga Node has to have a (non-null) pointer to
+     * Yoga Config (this config can be shared between many nodes),
+     * so every node can be individually configured. This does *not* mean
+     * however that Yoga consults with every single Yoga Node Config for every
+     * config parameter. Especially in case of `pointScaleFactor`,
+     * the only value in the config of the root node is taken into account
+     * (and this is by design).
+     */
+    yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
     YGNodeCalculateLayout(&yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
   }
 
@@ -242,6 +248,10 @@ void YogaLayoutableShadowNode::setYogaNodeChildrenBasedOnShadowNodeChildren(YGNo
   }
 
   yogaNodeRawPtr->setChildren(yogaNodeChildren);
+}
+
+void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
+  config.cloneNodeCallback = YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
 }
 
 } // namespace react
