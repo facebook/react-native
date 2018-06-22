@@ -17,6 +17,7 @@
 #import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
+#import <React/RCTUtils.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
 
@@ -106,6 +107,7 @@ using namespace facebook::react;
                           surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
@@ -120,6 +122,7 @@ using namespace facebook::react;
                surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
