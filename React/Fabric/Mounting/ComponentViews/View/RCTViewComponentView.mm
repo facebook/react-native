@@ -131,6 +131,10 @@ using namespace facebook::react;
   if (oldViewProps.nativeId != newViewProps.nativeId) {
     self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
   }
+
+  // `accessible`
+  if (oldViewProps.accessible != newViewProps.accessible) {
+    self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
   }
 }
 
@@ -146,10 +150,64 @@ using namespace facebook::react;
   _layoutMetrics = layoutMetrics;
 
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+}
 
+- (void)invalidateBorder
+{
+  const auto &props = *std::dynamic_pointer_cast<const ViewProps>(_props);
+
+  bool useCoreAnimationBorderRendering =
+    props.borderStyle == BorderStyle::Solid &&
+    props.borderWidth.isUniformed() &&
+    props.borderRadius.isUniformed();
+
+  CALayer *layer = self.layer;
+  if (_isCoreAnimationBorderRenderingEnabled != useCoreAnimationBorderRendering) {
+    _isCoreAnimationBorderRenderingEnabled = useCoreAnimationBorderRendering;
+    if (!useCoreAnimationBorderRendering) {
+      layer.borderWidth = 0;
+      layer.borderColor = nil;
+      layer.cornerRadius = 0;
+    }
+  }
+
+  if (useCoreAnimationBorderRendering) {
+    layer.borderWidth = (CGFloat)props.borderWidth.left;
+    layer.borderColor = RCTCGColorRefFromSharedColor(props.borderColor);
+    layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
+    _contentView.layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
+    _contentView.layer.masksToBounds = YES;
+  } else {
+    // Not supported yet.
+  }
+}
+
+#pragma mark - Accessibility
+
+- (NSObject *)accessibilityElement
+{
+  return self;
 }
 
 #pragma mark - Accessibility Events
+
+- (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  const auto &accessibilityProps = *std::dynamic_pointer_cast<const AccessibilityProps>(_props);
+
+  if (accessibilityProps.accessibilityActions.size() == 0) {
+    return nil;
+  }
+
+  NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
+  for (const auto &accessibilityAction : accessibilityProps.accessibilityActions) {
+    [customActions addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+                                                                        target:self
+                                                                      selector:@selector(didActivateAccessibilityCustomAction:)]];
+  }
+
+  return [customActions copy];
+}
 
 - (BOOL)accessibilityActivate
 {

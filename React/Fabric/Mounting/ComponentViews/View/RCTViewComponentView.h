@@ -52,6 +52,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
 
 /**
+ * Returns the object - usually (sub)view - which represents this
+ * component view in terms of accessibility.
+ * All accessibility properties will be applied to this object.
+ * May be overridden in subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
+
+/**
  * Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
