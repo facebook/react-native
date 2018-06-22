@@ -191,7 +191,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto &&activeTouch = CreateTouchWithUITouch(touch, _rootComponentView);
+    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
@@ -207,7 +207,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto &&activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches[touch];
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
@@ -221,7 +221,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (UITouch *touch in touches) {
-    auto &&activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches[touch];
 
     if (!activeTouch.eventEmitter) {
       continue;
@@ -232,7 +232,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     uniqueEventEmitter.insert(activeTouch.eventEmitter);
   }
 
-  for (auto &&pair : _activeTouches) {
+  for (const auto &pair : _activeTouches) {
     if (!pair.second.eventEmitter) {
       continue;
     }
@@ -247,10 +247,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     event.touches.insert(pair.second.touch);
   }
 
-  for (auto &&eventEmitter : uniqueEventEmitter) {
+  for (const auto &eventEmitter : uniqueEventEmitter) {
     event.targetTouches.clear();
 
-    for (auto &&pair : _activeTouches) {
+    for (const auto &pair : _activeTouches) {
       if (pair.second.eventEmitter == eventEmitter) {
         event.targetTouches.insert(pair.second.touch);
       }

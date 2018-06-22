@@ -41,12 +41,12 @@ inline T convertRawProp(
   const T &sourceValue,
   const T &defaultValue = T()
 ) {
-  auto &&iterator = rawProps.find(name);
+  const auto &iterator = rawProps.find(name);
   if (iterator == rawProps.end()) {
     return sourceValue;
   }
 
-  auto &&value = iterator->second;
+  const auto &value = iterator->second;
 
   // Special case: `null` always means `the prop was removed, use default value`.
   if (value.isNull()) {
@@ -65,12 +65,12 @@ inline static folly::Optional<T> convertRawProp(
   const folly::Optional<T> &sourceValue,
   const folly::Optional<T> &defaultValue = {}
 ) {
-  auto &&iterator = rawProps.find(name);
+  const auto &iterator = rawProps.find(name);
   if (iterator == rawProps.end()) {
     return sourceValue;
   }
 
-  auto &&value = iterator->second;
+  const auto &value = iterator->second;
 
   // Special case: `null` always means `the prop was removed, use default value`.
   if (value.isNull()) {
