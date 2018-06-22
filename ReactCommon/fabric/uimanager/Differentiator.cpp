@@ -39,6 +39,7 @@ static void calculateMutationInstructions(
   TreeMutationInstructionList removeInstructions = {};
   TreeMutationInstructionList replaceInstructions = {};
   TreeMutationInstructionList downwardInstructions = {};
+  TreeMutationInstructionList destructionDownwardInstructions = {};
 
   // Stage 1: Collectings Updates
   for (index = 0; index < oldChildNodes->size() && index < newChildNodes->size(); index++) {
@@ -62,7 +63,7 @@ static void calculateMutationInstructions(
     }
 
     calculateMutationInstructions(
-      downwardInstructions,
+      *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
       oldChildNode,
       oldChildNode->getChildren(),
       newChildNode->getChildren()
@@ -90,7 +91,7 @@ static void calculateMutationInstructions(
       newChildSourceNode ? newChildSourceNode->getChildren() : ShadowNode::emptySharedShadowNodeSharedList();
 
     calculateMutationInstructions(
-      downwardInstructions,
+      *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
       newChildNode,
       newChildSourceChildNodes,
       newChildNode->getChildren()
@@ -125,7 +126,7 @@ static void calculateMutationInstructions(
       );
 
       calculateMutationInstructions(
-        downwardInstructions,
+        destructionDownwardInstructions,
         oldChildNode,
         oldChildNode->getChildren(),
         ShadowNode::emptySharedShadowNodeSharedList()
@@ -149,14 +150,14 @@ static void calculateMutationInstructions(
   }
 
   // All instructions in an optimal order:
+  instructions.insert(instructions.end(), destructionDownwardInstructions.begin(), destructionDownwardInstructions.end());
   instructions.insert(instructions.end(), replaceInstructions.begin(), replaceInstructions.end());
   instructions.insert(instructions.end(), removeInstructions.begin(), removeInstructions.end());
-  instructions.insert(instructions.end(), deleteInstructions.begin(), deleteInstructions.end());
   instructions.insert(instructions.end(), createInstructions.begin(), createInstructions.end());
-  instructions.insert(instructions.end(), insertInstructions.begin(), insertInstructions.end());
   instructions.insert(instructions.end(), downwardInstructions.begin(), downwardInstructions.end());
+  instructions.insert(instructions.end(), insertInstructions.begin(), insertInstructions.end());
+  instructions.insert(instructions.end(), deleteInstructions.begin(), deleteInstructions.end());
 }
-
 
 void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
