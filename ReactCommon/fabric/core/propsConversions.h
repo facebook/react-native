@@ -26,6 +26,13 @@ inline void fromDynamic(const folly::dynamic &value, std::string &result) { resu
 
 template <typename T>
 inline void fromDynamic(const folly::dynamic &value, std::vector<T> &result) {
+  if (!value.isArray()) {
+    T itemResult;
+    fromDynamic(value, itemResult);
+    result = {itemResult};
+    return;
+  }
+
   result.clear();
   T itemResult;
   for (auto &itemValue : value) {
