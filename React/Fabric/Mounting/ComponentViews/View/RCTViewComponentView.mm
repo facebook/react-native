@@ -15,6 +15,10 @@
 using namespace facebook::react;
 
 @implementation RCTViewComponentView
+{
+  BOOL _isCoreAnimationBorderRenderingEnabled;
+}
+
 - (void)setContentView:(UIView *)contentView
 {
   if (_contentView) {
@@ -116,7 +120,6 @@ using namespace facebook::react;
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
-  // TODO: Implement all sutable non-layout <View> props.
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
     self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
@@ -125,6 +128,16 @@ using namespace facebook::react;
   // `zIndex`
   if (oldViewProps.zIndex != newViewProps.zIndex) {
     self.layer.zPosition = (CGFloat)newViewProps.zIndex;
+  }
+
+  // `border`
+  if (
+    oldViewProps.borderWidth != newViewProps.borderWidth ||
+    oldViewProps.borderStyle != newViewProps.borderStyle ||
+    oldViewProps.borderRadius != newViewProps.borderRadius ||
+    oldViewProps.borderColor != newViewProps.borderColor
+  ) {
+    [self invalidateBorder];
   }
 
   // `nativeId`
@@ -158,8 +171,8 @@ using namespace facebook::react;
 
   bool useCoreAnimationBorderRendering =
     props.borderStyle == BorderStyle::Solid &&
-    props.borderWidth.isUniformed() &&
-    props.borderRadius.isUniformed();
+    props.borderWidth.isUniform() &&
+    props.borderRadius.isUniform();
 
   CALayer *layer = self.layer;
   if (_isCoreAnimationBorderRenderingEnabled != useCoreAnimationBorderRendering) {
