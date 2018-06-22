@@ -87,6 +87,10 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
                                                                tag:(ReactTag)tag
 {
   RCTAssertMainQueue();
+
+  RCTAssert(![_registry objectForKey:(__bridge id)(void *)tag],
+    @"RCTComponentViewRegistry: Attempt to dequeue already registered component.");
+
   UIView<RCTComponentViewProtocol> *componentView =
     [self _dequeueComponentViewWithName:componentName];
   componentView.tag = tag;
@@ -104,6 +108,9 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
                        componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
+
+  RCTAssert([_registry objectForKey:(__bridge id)(void *)tag],
+    @"RCTComponentViewRegistry: Attempt to enqueue unregistered component.");
 
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
   [RCTUIManager unregisterView:componentView];
