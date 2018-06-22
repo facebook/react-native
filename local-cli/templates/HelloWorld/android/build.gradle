@@ -30,3 +30,11 @@ allprojects {
         }
     }
 }
+
+ext {
+    buildToolsVersion = "26.0.2"
+    minSdkVersion = 16
+    compileSdkVersion = 26
+    targetSdkVersion = 22
+    supportLibVersion = "26.1.0"
+}
