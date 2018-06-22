@@ -456,18 +456,15 @@ jobs:
 
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
-      - save-cache: *save-cache-android-packages
 
       # Install Android NDK
       - run: *create-ndk-directory
       - restore-cache: *restore-cache-ndk
       - run: *install-ndk
-      - save-cache: *save-cache-ndk
 
       # Fetch dependencies using BUCK
       - restore-cache: *restore-cache-buck
       - run: *install-buck
-      - save-cache: *save-cache-buck
 
       - run: buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
       - run: buck fetch ReactAndroid/src/main/java/com/facebook/react
@@ -477,24 +474,18 @@ jobs:
 
       - restore-cache: *restore-cache-gradle-downloads
       - run: *gradle-download-deps
-      - save-cache: *save-cache-gradle-downloads
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
-      - save-cache: *save-yarn-cache
 
       - run:
           name: Publish React Native Package
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-              git config --global user.email "reactjs-bot@users.noreply.github.com"
-              git config --global user.name "npm Deployment Script"
-              echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-              node ./scripts/publish-npm.js
-            else
-              echo "Skipping deploy."
-            fi
+            echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+            git config --global user.email "reactjs-bot@users.noreply.github.com"
+            git config --global user.name "npm Deployment Script"
+            echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+            node ./scripts/publish-npm.js
 
   # Set up an Android environment for downstream jobs
   test_android:
