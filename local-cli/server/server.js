@@ -10,7 +10,6 @@
 
 'use strict';
 
-const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
@@ -20,15 +19,12 @@ import type {Args as RunServerArgs} from './runServer';
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv: mixed, config: RNConfig, allArgs: Object) {
-  const {root, ...args} = allArgs;
-  args.projectRoots = args.projectRoots.concat(root);
-
+function server(argv: mixed, config: RNConfig, args: Object) {
   const startedCallback = logReporter => {
     logReporter.update({
       type: 'initialize_started',
       port: args.port,
-      projectRoots: args.projectRoots,
+      projectRoots: args.watchFolders,
     });
 
     process.on('uncaughtException', error => {
@@ -68,19 +64,19 @@ module.exports = {
       default: '',
     },
     {
-      command: '--root [list]',
-      description:
-        'add another root(s) to be used by the packager in this project',
-      parse: (val: string) => val.split(',').map(root => path.resolve(root)),
-      default: [],
+      command: '--projectRoot [string]',
+      description: 'Specify the main project root',
+      default: (config: ConfigT) => {
+        return config.getProjectRoot();
+      },
     },
     {
       command: '--watchFolders [list]',
       description:
-        'Sepcify any additional folders to be added to the watch list',
+        'Specify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
       default: (config: ConfigT) => {
-        return config.getProjectRoots ? config.getProjectRoots() : undefined;
+        return config.getWatchFolders();
       },
     },
     {

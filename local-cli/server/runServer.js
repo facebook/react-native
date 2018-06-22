@@ -56,7 +56,7 @@ export type Args = {|
   +nonPersistent: boolean,
   +platforms: $ReadOnlyArray<string>,
   +port: number,
-  +projectRoots: $ReadOnlyArray<string>,
+  +projectRoot: string,
   +resetCache: boolean,
   +sourceExts: $ReadOnlyArray<string>,
   +verbose: boolean,
@@ -197,7 +197,7 @@ function getPackagerServer(args, config, reporter) {
     polyfillModuleNames: config.getPolyfillModuleNames(),
     postMinifyProcess: config.postMinifyProcess,
     postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    projectRoot: config.getProjectRoot(),
+    projectRoot: args.projectRoot,
     providesModuleNodeModules: providesModuleNodeModules,
     reporter,
     resetCache: args.resetCache,
@@ -206,7 +206,7 @@ function getPackagerServer(args, config, reporter) {
     transformModulePath: transformModulePath,
     verbose: args.verbose,
     watch: !args.nonPersistent,
-    watchFolders: config.getWatchFolders(),
+    watchFolders: args.watchFolders,
     workerPath: config.getWorkerPath(),
   });
 }
