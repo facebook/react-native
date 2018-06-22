@@ -128,6 +128,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   private @Nullable ReactStylesDiffMap mNewProps;
   private long mInstanceHandle;
+  private boolean mIsSealed = false;
 
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0);
@@ -164,6 +165,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mNewProps = null;
     mParent = null;
     mOriginalReactShadowNode = original;
+    mIsSealed = false;
   }
 
   private void replaceChild(ReactShadowNodeImpl newNode, int childIndex) {
@@ -1146,5 +1148,15 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void setInstanceHandle(long instanceHandle) {
     mInstanceHandle = instanceHandle;
+  }
+
+  @Override
+  public void markAsSealed() {
+    mIsSealed = true;
+  }
+
+  @Override
+  public boolean isSealed() {
+    return mIsSealed;
   }
 }
