@@ -64,7 +64,7 @@ public:
     assert(std::dynamic_pointer_cast<const ConcreteProps>(props));
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter));
 
-    auto &&shadowNode = std::make_shared<ShadowNodeT>(
+    const auto &shadowNode = std::make_shared<ShadowNodeT>(
       tag,
       rootTag,
       std::static_pointer_cast<const ConcreteProps>(props),
@@ -85,7 +85,7 @@ public:
   ) const override {
     assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
 
-    auto &&shadowNode = std::make_shared<ShadowNodeT>(
+    const auto &shadowNode = std::make_shared<ShadowNodeT>(
       std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
       std::static_pointer_cast<const ConcreteProps>(props),
       std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),

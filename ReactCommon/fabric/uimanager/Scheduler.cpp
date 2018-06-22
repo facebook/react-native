@@ -24,8 +24,8 @@ namespace react {
 
 Scheduler::Scheduler(const SharedContextContainer &contextContainer):
   contextContainer_(contextContainer) {
-  auto &&eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
-  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
+  const auto &eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
+  const auto &componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
 
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
@@ -40,27 +40,27 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
-  auto &&shadowTree = std::make_shared<ShadowTree>(rootTag);
+  const auto &shadowTree = std::make_shared<ShadowTree>(rootTag);
   shadowTree->setDelegate(this);
   shadowTreeRegistry_.insert({rootTag, shadowTree});
 }
 
 void Scheduler::unregisterRootTag(Tag rootTag) {
-  auto &&iterator = shadowTreeRegistry_.find(rootTag);
-  auto &&shadowTree = iterator->second;
+  const auto &iterator = shadowTreeRegistry_.find(rootTag);
+  const auto &shadowTree = iterator->second;
   assert(shadowTree);
   shadowTree->setDelegate(nullptr);
   shadowTreeRegistry_.erase(iterator);
 }
 
 Size Scheduler::measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  const auto &shadowTree = shadowTreeRegistry_.at(rootTag);
   assert(shadowTree);
   return shadowTree->measure(layoutConstraints, layoutContext);
 }
 
 void Scheduler::constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) {
-  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  const auto &shadowTree = shadowTreeRegistry_.at(rootTag);
   assert(shadowTree);
   return shadowTree->constraintLayout(layoutConstraints, layoutContext);
 }
@@ -86,8 +86,8 @@ void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const Tr
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  auto &&iterator = shadowTreeRegistry_.find(rootTag);
-  auto &&shadowTree = iterator->second;
+  const auto &iterator = shadowTreeRegistry_.find(rootTag);
+  const auto &shadowTree = iterator->second;
   assert(shadowTree);
   return shadowTree->complete(rootChildNodes);
 }

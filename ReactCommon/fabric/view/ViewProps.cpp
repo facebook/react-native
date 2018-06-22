@@ -42,7 +42,7 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
-  auto &&defaultViewProps = ViewProps();
+  const auto &defaultViewProps = ViewProps();
 
   return
     AccessibilityProps::getDebugProps() +
