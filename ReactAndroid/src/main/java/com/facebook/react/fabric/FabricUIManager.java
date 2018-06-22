@@ -451,7 +451,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     }
 
     int tag = node.getReactTag();
-    if (mRootShadowNodeRegistry.getNode(tag) == null) {
+    if (getRootNode(tag) == null) {
       boolean frameDidChange =
           node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
       // Notify JS about layout event if requested
@@ -511,13 +511,16 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   @Override
   @DoNotStrip
-  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
+  public synchronized void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    ReactShadowNode rootNode = getRootNode(rootViewTag);
     if (rootNode == null) {
       FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
       return;
     }
-    updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
+
+    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
+    updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
+    mRootShadowNodeRegistry.replaceNode(newRootNode);
   }
 
   /**
@@ -526,18 +529,20 @@ public class FabricUIManager implements UIManager, JSHandler {
    * //TODO: change synchronization to integrate with new #render loop.
    */
   private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
+    ReactShadowNode rootNode = getRootNode(rootTag);
     if (rootNode == null) {
       FLog.w(
         ReactConstants.TAG,
         "Tried to update size of non-existent tag: " + rootTag);
       return;
     }
+
+    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
     int newWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
     int newHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
-    updateRootView(rootNode, newWidthSpec, newHeightSpec);
+    updateRootView(newRootNode, newWidthSpec, newHeightSpec);
 
-    completeRoot(rootTag, rootNode.getChildrenList());
+    completeRoot(rootTag, newRootNode.getChildrenList());
   }
 
   public void removeRootView(int rootTag) {
