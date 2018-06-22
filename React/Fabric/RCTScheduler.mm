@@ -7,9 +7,12 @@
 
 #import "RCTScheduler.h"
 
+#import <fabric/imagemanager/ImageManager.h>
 #import <fabric/uimanager/ContextContainer.h>
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTBridge+Private.h>
 
 #import "RCTConversions.h"
 
@@ -44,6 +47,10 @@ private:
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
     SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
+
+    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
+    contextContainer->registerInstance(typeid(ImageManager), std::make_shared<ImageManager>(imageLoader));
+
     _scheduler = std::make_shared<Scheduler>(contextContainer);
     _scheduler->setDelegate(_delegateProxy.get());
   }
