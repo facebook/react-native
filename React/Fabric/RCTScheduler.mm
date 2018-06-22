@@ -29,7 +29,7 @@ public:
 
   void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:[NSString stringWithCString:componentName.c_str() encoding:NSASCIIStringEncoding]];
+    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
   }
 
 private:
