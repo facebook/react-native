@@ -60,6 +60,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "Text";
   }
 
+  if (viewName == "ImageView") {
+    return "Image";
+  }
+
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components: <Image>, <ScrollContentView>.
   if (
