@@ -234,7 +234,6 @@ void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, cons
     auto childComponentDescriptor = (*componentDescriptorRegistry_)[childShadowNode];
     auto clonedChildShadowNode = childComponentDescriptor->cloneShadowNode(childShadowNode);
     auto nonConstClonedChildShadowNode = std::const_pointer_cast<ShadowNode>(clonedChildShadowNode);
-    nonConstClonedChildShadowNode->shallowSourceNode();
     componentDescriptor->appendChild(parentShadowNode, clonedChildShadowNode);
     return;
   }
