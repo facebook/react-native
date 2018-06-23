@@ -389,4 +389,5 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   boolean isSealed();
 
+  void updateScreenLayout(ReactShadowNode prevNode);
 }
