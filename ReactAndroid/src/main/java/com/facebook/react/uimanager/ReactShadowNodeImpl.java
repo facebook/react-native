@@ -1220,4 +1220,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       throw new IllegalStateException("Can not modify sealed node " + toString());
     }
   }
+
+  public void updateScreenLayout(ReactShadowNode prevNode) {
+    assertNotSealed();
+    mScreenHeight = prevNode.getScreenHeight();
+    mScreenWidth = prevNode.getScreenWidth();
+    mScreenX = prevNode.getScreenX();
+    mScreenY = prevNode.getScreenY();
+  }
 }
