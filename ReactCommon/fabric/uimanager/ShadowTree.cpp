@@ -115,6 +115,13 @@ void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instruction
       if (viewEventEmitter) {
         // Now we know that both (old and new) shadow nodes must be `LayoutableShadowNode` subclasses.
         assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode));
+
+        // Checking if the `onLayout` event was requested for the particular Shadow Node.
+        const auto &viewProps = std::dynamic_pointer_cast<const ViewProps>(newShadowNode->getProps());
+        if (viewProps && !viewProps->onLayout) {
+          continue;
+        }
+
         // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
         const auto &newLayoutableShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);

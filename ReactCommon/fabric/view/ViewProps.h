@@ -60,6 +60,7 @@ public:
   // Events
   const PointerEventsMode pointerEvents {};
   const EdgeInsets hitSlop {};
+  const bool onLayout {false};
 
 #pragma mark - DebugStringConvertible
 

@@ -37,7 +37,8 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   shouldRasterize(convertRawProp(rawProps, "shouldRasterize", sourceProps.shouldRasterize)),
   zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),
   pointerEvents(convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
-  hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)) {};
+  hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)),
+  onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)) {};
 
 #pragma mark - DebugStringConvertible
 
