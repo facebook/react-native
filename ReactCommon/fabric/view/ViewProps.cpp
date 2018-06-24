@@ -21,7 +21,7 @@ ViewProps::ViewProps(const YGStyle &yogaStyle):
 ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   Props(sourceProps, rawProps),
   YogaStylableProps(sourceProps, rawProps),
-  opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity)),
+  opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
   foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
   backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
   borderWidth(convertRawProp(rawProps, "borderWidth", sourceProps.borderWidth)),
