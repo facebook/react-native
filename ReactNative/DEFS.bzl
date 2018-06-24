@@ -6,12 +6,21 @@ This lets us build React Native:
 """
 # @lint-ignore-every SKYLINT BUCKRESTRICTEDSYNTAX
 
+_DEBUG_PREPROCESSOR_FLAGS = []
+
+_APPLE_COMPILER_FLAGS = []
+
+def get_debug_preprocessor_flags():
+    return _DEBUG_PREPROCESSOR_FLAGS
+
+def get_apple_compiler_flags():
+    return _APPLE_COMPILER_FLAGS
+
 IS_OSS_BUILD = True
 
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
-DEBUG_PREPROCESSOR_FLAGS = []
 
 APPLE_JSC_INTERNAL_DEPS = []
 APPLE_JSC_DEPS = []
