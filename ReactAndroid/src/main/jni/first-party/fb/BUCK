@@ -1,3 +1,4 @@
+load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "JNI_TARGET", "cxx_library")
 
 # This target is only used in open source

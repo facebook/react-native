@@ -1,3 +1,4 @@
+load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE", "APPLE_JSC_DEPS", "IS_OSS_BUILD", "get_android_inspector_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
@@ -113,14 +114,14 @@ rn_xplat_cxx_library(
     name = "bridge",
     srcs = glob(
         ["*.cpp"],
-        excludes = [
+        exclude = [
             "JSBigString.cpp",
             "SampleCxxModule.cpp",
         ],
     ),
     headers = glob(
         ["*.h"],
-        excludes = CXXREACT_PUBLIC_HEADERS,
+        exclude = CXXREACT_PUBLIC_HEADERS,
     ),
     header_namespace = "",
     exported_headers = dict([
