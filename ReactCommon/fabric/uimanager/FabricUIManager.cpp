@@ -65,10 +65,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   }
 
   // We need this temporarly for testing purposes until we have proper
-  // implementation of core components: <ReactPerformanceLoggerFlag>,
-  // <SafeAreaView>, and etc.
+  // implementation of core components.
   if (
-    viewName == "ReactPerformanceLoggerFlag" ||
     viewName == "SinglelineTextInputView" ||
     viewName == "MultilineTextInputView" ||
     viewName == "RefreshControl" ||
