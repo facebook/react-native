@@ -1,20 +1,10 @@
 load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE", "APPLE_JSC_DEPS", "IS_OSS_BUILD", "get_android_inspector_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE", "get_apple_compiler_flags", "APPLE_JSC_DEPS", "get_debug_preprocessor_flags", "IS_OSS_BUILD", "get_android_inspector_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
     "-Wall",
 ]
-
-APPLE_COMPILER_FLAGS = []
-
-DEBUG_PREPROCESSOR_FLAGS = []
-
-if not IS_OSS_BUILD:
-    load("@xplat//configurations/buck/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
-
-    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
-    DEBUG_PREPROCESSOR_FLAGS = get_debug_preprocessor_flags()
 
 rn_xplat_cxx_library(
     name = "module",
@@ -28,7 +18,7 @@ rn_xplat_cxx_library(
         prefix = "cxxreact",
     ),
     compiler_flags = CXX_LIBRARY_COMPILER_FLAGS,
-    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     visibility = [
         "PUBLIC",
@@ -52,7 +42,7 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
-    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
     visibility = [
         "PUBLIC",
@@ -73,7 +63,7 @@ rn_xplat_cxx_library(
         "-fno-omit-frame-pointer",
         "-fexceptions",
     ],
-    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_compiler_flags = get_apple_compiler_flags(),
     soname = "libxplat_react_module_samplemodule.$(ext)",
     visibility = [
         "PUBLIC",
@@ -141,13 +131,13 @@ rn_xplat_cxx_library(
         "-DWITH_JSC_MEMORY_PRESSURE=1",
         "-DWITH_FB_MEMORY_PROFILING=1",
     ],
-    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_compiler_flags = get_apple_compiler_flags(),
     fbobjc_deps = APPLE_JSC_DEPS,
     fbobjc_force_static = True,
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
-    fbobjc_preprocessor_flags = DEBUG_PREPROCESSOR_FLAGS + get_apple_inspector_flags(),
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
