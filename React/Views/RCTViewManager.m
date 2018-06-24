@@ -104,7 +104,6 @@ RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
 RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
-RCT_EXPORT_VIEW_PROPERTY(accessibilityIgnoresInvertColors, BOOL)
 
 // Acessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
