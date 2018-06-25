@@ -152,7 +152,7 @@ def rn_robolectric_test(name, srcs, vm_args=None, *args, **kwargs):
         '-XX:MaxPermSize=620m',
         '-Drobolectric.offline=true',
     ]
-    if native.read_config("user", "use_dev_shm"):
+    if read_config("user", "use_dev_shm"):
         extra_vm_args.append('-Djava.io.tmpdir=/dev/shm')
 
     # RN tests use  Powermock, which means they get their own ClassLoaders.
