@@ -11,8 +11,7 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
         CURRENT_ARCH="x86_64"
     else 
-        # arm64 is the current CPU architecture (since the iPhone 5S)
-        CURRENT_ARCH="arm64"
+        CURRENT_ARCH="armv7"
     fi
 fi
 
