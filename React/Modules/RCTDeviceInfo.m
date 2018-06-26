@@ -16,6 +16,7 @@
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
+  NSDictionary *_currentInterfaceDimensions;
 #endif
 }
 
@@ -47,6 +48,13 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
+                                             object:nil];
+
+  _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
                                              object:nil];
 #endif
 }
@@ -163,6 +171,31 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       }
 
   _currentInterfaceOrientation = nextOrientation;
+}
+
+
+- (void)interfaceFrameDidChange
+{
+  __weak typeof(self) weakSelf = self;
+  RCTExecuteOnMainQueue(^{
+    [weakSelf _interfaceFrameDidChange];
+  });
+}
+
+
+- (void)_interfaceFrameDidChange
+{
+  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge);
+
+  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                                  body:RCTExportedDimensions(_bridge)];
+#pragma clang diagnostic pop
+  }
+
+  _currentInterfaceDimensions = nextInterfaceDimensions;
 }
 
 #endif // TARGET_OS_TV
