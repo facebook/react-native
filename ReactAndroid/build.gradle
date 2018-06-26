@@ -24,7 +24,7 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - boost_1_63_0
 //   - double-conversion-1.1.1
 //   - folly-deprecate-dynamic-initializer
-//   - glog-0.3.3
+//   - glog-0.3.5
 //   - jsc-headers
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
