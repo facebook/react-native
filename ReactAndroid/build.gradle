@@ -24,7 +24,7 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - boost_1_63_0
 //   - double-conversion-1.1.1
 //   - folly-deprecate-dynamic-initializer
-//   - glog-0.3.3
+//   - glog-0.3.5
 //   - jsc-headers
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
@@ -89,10 +89,10 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/glog/archive/v0.3.3.tar.gz'
+    src 'https://github.com/google/glog/archive/v0.3.5.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'glog-0.3.3.tar.gz')
+    dest new File(downloadsDir, 'glog-0.3.5.tar.gz')
 }
 
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
@@ -100,7 +100,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
     from dependenciesPath ?: tarTree(downloadGlog.dest)
     from 'src/main/jni/third-party/glog/'
-    include 'glog-0.3.3/src/**/*', 'Android.mk', 'config.h'
+    include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h'
     includeEmptyDirs = false
     filesMatching('**/*.h.in') {
         filter(ReplaceTokens, tokens: [
