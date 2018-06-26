@@ -22,6 +22,8 @@ inline void fromDynamic(const folly::dynamic &value, int &result) {
   // So this always converts the value to int64 instead.
   result = value.asInt();
 }
+inline void fromDynamic(const folly::dynamic &value, float &result) { result = (float)value.asDouble(); }
+inline void fromDynamic(const folly::dynamic &value, double &result) { result = value.asDouble(); }
 inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>

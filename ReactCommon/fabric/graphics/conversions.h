@@ -55,10 +55,6 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromDynamic(const folly::dynamic &value, Float &result) {
-  result = value.asDouble();
-}
-
 inline void fromDynamic(const folly::dynamic &value, Point &result) {
   if (value.isObject()) {
     result = Point {(Float)value["x"].asDouble(), (Float)value["y"].asDouble()};
