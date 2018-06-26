@@ -174,12 +174,8 @@
 <p><block class="ios android"></p>
 <pre><code class="hljs css languages- javascript"><span class="hljs-keyword">var</span> TVEventHandler = <span class="hljs-built_in">require</span>(<span class="hljs-string">'TVEventHandler'</span>);
 
-.
-.
-.
-
-class Game2048 extends React.Component {
-  <span class="hljs-attr">_tvEventHandler</span>: any;
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Game2048</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  _tvEventHandler: any;
 
   _enableTVEventHandler() {
     <span class="hljs-keyword">this</span>._tvEventHandler = <span class="hljs-keyword">new</span> TVEventHandler();
