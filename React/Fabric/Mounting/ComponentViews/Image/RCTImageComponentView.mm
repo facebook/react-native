@@ -39,6 +39,8 @@ using namespace facebook::react;
   return self;
 }
 
+#pragma mark - RCTComponentViewProtocol
+
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
   if (!oldProps) {
@@ -78,6 +80,14 @@ using namespace facebook::react;
     self.image = (__bridge_transfer UIImage *)imageResponse.getImage().get();
   });
 }
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _imageView.image = nil;
+}
+
+#pragma mark - Other
 
 - (void)setImage:(UIImage *)image
 {
