@@ -88,7 +88,7 @@ public class FabricReconciler {
     for (int k = firstRemovedOrAddedViewIndex; k < newList.size(); k++) {
       ReactShadowNode newNode = newList.get(k);
       if (newNode.isVirtual()) continue;
-      enqueueUpdateProperties(newNode, null);
+      enqueueUpdateProperties(newNode, newNode.getOriginalReactShadowNode());
       viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());

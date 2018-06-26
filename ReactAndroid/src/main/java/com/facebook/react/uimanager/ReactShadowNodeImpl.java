@@ -1221,8 +1221,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
   }
 
+  @Override
   public void updateScreenLayout(ReactShadowNode prevNode) {
-    assertNotSealed();
     mScreenHeight = prevNode.getScreenHeight();
     mScreenWidth = prevNode.getScreenWidth();
     mScreenX = prevNode.getScreenX();
