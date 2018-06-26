@@ -17,6 +17,8 @@ module.exports = (moduleName, instanceMethods) => {
     typeof RealComponent === 'function' ? RealComponent : React.Component;
 
   const Component = class extends SuperClass {
+    static displayName = 'Component';
+
     render() {
       const name =
         RealComponent.displayName ||
