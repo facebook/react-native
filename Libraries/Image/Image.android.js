@@ -190,9 +190,6 @@ let Image = (
     props.loadingIndicatorSource,
   );
 
-  // As opposed to the ios version, here we render `null` when there is no source, source.uri
-  // or source array.
-
   if (source && source.uri === '') {
     console.warn('source.uri should not be an empty string');
   }
@@ -215,13 +212,9 @@ let Image = (
     );
   }
 
-  if (!source || (!source.uri && !Array.isArray(source))) {
-    return null;
-  }
-
   let style;
   let sources;
-  if (source.uri) {
+  if (source?.uri != null) {
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
     sources = [{uri: source.uri}];
@@ -235,7 +228,7 @@ let Image = (
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
-    headers: source.headers,
+    headers: source?.headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri
