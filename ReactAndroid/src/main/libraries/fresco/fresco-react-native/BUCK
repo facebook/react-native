@@ -60,12 +60,12 @@ remote_file(
 
 rn_prebuilt_jar(
     name = "bolts",
-    binary_jar = ":download-bolts",
+    binary_jar = ":download-bolts.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
 remote_file(
-    name = "download-bolts",
+    name = "download-bolts.jar",
     sha1 = "d85884acf6810a3bbbecb587f239005cbc846dc4",
     url = "mvn:com.parse.bolts:bolts-tasks:jar:1.4.0",
 )
