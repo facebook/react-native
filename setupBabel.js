@@ -20,7 +20,8 @@ const BABEL_ENABLED_PATHS = ['local-cli'];
  */
 function setupBabel() {
   babelRegisterOnly(
-    babelRegisterOnly.buildRegExps(__dirname, BABEL_ENABLED_PATHS),
+    // babelRegisterOnly.buildRegExps(__dirname, BABEL_ENABLED_PATHS),
+    [/local-cli/],
   );
 }
 
