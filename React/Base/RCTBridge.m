@@ -98,6 +98,9 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 
   for (unsigned int i = 0; i < classCount; i++) {
     Class cls = classes[i];
+    if (strncmp(class_getName(cls), "RCTCxxModule", strlen("RCTCxxModule")) == 0) {
+      continue;
+    }
     Class superclass = cls;
     while (superclass) {
       if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
