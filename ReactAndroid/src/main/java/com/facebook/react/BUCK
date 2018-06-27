@@ -35,4 +35,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
     ],
+    exported_deps = [
+        react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
+    ],
 )

@@ -81,6 +81,13 @@ public class DevServerHelper {
     void onPackagerReloadCommand();
     void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
+
+    // Allow apps to provide listeners for custom packager commands.
+    @Nullable Map<String, RequestHandler> customCommandHandlers();
+  }
+
+  public interface PackagerCustomCommandProvider {
+
   }
 
   public interface SymbolicationListener {
@@ -162,6 +169,10 @@ public class DevServerHelper {
             commandListener.onCaptureHeapCommand(responder);
           }
         });
+        Map<String, RequestHandler> customHandlers = commandListener.customCommandHandlers();
+        if (customHandlers != null) {
+          handlers.putAll(customHandlers);
+        }
         handlers.putAll(new FileIoHandler().handlers());
 
         ConnectionCallback onPackagerConnectedCallback =
