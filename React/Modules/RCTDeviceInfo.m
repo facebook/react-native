@@ -13,11 +13,7 @@
 #import "RCTUIUtils.h"
 #import "RCTUtils.h"
 
-@implementation RCTDeviceInfo {
-#if !TARGET_OS_TV
-  UIInterfaceOrientation _currentInterfaceOrientation;
-#endif
-}
+@implementation RCTDeviceInfo
 
 @synthesize bridge = _bridge;
 
@@ -42,11 +38,9 @@ RCT_EXPORT_MODULE()
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
 #if !TARGET_OS_TV
-  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
-
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationDidChange)
-                                               name:UIApplicationDidChangeStatusBarOrientationNotification
+                                           selector:@selector(applicationDidChangeStatusBarFrame)
+                                               name:UIApplicationDidChangeStatusBarFrameNotification
                                              object:nil];
 #endif
 }
@@ -72,16 +66,21 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   RCTAssertMainQueue();
 
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
-  NSDictionary<NSString *, NSNumber *> *dims = @{
-      @"width": @(window.width),
-      @"height": @(window.height),
-      @"scale": @(window.scale),
-      @"fontScale": @(window.fontScale)
+  NSDictionary<NSString *, NSNumber *> *screen = @{
+    @"width": @(dimensions.screen.width),
+    @"height": @(dimensions.screen.height),
+    @"scale": @(dimensions.screen.scale),
+    @"fontScale": @(dimensions.screen.fontScale),
+  };
+  NSDictionary<NSString *, NSNumber *> *window = @{
+    @"width": @(dimensions.window.width),
+    @"height": @(dimensions.window.height),
+    @"scale": @(dimensions.window.scale),
+    @"fontScale": @(dimensions.window.fontScale),
   };
   return @{
-      @"window": dims,
-      @"screen": dims
+    @"screen": screen,
+    @"window": window,
   };
 }
 
@@ -125,35 +124,15 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 #if !TARGET_OS_TV
 
-- (void)interfaceOrientationDidChange
+- (void)applicationDidChangeStatusBarFrame
 {
-  __weak typeof(self) weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-    [weakSelf _interfaceOrientationDidChange];
-  });
-}
-
-
-- (void)_interfaceOrientationDidChange
-{
-  UIInterfaceOrientation nextOrientation = [RCTSharedApplication() statusBarOrientation];
-
-  // Update when we go from portrait to landscape, or landscape to portrait
-  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
-      (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
-       !UIInterfaceOrientationIsLandscape(nextOrientation))) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                    body:RCTExportedDimensions(_bridge)];
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                              body:RCTExportedDimensions(_bridge)];
 #pragma clang diagnostic pop
-      }
-
-  _currentInterfaceOrientation = nextOrientation;
 }
 
 #endif // TARGET_OS_TV
-
 
 @end
