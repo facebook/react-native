@@ -22,7 +22,7 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
 //   - boost_1_63_0
-//   - double-conversion-1.1.1
+//   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.3
 //   - jsc-headers
@@ -57,16 +57,16 @@ task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/double-conversion/archive/v1.1.1.tar.gz'
+    src 'https://github.com/google/double-conversion/archive/v1.1.6.tar.gz'
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'double-conversion-1.1.1.tar.gz')
+    dest new File(downloadsDir, 'double-conversion-1.1.6.tar.gz')
 }
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from dependenciesPath ?: tarTree(downloadDoubleConversion.dest)
     from 'src/main/jni/third-party/double-conversion/Android.mk'
-    include 'double-conversion-1.1.1/src/**/*', 'Android.mk'
+    include 'double-conversion-1.1.6/src/**/*', 'Android.mk'
     filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/double-conversion"
