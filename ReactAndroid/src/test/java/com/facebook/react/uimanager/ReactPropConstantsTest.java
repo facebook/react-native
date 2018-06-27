@@ -141,7 +141,7 @@ public class ReactPropConstantsTest {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ViewManagerUnderTest());
     ReactApplicationContext reactContext = new ReactApplicationContext(RuntimeEnvironment.application);
     UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(reactContext, viewManagers, 0);
     Map<String, String> constants =
         (Map) valueAtPath(uiManagerModule.getConstants(), "SomeView", "NativeProps");
     assertThat(constants).isEqualTo(
