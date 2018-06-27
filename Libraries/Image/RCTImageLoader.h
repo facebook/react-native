@@ -24,15 +24,15 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (UIImage *)imageForUrl:(NSString *)url
                     size:(CGSize)size
                    scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate;
+              resizeMode:(RCTResizeMode)resizeMode;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate;
+           responseDate:(NSString *)responseDate
+           cacheControl:(NSString *)cacheControl;
 
 @end
 
