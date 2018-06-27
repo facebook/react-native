@@ -14,7 +14,7 @@
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes) {
   NSString *fontFamily = [NSString stringWithCString:textAttributes.fontFamily.c_str()
-                                            encoding:NSASCIIStringEncoding];
+                                            encoding:NSUTF8StringEncoding];
 
   RCTFontProperties fontProperties;
   fontProperties.family = fontFamily;
@@ -199,7 +199,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     } else {
       NSString *string =
         [NSString stringWithCString:fragment.string.c_str()
-                           encoding:NSASCIIStringEncoding];
+                           encoding:NSUTF8StringEncoding];
 
       nsAttributedStringFragment =
         [[NSAttributedString alloc] initWithString:string

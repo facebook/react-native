@@ -134,7 +134,7 @@ const YellowBoxCategory = {
       0,
     );
 
-    if (lastOffset < content.length - 1) {
+    if (lastOffset < content.length) {
       const lastPart = content.substr(lastOffset);
       elements.push(<Text key="-1">{lastPart}</Text>);
     }

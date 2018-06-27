@@ -60,10 +60,17 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "Text";
   }
 
+  if (viewName == "ImageView") {
+    return "Image";
+  }
+
   // We need this temporarly for testing purposes until we have proper
-  // implementation of core components: <Image>, <ScrollContentView>.
+  // implementation of core components.
   if (
-    viewName == "ImageView" ||
+    viewName == "SinglelineTextInputView" ||
+    viewName == "MultilineTextInputView" ||
+    viewName == "RefreshControl" ||
+    viewName == "SafeAreaView" ||
     viewName == "ScrollContentView"
   ) {
     return "View";
@@ -102,6 +109,10 @@ void FabricUIManager::setReleaseEventHandlerFunction(std::function<ReleaseEventH
   releaseEventHandlerFunction_ = releaseEventHandlerFunction;
 }
 
+void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction) {
+  releaseEventTargetFunction_ = releaseEventTargetFunction;
+}
+
 EventTarget FabricUIManager::createEventTarget(const InstanceHandle &instanceHandle) const {
   return createEventTargetFunction_(instanceHandle);
 }
@@ -113,6 +124,10 @@ void FabricUIManager::dispatchEvent(const EventTarget &eventTarget, const std::s
     const_cast<std::string &>(type),
     const_cast<folly::dynamic &>(payload)
   );
+}
+
+void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
+  releaseEventTargetFunction_(eventTarget);
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, InstanceHandle instanceHandle) {
@@ -217,7 +232,6 @@ void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, cons
     auto childComponentDescriptor = (*componentDescriptorRegistry_)[childShadowNode];
     auto clonedChildShadowNode = childComponentDescriptor->cloneShadowNode(childShadowNode);
     auto nonConstClonedChildShadowNode = std::const_pointer_cast<ShadowNode>(clonedChildShadowNode);
-    nonConstClonedChildShadowNode->shallowSourceNode();
     componentDescriptor->appendChild(parentShadowNode, clonedChildShadowNode);
     return;
   }

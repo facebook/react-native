@@ -16,6 +16,7 @@
 #import "RCTMountItemProtocol.h"
 
 #import "RCTCreateMountItem.h"
+#import "RCTConversions.h"
 #import "RCTDeleteMountItem.h"
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
@@ -46,8 +47,7 @@ using namespace facebook::react;
   for (auto instruction : instructions) {
     switch (instruction.getType()) {
       case TreeMutationInstruction::Creation: {
-        NSString *componentName = [NSString stringWithCString:instruction.getNewChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+        NSString *componentName = RCTNSStringFromString(instruction.getNewChildNode()->getComponentName(), NSASCIIStringEncoding);
         RCTCreateMountItem *mountItem =
           [[RCTCreateMountItem alloc] initWithComponentName:componentName
                                                         tag:instruction.getNewChildNode()->getTag()];
@@ -56,8 +56,7 @@ using namespace facebook::react;
       }
 
       case TreeMutationInstruction::Deletion: {
-        NSString *componentName = [NSString stringWithCString:instruction.getOldChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+        NSString *componentName = RCTNSStringFromString(instruction.getOldChildNode()->getComponentName(), NSASCIIStringEncoding);
         RCTDeleteMountItem *mountItem =
           [[RCTDeleteMountItem alloc] initWithComponentName:componentName
                                                         tag:instruction.getOldChildNode()->getTag()];

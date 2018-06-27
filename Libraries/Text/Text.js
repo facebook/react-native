@@ -267,7 +267,6 @@ const Text = (
 ) => {
   return <TouchableText {...props} forwardedRef={forwardedRef} />;
 };
-Text.displayName = 'Text'; // TODO(T30332650) remove bug workaround
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const TextToExport = React.forwardRef(Text);
 

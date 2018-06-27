@@ -26,7 +26,7 @@ using namespace facebook::react;
                  action:@selector(onChange:)
        forControlEvents:UIControlEventValueChanged];
 
-    auto &&defaultProps = SwitchProps();
+    const auto &defaultProps = SwitchProps();
 
     _switchView.on = defaultProps.value;
 

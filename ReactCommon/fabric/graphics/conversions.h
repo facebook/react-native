@@ -55,10 +55,6 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromDynamic(const folly::dynamic &value, Float &result) {
-  result = value.asDouble();
-}
-
 inline void fromDynamic(const folly::dynamic &value, Point &result) {
   if (value.isObject()) {
     result = Point {(Float)value["x"].asDouble(), (Float)value["y"].asDouble()};
@@ -84,6 +80,11 @@ inline void fromDynamic(const folly::dynamic &value, Size &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = EdgeInsets {number, number, number, number};
+    return;
+  }
   if (value.isObject()) {
     result = EdgeInsets {
       (Float)value["top"].asDouble(),
@@ -106,6 +107,11 @@ inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, CornerInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = CornerInsets {number, number, number, number};
+    return;
+  }
   if (value.isObject()) {
     result = CornerInsets {
       (Float)value["topLeft"].asDouble(),

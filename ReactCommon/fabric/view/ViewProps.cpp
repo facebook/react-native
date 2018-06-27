@@ -21,11 +21,11 @@ ViewProps::ViewProps(const YGStyle &yogaStyle):
 ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   Props(sourceProps, rawProps),
   YogaStylableProps(sourceProps, rawProps),
-  opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity)),
+  opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
   foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
   backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
   borderWidth(convertRawProp(rawProps, "borderWidth", sourceProps.borderWidth)),
-  borderRadus(convertRawProp(rawProps, "borderRadus", sourceProps.borderRadus)),
+  borderRadius(convertRawProp(rawProps, "borderRadius", sourceProps.borderRadius)),
   borderColor(convertRawProp(rawProps, "borderColor", sourceProps.borderColor)),
   borderStyle(convertRawProp(rawProps, "borderStyle", sourceProps.borderStyle)),
   shadowColor(convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor)),
@@ -37,12 +37,13 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   shouldRasterize(convertRawProp(rawProps, "shouldRasterize", sourceProps.shouldRasterize)),
   zIndex(convertRawProp(rawProps, "zIndex", sourceProps.zIndex)),
   pointerEvents(convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
-  hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)) {};
+  hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)),
+  onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)) {};
 
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
-  auto &&defaultViewProps = ViewProps();
+  const auto &defaultViewProps = ViewProps();
 
   return
     AccessibilityProps::getDebugProps() +

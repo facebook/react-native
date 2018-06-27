@@ -393,7 +393,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
     if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+      if (@available(iOS 11.0, *)) {
         _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      }
     }
 #endif
 
@@ -1034,7 +1036,9 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;
-    _scrollView.contentInsetAdjustmentBehavior = behavior;
+    if (@available(iOS 11.0, *)) {
+      _scrollView.contentInsetAdjustmentBehavior = behavior;
+    }
     _scrollView.contentOffset = contentOffset;
   }
 }

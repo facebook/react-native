@@ -35,31 +35,32 @@ public:
 #pragma mark - Props
 
   // Color
-  const Float opacity {1};
-  const SharedColor foregroundColor {nullptr};
-  const SharedColor backgroundColor {nullptr};
+  const Float opacity {1.0};
+  const SharedColor foregroundColor {};
+  const SharedColor backgroundColor {};
 
   // Borders
   const EdgeInsets borderWidth {};
-  const CornerInsets borderRadus {};
+  const CornerInsets borderRadius {};
   const SharedColor borderColor {};
   const BorderStyle borderStyle {};
 
   // Shadow
-  const SharedColor shadowColor {nullptr};
+  const SharedColor shadowColor {};
   const Size shadowOffset {};
   const Float shadowOpacity {};
   const Float shadowRadius {};
 
   // Transform
   const Transform transform {};
-  const bool backfaceVisibility {false};
-  const bool shouldRasterize {false};
-  const int zIndex {0};
+  const bool backfaceVisibility {};
+  const bool shouldRasterize {};
+  const int zIndex {};
 
   // Events
   const PointerEventsMode pointerEvents {};
   const EdgeInsets hitSlop {};
+  const bool onLayout {};
 
 #pragma mark - DebugStringConvertible
 

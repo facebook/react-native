@@ -233,6 +233,24 @@ public class FabricUIManagerTest {
     mFabricUIManager.completeRoot(rootTag, children);
   }
 
+  @Test
+  public void testSealReactShadowNode() {
+    ReactRootView rootView =
+      new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
+    int rootTag = mFabricUIManager.addRootView(rootView);
+    String viewClass = ReactViewManager.REACT_CLASS;
+
+    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null, randomInstanceHandle());
+    List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
+    mFabricUIManager.appendChildToSet(childSet, container);
+
+    assertThat(container.isSealed()).isFalse();
+
+    mFabricUIManager.completeRoot(rootTag, childSet);
+
+    assertThat(container.isSealed()).isTrue();
+  }
+
   /**
    * Tests that cloned text nodes will not share measure functions
    */

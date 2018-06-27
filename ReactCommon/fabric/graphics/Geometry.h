@@ -123,6 +123,12 @@ struct EdgeInsets {
   bool operator !=(const EdgeInsets& rhs) const {
     return !(*this == rhs);
   }
+
+  bool isUniform() const {
+    return left == top &&
+      left == right &&
+      left == bottom;
+  }
 };
 
 /*
@@ -142,6 +148,12 @@ struct CornerInsets {
 
   bool operator !=(const CornerInsets& rhs) const {
     return !(*this == rhs);
+  }
+
+  bool isUniform() const {
+    return topLeft == topRight &&
+      topLeft == bottomLeft &&
+      topLeft == bottomRight;
   }
 };
 

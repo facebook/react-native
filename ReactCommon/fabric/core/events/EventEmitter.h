@@ -53,6 +53,7 @@ private:
   InstanceHandle instanceHandle_;
   Tag tag_;
   std::weak_ptr<const EventDispatcher> eventDispatcher_;
+  mutable EventTarget eventTarget_ {nullptr};
 };
 
 } // namespace react

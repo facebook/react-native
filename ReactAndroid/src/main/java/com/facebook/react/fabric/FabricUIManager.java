@@ -20,7 +20,6 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
-import com.facebook.react.bridge.PerformanceCounter;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -292,10 +291,10 @@ public class FabricUIManager implements UIManager, JSHandler {
       "FabricUIManager.appendChild")
       .flush();
     try {
-      // If the child to append is shared with another tree (child.getParent() != null),
+      // If the child to append was already committed (child.isSealed()),
       // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
       //TODO: T27926878 avoid cloning shared child
-      if (child.getParent() != null) {
+      if (child.isSealed()) {
         child = child.mutableCopy(child.getInstanceHandle());
       }
       parent.addChildAt(child, parent.getChildCount());
@@ -452,7 +451,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     }
 
     int tag = node.getReactTag();
-    if (mRootShadowNodeRegistry.getNode(tag) == null) {
+    if (getRootNode(tag) == null) {
       boolean frameDidChange =
           node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
       // Notify JS about layout event if requested
@@ -471,6 +470,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     // and we do not need to hold references to the previous tree anymore
     node.setOriginalReactShadowNode(null);
     node.markUpdateSeen();
+    node.markAsSealed();
   }
 
   @Override
@@ -511,13 +511,16 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   @Override
   @DoNotStrip
-  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
+  public synchronized void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
+    ReactShadowNode rootNode = getRootNode(rootViewTag);
     if (rootNode == null) {
       FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
       return;
     }
-    updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
+
+    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
+    updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
+    mRootShadowNodeRegistry.replaceNode(newRootNode);
   }
 
   /**
@@ -526,18 +529,20 @@ public class FabricUIManager implements UIManager, JSHandler {
    * //TODO: change synchronization to integrate with new #render loop.
    */
   private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
+    ReactShadowNode rootNode = getRootNode(rootTag);
     if (rootNode == null) {
       FLog.w(
         ReactConstants.TAG,
         "Tried to update size of non-existent tag: " + rootTag);
       return;
     }
+
+    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
     int newWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
     int newHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
-    updateRootView(rootNode, newWidthSpec, newHeightSpec);
+    updateRootView(newRootNode, newWidthSpec, newHeightSpec);
 
-    completeRoot(rootTag, rootNode.getChildrenList());
+    completeRoot(rootTag, newRootNode.getChildrenList());
   }
 
   public void removeRootView(int rootTag) {
@@ -640,7 +645,20 @@ public class FabricUIManager implements UIManager, JSHandler {
         TAG,
         "Dispatching event for target: " + eventTarget);
     }
+    if (params == null) {
+      params = new WritableNativeMap();
+    }
     mBinding.dispatchEventToTarget(mJSContext.get(), mEventHandlerPointer, eventTarget, name, (WritableNativeMap) params);
+  }
+
+  @Override
+  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+    // TODO: Do nothing for now
+  }
+
+  @Override
+  public void clearJSResponder() {
+    // TODO: Do nothing for now
   }
 
   @Override

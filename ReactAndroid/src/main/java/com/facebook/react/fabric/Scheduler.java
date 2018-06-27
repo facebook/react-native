@@ -1,6 +1,6 @@
 package com.facebook.react.fabric;
 
-import android.util.Log;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -56,7 +56,7 @@ public class Scheduler {
               try {
                 work.run();
               } catch (Exception ex) {
-                Log.w(TAG, "Exception running work in JS.", ex);
+                FLog.w(TAG, "Exception running work in JS.", ex);
                 throw ex;
               }
             }
@@ -66,7 +66,7 @@ public class Scheduler {
     } catch (RejectedExecutionException ex) {
       // This can happen if a Work is scheduled when the Scheduler is being shutdown.
       // For now, we log and do not take any action.
-      Log.i(TAG, "Unable to schedule task.");
+      FLog.i(TAG, "Unable to schedule task.");
     }
   }
 

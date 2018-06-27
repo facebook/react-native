@@ -15,6 +15,10 @@
 using namespace facebook::react;
 
 @implementation RCTViewComponentView
+{
+  BOOL _isCoreAnimationBorderRenderingEnabled;
+}
+
 - (void)setContentView:(UIView *)contentView
 {
   if (_contentView) {
@@ -116,7 +120,6 @@ using namespace facebook::react;
     self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
-  // TODO: Implement all sutable non-layout <View> props.
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
     self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
@@ -127,10 +130,24 @@ using namespace facebook::react;
     self.layer.zPosition = (CGFloat)newViewProps.zIndex;
   }
 
+  // `border`
+  if (
+    oldViewProps.borderWidth != newViewProps.borderWidth ||
+    oldViewProps.borderStyle != newViewProps.borderStyle ||
+    oldViewProps.borderRadius != newViewProps.borderRadius ||
+    oldViewProps.borderColor != newViewProps.borderColor
+  ) {
+    [self invalidateBorder];
+  }
+
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
-    self.nativeId = [NSString stringWithCString:newViewProps.nativeId.c_str()
-                                       encoding:NSASCIIStringEncoding];
+    self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
+  }
+
+  // `accessible`
+  if (oldViewProps.accessible != newViewProps.accessible) {
+    self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
   }
 }
 
@@ -146,10 +163,64 @@ using namespace facebook::react;
   _layoutMetrics = layoutMetrics;
 
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+}
 
+- (void)invalidateBorder
+{
+  const auto &props = *std::dynamic_pointer_cast<const ViewProps>(_props);
+
+  bool useCoreAnimationBorderRendering =
+    props.borderStyle == BorderStyle::Solid &&
+    props.borderWidth.isUniform() &&
+    props.borderRadius.isUniform();
+
+  CALayer *layer = self.layer;
+  if (_isCoreAnimationBorderRenderingEnabled != useCoreAnimationBorderRendering) {
+    _isCoreAnimationBorderRenderingEnabled = useCoreAnimationBorderRendering;
+    if (!useCoreAnimationBorderRendering) {
+      layer.borderWidth = 0;
+      layer.borderColor = nil;
+      layer.cornerRadius = 0;
+    }
+  }
+
+  if (useCoreAnimationBorderRendering) {
+    layer.borderWidth = (CGFloat)props.borderWidth.left;
+    layer.borderColor = RCTCGColorRefFromSharedColor(props.borderColor);
+    layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
+    _contentView.layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
+    _contentView.layer.masksToBounds = YES;
+  } else {
+    // Not supported yet.
+  }
+}
+
+#pragma mark - Accessibility
+
+- (NSObject *)accessibilityElement
+{
+  return self;
 }
 
 #pragma mark - Accessibility Events
+
+- (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  const auto &accessibilityProps = *std::dynamic_pointer_cast<const AccessibilityProps>(_props);
+
+  if (accessibilityProps.accessibilityActions.size() == 0) {
+    return nil;
+  }
+
+  NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
+  for (const auto &accessibilityAction : accessibilityProps.accessibilityActions) {
+    [customActions addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+                                                                        target:self
+                                                                      selector:@selector(didActivateAccessibilityCustomAction:)]];
+  }
+
+  return [customActions copy];
+}
 
 - (BOOL)accessibilityActivate
 {
@@ -165,7 +236,7 @@ using namespace facebook::react;
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  _eventEmitter->onAccessibilityAction([action.name cStringUsingEncoding:NSASCIIStringEncoding]);
+  _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
   return YES;
 }
 
