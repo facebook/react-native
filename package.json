@@ -103,7 +103,6 @@
     "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
-    "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
     "jest-preset.json",
     "jest",
@@ -123,7 +122,7 @@
     "third-party-podspecs"
   ],
   "scripts": {
-    "start": "flow-node ./local-cli/cli.js start -- --reset-cache",
+    "start": "flow-node ./local-cli/cli.js start",
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
