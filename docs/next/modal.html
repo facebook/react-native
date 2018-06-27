@@ -34,7 +34,7 @@
 <p>Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator.</p>
 </blockquote>
 <pre><code class="hljs css languages- javascript"><span class="hljs-keyword">import</span> React, {Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {Modal, Text, TouchableHighlight, View} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> {Modal, Text, TouchableHighlight, View, Alert} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ModalExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   state = {
@@ -53,7 +53,7 @@
           <span class="hljs-attr">transparent</span>=<span class="hljs-string">{false}</span>
           <span class="hljs-attr">visible</span>=<span class="hljs-string">{this.state.modalVisible}</span>
           <span class="hljs-attr">onRequestClose</span>=<span class="hljs-string">{()</span> =&gt;</span> {
-            alert('Modal has been closed.');
+            Alert.alert('Modal has been closed.');
           }}&gt;
           <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{marginTop:</span> <span class="hljs-attr">22</span>}}&gt;</span>
             <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
