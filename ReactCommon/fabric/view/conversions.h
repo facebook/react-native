@@ -230,11 +230,11 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
 inline void fromDynamic(const folly::dynamic &value, Transform &result) {
   assert(value.isArray());
   Transform transformMatrix;
-  for (auto &&tranformConfiguration : value) {
+  for (const auto &tranformConfiguration : value) {
     assert(tranformConfiguration.isObject());
     auto pair = *tranformConfiguration.items().begin();
-    auto &&operation = pair.first.asString();
-    auto &&parameters = pair.second;
+    const auto &operation = pair.first.asString();
+    const auto &parameters = pair.second;
 
     if (operation == "matrix") {
       assert(parameters.isArray());

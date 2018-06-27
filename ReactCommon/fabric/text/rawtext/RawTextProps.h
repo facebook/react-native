@@ -29,7 +29,7 @@ public:
 
 #pragma mark - Props
 
-  const std::string text {""};
+  const std::string text {};
 
 #pragma mark - DebugStringConvertible
 

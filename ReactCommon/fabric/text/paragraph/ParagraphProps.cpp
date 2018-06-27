@@ -20,8 +20,8 @@ static ParagraphAttributes convertRawProp(const RawProps &rawProps, const Paragr
   paragraphAttributes.maximumNumberOfLines = convertRawProp(rawProps, "numberOfLines", defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
   paragraphAttributes.adjustsFontSizeToFit = convertRawProp(rawProps, "adjustsFontSizeToFit", defaultParagraphAttributes.adjustsFontSizeToFit);
-  paragraphAttributes.minimumFontSize = convertRawProp(rawProps, "minimumFontSize", defaultParagraphAttributes.minimumFontSize);
-  paragraphAttributes.maximumFontSize = convertRawProp(rawProps, "maximumFontSize", defaultParagraphAttributes.maximumFontSize);
+  paragraphAttributes.minimumFontSize = convertRawProp(rawProps, "minimumFontSize", defaultParagraphAttributes.minimumFontSize, std::numeric_limits<Float>::quiet_NaN());
+  paragraphAttributes.maximumFontSize = convertRawProp(rawProps, "maximumFontSize", defaultParagraphAttributes.maximumFontSize, std::numeric_limits<Float>::quiet_NaN());
 
   return paragraphAttributes;
 }

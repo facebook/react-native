@@ -22,6 +22,7 @@ struct LayoutMetrics {
   EdgeInsets borderWidth {0};
   DisplayType displayType {DisplayType::Flex};
   LayoutDirection layoutDirection {LayoutDirection::Undefined};
+  Float pointScaleFactor {1.0};
 
   Rect getContentFrame() const {
     return Rect {

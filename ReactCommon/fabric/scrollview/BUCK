@@ -1,3 +1,4 @@
+load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
 load("//ReactNative:DEFS.bzl", "ANDROID", "APPLE", "IS_OSS_BUILD", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
@@ -12,11 +13,11 @@ rn_xplat_cxx_library(
     name = "scrollview",
     srcs = glob(
         ["**/*.cpp"],
-        excludes = glob(["tests/**/*.cpp"]),
+        exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
         ["**/*.h"],
-        excludes = glob(["tests/**/*.h"]),
+        exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(

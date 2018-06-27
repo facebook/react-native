@@ -25,7 +25,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
 
   AttributedString attributedString;
 
-  for (auto &&childNode : *childNodes) {
+  for (const auto &childNode : *childNodes) {
     // RawShadowNode
     SharedRawTextShadowNode rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {

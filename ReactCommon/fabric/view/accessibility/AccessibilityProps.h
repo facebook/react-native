@@ -30,7 +30,7 @@ public:
 #pragma mark - Props
 
   const bool accessible {true};
-  const std::string accessibilityActions {""};
+  const std::vector<std::string> accessibilityActions {};
   const std::string accessibilityLabel {""};
   const AccessibilityTraits accessibilityTraits {AccessibilityTraits::None};
   const bool accessibilityViewIsModal {false};

@@ -8,7 +8,7 @@ rn_android_library(
     name = "common",
     srcs = glob(
         ["**/*.java"],
-        excludes = SUB_PROJECTS,
+        exclude = SUB_PROJECTS,
     ),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),

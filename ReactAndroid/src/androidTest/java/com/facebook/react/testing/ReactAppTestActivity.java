@@ -37,11 +37,10 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
-import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -139,16 +138,11 @@ public class ReactAppTestActivity extends FragmentActivity
     loadApp(appKey, spec, null, DEFAULT_BUNDLE_NAME, enableDevSupport);
   }
 
-  public void loadApp(String appKey, ReactInstanceSpecForTest spec, String bundleName) {
-    loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */);
-  }
-
   public void loadApp(
     String appKey,
     ReactInstanceSpecForTest spec,
-    String bundleName,
-    UIImplementationProvider uiImplementationProvider) {
-    loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */, uiImplementationProvider);
+    String bundleName) {
+    loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */);
   }
 
   public void resetRootViewForScreenshotTests() {
@@ -166,22 +160,12 @@ public class ReactAppTestActivity extends FragmentActivity
   }
 
   public void loadApp(
-      String appKey,
-      ReactInstanceSpecForTest spec,
-      @Nullable Bundle initialProps,
-      String bundleName,
-      boolean useDevSupport) {
-    loadApp(appKey, spec, initialProps, bundleName, useDevSupport, null);
-  }
-
-  public void loadApp(
     String appKey,
     ReactInstanceSpecForTest spec,
     @Nullable Bundle initialProps,
     String bundleName,
-    boolean useDevSupport,
-    UIImplementationProvider uiImplementationProvider) {
-    loadBundle(spec, bundleName, useDevSupport, uiImplementationProvider);
+    boolean useDevSupport) {
+    loadBundle(spec, bundleName, useDevSupport);
     renderComponent(appKey, initialProps);
   }
 
@@ -217,14 +201,6 @@ public class ReactAppTestActivity extends FragmentActivity
       ReactInstanceSpecForTest spec,
       String bundleName,
       boolean useDevSupport) {
-    loadBundle(spec, bundleName, useDevSupport, null);
-  }
-
-  public void loadBundle(
-      ReactInstanceSpecForTest spec,
-      String bundleName,
-      boolean useDevSupport,
-      UIImplementationProvider uiImplementationProvider) {
 
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
@@ -277,8 +253,7 @@ public class ReactAppTestActivity extends FragmentActivity
                       };
                     }
                   });
-              }})
-        .setUIImplementationProvider(uiImplementationProvider);
+              }});
 
     final CountDownLatch latch = new CountDownLatch(1);
     runOnUiThread(new Runnable() {

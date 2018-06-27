@@ -33,7 +33,7 @@ void EventEmitter::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  auto &&eventDispatcher = eventDispatcher_.lock();
+  const auto &eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
@@ -50,7 +50,7 @@ void EventEmitter::dispatchEvent(
 }
 
 EventTarget EventEmitter::createEventTarget() const {
-  auto &&eventDispatcher = eventDispatcher_.lock();
+  const auto &eventDispatcher = eventDispatcher_.lock();
   assert(eventDispatcher);
   return eventDispatcher->createEventTarget(instanceHandle_);
 }
