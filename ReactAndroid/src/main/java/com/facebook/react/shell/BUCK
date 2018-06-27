@@ -19,7 +19,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
-        react_native_target("java/com/facebook/react/flat:flat"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/accessibilityinfo:accessibilityinfo"),
         react_native_target("java/com/facebook/react/modules/appstate:appstate"),
