@@ -12,9 +12,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.app.DatePickerDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.widget.DatePicker;
 
 import com.facebook.react.bridge.BaseJavaModule;
@@ -105,7 +105,7 @@ public class DatePickerDialogTestCase extends ReactAppInstrumentationTestCase {
     waitForBridgeAndUIIdle();
     getInstrumentation().waitForIdleSync();
 
-    return (DialogFragment) getActivity().getSupportFragmentManager()
+    return (DialogFragment) getActivity().getFragmentManager()
         .findFragmentByTag(DatePickerDialogModule.FRAGMENT_TAG);
   }
 
