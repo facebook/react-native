@@ -99,41 +99,20 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
           "Tried to open a TimePicker dialog while not attached to an Activity");
       return;
     }
-    // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
-    // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
-    if (activity instanceof android.support.v4.app.FragmentActivity) {
-      android.support.v4.app.FragmentManager fragmentManager =
-          ((android.support.v4.app.FragmentActivity) activity).getSupportFragmentManager();
-      android.support.v4.app.DialogFragment oldFragment =
-          (android.support.v4.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-      if (oldFragment != null) {
-        oldFragment.dismiss();
-      }
-      SupportTimePickerDialogFragment fragment = new SupportTimePickerDialogFragment();
-      if (options != null) {
-        Bundle args = createFragmentArguments(options);
-        fragment.setArguments(args);
-      }
-      TimePickerDialogListener listener = new TimePickerDialogListener(promise);
-      fragment.setOnDismissListener(listener);
-      fragment.setOnTimeSetListener(listener);
-      fragment.show(fragmentManager, FRAGMENT_TAG);
-    } else {
-      FragmentManager fragmentManager = activity.getFragmentManager();
-      DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-      if (oldFragment != null) {
-        oldFragment.dismiss();
-      }
-      TimePickerDialogFragment fragment = new TimePickerDialogFragment();
-      if (options != null) {
-        final Bundle args = createFragmentArguments(options);
-        fragment.setArguments(args);
-      }
-      TimePickerDialogListener listener = new TimePickerDialogListener(promise);
-      fragment.setOnDismissListener(listener);
-      fragment.setOnTimeSetListener(listener);
-      fragment.show(fragmentManager, FRAGMENT_TAG);
+    FragmentManager fragmentManager = activity.getFragmentManager();
+    DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+    if (oldFragment != null) {
+      oldFragment.dismiss();
     }
+    TimePickerDialogFragment fragment = new TimePickerDialogFragment();
+    if (options != null) {
+      final Bundle args = createFragmentArguments(options);
+      fragment.setArguments(args);
+    }
+    TimePickerDialogListener listener = new TimePickerDialogListener(promise);
+    fragment.setOnDismissListener(listener);
+    fragment.setOnTimeSetListener(listener);
+    fragment.show(fragmentManager, FRAGMENT_TAG);
   }
 
   private Bundle createFragmentArguments(ReadableMap options) {

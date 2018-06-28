@@ -10,9 +10,9 @@ package com.facebook.react.tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
@@ -94,7 +94,7 @@ public class TimePickerDialogTestCase extends ReactAppInstrumentationTestCase {
     waitForBridgeAndUIIdle();
     getInstrumentation().waitForIdleSync();
 
-    return (DialogFragment) getActivity().getSupportFragmentManager()
+    return (DialogFragment) getActivity().getFragmentManager()
         .findFragmentByTag(TimePickerDialogModule.FRAGMENT_TAG);
   }
 
