@@ -363,10 +363,7 @@ function startServerInNewWindow(port) {
 
   // set up the launchpackager.(command|bat) file
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
-  const launchPackagerScript = path.resolve(
-    scriptsDir, 
-    scriptFile
-  );
+  const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
   const terminal = process.env.REACT_TERMINAL;
 
