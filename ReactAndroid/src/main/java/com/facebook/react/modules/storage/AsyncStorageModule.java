@@ -7,10 +7,13 @@
 
 package com.facebook.react.modules.storage;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.os.AsyncTask;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
@@ -42,6 +45,33 @@ public final class AsyncStorageModule
 
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
+
+  // Borrowed from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
+  private static class SerialExecutor implements Executor {
+    final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+    Runnable mActive;
+    public synchronized void execute(final Runnable r) {
+      mTasks.offer(new Runnable() {
+        public void run() {
+          try {
+            r.run();
+          } finally {
+            scheduleNext();
+          }
+        }
+      });
+      if (mActive == null) {
+        scheduleNext();
+      }
+    }
+    protected synchronized void scheduleNext() {
+      if ((mActive = mTasks.poll()) != null) {
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(mActive);
+      }
+    }
+  }
+
+  private static final Executor ASYNC_STORAGE_EXECUTOR = new SerialExecutor();
 
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -141,7 +171,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
@@ -208,7 +238,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
@@ -259,7 +289,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
@@ -322,7 +352,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
@@ -345,7 +375,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
@@ -379,7 +409,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    }.execute();
+    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
   }
 
   /**
