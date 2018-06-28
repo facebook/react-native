@@ -1,7 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSBundleType.h"
-#include "oss-compat-util.h"
+
+#include <folly/Bits.h>
 
 namespace facebook {
 namespace react {
@@ -10,8 +14,7 @@ static uint32_t constexpr RAMBundleMagicNumber = 0xFB0BD1E5;
 static uint32_t constexpr BCBundleMagicNumber  = 0x6D657300;
 
 ScriptTag parseTypeFromHeader(const BundleHeader& header) {
-
-  switch (littleEndianToHost(header.magic)) {
+  switch (folly::Endian::little(header.magic)) {
   case RAMBundleMagicNumber:
     return ScriptTag::RAMBundle;
   case BCBundleMagicNumber:

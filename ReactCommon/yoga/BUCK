@@ -1,4 +1,6 @@
-fb_xplat_cxx_library(
+load("//ReactNative:DEFS.bzl", "cxx_library")
+
+cxx_library(
     name = "yoga",
     srcs = glob(["yoga/*.cpp"]),
     header_namespace = "",

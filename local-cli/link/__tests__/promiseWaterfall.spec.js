@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -17,8 +14,7 @@ const sinon = require('sinon');
 const promiseWaterfall = require('../promiseWaterfall');
 
 describe('promiseWaterfall', () => {
-
-  it('should run promises in a sequence', (done) => {
+  it('should run promises in a sequence', done => {
     const tasks = [sinon.stub(), sinon.stub()];
 
     promiseWaterfall(tasks).then(() => {
@@ -27,7 +23,7 @@ describe('promiseWaterfall', () => {
     });
   });
 
-  it('should resolve with last promise value', (done) => {
+  it('should resolve with last promise value', done => {
     const tasks = [sinon.stub().returns(1), sinon.stub().returns(2)];
 
     promiseWaterfall(tasks).then(value => {
@@ -36,7 +32,7 @@ describe('promiseWaterfall', () => {
     });
   });
 
-  it('should stop the sequence when one of promises is rejected', (done) => {
+  it('should stop the sequence when one of promises is rejected', done => {
     const error = new Error();
     const tasks = [sinon.stub().throws(error), sinon.stub().returns(2)];
 
@@ -46,5 +42,4 @@ describe('promiseWaterfall', () => {
       done();
     });
   });
-
 });

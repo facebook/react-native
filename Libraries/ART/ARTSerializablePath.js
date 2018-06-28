@@ -1,28 +1,26 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ARTSerializablePath
+ * @format
  */
+
 'use strict';
 
 // TODO: Move this into an ART mode called "serialized" or something
 
-var Class = require('art/core/class.js');
-var Path = require('art/core/path.js');
+const Class = require('art/core/class.js');
+const Path = require('art/core/path.js');
 
-var MOVE_TO = 0;
-var CLOSE = 1;
-var LINE_TO = 2;
-var CURVE_TO = 3;
-var ARC = 4;
+const MOVE_TO = 0;
+const CLOSE = 1;
+const LINE_TO = 2;
+const CURVE_TO = 3;
+const ARC = 4;
 
-var SerializablePath = Class(Path, {
-
+const SerializablePath = Class(Path, {
   initialize: function(path) {
     this.reset();
     if (path instanceof SerializablePath) {
@@ -57,7 +55,18 @@ var SerializablePath = Class(Path, {
   onArc: function(sx, sy, ex, ey, cx, cy, rx, ry, sa, ea, ccw, rotation) {
     if (rx !== ry || rotation) {
       return this._arcToBezier(
-        sx, sy, ex, ey, cx, cy, rx, ry, sa, ea, ccw, rotation
+        sx,
+        sy,
+        ex,
+        ey,
+        cx,
+        cy,
+        rx,
+        ry,
+        sa,
+        ea,
+        ccw,
+        rotation,
       );
     }
     this.path.push(ARC, cx, cy, rx, sa, ea, ccw ? 0 : 1);
@@ -69,8 +78,7 @@ var SerializablePath = Class(Path, {
 
   toJSON: function() {
     return this.path;
-  }
-
+  },
 });
 
 module.exports = SerializablePath;

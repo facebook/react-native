@@ -1,15 +1,15 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "KEYSTORE_TARGET", "react_native_dep", "react_native_target", "rn_android_binary", "rn_android_library", "rn_android_resource")
 
-android_binary(
+rn_android_binary(
     name = "app",
-    keystore = "//keystores:debug",
+    keystore = KEYSTORE_TARGET,
     manifest = "src/main/AndroidManifest.xml",
     deps = [
         ":rntester-lib",
     ],
 )
 
-android_library(
+rn_android_library(
     name = "rntester-lib",
     srcs = glob(["src/main/java/**/*.java"]),
     deps = [
@@ -26,7 +26,7 @@ android_library(
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "res",
     package = "com.facebook.react.uiapp",
     res = "src/main/res",

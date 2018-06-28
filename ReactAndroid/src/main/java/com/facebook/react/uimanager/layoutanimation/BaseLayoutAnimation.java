@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager.layoutanimation;
 
@@ -39,6 +42,32 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
               toValue,
               Animation.RELATIVE_TO_SELF,
               .5f,
+              Animation.RELATIVE_TO_SELF,
+              .5f);
+        }
+        case SCALE_X: {
+          float fromValue = isReverse() ? 1.0f : 0.0f;
+          float toValue = isReverse() ? 0.0f : 1.0f;
+          return new ScaleAnimation(
+              fromValue,
+              toValue,
+              1f,
+              1f,
+              Animation.RELATIVE_TO_SELF,
+              .5f,
+              Animation.RELATIVE_TO_SELF,
+              0f);
+        }
+        case SCALE_Y: {
+          float fromValue = isReverse() ? 1.0f : 0.0f;
+          float toValue = isReverse() ? 0.0f : 1.0f;
+          return new ScaleAnimation(
+              1f,
+              1f,
+              fromValue,
+              toValue,
+              Animation.RELATIVE_TO_SELF,
+              0f,
               Animation.RELATIVE_TO_SELF,
               .5f);
         }

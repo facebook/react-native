@@ -1,35 +1,28 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule LayoutEventsExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Image,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type State = {
-  containerStyle?: { width: number },
+  containerStyle?: {width: number},
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
-  viewStyle: { margin: number },
+  viewStyle: {margin: number},
 };
 
 class LayoutEventExample extends React.Component<{}, State> {
@@ -40,24 +33,21 @@ class LayoutEventExample extends React.Component<{}, State> {
   };
 
   animateViewLayout = () => {
-    LayoutAnimation.configureNext(
-      LayoutAnimation.Presets.spring,
-      () => {
-        console.log('layout animation done.');
-        this.addWrapText();
-      }
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
+      console.log('layout animation done.');
+      this.addWrapText();
+    });
     this.setState({
       viewStyle: {
         margin: this.state.viewStyle.margin > 20 ? 20 : 60,
-      }
+      },
     });
   };
 
   addWrapText = () => {
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
-      this.changeContainer
+      this.changeContainer,
     );
   };
 
@@ -87,7 +77,10 @@ class LayoutEventExample extends React.Component<{}, State> {
     return (
       <View style={this.state.containerStyle}>
         <Text>
-          layout events are called on mount and whenever layout is recalculated. Note that the layout event will typically be received <Text style={styles.italicText}>before</Text> the layout has updated on screen, especially when using layout animations.{'  '}
+          layout events are called on mount and whenever layout is recalculated.
+          Note that the layout event will typically be received{' '}
+          <Text style={styles.italicText}>before</Text> the layout has updated
+          on screen, especially when using layout animations.{'  '}
           <Text style={styles.pressText} onPress={this.animateViewLayout}>
             Press here to change layout.
           </Text>
@@ -97,10 +90,14 @@ class LayoutEventExample extends React.Component<{}, State> {
             ref="img"
             onLayout={this.onImageLayout}
             style={styles.image}
-            source={{uri: 'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png'}}
+            source={{
+              uri:
+                'https://fbcdn-dragon-a.akamaihd.net/hphotos-ak-prn1/t39.1997/p128x128/851561_767334496626293_1958532586_n.png',
+            }}
           />
           <Text>
-            ViewLayout: {JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
+            ViewLayout:{' '}
+            {JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
           </Text>
           <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
             A simple piece of text.{this.state.extraText}
@@ -143,12 +140,14 @@ var styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Events';
-exports.description = 'Examples that show how Layout events can be used to ' +
+exports.description =
+  'Examples that show how Layout events can be used to ' +
   'measure view size and position.';
 exports.examples = [
-{
-  title: 'LayoutEventExample',
-  render: function(): React.Element<any> {
-    return <LayoutEventExample />;
+  {
+    title: 'LayoutEventExample',
+    render: function(): React.Element<any> {
+      return <LayoutEventExample />;
+    },
   },
-}];
+];

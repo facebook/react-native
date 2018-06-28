@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -24,14 +21,19 @@ describe('ios::getHeaderSearchPath', () => {
    */
   it('should return correct path when all headers are in root folder', () => {
     const files = [
-      path.join('react-native-project', 'node_modules', 'package', 'Gradient.h'),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'Gradient.h',
+      ),
       path.join('react-native-project', 'node_modules', 'package', 'Manager.h'),
     ];
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
     expect(searchPath).toBe(
-      `"${['$(SRCROOT)', '..', 'node_modules', 'package'].join(path.sep)}"`
+      `"${['$(SRCROOT)', '..', 'node_modules', 'package'].join(path.sep)}"`,
     );
   });
 
@@ -40,14 +42,30 @@ describe('ios::getHeaderSearchPath', () => {
    */
   it('should return correct path when headers are in multiple folders', () => {
     const files = [
-      path.join('react-native-project', 'node_modules', 'package', 'src', 'folderA', 'Gradient.h'),
-      path.join('react-native-project', 'node_modules', 'package', 'src', 'folderB', 'Manager.h'),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'src',
+        'folderA',
+        'Gradient.h',
+      ),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'src',
+        'folderB',
+        'Manager.h',
+      ),
     ];
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
     expect(searchPath).toBe(
-      `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(path.sep)}/**"`
+      `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(
+        path.sep,
+      )}/**"`,
     );
   });
 
@@ -56,15 +74,37 @@ describe('ios::getHeaderSearchPath', () => {
    */
   it('should return correct path when headers are in root and nested folders', () => {
     const files = [
-      path.join('react-native-project', 'node_modules', 'package', 'src', 'folderA', 'Gradient.h'),
-      path.join('react-native-project', 'node_modules', 'package', 'src', 'folderB', 'Manager.h'),
-      path.join('react-native-project', 'node_modules', 'package', 'src', 'Manager.h'),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'src',
+        'folderA',
+        'Gradient.h',
+      ),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'src',
+        'folderB',
+        'Manager.h',
+      ),
+      path.join(
+        'react-native-project',
+        'node_modules',
+        'package',
+        'src',
+        'Manager.h',
+      ),
     ];
 
     const searchPath = getHeaderSearchPath(SRC_DIR, files);
 
     expect(searchPath).toBe(
-      `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(path.sep)}/**"`
+      `"${['$(SRCROOT)', '..', 'node_modules', 'package', 'src'].join(
+        path.sep,
+      )}/**"`,
     );
   });
 });

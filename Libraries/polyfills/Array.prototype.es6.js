@@ -1,23 +1,21 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Array.prototype.es6
+ * @format
  * @polyfill
  * @nolint
  */
 
-/* eslint-disable */
+/* eslint-disable no-bitwise, no-extend-native, radix, no-self-compare */
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
 function findIndex(predicate, context) {
   if (this == null) {
     throw new TypeError(
-      'Array.prototype.findIndex called on null or undefined'
+      'Array.prototype.findIndex called on null or undefined',
     );
   }
   if (typeof predicate !== 'function') {
@@ -38,7 +36,7 @@ if (!Array.prototype.findIndex) {
     enumerable: false,
     writable: true,
     configurable: true,
-    value: findIndex
+    value: findIndex,
   });
 }
 
@@ -50,13 +48,11 @@ if (!Array.prototype.find) {
     configurable: true,
     value: function(predicate, context) {
       if (this == null) {
-        throw new TypeError(
-          'Array.prototype.find called on null or undefined'
-        );
+        throw new TypeError('Array.prototype.find called on null or undefined');
       }
       var index = findIndex.call(this, predicate, context);
       return index === -1 ? undefined : this[index];
-    }
+    },
   });
 }
 
@@ -66,7 +62,7 @@ if (!Array.prototype.includes) {
     enumerable: false,
     writable: true,
     configurable: true,
-    value: function (searchElement) {
+    value: function(searchElement) {
       var O = Object(this);
       var len = parseInt(O.length) || 0;
       if (len === 0) {
@@ -85,13 +81,15 @@ if (!Array.prototype.includes) {
       var currentElement;
       while (k < len) {
         currentElement = O[k];
-        if (searchElement === currentElement ||
-          (searchElement !== searchElement && currentElement !== currentElement)) {
+        if (
+          searchElement === currentElement ||
+          (searchElement !== searchElement && currentElement !== currentElement)
+        ) {
           return true;
         }
         k++;
       }
       return false;
-    }
+    },
   });
 }

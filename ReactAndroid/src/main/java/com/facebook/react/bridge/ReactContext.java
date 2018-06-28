@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -304,13 +302,13 @@ public class ReactContext extends ContextWrapper {
    * {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} if one exists, rethrowing
    * otherwise.
    */
-  public void handleException(RuntimeException e) {
+  public void handleException(Exception e) {
     if (mCatalystInstance != null &&
         !mCatalystInstance.isDestroyed() &&
         mNativeModuleCallExceptionHandler != null) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
-      throw e;
+      throw new RuntimeException(e);
     }
   }
 
@@ -351,4 +349,5 @@ public class ReactContext extends ContextWrapper {
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
+
 }

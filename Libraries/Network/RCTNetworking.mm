@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -131,11 +129,24 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
+  NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
+  NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
 
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
+
+- (void)invalidate
+{
+  for (NSNumber *requestID in _tasksByRequestID) {
+    [_tasksByRequestID[requestID] cancel];
+  }
+  [_tasksByRequestID removeAllObjects];
+  _handlers = nil;
+  _requestHandlers = nil;
+  _responseHandlers = nil;
+}
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -297,6 +308,8 @@ RCT_EXPORT_MODULE()
  *
  * - {"formData": [...]}: list of data payloads that will be combined into a multipart/form-data request
  *
+ * - {"blob": {...}}: an object representing a blob
+ *
  * If successful, the callback be called with a result dictionary containing the following (optional) keys:
  *
  * - @"body" (NSData): the body of the request
@@ -311,6 +324,15 @@ RCT_EXPORT_MODULE()
 
   if (!query) {
     return callback(nil, nil);
+  }
+  for (id<RCTNetworkingRequestHandler> handler in _requestHandlers) {
+    if ([handler canHandleNetworkingRequest:query]) {
+      // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
+      NSDictionary *body = [handler handleNetworkingRequest:query];
+      if (body) {
+        return callback(nil, body);
+      }
+    }
   }
   NSData *body = [RCTConvert NSData:query[@"string"]];
   if (body) {
@@ -417,31 +439,40 @@ RCT_EXPORT_MODULE()
 
 - (void)sendData:(NSData *)data
     responseType:(NSString *)responseType
+        response:(NSURLResponse *)response
          forTask:(RCTNetworkTask *)task
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
 
-  if (data.length == 0) {
-    return;
+  id responseData = nil;
+  for (id<RCTNetworkingResponseHandler> handler in _responseHandlers) {
+    if ([handler canHandleNetworkingResponse:responseType]) {
+      responseData = [handler handleNetworkingResponse:response data:data];
+      break;
+    }
   }
 
-  NSString *responseString;
-  if ([responseType isEqualToString:@"text"]) {
-    // No carry storage is required here because the entire data has been loaded.
-    responseString = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
-    if (!responseString) {
-      RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+  if (!responseData) {
+    if (data.length == 0) {
       return;
     }
-  } else if ([responseType isEqualToString:@"base64"]) {
-    responseString = [data base64EncodedStringWithOptions:0];
-  } else {
-    RCTLogWarn(@"Invalid responseType: %@", responseType);
-    return;
+
+    if ([responseType isEqualToString:@"text"]) {
+      // No carry storage is required here because the entire data has been loaded.
+      responseData = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];
+      if (!responseData) {
+        RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
+        return;
+      }
+    } else if ([responseType isEqualToString:@"base64"]) {
+      responseData = [data base64EncodedStringWithOptions:0];
+    } else {
+      RCTLogWarn(@"Invalid responseType: %@", responseType);
+      return;
+    }
   }
 
-  NSArray<id> *responseJSON = @[task.requestID, responseString];
-  [self sendEventWithName:@"didReceiveNetworkData" body:responseJSON];
+  [self sendEventWithName:@"didReceiveNetworkData" body:@[task.requestID, responseData]];
 }
 
 - (void)sendRequest:(NSURLRequest *)request
@@ -523,7 +554,10 @@ RCT_EXPORT_MODULE()
     // Unless we were sending incremental (text) chunks to JS, all along, now
     // is the time to send the request body to JS.
     if (!(incrementalUpdates && [responseType isEqualToString:@"text"])) {
-      [strongSelf sendData:data responseType:responseType forTask:task];
+      [strongSelf sendData:data
+              responseType:responseType
+                  response:response
+                   forTask:task];
     }
     NSArray *responseJSON = @[task.requestID,
                               RCTNullIfNil(error.localizedDescription),
@@ -552,6 +586,32 @@ RCT_EXPORT_MODULE()
 }
 
 #pragma mark - Public API
+
+- (void)addRequestHandler:(id<RCTNetworkingRequestHandler>)handler
+{
+  if (!_requestHandlers) {
+    _requestHandlers = [NSMutableArray new];
+  }
+  [_requestHandlers addObject:handler];
+}
+
+- (void)addResponseHandler:(id<RCTNetworkingResponseHandler>)handler
+{
+  if (!_responseHandlers) {
+    _responseHandlers = [NSMutableArray new];
+  }
+  [_responseHandlers addObject:handler];
+}
+
+- (void)removeRequestHandler:(id<RCTNetworkingRequestHandler>)handler
+{
+  [_requestHandlers removeObject:handler];
+}
+
+- (void)removeResponseHandler:(id<RCTNetworkingResponseHandler>)handler
+{
+  [_responseHandlers removeObject:handler];
+}
 
 - (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request completionBlock:(RCTURLRequestCompletionBlock)completionBlock
 {

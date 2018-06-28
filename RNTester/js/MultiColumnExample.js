@@ -1,24 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule MultiColumnExample
  */
+
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const {FlatList, StyleSheet, Text, View} = ReactNative;
 
 const RNTesterPage = require('./RNTesterPage');
 
@@ -36,7 +30,10 @@ const {
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
 
-class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMeState> {
+class MultiColumnExample extends React.PureComponent<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   static title = '<FlatList> - MultiColumn';
   static description = 'Performant, scrollable grid of data.';
 
@@ -48,15 +45,16 @@ class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMe
     numColumns: 2,
     virtualized: true,
   };
-  _onChangeFilterText = (filterText) => {
+  _onChangeFilterText = filterText => {
     this.setState(() => ({filterText}));
   };
-  _onChangeNumColumns = (numColumns) => {
+  _onChangeNumColumns = numColumns => {
     this.setState(() => ({numColumns: Number(numColumns)}));
   };
   render() {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
-    const filter = (item) => (filterRegex.test(item.text) || filterRegex.test(item.title));
+    const filter = item =>
+      filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     return (
       <RNTesterPage
@@ -70,7 +68,7 @@ class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMe
               placeholder="Search..."
               value={this.state.filterText}
             />
-            <Text>   numColumns: </Text>
+            <Text> numColumns: </Text>
             <PlainInput
               clearButtonMode="never"
               onChangeText={this._onChangeNumColumns}
@@ -87,7 +85,9 @@ class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMe
         <FlatList
           ListFooterComponent={FooterComponent}
           ListHeaderComponent={HeaderComponent}
-          getItemLayout={this.state.fixedHeight ? this._getItemLayout : undefined}
+          getItemLayout={
+            this.state.fixedHeight ? this._getItemLayout : undefined
+          }
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
           numColumns={this.state.numColumns || 1}
@@ -101,8 +101,12 @@ class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMe
       </RNTesterPage>
     );
   }
-  _getItemLayout(data: any, index: number): {length: number, offset: number, index: number} {
-    const length = getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
+  _getItemLayout(
+    data: any,
+    index: number,
+  ): {length: number, offset: number, index: number} {
+    const length =
+      getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
   }
   _renderItemComponent = ({item}) => {
@@ -119,12 +123,19 @@ class MultiColumnExample extends React.PureComponent<$FlowFixMeProps, $FlowFixMe
   // This is called when items change viewability by scrolling into or out of the viewable area.
   _onViewableItemsChanged = (info: {
     changed: Array<{
-      key: string, isViewable: boolean, item: {columns: Array<*>}, index: ?number, section?: any
-    }>},
-  ) => {
+      key: string,
+      isViewable: boolean,
+      item: {columns: Array<*>},
+      index: ?number,
+      section?: any,
+    }>,
+  }) => {
     // Impressions can be logged here
     if (this.state.logViewable) {
-      infoLog('onViewableItemsChanged: ', info.changed.map((v) => ({...v, item: '...'})));
+      infoLog(
+        'onViewableItemsChanged: ',
+        info.changed.map(v => ({...v, item: '...'})),
+      );
     }
   };
   _pressItem = (key: string) => {

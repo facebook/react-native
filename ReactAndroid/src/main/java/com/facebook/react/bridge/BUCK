@@ -1,13 +1,8 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "rn_android_library")
 
-android_library(
+rn_android_library(
     name = "bridge",
     srcs = glob(["**/*.java"]),
-    exported_deps = [
-        react_native_dep("java/com/facebook/jni:jni"),
-        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
-        react_native_dep("third-party/java/jsr-330:jsr-330"),
-    ],
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
@@ -27,5 +22,11 @@ android_library(
         react_native_target("java/com/facebook/debug/holder:holder"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/model:model"),
+        react_native_target("java/com/facebook/react/uimanager/common:common"),
     ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
+    exported_deps = [
+        react_native_dep("java/com/facebook/jni:jni"),
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+        react_native_dep("third-party/java/jsr-330:jsr-330"),
+    ],
 )

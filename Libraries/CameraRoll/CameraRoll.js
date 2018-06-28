@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CameraRoll
  * @flow
  * @format
  */
@@ -115,8 +112,10 @@ type GetPhotosReturn = Promise<{
  * Shape of the return value of the `getPhotos` function.
  */
 const getPhotosReturnChecker = createStrictShapeTypeChecker({
-  // $FlowFixMe(>=0.41.0)
   edges: PropTypes.arrayOf(
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
     createStrictShapeTypeChecker({
       node: createStrictShapeTypeChecker({
         type: PropTypes.string.isRequired,
@@ -147,15 +146,9 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
 });
 
 /**
- * `CameraRoll` provides access to the local camera roll / gallery.
- * Before using this you must link the `RCTCameraRoll` library.
- * You can refer to [Linking](docs/linking-libraries-ios.html) for help.
+ * `CameraRoll` provides access to the local camera roll or photo library.
  *
- * ### Permissions
- * The user's permission is required in order to access the Camera Roll on devices running iOS 10 or later.
- * Add the `NSPhotoLibraryUsageDescription` key in your `Info.plist` with a string that describes how your
- * app will use this data. This key will appear as `Privacy - Photo Library Usage Description` in Xcode.
- *
+ * See https://facebook.github.io/react-native/docs/cameraroll.html
  */
 class CameraRoll {
   static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
@@ -176,18 +169,9 @@ class CameraRoll {
   }
 
   /**
-   * Saves the photo or video to the camera roll / gallery.
+   * Saves the photo or video to the camera roll or photo library.
    *
-   * On Android, the tag must be a local image or video URI, such as `"file:///sdcard/img.png"`.
-   *
-   * On iOS, the tag can be any image URI (including local, remote asset-library and base64 data URIs)
-   * or a local video file URI (remote or data URIs are not supported for saving video at this time).
-   *
-   * If the tag has a file extension of .mov or .mp4, it will be inferred as a video. Otherwise
-   * it will be treated as a photo. To override the automatic choice, you can pass an optional
-   * `type` parameter that must be one of 'photo' or 'video'.
-   *
-   * Returns a Promise which will resolve with the new URI.
+   * See https://facebook.github.io/react-native/docs/cameraroll.html#savetocameraroll
    */
   static saveToCameraRoll(
     tag: string,
@@ -218,84 +202,7 @@ class CameraRoll {
    * Returns a Promise with photo identifier objects from the local camera
    * roll of the device matching shape defined by `getPhotosReturnChecker`.
    *
-   * Expects a params object of the following shape:
-   *
-   * - `first` : {number} : The number of photos wanted in reverse order of the photo application (i.e. most recent first for SavedPhotos).
-   * - `after` : {string} : A cursor that matches `page_info { end_cursor }` returned from a previous call to `getPhotos`.
-   * - `groupTypes` : {string} : Specifies which group types to filter the results to. Valid values are:
-   *      - `Album`
-   *      - `All`
-   *      - `Event`
-   *      - `Faces`
-   *      - `Library`
-   *      - `PhotoStream`
-   *      - `SavedPhotos` // default
-   * - `groupName` : {string} : Specifies filter on group names, like 'Recent Photos' or custom album titles.
-   * - `assetType` : {string} : Specifies filter on asset type. Valid values are:
-   *      - `All`
-   *      - `Videos`
-   *      - `Photos` // default
-   * - `mimeTypes` : {string} : Filter by mimetype (e.g. image/jpeg).
-   *
-   * Returns a Promise which when resolved will be of the following shape:
-   *
-   * - `edges` : {Array<node>} An array of node objects
-   *      - `node`: {object} An object with the following shape:
-   *          - `type`: {string}
-   *          - `group_name`: {string}
-   *          - `image`: {object} : An object with the following shape:
-   *              - `uri`: {string}
-   *              - `height`: {number}
-   *              - `width`: {number}
-   *              - `isStored`: {boolean}
-   *          - `timestamp`: {number}
-   *          - `location`: {object} : An object with the following shape:
-   *              - `latitude`: {number}
-   *              - `longitude`: {number}
-   *              - `altitude`: {number}
-   *              - `heading`: {number}
-   *              - `speed`: {number}
-   * - `page_info` : {object} : An object with the following shape:
-   *      - `has_next_page`: {boolean}
-   *      - `start_cursor`: {string}
-   *      - `end_cursor`: {string}
-   *
-   * Loading images:
-   * ```
-   * _handleButtonPress = () => {
-   *    CameraRoll.getPhotos({
-   *        first: 20,
-   *        assetType: 'All',
-   *      })
-   *      .then(r => {
-   *        this.setState({ photos: r.edges });
-   *      })
-   *      .catch((err) => {
-   *         //Error Loading Images
-   *      });
-   *    };
-   * render() {
-   *  return (
-   *    <View>
-   *      <Button title="Load Images" onPress={this._handleButtonPress} />
-   *      <ScrollView>
-   *        {this.state.photos.map((p, i) => {
-   *        return (
-   *          <Image
-   *            key={i}
-   *            style={{
-   *              width: 300,
-   *              height: 100,
-   *            }}
-   *            source={{ uri: p.node.image.uri }}
-   *          />
-   *        );
-   *      })}
-   *      </ScrollView>
-   *    </View>
-   *  );
-   * }
-   * ```
+   * See https://facebook.github.io/react-native/docs/cameraroll.html#getphotos
    */
   static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {

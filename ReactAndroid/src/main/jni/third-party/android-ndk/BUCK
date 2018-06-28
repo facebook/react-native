@@ -1,5 +1,3 @@
-include_defs("//ReactAndroid/DEFS")
-
 # NOTE(agallagher): The platform should really be responsible for providing
 # this type of implicit dependency.  As it is now, we need to setup a dummy
 # rules to model the Android NDK's built in libraries.
@@ -14,13 +12,13 @@ LIBS = (
 )
 
 for lib in LIBS:
-  prebuilt_cxx_library(
-    name = lib,
-    header_only = True,
-    exported_platform_linker_flags = [
-      ('android.*', ['-l' + lib]),
-    ],
-    visibility = [
-      'PUBLIC',
-    ],
-  )
+    prebuilt_cxx_library(
+        name = lib,
+        header_only = True,
+        exported_platform_linker_flags = [
+            ("android.*", ["-l" + lib]),
+        ],
+        visibility = [
+            "PUBLIC",
+        ],
+    )

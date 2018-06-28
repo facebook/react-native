@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule ProgressBarAndroidExample
  */
+
 'use strict';
 
 var ProgressBar = require('ProgressBarAndroid');
@@ -25,17 +24,15 @@ var MovingBar = createReactClass({
 
   getInitialState: function() {
     return {
-      progress: 0
+      progress: 0,
     };
   },
 
   componentDidMount: function() {
-    this.setInterval(
-      () => {
-        var progress = (this.state.progress + 0.02) % 1;
-        this.setState({progress: progress});
-      }, 50
-    );
+    this.setInterval(() => {
+      var progress = (this.state.progress + 0.02) % 1;
+      this.setState({progress: progress});
+    }, 50);
   },
 
   render: function() {
@@ -63,7 +60,11 @@ class ProgressBarAndroidExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Horizontal Blue ProgressBar">
-          <MovingBar styleAttr="Horizontal" indeterminate={false} color="blue" />
+          <MovingBar
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="blue"
+          />
         </RNTesterBlock>
       </RNTesterPage>
     );

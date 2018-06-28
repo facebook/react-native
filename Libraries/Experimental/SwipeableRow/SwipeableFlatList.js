@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableFlatList
  * @flow
  * @format
  */
@@ -51,7 +48,7 @@ type State = {
  *
  * - It ensures that at most 1 row is swiped open (auto closes others)
  * - It can bounce the 1st row of the list so users know it's swipeable
- * - Increase performance on iOS by locking list swiping when row swiping is occuring
+ * - Increase performance on iOS by locking list swiping when row swiping is occurring
  * - More to come
  */
 

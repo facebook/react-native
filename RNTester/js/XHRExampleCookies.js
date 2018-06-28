@@ -1,25 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule XHRExampleCookies
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-  WebView,
-} = ReactNative;
+var {StyleSheet, Text, TouchableHighlight, View, WebView} = ReactNative;
 
 var RCTNetworking = require('RCTNetworking');
 
@@ -39,7 +32,7 @@ class XHRExampleCookies extends React.Component<any, any> {
   setCookie(domain: string) {
     var {a, b} = this.state;
     var url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
-    fetch(url).then((response) => {
+    fetch(url).then(response => {
       this.setStatus(`Cookies a=${a}, b=${b} set`);
       this.refreshWebview();
     });
@@ -52,18 +45,22 @@ class XHRExampleCookies extends React.Component<any, any> {
   }
 
   getCookies(domain: string) {
-    fetch(`https://${domain}/cookies`).then((response) => {
-      return response.json();
-    }).then((data) => {
-      this.setStatus(`Got cookies ${JSON.stringify(data.cookies)} from server`);
-      this.refreshWebview();
-    });
+    fetch(`https://${domain}/cookies`)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setStatus(
+          `Got cookies ${JSON.stringify(data.cookies)} from server`,
+        );
+        this.refreshWebview();
+      });
 
     this.setStatus('Getting cookies...');
   }
 
   clearCookies() {
-    RCTNetworking.clearCookies((cleared) => {
+    RCTNetworking.clearCookies(cleared => {
       this.setStatus('Cookies cleared, had cookies=' + cleared.toString());
       this.refreshWebview();
     });

@@ -6,7 +6,7 @@ It uses Git under the hood to automatically resolve merge conflicts in project t
 
 ## Usage
 
-See the [Upgrading docs](https://facebook.github.io/react-native/releases/next/docs/upgrading.html) on the React Native website.
+See the [Upgrading docs](https://facebook.github.io/react-native/docs/upgrading.html) on the React Native website.
 
 Basic usage:
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -20,13 +18,14 @@
 #include <stdbool.h>
 #endif
 
-// Not defined in MSVC++
-#ifndef NAN
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float *) __nan)
-#endif
-
-#define YGUndefined NAN
+/** Large positive number signifies that the property(float) is undefined.
+ *Earlier we used to have YGundefined as NAN, but the downside of this is that
+ *we can't use -ffast-math compiler flag as it assumes all floating-point
+ *calculation involve and result into finite numbers. For more information
+ *regarding -ffast-math compiler flag in clang, have a look at
+ *https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
+ **/
+#define YGUndefined 10E20F
 
 #include "YGEnums.h"
 #include "YGMacros.h"
@@ -56,16 +55,15 @@ typedef YGSize (*YGMeasureFunc)(YGNodeRef node,
                                 float height,
                                 YGMeasureMode heightMode);
 typedef float (*YGBaselineFunc)(YGNodeRef node, const float width, const float height);
+typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
 typedef int (*YGLogger)(const YGConfigRef config,
                         const YGNodeRef node,
                         YGLogLevel level,
                         const char *format,
                         va_list args);
-typedef void (*YGNodeClonedFunc)(YGNodeRef oldNode,
-                                 YGNodeRef newNode,
-                                 YGNodeRef parent,
-                                 int childIndex);
+typedef YGNodeRef (
+    *YGCloneNodeFunc)(YGNodeRef oldNode, YGNodeRef owner, int childIndex);
 
 // YGNode
 WIN_EXPORT YGNodeRef YGNodeNew(void);
@@ -79,16 +77,32 @@ WIN_EXPORT int32_t YGNodeGetInstanceCount(void);
 WIN_EXPORT void YGNodeInsertChild(const YGNodeRef node,
                                   const YGNodeRef child,
                                   const uint32_t index);
+
+// This function inserts the child YGNodeRef as a children of the node received
+// by parameter and set the Owner of the child object to null. This function is
+// expected to be called when using Yoga in persistent mode in order to share a
+// YGNodeRef object as a child of two different Yoga trees. The child YGNodeRef
+// is expected to be referenced from its original owner and from a clone of its
+// original owner.
+WIN_EXPORT void YGNodeInsertSharedChild(
+    const YGNodeRef node,
+    const YGNodeRef child,
+    const uint32_t index);
 WIN_EXPORT void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
+WIN_EXPORT YGNodeRef YGNodeGetOwner(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetParent(const YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(const YGNodeRef node);
+WIN_EXPORT void YGNodeSetChildren(
+    YGNodeRef const owner,
+    const YGNodeRef children[],
+    const uint32_t count);
 
 WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
                                       const float availableWidth,
                                       const float availableHeight,
-                                      const YGDirection parentDirection);
+                                      const YGDirection ownerDirection);
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
@@ -97,6 +111,10 @@ WIN_EXPORT void YGNodeCalculateLayout(const YGNodeRef node,
 // depends on information not known to YG they must perform this dirty
 // marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
+
+// This function marks the current node and all its descendants as dirty. This function is added to test yoga benchmarks.
+// This function is not expected to be used in production as calling `YGCalculateLayout` will cause the recalculation of each and every node.
+WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
 
@@ -165,6 +183,8 @@ YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
 void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
+YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
+void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
 YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
 bool YGNodeGetHasNewLayout(YGNodeRef node);
@@ -172,6 +192,7 @@ void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
 YGNodeType YGNodeGetNodeType(YGNodeRef node);
 void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
 bool YGNodeIsDirty(YGNodeRef node);
+bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node);
 
 YG_NODE_STYLE_PROPERTY(YGDirection, Direction, direction);
 YG_NODE_STYLE_PROPERTY(YGFlexDirection, FlexDirection, flexDirection);
@@ -183,7 +204,6 @@ YG_NODE_STYLE_PROPERTY(YGPositionType, PositionType, positionType);
 YG_NODE_STYLE_PROPERTY(YGWrap, FlexWrap, flexWrap);
 YG_NODE_STYLE_PROPERTY(YGOverflow, Overflow, overflow);
 YG_NODE_STYLE_PROPERTY(YGDisplay, Display, display);
-
 YG_NODE_STYLE_PROPERTY(float, Flex, flex);
 YG_NODE_STYLE_PROPERTY(float, FlexGrow, flexGrow);
 YG_NODE_STYLE_PROPERTY(float, FlexShrink, flexShrink);
@@ -225,6 +245,7 @@ YG_NODE_LAYOUT_PROPERTY(float, Width);
 YG_NODE_LAYOUT_PROPERTY(float, Height);
 YG_NODE_LAYOUT_PROPERTY(YGDirection, Direction);
 YG_NODE_LAYOUT_PROPERTY(bool, HadOverflow);
+bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node);
 
 // Get the computed values for these nodes after performing layout. If they were set using
 // point values then the returned value will be the same as YGNodeStyleGetXXX. However if
@@ -242,10 +263,12 @@ WIN_EXPORT void YGAssertWithNode(const YGNodeRef node, const bool condition, con
 WIN_EXPORT void YGAssertWithConfig(const YGConfigRef config,
                                    const bool condition,
                                    const char *message);
-
 // Set this to number of pixels in 1 point to round calculation results
 // If you want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(const YGConfigRef config, const float pixelsInPoint);
+void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+    const YGConfigRef config,
+    const bool shouldDiffLayout);
 
 // Yoga previously had an error where containers would take the maximum space possible instead of
 // the minimum
@@ -273,8 +296,8 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(const YGConfigRef config,
 WIN_EXPORT void YGConfigSetUseWebDefaults(const YGConfigRef config, const bool enabled);
 WIN_EXPORT bool YGConfigGetUseWebDefaults(const YGConfigRef config);
 
-WIN_EXPORT void YGConfigSetNodeClonedFunc(const YGConfigRef config,
-                                          const YGNodeClonedFunc callback);
+WIN_EXPORT void YGConfigSetCloneNodeFunc(const YGConfigRef config,
+                                          const YGCloneNodeFunc callback);
 
 // Export only for C#
 WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
@@ -289,3 +312,17 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     const bool forceFloor);
 
 YG_EXTERN_C_END
+
+#ifdef __cplusplus
+
+#include <functional>
+#include <vector>
+
+// Calls f on each node in the tree including the given node argument.
+extern void YGTraversePreOrder(YGNodeRef const node, std::function<void(YGNodeRef node)>&& f);
+
+extern void YGNodeSetChildren(
+    YGNodeRef const owner,
+    const std::vector<YGNodeRef>& children);
+
+#endif

@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -36,9 +33,9 @@ describe('ios::findPodspecName', () => {
       user: {
         PacketName: {
           'Another.podspec': 'empty',
-          'PacketName.podspec': 'empty'
-        }
-      }
+          'PacketName.podspec': 'empty',
+        },
+      },
     });
     expect(findPodspecName('/user/PacketName')).toBe('PacketName');
   });
@@ -48,9 +45,9 @@ describe('ios::findPodspecName', () => {
       user: {
         packet: {
           'Another.podspec': 'empty',
-          'PacketName.podspec': 'empty'
-        }
-      }
+          'PacketName.podspec': 'empty',
+        },
+      },
     });
     expect(findPodspecName('/user/packet')).toBe('Another');
   });

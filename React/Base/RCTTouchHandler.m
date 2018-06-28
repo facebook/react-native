@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTouchHandler.h"
@@ -38,6 +36,8 @@
   NSMutableOrderedSet<UITouch *> *_nativeTouches;
   NSMutableArray<NSMutableDictionary *> *_reactTouches;
   NSMutableArray<UIView *> *_touchViews;
+
+  __weak UIView *_cachedRootView;
 
   uint16_t _coalescingKey;
 }
@@ -150,7 +150,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   UITouch *nativeTouch = _nativeTouches[touchIndex];
   CGPoint windowLocation = [nativeTouch locationInView:nativeTouch.window];
-  CGPoint rootViewLocation = [nativeTouch.window convertPoint:windowLocation toView:self.view];
+  RCTAssert(_cachedRootView, @"We were unable to find a root view for the touch");
+  CGPoint rootViewLocation = [nativeTouch.window convertPoint:windowLocation toView:_cachedRootView];
 
   UIView *touchView = _touchViews[touchIndex];
   CGPoint touchViewLocation = [nativeTouch.window convertPoint:windowLocation toView:touchView];
@@ -211,7 +212,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   BOOL canBeCoalesced = [eventName isEqualToString:@"touchMove"];
 
   // We increment `_coalescingKey` twice here just for sure that
-  // this `_coalescingKey` will not be reused by ahother (preceding or following) event
+  // this `_coalescingKey` will not be reused by another (preceding or following) event
   // (yes, even if coalescing only happens (and makes sense) on events of the same type).
 
   if (!canBeCoalesced) {
@@ -229,6 +230,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   }
 
   [_eventDispatcher sendEvent:event];
+}
+
+/***
+ * To ensure compatibilty when using UIManager.measure and RCTTouchHandler, we have to adopt
+ * UIManager.measure's behavior in finding a "root view".
+ * Usually RCTTouchHandler is already attached to a root view but in some cases (e.g. Modal),
+ * we are instead attached to some RCTView subtree. This is also the case when embedding some RN
+ * views inside a seperate ViewController not controlled by RN.
+ * This logic will either find the nearest rootView, or go all the way to the UIWindow.
+ * While this is not optimal, it is exactly what UIManager.measure does, and what Touchable.js
+ * relies on.
+ * We cache it here so that we don't have to repeat it for every touch in the gesture.
+ */
+- (void)_cacheRootView
+{
+  UIView *rootView = self.view;
+  while (rootView.superview && ![rootView isReactRootView]) {
+    rootView = rootView.superview;
+  }
+  _cachedRootView = rootView;
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
@@ -261,6 +282,8 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
+
+  [self _cacheRootView];
 
   // "start" has to record new touches *before* extracting the event.
   // "end"/"cancel" needs to remove the touch *after* extracting the event.
@@ -333,6 +356,8 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
     [_nativeTouches removeAllObjects];
     [_reactTouches removeAllObjects];
     [_touchViews removeAllObjects];
+
+    _cachedRootView = nil;
   }
 }
 

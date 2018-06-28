@@ -1,22 +1,23 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager.layoutanimation;
-
-import javax.annotation.Nullable;
-
-import java.util.Map;
 
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.BaseInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Class responsible for parsing and converting layout animation data into native {@link Animation}
@@ -36,12 +37,11 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
    */
   abstract @Nullable Animation createAnimationImpl(View view, int x, int y, int width, int height);
 
-  private static final Map<InterpolatorType, Interpolator> INTERPOLATOR = MapBuilder.of(
+  private static final Map<InterpolatorType, BaseInterpolator> INTERPOLATOR = MapBuilder.of(
       InterpolatorType.LINEAR, new LinearInterpolator(),
       InterpolatorType.EASE_IN, new AccelerateInterpolator(),
       InterpolatorType.EASE_OUT, new DecelerateInterpolator(),
-      InterpolatorType.EASE_IN_EASE_OUT, new AccelerateDecelerateInterpolator(),
-      InterpolatorType.SPRING, new SimpleSpringInterpolator());
+      InterpolatorType.EASE_IN_EASE_OUT, new AccelerateDecelerateInterpolator());
 
   private @Nullable Interpolator mInterpolator;
   private int mDelayMs;
@@ -64,7 +64,7 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
     if (!data.hasKey("type")) {
       throw new IllegalArgumentException("Missing interpolation type.");
     }
-    mInterpolator = getInterpolator(InterpolatorType.fromString(data.getString("type")));
+    mInterpolator = getInterpolator(InterpolatorType.fromString(data.getString("type")), data);
 
     if (!isValid()) {
       throw new IllegalViewOperationException("Invalid layout animation : " + data);
@@ -100,8 +100,13 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
     return animation;
   }
 
-  private static Interpolator getInterpolator(InterpolatorType type) {
-    Interpolator interpolator = INTERPOLATOR.get(type);
+  private static Interpolator getInterpolator(InterpolatorType type, ReadableMap params) {
+     Interpolator interpolator;
+     if (type.equals(InterpolatorType.SPRING)) {
+       interpolator = new SimpleSpringInterpolator(SimpleSpringInterpolator.getSpringDamping(params));
+     } else {
+       interpolator = INTERPOLATOR.get(type);
+     }
     if (interpolator == null) {
       throw new IllegalArgumentException("Missing interpolator for type : " + type);
     }
