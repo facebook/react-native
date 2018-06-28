@@ -16,7 +16,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
@@ -76,21 +75,11 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
     // Exactly one of the two is null
     private final @Nullable android.app.FragmentManager mFragmentManager;
-    private final @Nullable android.support.v4.app.FragmentManager mSupportFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    private boolean isUsingSupportLibrary() {
-      return mSupportFragmentManager != null;
-    }
-
-    public FragmentManagerHelper(android.support.v4.app.FragmentManager supportFragmentManager) {
-      mFragmentManager = null;
-      mSupportFragmentManager = supportFragmentManager;
-    }
     public FragmentManagerHelper(android.app.FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
-      mSupportFragmentManager = null;
     }
 
     public void showPendingAlert() {
@@ -98,27 +87,16 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       if (mFragmentToShow == null) {
         return;
       }
-      if (isUsingSupportLibrary()) {
-        ((SupportAlertFragment) mFragmentToShow).show(mSupportFragmentManager, FRAGMENT_TAG);
-      } else {
-        ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
-      }
+
+      ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
       mFragmentToShow = null;
     }
 
     private void dismissExisting() {
-      if (isUsingSupportLibrary()) {
-        SupportAlertFragment oldFragment =
-            (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null) {
-          oldFragment.dismiss();
-        }
-      } else {
-        AlertFragment oldFragment =
-            (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null) {
-          oldFragment.dismiss();
-        }
+      AlertFragment oldFragment =
+        (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+      if (oldFragment != null) {
+        oldFragment.dismiss();
       }
     }
 
@@ -130,26 +108,14 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       AlertFragmentListener actionListener =
           actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
 
-      if (isUsingSupportLibrary()) {
-        SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-        if (isInForeground) {
-          if (arguments.containsKey(KEY_CANCELABLE)) {
-            alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-          }
-          alertFragment.show(mSupportFragmentManager, FRAGMENT_TAG);
-        } else {
-          mFragmentToShow = alertFragment;
+      AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
+      if (isInForeground) {
+        if (arguments.containsKey(KEY_CANCELABLE)) {
+          alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
         }
+        alertFragment.show(mFragmentManager, FRAGMENT_TAG);
       } else {
-        AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
-        if (isInForeground) {
-          if (arguments.containsKey(KEY_CANCELABLE)) {
-            alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-          }
-          alertFragment.show(mFragmentManager, FRAGMENT_TAG);
-        } else {
-          mFragmentToShow = alertFragment;
-        }
+        mFragmentToShow = alertFragment;
       }
     }
   }
@@ -276,10 +242,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     if (activity == null) {
       return null;
     }
-    if (activity instanceof FragmentActivity) {
-      return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
-    } else {
-      return new FragmentManagerHelper(activity.getFragmentManager());
-    }
+
+    return new FragmentManagerHelper(activity.getFragmentManager());
   }
 }
