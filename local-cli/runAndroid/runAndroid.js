@@ -349,18 +349,19 @@ function runOnAllDevices(
 }
 
 function startServerInNewWindow(port) {
+  // setup OS-specific filenames and commands
   const isWindows = /^win/.test(process.platform);
-
   const scriptFileExtension = isWindows ? 'bat' : 'command';
-  const scriptFile = `launchPackager.${scriptFileExtension}`;
+  const packagerFileExtension = isWindows ? 'bat' : 'env';
+  const environmentExportCommand = isWindows ? 'set' : 'export';
 
+  const scriptFile = `launchPackager.${scriptFileExtension}`;
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
   const terminal = process.env.REACT_TERMINAL;
 
   // setup the .packager.(env|bat) file to ensure the packager starts on the right port
-  const packagerFileExtension = isWindows ? 'bat' : 'env';
   const packagerFilename = `.packager.${packagerFileExtension}`;
   const packagerEnvFile = path.join(
     __dirname,
@@ -371,7 +372,6 @@ function startServerInNewWindow(port) {
   );
   
   // export|set the RCT_METRO_PORT
-  const environmentExportCommand = isWindows ? 'set' : 'export';
   const content = `${environmentExportCommand} RCT_METRO_PORT=${port}`;
   // ensure we overwrite file by passing the 'w' flag
   fs.writeFileSync(packagerEnvFile, content, {encoding: 'utf8', flag: 'w'});
