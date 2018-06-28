@@ -7,17 +7,9 @@
 
 package com.facebook.react.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Instrumentation.ActivityMonitor;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentFilter.MalformedMimeTypeException;
-import android.support.v4.app.DialogFragment;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
