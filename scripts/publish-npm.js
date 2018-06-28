@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -62,17 +63,24 @@ if (buildBranch.indexOf('-stable') !== -1) {
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
-const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {silent: true})
+const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
+  silent: true,
+})
   .stdout.split(/\s/)
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
-  .filter(version => !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0)
+  .filter(
+    version =>
+      !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0,
+  )
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
   .filter(version => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
   .map(version => version.slice('refs/tags/'.length));
 
 if (tagsWithVersion.length === 0) {
-  echo('Error: Can\'t find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit');
+  echo(
+    "Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit",
+  );
   exit(1);
 }
 let releaseVersion;
@@ -88,7 +96,7 @@ if (tagsWithVersion[0].indexOf('-rc') === -1) {
 
 // -------- Generating Android Artifacts with JavaDoc
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Couldn\'t generate artifacts');
+  echo("Couldn't generate artifacts");
   exit(1);
 }
 
@@ -97,12 +105,17 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
+let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 
-artifacts.forEach((name) => {
-  if (!test('-e', `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
+artifacts.forEach(name => {
+  if (
+    !test(
+      '-e',
+      `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+    )
+  ) {
     echo(`file ${name} was not generated`);
     exit(1);
   }

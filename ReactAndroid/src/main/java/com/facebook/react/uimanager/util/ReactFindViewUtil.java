@@ -1,17 +1,20 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager.util;
 
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.R;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Finds views in React Native view hierarchies
@@ -19,6 +22,8 @@ import com.facebook.react.R;
 public class ReactFindViewUtil {
 
   private static final List<OnViewFoundListener> mOnViewFoundListeners = new ArrayList<>();
+  private static final Map<OnMultipleViewsFoundListener, Set<String>>
+      mOnMultipleViewsFoundListener = new HashMap<>();
 
   /**
    * Callback to be invoked when a react native view has been found
@@ -35,6 +40,18 @@ public class ReactFindViewUtil {
      * @param view
      */
     void onViewFound(View view);
+  }
+
+  /**
+   * Callback to be invoked when all react native views with geiven NativeIds have been found
+   */
+  public interface OnMultipleViewsFoundListener{
+
+    void onViewFound(View view, String nativeId);
+    /**
+     * Called when all teh views have been found
+     * @param map
+     */
   }
 
   /**
@@ -90,6 +107,14 @@ public class ReactFindViewUtil {
     mOnViewFoundListeners.remove(onViewFoundListener);
   }
 
+  public static void addViewsListener(OnMultipleViewsFoundListener listener, Set<String> ids) {
+    mOnMultipleViewsFoundListener.put(listener, ids);
+  }
+
+  public static void removeViewsListener(OnMultipleViewsFoundListener listener) {
+    mOnMultipleViewsFoundListener.remove(listener);
+  }
+
   /**
    * Invokes any listeners that are listening on this {@param view}'s native id
    */
@@ -105,6 +130,13 @@ public class ReactFindViewUtil {
         listener.onViewFound(view);
         iterator.remove();
       }
+    }
+
+    for (Map.Entry<OnMultipleViewsFoundListener, Set<String>> entry : mOnMultipleViewsFoundListener.entrySet()) {
+       Set<String> nativeIds = entry.getValue();
+       if (nativeIds != null && nativeIds.contains(nativeId)) {
+            entry.getKey().onViewFound(view, nativeId);
+       }
     }
   }
 

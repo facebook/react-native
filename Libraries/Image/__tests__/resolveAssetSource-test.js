@@ -1,22 +1,22 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
-var AssetRegistry = require('AssetRegistry');
-var Platform = require('Platform');
-var NativeModules = require('NativeModules');
-var resolveAssetSource = require('../resolveAssetSource');
+const AssetRegistry = require('AssetRegistry');
+const Platform = require('Platform');
+const NativeModules = require('NativeModules');
+const resolveAssetSource = require('../resolveAssetSource');
 
 function expectResolvesAsset(input, expectedSource) {
-  var assetId = AssetRegistry.registerAsset(input);
+  const assetId = AssetRegistry.registerAsset(input);
   expect(resolveAssetSource(assetId)).toEqual(expectedSource);
 }
 
@@ -26,20 +26,22 @@ describe('resolveAssetSource', () => {
   });
 
   it('returns same source for simple static and network images', () => {
-    var source1 = {uri: 'https://www.facebook.com/logo'};
+    const source1 = {uri: 'https://www.facebook.com/logo'};
     expect(resolveAssetSource(source1)).toBe(source1);
 
-    var source2 = {uri: 'logo'};
+    const source2 = {uri: 'logo'};
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 
   it('does not change deprecated assets', () => {
-    expect(resolveAssetSource({
-      deprecated: true,
-      width: 100,
-      height: 200,
-      uri: 'logo',
-    })).toEqual({
+    expect(
+      resolveAssetSource({
+        deprecated: true,
+        width: 100,
+        height: 200,
+        uri: 'logo',
+      }),
+    ).toEqual({
       deprecated: true,
       width: 100,
       height: 200,
@@ -55,51 +57,57 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'http://10.0.0.1:8081/main.bundle';
+      NativeModules.SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';
       Platform.OS = 'ios';
     });
 
     it('uses network image', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/module/a',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: 'logo',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/module/a',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri:
+            'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
+          scale: 1,
+        },
+      );
     });
 
     it('picks matching scale', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/module/a',
-        width: 100,
-        height: 200,
-        scales: [1, 2, 3],
-        hash: '5b6f00f',
-        name: 'logo',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
-        scale: 2,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/module/a',
+          width: 100,
+          height: 200,
+          scales: [1, 2, 3],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri:
+            'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+          scale: 2,
+        },
+      );
     });
-
   });
 
   describe('bundle was loaded from file on iOS', () => {
@@ -110,23 +118,26 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses pre-packed image', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/module/a',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: 'logo',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'file:///Path/To/Sample.app/assets/module/a/logo.png',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/module/a',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'file:///Path/To/Sample.app/assets/module/a/logo.png',
+          scale: 1,
+        },
+      );
     });
   });
 
@@ -138,23 +149,26 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses pre-packed image', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/AwesomeModule/Subdir',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: '!@Logo#1_\u20ac', // Invalid chars shouldn't get passed to native
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'awesomemodule_subdir_logo1_',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/AwesomeModule/Subdir',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: '!@Logo#1_\u20ac', // Invalid chars shouldn't get passed to native
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'awesomemodule_subdir_logo1_',
+          scale: 1,
+        },
+      );
     });
   });
 
@@ -166,23 +180,27 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses pre-packed image', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/AwesomeModule/Subdir',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: '!@Logo#1_\u20ac',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/AwesomeModule/Subdir',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: '!@Logo#1_\u20ac',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri:
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+          scale: 1,
+        },
+      );
     });
   });
 
@@ -194,23 +212,27 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses sideloaded image', () => {
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/AwesomeModule/Subdir',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: '!@Logo#1_\u20ac',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/AwesomeModule/Subdir',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: '!@Logo#1_\u20ac',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri:
+            'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+          scale: 1,
+        },
+      );
     });
   });
 
@@ -222,52 +244,57 @@ describe('resolveAssetSource', () => {
     });
 
     it('uses bundled source, event when js is sideloaded', () => {
-      resolveAssetSource.setCustomSourceTransformer(
-        (resolver) => resolver.resourceIdentifierWithoutScale(),
+      resolveAssetSource.setCustomSourceTransformer(resolver =>
+        resolver.resourceIdentifierWithoutScale(),
       );
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/AwesomeModule/Subdir',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: '!@Logo#1_\u20ac',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'awesomemodule_subdir_logo1_',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/AwesomeModule/Subdir',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: '!@Logo#1_\u20ac',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'awesomemodule_subdir_logo1_',
+          scale: 1,
+        },
+      );
     });
 
     it('allows any customization', () => {
-      resolveAssetSource.setCustomSourceTransformer(
-        (resolver) => resolver.fromSource('TEST')
+      resolveAssetSource.setCustomSourceTransformer(resolver =>
+        resolver.fromSource('TEST'),
       );
-      expectResolvesAsset({
-        __packager_asset: true,
-        fileSystemLocation: '/root/app/module/a',
-        httpServerLocation: '/assets/AwesomeModule/Subdir',
-        width: 100,
-        height: 200,
-        scales: [1],
-        hash: '5b6f00f',
-        name: '!@Logo#1_\u20ac',
-        type: 'png',
-      }, {
-        __packager_asset: true,
-        width: 100,
-        height: 200,
-        uri: 'TEST',
-        scale: 1,
-      });
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/module/a',
+          httpServerLocation: '/assets/AwesomeModule/Subdir',
+          width: 100,
+          height: 200,
+          scales: [1],
+          hash: '5b6f00f',
+          name: '!@Logo#1_\u20ac',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'TEST',
+          scale: 1,
+        },
+      );
     });
   });
-
 });
 
 describe('resolveAssetSource.pickScale', () => {

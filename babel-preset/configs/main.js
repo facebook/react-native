@@ -1,90 +1,118 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
-var resolvePlugins = require('../lib/resolvePlugins');
+const defaultPlugins = [
+  [require('@babel/plugin-transform-block-scoping')],
+  // the flow strip types plugin must go BEFORE class properties!
+  // there'll be a test case that fails if you don't.
+  [require('@babel/plugin-transform-flow-strip-types')],
+  [
+    require('@babel/plugin-proposal-class-properties'),
+    // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
+    {loose: true},
+  ],
+  [require('@babel/plugin-transform-computed-properties')],
+  [require('@babel/plugin-transform-destructuring')],
+  [require('@babel/plugin-transform-function-name')],
+  [require('@babel/plugin-transform-literals')],
+  [require('@babel/plugin-transform-parameters')],
+  [require('@babel/plugin-transform-shorthand-properties')],
+  [require('@babel/plugin-transform-react-jsx')],
+  [require('@babel/plugin-transform-regenerator')],
+  [require('@babel/plugin-transform-sticky-regex')],
+  [require('@babel/plugin-transform-unicode-regex')],
+  [
+    require('@babel/plugin-transform-modules-commonjs'),
+    {
+      strict: false,
+      strictMode: false, // prevent "use strict" injections
+      allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
+    },
+  ],
+];
+
+const es2015ArrowFunctions = [
+  require('@babel/plugin-transform-arrow-functions'),
+];
+const es2015Classes = [require('@babel/plugin-transform-classes')];
+const es2015ForOf = [require('@babel/plugin-transform-for-of'), {loose: true}];
+const es2015Spread = [require('@babel/plugin-transform-spread')];
+const es2015TemplateLiterals = [
+  require('@babel/plugin-transform-template-literals'),
+  {loose: true}, // dont 'a'.concat('b'), just use 'a'+'b'
+];
+const exponentiationOperator = [
+  require('@babel/plugin-transform-exponentiation-operator'),
+];
+const objectAssign = [require('@babel/plugin-transform-object-assign')];
+const objectRestSpread = [require('@babel/plugin-proposal-object-rest-spread')];
+const optionalChaining = [require('@babel/plugin-proposal-optional-chaining')];
+const reactDisplayName = [
+  require('@babel/plugin-transform-react-display-name'),
+];
+const reactJsxSource = [require('@babel/plugin-transform-react-jsx-source')];
+const symbolMember = [require('../transforms/transform-symbol-member')];
 
 const getPreset = (src, options) => {
-  const plugins = [];
   const isNull = src === null || src === undefined;
   const hasClass = isNull || src.indexOf('class') !== -1;
   const hasForOf =
     isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
 
-  plugins.push(
-    'syntax-class-properties',
-    'syntax-trailing-function-commas',
-    'transform-class-properties',
-    'transform-es2015-block-scoping',
-    'transform-es2015-computed-properties',
-    'transform-es2015-destructuring',
-    'transform-es2015-function-name',
-    'transform-es2015-literals',
-    'transform-es2015-parameters',
-    'transform-es2015-shorthand-properties',
-    'transform-flow-strip-types',
-    'transform-react-jsx',
-    'transform-regenerator',
-    [
-      'transform-es2015-modules-commonjs',
-      {strict: false, allowTopLevelThis: true},
-    ]
-  );
+  const extraPlugins = [];
 
-  if (isNull || src.indexOf('async') !== -1 || src.indexOf('await') !== -1) {
-    plugins.push('syntax-async-functions');
-  }
   if (hasClass) {
-    plugins.push('transform-es2015-classes');
+    extraPlugins.push(es2015Classes);
   }
   if (isNull || src.indexOf('=>') !== -1) {
-    plugins.push('transform-es2015-arrow-functions');
-  }
-  if (isNull || src.indexOf('const') !== -1) {
-    plugins.push('check-es2015-constants');
+    extraPlugins.push(es2015ArrowFunctions);
   }
   if (isNull || hasClass || src.indexOf('...') !== -1) {
-    plugins.push('transform-es2015-spread');
-    plugins.push('transform-object-rest-spread');
+    extraPlugins.push(es2015Spread);
+    extraPlugins.push(objectRestSpread);
   }
   if (isNull || src.indexOf('`') !== -1) {
-    plugins.push('transform-es2015-template-literals');
+    extraPlugins.push(es2015TemplateLiterals);
   }
   if (isNull || src.indexOf('**') !== -1) {
-    plugins.push('transform-exponentiation-operator');
+    extraPlugins.push(exponentiationOperator);
   }
   if (isNull || src.indexOf('Object.assign') !== -1) {
-    plugins.push('transform-object-assign');
+    extraPlugins.push(objectAssign);
   }
   if (hasForOf) {
-    plugins.push(['transform-es2015-for-of', {loose: true}]);
+    extraPlugins.push(es2015ForOf);
   }
   if (hasForOf || src.indexOf('Symbol') !== -1) {
-    plugins.push(require('../transforms/transform-symbol-member'));
+    extraPlugins.push(symbolMember);
   }
   if (
     isNull ||
     src.indexOf('React.createClass') !== -1 ||
     src.indexOf('createReactClass') !== -1
   ) {
-    plugins.push('transform-react-display-name');
+    extraPlugins.push(reactDisplayName);
+  }
+  if (isNull || src.indexOf('?.') !== -1) {
+    extraPlugins.push(optionalChaining);
   }
 
   if (options && options.dev) {
-    plugins.push('transform-react-jsx-source');
+    extraPlugins.push(reactJsxSource);
   }
 
   return {
     comments: false,
     compact: true,
-    plugins: resolvePlugins(plugins),
+    plugins: defaultPlugins.concat(extraPlugins),
   };
 };
 

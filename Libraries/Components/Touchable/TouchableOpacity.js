@@ -1,34 +1,46 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableOpacity
- * @noflow
+ * @format
+ * @flow
  */
+
 'use strict';
 
-// Note (avik): add @flow when Flow supports spread properties in propTypes
+const Animated = require('Animated');
+const Easing = require('Easing');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const React = require('React');
+const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
+const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var Animated = require('Animated');
-var Easing = require('Easing');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var TimerMixin = require('react-timer-mixin');
-var Touchable = require('Touchable');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const createReactClass = require('create-react-class');
+const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const flattenStyle = require('flattenStyle');
 
-var createReactClass = require('create-react-class');
-var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var flattenStyle = require('flattenStyle');
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {ViewStyleProp} from 'StyleSheet';
 
 type Event = Object;
 
-var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+type TVProps = $ReadOnly<{|
+  hasTVPreferredFocus?: ?boolean,
+  tvParallaxProperties?: ?Object,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...TouchableWithoutFeedbackProps,
+  ...TVProps,
+  activeOpacity?: ?number,
+  style?: ?ViewStyleProp,
+|}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -118,7 +130,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  *
  */
-var TouchableOpacity = createReactClass({
+const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
   mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
@@ -130,9 +142,7 @@ var TouchableOpacity = createReactClass({
      */
     activeOpacity: PropTypes.number,
     /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
+     * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
@@ -158,23 +168,26 @@ var TouchableOpacity = createReactClass({
     ensurePositiveDelayProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
+  },
+
+  componentDidUpdate: function(prevProps, prevState) {
+    if (this.props.disabled !== prevProps.disabled) {
+      this._opacityInactive(250);
+    }
   },
 
   /**
    * Animate the touchable to a new opacity.
    */
   setOpacityTo: function(value: number, duration: number) {
-    Animated.timing(
-      this.state.anim,
-      {
-        toValue: value,
-        duration: duration,
-        easing: Easing.inOut(Easing.quad),
-        useNativeDriver: true,
-      }
-    ).start();
+    Animated.timing(this.state.anim, {
+      toValue: value,
+      duration: duration,
+      easing: Easing.inOut(Easing.quad),
+      useNativeDriver: true,
+    }).start();
   },
 
   /**
@@ -216,8 +229,9 @@ var TouchableOpacity = createReactClass({
   },
 
   touchableGetLongPressDelayMS: function() {
-    return this.props.delayLongPress === 0 ? 0 :
-      this.props.delayLongPress || 500;
+    return this.props.delayLongPress === 0
+      ? 0
+      : this.props.delayLongPress || 500;
   },
 
   touchableGetPressOutDelayMS: function() {
@@ -229,16 +243,13 @@ var TouchableOpacity = createReactClass({
   },
 
   _opacityInactive: function(duration: number) {
-    this.setOpacityTo(
-      this._getChildStyleOpacityWithDefault(),
-      duration
-    );
+    this.setOpacityTo(this._getChildStyleOpacityWithDefault(), duration);
   },
 
   _getChildStyleOpacityWithDefault: function() {
-   var childStyle = flattenStyle(this.props.style) || {};
-   return childStyle.opacity == undefined ? 1 : childStyle.opacity;
- },
+    const childStyle = flattenStyle(this.props.style) || {};
+    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+  },
 
   render: function() {
     return (
@@ -256,16 +267,21 @@ var TouchableOpacity = createReactClass({
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderTerminationRequest={
+          this.touchableHandleResponderTerminationRequest
+        }
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
-        {Touchable.renderDebugView({color: 'cyan', hitSlop: this.props.hitSlop})}
+        {Touchable.renderDebugView({
+          color: 'cyan',
+          hitSlop: this.props.hitSlop,
+        })}
       </Animated.View>
     );
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableOpacity;

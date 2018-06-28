@@ -1,21 +1,21 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 jest.enableAutomock().unmock('InteractionMixin');
 
 describe('InteractionMixin', () => {
-  var InteractionManager;
-  var InteractionMixin;
-  var component;
+  let InteractionManager;
+  let InteractionMixin;
+  let component;
 
   beforeEach(() => {
     jest.resetModules();
@@ -31,19 +31,19 @@ describe('InteractionMixin', () => {
   });
 
   it('should end interactions', () => {
-    var handle = {};
+    const handle = {};
     component.clearInteractionHandle(handle);
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });
 
   it('should schedule tasks', () => {
-    var task = jest.fn();
+    const task = jest.fn();
     component.runAfterInteractions(task);
     expect(InteractionManager.runAfterInteractions).toBeCalledWith(task);
   });
 
   it('should end unfinished interactions in componentWillUnmount', () => {
-    var handle = component.createInteractionHandle();
+    const handle = component.createInteractionHandle();
     component.componentWillUnmount();
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });

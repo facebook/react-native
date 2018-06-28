@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -85,6 +83,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
+ * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
 @property (nonatomic, weak, readonly) RCTBridge *bridge;
 
@@ -187,7 +186,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_METHOD(js_name, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
-  - (void)method;
+  - (void)method RCT_DYNAMIC;
 
 /**
  * Similar to RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD but lets you set
@@ -199,7 +198,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (returnType)method;
+  - (returnType)method RCT_DYNAMIC;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically

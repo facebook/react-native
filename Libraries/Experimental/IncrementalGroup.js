@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule IncrementalGroup
+ * @format
  * @flow
  */
+
 'use strict';
 
 const Incremental = require('Incremental');
@@ -37,11 +36,9 @@ import type {Props, Context} from 'Incremental';
 class IncrementalGroup extends React.Component<Props & {disabled?: boolean}> {
   context: Context;
   _groupInc: string;
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._groupInc = `g${++_groupCounter}-`;
-    DEBUG && infoLog(
-      'create IncrementalGroup with id ' + this.getGroupId()
-    );
+    DEBUG && infoLog('create IncrementalGroup with id ' + this.getGroupId());
   }
 
   getGroupId(): string {
@@ -68,10 +65,7 @@ class IncrementalGroup extends React.Component<Props & {disabled?: boolean}> {
 
   render(): React.Node {
     return (
-      <Incremental
-        onDone={this.props.onDone}
-        children={this.props.children}
-      />
+      <Incremental onDone={this.props.onDone} children={this.props.children} />
     );
   }
 }

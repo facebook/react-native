@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
 
 rn_robolectric_test(
     name = "modules",
@@ -26,6 +26,7 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/common/network:network"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/jstasks:jstasks"),
+        react_native_target("java/com/facebook/react/modules/blob:blob"),
         react_native_target("java/com/facebook/react/modules/camera:camera"),
         react_native_target("java/com/facebook/react/modules/clipboard:clipboard"),
         react_native_target("java/com/facebook/react/modules/common:common"),

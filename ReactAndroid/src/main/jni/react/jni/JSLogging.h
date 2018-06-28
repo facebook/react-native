@@ -1,17 +1,22 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <JavaScriptCore/JSContextRef.h>
+#include <android/log.h>
+#include <string>
 
 namespace facebook {
 namespace react {
 
-JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception);
+void reactAndroidLoggingHook(
+    const std::string& message,
+    android_LogPriority logLevel);
+void reactAndroidLoggingHook(
+    const std::string& message,
+    unsigned int logLevel);
 
-}}
+} // namespace react
+} // namespace facebook

@@ -1,45 +1,60 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ListView
  * @flow
  * @format
  */
 'use strict';
 
-var ListViewDataSource = require('ListViewDataSource');
-var Platform = require('Platform');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
-var ScrollView = require('ScrollView');
-var ScrollResponder = require('ScrollResponder');
-var StaticRenderer = require('StaticRenderer');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
-var View = require('View');
+const InternalListViewType = require('InternalListViewType');
+const ListViewDataSource = require('ListViewDataSource');
+const Platform = require('Platform');
+const React = require('React');
+const PropTypes = require('prop-types');
+const ReactNative = require('ReactNative');
+const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
+const ScrollView = require('ScrollView');
+const ScrollResponder = require('ScrollResponder');
+const StaticRenderer = require('StaticRenderer');
+const TimerMixin = require('react-timer-mixin');
+const View = require('View');
+const cloneReferencedElement = require('react-clone-referenced-element');
+const createReactClass = require('create-react-class');
+const isEmpty = require('isEmpty');
+const merge = require('merge');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var cloneReferencedElement = require('react-clone-referenced-element');
-var createReactClass = require('create-react-class');
-var isEmpty = require('isEmpty');
-var merge = require('merge');
+import type {Props as ScrollViewProps} from 'ScrollView';
 
-var DEFAULT_PAGE_SIZE = 1;
-var DEFAULT_INITIAL_ROWS = 10;
-var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
-var DEFAULT_END_REACHED_THRESHOLD = 1000;
-var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+const DEFAULT_PAGE_SIZE = 1;
+const DEFAULT_INITIAL_ROWS = 10;
+const DEFAULT_SCROLL_RENDER_AHEAD = 1000;
+const DEFAULT_END_REACHED_THRESHOLD = 1000;
+const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+
+type Props = $ReadOnly<{|
+  ...ScrollViewProps,
+
+  dataSource: ListViewDataSource,
+  renderSeparator?: ?Function,
+  renderRow: Function,
+  initialListSize?: ?number,
+  onEndReached?: ?Function,
+  onEndReachedThreshold?: ?number,
+  pageSize?: ?number,
+  renderFooter?: ?Function,
+  renderHeader?: ?Function,
+  renderSectionHeader?: ?Function,
+  renderScrollComponent?: ?Function,
+  scrollRenderAheadDistance?: ?number,
+  onChangeVisibleRows?: ?Function,
+  removeClippedSubviews?: ?boolean,
+  stickySectionHeadersEnabled?: ?boolean,
+  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  enableEmptySections?: ?boolean,
+|}>;
 
 /**
  * DEPRECATED - use one of the new list components, such as [`FlatList`](docs/flatlist.html)
@@ -98,11 +113,11 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-var ListView = createReactClass({
+const ListView = createReactClass({
   displayName: 'ListView',
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
-  _scrollComponent: (null: any),
+  _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
   _prevRenderedRowsCount: 0,
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
@@ -354,7 +369,7 @@ var ListView = createReactClass({
     return this._scrollComponent.getInnerViewNode();
   },
 
-  componentWillMount: function() {
+  UNSAFE_componentWillMount: function() {
     // this data should never trigger a render pass, so don't put in state
     this.scrollProperties = {
       visibleLength: null,
@@ -375,7 +390,7 @@ var ListView = createReactClass({
     });
   },
 
-  componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
     if (
       this.props.dataSource !== nextProps.dataSource ||
       this.props.initialListSize !== nextProps.initialListSize
@@ -408,28 +423,25 @@ var ListView = createReactClass({
   },
 
   render: function() {
-    var bodyComponents = [];
+    const bodyComponents = [];
 
-    var dataSource = this.props.dataSource;
-    var allRowIDs = dataSource.rowIdentities;
-    var rowCount = 0;
-    var stickySectionHeaderIndices = [];
+    const dataSource = this.props.dataSource;
+    const allRowIDs = dataSource.rowIdentities;
+    let rowCount = 0;
+    const stickySectionHeaderIndices = [];
 
     const {renderSectionHeader} = this.props;
 
-    var header = this.props.renderHeader && this.props.renderHeader();
-    var footer = this.props.renderFooter && this.props.renderFooter();
-    var totalIndex = header ? 1 : 0;
+    const header = this.props.renderHeader && this.props.renderHeader();
+    const footer = this.props.renderFooter && this.props.renderFooter();
+    let totalIndex = header ? 1 : 0;
 
-    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-      var sectionID = dataSource.sectionIdentities[sectionIdx];
-      var rowIDs = allRowIDs[sectionIdx];
+    for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+      const sectionID = dataSource.sectionIdentities[sectionIdx];
+      const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
-          /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
-           * an error found when Flow v0.54 was deployed. To see the error
-           * delete this comment and run Flow. */
-          var warning = require('fbjs/lib/warning');
+          const warning = require('fbjs/lib/warning');
           warning(
             false,
             'In next release empty section headers will be rendered.' +
@@ -437,7 +449,7 @@ var ListView = createReactClass({
           );
           continue;
         } else {
-          var invariant = require('fbjs/lib/invariant');
+          const invariant = require('fbjs/lib/invariant');
           invariant(
             this.props.enableEmptySections,
             "In next release 'enableEmptySections' flag will be deprecated, empty section headers will always be rendered." +
@@ -463,13 +475,13 @@ var ListView = createReactClass({
         }
       }
 
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
-        var rowID = rowIDs[rowIdx];
-        var comboID = sectionID + '_' + rowID;
-        var shouldUpdateRow =
+      for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+        const rowID = rowIDs[rowIdx];
+        const comboID = sectionID + '_' + rowID;
+        const shouldUpdateRow =
           rowCount >= this._prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
-        var row = (
+        const row = (
           <StaticRenderer
             key={'r_' + comboID}
             shouldUpdate={!!shouldUpdateRow}
@@ -489,11 +501,11 @@ var ListView = createReactClass({
           this.props.renderSeparator &&
           (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)
         ) {
-          var adjacentRowHighlighted =
+          const adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID &&
             (this.state.highlightedRow.rowID === rowID ||
               this.state.highlightedRow.rowID === rowIDs[rowIdx + 1]);
-          var separator = this.props.renderSeparator(
+          const separator = this.props.renderSeparator(
             sectionID,
             rowID,
             adjacentRowHighlighted,
@@ -512,7 +524,7 @@ var ListView = createReactClass({
       }
     }
 
-    var {renderScrollComponent, ...props} = this.props;
+    const {renderScrollComponent, ...props} = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
@@ -553,7 +565,7 @@ var ListView = createReactClass({
    */
 
   _measureAndUpdateScrollProps: function() {
-    var scrollComponent = this.getScrollResponder();
+    const scrollComponent = this.getScrollResponder();
     if (!scrollComponent || !scrollComponent.getInnerViewNode) {
       return;
     }
@@ -568,12 +580,12 @@ var ListView = createReactClass({
       );
   },
 
-  _setScrollComponentRef: function(scrollComponent: Object) {
+  _setScrollComponentRef: function(scrollComponent) {
     this._scrollComponent = scrollComponent;
   },
 
   _onContentSizeChange: function(width: number, height: number) {
-    var contentLength = !this.props.horizontal ? height : width;
+    const contentLength = !this.props.horizontal ? height : width;
     if (contentLength !== this.scrollProperties.contentLength) {
       this.scrollProperties.contentLength = contentLength;
       this._updateVisibleRows();
@@ -584,8 +596,8 @@ var ListView = createReactClass({
   },
 
   _onLayout: function(event: Object) {
-    var {width, height} = event.nativeEvent.layout;
-    var visibleLength = !this.props.horizontal ? height : width;
+    const {width, height} = event.nativeEvent.layout;
+    const visibleLength = !this.props.horizontal ? height : width;
     if (visibleLength !== this.scrollProperties.visibleLength) {
       this.scrollProperties.visibleLength = visibleLength;
       this._updateVisibleRows();
@@ -625,7 +637,7 @@ var ListView = createReactClass({
       return;
     }
 
-    var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
+    const distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();
     }
@@ -634,7 +646,7 @@ var ListView = createReactClass({
   _pageInNewRows: function() {
     this.setState(
       (state, props) => {
-        var rowsToRender = Math.min(
+        const rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
           props.enableEmptySections
             ? props.dataSource.getRowAndSectionCount()
@@ -669,32 +681,32 @@ var ListView = createReactClass({
         this._childFrames[newFrame.index] = merge(newFrame);
       });
     }
-    var isVertical = !this.props.horizontal;
-    var dataSource = this.props.dataSource;
-    var visibleMin = this.scrollProperties.offset;
-    var visibleMax = visibleMin + this.scrollProperties.visibleLength;
-    var allRowIDs = dataSource.rowIdentities;
+    const isVertical = !this.props.horizontal;
+    const dataSource = this.props.dataSource;
+    const visibleMin = this.scrollProperties.offset;
+    const visibleMax = visibleMin + this.scrollProperties.visibleLength;
+    const allRowIDs = dataSource.rowIdentities;
 
-    var header = this.props.renderHeader && this.props.renderHeader();
-    var totalIndex = header ? 1 : 0;
-    var visibilityChanged = false;
-    var changedRows = {};
-    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-      var rowIDs = allRowIDs[sectionIdx];
+    const header = this.props.renderHeader && this.props.renderHeader();
+    let totalIndex = header ? 1 : 0;
+    let visibilityChanged = false;
+    const changedRows = {};
+    for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+      const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         continue;
       }
-      var sectionID = dataSource.sectionIdentities[sectionIdx];
+      const sectionID = dataSource.sectionIdentities[sectionIdx];
       if (this.props.renderSectionHeader) {
         totalIndex++;
       }
-      var visibleSection = this._visibleRows[sectionID];
+      let visibleSection = this._visibleRows[sectionID];
       if (!visibleSection) {
         visibleSection = {};
       }
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
-        var rowID = rowIDs[rowIdx];
-        var frame = this._childFrames[totalIndex];
+      for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+        const rowID = rowIDs[rowIdx];
+        const frame = this._childFrames[totalIndex];
         totalIndex++;
         if (
           this.props.renderSeparator &&
@@ -705,9 +717,9 @@ var ListView = createReactClass({
         if (!frame) {
           break;
         }
-        var rowVisible = visibleSection[rowID];
-        var min = isVertical ? frame.y : frame.x;
-        var max = min + (isVertical ? frame.height : frame.width);
+        const rowVisible = visibleSection[rowID];
+        const min = isVertical ? frame.y : frame.x;
+        const max = min + (isVertical ? frame.height : frame.width);
         if ((!min && !max) || min === max) {
           break;
         }
@@ -740,7 +752,7 @@ var ListView = createReactClass({
   },
 
   _onScroll: function(e: Object) {
-    var isVertical = !this.props.horizontal;
+    const isVertical = !this.props.horizontal;
     this.scrollProperties.visibleLength =
       e.nativeEvent.layoutMeasurement[isVertical ? 'height' : 'width'];
     this.scrollProperties.contentLength =
@@ -765,4 +777,4 @@ var ListView = createReactClass({
   },
 });
 
-module.exports = ListView;
+module.exports = ((ListView: any): Class<InternalListViewType<Props>>);

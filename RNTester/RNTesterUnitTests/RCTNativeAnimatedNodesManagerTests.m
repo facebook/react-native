@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -863,6 +861,229 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
   [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
   [_nodesManager handleAnimatedEvent:[self createScrollEventWithTag:viewTag value:10]];
   [_uiManager verify];
+}
+
+/**
+ * Creates a following graph of nodes:
+ * Value(3, initialValue) ----> Style(4) ---> Props(5) ---> View(viewTag)
+ *
+ * Value(3) is set to track Value(1) via Tracking(2) node with the provided animation config
+ */
+- (void)createAnimatedGraphWithTrackingNode:(NSNumber *)viewTag
+                               initialValue:(CGFloat)initialValue
+                            animationConfig:(NSDictionary *)animationConfig
+{
+  [_nodesManager createAnimatedNode:@1
+                             config:@{@"type": @"value", @"value": @(initialValue), @"offset": @0}];
+  [_nodesManager createAnimatedNode:@3
+                             config:@{@"type": @"value", @"value": @(initialValue), @"offset": @0}];
+
+  [_nodesManager createAnimatedNode:@2
+                             config:@{@"type": @"tracking",
+                                      @"animationId": @70,
+                                      @"value": @3,
+                                      @"toValue": @1,
+                                      @"animationConfig": animationConfig}];
+  [_nodesManager createAnimatedNode:@4
+                             config:@{@"type": @"style", @"style": @{@"translateX": @3}}];
+  [_nodesManager createAnimatedNode:@5
+                             config:@{@"type": @"props", @"props": @{@"style": @4}}];
+
+  [_nodesManager connectAnimatedNodes:@1 childTag:@2];
+  [_nodesManager connectAnimatedNodes:@3 childTag:@4];
+  [_nodesManager connectAnimatedNodes:@4 childTag:@5];
+  [_nodesManager connectAnimatedNodeToView:@5 viewTag:viewTag viewName:@"UIView"];
+}
+
+/**
+ * In this test we verify that when value is being tracked we can update destination value in the
+ * middle of ongoing animation and the animation will update and animate to the new spot. This is
+ * tested using simple 5 frame backed timing animation.
+ */
+- (void)testTracking
+{
+  NSArray *frames = @[@0, @0.25, @0.5, @0.75, @1];
+  NSDictionary *animationConfig = @{@"type": @"frames", @"frames": frames};
+  [self createAnimatedGraphWithTrackingNode:@1000 initialValue:0 animationConfig:animationConfig];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                viewName:@"UIView"
+                                                   props:RCTPropChecker(@"translateX", 0)];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+
+  // update "toValue" to 100, we expect tracking animation to animate now from 0 to 100 in 5 steps
+  [_nodesManager setAnimatedNodeValue:@1 value:@100];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  for (NSNumber *frame in frames) {
+    NSNumber *expected = @([frame doubleValue] * 100);
+    [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                  viewName:@"UIView"
+                                                     props:RCTPropChecker(@"translateX", expected)];
+    [_nodesManager stepAnimations:_displayLink];
+    [_uiManager verify];
+  }
+
+  // update "toValue" to 0 but run only two frames from the animation,
+  // we expect tracking animation to animate now from 100 to 75
+  [_nodesManager setAnimatedNodeValue:@1 value:@0];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  for (int i = 0; i < 2; i++) {
+    NSNumber *expected = @(100. * (1. - [frames[i] doubleValue]));
+    [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                  viewName:@"UIView"
+                                                     props:RCTPropChecker(@"translateX", expected)];
+    [_nodesManager stepAnimations:_displayLink];
+    [_uiManager verify];
+  }
+
+  // at this point we expect tracking value to be at 75
+  // we update "toValue" again to 100 and expect the animation to restart from the current place
+  [_nodesManager setAnimatedNodeValue:@1 value:@100];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  for (NSNumber *frame in frames) {
+    NSNumber *expected = @(50. + 50. * [frame doubleValue]);
+    [[_uiManager expect] synchronouslyUpdateViewOnUIThread:@1000
+                                                  viewName:@"UIView"
+                                                     props:RCTPropChecker(@"translateX", expected)];
+    [_nodesManager stepAnimations:_displayLink];
+    [_uiManager verify];
+  }
+
+  [_nodesManager stepAnimations:_displayLink];
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
+/**
+ * In this test we verify that when tracking is set up for a given animated node and when the
+ * animation settles it will not be registered as an active animation and therefore will not
+ * consume resources on running the animation that has already completed. Then we verify that when
+ * the value updates the animation will resume as expected and the complete again when reaches the
+ * end.
+ */
+
+ - (void)testTrackingPausesWhenEndValueIsReached
+{
+  NSArray *frames = @[@0, @0.5, @1];
+  NSDictionary *animationConfig = @{@"type": @"frames", @"frames": frames};
+  [self createAnimatedGraphWithTrackingNode:@1000 initialValue:0 animationConfig:animationConfig];
+
+  [_nodesManager setAnimatedNodeValue:@1 value:@100];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  __block int callCount = 0;
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+    callCount++;
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  for (NSUInteger i = 0; i < frames.count; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+  }
+  [_nodesManager stepAnimations:_displayLink];
+  XCTAssertEqual(callCount, 4);
+
+  // the animation has completed, we expect no updates to be done
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+    XCTFail("Expected not to be called");
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+
+  // restore rejected method, we will use it later on
+  callCount = 0;
+  [[[_uiManager stub] andDo:^(NSInvocation* __unused invocation) {
+    callCount++;
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  // we update end value and expect the animation to restart
+  [_nodesManager setAnimatedNodeValue:@1 value:@200];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  for (NSUInteger i = 0; i < frames.count; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+  }
+  [_nodesManager stepAnimations:_displayLink];
+  XCTAssertEqual(callCount, 4);
+
+  // the animation has completed, we expect no updates to be done
+  [[_uiManager reject] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+  [_nodesManager stepAnimations:_displayLink];
+  [_uiManager verify];
+}
+
+/**
+ * In this test we verify that when tracking is configured to use spring animation and when the
+ * destination value updates the current speed of the animated value will be taken into account
+ * while updating the spring animation and it will smoothly transition to the new end value.
+ */
+- (void) testSpringTrackingRetainsSpeed
+{
+  // this spring config correspomds to tension 20 and friction 0.5 which makes the spring settle
+  // very slowly
+  NSDictionary *springConfig = @{@"type": @"spring",
+                                 @"restSpeedThreshold": @0.001,
+                                 @"mass": @1,
+                                 @"restDisplacementThreshold": @0.001,
+                                 @"initialVelocity": @0.5,
+                                 @"damping": @2.5,
+                                 @"stiffness": @157.8,
+                                 @"overshootClamping": @NO};
+  [self createAnimatedGraphWithTrackingNode:@1000 initialValue:0 animationConfig:springConfig];
+
+  __block CGFloat lastTranslateX = 0;
+  [[[_uiManager stub] andDo:^(NSInvocation *invocation) {
+    __unsafe_unretained NSDictionary *props = nil;
+    [invocation getArgument:&props atIndex:4];
+    lastTranslateX = [props[@"translateX"] doubleValue];
+  }] synchronouslyUpdateViewOnUIThread:OCMOCK_ANY viewName:OCMOCK_ANY props:OCMOCK_ANY];
+
+  // update "toValue" to 1, we expect tracking animation to animate now from 0 to 1
+  [_nodesManager setAnimatedNodeValue:@1 value:@1];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  // we run several steps of animation until the value starts bouncing, has negative speed and
+  // passes the final point (that is 1) while going backwards
+  BOOL isBoucingBack = NO;
+  CGFloat previousValue = 0;
+  for (int maxFrames = 500; maxFrames > 0; maxFrames--) {
+    [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+    if (previousValue >= 1. && lastTranslateX < 1.) {
+      isBoucingBack = YES;
+      break;
+    }
+    previousValue = lastTranslateX;
+  }
+  XCTAssert(isBoucingBack);
+
+  // we now update "toValue" to 1.5 but since the value have negative speed and has also pretty
+  // low friction we expect it to keep going in the opposite direction for a few more frames
+  [_nodesManager setAnimatedNodeValue:@1 value:@1.5];
+  [_nodesManager stepAnimations:_displayLink]; // kick off the tracking
+
+  int bounceBackInitialFrames = 0;
+  BOOL hasTurnedForward = NO;
+
+  // we run 8 seconds of animation
+  for (int i = 0; i < 8 * 60; i++) {
+    [_nodesManager stepAnimations:_displayLink];
+    if (!hasTurnedForward) {
+      if (lastTranslateX <= previousValue) {
+        bounceBackInitialFrames++;
+      } else {
+        hasTurnedForward = true;
+      }
+    }
+    previousValue = lastTranslateX;
+  }
+  XCTAssert(hasTurnedForward);
+  XCTAssertGreaterThan(bounceBackInitialFrames, 3);
+  XCTAssertEqual(lastTranslateX, 1.5);
 }
 
 @end

@@ -14,7 +14,7 @@ There are many ways to contribute to React Native, and many of them do not invol
 * Simply start using React Native. Go through the [Getting Started](https://facebook.github.io/react-native/docs/getting-started.html) guide. Does everything work as expected? If not, we're always looking for improvements. Let us know by [opening an issue](https://facebook.github.io/react-native/docs/contributing.html#reporting-new-issues).
 * Look through the [open issues](https://github.com/facebook/react-native/issues). Provide workarounds, ask for clarification, or suggest labels. Help [triage issues](https://facebook.github.io/react-native/docs/contributing.html#triaging-issues-and-pull-requests).
 * If you find an issue you would like to fix, [open a pull request](https://facebook.github.io/react-native/docs/contributing.html#your-first-pull-request). Issues tagged as [_Good first issue_](https://github.com/facebook/react-native/labels/Good%20first%20issue) are a good place to get started.
-* Read through the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). If you find anything that is confusing or can be improved, you can make edits by clicking "Improve this page" at the bottom of most docs.
+* Read through the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). If you find anything that is confusing or can be improved, you can make edits by clicking the "EDIT" button in the top-right corner of most docs.
 * Browse [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native) and answer questions. This will help you get familiarized with common pitfalls or misunderstandings, which can be useful when contributing updates to the documentation.
 * Take a look at the [features requested](https://react-native.canny.io/feature-requests) by others in the community and consider opening a pull request if you see something you want to work on.
 
@@ -78,7 +78,7 @@ Working on your first Pull Request? You can learn how from this free video serie
 
 [**How to Contribute to an Open Source Project on GitHub**](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Task) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20first%20issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ### Proposing a change
 
@@ -141,15 +141,11 @@ Copy and paste this to the top of your new file(s):
 ```JS
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 ```
-
-If you've added a new module, add a `@providesModule <moduleName>` at the end of the comment. This will allow the haste package manager to find it.
 
 #### Contributor License Agreement (CLA)
 
@@ -210,5 +206,5 @@ However, there are still some styles that the linter cannot pick up.
 
 ## License
 
-By contributing to React Native, you agree that your contributions will be licensed under its BSD license.
+By contributing to React Native, you agree that your contributions will be licensed under its MIT license.
 <!-- generated_contributing_end -->

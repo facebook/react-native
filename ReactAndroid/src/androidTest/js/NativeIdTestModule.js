@@ -1,12 +1,10 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule NativeIdTestModule
+ * @format
  * @flow
  */
 
@@ -31,18 +29,16 @@ const View = require('View');
  */
 class NativeIdTestApp extends React.Component<{}> {
   render() {
-    const uri = 'data:image/gif;base64,' +
-        'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +
-        'uvUUlvONmOZtfzgFzByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSpa/' +
-        'TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJlZeGl9i2icVqaNVailT6F5' +
-        'iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uisF81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97V' +
-        'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7';
+    const uri =
+      'data:image/gif;base64,' +
+      'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +
+      'uvUUlvONmOZtfzgFzByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSpa/' +
+      'TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJlZeGl9i2icVqaNVailT6F5' +
+      'iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uisF81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97V' +
+      'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7';
     return (
       <View>
-        <Image
-          nativeID="Image"
-          source={{uri: uri}}
-          style={styles.base} />
+        <Image nativeID="Image" source={{uri: uri}} style={styles.base} />
         <Text nativeID="Text">text</Text>
         <TextInput nativeID="TextInput" value="Text input" />
         <TouchableBounce nativeID="TouchableBounce">

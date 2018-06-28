@@ -1,24 +1,27 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
 
 import android.os.Build;
 import android.text.Layout;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -46,7 +49,45 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
         0 : Layout.BREAK_STRATEGY_SIMPLE;
 
+    initMeasureFunction();
+  }
+
+  private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
+    super(node);
+    mMostRecentEventCount = node.mMostRecentEventCount;
+    mText = node.mText;
+    mLocalData = node.mLocalData;
+  }
+
+  @Override
+  protected ReactTextInputShadowNode copy() {
+    return new ReactTextInputShadowNode(this);
+  }
+
+  @Override
+  public ReactTextInputShadowNode mutableCopy(long instanceHandle) {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy(instanceHandle);
+    node.initMeasureFunction();
+    ThemedReactContext themedContext = getThemedContext();
+    if (themedContext != null) {
+      node.setThemedContext(themedContext);
+    }
+    return node;
+  }
+
+  private void initMeasureFunction() {
     setMeasureFunction(this);
+  }
+
+  @Override
+  public ReactTextInputShadowNode mutableCopyWithNewChildren(long instanceHandle) {
+    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
+    node.initMeasureFunction();
+    ThemedReactContext themedContext = getThemedContext();
+    if (themedContext != null) {
+      node.setThemedContext(themedContext);
+    }
+    return node;
   }
 
   @Override
@@ -89,12 +130,24 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mDummyEditText);
 
-    if (mLocalData == null) {
-      // No local data, no intrinsic size.
-      return YogaMeasureOutput.make(0, 0);
+    if (mLocalData != null) {
+      mLocalData.apply(editText);
+    } else {
+      editText.setTextSize(
+          TypedValue.COMPLEX_UNIT_PX,
+          mFontSize == UNSET ?
+              (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
+
+      if (mNumberOfLines != UNSET) {
+        editText.setLines(mNumberOfLines);
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+          editText.getBreakStrategy() != mTextBreakStrategy) {
+        editText.setBreakStrategy(mTextBreakStrategy);
+      }
     }
 
-    mLocalData.apply(editText);
 
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),

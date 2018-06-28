@@ -14,7 +14,6 @@ See the official [React Native website](https://facebook.github.io/react-native/
 Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
 
 - [Getting Started](#getting-started)
-- [Getting Help](#getting-help)
 - [Documentation](#documentation)
 - [Upgrading](#upgrading)
 - [Contributing](#contributing)
@@ -66,13 +65,13 @@ Read our [contributing guide](https://facebook.github.io/react-native/docs/contr
 
 ### Beginner Friendly Bugs
 
-We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20First%20Issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner friendly issues](https://github.com/facebook/react-native/labels/Good%20first%20issue) to help you get your feet wet in the React Native codebase and familiar with our contribution process. This is a great place to get started.
 
 ---
 
 ## License
 
-React Native is [BSD licensed](./LICENSE). We also provide an additional [patent grant](./PATENTS).
+React Native is [MIT licensed](./LICENSE).
 
 React Native documentation is [Creative Commons licensed](./LICENSE-docs).
 

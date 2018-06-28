@@ -1,98 +1,38 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextShadowView.h"
 
-#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
-#import <React/RCTConvert.h>
-#import <React/RCTFont.h>
-#import <React/RCTLog.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
-#import <React/RCTUtils.h>
+#import <yoga/Yoga.h>
 
-#import "RCTRawTextShadowView.h"
+#import "NSTextStorage+FontScaling.h"
 #import "RCTTextView.h"
-#import "RCTMultilineTextInputView.h"
-
-NSString *const RCTIsHighlightedAttributeName = @"IsHighlightedAttributeName";
-NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
-
-static NSString *const kShadowViewAttributeName = @"RCTShadowViewAttributeName";
-
-static CGFloat const kAutoSizeWidthErrorMargin  = 0.05f;
-static CGFloat const kAutoSizeHeightErrorMargin = 0.025f;
-static CGFloat const kAutoSizeGranularity       = 0.001f;
 
 @implementation RCTTextShadowView
 {
-  NSTextStorage *_cachedTextStorage;
-  CGFloat _cachedTextStorageWidth;
-  CGFloat _cachedTextStorageWidthMode;
-  NSAttributedString *_cachedAttributedString;
-  CGFloat _effectiveLetterSpacing;
-  UIUserInterfaceLayoutDirection _cachedLayoutDirection;
+  __weak RCTBridge *_bridge;
+  BOOL _needsUpdateView;
+  NSMapTable<id, NSTextStorage *> *_cachedTextStorages;
 }
 
-static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  RCTTextShadowView *shadowText = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
-  NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width widthMode:widthMode];
-  [shadowText calculateTextFrame:textStorage];
-  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  CGSize computedSize = [layoutManager usedRectForTextContainer:textContainer].size;
-
-  YGSize result;
-  result.width = RCTCeilPixelValue(computedSize.width);
-  if (shadowText->_effectiveLetterSpacing < 0) {
-    result.width -= shadowText->_effectiveLetterSpacing;
+  if (self = [super init]) {
+    _bridge = bridge;
+    _cachedTextStorages = [NSMapTable strongToStrongObjectsMapTable];
+    _needsUpdateView = YES;
+    YGNodeSetMeasureFunc(self.yogaNode, RCTTextShadowViewMeasure);
+    YGNodeSetBaselineFunc(self.yogaNode, RCTTextShadowViewBaseline);
   }
-  result.height = RCTCeilPixelValue(computedSize.height);
-  return result;
-}
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _fontSize = NAN;
-    _letterSpacing = NAN;
-    _isHighlighted = NO;
-    _textDecorationStyle = NSUnderlineStyleSingle;
-    _opacity = 1.0;
-    _cachedTextStorageWidth = -1;
-    _cachedTextStorageWidthMode = -1;
-    _fontSizeMultiplier = 1.0;
-    _textAlign = NSTextAlignmentNatural;
-    _writingDirection = NSWritingDirectionNatural;
-    _cachedLayoutDirection = UIUserInterfaceLayoutDirectionLeftToRight;
-
-     YGNodeSetMeasureFunc(self.yogaNode, RCTMeasure);
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(contentSizeMultiplierDidChange:)
-                                                 name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
-                                               object:nil];
-  }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (NSString *)description
-{
-  NSString *superDescription = super.description;
-  return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; text: %@>", [self attributedString].string];
 }
 
 - (BOOL)isYogaLeafNode
@@ -100,587 +40,342 @@ static YGSize RCTMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, f
   return YES;
 }
 
-- (void)contentSizeMultiplierDidChange:(NSNotification *)note
+- (void)dirtyLayout
 {
+  [super dirtyLayout];
   YGNodeMarkDirty(self.yogaNode);
-  [self dirtyText];
+  [self invalidateCache];
 }
 
-- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties
+- (void)invalidateCache
 {
-  if ([[self reactSuperview] isKindOfClass:[RCTTextShadowView class]]) {
-    return parentProperties;
+  [_cachedTextStorages removeAllObjects];
+  _needsUpdateView = YES;
+}
+
+#pragma mark - RCTUIManagerObserver
+
+- (void)uiManagerWillPerformMounting
+{
+  if (YGNodeIsDirty(self.yogaNode)) {
+    return;
   }
 
-  parentProperties = [super processUpdatedProperties:applierBlocks
-                                    parentProperties:parentProperties];
+  if (!_needsUpdateView) {
+    return;
+  }
+  _needsUpdateView = NO;
 
-  CGFloat availableWidth = self.availableSize.width;
-  NSNumber *parentTag = [[self reactSuperview] reactTag];
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:availableWidth widthMode:YGMeasureModeExactly];
-  CGRect textFrame = [self calculateTextFrame:textStorage];
-  BOOL selectable = _selectable;
-  [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    RCTTextView *view = (RCTTextView *)viewRegistry[self.reactTag];
-    view.textFrame = textFrame;
-    view.textStorage = textStorage;
-    view.selectable = selectable;
+  CGRect contentFrame = self.contentFrame;
+  NSTextStorage *textStorage = [self textStorageAndLayoutManagerThatFitsSize:self.contentFrame.size
+                                                          exclusiveOwnership:YES];
 
-    /**
-     * NOTE: this logic is included to support rich text editing inside multiline
-     * `<TextInput>` controls. It is required in order to ensure that the
-     * textStorage (aka attributed string) is copied over from the RCTTextShadowView
-     * to the RCTTextView view in time to be used to update the editable text content.
-     * TODO: we should establish a delegate relationship betweeen RCTMultilineTextInputView
-     * and its contaned RCTTextView element when they get inserted and get rid of this
-     */
-    UIView *parentView = viewRegistry[parentTag];
-    if ([parentView respondsToSelector:@selector(performTextUpdate)]) {
-      [(RCTMultilineTextInputView *)parentView performTextUpdate];
+  NSNumber *tag = self.reactTag;
+  NSMutableArray<NSNumber *> *descendantViewTags = [NSMutableArray new];
+  [textStorage enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
+                          inRange:NSMakeRange(0, textStorage.length)
+                          options:0
+                       usingBlock:
+   ^(RCTShadowView *shadowView, NSRange range, __unused BOOL *stop) {
+     if (!shadowView) {
+       return;
+     }
+
+     [descendantViewTags addObject:shadowView.reactTag];
+   }
+  ];
+
+  [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    RCTTextView *textView = (RCTTextView *)viewRegistry[tag];
+    if (!textView) {
+      return;
     }
-  }];
 
-  return parentProperties;
-}
-
-- (void)applyLayoutNode:(YGNodeRef)node
-      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-       absolutePosition:(CGPoint)absolutePosition
-{
-  [super applyLayoutNode:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];
-  [self dirtyPropagation];
-}
-
-- (void)applyLayoutToChildren:(YGNodeRef)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition
-{
-  // Run layout on subviews.
-  CGFloat availableWidth = self.availableSize.width;
-  NSTextStorage *textStorage = [self buildTextStorageForWidth:availableWidth widthMode:YGMeasureModeExactly];
-  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-  [layoutManager.textStorage enumerateAttribute:kShadowViewAttributeName inRange:characterRange options:0 usingBlock:^(RCTShadowView *child, NSRange range, BOOL *_) {
-    if (child) {
-      YGNodeRef childNode = child.yogaNode;
-      float width = YGNodeStyleGetWidth(childNode).value;
-      float height = YGNodeStyleGetHeight(childNode).value;
-      if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
-        RCTLogError(@"Views nested within a <Text> must have a width and height");
+    NSMutableArray<UIView *> *descendantViews =
+      [NSMutableArray arrayWithCapacity:descendantViewTags.count];
+    [descendantViewTags enumerateObjectsUsingBlock:^(NSNumber *_Nonnull descendantViewTag, NSUInteger index, BOOL *_Nonnull stop) {
+      UIView *descendantView = viewRegistry[descendantViewTag];
+      if (!descendantView) {
+        return;
       }
-      UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
-      CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
-      CGRect childFrame = {{
-        RCTRoundPixelValue(glyphRect.origin.x),
-        RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - height + font.descender)
-      }, {
-        RCTRoundPixelValue(width),
-        RCTRoundPixelValue(height)
-      }};
 
-      NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
-      BOOL childIsTruncated = NSIntersectionRange(range, truncatedGlyphRange).length != 0;
+      [descendantViews addObject:descendantView];
+    }];
 
-      [child collectUpdatedFrames:viewsWithNewFrame
-                        withFrame:childFrame
-                           hidden:childIsTruncated
-                 absolutePosition:absolutePosition];
-    }
+    // Removing all references to Shadow Views to avoid unnececery retainning.
+    [textStorage removeAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName range:NSMakeRange(0, textStorage.length)];
+
+    [textView setTextStorage:textStorage
+                contentFrame:contentFrame
+             descendantViews:descendantViews];
   }];
 }
 
-- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width widthMode:(YGMeasureMode)widthMode
+- (void)postprocessAttributedText:(NSMutableAttributedString *)attributedText
 {
-  if (
-      _cachedTextStorage &&
-      (width == _cachedTextStorageWidth || (isnan(width) && isnan(_cachedTextStorageWidth))) &&
-      widthMode == _cachedTextStorageWidthMode &&
-      _cachedLayoutDirection == self.layoutDirection
-  ) {
-    return _cachedTextStorage;
+  __block CGFloat maximumLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
+      if (!paragraphStyle) {
+        return;
+      }
+
+      maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
+    }
+  ];
+
+  if (maximumLineHeight == 0) {
+    // `lineHeight` was not specified, nothing to do.
+    return;
   }
+
+  [attributedText beginEditing];
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (!font) {
+        return;
+      }
+
+      if (maximumLineHeight <= font.lineHeight) {
+        return;
+      }
+
+      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.lineHeight / 2.0;
+
+      [attributedText addAttribute:NSBaselineOffsetAttributeName
+                             value:@(baseLineOffset)
+                             range:range];
+     }
+   ];
+
+   [attributedText endEditing];
+}
+
+- (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
+{
+  NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithAttributedString:[self attributedTextWithBaseTextAttributes:nil]];
+
+  [attributedText beginEditing];
+
+  [attributedText enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
+                               inRange:NSMakeRange(0, attributedText.length)
+                               options:0
+                            usingBlock:
+    ^(RCTShadowView *shadowView, NSRange range, __unused BOOL *stop) {
+      if (!shadowView) {
+        return;
+      }
+
+      CGSize fittingSize = [shadowView sizeThatFitsMinimumSize:CGSizeZero
+                                                   maximumSize:size];
+      NSTextAttachment *attachment = [NSTextAttachment new];
+      attachment.bounds = (CGRect){CGPointZero, fittingSize};
+      [attributedText addAttribute:NSAttachmentAttributeName value:attachment range:range];
+    }
+  ];
+
+  [attributedText endEditing];
+
+  return [attributedText copy];
+}
+
+- (NSTextStorage *)textStorageAndLayoutManagerThatFitsSize:(CGSize)size
+                                        exclusiveOwnership:(BOOL)exclusiveOwnership
+{
+  NSValue *key = [NSValue valueWithCGSize:size];
+  NSTextStorage *cachedTextStorage = [_cachedTextStorages objectForKey:key];
+
+  if (cachedTextStorage) {
+    if (exclusiveOwnership) {
+      [_cachedTextStorages removeObjectForKey:key];
+    }
+
+    return cachedTextStorage;
+  }
+
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+
+  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+  textContainer.lineBreakMode =
+    _maximumNumberOfLines > 0 ? _lineBreakMode : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = _maximumNumberOfLines;
 
   NSLayoutManager *layoutManager = [NSLayoutManager new];
+  [layoutManager addTextContainer:textContainer];
 
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:self.attributedString];
+  NSTextStorage *textStorage =
+    [[NSTextStorage alloc] initWithAttributedString:[self attributedTextWithMeasuredAttachmentsThatFitSize:size]];
+
+  [self postprocessAttributedText:textStorage];
+
   [textStorage addLayoutManager:layoutManager];
 
-  NSTextContainer *textContainer = [NSTextContainer new];
-  textContainer.lineFragmentPadding = 0.0;
-
-  if (_numberOfLines > 0) {
-    textContainer.lineBreakMode = _ellipsizeMode;
-  } else {
-    textContainer.lineBreakMode = NSLineBreakByClipping;
+  if (_adjustsFontSizeToFit) {
+    CGFloat minimumFontSize =
+      MAX(_minimumFontScale * (self.textAttributes.effectiveFont.pointSize), 4.0);
+    [textStorage scaleFontSizeToFitSize:size
+                        minimumFontSize:minimumFontSize
+                        maximumFontSize:self.textAttributes.effectiveFont.pointSize];
   }
 
-  textContainer.maximumNumberOfLines = _numberOfLines;
-  textContainer.size = (CGSize){
-    widthMode == YGMeasureModeUndefined || isnan(width) ? CGFLOAT_MAX : width,
-    CGFLOAT_MAX
-  };
-
-  [layoutManager addTextContainer:textContainer];
-  [layoutManager ensureLayoutForTextContainer:textContainer];
-
-  _cachedTextStorageWidth = width;
-  _cachedTextStorageWidthMode = widthMode;
-  _cachedTextStorage = textStorage;
+  if (!exclusiveOwnership) {
+    [_cachedTextStorages setObject:textStorage forKey:key];
+  }
 
   return textStorage;
 }
 
-- (void)dirtyText
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
 {
-  [super dirtyText];
-  _cachedTextStorage = nil;
+  // If the view got new `contentFrame`, we have to redraw it because
+  // and sizes of embedded views may change.
+  if (!CGRectEqualToRect(self.layoutMetrics.contentFrame, layoutMetrics.contentFrame)) {
+    _needsUpdateView = YES;
+  }
+
+  if (self.textAttributes.layoutDirection != layoutMetrics.layoutDirection) {
+    self.textAttributes.layoutDirection = layoutMetrics.layoutDirection;
+    [self invalidateCache];
+  }
+
+  [super layoutWithMetrics:layoutMetrics layoutContext:layoutContext];
 }
 
-- (void)recomputeText
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
 {
-  [self attributedString];
-  [self setTextComputed];
-  [self dirtyPropagation];
-}
+  NSTextStorage *textStorage =
+    [self textStorageAndLayoutManagerThatFitsSize:self.availableSize
+                               exclusiveOwnership:NO];
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
+                                                     actualGlyphRange:NULL];
 
-- (NSAttributedString *)attributedString
-{
-  return [self _attributedStringWithFontFamily:nil
-                                      fontSize:nil
-                                    fontWeight:nil
-                                     fontStyle:nil
-                                 letterSpacing:nil
-                            useBackgroundColor:NO
-                               foregroundColor:self.color ?: [UIColor blackColor]
-                               backgroundColor:self.backgroundColor
-                                       opacity:self.opacity];
-}
-
-- (NSAttributedString *)_attributedStringWithFontFamily:(NSString *)fontFamily
-                                               fontSize:(NSNumber *)fontSize
-                                             fontWeight:(NSString *)fontWeight
-                                              fontStyle:(NSString *)fontStyle
-                                          letterSpacing:(NSNumber *)letterSpacing
-                                     useBackgroundColor:(BOOL)useBackgroundColor
-                                        foregroundColor:(UIColor *)foregroundColor
-                                        backgroundColor:(UIColor *)backgroundColor
-                                                opacity:(CGFloat)opacity
-{
-  if (
-      ![self isTextDirty] &&
-      _cachedAttributedString &&
-      _cachedLayoutDirection == self.layoutDirection
-  ) {
-    return _cachedAttributedString;
-  }
-
-  _cachedLayoutDirection = self.layoutDirection;
-
-  if (_fontSize && !isnan(_fontSize)) {
-    fontSize = @(_fontSize);
-  }
-  if (_fontWeight) {
-    fontWeight = _fontWeight;
-  }
-  if (_fontStyle) {
-    fontStyle = _fontStyle;
-  }
-  if (_fontFamily) {
-    fontFamily = _fontFamily;
-  }
-  if (!isnan(_letterSpacing)) {
-    letterSpacing = @(_letterSpacing);
-  }
-
-  _effectiveLetterSpacing = letterSpacing.doubleValue;
-
-  UIFont *font = [RCTFont updateFont:nil
-                          withFamily:fontFamily
-                                size:fontSize
-                              weight:fontWeight
-                               style:fontStyle
-                             variant:_fontVariant
-                     scaleMultiplier:_allowFontScaling ? _fontSizeMultiplier : 1.0];
-
-  CGFloat heightOfTallestSubview = 0.0;
-  NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
-  for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTTextShadowView class]]) {
-      RCTTextShadowView *shadowText = (RCTTextShadowView *)child;
-      [attributedString appendAttributedString:
-       [shadowText _attributedStringWithFontFamily:fontFamily
-                                          fontSize:fontSize
-                                        fontWeight:fontWeight
-                                         fontStyle:fontStyle
-                                     letterSpacing:letterSpacing
-                                useBackgroundColor:YES
-                                   foregroundColor:shadowText.color ?: foregroundColor
-                                   backgroundColor:shadowText.backgroundColor ?: backgroundColor
-                                           opacity:opacity * shadowText.opacity]];
-      [child setTextComputed];
-    } else if ([child isKindOfClass:[RCTRawTextShadowView class]]) {
-      RCTRawTextShadowView *shadowRawText = (RCTRawTextShadowView *)child;
-      [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:shadowRawText.text ?: @""]];
-      [child setTextComputed];
-    } else {
-      float width = YGNodeStyleGetWidth(child.yogaNode).value;
-      float height = YGNodeStyleGetHeight(child.yogaNode).value;
-      if (YGFloatIsUndefined(width) || YGFloatIsUndefined(height)) {
-        RCTLogError(@"Views nested within a <Text> must have a width and height");
+  [textStorage enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
+                          inRange:characterRange
+                          options:0
+                       usingBlock:
+    ^(RCTShadowView *shadowView, NSRange range, BOOL *stop) {
+      if (!shadowView) {
+        return;
       }
-      NSTextAttachment *attachment = [NSTextAttachment new];
-      attachment.bounds = (CGRect){CGPointZero, {width, height}};
-      NSMutableAttributedString *attachmentString = [NSMutableAttributedString new];
-      [attachmentString appendAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
-      [attachmentString addAttribute:kShadowViewAttributeName value:child range:(NSRange){0, attachmentString.length}];
-      [attributedString appendAttributedString:attachmentString];
-      if (height > heightOfTallestSubview) {
-        heightOfTallestSubview = height;
-      }
-      // Don't call setTextComputed on this child. RCTTextViewManager takes care of
-      // processing inline UIViews.
+
+      CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range
+                                                  inTextContainer:textContainer];
+
+      NSTextAttachment *attachment =
+        [textStorage attribute:NSAttachmentAttributeName atIndex:range.location effectiveRange:nil];
+
+      CGSize attachmentSize = attachment.bounds.size;
+
+      UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+
+      CGRect frame = {{
+        RCTRoundPixelValue(glyphRect.origin.x),
+        RCTRoundPixelValue(glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender)
+      }, {
+        RCTRoundPixelValue(attachmentSize.width),
+        RCTRoundPixelValue(attachmentSize.height)
+      }};
+
+      RCTLayoutContext localLayoutContext = layoutContext;
+      localLayoutContext.absolutePosition.x += frame.origin.x;
+      localLayoutContext.absolutePosition.y += frame.origin.y;
+
+      [shadowView layoutWithMinimumSize:frame.size
+                            maximumSize:frame.size
+                        layoutDirection:self.layoutMetrics.layoutDirection
+                          layoutContext:localLayoutContext];
+
+      // Reinforcing a proper frame origin for the Shadow View.
+      RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
+      localLayoutMetrics.frame.origin = frame.origin;
+      [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
-  }
-
-  [self _addAttribute:NSForegroundColorAttributeName
-            withValue:[foregroundColor colorWithAlphaComponent:CGColorGetAlpha(foregroundColor.CGColor) * opacity]
-   toAttributedString:attributedString];
-
-  if (_isHighlighted) {
-    [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
-  }
-  if (useBackgroundColor && backgroundColor) {
-    [self _addAttribute:NSBackgroundColorAttributeName
-              withValue:[backgroundColor colorWithAlphaComponent:CGColorGetAlpha(backgroundColor.CGColor) * opacity]
-     toAttributedString:attributedString];
-  }
-
-  [self _addAttribute:NSFontAttributeName withValue:font toAttributedString:attributedString];
-  [self _addAttribute:NSKernAttributeName withValue:letterSpacing toAttributedString:attributedString];
-  [self _addAttribute:RCTReactTagAttributeName withValue:self.reactTag toAttributedString:attributedString];
-  [self _setParagraphStyleOnAttributedString:attributedString
-                              fontLineHeight:font.lineHeight
-                      heightOfTallestSubview:heightOfTallestSubview];
-
-  // create a non-mutable attributedString for use by the Text system which avoids copies down the line
-  _cachedAttributedString = [[NSAttributedString alloc] initWithAttributedString:attributedString];
-  YGNodeMarkDirty(self.yogaNode);
-
-  return _cachedAttributedString;
+  ];
 }
 
-- (void)_addAttribute:(NSString *)attribute withValue:(id)attributeValue toAttributedString:(NSMutableAttributedString *)attributedString
+- (CGFloat)lastBaselineForSize:(CGSize)size
 {
-  [attributedString enumerateAttribute:attribute inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (!value && attributeValue) {
-      [attributedString addAttribute:attribute value:attributeValue range:range];
-    }
-  }];
-}
+  NSAttributedString *attributedText =
+    [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
 
-/*
- * LineHeight works the same way line-height works in the web: if children and self have
- * varying lineHeights, we simply take the max.
- */
-- (void)_setParagraphStyleOnAttributedString:(NSMutableAttributedString *)attributedString
-                              fontLineHeight:(CGFloat)fontLineHeight
-                      heightOfTallestSubview:(CGFloat)heightOfTallestSubview
-{
-  __block BOOL hasParagraphStyle = NO;
+  __block CGFloat maximumDescender = 0.0;
 
-  if (_lineHeight != 0.0 || _textAlign != NSTextAlignmentNatural) {
-    hasParagraphStyle = YES;
-  }
-
-  CGFloat fontSizeMultiplier = _allowFontScaling ? _fontSizeMultiplier : 1.0;
-
-  // Text line height
-  __block float compoundLineHeight = _lineHeight * fontSizeMultiplier;
-
-  // Checking for `maximumLineHeight` on each of our children and updating `compoundLineHeight` with the maximum value on the go.
-  [attributedString enumerateAttribute:NSParagraphStyleAttributeName
-                               inRange:(NSRange){0, attributedString.length}
-                               options:0
-                            usingBlock:^(NSParagraphStyle *paragraphStyle, NSRange range, BOOL *stop) {
-
-    if (!paragraphStyle) {
-      return;
-    }
-
-    hasParagraphStyle = YES;
-    compoundLineHeight = MAX(compoundLineHeight, paragraphStyle.maximumLineHeight);
-  }];
-
-  compoundLineHeight = MAX(round(compoundLineHeight), ceilf(heightOfTallestSubview));
-
-  // Text alignment
-  NSTextAlignment textAlign = _textAlign;
-  if (textAlign == NSTextAlignmentRight || textAlign == NSTextAlignmentLeft) {
-    if (_cachedLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
-      if (textAlign == NSTextAlignmentRight) {
-        textAlign = NSTextAlignmentLeft;
-      } else {
-        textAlign = NSTextAlignmentRight;
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (maximumDescender > font.descender) {
+        maximumDescender = font.descender;
       }
     }
-  }
+  ];
 
-  if (hasParagraphStyle) {
-    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    paragraphStyle.alignment = textAlign;
-    paragraphStyle.baseWritingDirection = _writingDirection;
-    paragraphStyle.minimumLineHeight = compoundLineHeight;
-    paragraphStyle.maximumLineHeight = compoundLineHeight;
-    [attributedString addAttribute:NSParagraphStyleAttributeName
-                             value:paragraphStyle
-                             range:(NSRange){0, attributedString.length}];
-
-    if (compoundLineHeight > fontLineHeight) {
-      [attributedString addAttribute:NSBaselineOffsetAttributeName
-                               value:@(compoundLineHeight / 2 - fontLineHeight / 2)
-                               range:(NSRange){0, attributedString.length}];
-    }
-  }
-
-  // Text decoration
-  if (_textDecorationLine == RCTTextDecorationLineTypeUnderline ||
-      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough) {
-    [self _addAttribute:NSUnderlineStyleAttributeName withValue:@(_textDecorationStyle)
-     toAttributedString:attributedString];
-  }
-  if (_textDecorationLine == RCTTextDecorationLineTypeStrikethrough ||
-      _textDecorationLine == RCTTextDecorationLineTypeUnderlineStrikethrough){
-    [self _addAttribute:NSStrikethroughStyleAttributeName withValue:@(_textDecorationStyle)
-     toAttributedString:attributedString];
-  }
-  if (_textDecorationColor) {
-    [self _addAttribute:NSStrikethroughColorAttributeName withValue:_textDecorationColor
-     toAttributedString:attributedString];
-    [self _addAttribute:NSUnderlineColorAttributeName withValue:_textDecorationColor
-     toAttributedString:attributedString];
-  }
-
-  // Text shadow
-  if (!CGSizeEqualToSize(_textShadowOffset, CGSizeZero)) {
-    NSShadow *shadow = [NSShadow new];
-    shadow.shadowOffset = _textShadowOffset;
-    shadow.shadowBlurRadius = _textShadowRadius;
-    shadow.shadowColor = _textShadowColor;
-    [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
-  }
+  return size.height + maximumDescender;
 }
 
-#pragma mark Autosizing
-
-- (CGRect)calculateTextFrame:(NSTextStorage *)textStorage
+static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 {
-  CGRect textFrame = UIEdgeInsetsInsetRect((CGRect){CGPointZero, self.frame.size},
-                                           self.compoundInsets);
+  CGSize maximumSize = (CGSize){
+    widthMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(width),
+    heightMode == YGMeasureModeUndefined ? CGFLOAT_MAX : RCTCoreGraphicsFloatFromYogaFloat(height),
+  };
 
-  if (_adjustsFontSizeToFit) {
-    textFrame = [self updateStorage:textStorage toFitFrame:textFrame];
+  RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
+
+  NSTextStorage *textStorage =
+    [shadowTextView textStorageAndLayoutManagerThatFitsSize:maximumSize
+                                         exclusiveOwnership:NO];
+
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  CGFloat letterSpacing = shadowTextView.textAttributes.letterSpacing;
+  if (!isnan(letterSpacing) && letterSpacing < 0) {
+    size.width -= letterSpacing;
   }
 
-  return textFrame;
+  size = (CGSize){
+    MIN(RCTCeilPixelValue(size.width), maximumSize.width),
+    MIN(RCTCeilPixelValue(size.height), maximumSize.height)
+  };
+
+  // Adding epsilon value illuminates problems with converting values from
+  // `double` to `float`, and then rounding them to pixel grid in Yoga.
+  CGFloat epsilon = 0.001;
+  return (YGSize){
+    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
+  };
 }
 
-- (CGRect)updateStorage:(NSTextStorage *)textStorage toFitFrame:(CGRect)frame
+static float RCTTextShadowViewBaseline(YGNodeRef node, const float width, const float height)
 {
-  BOOL fits = [self attemptScale:1.0f
-                       inStorage:textStorage
-                        forFrame:frame];
-  CGSize requiredSize;
-  if (!fits) {
-    requiredSize = [self calculateOptimumScaleInFrame:frame
-                                           forStorage:textStorage
-                                             minScale:self.minimumFontScale
-                                             maxScale:1.0
-                                              prevMid:INT_MAX];
-  } else {
-    requiredSize = [self calculateSize:textStorage];
-  }
+  RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
 
-  // Vertically center draw position for new text sizing.
-  frame.origin.y = self.compoundInsets.top + RCTRoundPixelValue((CGRectGetHeight(frame) - requiredSize.height) / 2.0f);
-  return frame;
-}
+  CGSize size = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(width),
+    RCTCoreGraphicsFloatFromYogaFloat(height)
+  };
 
-- (CGSize)calculateOptimumScaleInFrame:(CGRect)frame
-                            forStorage:(NSTextStorage *)textStorage
-                              minScale:(CGFloat)minScale
-                              maxScale:(CGFloat)maxScale
-                               prevMid:(CGFloat)prevMid
-{
-  CGFloat midScale = (minScale + maxScale) / 2.0f;
-  if (round((prevMid / kAutoSizeGranularity)) == round((midScale / kAutoSizeGranularity))) {
-    //Bail because we can't meet error margin.
-    return [self calculateSize:textStorage];
-  } else {
-    RCTSizeComparison comparison = [self attemptScale:midScale
-                                            inStorage:textStorage
-                                             forFrame:frame];
-    if (comparison == RCTSizeWithinRange) {
-      return [self calculateSize:textStorage];
-    } else if (comparison == RCTSizeTooLarge) {
-      return [self calculateOptimumScaleInFrame:frame
-                                     forStorage:textStorage
-                                       minScale:minScale
-                                       maxScale:midScale - kAutoSizeGranularity
-                                        prevMid:midScale];
-    } else {
-      return [self calculateOptimumScaleInFrame:frame
-                                     forStorage:textStorage
-                                       minScale:midScale + kAutoSizeGranularity
-                                       maxScale:maxScale
-                                        prevMid:midScale];
-    }
-  }
-}
+  CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
 
-- (RCTSizeComparison)attemptScale:(CGFloat)scale
-                        inStorage:(NSTextStorage *)textStorage
-                         forFrame:(CGRect)frame
-{
-  NSLayoutManager *layoutManager = [textStorage.layoutManagers firstObject];
-  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
-
-  NSRange glyphRange = NSMakeRange(0, textStorage.length);
-  [textStorage beginEditing];
-  [textStorage enumerateAttribute:NSFontAttributeName
-                           inRange:glyphRange
-                           options:0
-                        usingBlock:^(UIFont *font, NSRange range, BOOL *stop)
-   {
-     if (font) {
-       UIFont *originalFont = [self.attributedString attribute:NSFontAttributeName
-                                                       atIndex:range.location
-                                                effectiveRange:&range];
-       UIFont *newFont = [font fontWithSize:originalFont.pointSize * scale];
-       [textStorage removeAttribute:NSFontAttributeName range:range];
-       [textStorage addAttribute:NSFontAttributeName value:newFont range:range];
-     }
-   }];
-
-  [textStorage endEditing];
-
-  NSInteger linesRequired = [self numberOfLinesRequired:[textStorage.layoutManagers firstObject]];
-  CGSize requiredSize = [self calculateSize:textStorage];
-
-  BOOL fitSize = requiredSize.height <= CGRectGetHeight(frame) &&
-  requiredSize.width <= CGRectGetWidth(frame);
-
-  BOOL fitLines = linesRequired <= textContainer.maximumNumberOfLines ||
-  textContainer.maximumNumberOfLines == 0;
-
-  if (fitLines && fitSize) {
-    if ((requiredSize.width + (CGRectGetWidth(frame) * kAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame) &&
-        (requiredSize.height + (CGRectGetHeight(frame) * kAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame))
-    {
-      return RCTSizeWithinRange;
-    } else {
-      return RCTSizeTooSmall;
-    }
-  } else {
-    return RCTSizeTooLarge;
-  }
-}
-
-// Via Apple Text Layout Programming Guide
-// https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/TextLayout/Tasks/CountLines.html
-- (NSInteger)numberOfLinesRequired:(NSLayoutManager *)layoutManager
-{
-  NSInteger numberOfLines, index, numberOfGlyphs = [layoutManager numberOfGlyphs];
-  NSRange lineRange;
-  for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-    (void) [layoutManager lineFragmentRectForGlyphAtIndex:index
-                                           effectiveRange:&lineRange];
-    index = NSMaxRange(lineRange);
-  }
-
-  return numberOfLines;
-}
-
-// Via Apple Text Layout Programming Guide
-//https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/TextLayout/Tasks/StringHeight.html
-- (CGSize)calculateSize:(NSTextStorage *)storage
-{
-  NSLayoutManager *layoutManager = [storage.layoutManagers firstObject];
-  NSTextContainer *textContainer = [layoutManager.textContainers firstObject];
-
-  [textContainer setLineBreakMode:NSLineBreakByWordWrapping];
-  NSInteger maxLines = [textContainer maximumNumberOfLines];
-  [textContainer setMaximumNumberOfLines:0];
-  (void) [layoutManager glyphRangeForTextContainer:textContainer];
-  CGSize requiredSize = [layoutManager usedRectForTextContainer:textContainer].size;
-  [textContainer setMaximumNumberOfLines:maxLines];
-
-  return requiredSize;
-}
-
-#define RCT_TEXT_PROPERTY(setProp, ivar, type) \
-- (void)set##setProp:(type)value;              \
-{                                              \
-  ivar = value;                                \
-  [self dirtyText];                            \
-}
-
-RCT_TEXT_PROPERTY(AdjustsFontSizeToFit, _adjustsFontSizeToFit, BOOL)
-RCT_TEXT_PROPERTY(Color, _color, UIColor *)
-RCT_TEXT_PROPERTY(FontFamily, _fontFamily, NSString *)
-RCT_TEXT_PROPERTY(FontSize, _fontSize, CGFloat)
-RCT_TEXT_PROPERTY(FontWeight, _fontWeight, NSString *)
-RCT_TEXT_PROPERTY(FontStyle, _fontStyle, NSString *)
-RCT_TEXT_PROPERTY(FontVariant, _fontVariant, NSArray *)
-RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
-RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
-RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
-RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
-RCT_TEXT_PROPERTY(EllipsizeMode, _ellipsizeMode, NSLineBreakMode)
-RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
-RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
-RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
-RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
-RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
-RCT_TEXT_PROPERTY(Opacity, _opacity, CGFloat)
-RCT_TEXT_PROPERTY(TextShadowOffset, _textShadowOffset, CGSize);
-RCT_TEXT_PROPERTY(TextShadowRadius, _textShadowRadius, CGFloat);
-RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *);
-
-- (void)setAllowFontScaling:(BOOL)allowFontScaling
-{
-  _allowFontScaling = allowFontScaling;
-  for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTTextShadowView class]]) {
-      ((RCTTextShadowView *)child).allowFontScaling = allowFontScaling;
-    }
-  }
-  [self dirtyText];
-}
-
-- (void)setFontSizeMultiplier:(CGFloat)fontSizeMultiplier
-{
-  _fontSizeMultiplier = fontSizeMultiplier;
-  if (_fontSizeMultiplier == 0) {
-    RCTLogError(@"fontSizeMultiplier value must be > zero.");
-    _fontSizeMultiplier = 1.0;
-  }
-  for (RCTShadowView *child in [self reactSubviews]) {
-    if ([child isKindOfClass:[RCTTextShadowView class]]) {
-      ((RCTTextShadowView *)child).fontSizeMultiplier = fontSizeMultiplier;
-    }
-  }
-  [self dirtyText];
-}
-
-- (void)setMinimumFontScale:(CGFloat)minimumFontScale
-{
-  if (minimumFontScale >= 0.01) {
-    _minimumFontScale = minimumFontScale;
-  }
-  [self dirtyText];
+  return RCTYogaFloatFromCoreGraphicsFloat(lastBaseline);
 }
 
 @end

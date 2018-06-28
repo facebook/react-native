@@ -1,23 +1,23 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "FBJNI_TARGET", "IS_OSS_BUILD", "cxx_library")
 
 # This target is only used in open source
 if IS_OSS_BUILD:
-  fb_xplat_cxx_library(
-    name = 'jni',
-    soname = 'libyoga.$(ext)',
-    srcs = glob(['jni/*.cpp']),
-    header_namespace = '',
-    compiler_flags = [
-      '-fno-omit-frame-pointer',
-      '-fexceptions',
-      '-Wall',
-      '-Werror',
-      '-O3',
-      '-std=c++11',
-    ],
-    deps = [
-      '//ReactCommon/yoga:yoga',
-      FBJNI_TARGET,
-    ],
-    visibility = ['PUBLIC'],
-  )
+    cxx_library(
+        name = "jni",
+        soname = "libyoga.$(ext)",
+        srcs = glob(["jni/*.cpp"]),
+        header_namespace = "",
+        compiler_flags = [
+            "-fno-omit-frame-pointer",
+            "-fexceptions",
+            "-Wall",
+            "-Werror",
+            "-O3",
+            "-std=c++11",
+        ],
+        deps = [
+            "//ReactCommon/yoga:yoga",
+            FBJNI_TARGET,
+        ],
+        visibility = ["PUBLIC"],
+    )

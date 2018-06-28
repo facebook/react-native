@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -77,14 +80,6 @@ public:
     const double callbackId,
     const folly::dynamic& arguments) override;
 
-  template <typename T>
-  Value callFunctionSync(
-      const std::string& module, const std::string& method, T&& args) {
-    return callFunctionSyncWithValue(
-      module, method, JSCValueEncoder<typename std::decay<T>::type>::toJSCValue(
-        m_context, std::forward<T>(args)));
-  }
-
   virtual void setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
@@ -95,9 +90,7 @@ public:
 
   virtual bool isInspectable() override;
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
   virtual void handleMemoryPressure(int pressureLevel) override;
-#endif
 
   virtual void destroy() override;
 
@@ -120,9 +113,6 @@ private:
 
   void initOnJSVMThread() throw(JSException);
   static bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
-  // This method is experimental, and may be modified or removed.
-  Value callFunctionSyncWithValue(
-    const std::string& module, const std::string& method, Value value);
   void terminateOnJSVMThread();
   void bindBridge() throw(JSException);
   void callNativeModules(Value&&);
@@ -134,6 +124,7 @@ private:
 
   template<JSValueRef (JSCExecutor::*method)(size_t, const JSValueRef[])>
   void installNativeHook(const char* name);
+
   JSValueRef getNativeModule(JSObjectRef object, JSStringRef propertyName);
 
   JSValueRef nativeRequire(

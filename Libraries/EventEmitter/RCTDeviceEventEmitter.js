@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTDeviceEventEmitter
+ * @format
  * @flow
  */
+
 'use strict';
 
 const EventEmitter = require('EventEmitter');
@@ -19,13 +18,25 @@ import type EmitterSubscription from 'EmitterSubscription';
 function checkNativeEventModule(eventType: ?string) {
   if (eventType) {
     if (eventType.lastIndexOf('statusBar', 0) === 0) {
-      throw new Error('`' + eventType + '` event should be registered via the StatusBarIOS module');
+      throw new Error(
+        '`' +
+          eventType +
+          '` event should be registered via the StatusBarIOS module',
+      );
     }
     if (eventType.lastIndexOf('keyboard', 0) === 0) {
-      throw new Error('`' + eventType + '` event should be registered via the Keyboard module');
+      throw new Error(
+        '`' +
+          eventType +
+          '` event should be registered via the Keyboard module',
+      );
     }
     if (eventType === 'appStateDidChange' || eventType === 'memoryWarning') {
-      throw new Error('`' + eventType + '` event should be registered via the AppState module');
+      throw new Error(
+        '`' +
+          eventType +
+          '` event should be registered via the AppState module',
+      );
     }
   }
 }
@@ -35,7 +46,6 @@ function checkNativeEventModule(eventType: ?string) {
  * adding all event listeners directly to RCTDeviceEventEmitter.
  */
 class RCTDeviceEventEmitter extends EventEmitter {
-
   sharedSubscriber: EventSubscriptionVendor;
 
   constructor() {
@@ -44,8 +54,11 @@ class RCTDeviceEventEmitter extends EventEmitter {
     this.sharedSubscriber = sharedSubscriber;
   }
 
-
-  addListener(eventType: string, listener: Function, context: ?Object): EmitterSubscription {
+  addListener(
+    eventType: string,
+    listener: Function,
+    context: ?Object,
+  ): EmitterSubscription {
     if (__DEV__) {
       checkNativeEventModule(eventType);
     }

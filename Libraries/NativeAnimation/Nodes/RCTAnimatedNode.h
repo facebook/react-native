@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
+
+@class RCTNativeAnimatedNodesManager;
 
 @interface RCTAnimatedNode : NSObject
 
@@ -15,6 +15,7 @@
                      config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSNumber *nodeTag;
+@property (nonatomic, weak) RCTNativeAnimatedNodesManager *manager;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *config;
 
 @property (nonatomic, copy, readonly) NSMapTable<NSNumber *, RCTAnimatedNode *> *childNodes;

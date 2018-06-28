@@ -1,20 +1,27 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "CatalystInstanceImpl.h"
 
 #include <mutex>
 #include <condition_variable>
+#include <sstream>
+#include <vector>
 
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
+#include <cxxreact/JSDeltaBundleClient.h>
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
 #include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
+#include <fb/fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
 #include <folly/Memory.h>
 #include <jni/Countable.h>
@@ -100,6 +107,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniRegisterSegment", CatalystInstanceImpl::jniRegisterSegment),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
+    makeNativeMethod("jniLoadScriptFromDeltaBundle", CatalystInstanceImpl::jniLoadScriptFromDeltaBundle),
     makeNativeMethod("jniCallJSFunction", CatalystInstanceImpl::jniCallJSFunction),
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
@@ -210,6 +218,19 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
   }
 }
 
+void CatalystInstanceImpl::jniLoadScriptFromDeltaBundle(
+    const std::string& sourceURL,
+    jni::alias_ref<NativeDeltaClient::jhybridobject> jDeltaClient,
+    bool loadSynchronously) {
+
+  auto deltaClient = jDeltaClient->cthis()->getDeltaClient();
+  auto registry = RAMBundleRegistry::singleBundleRegistry(
+    folly::make_unique<JSDeltaBundleClientRAMBundle>(deltaClient));
+
+  instance_->loadRAMBundle(
+    std::move(registry), deltaClient->getStartupCode(), sourceURL, loadSynchronously);
+}
+
 void CatalystInstanceImpl::jniCallJSFunction(std::string module, std::string method, NativeArray* arguments) {
   // We want to share the C++ code, and on iOS, modules pass module/method
   // names as strings all the way through to JS, and there's no way to do
@@ -241,9 +262,7 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
 }
 
 void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
-  #ifdef WITH_JSC_MEMORY_PRESSURE
   instance_->handleMemoryPressure(pressureLevel);
-  #endif
 }
 
 }}

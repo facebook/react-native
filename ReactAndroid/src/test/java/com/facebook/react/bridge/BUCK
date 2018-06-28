@@ -1,10 +1,10 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library", "rn_robolectric_test")
 
 STANDARD_TEST_SRCS = [
     "*Test.java",
 ]
 
-android_library(
+rn_android_library(
     name = "testhelpers",
     srcs = glob(
         ["*.java"],

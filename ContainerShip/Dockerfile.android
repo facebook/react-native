@@ -1,4 +1,13 @@
-FROM hramos/android-base:latest
+# React Native Android Unit Tests
+#
+# This image builds upon the React Native Base Android Development Environment
+# image. Ideally, this image would be rebuilt with any new commit to the master
+# branch. Doing so will catch issues such as BUCK failing to fetch dependencies
+# or run tests, as well as unit test failures.
+FROM reactnativeci/android-base:latest
+
+LABEL Description="This image prepares and runs React Native's Android tests."
+LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
@@ -9,6 +18,7 @@ ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
 ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
+ADD ReactNative /app/ReactNative
 ADD keystores /app/keystores
 
 # set workdir
@@ -41,10 +51,12 @@ RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.bu
 ADD . /app
 WORKDIR /app
 
-# https://github.com/npm/npm/issues/13306
-RUN cd $(npm root -g)/npm && npm install fs-extra && sed -i -e s/graceful-fs/fs-extra/ -e s/fs.rename/fs.move/ ./lib/utils/rename.js
-
 # build node dependencies
-RUN npm install
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get install apt-transport-https
+RUN apt-get update
+RUN apt-get install yarn
+RUN yarn
 
 WORKDIR /app

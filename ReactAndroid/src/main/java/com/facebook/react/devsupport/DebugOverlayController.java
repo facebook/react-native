@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
@@ -23,6 +21,7 @@ import android.widget.FrameLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
 import javax.annotation.Nullable;
@@ -96,25 +95,30 @@ import javax.annotation.Nullable;
     mWindowManager = (WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE);
   }
 
-  public void setFpsDebugViewVisible(boolean fpsDebugViewVisible) {
-    if (fpsDebugViewVisible && mFPSDebugViewContainer == null) {
-      if (!permissionCheck(mReactContext)) {
-        FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
-        return;
-      }
-      mFPSDebugViewContainer = new FpsView(mReactContext);
-      WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowManager.LayoutParams.MATCH_PARENT,
-          WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
-          WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+  public void setFpsDebugViewVisible(final boolean fpsDebugViewVisible) {
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if (fpsDebugViewVisible && mFPSDebugViewContainer == null) {
+          if (!permissionCheck(mReactContext)) {
+            FLog.d(ReactConstants.TAG, "Wait for overlay permission to be set");
+            return;
+          }
+          mFPSDebugViewContainer = new FpsView(mReactContext);
+          WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
               | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-          PixelFormat.TRANSLUCENT);
-      mWindowManager.addView(mFPSDebugViewContainer, params);
-    } else if (!fpsDebugViewVisible && mFPSDebugViewContainer != null) {
-      mFPSDebugViewContainer.removeAllViews();
-      mWindowManager.removeView(mFPSDebugViewContainer);
-      mFPSDebugViewContainer = null;
-    }
+            PixelFormat.TRANSLUCENT);
+          mWindowManager.addView(mFPSDebugViewContainer, params);
+        } else if (!fpsDebugViewVisible && mFPSDebugViewContainer != null) {
+          mFPSDebugViewContainer.removeAllViews();
+          mWindowManager.removeView(mFPSDebugViewContainer);
+          mFPSDebugViewContainer = null;
+        }
+      }
+    });
   }
 }

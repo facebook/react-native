@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const findProject = require('./findProject');
@@ -17,7 +18,7 @@ const path = require('path');
  * For libraries specified without an extension, add '.tbd' for those that
  * start with 'lib' and '.framework' to the rest.
  */
-const mapSharedLibaries = (libraries) => {
+const mapSharedLibaries = libraries => {
   return libraries.map(name => {
     if (path.extname(name)) {
       return name;
@@ -57,3 +58,5 @@ exports.projectConfig = function projectConfigIOS(folder, userConfig) {
 };
 
 exports.dependencyConfig = exports.projectConfig;
+
+exports.linkConfig = require('../../link/ios');

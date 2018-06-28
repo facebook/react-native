@@ -45,7 +45,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   refreshControl={
     <RefreshControlMock
       onRefresh={[MockFunction]}
-      progressViewOffset={undefined}
       refreshing={false}
     />
   }
@@ -66,17 +65,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -89,17 +84,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -112,17 +103,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -171,7 +158,6 @@ exports[`FlatList renders empty list 1`] = `
 
 exports[`FlatList renders null list 1`] = `
 <RCTScrollView
-  data={undefined}
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}

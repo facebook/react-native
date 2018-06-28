@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
-android_library(
+rn_android_library(
     name = "debug",
     srcs = glob(["*.java"]),
     visibility = [
@@ -19,7 +19,7 @@ android_library(
     ],
 )
 
-android_library(
+rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
     visibility = [

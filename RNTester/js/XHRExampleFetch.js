@@ -1,26 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule XHRExampleFetch
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Platform,
-} = ReactNative;
-
+var {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -29,20 +21,22 @@ class XHRExampleFetch extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-     responseText: null,
+      responseText: null,
     };
     this.responseURL = null;
     this.responseHeaders = null;
   }
 
   submit(uri: String) {
-    fetch(uri).then((response) => {
-      this.responseURL = response.url;
-      this.responseHeaders = response.headers;
-      return response.text();
-    }).then((body) => {
-      this.setState({responseText: body});
-    });
+    fetch(uri)
+      .then(response => {
+        this.responseURL = response.url;
+        this.responseHeaders = response.headers;
+        return response.text();
+      })
+      .then(body => {
+        this.setState({responseText: body});
+      });
   }
 
   _renderHeaders() {
@@ -55,13 +49,16 @@ class XHRExampleFetch extends React.Component<any, any> {
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
       var value = this.responseHeaders.get(key);
-      responseHeaders.push(<Text>{key}: {value}</Text>);
+      responseHeaders.push(
+        <Text>
+          {key}: {value}
+        </Text>,
+      );
     }
     return responseHeaders;
   }
 
   render() {
-
     var responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>
@@ -94,7 +91,7 @@ class XHRExampleFetch extends React.Component<any, any> {
         <TextInput
           returnKeyType="go"
           defaultValue="http://www.posttestserver.com/post.php"
-          onSubmitEditing={(event)=> {
+          onSubmitEditing={event => {
             this.submit(event.nativeEvent.text);
           }}
           style={styles.textInput}

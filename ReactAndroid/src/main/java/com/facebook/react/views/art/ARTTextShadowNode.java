@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.art;
@@ -41,6 +39,19 @@ public class ARTTextShadowNode extends ARTShapeShadowNode {
 
   private @Nullable ReadableMap mFrame;
   private int mTextAlignment = TEXT_ALIGNMENT_LEFT;
+
+  public ARTTextShadowNode() { }
+
+  public ARTTextShadowNode(ARTTextShadowNode node) {
+    super(node);
+    mTextAlignment = node.mTextAlignment;
+    mFrame = node.mFrame; // copy reference as mFrame is already immutable
+  }
+
+  @Override
+  protected ARTShapeShadowNode copy() {
+    return new ARTTextShadowNode(this);
+  }
 
   @ReactProp(name = "frame")
   public void setFrame(@Nullable ReadableMap frame) {

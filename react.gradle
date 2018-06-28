@@ -23,7 +23,8 @@ void runBefore(String dependentTaskName, Task task) {
     }
 }
 
-gradle.projectsEvaluated {
+afterEvaluate {
+    def isAndroidLibrary = plugins.hasPlugin("com.android.library")
     // Grab all build types and product flavors
     def buildTypes = android.buildTypes.collect { type -> type.name }
     def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
@@ -101,6 +102,24 @@ gradle.projectsEvaluated {
                 enabled config."bundleIn${targetName}" ||
                     config."bundleIn${buildTypeName.capitalize()}" ?:
                             targetName.toLowerCase().contains("release")
+
+                if (isAndroidLibrary) {
+                    doLast {
+                        def moveFunc = { resSuffix ->
+                            File originalDir = file("${resourcesDir}/drawable-${resSuffix}")
+                            if (originalDir.exists()) {
+                                File destDir = file("${resourcesDir}/drawable-${resSuffix}-v4")
+                                ant.move(file: originalDir, tofile: destDir)
+                            }
+                        }
+                        moveFunc.curry("ldpi").call()
+                        moveFunc.curry("mdpi").call()
+                        moveFunc.curry("hdpi").call()
+                        moveFunc.curry("xhdpi").call()
+                        moveFunc.curry("xxhdpi").call()
+                        moveFunc.curry("xxxhdpi").call()
+                    }
+                }
             }
 
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process

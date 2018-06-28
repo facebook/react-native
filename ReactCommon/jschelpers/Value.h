@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -302,6 +305,13 @@ public:
     }
   }
 
+  double getNumberOrThrow() const {
+    if (!isNumber()) {
+      throwTypeException("Number");
+    }
+    return JSC_JSValueToNumber(context(), m_value, nullptr);
+  }
+
   int32_t asInteger() const {
     return static_cast<int32_t>(asNumber());
   }
@@ -355,7 +365,9 @@ private:
   JSContextRef m_context;
   JSValueRef m_value;
 
+  void throwTypeException(const std::string &expectedType) const;
   static JSValueRef fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj);
+
 };
 
 } }
