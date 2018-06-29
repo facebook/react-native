@@ -176,7 +176,7 @@ aliases:
   - &configure-android-path
     name: Configure Environment Variables
     command: |
-      echo 'export PATH=${ANDROID_NDK}:~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
+      echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
       source $BASH_ENV
 
   - &install-android-packages
