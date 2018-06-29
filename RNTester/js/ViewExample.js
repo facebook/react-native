@@ -146,31 +146,37 @@ exports.examples = [
   {
     title: 'Overflow',
     render() {
+      const styles = StyleSheet.create({
+        container: {
+          borderWidth: StyleSheet.hairlineWidth,
+          height: 12,
+          marginBottom: 8,
+          marginEnd: 16,
+          width: 95,
+        },
+        content: {
+          height: 20,
+          width: 200,
+        },
+      });
+
+      // NOTE: The <View> that sets `overflow` should only have other layout
+      // styles so that we can accurately test view flattening optimizations.
       return (
         <View style={{flexDirection: 'row'}}>
-          <View
-            style={{
-              borderWidth: 0.5,
-              height: 10,
-              marginBottom: 5,
-              marginRight: 10,
-              overflow: 'hidden',
-              width: 95,
-            }}>
-            <View style={{width: 200, height: 20}}>
-              <Text>Overflow hidden</Text>
+          <View style={styles.container}>
+            <View style={[StyleSheet.absoluteFill]}>
+              <Text style={styles.content}>undefined</Text>
             </View>
           </View>
-          <View
-            style={{
-              borderWidth: 0.5,
-              height: 10,
-              marginBottom: 5,
-              marginRight: 10,
-              width: 95,
-            }}>
-            <View style={{width: 200, height: 20}}>
-              <Text>Overflow visible</Text>
+          <View style={styles.container}>
+            <View style={[StyleSheet.absoluteFill, {overflow: 'hidden'}]}>
+              <Text style={styles.content}>hidden</Text>
+            </View>
+          </View>
+          <View style={styles.container}>
+            <View style={[StyleSheet.absoluteFill, {overflow: 'visible'}]}>
+              <Text style={styles.content}>visible</Text>
             </View>
           </View>
         </View>
