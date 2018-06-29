@@ -47,6 +47,7 @@ type RCTPickerIOSType = Class<
       onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
+      enabled: boolean
     |}>,
   >,
 >;
@@ -116,6 +117,7 @@ class PickerIOS extends React.Component<Props, State> {
           }}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
+          enabled={this.props.enabled}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
           onStartShouldSetResponder={() => true}

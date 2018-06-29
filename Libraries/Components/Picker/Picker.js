@@ -102,6 +102,7 @@ class Picker extends React.Component<{
 
   static defaultProps = {
     mode: MODE_DIALOG,
+    enabled: true
   };
 
   // $FlowFixMe(>=0.41.0)
@@ -121,7 +122,6 @@ class Picker extends React.Component<{
     /**
      * If set to false, the picker will be disabled, i.e. the user will not be able to make a
      * selection.
-     * @platform android
      */
     enabled: PropTypes.bool,
     /**

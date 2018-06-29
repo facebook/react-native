@@ -12,6 +12,7 @@
 @interface RCTPicker : UIPickerView
 
 @property (nonatomic, copy) NSArray<NSDictionary *> *items;
+@property (nonatomic, assign) BOOL enabled;
 @property (nonatomic, assign) NSInteger selectedIndex;
 
 @property (nonatomic, strong) UIColor *color;

@@ -22,6 +22,7 @@
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
+    _enabled = true;
     self.delegate = self;
   }
   return self;
@@ -106,6 +107,11 @@ numberOfRowsInComponent:(__unused NSInteger)component
       @"newValue": RCTNullIfNil(_items[row][@"value"]),
     });
   }
+}
+
+- (void)setEnabled:(BOOL)enabled
+{
+  [self setUserInteractionEnabled:enabled];
 }
 
 @end
