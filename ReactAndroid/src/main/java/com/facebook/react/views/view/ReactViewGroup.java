@@ -112,7 +112,6 @@ public class ReactViewGroup extends ViewGroup implements
 
   public ReactViewGroup(Context context) {
     super(context);
-    setClipChildren(false);
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -639,7 +638,6 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   public void setOverflow(String overflow) {
-    setClipChildren(mOverflow == "hidden");
     mOverflow = overflow;
     invalidate();
   }
