@@ -46,7 +46,10 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
     var color = this.state.selectedValue;
     return (
       <View>
-        <PickerIOS selectedValue={color} onValueChange={this._onValueChange}>
+        <PickerIOS
+          selectedValue={color}
+          onValueChange={this._onValueChange}
+          enabled={true}>
           {COLORS.map(value => (
             <PickerItemIOS key={value} value={value} label={value} />
           ))}
@@ -55,11 +58,11 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
           {'Selected: '}
           <Text style={{color}}>{this.state.selectedValue}</Text>
         </Text>
-        <Text> </Text>
+        <Text />
         <Text onPress={this._removeStorage}>
           Press here to remove from storage.
         </Text>
-        <Text> </Text>
+        <Text />
         <Text>Messages:</Text>
         {this.state.messages.map(m => <Text key={m}>{m}</Text>)}
       </View>

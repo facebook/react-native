@@ -47,7 +47,7 @@ type RCTPickerIOSType = Class<
       onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
-      enabled: boolean
+      enabled: boolean,
     |}>,
   >,
 >;
@@ -65,6 +65,7 @@ type Props = $ReadOnly<{|
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
   onValueChange?: ?(newValue: any, newIndex: number) => mixed,
   selectedValue: any,
+  enabled: boolean,
 |}>;
 
 type State = {|

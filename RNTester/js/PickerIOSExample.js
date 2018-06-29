@@ -111,6 +111,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
       <View>
         <Text>Please choose a make for your car:</Text>
         <PickerIOS
+          enabled={true}
           selectedValue={this.state.carMake}
           onValueChange={carMake => this.setState({carMake, modelIndex: 0})}>
           {Object.keys(CAR_MAKES_AND_MODELS).map(carMake => (
@@ -123,6 +124,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
         </PickerIOS>
         <Text>Please choose a model of {make.name}:</Text>
         <PickerIOS
+          enabled={true}
           selectedValue={this.state.modelIndex}
           key={this.state.carMake}
           onValueChange={modelIndex => this.setState({modelIndex})}>
@@ -151,6 +153,7 @@ class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <PickerIOS
+        enabled={true}
         itemStyle={{
           fontSize: 25,
           color: 'red',
