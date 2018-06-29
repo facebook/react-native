@@ -30,7 +30,7 @@ static void calculateMutationInstructions(
     return;
   }
 
-  std::unordered_set<Tag> insertedTags = {};
+  std::unordered_set<Tag> insertedTags;
   int index = 0;
 
   TreeMutationInstructionList createInstructions = {};

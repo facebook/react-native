@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <mutex>
-#include <stdatomic.h>
 
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/ReactPrimitives.h>
@@ -84,7 +83,7 @@ private:
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;
   ShadowTreeDelegate *delegate_;
-  mutable std::mutex commitMutex_ {};
+  mutable std::mutex commitMutex_;
 };
 
 } // namespace react
