@@ -5,6 +5,5 @@ dependencies {
     }
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:26.1.0"
-    compile "com.android.support:support-annotations:26.1.0"
     compile "com.facebook.react:react-native:+"
 }
