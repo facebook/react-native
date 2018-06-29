@@ -268,6 +268,16 @@ jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
   return reinterpret_cast<jlong>(node);
 }
 
+void jni_YGNodeSetOwner(
+    alias_ref<jobject> thiz,
+    jlong nativePointer,
+    jlong newOwnerNativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  const YGNodeRef newOwnerNode = _jlong2YGNodeRef(newOwnerNativePointer);
+
+  node->setOwner(newOwnerNode);
+}
+
 jlong jni_YGNodeClone(
     alias_ref<jobject> thiz,
     jlong nativePointer,
@@ -667,6 +677,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeNativeMethod(jni_YGNodePrint),
             YGMakeNativeMethod(jni_YGNodeClone),
+            YGMakeNativeMethod(jni_YGNodeSetOwner),
         });
     registerNatives(
         "com/facebook/yoga/YogaConfig",

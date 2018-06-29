@@ -175,6 +175,8 @@ public class YogaNode implements Cloneable {
     jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
   }
 
+  private native void jni_YGNodeSetOwner(long nativePointer, long newOwnerNativePointer);
+
   private native long jni_YGNodeClone(long nativePointer, Object newNode);
 
   @Override
@@ -182,6 +184,14 @@ public class YogaNode implements Cloneable {
     try {
       YogaNode clonedYogaNode = (YogaNode) super.clone();
       long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+
+      if (mChildren != null) {
+        for (YogaNode child : mChildren) {
+          child.jni_YGNodeSetOwner(child.mNativePointer, 0);
+          child.mOwner = null;
+        }
+      }
+
       clonedYogaNode.mNativePointer = clonedNativePointer;
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mChildren =
