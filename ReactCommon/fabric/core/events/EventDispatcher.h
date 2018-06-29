@@ -28,8 +28,6 @@ class EventDispatcher {
 
 public:
 
-  virtual EventTarget createEventTarget(const InstanceHandle &instanceHandle) const = 0;
-
   /*
    * Dispatches "raw" event using some event-delivery infrastructure.
    */

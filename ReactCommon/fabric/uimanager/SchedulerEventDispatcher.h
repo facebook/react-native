@@ -31,8 +31,6 @@ public:
 
 #pragma mark - EventDispatcher
 
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
-
   void dispatchEvent(
     const EventTarget &eventTarget,
     const std::string &type,
