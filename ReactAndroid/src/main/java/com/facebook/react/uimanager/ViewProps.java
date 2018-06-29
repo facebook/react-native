@@ -74,6 +74,9 @@ public class ViewProps {
   public static final String MIN_HEIGHT = "minHeight";
   public static final String MAX_HEIGHT = "maxHeight";
 
+  public static final String HIDDEN = "hidden";
+  public static final String VISIBLE = "visible";
+
   public static final String ASPECT_RATIO = "aspectRatio";
 
   // Props that sometimes may prevent us from collapsing views
@@ -254,8 +257,6 @@ public class ViewProps {
           return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
         case BORDER_BOTTOM_WIDTH:
           return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
-        case OVERFLOW: // We do nothing with this right now.
-          return true;
         default:
           return false;
       }

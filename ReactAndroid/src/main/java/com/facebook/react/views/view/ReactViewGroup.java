@@ -37,6 +37,7 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
@@ -682,12 +683,12 @@ public class ReactViewGroup extends ViewGroup implements
   private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
-        case "visible":
+        case ViewProps.VISIBLE:
           if (mPath != null) {
             mPath.rewind();
           }
           break;
-        case "hidden":
+        case ViewProps.HIDDEN:
           if (mReactBackgroundDrawable != null) {
             float left = 0f;
             float top = 0f;
