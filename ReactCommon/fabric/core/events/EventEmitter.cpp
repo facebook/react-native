@@ -12,13 +12,10 @@
 namespace facebook {
 namespace react {
 
-EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
-  instanceHandle_(instanceHandle),
+EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
+  eventTarget_(eventTarget),
   tag_(tag),
   eventDispatcher_(eventDispatcher) {
-  if (eventDispatcher) {
-    eventTarget_ = createEventTarget();
-  }
 }
 
 EventEmitter::~EventEmitter() {
@@ -47,12 +44,6 @@ void EventEmitter::dispatchEvent(
 
   // TODO(T29610783): Reconsider using dynamic dispatch here.
   eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
-}
-
-EventTarget EventEmitter::createEventTarget() const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  return eventDispatcher->createEventTarget(instanceHandle_);
 }
 
 } // namespace react

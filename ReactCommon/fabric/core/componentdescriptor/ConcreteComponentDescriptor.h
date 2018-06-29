@@ -113,10 +113,10 @@ public:
   };
 
   virtual SharedEventEmitter createEventEmitter(
-    const InstanceHandle &instanceHandle,
+    const EventTarget &eventTarget,
     const Tag &tag
   ) const override {
-    return std::make_shared<ConcreteEventEmitter>(instanceHandle, tag, eventDispatcher_);
+    return std::make_shared<ConcreteEventEmitter>(eventTarget, tag, eventDispatcher_);
   }
 
 protected:
