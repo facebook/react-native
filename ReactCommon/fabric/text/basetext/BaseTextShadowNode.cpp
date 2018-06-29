@@ -8,11 +8,10 @@
 #include "BaseTextShadowNode.h"
 
 #include <fabric/debug/DebugStringConvertibleItem.h>
-
-#include "RawTextShadowNode.h"
-#include "RawTextProps.h"
-#include "TextShadowNode.h"
-#include "TextProps.h"
+#include <fabric/text/RawTextShadowNode.h>
+#include <fabric/text/RawTextProps.h>
+#include <fabric/text/TextShadowNode.h>
+#include <fabric/text/TextProps.h>
 
 namespace facebook {
 namespace react {

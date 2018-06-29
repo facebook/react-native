@@ -7,6 +7,8 @@
 
 #include "ShadowNode.h"
 
+#include <string>
+
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 

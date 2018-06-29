@@ -26,7 +26,7 @@ class YogaLayoutableShadowNode;
 using SharedYogaConfig = std::shared_ptr<YGConfig>;
 
 using SharedYogaLayoutableShadowNode = std::shared_ptr<const YogaLayoutableShadowNode>;
-using SharedYogaLayoutableShadowNodeList = std::vector<const SharedYogaLayoutableShadowNode>;
+using SharedYogaLayoutableShadowNodeList = std::vector<SharedYogaLayoutableShadowNode>;
 using SharedYogaLayoutableShadowNodeSharedList = std::shared_ptr<const SharedYogaLayoutableShadowNodeList>;
 
 class YogaLayoutableShadowNode:
