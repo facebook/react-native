@@ -321,12 +321,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       return;
     }
     const frame = this._getFrameMetricsApprox(index);
+
+    const maxOffset = Math.max(0, this._scrollMetrics.contentLength - this._scrollMetrics.visibleLength);
     const offset =
       Math.max(
         0,
-        frame.offset -
-          (viewPosition || 0) *
-            (this._scrollMetrics.visibleLength - frame.length),
+        Math.min(
+          maxOffset,
+          frame.offset -
+            (viewPosition || 0) *
+              (this._scrollMetrics.visibleLength - frame.length),
+        )
       ) - (viewOffset || 0);
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
