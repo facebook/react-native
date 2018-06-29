@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import android.support.annotation.Nullable;
+
 /**
  * Interface for a mutable array. Used to pass arguments from Java to JS.
  */
@@ -16,7 +18,7 @@ public interface WritableArray extends ReadableArray {
   void pushBoolean(boolean value);
   void pushDouble(double value);
   void pushInt(int value);
-  void pushString(String value);
-  void pushArray(WritableArray array);
-  void pushMap(WritableMap map);
+  void pushString(@Nullable String value);
+  void pushArray(@Nullable WritableArray array);
+  void pushMap(@Nullable WritableMap map);
 }

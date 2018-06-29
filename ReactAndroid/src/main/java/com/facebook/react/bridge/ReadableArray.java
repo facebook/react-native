@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import android.support.annotation.NonNull;
 import java.util.ArrayList;
 
 /**
@@ -20,11 +21,11 @@ public interface ReadableArray {
   boolean getBoolean(int index);
   double getDouble(int index);
   int getInt(int index);
-  String getString(int index);
-  ReadableArray getArray(int index);
-  ReadableMap getMap(int index);
-  Dynamic getDynamic(int index);
-  ReadableType getType(int index);
-  ArrayList<Object> toArrayList();
+  @NonNull String getString(int index);
+  @NonNull ReadableArray getArray(int index);
+  @NonNull ReadableMap getMap(int index);
+  @NonNull Dynamic getDynamic(int index);
+  @NonNull ReadableType getType(int index);
+  @NonNull ArrayList<Object> toArrayList();
 
 }

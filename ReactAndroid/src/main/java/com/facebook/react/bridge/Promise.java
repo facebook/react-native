@@ -7,7 +7,9 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Interface that represents a JavaScript Promise which can be passed to the native module as a
@@ -26,17 +28,17 @@ public interface Promise {
   /**
    * Report an error which wasn't caused by an exception.
    */
-  void reject(String code, String message);
+  void reject(@Nullable String code, @NonNull String message);
 
   /**
    * Report an exception.
    */
-  void reject(String code, Throwable e);
+  void reject(@Nullable String code, @NonNull Throwable e);
 
   /**
    * Report an exception with a custom error message.
    */
-  void reject(String code, String message, Throwable e);
+  void reject(@Nullable String code, @Nullable String message, @Nullable Throwable e);
 
   /**
    * Report an error which wasn't caused by an exception.
@@ -50,5 +52,5 @@ public interface Promise {
    * Report an exception, with default error code.
    * Useful in catch-all scenarios where it's unclear why the error occurred.
    */
-  void reject(Throwable reason);
+  void reject(@NonNull Throwable reason);
 }

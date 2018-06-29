@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import android.support.annotation.NonNull;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 
 
@@ -28,6 +30,7 @@ public interface NativeModule {
    * @return the name of this module. This will be the name used to {@code require()} this module
    * from javascript.
    */
+  @NonNull
   String getName();
 
   /**

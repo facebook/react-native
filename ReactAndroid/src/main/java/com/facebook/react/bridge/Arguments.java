@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 public class Arguments {
-  private static Object makeNativeObject(Object object) {
+  @Nullable
+  private static Object makeNativeObject(@Nullable Object object) {
     if (object == null) {
       return null;
     } else if (object instanceof Float ||
@@ -48,7 +49,8 @@ public class Arguments {
    * way to think of this is a way to generate a Java representation of a json
    * list, from Java types which have a natural representation in json.
    */
-  public static WritableNativeArray makeNativeArray(List objects) {
+  @NonNull
+  public static WritableNativeArray makeNativeArray(@Nullable List objects) {
     WritableNativeArray nativeArray = new WritableNativeArray();
     if (objects == null) {
       return nativeArray;
@@ -80,7 +82,8 @@ public class Arguments {
    * This overload is like the above, but uses reflection to operate on any
    * primitive or object type.
    */
-  public static <T> WritableNativeArray makeNativeArray(final Object objects) {
+  @NonNull
+  public static <T> WritableNativeArray makeNativeArray(@Nullable final Object objects) {
     if (objects == null) {
       return new WritableNativeArray();
     }
@@ -97,7 +100,7 @@ public class Arguments {
     });
   }
 
-  private static void addEntry(WritableNativeMap nativeMap, String key, Object value) {
+  private static void addEntry(@NonNull WritableNativeMap nativeMap, @NonNull String key, @Nullable Object value) {
     value = makeNativeObject(value);
     if (value == null) {
       nativeMap.putNull(key);
@@ -124,7 +127,8 @@ public class Arguments {
    * a Java representation of a json object, from Java types which have a
    * natural representation in json.
    */
-  public static WritableNativeMap makeNativeMap(Map<String, Object> objects) {
+  @NonNull
+  public static WritableNativeMap makeNativeMap(@Nullable Map<String, Object> objects) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (objects == null) {
       return nativeMap;
@@ -138,7 +142,8 @@ public class Arguments {
   /**
    * Like the above, but takes a Bundle instead of a Map.
    */
-  public static WritableNativeMap makeNativeMap(Bundle bundle) {
+  @NonNull
+  public static WritableNativeMap makeNativeMap(@Nullable Bundle bundle) {
     WritableNativeMap nativeMap = new WritableNativeMap();
     if (bundle == null) {
       return nativeMap;
@@ -152,6 +157,7 @@ public class Arguments {
   /**
    * This method should be used when you need to stub out creating NativeArrays in unit tests.
    */
+  @NonNull
   public static WritableArray createArray() {
     return new WritableNativeArray();
   }
@@ -159,10 +165,12 @@ public class Arguments {
   /**
    * This method should be used when you need to stub out creating NativeMaps in unit tests.
    */
+  @NonNull
   public static WritableMap createMap() {
     return new WritableNativeMap();
   }
 
+  @NonNull
   public static WritableNativeArray fromJavaArgs(Object[] args) {
     WritableNativeArray arguments = new WritableNativeArray();
     for (int i = 0; i < args.length; i++) {
@@ -202,7 +210,8 @@ public class Arguments {
    * @return the converted {@link WritableArray}
    * @throws IllegalArgumentException if the passed object is none of the above types
    */
-  public static WritableArray fromArray(Object array) {
+  @NonNull
+  public static WritableArray fromArray(@NonNull Object array) {
     WritableArray catalystArray = createArray();
     if (array instanceof String[]) {
       for (String v : (String[]) array) {
@@ -242,7 +251,8 @@ public class Arguments {
    * @return the converted {@link WritableArray}
    * @throws IllegalArgumentException if one of the values from the passed list is none of the above types
    */
-  public static WritableArray fromList(List list) {
+  @NonNull
+  public static WritableArray fromList(@NonNull List list) {
     WritableArray catalystArray = createArray();
     for (Object obj : list) {
       if (obj == null) {
@@ -283,7 +293,8 @@ public class Arguments {
    * @return the converted {@link WritableMap}
    * @throws IllegalArgumentException if there are keys of unsupported types
    */
-  public static WritableMap fromBundle(Bundle bundle) {
+  @NonNull
+  public static WritableMap fromBundle(@NonNull Bundle bundle) {
     WritableMap map = createMap();
     for (String key : bundle.keySet()) {
       Object value = bundle.get(key);

@@ -10,6 +10,7 @@ package com.facebook.react.modules.core;
 import javax.annotation.Nullable;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,7 +28,7 @@ import com.facebook.react.module.annotations.ReactModule;
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
-    void emit(String eventName, @Nullable Object data);
+    void emit(@NonNull String eventName, @Nullable Object data);
   }
 
   private final Runnable mInvokeDefaultBackPressRunnable;
