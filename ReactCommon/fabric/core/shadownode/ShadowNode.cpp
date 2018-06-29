@@ -162,7 +162,7 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + std::to_string(revision_) + (getSealed() ? "/sealed" : "");
+  return "r" + folly::to<std::string>(revision_) + (getSealed() ? "/sealed" : "");
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
@@ -181,7 +181,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
   SharedDebugStringConvertibleList list = {};
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", std::to_string(tag_)));
+  list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", folly::to<std::string>(tag_)));
 
   SharedShadowNode sourceNode = getSourceNode();
   if (sourceNode) {
