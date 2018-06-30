@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 'use strict';
 
@@ -26,20 +26,20 @@ var {
 var PAGE_SIZE = 20;
 
 type ImageOffset = {
-  x: number;
-  y: number;
+  x: number,
+  y: number,
 };
 
 type ImageSize = {
-  width: number;
-  height: number;
+  width: number,
+  height: number,
 };
 
 type ImageCropData = {
-  offset: ImageOffset;
-  size: ImageSize;
-  displaySize?: ?ImageSize;
-  resizeMode?: ?any;
+  offset: ImageOffset,
+  size: ImageSize,
+  displaySize?: ?ImageSize,
+  resizeMode?: ?any,
 };
 
 class SquareImageCropper extends React.Component {
@@ -85,7 +85,7 @@ class SquareImageCropper extends React.Component {
       return (
         <View
           style={styles.container}
-          onLayout={(event) => {
+          onLayout={event => {
             var measuredWidth = event.nativeEvent.layout.width;
             if (!measuredWidth) {
               return;
@@ -106,15 +106,11 @@ class SquareImageCropper extends React.Component {
 
   _renderImageCropper() {
     if (!this.state.randomPhoto) {
-      return (
-        <View style={styles.container} />
-      );
+      return <View style={styles.container} />;
     }
     var error = null;
     if (this.state.cropError) {
-      error = (
-        <Text>{this.state.cropError.message}</Text>
-      );
+      error = <Text>{this.state.cropError.message}</Text>;
     }
     return (
       <View style={styles.container}>
@@ -123,15 +119,13 @@ class SquareImageCropper extends React.Component {
           image={this.state.randomPhoto}
           size={this.state.measuredSize}
           style={[styles.imageCropper, this.state.measuredSize]}
-          onTransformDataChange={(data) => this._transformData = data}
+          onTransformDataChange={data => (this._transformData = data)}
         />
         <TouchableHighlight
           style={styles.cropButtonTouchable}
           onPress={this._crop.bind(this)}>
           <View style={styles.cropButton}>
-            <Text style={styles.cropButtonLabel}>
-              Crop
-            </Text>
+            <Text style={styles.cropButtonLabel}>Crop</Text>
           </View>
         </TouchableHighlight>
         {error}
@@ -151,9 +145,7 @@ class SquareImageCropper extends React.Component {
           style={styles.cropButtonTouchable}
           onPress={this._reset.bind(this)}>
           <View style={styles.cropButton}>
-            <Text style={styles.cropButtonLabel}>
-              Try again
-            </Text>
+            <Text style={styles.cropButtonLabel}>Try again</Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -164,8 +156,8 @@ class SquareImageCropper extends React.Component {
     ImageEditor.cropImage(
       this.state.randomPhoto.uri,
       this._transformData,
-      (croppedImageURI) => this.setState({croppedImageURI}),
-      (cropError) => this.setState({cropError})
+      croppedImageURI => this.setState({croppedImageURI}),
+      cropError => this.setState({cropError}),
     );
   }
 
@@ -173,11 +165,10 @@ class SquareImageCropper extends React.Component {
     this.setState({
       randomPhoto: null,
       croppedImageURI: null,
-      cropError: null
+      cropError: null,
     });
     this._fetchRandomPhoto();
   }
-
 }
 
 class ImageCropper extends React.Component {
@@ -218,16 +209,16 @@ class ImageCropper extends React.Component {
     };
     this._maximumZoomScale = Math.min(
       this.props.image.width / this._scaledImageSize.width,
-      this.props.image.height / this._scaledImageSize.height
+      this.props.image.height / this._scaledImageSize.height,
     );
     this._minimumZoomScale = Math.max(
       this.props.size.width / this._scaledImageSize.width,
-      this.props.size.height / this._scaledImageSize.height
+      this.props.size.height / this._scaledImageSize.height,
     );
     this._updateTransformData(
       this._contentOffset,
       this._scaledImageSize,
-      this.props.size
+      this.props.size,
     );
   }
 
@@ -235,7 +226,7 @@ class ImageCropper extends React.Component {
     this._updateTransformData(
       event.nativeEvent.contentOffset,
       event.nativeEvent.contentSize,
-      event.nativeEvent.layoutMeasurement
+      event.nativeEvent.layoutMeasurement,
     );
   }
 
@@ -255,7 +246,8 @@ class ImageCropper extends React.Component {
         height: this.props.image.height * sizeRatioY,
       },
     };
-    this.props.onTransformDataChange && this.props.onTransformDataChange(cropData);
+    this.props.onTransformDataChange &&
+      this.props.onTransformDataChange(cropData);
   }
 
   render() {
@@ -278,18 +270,19 @@ class ImageCropper extends React.Component {
       </ScrollView>
     );
   }
-
 }
 
 exports.framework = 'React';
 exports.title = 'ImageEditor';
 exports.description = 'Cropping and scaling with ImageEditor';
-exports.examples = [{
-  title: 'Image Cropping',
-  render() {
-    return <SquareImageCropper/>;
-  }
-}];
+exports.examples = [
+  {
+    title: 'Image Cropping',
+    render() {
+      return <SquareImageCropper />;
+    },
+  },
+];
 
 var styles = StyleSheet.create({
   container: {
