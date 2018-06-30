@@ -286,6 +286,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'ImageEditingExample',
+    module: require('./ImageEditingExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'LayoutAnimationExample',
     module: require('./LayoutAnimationExample'),
     supportsTVOS: true,

@@ -168,6 +168,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./GeolocationExample'),
   },
   {
+    key: 'ImageEditingExample',
+    module: require('./ImageEditingExample'),
+  },
+  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
   },
