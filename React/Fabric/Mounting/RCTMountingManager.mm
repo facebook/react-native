@@ -181,4 +181,11 @@ using namespace facebook::react;
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
 }
 
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName
+{
+  RCTExecuteOnMainQueue(^{
+    [self->_componentViewRegistry preliminaryCreateComponentViewWithName:componentName];
+  });
+}
+
 @end
