@@ -42,7 +42,7 @@ type ImageCropData = {
   resizeMode?: ?any,
 };
 
-class SquareImageCropper extends React.Component<{}, $FlowFixMeState> {
+class SquareImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state: any;
   _isMounted: boolean;
   _transformData: ImageCropData;
@@ -171,7 +171,7 @@ class SquareImageCropper extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class ImageCropper extends React.Component<{}, $FlowFixMeState> {
+class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   _contentOffset: ImageOffset;
   _maximumZoomScale: number;
   _minimumZoomScale: number;
