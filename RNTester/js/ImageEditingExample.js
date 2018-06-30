@@ -173,7 +173,7 @@ class SquareImageCropper extends React.Component {
     this.setState({
       randomPhoto: null,
       croppedImageURI: null,
-      cropError: null,
+      cropError: null
     });
     this._fetchRandomPhoto();
   }
