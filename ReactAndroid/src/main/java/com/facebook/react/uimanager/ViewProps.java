@@ -102,6 +102,7 @@ public class ViewProps {
   public static final String OVERFLOW = "overflow";
 
   public static final String HIDDEN = "hidden";
+  public static final String SCROLL = "scroll";
   public static final String VISIBLE = "visible";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
