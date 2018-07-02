@@ -14,132 +14,69 @@ require('../../setupBabel')();
 
 const Metro = require('metro');
 
-const HmrServer = require('metro/src/HmrServer');
-
 const {Terminal} = require('metro-core');
 
-const attachWebsocketServer = require('metro/src/lib/attachWebsocketServer');
-const compression = require('compression');
-const connect = require('connect');
-const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const defaultAssetExts = Metro.defaults.assetExts;
-const defaultSourceExts = Metro.defaults.sourceExts;
-const defaultPlatforms = Metro.defaults.platforms;
-const defaultProvidesModuleNodeModules =
-  Metro.defaults.providesModuleNodeModules;
-const errorhandler = require('errorhandler');
-const fs = require('fs');
-const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const http = require('http');
-const https = require('https');
-const indexPageMiddleware = require('./middleware/indexPage');
-const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
-const messageSocket = require('./util/messageSocket.js');
-const morgan = require('morgan');
-const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
-const serveStatic = require('serve-static');
-const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
-const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const webSocketProxy = require('./util/webSocketProxy.js');
-
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
+const MiddlewareManager = require('./middleware/MiddlewareManager');
 
 import type {ConfigT} from 'metro';
-/* $FlowFixMe(site=react_native_oss) */
-import type {Reporter} from 'metro/src/lib/reporting';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
+  +cert: string,
+  +customLogReporterPath?: string,
   +host: string,
+  +https: boolean,
   +maxWorkers: number,
+  +key: string,
   +nonPersistent: boolean,
   +platforms: $ReadOnlyArray<string>,
   +port: number,
   +projectRoot: string,
+  +providesModuleNodeModules: Array<string>,
   +resetCache: boolean,
   +sourceExts: $ReadOnlyArray<string>,
+  +transformer?: string,
   +verbose: boolean,
   +watchFolders: $ReadOnlyArray<string>,
 |};
 
-function runServer(
-  args: Args,
-  config: ConfigT,
-  // FIXME: this is weird design. The top-level should pass down a custom
-  // reporter rather than passing it up as argument to an event.
-  startedCallback: (reporter: Reporter) => mixed,
-  readyCallback: (reporter: Reporter) => mixed,
-) {
-  var wsProxy = null;
-  var ms = null;
-
+async function runServer(args: Args, config: ConfigT) {
   const terminal = new Terminal(process.stdout);
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
-  const packagerServer = getPackagerServer(args, config, reporter);
-  startedCallback(reporter);
+  const middlewareManager = new MiddlewareManager(args);
 
-  const app = connect()
-    .use(loadRawBodyMiddleware)
-    .use(compression())
-    .use(
-      '/debugger-ui',
-      serveStatic(path.join(__dirname, 'util', 'debugger-ui')),
-    )
-    .use(
-      getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
-    )
-    .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware(args))
-    .use(copyToClipBoardMiddleware)
-    .use(statusPageMiddleware)
-    .use(systraceProfileMiddleware)
-    .use(indexPageMiddleware)
-    .use(packagerServer.processRequest.bind(packagerServer));
+  args.watchFolders.forEach(middlewareManager.serveStatic);
 
-  args.watchFolders.forEach(root => app.use(serveStatic(root)));
-
-  app.use(morgan('combined')).use(errorhandler());
-
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
-  if (args.https && (!args.key || !args.cert)) {
-    throw new Error('Cannot use https without specifying key and cert options');
-  }
-
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
-  const serverInstance = args.https
-    ? https.createServer(
-        {
-          key: fs.readFileSync(args.key),
-          cert: fs.readFileSync(args.cert),
-        },
-        app,
-      )
-    : http.createServer(app);
-
-  serverInstance.listen(args.port, args.host, 511, function() {
-    attachWebsocketServer({
-      httpServer: serverInstance,
-      path: '/hot',
-      websocketServer: new HmrServer(packagerServer),
-    });
-
-    wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
-    ms = messageSocket.attachToServer(serverInstance, '/message');
-    readyCallback(reporter);
+  const serverInstance = await Metro.runServer({
+    config: {
+      ...config,
+      hmrEnabled: true,
+      maxWorkers: args.maxWorkers,
+      reporter,
+      secure: args.https,
+      secureKey: args.key,
+      secureCert: args.cert,
+      transformModulePath: args.transformer
+        ? path.resolve(args.transformer)
+        : config.getTransformModulePath(),
+      watch: !args.nonPersistent,
+    },
   });
-  // Disable any kind of automatic timeout behavior for incoming
-  // requests in case it takes the packager more than the default
-  // timeout of 120 seconds to respond to a request.
-  serverInstance.timeout = 0;
+
+  // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
+  // early versions of Node 8, this was implemented in a buggy way which caused
+  // some HTTP responses (like those containing large JS bundles) to be
+  // terminated early.
+  //
+  // As a workaround, arbitrarily increase the keep-alive from 5 to 30 seconds,
+  // which should be enough to send even the largest of JS bundles.
+  //
+  // For more info: https://github.com/nodejs/node/issues/13391
+  //
+  // $FlowFixMe
+  serverInstance.keepAliveTimeout = 30000;
 }
 
 function getReporterImpl(customLogReporterPath: ?string) {
@@ -160,55 +97,6 @@ function getReporterImpl(customLogReporterPath: ?string) {
     /* $FlowFixMe: can't type dynamic require */
     return require(path.resolve(customLogReporterPath));
   }
-}
-
-function getPackagerServer(args, config, reporter) {
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
-  const transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.getTransformModulePath();
-
-  const providesModuleNodeModules =
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
-    args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
-
-  return Metro.createServer({
-    asyncRequireModulePath: config.getAsyncRequireModulePath(),
-    assetExts: defaultAssetExts.concat(args.assetExts),
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    blacklistRE: config.getBlacklistRE(),
-    cacheStores: config.cacheStores,
-    cacheVersion: '3',
-    enableBabelRCLookup: config.getEnableBabelRCLookup(),
-    extraNodeModules: config.extraNodeModules,
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
-    getPolyfills: config.getPolyfills,
-    getResolverMainFields: config.getResolverMainFields,
-    getRunModuleStatement: config.getRunModuleStatement,
-    getTransformOptions: config.getTransformOptions,
-    hasteImplModulePath: config.hasteImplModulePath,
-    maxWorkers: args.maxWorkers,
-    platforms: defaultPlatforms.concat(args.platforms),
-    polyfillModuleNames: config.getPolyfillModuleNames(),
-    postMinifyProcess: config.postMinifyProcess,
-    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    projectRoot: args.projectRoot,
-    providesModuleNodeModules: providesModuleNodeModules,
-    reporter,
-    resetCache: args.resetCache,
-    resolveRequest: config.resolveRequest,
-    sourceExts: args.sourceExts.concat(defaultSourceExts),
-    transformModulePath: transformModulePath,
-    verbose: args.verbose,
-    watch: !args.nonPersistent,
-    watchFolders: args.watchFolders,
-    workerPath: config.getWorkerPath(),
-  });
 }
 
 module.exports = runServer;

@@ -19,34 +19,10 @@ import type {Args as RunServerArgs} from './runServer';
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv: mixed, config: RNConfig, args: Object) {
-  const startedCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_started',
-      port: args.port,
-      projectRoots: args.watchFolders,
-    });
-
-    process.on('uncaughtException', error => {
-      logReporter.update({
-        type: 'initialize_failed',
-        port: args.port,
-        error,
-      });
-
-      process.exit(11);
-    });
-  };
-
-  const readyCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_done',
-    });
-  };
-  const runServerArgs: RunServerArgs = args;
+function server(argv: mixed, config: RNConfig, args: RunServerArgs) {
   /* $FlowFixMe(site=react_native_fb) ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
-  runServer(runServerArgs, configT, startedCallback, readyCallback);
+  runServer(args, configT);
 }
 
 module.exports = {
