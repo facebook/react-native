@@ -6,9 +6,6 @@
  */
 
 #include "Color.h"
-#include <CoreGraphics/CoreGraphics.h>
-#include <CoreGraphics/CGColor.h>
-#include <cassert>
 
 namespace facebook {
 namespace react {

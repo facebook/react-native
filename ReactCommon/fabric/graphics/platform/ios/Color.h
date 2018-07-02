@@ -7,21 +7,17 @@
 
 #pragma once
 
-#include <CoreGraphics/CoreGraphics.h>
 #include <memory>
+
+#include <fabric/graphics/Float.h>
+
+#include <fabric/graphics/ColorComponents.h>
 
 namespace facebook {
 namespace react {
 
 using Color = CGColor;
 using SharedColor = std::shared_ptr<Color>;
-
-struct ColorComponents {
-  float red {0};
-  float green {0};
-  float blue {0};
-  float alpha {0};
-};
 
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);

@@ -8,24 +8,10 @@
 #include <algorithm>
 #include <tuple>
 
-#include <CoreGraphics/CGBase.h>
+#include <fabric/graphics/Float.h>
 
 namespace facebook {
 namespace react {
-
-/*
- * Exact type of float numbers which ideally should match a type behing
- * platform- and chip-architecture-specific float type.
- */
-using Float = CGFloat;
-
-/*
- * Large positive number signifies that the `Float` values is `undefined`.
- */
-const Float kFloatUndefined = CGFLOAT_MAX;
-
-const Float kFloatMax = CGFLOAT_MAX;
-const Float kFloatMin = CGFLOAT_MIN;
 
 /*
  * Point
