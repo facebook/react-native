@@ -12,7 +12,10 @@
 
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
+const ROOTS = [
+  path.resolve(__dirname, '..') + path.sep,
+  path.resolve(__dirname, '../../react-native-windows') + path.sep,
+];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*\/__(mocks|tests)__\/.*/,
@@ -33,7 +36,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
   // strip .android/.ios/.native/.web suffix
-  [/^(.*)\.(android|ios|native|web)$/, '$1'],
+  [/^(.*)\.(android|ios|native|web|windows)$/, '$1'],
 ];
 
 const haste = {
@@ -63,11 +66,12 @@ function isHastePath(filePath /*: string */) /*: boolean */ {
     return false;
   }
 
-  if (!filePath.startsWith(ROOT)) {
+  const root = ROOTS.find(r => filePath.startsWith(r));
+  if (!root) {
     return false;
   }
 
-  filePath = filePath.substr(ROOT.length + 1);
+  filePath = filePath.substr(root.length);
   if (BLACKLISTED_PATTERNS.some(pattern => pattern.test(filePath))) {
     return false;
   }
