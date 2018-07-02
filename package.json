@@ -126,7 +126,7 @@
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
     "lint": "eslint .",
-    "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
+    "prettier": "prettier \"./**/*.js\" --write",
     "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
     "docker-setup-android": "docker pull reactnativeci/android-base:latest",
     "docker-build-android-base": "docker build -t reactnativeci/android-base -f ContainerShip/Dockerfile.android-base .",
