@@ -16,14 +16,10 @@ const ScrollView = require('ScrollView');
 const Text = require('Text');
 const View = require('View');
 
-const Animated = {
+module.exports = {
+  ...AnimatedImplementation,
   View: AnimatedImplementation.createAnimatedComponent(View),
   Text: AnimatedImplementation.createAnimatedComponent(Text),
   Image: AnimatedImplementation.createAnimatedComponent(Image),
   ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),
 };
-
-Object.assign((Animated: Object), AnimatedImplementation);
-
-module.exports = ((Animated: any): typeof AnimatedImplementation &
-  typeof Animated);
