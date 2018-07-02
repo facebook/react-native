@@ -354,7 +354,9 @@ function startServerInNewWindow(port) {
   const scriptFile = isWindows
     ? 'launchPackager.bat'
     : 'launchPackager.command';
-  const packagerEnvFilename = isWindows ? '.packager.bat' : '.packager.env';
+  const packagerEnvFilename = isWindows
+    ? '.packager.bat'
+    : '.packager.env';
   const portExportContent = isWindows
     ? `set RCT_METRO_PORT=${port}`
     : `export RCT_METRO_PORT=${port}`;
@@ -371,14 +373,11 @@ function startServerInNewWindow(port) {
     '..',
     '..',
     'scripts',
-    packagerEnvFilename,
+    packagerEnvFilename
   );
-
+  
   // ensure we overwrite file by passing the 'w' flag
-  fs.writeFileSync(packagerEnvFile, portExportContent, {
-    encoding: 'utf8',
-    flag: 'w',
-  });
+  fs.writeFileSync(packagerEnvFile, portExportContent, {encoding: 'utf8', flag: 'w'});
 
   if (process.platform === 'darwin') {
     if (terminal) {
