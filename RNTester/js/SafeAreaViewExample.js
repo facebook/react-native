@@ -64,36 +64,12 @@ class SafeAreaViewExample extends React.Component<
   }
 }
 
-class IsIPhoneXExample extends React.Component<{}> {
-  render() {
-    return (
-      <View>
-        <Text>
-          Is this an iPhone X:{' '}
-          {DeviceInfo.isIPhoneX_deprecated
-            ? 'Yeah!'
-            : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
-        </Text>
-      </View>
-    );
-  }
-}
-
 exports.examples = [
   {
     title: '<SafeAreaView> Example',
     description:
       'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.',
     render: () => <SafeAreaViewExample />,
-  },
-  {
-    title: 'isIPhoneX_deprecated Example',
-    description:
-      '`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-      'Note: This prop is deprecated and will be removed right after June 01, 2018. ' +
-      'Please use this only for a quick and temporary solution. ' +
-      'Use <SafeAreaView> instead.',
-    render: () => <IsIPhoneXExample />,
   },
 ];
 
