@@ -191,7 +191,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                  body:RCTExportedDimensions(_bridge)];
+                                                  body:nextInterfaceDimensions];
 #pragma clang diagnostic pop
   }
 
