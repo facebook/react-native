@@ -212,8 +212,6 @@ public class ViewProps {
               PADDING_START,
               PADDING_END));
 
-  public static boolean sIsOptimizationsEnabled;
-
   public static boolean isLayoutOnly(ReadableMap map, String prop) {
     if (LAYOUT_ONLY_PROPS.contains(prop)) {
       return true;
@@ -222,47 +220,43 @@ public class ViewProps {
       return AUTO.equals(value) || BOX_NONE.equals(value);
     }
 
-
-    if (sIsOptimizationsEnabled) {
-      switch (prop) {
-        case OPACITY:
-          // null opacity behaves like opacity = 1
-          // Ignore if explicitly set to default opacity.
-          return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
-        case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-          if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
-            return false;
-          }
-          if (map.hasKey(BORDER_WIDTH)
-            && !map.isNull(BORDER_WIDTH)
-            && map.getDouble(BORDER_WIDTH) != 0d) {
-            return false;
-          }
-          return true;
-        case BORDER_LEFT_COLOR:
-          return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
-        case BORDER_RIGHT_COLOR:
-          return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
-        case BORDER_TOP_COLOR:
-          return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
-        case BORDER_BOTTOM_COLOR:
-          return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
-        case BORDER_WIDTH:
-          return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
-        case BORDER_LEFT_WIDTH:
-          return map.isNull(BORDER_LEFT_WIDTH) || map.getDouble(BORDER_LEFT_WIDTH) == 0d;
-        case BORDER_TOP_WIDTH:
-          return map.isNull(BORDER_TOP_WIDTH) || map.getDouble(BORDER_TOP_WIDTH) == 0d;
-        case BORDER_RIGHT_WIDTH:
-          return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
-        case BORDER_BOTTOM_WIDTH:
-          return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
-        case OVERFLOW:
-          return map.isNull(OVERFLOW) || VISIBLE.equals(map.getString(OVERFLOW));
-        default:
+    switch (prop) {
+      case OPACITY:
+        // null opacity behaves like opacity = 1
+        // Ignore if explicitly set to default opacity.
+        return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
+      case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
+        if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
           return false;
+        }
+        if (map.hasKey(BORDER_WIDTH)
+          && !map.isNull(BORDER_WIDTH)
+          && map.getDouble(BORDER_WIDTH) != 0d) {
+          return false;
+        }
+        return true;
+      case BORDER_LEFT_COLOR:
+        return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
+      case BORDER_RIGHT_COLOR:
+        return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
+      case BORDER_TOP_COLOR:
+        return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
+      case BORDER_BOTTOM_COLOR:
+        return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
+      case BORDER_WIDTH:
+        return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
+      case BORDER_LEFT_WIDTH:
+        return map.isNull(BORDER_LEFT_WIDTH) || map.getDouble(BORDER_LEFT_WIDTH) == 0d;
+      case BORDER_TOP_WIDTH:
+        return map.isNull(BORDER_TOP_WIDTH) || map.getDouble(BORDER_TOP_WIDTH) == 0d;
+      case BORDER_RIGHT_WIDTH:
+        return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
+      case BORDER_BOTTOM_WIDTH:
+        return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
+      case OVERFLOW:
+        return map.isNull(OVERFLOW) || VISIBLE.equals(map.getString(OVERFLOW));
+      default:
+        return false;
       }
-    }
-    return false;
   }
 }
