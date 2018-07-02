@@ -13,14 +13,14 @@ rn_xplat_cxx_library(
     name = "textlayoutmanager",
     srcs = glob(
         [
-            "**/*.cpp",
-            "**/*.mm",
+            "*.cpp",
         ],
-        exclude = glob(["tests/**/*.cpp"]),
     ),
-    headers = glob(
-        ["**/*.h"],
-        exclude = glob(["tests/**/*.h"]),
+    headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "",
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
@@ -35,6 +35,24 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("platform/android", "*.h"),
+        ],
+        prefix = "fabric/textlayoutmanager",
+    ),
+    fbandroid_headers = subdir_glob(
+        [
+            ("platform/android", "**/*.h"),
+        ],
+        prefix = "",
+    ),
+    fbandroid_srcs = glob(
+        [
+            "platform/android/**/*.cpp",
+        ],
+    ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     fbobjc_tests = [
@@ -46,6 +64,26 @@ rn_xplat_cxx_library(
         "$SDKROOT/System/Library/Frameworks/Foundation.framework",
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
     ],
+    ios_deps = [
+    ],
+    ios_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "fabric/textlayoutmanager",
+    ),
+    ios_headers = subdir_glob(
+        [
+            ("platform/ios", "**/*.h"),
+        ],
+        prefix = "",
+    ),
+    ios_srcs = glob(
+        [
+            "platform/ios/**/*.cpp",
+            "platform/ios/**/*.mm",
+        ],
+    ),
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
