@@ -212,6 +212,10 @@ let Image = (
     );
   }
 
+  if (!source.uri && !Array.isArray(source)) {
+    return null;
+  }
+
   let style;
   let sources;
   if (source?.uri != null) {
