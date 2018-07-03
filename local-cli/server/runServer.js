@@ -16,6 +16,7 @@ const Metro = require('metro');
 
 const {Terminal} = require('metro-core');
 
+const morgan = require('morgan');
 const path = require('path');
 const MiddlewareManager = require('./middleware/MiddlewareManager');
 
@@ -46,6 +47,8 @@ async function runServer(args: Args, config: ConfigT) {
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
   const middlewareManager = new MiddlewareManager(args);
+
+  middlewareManager.getConnectInstance().use(morgan('combined'));
 
   args.watchFolders.forEach(middlewareManager.serveStatic);
 

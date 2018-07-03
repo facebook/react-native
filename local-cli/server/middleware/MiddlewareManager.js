@@ -11,7 +11,6 @@
 const compression = require('compression');
 const connect = require('connect');
 const errorhandler = require('errorhandler');
-const morgan = require('morgan');
 const path = require('path');
 const serveStatic = require('serve-static');
 const WebSocketServer = require('ws').Server;
@@ -33,7 +32,8 @@ type WebSocketProxy = {
   server: WebSocketServer,
   isChromeConnected: () => boolean,
 };
-type Connect = any;
+
+type Connect = $Call<connect>;
 
 module.exports = class MiddlewareManager {
   app: Connect;
@@ -52,7 +52,6 @@ module.exports = class MiddlewareManager {
       .use(statusPageMiddleware)
       .use(systraceProfileMiddleware)
       .use(indexPageMiddleware)
-      .use(morgan('combined'))
       .use(errorhandler());
   }
 
