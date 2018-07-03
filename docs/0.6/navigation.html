@@ -47,6 +47,8 @@ const App = createStackNavigator({
   Home: { screen: HomeScreen },
   Profile: { screen: ProfileScreen },
 });
+
+export <span class="hljs-keyword">default</span> App;
 </code></pre>
 <p>Each screen component can set navigation options such as the header title. It can use action creators on the <code>navigation</code> prop to link to other screens:</p>
 <pre><code class="hljs"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HomeScreen</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
