@@ -166,7 +166,7 @@ SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) 
     componentDescriptor->cloneShadowNode(
       shadowNode,
       nullptr,
-      componentDescriptor->createEventEmitter(nullptr /*TODO(shergin)*/, shadowNode->getTag()),
+      shadowNode->getEventEmitter(),
       nullptr
     );
 
@@ -183,7 +183,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNod
     componentDescriptor->cloneShadowNode(
       shadowNode,
       nullptr,
-      componentDescriptor->createEventEmitter(nullptr /*TODO(shergin)*/, shadowNode->getTag()),
+      shadowNode->getEventEmitter(),
       ShadowNode::emptySharedShadowNodeSharedList()
     );
 
@@ -201,7 +201,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &
     componentDescriptor->cloneShadowNode(
       shadowNode,
       componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
-      componentDescriptor->createEventEmitter(nullptr /*TODO(shergin)*/, shadowNode->getTag()),
+      shadowNode->getEventEmitter(),
       nullptr
     );
 
@@ -219,7 +219,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedS
     componentDescriptor->cloneShadowNode(
       shadowNode,
       componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
-      componentDescriptor->createEventEmitter(nullptr /*TODO(shergin)*/, shadowNode->getTag()),
+      shadowNode->getEventEmitter(),
       ShadowNode::emptySharedShadowNodeSharedList()
     );
 
