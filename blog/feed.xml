@@ -4,7 +4,7 @@
         <title>React Native Blog</title>
         <link>https://facebook.github.io/react-native/blog</link>
         <description>The best place to stay up-to-date with the latest React Native news and events.</description>
-        <lastBuildDate>Thu, 14 Jun 2018 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 04 Jul 2018 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -12,6 +12,14 @@
             <url>https://facebook.github.io/react-native/img/header_logo.png</url>
             <link>https://facebook.github.io/react-native/blog</link>
         </image>
+        <item>
+            <title><![CDATA[Releasing 0.56]]></title>
+            <link>https://facebook.github.io/react-native/blog/2018/07/04/releasing-react-native-056.html</link>
+            <guid>https://facebook.github.io/react-native/blog/2018/07/04/releasing-react-native-056.html</guid>
+            <pubDate>Wed, 04 Jul 2018 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>The long-awaited 0.56 version of React Native is now available 🎉. This blog post highlights some of the <a href="https://github.com/react-native-community/react-native-releases/blob/master/CHANGELOG.md#highlights">changes</a> introduced in this new release. We</p>
+]]></description>
+        </item>
         <item>
             <title><![CDATA[State of React Native 2018]]></title>
             <link>https://facebook.github.io/react-native/blog/2018/06/14/state-of-react-native-2018.html</link>
