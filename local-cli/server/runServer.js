@@ -66,6 +66,8 @@ async function runServer(args: Args, config: ConfigT) {
         : config.getTransformModulePath(),
       watch: !args.nonPersistent,
     },
+    host: args.host,
+    port: args.port,
   });
 
   // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
