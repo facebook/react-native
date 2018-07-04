@@ -55,7 +55,7 @@ android_prebuilt_aar(
 
 remote_file(
     name = "android-lifecycle-runtime-aar",
-    sha1 = "4286e1ae9364b485cb2ff7a370e355b7c570015b",
+    sha1 = "95428e5f6bf6875a6a1125d2157c3836a1a837f5",
     url = "mvn:android.arch.lifecycle:runtime:aar:1.1.0",
 )
 
