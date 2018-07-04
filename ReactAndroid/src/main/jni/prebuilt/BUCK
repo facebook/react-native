@@ -1,14 +1,13 @@
-include_defs("//ReactAndroid/DEFS")
-
+load("//ReactNative:DEFS.bzl", "rn_android_prebuilt_aar", "rn_prebuilt_native_library")
 # Temp workaround to get the build working e2e, Gradle builds them for us
 
-prebuilt_native_library(
+rn_prebuilt_native_library(
     name = "reactnative-libs",
     native_libs = "lib",
     visibility = ["PUBLIC"],
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "android-jsc",
     aar = ":android-jsc-aar",
     visibility = ["PUBLIC"],

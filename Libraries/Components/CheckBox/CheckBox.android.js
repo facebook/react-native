@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CheckBox
  * @flow
  * @format
  */
@@ -21,6 +18,8 @@ const ViewPropTypes = require('ViewPropTypes');
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
+
 type DefaultProps = {
   value: boolean,
   disabled: boolean,
@@ -34,10 +33,53 @@ type DefaultProps = {
  * If the `value` prop is not updated, the component will continue to render
  * the supplied `value` prop instead of the expected result of any user actions.
  *
+ * ```
+ * import React from 'react';
+ * import { AppRegistry, StyleSheet, Text, View, CheckBox } from 'react-native';
+ *
+ * export default class App extends React.Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       checked: false
+ *     }
+ *   }
+ *
+ *   toggle() {
+ *     this.setState(({checked}) => {
+ *       return {
+ *         checked: !checked
+ *       };
+ *     });
+ *   }
+ *
+ *   render() {
+ *     const {checked} = this.state;
+ *     return (
+ *       <View style={styles.container}>
+ *         <Text>Checked</Text>
+ *         <CheckBox value={checked} onChange={this.toggle.bind(this)} />
+ *       </View>
+ *     );
+ *   }
+ * }
+ *
+ * const styles = StyleSheet.create({
+ *   container: {
+ *     flex: 1,
+ *     flexDirection: 'row',
+ *     alignItems: 'center',
+ *     justifyContent: 'center',
+ *   },
+ * });
+ *
+ * // skip this line if using Create React Native App
+ * AppRegistry.registerComponent('App', () => App);
+ * ```
+ *
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
 let CheckBox = createReactClass({
   displayName: 'CheckBox',
   propTypes: {
@@ -112,14 +154,6 @@ let styles = StyleSheet.create({
   rctCheckBox: {
     height: 32,
     width: 32,
-  },
-});
-
-let RCTCheckBox = requireNativeComponent('AndroidCheckBox', CheckBox, {
-  nativeOnly: {
-    onChange: true,
-    on: true,
-    enabled: true,
   },
 });
 

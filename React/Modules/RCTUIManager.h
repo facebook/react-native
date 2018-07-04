@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -28,6 +26,12 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * The RCTUIManager is the module responsible for updating the view hierarchy.
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
+
+/**
+ * Register a root view tag and creates corresponding `rootView` and
+ * `rootShadowView`.
+ */
+- (void)registerRootViewTag:(NSNumber *)rootTag;
 
 /**
  * Register a root view with the RCTUIManager.
@@ -80,14 +84,7 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * Use `UIViewNoIntrinsicMetric` to ignore a dimension.
  * The `size` must NOT include padding and border.
  */
-- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
-
-/**
- * Update the background color of a view. The source of truth for
- * backgroundColor is the shadow view, so if to update backgroundColor from
- * native code you will need to call this method.
- */
-- (void)setBackgroundColor:(UIColor *)color forView:(UIView *)view;
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(UIView *)view;
 
 /**
  * Sets up layout animation which will perform on next layout pass.
@@ -142,17 +139,6 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * The view that is currently first responder, according to the JS context.
  */
 + (UIView *)JSResponder;
-
-/**
- * Normally, UI changes are not applied until the complete batch of method
- * invocations from JavaScript to native has completed.
- *
- * Setting this to YES will flush UI changes sooner, which could potentially
- * result in inconsistent UI updates.
- *
- * The default is NO (recommended).
- */
-@property (atomic, assign) BOOL unsafeFlushUIChangesBeforeBatchEnds;
 
 /**
  * In some cases we might want to trigger layout from native side.

@@ -1,31 +1,89 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Switch
+ * @format
  * @flow
  */
+
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var React = require('React');
-const PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
+const Platform = require('Platform');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const nullthrows = require('fbjs/lib/nullthrows');
+const requireNativeComponent = require('requireNativeComponent');
 
-type DefaultProps = {
-  value: boolean,
-  disabled: boolean,
-};
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  /**
+   * The value of the switch.  If true the switch will be turned on.
+   * Default value is false.
+   */
+  value?: ?boolean,
+
+  /**
+   * If true the user won't be able to toggle the switch.
+   * Default value is false.
+   */
+  disabled?: ?boolean,
+
+  /**
+   * Switch change handler.
+   *
+   * Invoked with the event when the value changes. For getting the value
+   * the switch was changed to use onValueChange instead.
+   */
+  onChange?: ?Function,
+
+  /**
+   * Invoked with the new value when the value changes.
+   */
+  onValueChange?: ?Function,
+
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+
+  /**
+   * Border color on iOS and background color on Android when the switch is turned off.
+   */
+  tintColor?: ?ColorValue,
+
+  /**
+   * Background color when the switch is turned on.
+   */
+  onTintColor?: ?ColorValue,
+
+  /**
+   * Color of the foreground switch grip.
+   */
+  thumbTintColor?: ?ColorValue,
+|}>;
+
+type NativeSwitchType = Class<
+  ReactNative.NativeComponent<
+    $ReadOnly<{|
+      ...Props,
+      enabled?: ?boolean,
+      on?: ?boolean,
+      trackTintColor?: ?ColorValue,
+    |}>,
+  >,
+>;
+
+const RCTSwitch: NativeSwitchType =
+  Platform.OS === 'android'
+    ? (requireNativeComponent('AndroidSwitch'): any)
+    : (requireNativeComponent('RCTSwitch'): any);
 
 /**
  * Renders a boolean input.
@@ -38,115 +96,68 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-// $FlowFixMe(>=0.41.0)
-var Switch = createReactClass({
-  displayName: 'Switch',
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * The value of the switch.  If true the switch will be turned on.
-     * Default value is false.
-     */
-    value: PropTypes.bool,
-    /**
-     * If true the user won't be able to toggle the switch.
-     * Default value is false.
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Invoked with the new value when the value changes.
-     */
-    onValueChange: PropTypes.func,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
+class Switch extends React.Component<Props> {
+  static defaultProps = {
+    value: false,
+    disabled: false,
+  };
 
-    /**
-     * Border color on iOS and background color on Android when the switch is turned off.
-     */
-    tintColor: ColorPropType,
-    /**
-     * Background color when the switch is turned on.
-     */
-    onTintColor: ColorPropType,
-    /**
-     * Color of the foreground switch grip.
-     */
-    thumbTintColor: ColorPropType,
-  },
+  _rctSwitch: ?React.ElementRef<NativeSwitchType> = null;
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      value: false,
-      disabled: false,
-    };
-  },
-
-  mixins: [NativeMethodsMixin],
-
-  _rctSwitch: {},
-  _onChange: function(event: Object) {
+  _onChange = (event: Object) => {
     if (Platform.OS === 'android') {
-      this._rctSwitch.setNativeProps({on: this.props.value});
+      nullthrows(this._rctSwitch).setNativeProps({on: this.props.value});
     } else {
-      this._rctSwitch.setNativeProps({value: this.props.value});
+      nullthrows(this._rctSwitch).setNativeProps({value: this.props.value});
     }
-    //Change the props after the native props are set in case the props change removes the component
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
-    this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
-  },
 
-  render: function() {
-    var props = {...this.props};
-    props.onStartShouldSetResponder = () => true;
-    props.onResponderTerminationRequest = () => false;
-    if (Platform.OS === 'android') {
-      props.enabled = !this.props.disabled;
-      props.on = this.props.value;
-      props.style = this.props.style;
-      props.trackTintColor = this.props.value ? this.props.onTintColor : this.props.tintColor;
-    } else if (Platform.OS === 'ios') {
-      props.style = [styles.rctSwitchIOS, this.props.style];
-    }
+    this.props.onChange && this.props.onChange(event);
+    this.props.onValueChange &&
+      this.props.onValueChange(event.nativeEvent.value);
+  };
+
+  render() {
+    const props = {
+      ...this.props,
+      onStartShouldSetResponder: () => true,
+      onResponderTerminationRequest: () => false,
+    };
+
+    const platformProps =
+      Platform.OS === 'android'
+        ? {
+            enabled: !this.props.disabled,
+            on: this.props.value,
+            style: this.props.style,
+            trackTintColor: this.props.value
+              ? this.props.onTintColor
+              : this.props.tintColor,
+          }
+        : {
+            style: StyleSheet.compose(
+              styles.rctSwitchIOS,
+              this.props.style,
+            ),
+          };
+
     return (
       <RCTSwitch
         {...props}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
-        ref={(ref) => { this._rctSwitch = ref; }}
+        {...platformProps}
+        ref={ref => {
+          this._rctSwitch = ref;
+        }}
         onChange={this._onChange}
       />
     );
-  },
-});
+  }
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   rctSwitchIOS: {
     height: 31,
     width: 51,
-  }
+  },
 });
-
-if (Platform.OS === 'android') {
-  var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
-    nativeOnly: {
-      onChange: true,
-      on: true,
-      enabled: true,
-      trackTintColor: true,
-    }
-  });
-} else {
-  var RCTSwitch = requireNativeComponent('RCTSwitch', Switch, {
-    nativeOnly: {
-      onChange: true
-    }
-  });
-}
 
 module.exports = Switch;

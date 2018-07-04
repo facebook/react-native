@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -29,7 +27,7 @@ import java.util.Map;
  * 3/ {@link ReadableArray} mapped from JS Array
  * 4/ {@link ReadableMap} mapped from JS Object
  * 5/ {@link Callback} mapped from js function and can be used only as a last parameter or in the
- * case when it express success & error callback pair as two last arguments respecively.
+ * case when it express success & error callback pair as two last arguments respectively.
  *
  * All methods exposed as native to JS with {@link ReactMethod} annotation must return
  * {@code void}.

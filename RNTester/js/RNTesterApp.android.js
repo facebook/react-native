@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RNTesterApp
+ * @format
  * @flow
  */
+
 'use strict';
 
 const AppRegistry = require('AppRegistry');
@@ -32,7 +31,7 @@ const View = require('View');
 
 const nativeImageSource = require('nativeImageSource');
 
-import type { RNTesterNavigationState } from './RNTesterNavigationReducer';
+import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
@@ -47,24 +46,29 @@ const APP_STATE_KEY = 'RNTesterAppState.v2';
 const HEADER_LOGO_ICON = nativeImageSource({
   android: 'launcher_icon',
   width: 132,
-  height: 144
+  height: 144,
 });
 
 const HEADER_NAV_ICON = nativeImageSource({
   android: 'ic_menu_black_24dp',
   width: 48,
-  height: 48
+  height: 48,
 });
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
-  componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButtonPress);
+  UNSAFE_componentWillMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this._handleBackButtonPress,
+    );
   }
 
   componentDidMount() {
-    Linking.getInitialURL().then((url) => {
+    Linking.getInitialURL().then(url => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
-        const exampleAction = URIActionMap(this.props.exampleFromAppetizeParams);
+        const exampleAction = URIActionMap(
+          this.props.exampleFromAppetizeParams,
+        );
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
         if (err || !storedString) {
@@ -97,7 +101,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         onDrawerClose={() => {
           this._overrideBackPressForDrawerLayout = false;
         }}
-        ref={(drawer) => { this.drawer = drawer; }}
+        ref={drawer => {
+          this.drawer = drawer;
+        }}
         renderNavigationView={this._renderDrawerContent}
         statusBarBackgroundColor="#589c90">
         {this._renderApp()}
@@ -119,9 +125,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   };
 
   _renderApp() {
-    const {
-      openExample,
-    } = this.state;
+    const {openExample} = this.state;
 
     if (openExample) {
       const ExampleModule = RNTesterList.Modules[openExample];
@@ -131,7 +135,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
             onExampleExit={() => {
               this._handleAction(RNTesterActions.Back());
             }}
-            ref={(example) => { this._exampleRef = example; }}
+            ref={example => {
+              this._exampleRef = example;
+            }}
           />
         );
       } else if (ExampleModule) {
@@ -146,7 +152,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
             />
             <RNTesterExampleContainer
               module={ExampleModule}
-              ref={(example) => { this._exampleRef = example; }}
+              ref={example => {
+                this._exampleRef = example;
+              }}
             />
           </View>
         );
@@ -174,9 +182,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     this.drawer && this.drawer.closeDrawer();
     const newState = RNTesterNavigationReducer(this.state, action);
     if (this.state !== newState) {
-      this.setState(
-        newState,
-        () => AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state))
+      this.setState(newState, () =>
+        AsyncStorage.setItem(APP_STATE_KEY, JSON.stringify(this.state)),
       );
       return true;
     }

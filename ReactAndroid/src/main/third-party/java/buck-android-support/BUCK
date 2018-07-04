@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_integration_tests_target")
 
 # this lib was compiled by buck version : 6cbf2709778ea352a169d1c84e3ef2894dfa39ec
 prebuilt_jar(

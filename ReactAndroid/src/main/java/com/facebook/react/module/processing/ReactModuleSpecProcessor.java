@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.module.processing;
 
@@ -170,8 +173,13 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         List<? extends Element> elements = typeElement.getEnclosedElements();
         boolean hasConstants = false;
         if (elements != null) {
-          hasConstants = elements.stream()
-            .anyMatch((Element m) -> m.getKind() == ElementKind.METHOD && m.getSimpleName().contentEquals("getConstants"));
+          hasConstants =
+              elements
+                  .stream()
+                  .filter(element -> element.getKind() == ElementKind.METHOD)
+                  .map(Element::getSimpleName)
+                  .anyMatch(
+                      name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
         String valueString = new StringBuilder()

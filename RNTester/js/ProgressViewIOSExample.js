@@ -1,24 +1,19 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule ProgressViewIOSExample
  */
+
 'use strict';
 
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {
-  ProgressViewIOS,
-  StyleSheet,
-  View,
-} = ReactNative;
+var {ProgressViewIOS, StyleSheet, View} = ReactNative;
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -40,7 +35,7 @@ var ProgressViewExample = createReactClass({
 
   updateProgress() {
     var progress = this.state.progress + 0.01;
-    this.setState({ progress });
+    this.setState({progress});
     this.requestAnimationFrame(() => this.updateProgress());
   },
 
@@ -52,11 +47,30 @@ var ProgressViewExample = createReactClass({
   render() {
     return (
       <View style={styles.container}>
-        <ProgressViewIOS style={styles.progressView} progress={this.getProgress(0)}/>
-        <ProgressViewIOS style={styles.progressView} progressTintColor="purple" progress={this.getProgress(0.2)}/>
-        <ProgressViewIOS style={styles.progressView} progressTintColor="red" progress={this.getProgress(0.4)}/>
-        <ProgressViewIOS style={styles.progressView} progressTintColor="orange" progress={this.getProgress(0.6)}/>
-        <ProgressViewIOS style={styles.progressView} progressTintColor="yellow" progress={this.getProgress(0.8)}/>
+        <ProgressViewIOS
+          style={styles.progressView}
+          progress={this.getProgress(0)}
+        />
+        <ProgressViewIOS
+          style={styles.progressView}
+          progressTintColor="purple"
+          progress={this.getProgress(0.2)}
+        />
+        <ProgressViewIOS
+          style={styles.progressView}
+          progressTintColor="red"
+          progress={this.getProgress(0.4)}
+        />
+        <ProgressViewIOS
+          style={styles.progressView}
+          progressTintColor="orange"
+          progress={this.getProgress(0.6)}
+        />
+        <ProgressViewIOS
+          style={styles.progressView}
+          progressTintColor="yellow"
+          progress={this.getProgress(0.8)}
+        />
       </View>
     );
   },
@@ -66,14 +80,14 @@ exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'ProgressViewIOS';
 exports.description = 'ProgressViewIOS';
-exports.examples = [{
-  title: 'ProgressViewIOS',
-  render() {
-    return (
-      <ProgressViewExample/>
-    );
-  }
-}];
+exports.examples = [
+  {
+    title: 'ProgressViewIOS',
+    render() {
+      return <ProgressViewExample />;
+    },
+  },
+];
 
 var styles = StyleSheet.create({
   container: {
@@ -82,5 +96,5 @@ var styles = StyleSheet.create({
   },
   progressView: {
     marginTop: 20,
-  }
+  },
 });

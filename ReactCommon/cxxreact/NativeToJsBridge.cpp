@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "NativeToJsBridge.h"
 
@@ -11,6 +14,7 @@
 #include "SystraceSection.h"
 #include "MethodCall.h"
 #include "MessageQueueThread.h"
+#include "ModuleRegistry.h"
 #include "RAMBundleRegistry.h"
 
 #ifdef WITH_FBSYSTRACE
@@ -171,6 +175,12 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
     });
 }
 
+void NativeToJsBridge::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
+  runOnExecutorQueue([bundleId, bundlePath] (JSExecutor* executor) {
+    executor->registerBundle(bundleId, bundlePath);
+  });
+}
+
 void NativeToJsBridge::setGlobalVariable(std::string propName,
                                          std::unique_ptr<const JSBigString> jsonValue) {
   runOnExecutorQueue([propName=std::move(propName), jsonValue=folly::makeMoveWrapper(std::move(jsonValue))]
@@ -184,13 +194,15 @@ void* NativeToJsBridge::getJavaScriptContext() {
   return m_executor->getJavaScriptContext();
 }
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
+bool NativeToJsBridge::isInspectable() {
+  return m_executor->isInspectable();
+}
+
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
 }
-#endif
 
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if

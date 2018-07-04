@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTImageCache.h"
@@ -16,6 +14,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
+#import <React/RCTResizeMode.h>
 
 #import "RCTImageUtils.h"
 
@@ -24,8 +23,8 @@ static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode, NSString *responseDate)
 {
-    return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld|%@",
-            imageTag, size.width, size.height, scale, (long long)resizeMode, responseDate];
+  return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld|%@",
+          imageTag, size.width, size.height, scale, (long long)resizeMode, responseDate];
 }
 
 @implementation RCTImageCache
@@ -38,7 +37,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 {
   _decodedImageCache = [NSCache new];
   _decodedImageCache.totalCostLimit = 5 * 1024 * 1024; // 5MB
-
+  
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(clearCache)
                                                name:UIApplicationDidReceiveMemoryWarningNotification
@@ -47,7 +46,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                                            selector:@selector(clearCache)
                                                name:UIApplicationWillResignActiveNotification
                                              object:nil];
-
+  
   return self;
 }
 

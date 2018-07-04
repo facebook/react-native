@@ -1,24 +1,18 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule SliderExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Slider,
-  Text,
-  StyleSheet,
-  View,
-} = ReactNative;
+var {Slider, Text, StyleSheet, View} = ReactNative;
 
 class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
@@ -32,18 +26,22 @@ class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Text style={styles.text} >
+        <Text style={styles.text}>
           {this.state.value && +this.state.value.toFixed(3)}
         </Text>
         <Slider
           {...this.props}
-          onValueChange={(value) => this.setState({value: value})} />
+          onValueChange={value => this.setState({value: value})}
+        />
       </View>
     );
   }
 }
 
-class SlidingCompleteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class SlidingCompleteExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     slideCompletionValue: 0,
     slideCompletionCount: 0,
@@ -54,11 +52,16 @@ class SlidingCompleteExample extends React.Component<$FlowFixMeProps, $FlowFixMe
       <View>
         <SliderExample
           {...this.props}
-          onSlidingComplete={(value) => this.setState({
+          onSlidingComplete={value =>
+            this.setState({
               slideCompletionValue: value,
-              slideCompletionCount: this.state.slideCompletionCount + 1})} />
+              slideCompletionCount: this.state.slideCompletionCount + 1,
+            })
+          }
+        />
         <Text>
-          Completions: {this.state.slideCompletionCount} Value: {this.state.slideCompletionValue}
+          Completions: {this.state.slideCompletionCount} Value:{' '}
+          {this.state.slideCompletionValue}
         </Text>
       </View>
     );
@@ -86,38 +89,31 @@ exports.examples = [
     title: 'Default settings',
     render(): React.Element<any> {
       return <SliderExample />;
-    }
+    },
   },
   {
     title: 'Initial value: 0.5',
     render(): React.Element<any> {
       return <SliderExample value={0.5} />;
-    }
+    },
   },
   {
     title: 'minimumValue: -1, maximumValue: 2',
     render(): React.Element<any> {
-      return (
-        <SliderExample
-          minimumValue={-1}
-          maximumValue={2}
-        />
-      );
-    }
+      return <SliderExample minimumValue={-1} maximumValue={2} />;
+    },
   },
   {
     title: 'step: 0.25',
     render(): React.Element<any> {
       return <SliderExample step={0.25} />;
-    }
+    },
   },
   {
     title: 'onSlidingComplete',
     render(): React.Element<any> {
-      return (
-        <SlidingCompleteExample />
-      );
-    }
+      return <SlidingCompleteExample />;
+    },
   },
   {
     title: 'Custom min/max track tint color',
@@ -129,28 +125,28 @@ exports.examples = [
           value={0.5}
         />
       );
-    }
+    },
   },
   {
     title: 'Custom thumb color',
     platform: 'android',
     render(): React.Element<any> {
       return <SliderExample thumbTintColor={'blue'} />;
-    }
+    },
   },
   {
     title: 'Custom thumb image',
     platform: 'ios',
     render(): React.Element<any> {
       return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
-    }
+    },
   },
   {
     title: 'Custom track image',
     platform: 'ios',
     render(): React.Element<any> {
       return <SliderExample trackImage={require('./slider.png')} />;
-    }
+    },
   },
   {
     title: 'Custom min/max track image',
@@ -162,6 +158,6 @@ exports.examples = [
           maximumTrackImage={require('./slider-right.png')}
         />
       );
-    }
+    },
   },
 ];

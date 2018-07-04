@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const fs = require('fs');
@@ -26,7 +27,12 @@ const binaryExtensions = ['.png', '.jar'];
  *        If null, files will be overwritten.
  *        Function(path, 'identical' | 'changed' | 'new') => 'keep' | 'overwrite'
  */
-function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback) {
+function copyAndReplace(
+  srcPath,
+  destPath,
+  replacements,
+  contentChangedCallback,
+) {
   if (fs.lstatSync(srcPath).isDirectory()) {
     if (!fs.existsSync(destPath)) {
       fs.mkdirSync(destPath);
@@ -57,16 +63,22 @@ function copyAndReplace(srcPath, destPath, replacements, contentChangedCallback)
       shouldOverwrite = contentChangedCallback(destPath, contentChanged);
     }
     if (shouldOverwrite === 'overwrite') {
-      copyBinaryFile(srcPath, destPath, (err) => {
-        if (err) { throw err; }
+      copyBinaryFile(srcPath, destPath, err => {
+        if (err) {
+          throw err;
+        }
       });
     }
   } else {
     // Text file
     const srcPermissions = fs.statSync(srcPath).mode;
     let content = fs.readFileSync(srcPath, 'utf8');
-    Object.keys(replacements).forEach(regex =>
-      content = content.replace(new RegExp(regex, 'g'), replacements[regex])
+    Object.keys(replacements).forEach(
+      regex =>
+        (content = content.replace(
+          new RegExp(regex, 'g'),
+          replacements[regex],
+        )),
     );
 
     let shouldOverwrite = 'overwrite';
@@ -108,7 +120,7 @@ function copyBinaryFile(srcPath, destPath, cb) {
     done(err);
   });
   const writeStream = fs.createWriteStream(destPath, {
-    mode: srcPermissions
+    mode: srcPermissions,
   });
   writeStream.on('error', function(err) {
     done(err);

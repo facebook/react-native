@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTVView.h"
@@ -29,24 +27,50 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    self.tvParallaxProperties = @{
-      @"enabled": @YES,
-      @"shiftDistanceX": @2.0f,
-      @"shiftDistanceY": @2.0f,
-      @"tiltAngle": @0.05f,
-      @"magnification": @1.0f
-    };
+    dispatch_once(&onceToken, ^{
+      defaultTVParallaxProperties = @{
+        @"enabled": @YES,
+        @"shiftDistanceX": @2.0f,
+        @"shiftDistanceY": @2.0f,
+        @"tiltAngle": @0.05f,
+        @"magnification": @1.0f,
+        @"pressMagnification": @1.0f,
+        @"pressDuration": @0.3f,
+        @"pressDelay": @0.0f
+      };
+    });
+    self.tvParallaxProperties = defaultTVParallaxProperties;
   }
 
   return self;
+}
+
+static NSDictionary* defaultTVParallaxProperties = nil;
+static dispatch_once_t onceToken;
+
+- (void)setTvParallaxProperties:(NSDictionary *)tvParallaxProperties {
+  if (_tvParallaxProperties == nil) {
+    _tvParallaxProperties = [defaultTVParallaxProperties copy];
+    return;
+  }
+
+  NSMutableDictionary *newParallaxProperties = [NSMutableDictionary dictionaryWithDictionary:_tvParallaxProperties];
+  for (NSString *k in [defaultTVParallaxProperties allKeys]) {
+    if (tvParallaxProperties[k]) {
+      newParallaxProperties[k] = tvParallaxProperties[k];
+    }
+  }
+  _tvParallaxProperties = [newParallaxProperties copy];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)setIsTVSelectable:(BOOL)isTVSelectable {
   self->_isTVSelectable = isTVSelectable;
-  if(isTVSelectable) {
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelect:)];
+  if (isTVSelectable) {
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] 
+                                           initWithTarget:self 
+                                                   action:@selector(handleSelect:)];
     recognizer.allowedPressTypes = @[@(UIPressTypeSelect)];
     _selectRecognizer = recognizer;
     [self addGestureRecognizer:_selectRecognizer];
@@ -59,8 +83,37 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (void)handleSelect:(__unused UIGestureRecognizer *)r
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
-                                                      object:@{@"eventType":@"select",@"tag":self.reactTag}];
+	if ([self.tvParallaxProperties[@"enabled"] boolValue] == YES) {
+    float magnification = [self.tvParallaxProperties[@"magnification"] floatValue];
+    float pressMagnification = [self.tvParallaxProperties[@"pressMagnification"] floatValue];
+		
+		// Duration of press animation
+		float pressDuration = [self.tvParallaxProperties[@"pressDuration"] floatValue];
+		
+		// Delay of press animation
+		float pressDelay = [self.tvParallaxProperties[@"pressDelay"] floatValue];
+		
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:pressDelay]];
+    
+    [UIView animateWithDuration:(pressDuration/2)
+      animations:^{
+        self.transform = CGAffineTransformMakeScale(pressMagnification, pressMagnification);
+      }
+      completion:^(__unused BOOL finished1){
+        [UIView animateWithDuration:(pressDuration/2)
+          animations:^{
+            self.transform = CGAffineTransformMakeScale(magnification, magnification);
+          }
+          completion:^(__unused BOOL finished2) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification 
+              object:@{@"eventType":@"select",@"tag":self.reactTag}];
+          }];
+       }];
+    
+	} else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:RCTTVNavigationEventNotification
+															                          object:@{@"eventType":@"select",@"tag":self.reactTag}];
+	}
 }
 
 - (BOOL)isUserInteractionEnabled
@@ -81,15 +134,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // Make horizontal movements shift the centre left and right
   UIInterpolatingMotionEffect *xShift = [[UIInterpolatingMotionEffect alloc]
-                                         initWithKeyPath:@"center.x"
-                                         type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+                                          initWithKeyPath:@"center.x"
+                                                     type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
   xShift.minimumRelativeValue = @( shiftDistanceX * -1.0f);
   xShift.maximumRelativeValue = @( shiftDistanceX);
 
   // Make vertical movements shift the centre up and down
   UIInterpolatingMotionEffect *yShift = [[UIInterpolatingMotionEffect alloc]
-                                         initWithKeyPath:@"center.y"
-                                         type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+                                          initWithKeyPath:@"center.y"
+                                                     type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
   yShift.minimumRelativeValue = @( shiftDistanceY * -1.0f);
   yShift.maximumRelativeValue = @( shiftDistanceY);
 
@@ -97,7 +150,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   CGFloat const tiltAngle = [self.tvParallaxProperties[@"tiltAngle"] floatValue];
 
   // Now make horizontal movements effect a rotation about the Y axis for side-to-side rotation.
-  UIInterpolatingMotionEffect *xTilt = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"layer.transform" type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+  UIInterpolatingMotionEffect *xTilt = [[UIInterpolatingMotionEffect alloc] 
+                                         initWithKeyPath:@"layer.transform"
+                                                    type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
 
   // CATransform3D value for minimumRelativeValue
   CATransform3D transMinimumTiltAboutY = CATransform3DIdentity;
@@ -114,7 +169,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   xTilt.maximumRelativeValue = [NSValue valueWithCATransform3D: transMaximumTiltAboutY];
 
   // Now make vertical movements effect a rotation about the X axis for up and down rotation.
-  UIInterpolatingMotionEffect *yTilt = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@"layer.transform" type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+  UIInterpolatingMotionEffect *yTilt = [[UIInterpolatingMotionEffect alloc] 
+                                         initWithKeyPath:@"layer.transform" 
+                                                    type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
 
   // CATransform3D value for minimumRelativeValue
   CATransform3D transMinimumTiltAboutX = CATransform3DIdentity;

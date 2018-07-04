@@ -1,63 +1,78 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule resolveAssetSource
- * @flow
  *
  * Resolves an asset into a `source` for `Image`.
+ *
+ * @format
+ * @flow
  */
+
 'use strict';
 
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
-const NativeModules = require('NativeModules');
 
-import type { ResolvedAssetSource } from 'AssetSourceResolver';
+import type {ResolvedAssetSource} from 'AssetSourceResolver';
 
-let _customSourceTransformer, _serverURL, _bundleSourceURL;
+let _customSourceTransformer, _serverURL, _scriptURL;
+
+let _sourceCodeScriptURL: ?string;
+function getSourceCodeScriptURL(): ?string {
+  if (_sourceCodeScriptURL) {
+    return _sourceCodeScriptURL;
+  }
+
+  let sourceCode =
+    global.nativeExtensions && global.nativeExtensions.SourceCode;
+  if (!sourceCode) {
+    const NativeModules = require('NativeModules');
+    sourceCode = NativeModules && NativeModules.SourceCode;
+  }
+  _sourceCodeScriptURL = sourceCode.scriptURL;
+  return _sourceCodeScriptURL;
+}
 
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
-    var scriptURL = NativeModules.SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
+    const sourceCodeScriptURL = getSourceCodeScriptURL();
+    const match =
+      sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
-      // Bundle was loaded from network
+      // jsBundle was loaded from network
       _serverURL = match[0];
     } else {
-      // Bundle was loaded from file
+      // jsBundle was loaded from file
       _serverURL = null;
     }
   }
   return _serverURL;
 }
 
-function getBundleSourceURL(): ?string {
-  if (_bundleSourceURL === undefined) {
-    const scriptURL = NativeModules.SourceCode.scriptURL;
-    if (!scriptURL) {
-      // scriptURL is falsy, we have nothing to go on here
-      _bundleSourceURL = null;
-      return _bundleSourceURL;
-    }
+function _coerceLocalScriptURL(scriptURL: ?string): ?string {
+  if (scriptURL) {
     if (scriptURL.startsWith('assets://')) {
       // android: running from within assets, no offline path to use
-      _bundleSourceURL = null;
-      return _bundleSourceURL;
+      return null;
     }
-    _bundleSourceURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
-    if (!scriptURL.startsWith('file://')) {
+    scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
+    if (!scriptURL.includes('://')) {
       // Add file protocol in case we have an absolute file path and not a URL.
       // This shouldn't really be necessary. scriptURL should be a URL.
-      _bundleSourceURL = 'file://' + _bundleSourceURL;
+      scriptURL = 'file://' + scriptURL;
     }
   }
+  return scriptURL;
+}
 
-  return _bundleSourceURL;
+function getScriptURL(): ?string {
+  if (_scriptURL === undefined) {
+    _scriptURL = _coerceLocalScriptURL(getSourceCodeScriptURL());
+  }
+  return _scriptURL;
 }
 
 function setCustomSourceTransformer(
@@ -75,12 +90,16 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return source;
   }
 
-  var asset = AssetRegistry.getAssetByID(source);
+  const asset = AssetRegistry.getAssetByID(source);
   if (!asset) {
     return null;
   }
 
-  const resolver = new AssetSourceResolver(getDevServerURL(), getBundleSourceURL(), asset);
+  const resolver = new AssetSourceResolver(
+    getDevServerURL(),
+    getScriptURL(),
+    asset,
+  );
   if (_customSourceTransformer) {
     return _customSourceTransformer(resolver);
   }

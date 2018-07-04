@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
-android_library(
+rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
     manifest = "AndroidManifest.xml",
@@ -14,6 +14,7 @@ android_library(
         react_native_dep("third-party/java/okhttp:okhttp3"),
         react_native_dep("third-party/java/okio:okio"),
         react_native_target("java/com/facebook/debug/holder:holder"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
@@ -29,7 +30,7 @@ android_library(
     ],
 )
 
-android_library(
+rn_android_library(
     name = "interfaces",
     srcs = glob(["interfaces/*.java"]),
     visibility = [

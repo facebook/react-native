@@ -1,6 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "RAMBundleRegistry.h"
+
+#include <folly/Memory.h>
+#include <folly/String.h>
 
 #include <libgen.h>
 
@@ -9,35 +15,62 @@ namespace react {
 
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
 
-RAMBundleRegistry::RAMBundleRegistry(std::unique_ptr<JSModulesUnbundle> mainBundle) {
+std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::singleBundleRegistry(
+    std::unique_ptr<JSModulesUnbundle> mainBundle) {
+  return folly::make_unique<RAMBundleRegistry>(std::move(mainBundle));
+}
+
+std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::multipleBundlesRegistry(
+    std::unique_ptr<JSModulesUnbundle> mainBundle,
+    std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory) {
+  return folly::make_unique<RAMBundleRegistry>(
+      std::move(mainBundle), std::move(factory));
+}
+
+RAMBundleRegistry::RAMBundleRegistry(
+    std::unique_ptr<JSModulesUnbundle> mainBundle,
+    std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory):
+      m_factory(std::move(factory)) {
   m_bundles.emplace(MAIN_BUNDLE_ID, std::move(mainBundle));
 }
 
-JSModulesUnbundle::Module RAMBundleRegistry::getModule(uint32_t bundleId, uint32_t moduleId) {
+void RAMBundleRegistry::registerBundle(
+    uint32_t bundleId, std::string bundlePath) {
+  m_bundlePaths.emplace(bundleId, std::move(bundlePath));
+}
+
+JSModulesUnbundle::Module RAMBundleRegistry::getModule(
+    uint32_t bundleId, uint32_t moduleId) {
   if (m_bundles.find(bundleId) == m_bundles.end()) {
-    m_bundles.emplace(bundleId, this->bundleById(bundleId));
+    if (!m_factory) {
+      throw std::runtime_error(
+        "You need to register factory function in order to "
+        "support multiple RAM bundles."
+      );
+    }
+
+    auto bundlePath = m_bundlePaths.find(bundleId);
+    if (bundlePath == m_bundlePaths.end()) {
+      throw std::runtime_error(
+        "In order to fetch RAM bundle from the registry, its file "
+        "path needs to be registered first."
+      );
+    }
+    m_bundles.emplace(bundleId, m_factory(bundlePath->second));
   }
 
-  return getBundle(bundleId)->getModule(moduleId);
+  auto module = getBundle(bundleId)->getModule(moduleId);
+  if (bundleId == MAIN_BUNDLE_ID) {
+    return module;
+  }
+  return {
+    folly::to<std::string>("seg-", bundleId, '_', std::move(module.name)),
+    std::move(module.code),
+  };
 }
 
-JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
+JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
   return m_bundles.at(bundleId).get();
-}
-
-std::string RAMBundleRegistry::jsBundlesDir(std::string entryFile) {
-  char *pEntryFile = const_cast<char *>(entryFile.c_str());
-  std::string dir = dirname(pEntryFile);
-  std::string entryName = basename(pEntryFile);
-
-  std::size_t dotPosition = entryName.find(".");
-  if (dotPosition != std::string::npos) {
-    entryName.erase(dotPosition, std::string::npos);
-  }
-
-  std::string path = "js-bundles/" + entryName + "/";
-  // android's asset manager does not work with paths that start with a dot
-  return dir == "." ? path : dir + "/" + path;
 }
 
 }  // namespace react

@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule UIManager
  * @flow
  * @format
  */
@@ -79,12 +76,32 @@ if (Platform.OS === 'ios') {
       });
     }
   });
-} else if (Platform.OS === 'android' && UIManager.ViewManagerNames) {
-  UIManager.ViewManagerNames.forEach(viewManagerName => {
-    defineLazyObjectProperty(UIManager, viewManagerName, {
-      get: () => UIManager.getConstantsForViewManager(viewManagerName),
-    });
-  });
+} else if (UIManager.ViewManagerNames) {
+  // We want to add all the view managers to the UIManager.
+  // However, the way things are set up, the list of view managers is not known at compile time.
+  // As Prepack runs at compile it, it cannot process this loop.
+  // So we wrap it in a special __residual call, which basically tells Prepack to ignore it.
+  let residual = global.__residual
+    ? global.__residual
+    : (_, f, ...args) => f.apply(undefined, args);
+  residual(
+    'void',
+    (UIManager, defineLazyObjectProperty) => {
+      UIManager.ViewManagerNames.forEach(viewManagerName => {
+        defineLazyObjectProperty(UIManager, viewManagerName, {
+          get: () => UIManager.getConstantsForViewManager(viewManagerName),
+        });
+      });
+    },
+    UIManager,
+    defineLazyObjectProperty,
+  );
+
+  // As Prepack now no longer knows which properties exactly the UIManager has,
+  // we also tell Prepack that it has only partial knowledge of the UIManager,
+  // so that any accesses to unknown properties along the global code will fail
+  // when Prepack encounters them.
+  if (global.__makePartial) global.__makePartial(UIManager);
 }
 
 module.exports = UIManager;

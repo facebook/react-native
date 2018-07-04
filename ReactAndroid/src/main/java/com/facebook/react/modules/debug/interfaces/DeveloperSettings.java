@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.debug.interfaces;
@@ -38,6 +36,11 @@ public interface DeveloperSettings {
    * @return Whether element inspector is enabled.
    */
   boolean isElementInspectorEnabled();
+
+  /**
+   * @return Whether Nuclide JS debugging is enabled.
+   */
+  boolean isNuclideJSDebugEnabled();
 
   /**
    * @return Whether remote JS debugging is enabled.

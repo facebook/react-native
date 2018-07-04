@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -51,7 +54,7 @@ namespace ExceptionHandling {
     // method@filename[:line[:column]]
     std::string stack;
   };
-  using PlatformErrorExtractor = std::function<ExtractedEror(const std::exception &ex, const char *context)>;
+  typedef ExtractedEror(*PlatformErrorExtractor)(const std::exception &ex, const char *context);
   extern PlatformErrorExtractor platformErrorExtractor;
 }
 

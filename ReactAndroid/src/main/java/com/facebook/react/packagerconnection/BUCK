@@ -1,10 +1,9 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "react_native_dep", "react_native_target", "rn_android_library")
 
-android_library(
+rn_android_library(
     name = "packagerconnection",
     srcs = glob(
         ["**/*.java"],
-        excludes = ["SamplingProfilerPackagerMethod.java"] if IS_OSS_BUILD else [],
     ),
     visibility = [
         "PUBLIC",
@@ -19,5 +18,5 @@ android_library(
         react_native_dep("third-party/java/okhttp:okhttp3"),
         react_native_dep("third-party/java/okio:okio"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo-moduleless"),
-    ] + ([react_native_target("jni/packagerconnection:jni")] if not IS_OSS_BUILD else []),
+    ],
 )

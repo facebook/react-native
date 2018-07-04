@@ -1,11 +1,10 @@
 /**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- * @providesModule gulpfile
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 'use strict';
@@ -23,61 +22,52 @@ var objectAssign = require('object-assign');
 var runSequence = require('run-sequence');
 var webpackStream = require('webpack-stream');
 
-var DEVELOPMENT_HEADER = [
-  '/**',
-  ' * Animated v<%= version %>',
-  ' */'
-].join('\n') + '\n';
-var PRODUCTION_HEADER = [
-  '/**',
-  ' * Animated v<%= version %>',
-  ' *',
-  ' * Copyright 2013-2015, Facebook, Inc.',
-  ' * All rights reserved.',
-  ' *',
-  ' * This source code is licensed under the BSD-style license found in the',
-  ' * LICENSE file in the root directory of this source tree. An additional grant',
-  ' * of patent rights can be found in the PATENTS file in the same directory.',
-  ' *',
-  ' */'
-].join('\n') + '\n';
+var DEVELOPMENT_HEADER =
+  ['/**', ' * Animated v<%= version %>', ' */'].join('\n') + '\n';
+var PRODUCTION_HEADER =
+  [
+    '/**',
+    ' * Animated v<%= version %>',
+    ' *',
+    ' * Copyright (c) 2013-present, Facebook, Inc.',
+    ' *',
+    ' * This source code is licensed under the MIT license found in the',
+    ' * LICENSE file in the root directory of this source tree.',
+    ' */',
+  ].join('\n') + '\n';
 
 var babelOpts = {
   nonStandard: true,
-  loose: [
-    'es6.classes'
-  ],
+  loose: ['es6.classes'],
   stage: 1,
   plugins: [babelPluginDEV, babelPluginModules],
   _moduleMap: objectAssign({}, require('fbjs/module-map'), {
-    'React': 'react',
-  })
+    React: 'react',
+  }),
 };
 
 var buildDist = function(opts) {
   var webpackOpts = {
     debug: opts.debug,
     externals: {
-      'react': 'React',
+      react: 'React',
     },
     module: {
-      loaders: [
-        {test: /\.js$/, loader: 'babel'}
-      ],
+      loaders: [{test: /\.js$/, loader: 'babel'}],
     },
     output: {
       filename: opts.output,
-      library: 'Animated'
+      library: 'Animated',
     },
     plugins: [
       new webpackStream.webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(
-          opts.debug ? 'development' : 'production'
+          opts.debug ? 'development' : 'production',
         ),
       }),
       new webpackStream.webpack.optimize.OccurenceOrderPlugin(),
-      new webpackStream.webpack.optimize.DedupePlugin()
-    ]
+      new webpackStream.webpack.optimize.DedupePlugin(),
+    ],
   };
   if (!opts.debug) {
     webpackOpts.plugins.push(
@@ -85,9 +75,9 @@ var buildDist = function(opts) {
         compress: {
           hoist_vars: true,
           screw_ie8: true,
-          warnings: false
-        }
-      })
+          warnings: false,
+        },
+      }),
     );
   }
   return webpackStream(webpackOpts, null, function(err, stats) {
@@ -107,7 +97,7 @@ var paths = {
   src: [
     '*src/**/*.js',
     '!src/**/__tests__/**/*.js',
-    '!src/**/__mocks__/**/*.js'
+    '!src/**/__mocks__/**/*.js',
   ],
 };
 
@@ -123,32 +113,36 @@ gulp.task('modules', function() {
     .pipe(gulp.dest(paths.lib));
 });
 
-gulp.task('dist', ['modules'], function () {
+gulp.task('dist', ['modules'], function() {
   var distOpts = {
     debug: true,
-    output: 'animated.js'
+    output: 'animated.js',
   };
   return gulp
     .src(paths.entry)
     .pipe(buildDist(distOpts))
     .pipe(derequire())
-    .pipe(header(DEVELOPMENT_HEADER, {
-      version: process.env.npm_package_version
-    }))
+    .pipe(
+      header(DEVELOPMENT_HEADER, {
+        version: process.env.npm_package_version,
+      }),
+    )
     .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('dist:min', ['modules'], function () {
+gulp.task('dist:min', ['modules'], function() {
   var distOpts = {
     debug: false,
-    output: 'animated.min.js'
+    output: 'animated.min.js',
   };
   return gulp
     .src(paths.entry)
     .pipe(buildDist(distOpts))
-    .pipe(header(PRODUCTION_HEADER, {
-      version: process.env.npm_package_version
-    }))
+    .pipe(
+      header(PRODUCTION_HEADER, {
+        version: process.env.npm_package_version,
+      }),
+    )
     .pipe(gulp.dest(paths.dist));
 });
 

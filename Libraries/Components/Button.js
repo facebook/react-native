@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Button
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -55,6 +54,7 @@ class Button extends React.Component<{
   title: string,
   onPress: () => any,
   color?: ?string,
+  hasTVPreferredFocus?: ?boolean,
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
@@ -77,6 +77,10 @@ class Button extends React.Component<{
      */
     disabled: PropTypes.bool,
     /**
+     * TV preferred focus (see documentation for the View component).
+     */
+    hasTVPreferredFocus: PropTypes.bool,
+    /**
      * Handler to be called when the user taps the button
      */
     onPress: PropTypes.func.isRequired,
@@ -92,6 +96,7 @@ class Button extends React.Component<{
       color,
       onPress,
       title,
+      hasTVPreferredFocus,
       disabled,
       testID,
     } = this.props;
@@ -114,18 +119,23 @@ class Button extends React.Component<{
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
-    const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+    const formattedTitle =
+      Platform.OS === 'android' ? title.toUpperCase() : title;
+    const Touchable =
+      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
         accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityTraits={accessibilityTraits}
+        hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>
+            {formattedTitle}
+          </Text>
         </View>
       </Touchable>
     );
@@ -162,7 +172,7 @@ const styles = StyleSheet.create({
     android: {
       elevation: 0,
       backgroundColor: '#dfdfdf',
-    }
+    },
   }),
   textDisabled: Platform.select({
     ios: {
@@ -170,7 +180,7 @@ const styles = StyleSheet.create({
     },
     android: {
       color: '#a1a1a1',
-    }
+    },
   }),
 });
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -13,6 +11,8 @@ import javax.annotation.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.os.Build;
@@ -21,6 +21,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.WritableNativeMap;
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -103,5 +104,45 @@ public class DisplayMetricsHolder {
 
   public static DisplayMetrics getScreenDisplayMetrics() {
     return sScreenDisplayMetrics;
+  }
+
+  public static Map<String, Map<String, Object>> getDisplayMetricsMap(double fontScale) {
+    Assertions.assertNotNull(
+        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+        "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
+    final Map<String, Map<String, Object>> result = new HashMap<>();
+    result.put("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
+    result.put("screenPhysicalPixels", getPhysicalPixelsMap(sScreenDisplayMetrics, fontScale));
+    return result;
+  }
+
+  public static WritableNativeMap getDisplayMetricsNativeMap(double fontScale) {
+    Assertions.assertNotNull(
+        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+        "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
+    final WritableNativeMap result = new WritableNativeMap();
+    result.putMap("windowPhysicalPixels", getPhysicalPixelsNativeMap(sWindowDisplayMetrics, fontScale));
+    result.putMap("screenPhysicalPixels", getPhysicalPixelsNativeMap(sScreenDisplayMetrics, fontScale));
+    return result;
+  }
+
+  private static Map<String, Object> getPhysicalPixelsMap(DisplayMetrics displayMetrics, double fontScale) {
+    final Map<String, Object> result = new HashMap<>();
+    result.put("width", displayMetrics.widthPixels);
+    result.put("height", displayMetrics.heightPixels);
+    result.put("scale", displayMetrics.density);
+    result.put("fontScale", fontScale);
+    result.put("densityDpi", displayMetrics.densityDpi);
+    return result;
+  }
+
+  private static WritableNativeMap getPhysicalPixelsNativeMap(DisplayMetrics displayMetrics, double fontScale) {
+    final WritableNativeMap result = new WritableNativeMap();
+    result.putInt("width", displayMetrics.widthPixels);
+    result.putInt("height", displayMetrics.heightPixels);
+    result.putDouble("scale", displayMetrics.density);
+    result.putDouble("fontScale", fontScale);
+    result.putDouble("densityDpi", displayMetrics.densityDpi);
+    return result;
   }
 }

@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule ListExampleShared
  */
+
 'use strict';
 
 const React = require('react');
@@ -25,7 +24,13 @@ const {
   View,
 } = ReactNative;
 
-type Item = {title: string, text: string, key: string, pressed: boolean, noImage?: ?boolean};
+type Item = {
+  title: string,
+  text: string,
+  key: string,
+  pressed: boolean,
+  noImage?: ?boolean,
+};
 
 function genItemData(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
@@ -33,7 +38,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
-      text: LOREM_IPSUM.substr(0, itemHash % 301 + 20),
+      text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
       key: String(ii),
       pressed: false,
     });
@@ -64,13 +69,20 @@ class ItemComponent extends React.PureComponent<{
         onPress={this._onPress}
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
+        tvParallaxProperties={{
+          pressMagnification: 1.1,
+        }}
         style={horizontal ? styles.horizItem : styles.item}>
-        <View style={[
-          styles.row, horizontal && {width: HORIZ_WIDTH}, fixedHeight && {height: ITEM_HEIGHT}]}>
+        <View
+          style={[
+            styles.row,
+            horizontal && {width: HORIZ_WIDTH},
+            fixedHeight && {height: ITEM_HEIGHT},
+          ]}>
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
-            numberOfLines={(horizontal || fixedHeight) ? 3 : undefined}>
+            numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
             {item.title} - {item.text}
           </Text>
         </View>
@@ -84,7 +96,9 @@ const renderStackedItem = ({item}: {item: Item}) => {
   const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
   return (
     <View style={styles.stacked}>
-      <Text style={styles.stackedText}>{item.title} - {item.text}</Text>
+      <Text style={styles.stackedText}>
+        {item.title} - {item.text}
+      </Text>
       <Image style={styles.thumb} source={imgSource} />
     </View>
   );
@@ -116,6 +130,16 @@ class HeaderComponent extends React.PureComponent<{}> {
   }
 }
 
+class ListEmptyComponent extends React.PureComponent<{}> {
+  render() {
+    return (
+      <View style={styles.listEmpty}>
+        <Text>The list is empty :o</Text>
+      </View>
+    );
+  }
+}
+
 class SeparatorComponent extends React.PureComponent<{}> {
   render() {
     return <View style={styles.separator} />;
@@ -125,7 +149,10 @@ class SeparatorComponent extends React.PureComponent<{}> {
 class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
   render() {
     const style = this.props.highlighted
-      ? [styles.itemSeparator, {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'}]
+      ? [
+          styles.itemSeparator,
+          {marginLeft: 0, backgroundColor: 'rgb(217, 217, 217)'},
+        ]
       : styles.itemSeparator;
     return <View style={style} />;
   }
@@ -134,15 +161,22 @@ class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
 class Spindicator extends React.PureComponent<$FlowFixMeProps> {
   render() {
     return (
-      <Animated.View style={[styles.spindicator, {
-        transform: [
-          {rotate: this.props.value.interpolate({
-            inputRange: [0, 5000],
-            outputRange: ['0deg', '360deg'],
-            extrapolate: 'extend',
-          })}
-        ]
-      }]} />
+      <Animated.View
+        style={[
+          styles.spindicator,
+          {
+            transform: [
+              {
+                rotate: this.props.value.interpolate({
+                  inputRange: [0, 5000],
+                  outputRange: ['0deg', '360deg'],
+                  extrapolate: 'extend',
+                }),
+              },
+            ],
+          },
+        ]}
+      />
     );
   }
 }
@@ -162,7 +196,8 @@ const THUMB_URLS = [
   require('./Thumbnails/victory.png'),
 ];
 
-const LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix \
+const LOREM_IPSUM =
+  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix \
 civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id \
 integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem \
 vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud \
@@ -172,7 +207,7 @@ modus, putant invidunt reprehendunt ne qui.';
 function hashCode(str: string): number {
   let hash = 15;
   for (let ii = str.length - 1; ii >= 0; ii--) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(ii);
+    hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 }
@@ -181,15 +216,16 @@ const HEADER = {height: 30, width: 100};
 const SEPARATOR_HEIGHT = StyleSheet.hairlineWidth;
 
 function getItemLayout(data: any, index: number, horizontal?: boolean) {
-  const [length, separator, header] = horizontal ?
-    [HORIZ_WIDTH, 0, HEADER.width] : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
+  const [length, separator, header] = horizontal
+    ? [HORIZ_WIDTH, 0, HEADER.width]
+    : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];
   return {length, offset: (length + separator) * index + header, index};
 }
 
 function pressItem(context: Object, key: string) {
   const index = Number(key);
   const pressed = !context.state.data[index].pressed;
-  context.setState((state) => {
+  context.setState(state => {
     const newData = [...state.data];
     newData[index] = {
       ...state.data[index],
@@ -201,13 +237,16 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
+  if (Platform.isTV) {
+    return null;
+  }
   return (
     <View style={styles.option}>
       <Text>{key}:</Text>
       <Switch
         style={styles.smallSwitch}
         value={context.state[key]}
-        onValueChange={(value) => context.setState({[key]: value})}
+        onValueChange={value => context.setState({[key]: value})}
       />
     </View>
   );
@@ -235,6 +274,11 @@ const styles = StyleSheet.create({
   },
   headerFooterContainer: {
     backgroundColor: 'rgb(239, 239, 244)',
+  },
+  listEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
   },
   horizItem: {
     alignSelf: 'flex-start', // Necessary for touch highlight
@@ -313,6 +357,7 @@ const styles = StyleSheet.create({
 module.exports = {
   FooterComponent,
   HeaderComponent,
+  ListEmptyComponent,
   ItemComponent,
   ItemSeparatorComponent,
   PlainInput,

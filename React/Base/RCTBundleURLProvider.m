@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBundleURLProvider.h"
@@ -14,7 +12,7 @@
 
 NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProviderUpdatedNotification";
 
-const NSUInteger kRCTBundleURLProviderDefaultPort = 8081;
+const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
@@ -111,19 +109,11 @@ static NSURL *serverRootWithHost(NSString *host)
   return nil;
 }
 
-- (NSURL *)packagerServerURL
-{
-  NSString *const host = [self packagerServerHost];
-  return host ? serverRootWithHost(host) : nil;
-}
-
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
 {
   NSString *packagerServerHost = [self packagerServerHost];
   if (!packagerServerHost) {
-    resourceName = resourceName ?: @"main";
-    extension = extension ?: @"jsbundle";
-    return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
+    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                              packagerHost:packagerServerHost
@@ -135,6 +125,14 @@ static NSURL *serverRootWithHost(NSString *host)
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName
 {
   return [self jsBundleURLForBundleRoot:bundleRoot fallbackResource:resourceName fallbackExtension:nil];
+}
+
+- (NSURL *)jsBundleURLForFallbackResource:(NSString *)resourceName
+                        fallbackExtension:(NSString *)extension
+{
+  resourceName = resourceName ?: @"main";
+  extension = extension ?: @"jsbundle";
+  return [[NSBundle mainBundle] URLForResource:resourceName withExtension:extension];
 }
 
 - (NSURL *)resourceURLForResourceRoot:(NSString *)root

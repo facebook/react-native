@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 #import "RCTNativeAnimatedModule.h"
 
@@ -34,7 +32,7 @@ RCT_EXPORT_MODULE();
 - (dispatch_queue_t)methodQueue
 {
   // This module needs to be on the same queue as the UIManager to avoid
-  // having to lock `_operations` and `_preOperations` since `uiManagerWillFlushUIBlocks`
+  // having to lock `_operations` and `_preOperations` since `uiManagerWillPerformMounting`
   // will be called from that queue.
   return RCTGetUIManagerQueue();
 }
@@ -198,7 +196,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
 #pragma mark - RCTUIManagerObserver
 
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
 {
   if (_preOperations.count == 0 && _operations.count == 0) {
     return;

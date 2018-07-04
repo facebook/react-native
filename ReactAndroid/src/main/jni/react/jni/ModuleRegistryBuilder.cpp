@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ModuleRegistryBuilder.h"
 
@@ -33,25 +36,12 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject> javaModules,
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject> cxxModules,
-    std::shared_ptr<MessageQueueThread> moduleMessageQueue,
-    std::shared_ptr<MessageQueueThread> uiBackgroundMessageQueue) {
+    std::shared_ptr<MessageQueueThread> moduleMessageQueue) {
   std::vector<std::unique_ptr<NativeModule>> modules;
   if (javaModules) {
     for (const auto& jm : *javaModules) {
-      std::string name = jm->getName();
-      if (uiBackgroundMessageQueue != NULL &&
-        // This is techinically a hack. Perhaps we should bind the specific queue to the module
-        // in the module holder or wrapper.
-        // TODO expose as module configuration option
-        (name == "UIManager" ||
-          name == "NativeAnimatedModule" ||
-          name == "FBFacebookReactNavigator")) {
-        modules.emplace_back(folly::make_unique<JavaNativeModule>(
-                             winstance, jm, uiBackgroundMessageQueue));
-      } else {
-        modules.emplace_back(folly::make_unique<JavaNativeModule>(
-                             winstance, jm, moduleMessageQueue));
-      }
+      modules.emplace_back(folly::make_unique<JavaNativeModule>(
+                     winstance, jm, moduleMessageQueue));
     }
   }
   if (cxxModules) {

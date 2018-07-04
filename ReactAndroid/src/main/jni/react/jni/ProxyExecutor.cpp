@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ProxyExecutor.h"
 
@@ -85,6 +88,12 @@ void ProxyExecutor::loadApplicationScript(
 }
 
 void ProxyExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) {
+  jni::throwNewJavaException(
+    "java/lang/UnsupportedOperationException",
+    "Loading application RAM bundles is not supported for proxy executors");
+}
+
+void ProxyExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
   jni::throwNewJavaException(
     "java/lang/UnsupportedOperationException",
     "Loading application RAM bundles is not supported for proxy executors");

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ReadableNativeMap.h"
 
@@ -15,6 +18,73 @@ void ReadableNativeMap::mapException(const std::exception& ex) {
   if (dynamic_cast<const folly::TypeError*>(&ex) != nullptr) {
     throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
   }
+}
+
+local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
+  auto pairs = map_.items();
+  keys_ = folly::dynamic::array();
+  for (auto &pair : pairs) {
+    keys_.value().push_back(pair.first.asString());
+  }
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jstring>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    (*jarray)[i] = make_jstring(keys_.value()[i].getString());
+  }
+  return jarray;
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    std::string key = keys_.value()[i].getString().c_str();
+    const auto element = map_.at(key);
+    switch(element.type()) {
+      case folly::dynamic::Type::NULLT: {
+        jarray->setElement(i, nullptr);
+        break;
+      }
+      case folly::dynamic::Type::BOOL: {
+        (*jarray)[i] =
+              JBoolean::valueOf(ReadableNativeMap::getBooleanKey(key));
+        break;
+      }
+      case folly::dynamic::Type::INT64:
+      case folly::dynamic::Type::DOUBLE: {
+        (*jarray)[i] =
+          JDouble::valueOf(ReadableNativeMap::getDoubleKey(key));
+        break;
+      }
+      case folly::dynamic::Type::STRING: {
+        (*jarray)[i] = ReadableNativeMap::getStringKey(key);
+        break;
+      }
+      case folly::dynamic::Type::OBJECT: {
+        (*jarray)[i] = ReadableNativeMap::getMapKey(key);
+        break;
+      }
+      case folly::dynamic::Type::ARRAY: {
+        (*jarray)[i] = ReadableNativeMap::getArrayKey(key);
+        break;
+      }
+      default: {
+        jarray->setElement(i,nullptr);
+        break;
+      }
+    }
+  }
+  return jarray;
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
+  jint size = keys_.value().size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    std::string key = keys_.value()[i].getString().c_str();
+    (*jarray)[i] = ReadableNativeMap::getValueType(key);
+  }
+  return jarray;
 }
 
 bool ReadableNativeMap::hasKey(const std::string& key) {
@@ -99,15 +169,18 @@ local_ref<ReadableNativeMap::jhybridobject> ReadableNativeMap::createWithContent
 
 void ReadableNativeMap::registerNatives() {
   registerHybrid({
-      makeNativeMethod("hasKey", ReadableNativeMap::hasKey),
-      makeNativeMethod("isNull", ReadableNativeMap::isNull),
-      makeNativeMethod("getBoolean", ReadableNativeMap::getBooleanKey),
-      makeNativeMethod("getDouble", ReadableNativeMap::getDoubleKey),
-      makeNativeMethod("getInt", ReadableNativeMap::getIntKey),
-      makeNativeMethod("getString", ReadableNativeMap::getStringKey),
-      makeNativeMethod("getArray", ReadableNativeMap::getArrayKey),
-      makeNativeMethod("getMap", ReadableNativeMap::getMapKey),
-      makeNativeMethod("getType", ReadableNativeMap::getValueType),
+      makeNativeMethod("importKeys", ReadableNativeMap::importKeys),
+      makeNativeMethod("importValues", ReadableNativeMap::importValues),
+      makeNativeMethod("importTypes", ReadableNativeMap::importTypes),
+      makeNativeMethod("hasKeyNative", ReadableNativeMap::hasKey),
+      makeNativeMethod("isNullNative", ReadableNativeMap::isNull),
+      makeNativeMethod("getBooleanNative", ReadableNativeMap::getBooleanKey),
+      makeNativeMethod("getDoubleNative", ReadableNativeMap::getDoubleKey),
+      makeNativeMethod("getIntNative", ReadableNativeMap::getIntKey),
+      makeNativeMethod("getStringNative", ReadableNativeMap::getStringKey),
+      makeNativeMethod("getArrayNative", ReadableNativeMap::getArrayKey),
+      makeNativeMethod("getMapNative", ReadableNativeMap::getMapKey),
+      makeNativeMethod("getTypeNative", ReadableNativeMap::getValueType),
   });
 }
 
