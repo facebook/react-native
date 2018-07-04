@@ -5,6 +5,7 @@ android_library(
         ":android-lifecycle-common",
         ":android-lifecycle-core",
         ":android-lifecycle-runtime",
+        ":android-lifecycle-viewmodel",
         ":lib-support-v4-support-compat",
         ":lib-support-v4-support-core-ui",
         ":lib-support-v4-support-core-utils",
@@ -26,6 +27,11 @@ prebuilt_jar(
 android_prebuilt_aar(
     name = "android-lifecycle-runtime",
     aar = ":android-lifecycle-runtime-aar",
+)
+
+android_prebuilt_aar(
+    name = "android-lifecycle-viewmodel",
+    aar = ":android-lifecycle-viewmodel-aar",
 )
 
 android_prebuilt_aar(
@@ -69,6 +75,12 @@ remote_file(
     name = "android-lifecycle-core.jar",
     sha1 = "8007981f7d7540d89cd18471b8e5dcd2b4f99167",
     url = "mvn:android.arch.core:common:jar:1.1.0",
+)
+
+remote_file(
+    name = "android-lifecycle-viewmodel-aar",
+    sha1 = "74ee369b874da61b5b81bebd7b8df0c2577309c8",
+    url = "mvn:android.arch.lifecycle:viewmodel:aar:1.1.0",
 )
 
 remote_file(
