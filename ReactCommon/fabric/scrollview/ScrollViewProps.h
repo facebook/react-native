@@ -28,26 +28,26 @@ public:
   const bool bounces {true};
   const bool bouncesZoom {true};
   const bool canCancelContentTouches {true};
-  const bool centerContent {false};
-  const bool automaticallyAdjustContentInsets  {false};
+  const bool centerContent {};
+  const bool automaticallyAdjustContentInsets  {};
   const Float decelerationRate {0.998};
-  const bool directionalLockEnabled {false};
-  const ScrollViewIndicatorStyle indicatorStyle {ScrollViewIndicatorStyle::Default};
-  const ScrollViewKeyboardDismissMode keyboardDismissMode {ScrollViewKeyboardDismissMode::None};
+  const bool directionalLockEnabled {};
+  const ScrollViewIndicatorStyle indicatorStyle {};
+  const ScrollViewKeyboardDismissMode keyboardDismissMode {};
   const Float maximumZoomScale {1.0};
   const Float minimumZoomScale {1.0};
   const bool scrollEnabled {true};
-  const bool pagingEnabled {false};
+  const bool pagingEnabled {};
   const bool pinchGestureEnabled {true};
   const bool scrollsToTop {true};
   const bool showsHorizontalScrollIndicator {true};
   const bool showsVerticalScrollIndicator {true};
-  const Float scrollEventThrottle {0};
+  const Float scrollEventThrottle {};
   const Float zoomScale {1.0};
   const EdgeInsets contentInset {};
   const EdgeInsets scrollIndicatorInsets {};
-  const int snapToInterval {0};
-  const ScrollViewSnapToAlignment snapToAlignment {ScrollViewSnapToAlignment::Start};
+  const int snapToInterval {};
+  const ScrollViewSnapToAlignment snapToAlignment {};
 
 #pragma mark - DebugStringConvertible
 

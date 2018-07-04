@@ -22,16 +22,8 @@ static std::string normalizeEventType(const std::string &type) {
   return prefixedType;
 }
 
-void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) {
+void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManager> uiManager) const {
   uiManager_ = uiManager;
-}
-
-EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &instanceHandle) const {
-  return uiManager_->createEventTarget(instanceHandle);
-}
-
-void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
-  uiManager_->releaseEventTarget(eventTarget);
 }
 
 void SchedulerEventDispatcher::dispatchEvent(
@@ -40,7 +32,19 @@ void SchedulerEventDispatcher::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
+  if (!uiManager_) {
+    return;
+  }
+  // TODO: Schedule the event based on priority.
+  uiManager_->dispatchEventToTarget(eventTarget, normalizeEventType(type), payload);
+}
+
+void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
+  if (!uiManager_) {
+    return;
+  }
+  // TODO(shergin): This needs to move to the destructor of EventEmitter. For now we'll leak.
+  // uiManager_->releaseEventTarget(eventTarget);
 }
 
 } // namespace react

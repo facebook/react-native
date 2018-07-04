@@ -72,6 +72,14 @@ const pluginPlatforms = plugins.platforms.reduce((acc, pathToPlatforms) => {
 const defaultRNConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
+  getPlatforms(): Array<string> {
+    return ['ios', 'android', 'windows', 'web'];
+  },
+
+  getProvidesModuleNodeModules(): Array<string> {
+    return ['react-native', 'react-native-windows'];
+  },
+
   getProjectCommands(): Array<CommandT> {
     const commands = plugins.commands.map(pathToCommands => {
       const name = pathToCommands.split(path.sep)[0];

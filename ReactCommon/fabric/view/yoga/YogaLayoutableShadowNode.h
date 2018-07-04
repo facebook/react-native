@@ -26,7 +26,7 @@ class YogaLayoutableShadowNode;
 using SharedYogaConfig = std::shared_ptr<YGConfig>;
 
 using SharedYogaLayoutableShadowNode = std::shared_ptr<const YogaLayoutableShadowNode>;
-using SharedYogaLayoutableShadowNodeList = std::vector<const SharedYogaLayoutableShadowNode>;
+using SharedYogaLayoutableShadowNodeList = std::vector<SharedYogaLayoutableShadowNode>;
 using SharedYogaLayoutableShadowNodeSharedList = std::shared_ptr<const SharedYogaLayoutableShadowNodeList>;
 
 class YogaLayoutableShadowNode:
@@ -87,8 +87,13 @@ protected:
    */
   mutable YGNode yogaNode_;
 
+  /*
+   * Yoga config associated (only) with this particular node.
+   */
+  YGConfig yogaConfig_;
+
 private:
-  static SharedYogaConfig suitableYogaConfig();
+  static void initializeYogaConfig(YGConfig &config);
   static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode *yogaNodeRawPtr, const SharedShadowNodeSharedList &children);
   static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);

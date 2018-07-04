@@ -1,10 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
@@ -266,6 +266,16 @@ jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
   node->setContext(new weak_ref<jobject>(make_weak(thiz)));
   node->setPrintFunc(YGPrint);
   return reinterpret_cast<jlong>(node);
+}
+
+void jni_YGNodeSetOwner(
+    alias_ref<jobject> thiz,
+    jlong nativePointer,
+    jlong newOwnerNativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  const YGNodeRef newOwnerNode = _jlong2YGNodeRef(newOwnerNativePointer);
+
+  node->setOwner(newOwnerNode);
 }
 
 jlong jni_YGNodeClone(
@@ -667,6 +677,7 @@ jint JNI_OnLoad(JavaVM *vm, void *) {
             YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeNativeMethod(jni_YGNodePrint),
             YGMakeNativeMethod(jni_YGNodeClone),
+            YGMakeNativeMethod(jni_YGNodeSetOwner),
         });
     registerNatives(
         "com/facebook/yoga/YogaConfig",

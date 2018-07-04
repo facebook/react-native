@@ -17,8 +17,15 @@ module.exports = (moduleName, instanceMethods) => {
     typeof RealComponent === 'function' ? RealComponent : React.Component;
 
   const Component = class extends SuperClass {
+    static displayName = 'Component';
+
     render() {
-      const name = RealComponent.displayName || RealComponent.name;
+      const name =
+        RealComponent.displayName ||
+        RealComponent.name ||
+        (RealComponent.render // handle React.forwardRef
+          ? RealComponent.render.displayName || RealComponent.render.name
+          : 'Unknown');
 
       const props = Object.assign({}, RealComponent.defaultProps);
 
@@ -43,9 +50,9 @@ module.exports = (moduleName, instanceMethods) => {
     }
   };
 
-  if (RealComponent.propTypes != null) {
-    Component.propTypes = RealComponent.propTypes;
-  }
+  Object.keys(RealComponent).forEach(classStatic => {
+    Component[classStatic] = RealComponent[classStatic];
+  });
 
   if (instanceMethods != null) {
     Object.assign(Component.prototype, instanceMethods);

@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "JNI_TARGET", "cxx_library")
+load("//ReactNative:DEFS.bzl", "IS_OSS_BUILD", "JNI_TARGET", "cxx_library", "subdir_glob")
 
 # This target is only used in open source
 if IS_OSS_BUILD:

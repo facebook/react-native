@@ -56,7 +56,6 @@ const TouchableBounce = ((createReactClass({
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
-
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
     // to update UI before starting the animation.

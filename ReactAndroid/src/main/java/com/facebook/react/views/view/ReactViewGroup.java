@@ -37,6 +37,7 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
@@ -47,6 +48,11 @@ import javax.annotation.Nullable;
 public class ReactViewGroup extends ViewGroup implements
     ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView,
     ReactZIndexedViewGroup {
+
+  /**
+   * Kill switch to make overflow hidden by default. This flag will eventually be removed.
+   */
+  public static boolean sDefaultOverflowHidden;
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -112,6 +118,10 @@ public class ReactViewGroup extends ViewGroup implements
 
   public ReactViewGroup(Context context) {
     super(context);
+    // TODO: Remove this check after a couple public releases.
+    if (!sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -682,18 +692,20 @@ public class ReactViewGroup extends ViewGroup implements
   private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
-        case "visible":
+        case ViewProps.VISIBLE:
           if (mPath != null) {
             mPath.rewind();
           }
           break;
-        case "hidden":
-          if (mReactBackgroundDrawable != null) {
-            float left = 0f;
-            float top = 0f;
-            float right = getWidth();
-            float bottom = getHeight();
+        case ViewProps.HIDDEN:
+          float left = 0f;
+          float top = 0f;
+          float right = getWidth();
+          float bottom = getHeight();
 
+          boolean hasClipPath = false;
+
+          if (mReactBackgroundDrawable != null) {
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
@@ -816,9 +828,12 @@ public class ReactViewGroup extends ViewGroup implements
                 },
                 Path.Direction.CW);
               canvas.clipPath(mPath);
-            } else {
-              canvas.clipRect(new RectF(left, top, right, bottom));
+              hasClipPath = true;
             }
+          }
+
+          if (!hasClipPath) {
+            canvas.clipRect(new RectF(left, top, right, bottom));
           }
           break;
         default:

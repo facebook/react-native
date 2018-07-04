@@ -12,13 +12,17 @@
 namespace facebook {
 namespace react {
 
-EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
-  instanceHandle_(instanceHandle),
+EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
+  eventTarget_(eventTarget),
   tag_(tag),
-  eventDispatcher_(eventDispatcher) {}
+  eventDispatcher_(eventDispatcher) {
+}
 
 EventEmitter::~EventEmitter() {
-  releaseEventTargetIfNeeded();
+  auto &&eventDispatcher = eventDispatcher_.lock();
+  if (eventDispatcher && eventTarget_) {
+    eventDispatcher->releaseEventTarget(eventTarget_);
+  }
 }
 
 void EventEmitter::dispatchEvent(
@@ -26,12 +30,12 @@ void EventEmitter::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  auto &&eventDispatcher = eventDispatcher_.lock();
+  const auto &eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  createEventTargetIfNeeded();
+  assert(eventTarget_ && "Attempted to dispatch an event without an eventTarget.");
 
   // Mixing `target` into `payload`.
   assert(payload.isObject());
@@ -40,30 +44,6 @@ void EventEmitter::dispatchEvent(
 
   // TODO(T29610783): Reconsider using dynamic dispatch here.
   eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
-}
-
-void EventEmitter::createEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (eventTarget_) {
-    return;
-  }
-
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  eventTarget_ = eventDispatcher->createEventTarget(instanceHandle_);
-}
-
-void EventEmitter::releaseEventTargetIfNeeded() const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (!eventTarget_) {
-    return;
-  }
-
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  eventDispatcher->releaseEventTarget(eventTarget_);
 }
 
 } // namespace react

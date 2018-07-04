@@ -166,20 +166,20 @@ SharedDebugStringConvertibleList TreeMutationInstruction::getDebugProps() const 
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("childNode", newChildNode_->getDebugDescription(options)),
-        std::make_shared<DebugStringConvertibleItem>("index", std::to_string(index_))
+        std::make_shared<DebugStringConvertibleItem>("index", folly::to<std::string>(index_))
       };
     case Removal:
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("childNode", oldChildNode_->getDebugDescription(options)),
-        std::make_shared<DebugStringConvertibleItem>("index", std::to_string(index_))
+        std::make_shared<DebugStringConvertibleItem>("index", folly::to<std::string>(index_))
       };
     case Replacement:
       return SharedDebugStringConvertibleList {
         std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("oldChildNode", oldChildNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("newChildNode", newChildNode_->getDebugDescription(options)),
-        std::make_shared<DebugStringConvertibleItem>("index", std::to_string(index_))
+        std::make_shared<DebugStringConvertibleItem>("index", folly::to<std::string>(index_))
       };
   }
 }

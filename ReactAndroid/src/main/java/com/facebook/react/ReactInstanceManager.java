@@ -78,11 +78,10 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
@@ -92,6 +91,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -200,7 +200,6 @@ public class ReactInstanceManager {
     boolean useDeveloperSupport,
     @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
     LifecycleState initialLifecycleState,
-    UIImplementationProvider uiImplementationProvider,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     @Nullable RedBoxHandler redBoxHandler,
     boolean lazyNativeModulesEnabled,
@@ -208,7 +207,8 @@ public class ReactInstanceManager {
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     int minNumShakes,
     int minTimeLeftInFrameForNonBatchedOperationMs,
-    @Nullable JSIModulePackage jsiModulePackage) {
+    @Nullable JSIModulePackage jsiModulePackage,
+    @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -230,7 +230,8 @@ public class ReactInstanceManager {
             useDeveloperSupport,
             redBoxHandler,
             devBundleDownloadListener,
-            minNumShakes);
+            minNumShakes,
+            customPackagerCommandHandlers);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
@@ -248,7 +249,6 @@ public class ReactInstanceManager {
                   ReactInstanceManager.this.invokeDefaultOnBackPressed();
                 }
               },
-              uiImplementationProvider,
               lazyViewManagersEnabled,
               minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {

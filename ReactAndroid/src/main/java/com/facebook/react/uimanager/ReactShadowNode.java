@@ -377,4 +377,17 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   long getInstanceHandle();
 
   void setInstanceHandle(long instanceHandle);
+
+  /**
+   * Mark this {@link ReactShadowNode} as sealed. This means that the node was already committed
+   * and it should not be updated anymore.
+   */
+  void markAsSealed();
+
+  /**
+   * @return a {@link boolean} that represents if the {@link ReactShadowNode} is sealed.
+   */
+  boolean isSealed();
+
+  void updateScreenLayout(ReactShadowNode prevNode);
 }

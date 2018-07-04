@@ -27,13 +27,9 @@ class SchedulerEventDispatcher final:
 
 public:
 
-  void setUIManager(std::shared_ptr<const FabricUIManager> uiManager);
+  void setUIManager(std::shared_ptr<const FabricUIManager> uiManager) const;
 
 #pragma mark - EventDispatcher
-
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
-
-  void releaseEventTarget(const EventTarget &eventTarget) const override;
 
   void dispatchEvent(
     const EventTarget &eventTarget,
@@ -42,9 +38,13 @@ public:
     const EventPriority &priority
   ) const override;
 
+
+  void releaseEventTarget(const EventTarget &eventTarget) const override;
+
 private:
 
-  std::shared_ptr<const FabricUIManager> uiManager_;
+  // TODO: consider using std::weak_ptr<> instead for better memory management.
+  mutable std::shared_ptr<const FabricUIManager> uiManager_;
 };
 
 } // namespace react

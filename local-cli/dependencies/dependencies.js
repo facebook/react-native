@@ -34,7 +34,7 @@ function dependencies(argv, config, args, packagerInstance) {
   const packageOpts = {
     assetRegistryPath: ASSET_REGISTRY_PATH,
     cacheStores: [],
-    projectRoots: config.getProjectRoots(),
+    projectRoot: config.getProjectRoot(),
     blacklistRE: config.getBlacklistRE(),
     dynamicDepsInPackages: config.dynamicDepsInPackages,
     getPolyfills: config.getPolyfills,
@@ -44,12 +44,14 @@ function dependencies(argv, config, args, packagerInstance) {
     transformModulePath: transformModulePath,
     extraNodeModules: config.extraNodeModules,
     verbose: config.verbose,
+    watchFolders: config.getWatchFolders(),
     workerPath: config.getWorkerPath(),
   };
 
-  const relativePath = packageOpts.projectRoots.map(root =>
-    path.relative(root, rootModuleAbsolutePath),
-  )[0];
+  const relativePath = path.relative(
+    packageOpts.projectRoot,
+    rootModuleAbsolutePath,
+  );
 
   const options = {
     platform: args.platform,
@@ -75,7 +77,7 @@ function dependencies(argv, config, args, packagerInstance) {
         // (a) JS code to not depend on anything outside this directory, or
         // (b) Come up with a way to declare this dependency in Buck.
         const isInsideProjectRoots =
-          packageOpts.projectRoots.filter(root => modulePath.startsWith(root))
+          packageOpts.watchFolders.filter(root => modulePath.startsWith(root))
             .length > 0;
 
         if (isInsideProjectRoots) {
