@@ -875,7 +875,7 @@ const ScrollView = createReactClass({
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
       warning(
-        !this.props.snapToInterval || !this.props.pagingEnabled,
+        this.props.snapToInterval != null || !this.props.pagingEnabled,
         'snapToInterval is currently ignored when pagingEnabled is true.',
       );
     }
@@ -1028,7 +1028,7 @@ const ScrollView = createReactClass({
     };
 
     const {decelerationRate} = this.props;
-    if (decelerationRate) {
+    if (decelerationRate != null) {
       props.decelerationRate = processDecelerationRate(decelerationRate);
     }
 
