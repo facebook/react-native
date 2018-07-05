@@ -22,7 +22,8 @@ class InternalScrollViewType<Props> extends ReactNative.NativeComponent<Props> {
   ) {}
 
   flashScrollIndicators() {}
-  scrollToEnd(options?: {animated?: boolean}) {}
+  propTypes: empty;
+  scrollToEnd(options?: ?{animated?: boolean}) {}
   scrollWithoutAnimationTo(y: number = 0, x: number = 0) {}
 
   getScrollResponder(): any {}
