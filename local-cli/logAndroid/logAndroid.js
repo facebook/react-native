@@ -15,20 +15,23 @@ const child_process = require('child_process');
 /**
  * Starts adb logcat
  */
-function logAndroid() {
+function logAndroid(_device_name) {
   return new Promise((resolve, reject) => {
-    _logAndroid(resolve, reject);
+    _logAndroid(resolve, reject, _device_name);
   });
 }
 
-function _logAndroid() {
+function _logAndroid(resolve, reject, _device_name) {
   try {
     const adbPath = process.env.ANDROID_HOME
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
-    const adbArgs = ['logcat', '*:S', 'ReactNative:V', 'ReactNativeJS:V'];
+    let adbArgs = ['logcat', '*:S', 'ReactNative:V', 'ReactNativeJS:V'];
 
+    if (_device_name.length > 0)
+      adbArgs.unshift("-s", _device_name);
+    
     console.log(
       chalk.bold(`Starting the logger (${adbPath} ${adbArgs.join(' ')})...`),
     );
