@@ -212,7 +212,7 @@ let Image = (
     );
   }
 
-  if (!source.uri && !Array.isArray(source)) {
+  if (source && !source?.uri && !Array.isArray(source)) {
     return null;
   }
 
