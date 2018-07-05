@@ -606,7 +606,7 @@ void JSCExecutor::callFunction(
   auto result = [&] {
     JSContextLock lock(m_context);
     try {
-      if (!m_callFunctionReturnResultAndFlushedQueueJS) {
+      if (!m_callFunctionReturnFlushedQueueJS) {
         bindBridge();
       }
       return m_callFunctionReturnFlushedQueueJS->callAsFunction(
