@@ -49,10 +49,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mRect = new Rect(); // for reuse to avoid allocation
 
+  private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
   private boolean mDragging;
   private boolean mFlinging;
+  private boolean mPagingEnabled = false;
+  private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
@@ -128,6 +131,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     mScrollEnabled = scrollEnabled;
   }
 
+  public void setPagingEnabled(boolean pagingEnabled) {
+    mPagingEnabled = pagingEnabled;
+  }
+  
   public void flashScrollIndicators() {
     awakenScrollBars();
   }
@@ -172,9 +179,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         updateClippingRect();
       }
 
-      if (mFlinging) {
-        mDoneFlinging = false;
-      }
+      mActivelyScrolling = true;
 
       ReactScrollViewHelper.emitScrollEvent(
         this,
@@ -216,12 +221,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      float velocityX = mVelocityHelper.getXVelocity();
+      float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(
         this,
-        mVelocityHelper.getXVelocity(),
-        mVelocityHelper.getYVelocity());
+        velocityX,
+        velocityY);
       mDragging = false;
-      disableFpsListener();
+      // After the touch finishes, we may need to do some scrolling afterwards either as a result
+      // of a fling or because we need to page align the content
+      handlePostTouchScrolling(Math.round(velocityX), Math.round(velocityY));
     }
 
     return super.onTouchEvent(ev);
@@ -263,7 +272,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
-    if (mScroller != null) {
+    if (mPagingEnabled) {
+      smoothScrollToPage(velocityY);
+    } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
       // We provide our own version of fling that uses a different call to the standard OverScroller
@@ -315,6 +326,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       };
       ViewCompat.postOnAnimationDelayed(this, r, ReactScrollViewHelper.MOMENTUM_DELAY);
     }
+    handlePostTouchScrolling(0, velocityY);
   }
 
   private void enableFpsListener() {
@@ -373,7 +385,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // more information.
 
       if (!mScroller.isFinished() && mScroller.getCurrY() != mScroller.getFinalY()) {
-        int scrollRange = getMaxScrollY();
+        int scrollRange = Math.max(
+          0,
+          getChildAt(0).getHeight() - (getHeight() - getPaddingBottom() - getPaddingTop()));
         if (scrollY >= scrollRange) {
           mScroller.abortAnimation();
           scrollY = scrollRange;
@@ -384,6 +398,65 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     }
 
     super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
+  }
+
+
+  /**
+   * This handles any sort of scrolling that may occur after a touch is finished.  This may be
+   * momentum scrolling (fling) or because you have pagingEnabled on the scroll view.  Because we
+   * don't get any events from Android about this lifecycle, we do all our detection by creating a
+   * runnable that checks if we scrolled in the last frame and if so assumes we are still scrolling.
+   */
+  @TargetApi(16)
+  private void handlePostTouchScrolling(int velocityX, int velocityY) {
+    // If we aren't going to do anything (send events or snap to page), we can early out.
+    if (!mSendMomentumEvents && !mPagingEnabled && !isScrollPerfLoggingEnabled()) {
+      return;
+    }
+
+    // Check if we are already handling this which may occur if this is called by both the touch up
+    // and a fling call
+    if (mPostTouchRunnable != null) {
+      return;
+    }
+
+    if (mSendMomentumEvents) {
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this, velocityX, velocityY);
+    }
+
+    mActivelyScrolling = false;
+    mPostTouchRunnable = new Runnable() {
+
+      private boolean mSnappingToPage = false;
+
+      @Override
+      public void run() {
+        if (mActivelyScrolling) {
+          // We are still scrolling so we just post to check again a frame later
+          mActivelyScrolling = false;
+          ReactScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+        } else {
+          boolean doneWithAllScrolling = true;
+          if (mPagingEnabled && !mSnappingToPage) {
+            // Only if we have pagingEnabled and we have not snapped to the page do we
+            // need to continue checking for the scroll.  And we cause that scroll by asking for it
+            mSnappingToPage = true;
+            smoothScrollToPage(0);
+            doneWithAllScrolling = false;
+          }
+          if (doneWithAllScrolling) {
+            if (mSendMomentumEvents) {
+              ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
+            }
+            ReactScrollView.this.mPostTouchRunnable = null;
+            disableFpsListener();
+          } else {
+            ReactScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          }
+        }
+      }
+    };
+    postOnAnimationDelayed(mPostTouchRunnable, ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
   @Override
@@ -416,6 +489,24 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     }
   }
 
+  /**
+   * This will smooth scroll us to the nearest page boundary
+   * It currently just looks at where the content is relative to the page and slides to the nearest
+   * page.  It is intended to be run after we are done scrolling, and handling any momentum
+   * scrolling.
+   */
+  private void smoothScrollToPage(int velocity) {
+    int height = getHeight();
+    int currentY = getScrollY();
+    // TODO (t11123799) - Should we do anything beyond linear accounting of the velocity
+    int predictedY = currentY + velocity;
+    int page = currentY / height;
+    if (predictedY > page * height + height / 2) {
+      page = page + 1;
+    }
+    smoothScrollTo(getScrollX(), page * height);
+  }
+  
   @Override
   public void setBackgroundColor(int color) {
     mReactBackgroundManager.setBackgroundColor(color);
