@@ -51,8 +51,9 @@ public class ReactViewGroup extends ViewGroup implements
 
   /**
    * Kill switch to make overflow hidden by default. This flag will eventually be removed.
+   * TODO (T31096050): Sets this back to `false` until ReactNativeARTSurface issue is resolved.
    */
-  public static boolean sDefaultOverflowHidden;
+  public static boolean sDefaultOverflowHidden = true;
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
