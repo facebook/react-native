@@ -90,7 +90,8 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
       // set a root VC so rotation is supported
       self->_window.rootViewController = [UIViewController new];
 
-      self->_label.font = [UIFont systemFontOfSize:12.0];
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0
+                                                           weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
     }
 
