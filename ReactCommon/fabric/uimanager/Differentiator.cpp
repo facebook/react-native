@@ -30,7 +30,7 @@ static void calculateMutationInstructions(
     return;
   }
 
-  std::unordered_set<Tag> insertedTags;
+  std::unordered_map<Tag, SharedShadowNode> insertedNodes;
   int index = 0;
 
   TreeMutationInstructionList createInstructions = {};
@@ -43,8 +43,8 @@ static void calculateMutationInstructions(
 
   // Stage 1: Collectings Updates
   for (index = 0; index < oldChildNodes->size() && index < newChildNodes->size(); index++) {
-    SharedShadowNode oldChildNode = oldChildNodes->at(index);
-    SharedShadowNode newChildNode = newChildNodes->at(index);
+    const auto &oldChildNode = oldChildNodes->at(index);
+    const auto &newChildNode = newChildNodes->at(index);
 
     if (oldChildNode->getTag() != newChildNode->getTag()) {
       // Totally different nodes, updating is impossible.
@@ -74,7 +74,7 @@ static void calculateMutationInstructions(
 
   // Stage 2: Collectings Insertions
   for (; index < newChildNodes->size(); index++) {
-    SharedShadowNode newChildNode = newChildNodes->at(index);
+    const auto &newChildNode = newChildNodes->at(index);
 
     insertInstructions.push_back(
       TreeMutationInstruction::Insert(
@@ -84,23 +84,12 @@ static void calculateMutationInstructions(
       )
     );
 
-    insertedTags.insert(newChildNode->getTag());
-
-    SharedShadowNode newChildSourceNode = newChildNode->getSourceNode();
-    SharedShadowNodeSharedList newChildSourceChildNodes =
-      newChildSourceNode ? newChildSourceNode->getChildren() : ShadowNode::emptySharedShadowNodeSharedList();
-
-    calculateMutationInstructions(
-      *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
-      newChildNode,
-      newChildSourceChildNodes,
-      newChildNode->getChildren()
-    );
+    insertedNodes.insert({newChildNode->getTag(), newChildNode});
   }
 
   // Stage 3: Collectings Deletions and Removals
   for (index = lastIndexAfterFirstStage; index < oldChildNodes->size(); index++) {
-    SharedShadowNode oldChildNode = oldChildNodes->at(index);
+    const auto &oldChildNode = oldChildNodes->at(index);
 
     // Even if the old node was (re)inserted, we have to generate `remove`
     // instruction.
@@ -112,12 +101,11 @@ static void calculateMutationInstructions(
       )
     );
 
-    auto numberOfRemovedTags = insertedTags.erase(oldChildNode->getTag());
-    assert(numberOfRemovedTags == 0 || numberOfRemovedTags == 1);
+    const auto &it = insertedNodes.find(oldChildNode->getTag());
 
-    if (numberOfRemovedTags == 0) {
-      // The old node was *not* (re)inserted,
-      // so we have to generate `delete` instruction and apply the algorithm
+    if (it == insertedNodes.end()) {
+      // The old node was *not* (re)inserted.
+      // We have to generate `delete` instruction and apply the algorithm
       // recursively.
       deleteInstructions.push_back(
         TreeMutationInstruction::Delete(
@@ -125,19 +113,41 @@ static void calculateMutationInstructions(
         )
       );
 
+      // We also have to call the algorithm recursively to clean up the entire
+      // subtree starting from the removed node.
       calculateMutationInstructions(
         destructionDownwardInstructions,
         oldChildNode,
         oldChildNode->getChildren(),
         ShadowNode::emptySharedShadowNodeSharedList()
       );
+    } else {
+      // The old node *was* (re)inserted.
+      // We have to call the algorithm recursively if the inserted node
+      // is *not* the same as removed one.
+      const auto &newChildNode = it->second;
+      if (newChildNode != oldChildNode) {
+        calculateMutationInstructions(
+          *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
+          newChildNode,
+          oldChildNode->getChildren(),
+          newChildNode->getChildren()
+        );
+      }
+
+      // In any case we have to remove the node from `insertedNodes` as
+      // indication that the node was actually removed (which means that
+      // the node existed before), hence we don't have to generate
+      // `create` instruction.
+      insertedNodes.erase(it);
     }
   }
 
   // Stage 4: Collectings Creations
   for (index = lastIndexAfterFirstStage; index < newChildNodes->size(); index++) {
-    SharedShadowNode newChildNode = newChildNodes->at(index);
-    if (insertedTags.find(newChildNode->getTag()) == insertedTags.end()) {
+    const auto &newChildNode = newChildNodes->at(index);
+
+    if (insertedNodes.find(newChildNode->getTag()) == insertedNodes.end()) {
       // The new node was (re)inserted, so there is no need to create it.
       continue;
     }
@@ -146,6 +156,13 @@ static void calculateMutationInstructions(
       TreeMutationInstruction::Create(
         newChildNode
       )
+    );
+
+    calculateMutationInstructions(
+      downwardInstructions,
+      newChildNode,
+      ShadowNode::emptySharedShadowNodeSharedList(),
+      newChildNode->getChildren()
     );
   }
 
