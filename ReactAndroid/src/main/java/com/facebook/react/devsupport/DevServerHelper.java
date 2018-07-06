@@ -382,6 +382,16 @@ public class DevServerHelper {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
   }
 
+  public void downloadBundleFromURL(
+      DevBundleDownloadListener callback,
+      File outputFile,
+      String bundleURL,
+      BundleDownloader.BundleInfo bundleInfo,
+      Request.Builder requestBuilder) {
+    mBundleDownloader.downloadBundleFromURL(
+        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
+  }
+
   private BundleDeltaClient.ClientType getDeltaClientType() {
     if (mSettings.isBundleDeltasCppEnabled()) {
       return BundleDeltaClient.ClientType.NATIVE;
