@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -69,9 +70,6 @@ import javax.annotation.Nullable;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
-
-  public static final String REMOTE_TRANSPARENT_BITMAP_URI =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
@@ -341,10 +339,7 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setSource(@Nullable ReadableArray sources) {
     mSources.clear();
-    if (sources == null || sources.size() == 0) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
-      mSources.add(imageSource);
-    } else {
+    if (sources != null && sources.size() != 0) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
         ReadableMap source = sources.getMap(0);
@@ -578,9 +573,9 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
-       mSources.add(imageSource);
-     } else if (hasMultipleSources()) {
+      return;
+    }
+    if (hasMultipleSources()) {
       MultiSourceResult multiSource =
         MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
       mImageSource = multiSource.getBestResult();
