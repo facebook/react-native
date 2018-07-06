@@ -152,7 +152,7 @@ static void calculateMutationInstructions(
   // All instructions in an optimal order:
   instructions.insert(instructions.end(), destructionDownwardInstructions.begin(), destructionDownwardInstructions.end());
   instructions.insert(instructions.end(), replaceInstructions.begin(), replaceInstructions.end());
-  instructions.insert(instructions.end(), removeInstructions.begin(), removeInstructions.end());
+  instructions.insert(instructions.end(), removeInstructions.rbegin(), removeInstructions.rend());
   instructions.insert(instructions.end(), createInstructions.begin(), createInstructions.end());
   instructions.insert(instructions.end(), downwardInstructions.begin(), downwardInstructions.end());
   instructions.insert(instructions.end(), insertInstructions.begin(), insertInstructions.end());
