@@ -774,7 +774,7 @@ const ScrollView = createReactClass({
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
       warning(
-        this.props.snapToInterval != null || !this.props.pagingEnabled,
+        this.props.snapToInterval == null || !this.props.pagingEnabled,
         'snapToInterval is currently ignored when pagingEnabled is true.',
       );
     }
