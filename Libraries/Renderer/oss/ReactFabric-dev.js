@@ -3733,14 +3733,15 @@ function getRootHostContext(rootContainerInstance) {
   return { isInAParentText: false };
 }
 
-function getChildHostContext(parentHostContext, type, rootContainerInstance) {
+function getChildHostContext(parentHostContext, fiber, rootContainerInstance) {
   var prevIsInAParentText = parentHostContext.isInAParentText;
   var isInAParentText =
-    type === "AndroidTextInput" || // Android
-    type === "RCTMultilineTextInputView" || // iOS
-    type === "RCTSinglelineTextInputView" || // iOS
-    type === "RCTText" ||
-    type === "RCTVirtualText";
+    fiber.type === "AndroidTextInput" || // Android
+    fiber.type === "RCTMultilineTextInputView" || // iOS
+    fiber.type === "RCTSinglelineTextInputView" || // iOS
+    fiber.type === "RCTText" ||
+    fiber.type === "RCTVirtualText" ||
+    (fiber.return && fiber.return.type && fiber.return.type.canRenderString);
 
   if (prevIsInAParentText !== isInAParentText) {
     return { isInAParentText: isInAParentText };
@@ -6606,7 +6607,7 @@ function getHostContext() {
 function pushHostContext(fiber) {
   var rootInstance = requiredContext(rootInstanceStackCursor.current);
   var context = requiredContext(contextStackCursor$1.current);
-  var nextContext = getChildHostContext(context, fiber.type, rootInstance);
+  var nextContext = getChildHostContext(context, fiber, rootInstance);
 
   // Don't push this Fiber's context unless it's unique.
   if (context === nextContext) {
