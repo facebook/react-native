@@ -85,7 +85,7 @@ public:
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    const InstanceHandle &instanceHandle,
+    const EventTarget &eventTarget,
     const Tag &tag
   ) const = 0;
 };

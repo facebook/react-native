@@ -31,14 +31,15 @@ public:
 
 #pragma mark - EventDispatcher
 
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
-
   void dispatchEvent(
     const EventTarget &eventTarget,
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority
   ) const override;
+
+
+  void releaseEventTarget(const EventTarget &eventTarget) const override;
 
 private:
 

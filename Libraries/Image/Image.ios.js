@@ -85,7 +85,7 @@ let Image = (
     }
   }
 
-  const resizeMode = props.resizeMode || style.resizeMode;
+  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
   const tintColor = style.tintColor;
 
   if (props.src != null) {

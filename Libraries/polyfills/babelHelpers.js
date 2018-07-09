@@ -197,8 +197,7 @@ babelHelpers.get = function _get(target, property, receiver = target) {
   }
 
   return desc.value;
-}
-
+};
 
 // ### inherits ###
 

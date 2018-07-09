@@ -12,24 +12,30 @@
 namespace facebook {
 namespace react {
 
-EventEmitter::EventEmitter(const InstanceHandle &instanceHandle, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
-  instanceHandle_(instanceHandle),
+EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
+  eventTarget_(eventTarget),
   tag_(tag),
-  eventDispatcher_(eventDispatcher) {}
+  eventDispatcher_(eventDispatcher) {
+}
 
-EventEmitter::~EventEmitter() {}
+EventEmitter::~EventEmitter() {
+  auto &&eventDispatcher = eventDispatcher_.lock();
+  if (eventDispatcher && eventTarget_) {
+    eventDispatcher->releaseEventTarget(eventTarget_);
+  }
+}
 
 void EventEmitter::dispatchEvent(
   const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  auto &&eventDispatcher = eventDispatcher_.lock();
+  const auto &eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  EventTarget eventTarget = createEventTarget();
+  assert(eventTarget_ && "Attempted to dispatch an event without an eventTarget.");
 
   // Mixing `target` into `payload`.
   assert(payload.isObject());
@@ -37,13 +43,7 @@ void EventEmitter::dispatchEvent(
   extendedPayload.merge_patch(payload);
 
   // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(eventTarget, type, extendedPayload, priority);
-}
-
-EventTarget EventEmitter::createEventTarget() const {
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  assert(eventDispatcher);
-  return eventDispatcher->createEventTarget(instanceHandle_);
+  eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
 }
 
 } // namespace react

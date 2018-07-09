@@ -27,11 +27,16 @@ private:
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
-  jlong createEventTarget(jlong jsContextNativePointer, jlong instanceHandlePointer);
-
   void releaseEventTarget(jlong jsContextNativePointer, jlong eventTargetPointer);
 
   void releaseEventHandler(jlong jsContextNativePointer, jlong eventHandlerPointer);
+
+  void dispatchEventToEmptyTarget(
+    jlong jsContextNativePointer,
+    jlong eventHandlerPointer,
+    std::string type,
+    NativeMap *payload
+  );
 
   void dispatchEventToTarget(
     jlong jsContextNativePointer,

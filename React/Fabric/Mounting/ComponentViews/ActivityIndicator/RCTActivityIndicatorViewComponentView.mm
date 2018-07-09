@@ -30,7 +30,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.bounds];
     _activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    auto &&defaultProps = ActivityIndicatorViewProps();
+    const auto &defaultProps = ActivityIndicatorViewProps();
 
     if (defaultProps.animating) {
       [_activityIndicatorView startAnimating];

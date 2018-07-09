@@ -59,7 +59,6 @@
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties
 {
-
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
     _moduleName = moduleName;

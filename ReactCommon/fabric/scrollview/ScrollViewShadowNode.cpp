@@ -22,11 +22,11 @@ void ScrollViewShadowNode::updateLocalData() {
   ensureUnsealed();
 
   Rect contentBoundingRect;
-  for (auto &&childNode : getLayoutableChildNodes()) {
+  for (const auto &childNode : getLayoutableChildNodes()) {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }
 
-  auto &&localData = std::make_shared<const ScrollViewLocalData>(contentBoundingRect);
+  const auto &localData = std::make_shared<const ScrollViewLocalData>(contentBoundingRect);
   setLocalData(localData);
 }
 

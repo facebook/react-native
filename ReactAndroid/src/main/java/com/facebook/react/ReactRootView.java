@@ -7,9 +7,9 @@
 
 package com.facebook.react;
 
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -50,9 +50,9 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
-import com.facebook.react.uimanager.common.UIManagerType;
 import javax.annotation.Nullable;
 
 /**
@@ -93,7 +93,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-  private @Nullable Runnable mJSEntryPoint;
   private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
@@ -454,7 +453,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
     if (getRootViewTag() != 0) {
-      invokeJSEntryPoint();
+      runApplication();
     }
   }
 
@@ -462,34 +461,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /*package */ void invokeJSEntryPoint() {
-    if (mJSEntryPoint == null) {
-      defaultJSEntryPoint();
-    } else {
-      mJSEntryPoint.run();
-    }
-  }
-
-  /**
-   * Set a custom entry point for invoking JS. By default, this is AppRegistry.runApplication
-   * @param jsEntryPoint
-   */
-  public void setJSEntryPoint(Runnable jsEntryPoint) {
-    mJSEntryPoint = jsEntryPoint;
-  }
-
-  public void invokeDefaultJSEntryPoint(@Nullable Bundle appProperties) {
-    UiThreadUtil.assertOnUiThread();
-    if (appProperties != null) {
-      mAppProperties = appProperties;
-    }
-    defaultJSEntryPoint();
-  }
-
-  /**
-   * Calls the default entry point into JS which is AppRegistry.runApplication()
-   */
-  private void defaultJSEntryPoint() {
+  /* package */ void runApplication() {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
       try {
         if (mReactInstanceManager == null || !mIsAttachedToInstance) {

@@ -17,6 +17,7 @@
 #import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
+#import <React/RCTUtils.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
 
@@ -66,7 +67,10 @@ using namespace facebook::react;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
+#pragma mark - RCTSchedulerDelegate
+
+- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
+                                        rootTag:(ReactTag)rootTag
 {
   [_mountingManager mutateComponentViewTreeWithMutationInstructions:instructions
                                                             rootTag:rootTag];
@@ -74,7 +78,7 @@ using namespace facebook::react;
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName
 {
-  // TODO: To be implemeted.
+  [_mountingManager preliminaryCreateComponentViewWithName:componentName];
 }
 
 #pragma mark - Internal Surface-dedicated Interface
@@ -82,17 +86,17 @@ using namespace facebook::react;
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
-  [_scheduler registerRootTag:surface.rootViewTag.integerValue];
+  [_scheduler registerRootTag:surface.rootTag];
   [self runSurface:surface];
 
   // FIXME: Mutation instruction MUST produce instruction for root node.
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootViewTag.integerValue];
+  [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 }
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
   [self stopSurface:surface];
-  [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
+  [_scheduler unregisterRootTag:surface.rootTag];
   [_surfaceRegistry unregisterSurface:surface];
 }
 
@@ -106,6 +110,7 @@ using namespace facebook::react;
                           surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
@@ -120,6 +125,7 @@ using namespace facebook::react;
                surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
@@ -132,7 +138,7 @@ using namespace facebook::react;
 - (void)runSurface:(RCTFabricSurface *)surface
 {
   NSDictionary *applicationParameters = @{
-    @"rootTag": surface.rootViewTag,
+    @"rootTag": @(surface.rootTag),
     @"initialProps": surface.properties,
   };
 
@@ -141,7 +147,7 @@ using namespace facebook::react;
 
 - (void)stopSurface:(RCTFabricSurface *)surface
 {
-  [_batchedBridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[surface.rootViewTag] completion:NULL];
+  [_batchedBridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[@(surface.rootTag)] completion:NULL];
 }
 
 #pragma mark - RCTMountingManagerDelegate
