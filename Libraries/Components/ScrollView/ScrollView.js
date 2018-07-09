@@ -394,7 +394,7 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  // $FlowFixMe Issues found when typing ScrollView
+  // $FlowFixMe(site=react_native_fb) Issues found when typing ScrollView
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
