@@ -46,6 +46,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   NSString *_moduleName;
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
+  BOOL _needsReRenderBecauseAppPropertiesChanged;
   CGSize _intrinsicContentSize;
 }
 
@@ -68,6 +69,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _bridge = bridge;
     _moduleName = moduleName;
     _appProperties = [initialProperties copy];
+    _needsReRenderBecauseAppPropertiesChanged = NO;
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
@@ -257,6 +259,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _contentView.bridge) {
     [self bundleFinishedLoading:bridge];
+  } else if(_needsReRenderBecauseAppPropertiesChanged) {
+    [self runApplication:bridge];
   }
 }
 
@@ -330,6 +334,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_contentView && _bridge.valid && !_bridge.loading) {
     [self runApplication:_bridge];
+  } else {
+    _needsReRenderBecauseAppPropertiesChanged = YES;
   }
 }
 
