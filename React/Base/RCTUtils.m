@@ -698,10 +698,12 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
   }
 
   UIImage *image = nil;
-  if (bundle) {
-    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-  } else {
-    image = [UIImage imageNamed:imageName];
+  if (imageName) {
+    if (bundle) {
+      image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+      image = [UIImage imageNamed:imageName];
+    }
   }
 
   if (!image) {
