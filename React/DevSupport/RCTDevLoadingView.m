@@ -14,7 +14,7 @@
 #import "RCTModalHostViewController.h"
 #import "RCTUtils.h"
 
-#if RCT_DEV
+#if RCT_DEV | RCT_ENABLE_LOADING_VIEW
 
 static BOOL isEnabled = YES;
 
