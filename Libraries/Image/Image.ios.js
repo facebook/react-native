@@ -53,6 +53,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<
 > {
   static getSize: typeof getSize;
   static prefetch: typeof prefetch;
+  static queryCache: typeof queryCache;
   static resolveAssetSource: typeof resolveAssetSource;
   static propTypes: typeof ImageProps;
 }
