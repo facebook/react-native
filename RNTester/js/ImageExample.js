@@ -87,7 +87,7 @@ var NetworkImageCallbackExample = createReactClass({
                       this._loadEventFired(
                         `✘ queryCache (+${new Date() - mountTime}ms)`,
                       );
-                    },
+                    }
                   });
                 },
                 error => {
