@@ -29,6 +29,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
+  private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -115,6 +116,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
   public void setAccessibilityComponentType(T view, String accessibilityComponentType) {
     AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
+  }
+
+  @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
+  public void setAccessibilityRole(T view, String accessibilityRole) {
+    AccessibilityRoleUtil.updateAccessibilityRole(view, accessibilityRole);
   }
 
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
