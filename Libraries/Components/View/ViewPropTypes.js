@@ -20,11 +20,13 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
+  AccessibilityRoles,
 } = require('ViewAccessibility');
 
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
+  AccessibilityRole,
 } from 'ViewAccessibility';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
@@ -89,6 +91,7 @@ export type ViewProps = $ReadOnly<{|
   importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
   accessibilityIgnoresInvertColors?: boolean,
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityRole?: AccessibilityRole,
   accessibilityViewIsModal?: boolean,
   accessibilityElementsHidden?: boolean,
   children?: ?React.Node,
@@ -138,6 +141,12 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
    */
   accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+
+  /**
+   * Indicates to accessibility services to treat UI component like a
+   * native one. Merging accessibilityComponentType and accessibilityTraits.
+   */
+  accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
 
   /**
    * Indicates to accessibility services whether the user should be notified
