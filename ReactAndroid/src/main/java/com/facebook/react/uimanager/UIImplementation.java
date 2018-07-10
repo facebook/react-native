@@ -478,12 +478,23 @@ public class UIImplementation {
     ReadableArray childrenTags) {
 
     ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+    if (cssNodeToManage == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Tried to add children to non-existent parent with tag " + viewTag
+      );
+      return;
+    }
 
     for (int i = 0; i < childrenTags.size(); i++) {
-      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      int childTag = childrenTags.getInt(i);
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childTag);
       if (cssNodeToAdd == null) {
-        throw new IllegalViewOperationException("Trying to add unknown view tag: "
-          + childrenTags.getInt(i));
+        FLog.w(
+          ReactConstants.TAG,
+          "Tried to add a non-existent child with tag " + childTag + " to parent with tag " + viewTag
+        );
+        return;
       }
       cssNodeToManage.addChildAt(cssNodeToAdd, i);
     }
