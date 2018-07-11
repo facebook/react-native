@@ -275,10 +275,6 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
     node->setConfig(YGConfigClone(*(oldNode->getConfig())));
   }
 
-  if (oldNode->getNextChild() != nullptr) {
-    node->setNextChild(YGNodeDeepClone(oldNode->getNextChild()));
-  }
-
   return node;
 }
 

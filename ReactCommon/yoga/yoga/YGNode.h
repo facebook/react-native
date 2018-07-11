@@ -26,7 +26,6 @@ struct YGNode {
   uint32_t lineIndex_;
   YGNodeRef owner_;
   YGVector children_;
-  YGNodeRef nextChild_;
   YGConfigRef config_;
   bool isDirty_;
   std::array<YGValue, 2> resolvedDimensions_;
@@ -54,7 +53,6 @@ struct YGNode {
       uint32_t lineIndex,
       YGNodeRef owner,
       const YGVector& children,
-      YGNodeRef nextChild,
       YGConfigRef config,
       bool isDirty,
       std::array<YGValue, 2> resolvedDimensions);
@@ -83,7 +81,6 @@ struct YGNode {
   YGVector getChildren() const;
   uint32_t getChildrenCount() const;
   YGNodeRef getChild(uint32_t index) const;
-  YGNodeRef getNextChild() const;
   YGConfigRef getConfig() const;
   bool isDirty() const;
   std::array<YGValue, 2> getResolvedDimensions() const;
@@ -136,7 +133,6 @@ struct YGNode {
   void setLineIndex(uint32_t lineIndex);
   void setOwner(YGNodeRef owner);
   void setChildren(const YGVector& children);
-  void setNextChild(YGNodeRef nextChild);
   void setConfig(YGConfigRef config);
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
