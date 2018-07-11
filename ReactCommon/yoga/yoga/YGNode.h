@@ -58,33 +58,97 @@ struct YGNode {
       std::array<YGValue, 2> resolvedDimensions);
 
   // Getters
-  void* getContext() const;
-  YGPrintFunc getPrintFunc() const;
-  bool getHasNewLayout() const;
-  YGNodeType getNodeType() const;
-  YGMeasureFunc getMeasure() const;
-  YGBaselineFunc getBaseline() const;
-  YGDirtiedFunc getDirtied() const;
+  void* getContext() const {
+    return context_;
+  }
+
+  YGPrintFunc getPrintFunc() const {
+    return print_;
+  }
+
+  bool getHasNewLayout() const {
+    return hasNewLayout_;
+  }
+  
+  YGNodeType getNodeType() const {
+    return nodeType_;
+  }
+  
+  YGMeasureFunc getMeasure() const {
+    return measure_;
+  }
+  
+  YGBaselineFunc getBaseline() const {
+    return baseline_;
+  }
+  
+  YGDirtiedFunc getDirtied() const {
+    return dirtied_;
+  }
+  
   // For Performance reasons passing as reference.
-  YGStyle& getStyle();
+  YGStyle& getStyle() {
+    return style_;
+  }
+
+  const YGStyle& getStyle() const {
+    return style_;
+  }
+
   // For Performance reasons passing as reference.
-  YGLayout& getLayout();
-  uint32_t getLineIndex() const;
+  YGLayout& getLayout() {
+    return layout_;
+  }
+
+  const YGLayout& getLayout() const {
+    return layout_;
+  }
+  
+  uint32_t getLineIndex() const {
+    return lineIndex_;
+  }
+  
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
   // the YogaTree that a YGNode belongs to.
   // This method will return the parent of the YGNode when a YGNode only belongs
   // to one YogaTree or nullptr when the YGNode is shared between two or more
   // YogaTrees.
-  YGNodeRef getOwner() const;
+  YGNodeRef getOwner() const {
+    return owner_;
+  }
+  
   // Deprecated, use getOwner() instead.
-  YGNodeRef getParent() const;
-  YGVector getChildren() const;
-  uint32_t getChildrenCount() const;
-  YGNodeRef getChild(uint32_t index) const;
-  YGConfigRef getConfig() const;
-  bool isDirty() const;
-  std::array<YGValue, 2> getResolvedDimensions() const;
-  YGValue getResolvedDimension(int index);
+  YGNodeRef getParent() const {
+    return getOwner();
+  }
+  
+  YGVector getChildren() const {
+    return children_;
+  }
+  
+  uint32_t getChildrenCount() const {
+    return static_cast<uint32_t>(children_.size());
+  }
+  
+  YGNodeRef getChild(uint32_t index) const {
+    return children_.at(index);
+  }
+
+  YGConfigRef getConfig() const {
+    return config_;
+  }
+  
+  bool isDirty() const {
+    return isDirty_;
+  }
+  
+  std::array<YGValue, 2> getResolvedDimensions() const {
+    return resolvedDimensions_;
+  }
+  
+  YGValue getResolvedDimension(int index) const {
+    return resolvedDimensions_[index];
+  }
 
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(const YGFlexDirection& axis,
@@ -119,21 +183,66 @@ struct YGNode {
       const float& widthSize) const;
   // Setters
 
-  void setContext(void* context);
-  void setPrintFunc(YGPrintFunc printFunc);
-  void setHasNewLayout(bool hasNewLayout);
-  void setNodeType(YGNodeType nodeTye);
+  void setContext(void* context) {
+    context_ = context;
+  }
+
+  void setPrintFunc(YGPrintFunc printFunc) {
+    print_ = printFunc;
+  }
+
+  void setHasNewLayout(bool hasNewLayout) {
+    hasNewLayout_ = hasNewLayout;
+  }
+  
+  void setNodeType(YGNodeType nodeType) {
+    nodeType_ = nodeType;
+  }
+
+  void setStyleFlexDirection(YGFlexDirection direction) {
+    style_.flexDirection = direction;
+  }
+
+  void setStyleAlignContent(YGAlign alignContent) {
+    style_.alignContent = alignContent;
+  }
+
   void setMeasureFunc(YGMeasureFunc measureFunc);
-  void setBaseLineFunc(YGBaselineFunc baseLineFunc);
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc);
-  void setStyle(const YGStyle& style);
-  void setStyleFlexDirection(YGFlexDirection direction);
-  void setStyleAlignContent(YGAlign alignContent);
-  void setLayout(const YGLayout& layout);
-  void setLineIndex(uint32_t lineIndex);
-  void setOwner(YGNodeRef owner);
-  void setChildren(const YGVector& children);
-  void setConfig(YGConfigRef config);
+
+  void setBaseLineFunc(YGBaselineFunc baseLineFunc) {
+    baseline_ = baseLineFunc;
+  }
+
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
+    dirtied_ = dirtiedFunc;
+  }
+
+  void setStyle(const YGStyle& style) {
+    style_ = style;
+  }
+  
+  void setLayout(const YGLayout& layout) {
+    layout_ = layout;
+  }
+  
+  void setLineIndex(uint32_t lineIndex) {
+    lineIndex_ = lineIndex;
+  }
+  
+  void setOwner(YGNodeRef owner) {
+    owner_ = owner;
+  }
+
+  void setChildren(const YGVector& children) {
+    children_ = children;
+  }
+
+  // TODO: rvalue override for setChildren
+  
+  void setConfig(YGConfigRef config) {
+    config_ = config;
+  }
+
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
   void setLayoutComputedFlexBasis(const YGFloatOptional& computedFlexBasis);
