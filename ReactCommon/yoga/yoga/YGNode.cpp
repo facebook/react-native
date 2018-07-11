@@ -69,10 +69,6 @@ YGNodeRef YGNode::getChild(uint32_t index) const {
   return children_.at(index);
 }
 
-YGNodeRef YGNode::getNextChild() const {
-  return nextChild_;
-}
-
 YGConfigRef YGNode::getConfig() const {
   return config_;
 }
@@ -249,10 +245,6 @@ void YGNode::setChildren(const YGVector& children) {
   children_ = children;
 }
 
-void YGNode::setNextChild(YGNodeRef nextChild) {
-  nextChild_ = nextChild;
-}
-
 void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
   children_[index] = child;
 }
@@ -405,7 +397,6 @@ YGNode::YGNode()
       lineIndex_(0),
       owner_(nullptr),
       children_(YGVector()),
-      nextChild_(nullptr),
       config_(nullptr),
       isDirty_(false),
       resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
@@ -423,7 +414,6 @@ YGNode::YGNode(const YGNode& node)
       lineIndex_(node.lineIndex_),
       owner_(node.owner_),
       children_(node.children_),
-      nextChild_(node.nextChild_),
       config_(node.config_),
       isDirty_(node.isDirty_),
       resolvedDimensions_(node.resolvedDimensions_) {}
@@ -445,7 +435,6 @@ YGNode::YGNode(
     uint32_t lineIndex,
     YGNodeRef owner,
     const YGVector& children,
-    YGNodeRef nextChild,
     YGConfigRef config,
     bool isDirty,
     std::array<YGValue, 2> resolvedDimensions)
@@ -461,7 +450,6 @@ YGNode::YGNode(
       lineIndex_(lineIndex),
       owner_(owner),
       children_(children),
-      nextChild_(nextChild),
       config_(config),
       isDirty_(isDirty),
       resolvedDimensions_(resolvedDimensions) {}
@@ -487,7 +475,6 @@ YGNode& YGNode::operator=(const YGNode& node) {
   lineIndex_ = node.getLineIndex();
   owner_ = node.getOwner();
   children_ = node.getChildren();
-  nextChild_ = node.getNextChild();
   config_ = node.getConfig();
   isDirty_ = node.isDirty();
   resolvedDimensions_ = node.getResolvedDimensions();
