@@ -1788,16 +1788,17 @@ static void YGNodeComputeFlexBasisForChildren(
   // child to exactly match the remaining space
   if (measureModeMainDim == YGMeasureModeExactly) {
     for (auto child : children) {
-      if (singleFlexChild != nullptr) {
-        if (child->isNodeFlexible()) {
-          // There is already a flexible child, abort
+      if (child->isNodeFlexible()) {
+        if (singleFlexChild != nullptr ||
+            YGFloatsEqual(child->resolveFlexGrow(), 0.0f) ||
+            YGFloatsEqual(child->resolveFlexShrink(), 0.0f)) {
+          // There is already a flexible child, or this flexible child doesn't
+          // have flexGrow and flexShrink, abort
           singleFlexChild = nullptr;
           break;
+        } else {
+          singleFlexChild = child;
         }
-      } else if (
-          child->resolveFlexGrow() > 0.0f &&
-          child->resolveFlexShrink() > 0.0f) {
-        singleFlexChild = child;
       }
     }
   }
