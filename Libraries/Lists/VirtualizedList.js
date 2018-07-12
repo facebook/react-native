@@ -688,7 +688,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={e => this._onCellLayout(e, key, ii)}
+          onLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
           ref={ref => {
@@ -1046,7 +1046,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout(e, cellKey, index) {
+  _onCellLayout = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1086,7 +1086,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this._computeBlankness();
-  }
+  };
 
   _onCellUnmount = (cellKey: string) => {
     const curr = this._frames[cellKey];
@@ -1604,7 +1604,7 @@ class CellRenderer extends React.Component<
     index: number,
     inversionStyle: ?DangerouslyImpreciseStyleProp,
     item: Item,
-    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
+    onLayout: (event: Object, key: string, index: number) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
     onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
@@ -1670,6 +1670,9 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  _onLayout = (e): void =>
+    this.props.onLayout(e, this.props.cellKey, this.props.index);
+
   render() {
     const {
       CellRendererComponent,
@@ -1694,7 +1697,7 @@ class CellRenderer extends React.Component<
        * comment and run Flow. */
       getItemLayout && !parentProps.debug && !fillRateHelper.enabled()
         ? undefined
-        : this.props.onLayout;
+        : this._onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     const itemSeparator = ItemSeparatorComponent && (
