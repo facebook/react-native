@@ -479,6 +479,11 @@ public class UIImplementation {
 
     ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
 
+    if (cssNodeToManage == null) {
+      FLog.w(ReactConstants.TAG, "Tried to set children on non-existent root tag: " + viewTag);
+      return;
+    }
+
     for (int i = 0; i < childrenTags.size(); i++) {
       ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
       if (cssNodeToAdd == null) {
