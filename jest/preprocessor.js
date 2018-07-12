@@ -43,7 +43,9 @@ module.exports = {
         src,
         Object.assign(
           {filename: file},
-          {sourceType: 'script', ...nodeOptions, ast: false},
+          {sourceType: 'script'},
+          nodeOptions,
+          {ast: false}
         ),
       ).code;
     }
