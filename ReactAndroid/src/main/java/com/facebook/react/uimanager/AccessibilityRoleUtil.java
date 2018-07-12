@@ -33,8 +33,7 @@ public class AccessibilityRoleUtil {
     BUTTON("android.widget.Button"),
     IMAGE("android.widget.ImageView"),
     KEYBOARD_KEY("android.inputmethodservice.Keyboard$Key"),
-    TEXT("android.widget.ViewGroup"),
-    TAB_BAR("android.widget.TabWidget");
+    TEXT("android.widget.ViewGroup");
 
     @Nullable private final String mValue;
 
@@ -90,7 +89,6 @@ public class AccessibilityRoleUtil {
   private static final String IMAGE = "image";
   private static final String KEYBOARDKEY = "keyboardkey";
   private static final String TEXT = "text";
-  private static final String TABBAR = "tabbar";
 
   public static void updateAccessibilityRole(View view, String role) {
     if (role == null) {
@@ -110,9 +108,6 @@ public class AccessibilityRoleUtil {
         break;
       case TEXT:
         setRole(view, AccessibilityRoleUtil.AccessibilityRole.TEXT);
-        break;
-      case TABBAR:
-        setRole(view, AccessibilityRoleUtil.AccessibilityRole.TAB_BAR);
         break;
       default:
         view.setAccessibilityDelegate(null);
