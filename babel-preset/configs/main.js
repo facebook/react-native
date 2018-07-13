@@ -24,12 +24,12 @@ const defaultPlugins = resolvePlugins([
   'transform-es2015-shorthand-properties',
   'transform-flow-strip-types',
   'transform-react-jsx',
-  'transform-regenerator',
+  'transform-regenerator'
 ]);
 
 const es2015ModulesCommonJs = resolvePlugin([
   'transform-es2015-modules-commonjs',
-  { strict: false, allowTopLevelThis: true },
+  { strict: false, allowTopLevelThis: true }
 ]);
 const checkES2015Constants = resolvePlugin('check-es2015-constants');
 const es2015ArrowFunctions = resolvePlugin('transform-es2015-arrow-functions');
@@ -113,7 +113,7 @@ const getPreset = (src, options) => {
 module.exports = (api, options = {}) => {
   let presetOptions = {
     dev: false,
-    modules: 'commonjs',
+    modules: 'commonjs'
   };
   if (api.withDevTools == null) {
     const env = process.env.BABEL_ENV || process.env.NODE_ENV;
