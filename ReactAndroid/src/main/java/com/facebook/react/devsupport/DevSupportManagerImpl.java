@@ -718,13 +718,13 @@ public class DevSupportManagerImpl implements
 
     mCurrentContext = reactContext;
 
-    // Recreate debug overlay controller with new CatalystInstance object
-    if (mDebugOverlayController != null) {
-      mDebugOverlayController.setFpsDebugViewVisible(false);
-    }
-    if (reactContext != null) {
-      mDebugOverlayController = new DebugOverlayController(reactContext);
-    }
+    // Recreate debug overlay controller with new CatalystInstance object onto Ui thread
+    UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          recreateDebugOverlayController();
+        }
+      });
 
     if (mDevSettings.isHotModuleReplacementEnabled() && mCurrentContext != null) {
       try {
@@ -739,6 +739,17 @@ public class DevSupportManagerImpl implements
     }
 
     reloadSettings();
+  }
+
+  private void recreateDebugOverlayController() {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mDebugOverlayController != null) {
+      mDebugOverlayController.setFpsDebugViewVisible(false);
+    }
+    if (mCurrentContext != null) {
+      mDebugOverlayController = new DebugOverlayController(mCurrentContext);
+    }
   }
 
   @Override
