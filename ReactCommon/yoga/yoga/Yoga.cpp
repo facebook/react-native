@@ -264,7 +264,7 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
   YGVector vec = YGVector();
   vec.reserve(oldNode->getChildren().size());
   YGNodeRef childNode = nullptr;
-  for (auto& item : oldNode->getChildren()) {
+  for (auto* item : oldNode->getChildren()) {
     childNode = YGNodeDeepClone(item);
     childNode->setOwner(node);
     vec.push_back(childNode);
@@ -301,8 +301,8 @@ static void YGConfigFreeRecursive(const YGNodeRef root) {
     delete root->getConfig();
   }
   // Delete configs recursively for childrens
-  for (uint32_t i = 0; i < root->getChildrenCount(); ++i) {
-    YGConfigFreeRecursive(root->getChild(i));
+  for (auto* child : root->getChildren()) {
+    YGConfigFreeRecursive(child);
   }
 }
 
@@ -1868,7 +1868,7 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
 
   // Add items to the current line until it's full or we run out of items.
   uint32_t endOfLineIndex = startOfLineIndex;
-  for (; endOfLineIndex < node->getChildrenCount(); endOfLineIndex++) {
+  for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
     const YGNodeRef child = node->getChild(endOfLineIndex);
     if (child->getStyle().display == YGDisplayNone ||
         child->getStyle().positionType == YGPositionTypeAbsolute) {
