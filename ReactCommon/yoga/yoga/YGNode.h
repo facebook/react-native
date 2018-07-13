@@ -122,12 +122,8 @@ struct YGNode {
     return getOwner();
   }
   
-  YGVector getChildren() const {
+  const YGVector& getChildren() const {
     return children_;
-  }
-  
-  uint32_t getChildrenCount() const {
-    return static_cast<uint32_t>(children_.size());
   }
   
   YGNodeRef getChild(uint32_t index) const {

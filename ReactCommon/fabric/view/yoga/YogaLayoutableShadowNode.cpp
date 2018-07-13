@@ -94,7 +94,7 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
 
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child->yogaNode_;
-  yogaNodeRawPtr->insertChild(childYogaNodeRawPtr, yogaNodeRawPtr->getChildrenCount());
+  yogaNodeRawPtr->insertChild(childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 
   if (childYogaNodeRawPtr->getOwner() == nullptr) {
     child->ensureUnsealed();
