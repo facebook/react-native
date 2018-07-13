@@ -14,12 +14,12 @@ struct YGFloatOptional {
 
  public:
   explicit YGFloatOptional(float value);
-  explicit YGFloatOptional();
+  explicit YGFloatOptional() : value_(0), isUndefined_(true) {}
 
   // Program will terminate if the value of an undefined is accessed. Please
   // make sure to check if the optional is defined before calling this function.
   // To check if float optional is defined, use `isUndefined()`.
-  const float& getValue() const;
+  float getValue() const;
 
   // Sets the value of float optional, and thus isUndefined is assigned false.
   void setValue(float val) {
