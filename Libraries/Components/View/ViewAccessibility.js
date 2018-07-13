@@ -42,9 +42,12 @@ export type AccessibilityComponentType =
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'link'
+  | 'search'
   | 'image'
   | 'keyboardkey'
-  | 'text';
+  | 'text'
+  | 'adjustable';
 
 module.exports = {
   AccessibilityTraits: [
@@ -75,8 +78,11 @@ module.exports = {
   AccessibilityRoles: [
     'none',
     'button',
+    'link',
+    'search',
     'image',
     'keyboardkey',
     'text',
+    'adjustable',
   ],
 };
