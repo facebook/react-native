@@ -1659,7 +1659,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-class CellRenderer extends React.PureComponent<
+class CellRenderer extends React.Component<
   {
     CellRendererComponent?: ?React.ComponentType<any>,
     ItemSeparatorComponent: ?React.ComponentType<*>,
