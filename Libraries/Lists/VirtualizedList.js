@@ -239,7 +239,7 @@ type State = {first: number, last: number};
  * when any key has values which are not strictly equal between the arguments.
  * Returns true when the values of all keys are strictly equal.
  */
-function shallowEqual(objA, objB, exceptions = []) {
+function shallowEqual(objA: Object, objB: Object, exceptions = []) {
   if (is(objA, objB)) {
     return true;
   }
@@ -735,7 +735,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         stickyHeaderIndices.push(cells.length);
       }
       // remove all components from parentProps so that these components don't cause the CellRenderer to re-render.
-      const parentProps = {...this.props};
+      const parentProps: Props = {...this.props};
       delete parentProps.ItemSeparatorComponent;
       delete parentProps.ListEmptyComponent;
       delete parentProps.ListFooterComponent;
