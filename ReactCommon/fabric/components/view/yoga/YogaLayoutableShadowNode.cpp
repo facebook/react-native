@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <memory>
 
+#include <fabric/components/view/conversions.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/conversions.h>
 #include <yoga/Yoga.h>
 
 namespace facebook {

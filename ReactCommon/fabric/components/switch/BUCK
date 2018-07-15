@@ -56,7 +56,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/graphics:graphics"),
-        react_native_xplat_target("fabric/view:view"),
+        react_native_xplat_target("fabric/components/view:view"),
     ],
 )
 

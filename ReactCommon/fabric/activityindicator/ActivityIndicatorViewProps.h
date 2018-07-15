@@ -6,8 +6,8 @@
  */
 
 #include <fabric/activityindicator/primitives.h>
+#include <fabric/components/view/ViewProps.h>
 #include <fabric/graphics/Color.h>
-#include <fabric/view/ViewProps.h>
 
 namespace facebook {
 namespace react {

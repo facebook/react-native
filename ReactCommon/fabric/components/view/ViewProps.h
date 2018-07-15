@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include <fabric/components/view/AccessibilityProps.h>
+#include <fabric/components/view/primitives.h>
+#include <fabric/components/view/YogaStylableProps.h>
 #include <fabric/core/Props.h>
 #include <fabric/graphics/Geometry.h>
 #include <fabric/graphics/Color.h>
-#include <fabric/view/AccessibilityProps.h>
-#include <fabric/view/primitives.h>
-#include <fabric/view/YogaStylableProps.h>
 
 namespace facebook {
 namespace react {

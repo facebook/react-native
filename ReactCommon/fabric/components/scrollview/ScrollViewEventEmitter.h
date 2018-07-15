@@ -8,9 +8,9 @@
 
 #include <memory>
 
+#include <fabric/components/view/ViewEventEmitter.h>
 #include <fabric/graphics/Geometry.h>
 #include <fabric/core/EventEmitter.h>
-#include <fabric/view/ViewEventEmitter.h>
 
 #include <folly/dynamic.h>
 

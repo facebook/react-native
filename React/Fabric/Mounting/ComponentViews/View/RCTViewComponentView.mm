@@ -7,8 +7,8 @@
 
 #import "RCTViewComponentView.h"
 
-#import <fabric/view/ViewProps.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewProps.h>
+#import <fabric/components/view/ViewEventEmitter.h>
 
 #import "RCTConversions.h"
 

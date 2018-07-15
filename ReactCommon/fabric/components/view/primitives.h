@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cmath>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

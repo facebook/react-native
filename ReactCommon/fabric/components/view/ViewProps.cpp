@@ -7,10 +7,10 @@
 
 #include "ViewProps.h"
 
+#include <fabric/components/view/conversions.h>
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 #include <fabric/graphics/conversions.h>
-#include <fabric/view/conversions.h>
 
 namespace facebook {
 namespace react {

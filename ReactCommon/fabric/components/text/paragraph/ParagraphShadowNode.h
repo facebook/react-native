@@ -9,11 +9,11 @@
 
 #include <fabric/components/text/ParagraphProps.h>
 #include <fabric/components/text/TextShadowNode.h>
+#include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
-#include <fabric/view/ConcreteViewShadowNode.h>
 #include <folly/Optional.h>
 
 namespace facebook {

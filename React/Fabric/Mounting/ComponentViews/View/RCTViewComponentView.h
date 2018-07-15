@@ -12,7 +12,7 @@
 #import <fabric/core/EventEmitter.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewEventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
