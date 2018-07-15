@@ -10,7 +10,7 @@
 #include <string>
 
 #include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -49,7 +49,6 @@ ShadowNode::ShadowNode(
   props_(props ? props : shadowNode->props_),
   eventEmitter_(eventEmitter ? eventEmitter : shadowNode->eventEmitter_),
   children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
-  sourceNode_(shadowNode),
   localData_(shadowNode->localData_),
   cloneFunction_(shadowNode->cloneFunction_),
   revision_(shadowNode->revision_ + 1) {}
@@ -82,10 +81,6 @@ Tag ShadowNode::getTag() const {
 
 Tag ShadowNode::getRootTag() const {
   return rootTag_;
-}
-
-SharedShadowNode ShadowNode::getSourceNode() const {
-  return sourceNode_.lock();
 }
 
 SharedLocalData ShadowNode::getLocalData() const {
@@ -122,22 +117,9 @@ void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShad
   std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
 }
 
-void ShadowNode::clearSourceNode() {
-  ensureUnsealed();
-  sourceNode_.reset();
-}
-
 void ShadowNode::setLocalData(const SharedLocalData &localData) {
   ensureUnsealed();
   localData_ = localData;
-}
-
-void ShadowNode::shallowSourceNode() {
-  ensureUnsealed();
-
-  auto sourceNode = sourceNode_.lock();
-  assert(sourceNode);
-  sourceNode_ = sourceNode->getSourceNode();
 }
 
 #pragma mark - Equality
@@ -181,21 +163,11 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", folly::to<std::string>(tag_)));
-
-  SharedShadowNode sourceNode = getSourceNode();
-  if (sourceNode) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
-      "source",
-      sourceNode->getDebugDescription({.maximumDepth = 1, .format = false})
-    ));
-  }
-
-  SharedDebugStringConvertibleList propsList = props_->getDebugProps();
-  std::move(propsList.begin(), propsList.end(), std::back_inserter(list));
-  return list;
+  return
+    props_->getDebugProps() +
+    SharedDebugStringConvertibleList {
+      debugStringConvertibleItem("tag", folly::to<std::string>(tag_))
+    };
 }
 
 } // namespace react
