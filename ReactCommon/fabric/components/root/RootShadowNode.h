@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <fabric/components/view/RootProps.h>
+#include <fabric/components/root/RootProps.h>
 #include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/core/LayoutContext.h>
 

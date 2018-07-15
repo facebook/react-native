@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include <fabric/components/view/ViewShadowNode.h>
-#include <fabric/components/view/RootShadowNode.h>
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/uimanager/ContextContainer.h>
