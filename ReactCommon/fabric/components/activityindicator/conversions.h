@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/activityindicator/primitives.h>
+#include <fabric/components/activityindicator/primitives.h>
 #include <folly/dynamic.h>
 
 namespace facebook {

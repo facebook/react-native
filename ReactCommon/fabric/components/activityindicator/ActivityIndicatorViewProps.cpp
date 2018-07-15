@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/activityindicator/ActivityIndicatorViewProps.h>
-#include <fabric/activityindicator/conversions.h>
+#include <fabric/components/activityindicator/ActivityIndicatorViewProps.h>
+#include <fabric/components/activityindicator/conversions.h>
 #include <fabric/core/propsConversions.h>
 
 namespace facebook {

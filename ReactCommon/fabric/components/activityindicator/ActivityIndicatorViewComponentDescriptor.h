@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/activityindicator/ActivityIndicatorViewShadowNode.h>
+#include <fabric/components/activityindicator/ActivityIndicatorViewShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {

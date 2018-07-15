@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/activityindicator/primitives.h>
+#include <fabric/components/activityindicator/primitives.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/graphics/Color.h>
 

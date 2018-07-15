@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/activityindicator/ActivityIndicatorViewShadowNode.h>
+#include <fabric/components/activityindicator/ActivityIndicatorViewShadowNode.h>
 
 namespace facebook {
 namespace react {
