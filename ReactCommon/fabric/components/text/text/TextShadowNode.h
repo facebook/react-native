@@ -9,11 +9,11 @@
 
 #include <fabric/attributedstring/AttributedString.h>
 #include <fabric/attributedstring/TextAttributes.h>
+#include <fabric/components/text/BaseTextShadowNode.h>
+#include <fabric/components/text/TextProps.h>
+#include <fabric/components/text/TextShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/ShadowNode.h>
-#include <fabric/text/BaseTextShadowNode.h>
-#include <fabric/text/TextProps.h>
-#include <fabric/text/TextShadowNode.h>
 
 namespace facebook {
 namespace react {
