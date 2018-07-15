@@ -260,3 +260,6 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
         results[key] = f
 
     return results
+
+def oss_cxx_library(**kwargs):
+    cxx_library(**kwargs)
