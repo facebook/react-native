@@ -14,6 +14,7 @@
 #include <fabric/text/TextShadowNode.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
 #include <fabric/view/ConcreteViewShadowNode.h>
+#include <folly/Optional.h>
 
 namespace facebook {
 namespace react {
@@ -63,6 +64,12 @@ private:
   void updateLocalData();
 
   SharedTextLayoutManager textLayoutManager_;
+
+  /*
+   * Cached attributed string that represents the content of the subtree started
+   * from the node.
+   */
+  mutable folly::Optional<AttributedString> cachedAttributedString_ {};
 };
 
 } // namespace react

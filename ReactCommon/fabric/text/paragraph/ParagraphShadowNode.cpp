@@ -19,7 +19,12 @@ ComponentName ParagraphShadowNode::getComponentName() const {
 }
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
-  return BaseTextShadowNode::getAttributedString(getProps()->textAttributes, getChildren());
+  if (!cachedAttributedString_.has_value()) {
+    cachedAttributedString_ =
+      BaseTextShadowNode::getAttributedString(getProps()->textAttributes, getChildren());
+  }
+
+  return cachedAttributedString_.value();
 }
 
 void ParagraphShadowNode::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {

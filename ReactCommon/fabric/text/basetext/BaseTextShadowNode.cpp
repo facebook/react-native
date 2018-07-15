@@ -20,8 +20,6 @@ AttributedString BaseTextShadowNode::getAttributedString(
   const TextAttributes &textAttributes,
   const SharedShadowNodeSharedList &childNodes
 ) const {
-  // TODO: Implement caching.
-
   AttributedString attributedString;
 
   for (const auto &childNode : *childNodes) {
