@@ -37,7 +37,6 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getEventEmitter(), nullptr);
   TestShadowNode *nodePtr = node.get();
   ASSERT_EQ(node->getComponentHandle(), typeid(*nodePtr).hash_code());
-  ASSERT_EQ(node->getSourceNode(), nullptr);
   ASSERT_EQ(node->getChildren()->size(), 0);
 
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
@@ -55,7 +54,6 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
-  ASSERT_EQ(node2->getSourceNode(), node);
 }
 
 TEST(ShadowNodeTest, handleShadowNodeMutation) {
@@ -85,35 +83,11 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   ASSERT_TRUE(node4->getSealed());
 
   // No more mutation after sealing.
-  EXPECT_THROW(node4->clearSourceNode(), std::runtime_error);
+  EXPECT_THROW(node4->setLocalData(nullptr), std::runtime_error);
 
   auto node5 = std::make_shared<TestShadowNode>(node4, nullptr, nullptr, nullptr);
-  node5->clearSourceNode();
-  ASSERT_EQ(node5->getSourceNode(), nullptr);
-}
-
-TEST(ShadowNodeTest, handleSourceNode) {
-  auto nodeFirstGeneration = std::make_shared<TestShadowNode>(9, 1, std::make_shared<const TestProps>(), nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto nodeSecondGeneration = std::make_shared<TestShadowNode>(nodeFirstGeneration, nullptr, nullptr, nullptr);
-  auto nodeThirdGeneration = std::make_shared<TestShadowNode>(nodeSecondGeneration, nullptr, nullptr, nullptr);
-  auto nodeForthGeneration = std::make_shared<TestShadowNode>(nodeThirdGeneration, nullptr, nullptr, nullptr);
-
-  // Ensure established shource nodes structure.
-  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeThirdGeneration);
-  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
-  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
-
-  // Shallow source node for the forth generation node.
-  nodeForthGeneration->shallowSourceNode();
-  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeSecondGeneration);
-
-  // Shallow it one more time.
-  nodeForthGeneration->shallowSourceNode();
-  ASSERT_EQ(nodeForthGeneration->getSourceNode(), nodeFirstGeneration);
-
-  // Ensure that 3th and 2nd were not affected.
-  ASSERT_EQ(nodeThirdGeneration->getSourceNode(), nodeSecondGeneration);
-  ASSERT_EQ(nodeSecondGeneration->getSourceNode(), nodeFirstGeneration);
+  node5->setLocalData(nullptr);
+  ASSERT_EQ(node5->getLocalData(), nullptr);
 }
 
 TEST(ShadowNodeTest, handleCloneFunction) {
