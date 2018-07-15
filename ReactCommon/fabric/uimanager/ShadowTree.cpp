@@ -78,7 +78,7 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
     newRootShadowNode
   );
 
-  if (commit(newRootShadowNode)) {
+  if (commit(oldRootShadowNode, newRootShadowNode)) {
     emitLayoutEvents(instructions);
 
     if (delegate_) {
@@ -87,10 +87,10 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
   }
 }
 
-bool ShadowTree::commit(const SharedRootShadowNode &newRootShadowNode) {
+bool ShadowTree::commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode) {
   std::lock_guard<std::mutex> lock(commitMutex_);
 
-  if (newRootShadowNode->getSourceNode() != rootShadowNode_) {
+  if (oldRootShadowNode != rootShadowNode_) {
     return false;
   }
 

@@ -105,21 +105,6 @@ public:
     auto childShadowNode = std::dynamic_pointer_cast<const ShadowNode>(child);
     assert(childShadowNode);
     auto childShadowNodeClone = childShadowNode->clone();
-
-    // This is overloading of `SharedLayoutableShadowNode::cloneAndReplaceChild`,
-    // the method is used to clone some node as a preparation for future mutation
-    // caused by relayout.
-    // Because those changes are not requested by UIManager, they add a layer
-    // of node generation (between the committed stage and new proposed stage).
-    // That additional layer confuses the Diffing algorithm which uses
-    // `sourceNode` for referencing the previous (aka committed) stage
-    // of the tree to produce mutation instructions.
-    // In other words, if we don't compensate this change here,
-    // the Diffing algorithm will compare wrong trees
-    // ("new-but-not-laid-out-yet vs. new" instead of "committed vs. new").
-    auto nonConstChildShadowNodeClone = std::const_pointer_cast<ShadowNode>(childShadowNodeClone);
-    nonConstChildShadowNodeClone->shallowSourceNode();
-
     ShadowNode::replaceChild(childShadowNode, childShadowNodeClone);
     return std::dynamic_pointer_cast<const LayoutableShadowNode>(childShadowNodeClone);
   }
