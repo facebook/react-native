@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include <fabric/components/scrollview/ScrollViewEventEmitter.h>
+#include <fabric/components/scrollview/ScrollViewProps.h>
 #include <fabric/core/LayoutContext.h>
-#include <fabric/scrollview/ScrollViewEventEmitter.h>
-#include <fabric/scrollview/ScrollViewProps.h>
 #include <fabric/view/ConcreteViewShadowNode.h>
 
 namespace facebook {

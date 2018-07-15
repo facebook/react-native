@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/scrollview/primitives.h>
+#include <fabric/components/scrollview/primitives.h>
 #include <folly/dynamic.h>
 
 namespace facebook {

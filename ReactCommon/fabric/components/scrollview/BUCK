@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/scrollview",
+        prefix = "fabric/components/scrollview",
     ),
     compiler_flags = [
         "-fexceptions",
