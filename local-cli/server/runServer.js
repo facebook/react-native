@@ -62,19 +62,19 @@ async function runServer(args: Args, config: ConfigT) {
       assetRegistryPath: ASSET_REGISTRY_PATH,
       enhanceMiddleware: middleware =>
         middlewareManager.getConnectInstance().use(middleware),
-      hmrEnabled: true,
-      maxWorkers: args.maxWorkers,
-      reporter,
-      secure: args.https,
-      secureKey: args.key,
-      secureCert: args.cert,
       transformModulePath: args.transformer
         ? path.resolve(args.transformer)
         : config.getTransformModulePath(),
-      watch: !args.nonPersistent,
     },
+    hmrEnabled: true,
     host: args.host,
+    maxWorkers: args.maxWorkers,
     port: args.port,
+    reporter,
+    secure: args.https,
+    secureCert: args.cert,
+    secureKey: args.key,
+    watch: !args.nonPersistent,
   });
 
   const wsProxy = webSocketProxy.attachToServer(
