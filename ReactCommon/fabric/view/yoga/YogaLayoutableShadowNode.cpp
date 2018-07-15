@@ -94,12 +94,16 @@ void YogaLayoutableShadowNode::appendChild(SharedYogaLayoutableShadowNode child)
 
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child->yogaNode_;
-  yogaNodeRawPtr->insertChild(childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 
-  if (childYogaNodeRawPtr->getOwner() == nullptr) {
-    child->ensureUnsealed();
-    childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
+  if (childYogaNodeRawPtr->getOwner() != nullptr) {
+    child = std::static_pointer_cast<const YogaLayoutableShadowNode>(cloneAndReplaceChild(child));
+    childYogaNodeRawPtr = &child->yogaNode_;
   }
+
+  child->ensureUnsealed();
+  childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
+
+  yogaNodeRawPtr->insertChild(childYogaNodeRawPtr, yogaNodeRawPtr->getChildren().size());
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
