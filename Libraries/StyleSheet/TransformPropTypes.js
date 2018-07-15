@@ -106,4 +106,21 @@ const TransformPropTypes = {
   ),
 };
 
+export type TransformProps = $ReadOnly<{|
+  transform?: Array<
+    $Shape<{perspective: number}> |
+    $Shape<{rotate: string}> |
+    $Shape<{rotateX: string}> |
+    $Shape<{rotateY: string}> |
+    $Shape<{rotateZ: string}> |
+    $Shape<{scale: number}> |
+    $Shape<{scaleX: number}> |
+    $Shape<{scaleY: number}> |
+    $Shape<{translateX: number}> |
+    $Shape<{translateY: number}> |
+    $Shape<{skewX: string}> |
+    $Shape<{skewY: string}>
+  >,
+|}>;
+
 module.exports = TransformPropTypes;

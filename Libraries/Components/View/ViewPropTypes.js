@@ -30,6 +30,7 @@ import type {
 } from 'ViewAccessibility';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
+import type {TransformProps} from 'TransformPropTypes';
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
@@ -77,6 +78,8 @@ export type ViewProps = $ReadOnly<{|
   // There's no easy way to create a different type if (Platform.isTV):
   // so we must include TVViewProps
   ...TVViewProps,
+
+  ...TransformProps,
 
   accessible?: boolean,
   accessibilityLabel?:
