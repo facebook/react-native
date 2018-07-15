@@ -5,11 +5,11 @@
 
 #include "Scheduler.h"
 
+#include <fabric/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <fabric/components/text/ParagraphComponentDescriptor.h>
 #include <fabric/components/text/RawTextComponentDescriptor.h>
 #include <fabric/components/text/TextComponentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
-#include <fabric/scrollview/ScrollViewComponentDescriptor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <fabric/view/ViewComponentDescriptor.h>

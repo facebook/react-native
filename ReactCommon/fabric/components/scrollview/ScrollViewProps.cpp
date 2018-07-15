@@ -7,9 +7,9 @@
 
 #include "ScrollViewProps.h"
 
-#include <fabric/graphics/conversions.h>
-#include <fabric/scrollview/conversions.h>
+#include <fabric/components/scrollview/conversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
+#include <fabric/graphics/conversions.h>
 
 #include <fabric/core/propsConversions.h>
 
