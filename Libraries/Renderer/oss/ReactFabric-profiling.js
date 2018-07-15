@@ -3752,13 +3752,14 @@ function beginWork(current, workInProgress, renderExpirationTime) {
       return (
         requiredContext(rootInstanceStackCursor.current),
         (renderExpirationTime = requiredContext(contextStackCursor$1.current)),
-        (props = workInProgress.type),
+        (props = workInProgress),
         (props =
-          "AndroidTextInput" === props ||
-          "RCTMultilineTextInputView" === props ||
-          "RCTSinglelineTextInputView" === props ||
-          "RCTText" === props ||
-          "RCTVirtualText" === props),
+          "AndroidTextInput" === props.type ||
+          "RCTMultilineTextInputView" === props.type ||
+          "RCTSinglelineTextInputView" === props.type ||
+          "RCTText" === props.type ||
+          "RCTVirtualText" === props.type ||
+          (props.return && props.return.type && props.return.type.canRenderString)),
         (props =
           renderExpirationTime.isInAParentText !== props
             ? { isInAParentText: props }
