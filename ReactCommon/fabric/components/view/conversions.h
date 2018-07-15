@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <fabric/components/view/primitives.h>
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/graphics/Geometry.h>
-#include <fabric/view/primitives.h>
 #include <folly/dynamic.h>
 #include <folly/Conv.h>
 #include <yoga/Yoga.h>

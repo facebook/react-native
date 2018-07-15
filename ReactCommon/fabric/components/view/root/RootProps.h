@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include <fabric/components/view/ViewProps.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/LayoutContext.h>
-#include <fabric/view/ViewProps.h>
 
 namespace facebook {
 namespace react {

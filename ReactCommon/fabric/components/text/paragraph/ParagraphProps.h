@@ -12,8 +12,8 @@
 
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/components/text/BaseTextProps.h>
+#include <fabric/components/view/ViewProps.h>
 #include <fabric/core/Props.h>
-#include <fabric/view/ViewProps.h>
 
 namespace facebook {
 namespace react {

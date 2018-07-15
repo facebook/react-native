@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <fabric/view/ViewComponentDescriptor.h>
+#include <fabric/components/view/ViewComponentDescriptor.h>
 #include <gtest/gtest.h>
 
 using namespace facebook::react;

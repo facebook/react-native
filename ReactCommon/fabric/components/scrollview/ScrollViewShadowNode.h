@@ -11,8 +11,8 @@
 
 #include <fabric/components/scrollview/ScrollViewEventEmitter.h>
 #include <fabric/components/scrollview/ScrollViewProps.h>
+#include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/core/LayoutContext.h>
-#include <fabric/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {

@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <fabric/components/view/ViewShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/view/ViewShadowNode.h>
 
 namespace facebook {
 namespace react {

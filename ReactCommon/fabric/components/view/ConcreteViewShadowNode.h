@@ -7,14 +7,14 @@
 
 #pragma once
 
+#include <fabric/components/view/AccessibleShadowNode.h>
+#include <fabric/components/view/ViewEventEmitter.h>
+#include <fabric/components/view/ViewProps.h>
+#include <fabric/components/view/YogaLayoutableShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/AccessibleShadowNode.h>
-#include <fabric/view/ViewEventEmitter.h>
-#include <fabric/view/ViewProps.h>
-#include <fabric/view/YogaLayoutableShadowNode.h>
 
 namespace facebook {
 namespace react {

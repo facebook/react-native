@@ -9,13 +9,13 @@
 
 #include <glog/logging.h>
 
+#include <fabric/components/view/ViewComponentDescriptor.h>
+#include <fabric/components/view/ViewProps.h>
+#include <fabric/components/view/ViewShadowNode.h>
 #include <fabric/core/componentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/ViewComponentDescriptor.h>
-#include <fabric/view/ViewProps.h>
-#include <fabric/view/ViewShadowNode.h>
 
 namespace facebook {
 namespace react {

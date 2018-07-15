@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cinttypes>
+
 namespace facebook {
 namespace react {
 
