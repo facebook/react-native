@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include <fabric/components/text/RawTextProps.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/ShadowNode.h>
-#include <fabric/text/RawTextProps.h>
 
 namespace facebook {
 namespace react {

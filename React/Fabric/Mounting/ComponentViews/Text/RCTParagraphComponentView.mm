@@ -7,10 +7,10 @@
 
 #import "RCTParagraphComponentView.h"
 
+#import <fabric/components/text/ParagraphLocalData.h>
+#import <fabric/components/text/ParagraphProps.h>
 #import <fabric/core/LocalData.h>
 #import <fabric/graphics/Geometry.h>
-#import <fabric/text/ParagraphLocalData.h>
-#import <fabric/text/ParagraphProps.h>
 #import <fabric/textlayoutmanager/TextLayoutManager.h>
 #import <fabric/textlayoutmanager/RCTTextLayoutManager.h>
 #import "RCTConversions.h"

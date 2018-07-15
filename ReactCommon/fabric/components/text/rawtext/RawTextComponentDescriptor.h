@@ -7,13 +7,13 @@
 
 #pragma once
 
+#include <fabric/components/text/RawTextShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/text/TextShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-using TextComponentDescriptor = ConcreteComponentDescriptor<TextShadowNode>;
+using RawTextComponentDescriptor = ConcreteComponentDescriptor<RawTextShadowNode>;
 
 } // namespace react
 } // namespace facebook

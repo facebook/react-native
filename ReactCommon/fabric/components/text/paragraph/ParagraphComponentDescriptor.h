@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <fabric/components/text/ParagraphShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/text/ParagraphShadowNode.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {

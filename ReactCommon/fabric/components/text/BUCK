@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
             ("text", "*.h"),
             ("rawtext", "*.h"),
         ],
-        prefix = "fabric/text",
+        prefix = "fabric/components/text",
     ),
     compiler_flags = [
         "-fexceptions",

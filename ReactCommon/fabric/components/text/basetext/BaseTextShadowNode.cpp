@@ -7,11 +7,11 @@
 
 #include "BaseTextShadowNode.h"
 
+#include <fabric/components/text/RawTextShadowNode.h>
+#include <fabric/components/text/RawTextProps.h>
+#include <fabric/components/text/TextShadowNode.h>
+#include <fabric/components/text/TextProps.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/text/RawTextShadowNode.h>
-#include <fabric/text/RawTextProps.h>
-#include <fabric/text/TextShadowNode.h>
-#include <fabric/text/TextProps.h>
 
 namespace facebook {
 namespace react {

@@ -56,12 +56,11 @@ rn_xplat_cxx_library(
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
+        react_native_xplat_target("fabric/components/text:text"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/text:text"),
         react_native_xplat_target("fabric/view:view"),
         react_native_xplat_target("fabric/scrollview:scrollview"),
-        react_native_xplat_target("fabric/text:text"),
     ],
 )
 
