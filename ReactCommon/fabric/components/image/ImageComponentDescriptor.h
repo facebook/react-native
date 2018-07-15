@@ -24,7 +24,7 @@ class ImageComponentDescriptor final:
 public:
   ImageComponentDescriptor(SharedEventDispatcher eventDispatcher, const SharedContextContainer &contextContainer):
     ConcreteComponentDescriptor(eventDispatcher),
-    imageManager_(std::static_pointer_cast<ImageManager>(contextContainer->at(typeid(ImageManager)))) {}
+    imageManager_(contextContainer->getInstance<ImageManager>()) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

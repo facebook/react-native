@@ -24,15 +24,20 @@ using SharedContextContainer = std::shared_ptr<ContextContainer>;
 class ContextContainer final {
 
 public:
-  using ClassHandle = std::type_index;
-  using SharedInstance = std::shared_ptr<void>;
+  template<typename T>
+  void registerInstance(std::shared_ptr<T> instance) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    instances_.insert({std::type_index(typeid(T)), instance});
+  }
 
-  void registerInstance(const ClassHandle &handle, SharedInstance instance);
-
-  const SharedInstance &at(const ClassHandle &handle) const;
+  template<typename T>
+  std::shared_ptr<T> getInstance() const {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return std::static_pointer_cast<T>(instances_.at(std::type_index(typeid(T))));
+  }
 
 private:
-  std::unordered_map<ClassHandle, SharedInstance> instances_;
+  std::unordered_map<std::type_index, std::shared_ptr<void>> instances_;
   mutable std::mutex mutex_;
 };
 
