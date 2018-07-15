@@ -8,7 +8,7 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/components/view/RootShadowNode.h>
+#include <fabric/components/root/RootShadowNode.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/ShadowNode.h>
