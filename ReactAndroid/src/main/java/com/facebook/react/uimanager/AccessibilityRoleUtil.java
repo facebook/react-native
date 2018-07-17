@@ -12,6 +12,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import com.facebook.react.bridge.ReadableArray;
 import javax.annotation.Nullable;
 
 /**
@@ -102,7 +103,7 @@ public class AccessibilityRoleUtil {
   }
   
   /**
-   * Variables and methods for setting accessibilityRole on view properties.
+   * Method for setting accessibilityRole on view properties.
    */
   public static void updateAccessibilityRole(View view, String role) {
     if (role == null) {
