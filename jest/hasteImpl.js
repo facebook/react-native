@@ -18,9 +18,9 @@ const ROOTS = [
 ];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
-  /.*\/__(mocks|tests)__\/.*/,
-  /^Libraries\/Animated\/src\/polyfills\/.*/,
-  /^Libraries\/Renderer\/fb\/.*/,
+  /.*[\\\/]__(mocks|tests)__[\\\/].*/,
+  /^Libraries[\\\/]Animated[\\\/]src[\\\/]polyfills[\\\/].*/,
+  /^Libraries[\\\/]Renderer[\\\/]fb[\\\/].*/,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [
@@ -32,7 +32,7 @@ const WHITELISTED_PREFIXES /*: Array<string> */ = [
 
 const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
-  [/^(?:.*\/)?([a-zA-Z0-9$_.-]+)$/, '$1'],
+  [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
   // strip .android/.ios/.native/.web suffix
