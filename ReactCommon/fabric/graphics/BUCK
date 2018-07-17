@@ -56,11 +56,6 @@ rn_xplat_cxx_library(
         ":tests",
     ],
     force_static = True,
-    frameworks = [
-        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
-        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
-        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
-    ],
     ios_deps = [
         "xplat//js:RCTImage",
         "xplat//js/react-native-github:RCTCxxBridge",
@@ -71,6 +66,11 @@ rn_xplat_cxx_library(
         ],
         prefix = "fabric/graphics",
     ),
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
     ios_srcs = glob(
         [
             "platform/ios/**/*.cpp",

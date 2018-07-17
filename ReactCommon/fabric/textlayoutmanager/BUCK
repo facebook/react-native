@@ -63,11 +63,6 @@ rn_xplat_cxx_library(
         ":tests",
     ],
     force_static = True,
-    frameworks = [
-        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
-        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
-        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
-    ],
     ios_deps = [
     ],
     ios_exported_headers = subdir_glob(
@@ -76,6 +71,11 @@ rn_xplat_cxx_library(
         ],
         prefix = "fabric/textlayoutmanager",
     ),
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
     ios_headers = subdir_glob(
         [
             ("platform/ios", "**/*.h"),
