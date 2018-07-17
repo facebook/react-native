@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
-      
+
       if (@available(iOS 11.0, *)) {
         UIWindow *window = UIApplication.sharedApplication.keyWindow;
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
@@ -131,6 +131,10 @@ RCT_EXPORT_METHOD(hide)
   UIColor *backgroundColor;
   NSString *source;
   if (URL.fileURL) {
+    // If dev mode is not enabled, we don't want to show this kind of notification
+#if !RCT_DEV
+    return;
+#endif
     color = [UIColor grayColor];
     backgroundColor = [UIColor blackColor];
     source = @"pre-bundled file";
