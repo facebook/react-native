@@ -24,6 +24,8 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
 
   public WritableNativeArray() {
     super(initHybrid());
+
+    iUseNativeAccessor = true;
   }
 
   @Override

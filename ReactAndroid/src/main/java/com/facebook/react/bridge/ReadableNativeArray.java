@@ -32,6 +32,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   //WriteOnce but not in the constructor fields
   private @Nullable Object[] mLocalArray;
   private @Nullable ReadableType[] mLocalTypeArray;
+  protected boolean iUseNativeAccessor = false;
 
   private static int jniPassCounter = 0;
   private static boolean mUseNativeAccessor = false;
@@ -77,7 +78,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public int size() {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return sizeNative();
     }
@@ -87,7 +88,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public boolean isNull(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return isNullNative(index);
     }
@@ -97,7 +98,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public boolean getBoolean(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getBooleanNative(index);
     }
@@ -107,7 +108,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public double getDouble(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getDoubleNative(index);
     }
@@ -117,7 +118,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public int getInt(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getIntNative(index);
     }
@@ -127,7 +128,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public String getString(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getStringNative(index);
     }
@@ -137,7 +138,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public ReadableNativeArray getArray(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getArrayNative(index);
     }
@@ -147,7 +148,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public ReadableNativeMap getMap(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getMapNative(index);
     }
@@ -157,7 +158,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public ReadableType getType(int index) {
-    if (mUseNativeAccessor) {
+    if (mUseNativeAccessor || iUseNativeAccessor) {
       jniPassCounter++;
       return getTypeNative(index);
     }
