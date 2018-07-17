@@ -74,7 +74,6 @@ async function runServer(args: Args, config: ConfigT) {
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,
-    watch: !args.nonPersistent,
   });
 
   const wsProxy = webSocketProxy.attachToServer(
