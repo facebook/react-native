@@ -33,6 +33,7 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"header": @(UIAccessibilityTraitHeader),
   @"search": @(UIAccessibilityTraitSearchField),
   @"image": @(UIAccessibilityTraitImage),
+  @"imagebutton": @(UIAccessibilityTraitImage | UIAccessibilityTraitButton),
   @"selected": @(UIAccessibilityTraitSelected),
   @"plays": @(UIAccessibilityTraitPlaysSound),
   @"key": @(UIAccessibilityTraitKeyboardKey),
