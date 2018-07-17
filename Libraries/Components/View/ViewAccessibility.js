@@ -47,7 +47,8 @@ export type AccessibilityRole =
   | 'image'
   | 'keyboardkey'
   | 'text'
-  | 'adjustable';
+  | 'adjustable'
+  | 'imagebutton';
 
 module.exports = {
   AccessibilityTraits: [
@@ -84,5 +85,6 @@ module.exports = {
     'keyboardkey',
     'text',
     'adjustable',
+    'imagebutton',
   ],
 };
