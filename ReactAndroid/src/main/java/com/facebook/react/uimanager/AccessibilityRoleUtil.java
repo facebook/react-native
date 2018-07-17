@@ -34,6 +34,7 @@ public class AccessibilityRoleUtil {
     LINK("android.widget.Button"),
     SEARCH("android.widget.EditText"),
     IMAGE("android.widget.ImageView"),
+    IMAGEBUTTON("android.widget.ImageView"),
     KEYBOARDKEY("android.inputmethodservice.Keyboard$Key"),
     TEXT("android.widget.ViewGroup"),
     ADJUSTABLE("android.widget.SeekBar");
@@ -90,6 +91,10 @@ public class AccessibilityRoleUtil {
     }
     if (role.equals(AccessibilityRole.IMAGE)) {
       nodeInfo.setRoleDescription("Image");
+    }
+    if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
+      nodeInfo.setRoleDescription("Button Image");
+      nodeInfo.setClickable(true);
     }
     if (role.equals(AccessibilityRole.ADJUSTABLE)) {
       nodeInfo.setRoleDescription("Adjustable");
