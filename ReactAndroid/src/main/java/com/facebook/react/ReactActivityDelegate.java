@@ -196,10 +196,7 @@ public class ReactActivityDelegate {
   }
 
   private Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return null;
+    return Assertions.assertNotNull(mActivity);
   }
 
   private Activity getPlainActivity() {
