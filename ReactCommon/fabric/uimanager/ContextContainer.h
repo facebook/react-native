@@ -20,6 +20,7 @@ using SharedContextContainer = std::shared_ptr<ContextContainer>;
 
 /*
  * General purpose dependecy injection container.
+ * Instance types must be copyable.
  */
 class ContextContainer final {
 
@@ -30,11 +31,12 @@ public:
    * by `{type, key}` pair.
    */
   template<typename T>
-  void registerInstance(std::shared_ptr<T> instance, const std::string &key = "") {
+  void registerInstance(const T &instance, const std::string &key = "") {
     std::lock_guard<std::mutex> lock(mutex_);
+
     instances_.insert({
       {std::type_index(typeid(T)), key},
-      instance
+      std::make_shared<T>(instance)
     });
   }
 
@@ -44,9 +46,10 @@ public:
    * by {type, key} pair.
    */
   template<typename T>
-  std::shared_ptr<T> getInstance(const std::string &key = "") const {
+  T getInstance(const std::string &key = "") const {
     std::lock_guard<std::mutex> lock(mutex_);
-    return std::static_pointer_cast<T>(instances_.at({std::type_index(typeid(T)), key}));
+
+    return *std::static_pointer_cast<T>(instances_.at({std::type_index(typeid(T)), key}));
   }
 
 private:
