@@ -61,10 +61,11 @@ public:
     AccessibleShadowNode(
       props
     ),
-    YogaLayoutableShadowNode(
-      props,
-      children
-    ) {};
+    YogaLayoutableShadowNode() {
+
+    YogaLayoutableShadowNode::setProps(*props);
+    YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+  };
 
   ConcreteViewShadowNode(
     const SharedConcreteViewShadowNode &shadowNode,
@@ -83,30 +84,36 @@ public:
       props
     ),
     YogaLayoutableShadowNode(
-      shadowNode,
-      props,
-      children
-    ) {};
+      *shadowNode
+    ) {
+
+    if (props) {
+      YogaLayoutableShadowNode::setProps(*props);
+    }
+
+    if (children) {
+      YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+    }
+  };
 
   void appendChild(const SharedShadowNode &child) {
     ensureUnsealed();
 
     ShadowNode::appendChild(child);
 
-    auto yogaLayoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child);
+    auto nonConstChild = const_cast<ShadowNode *>(child.get());
+    auto yogaLayoutableChild = dynamic_cast<YogaLayoutableShadowNode *>(nonConstChild);
     if (yogaLayoutableChild) {
       YogaLayoutableShadowNode::appendChild(yogaLayoutableChild);
     }
   }
 
-  SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) override {
+  LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child) override {
     ensureUnsealed();
-
-    auto childShadowNode = std::dynamic_pointer_cast<const ShadowNode>(child);
-    assert(childShadowNode);
-    auto childShadowNodeClone = childShadowNode->clone();
-    ShadowNode::replaceChild(childShadowNode, childShadowNodeClone);
-    return std::dynamic_pointer_cast<const LayoutableShadowNode>(childShadowNodeClone);
+    auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
+    auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone());
+    ShadowNode::replaceChild(childShadowNode->shared_from_this(), clonedChildShadowNode);
+    return clonedChildShadowNode.get();
   }
 
 #pragma mark - Equality
@@ -131,24 +138,6 @@ public:
     list.push_back(std::make_shared<DebugStringConvertibleItem>("layout", "", LayoutableShadowNode::getDebugProps()));
 
     return list;
-  }
-
-protected:
-
-#pragma mark - LayoutableShadowNode
-
-  SharedLayoutableShadowNodeList getLayoutableChildNodes() const override {
-    SharedLayoutableShadowNodeList sharedLayoutableShadowNodeList = {};
-    for (auto child : *ShadowNode::children_) {
-      const SharedLayoutableShadowNode layoutableShadowNode = std::dynamic_pointer_cast<const LayoutableShadowNode>(child);
-      if (!layoutableShadowNode) {
-        continue;
-      }
-
-      sharedLayoutableShadowNodeList.push_back(layoutableShadowNode);
-    }
-
-    return sharedLayoutableShadowNodeList;
   }
 
 };

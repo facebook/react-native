@@ -29,7 +29,7 @@ using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
-using ShadowNodeCloneFunction = std::function<SharedShadowNode(
+using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
   const SharedShadowNode &shadowNode,
   const SharedProps &props,
   const SharedEventEmitter &eventEmitter,
@@ -64,7 +64,7 @@ public:
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  SharedShadowNode clone(
+  UnsharedShadowNode clone(
     const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const;

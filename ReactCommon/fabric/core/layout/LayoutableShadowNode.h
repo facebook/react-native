@@ -22,11 +22,6 @@ namespace react {
 struct LayoutConstraints;
 struct LayoutContext;
 
-class LayoutableShadowNode;
-using SharedLayoutableShadowNode = std::shared_ptr<const LayoutableShadowNode>;
-using SharedLayoutableShadowNodeList = std::vector<SharedLayoutableShadowNode>;
-using LayoutableShadowNodeIterator = std::iterator<std::input_iterator_tag, const SharedLayoutableShadowNode>;
-
 /*
  * Describes all sufficient layout API (in approach-agnostic way)
  * which makes a concurrent layout possible.
@@ -90,13 +85,13 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual SharedLayoutableShadowNodeList getLayoutableChildNodes() const = 0;
+  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
    */
-  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) = 0;
+  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child) = 0;
 
   /*
    * Sets layout metrics for the shadow node.

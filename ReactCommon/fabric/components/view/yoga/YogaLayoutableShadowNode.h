@@ -15,19 +15,10 @@
 #include <fabric/components/view/YogaStylableProps.h>
 #include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/core/Sealable.h>
-#include <fabric/core/ShadowNode.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
-
-class YogaLayoutableShadowNode;
-
-using SharedYogaConfig = std::shared_ptr<YGConfig>;
-
-using SharedYogaLayoutableShadowNode = std::shared_ptr<const YogaLayoutableShadowNode>;
-using SharedYogaLayoutableShadowNodeList = std::vector<SharedYogaLayoutableShadowNode>;
-using SharedYogaLayoutableShadowNodeSharedList = std::shared_ptr<const SharedYogaLayoutableShadowNodeList>;
 
 class YogaLayoutableShadowNode:
   public LayoutableShadowNode,
@@ -38,16 +29,9 @@ public:
 
 #pragma mark - Constructors
 
-  YogaLayoutableShadowNode(
-    const SharedYogaStylableProps &props,
-    const SharedShadowNodeSharedList &children
-  );
+  YogaLayoutableShadowNode();
 
-  YogaLayoutableShadowNode(
-    const SharedYogaLayoutableShadowNode &shadowNode,
-    const SharedYogaStylableProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
-  );
+  YogaLayoutableShadowNode(const YogaLayoutableShadowNode &layoutableShadowNode);
 
 #pragma mark - Mutating Methods
 
@@ -59,10 +43,22 @@ public:
 
   /*
    * Appends `child`'s Yoga node to the own Yoga node.
-   * So, it complements `ShadowNode::appendChild(...)` functionality from Yoga
-   * perspective.
+   * Complements `ShadowNode::appendChild(...)` functionality from Yoga perspective.
    */
-  void appendChild(SharedYogaLayoutableShadowNode child);
+  void appendChild(YogaLayoutableShadowNode *child);
+
+  /*
+   * Sets Yoga children based on collection of `YogaLayoutableShadowNode` instances.
+   * Complements `ShadowNode::setChildren(...)` functionality from Yoga perspective.
+   */
+  void setChildren(std::vector<YogaLayoutableShadowNode *> children);
+
+  /*
+   * Sets Yoga styles based on given `YogaStylableProps`.
+   */
+  void setProps(const YogaStylableProps &props);
+
+#pragma mark - LayoutableShadowNode
 
   void cleanLayout() override;
   void dirtyLayout() override;
@@ -79,6 +75,8 @@ public:
   
   void layoutChildren(LayoutContext layoutContext) override;
 
+  std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const override;
+
 protected:
   /*
    * All Yoga functions only accept non-const arguments, so we have to mark
@@ -94,7 +92,6 @@ protected:
 
 private:
   static void initializeYogaConfig(YGConfig &config);
-  static void setYogaNodeChildrenBasedOnShadowNodeChildren(YGNode *yogaNodeRawPtr, const SharedShadowNodeSharedList &children);
   static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
 };

@@ -53,7 +53,7 @@ ShadowNode::ShadowNode(
   cloneFunction_(shadowNode->cloneFunction_),
   revision_(shadowNode->revision_ + 1) {}
 
-SharedShadowNode ShadowNode::clone(
+UnsharedShadowNode ShadowNode::clone(
   const SharedProps &props,
   const SharedShadowNodeSharedList &children
 ) const {

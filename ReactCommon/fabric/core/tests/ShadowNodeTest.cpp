@@ -103,7 +103,7 @@ TEST(ShadowNodeTest, handleCloneFunction) {
     nullptr,
     ShadowNode::emptySharedShadowNodeSharedList(),
     [](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventEmitter &eventEmitter, const SharedShadowNodeSharedList &children) {
-      return std::make_shared<const TestShadowNode>(
+      return std::make_shared<TestShadowNode>(
         std::static_pointer_cast<const TestShadowNode>(shadowNode),
         props,
         nullptr,
