@@ -1,0 +1,41 @@
+environment:
+    ANDROID_HOME: "C:\\android-sdk-windows"
+    ANDROID_NDK: "C:\\android-sdk-windows\\ndk-bundle"
+    ANDROID_BUILD_VERSION: 26
+    ANDROID_TOOLS_VERSION: 26.0.3
+
+    GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+    SDK_TOOLS_URL: https://dl.google.com/android/repository/sdk-tools-windows-3859397.zip
+    NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r10e-windows-x86_64.zip
+
+    matrix:
+        - nodejs_version: 8
+        - nodejs_version: 10
+
+install:
+    # Install Android SDK Tools
+    - mkdir "%ANDROID_HOME%"
+    - appveyor DownloadFile "%SDK_TOOLS_URL%" -FileName "%TMP%/sdk-tools.zip"
+    - 7z x "%TMP%/sdk-tools.zip" -o"%ANDROID_HOME%" > nul
+    - appveyor DownloadFile "%NDK_TOOLS_URL%" -FileName "%TMP%/ndk.zip"
+    - 7z x "%TMP%/ndk.zip" -o"%ANDROID_NDK%" > nul
+    - set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
+
+    - yes 2> nul | sdkmanager --licenses > nul
+    - sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
+      "platforms;android-%ANDROID_BUILD_VERSION%" \
+      "build-tools;%ANDROID_TOOLS_VERSION%" \
+      "add-ons;addon-google_apis-google-23" \
+      "extras;android;m2repository"
+
+    - ps: Install-Product node $env:nodejs_version
+    - npm install
+
+build_script:
+  - gradlew.bat RNTester:android:app:assembleRelease
+
+test_script:
+    - node --version
+    - npm --version
+    - npm test
