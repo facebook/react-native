@@ -61,6 +61,11 @@ public:
    */
   const Fragments &getFragments() const;
 
+  /*
+   * Returns a string constructed from all strings in all fragments.
+   */
+  std::string getString() const;
+
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugChildren() const override;

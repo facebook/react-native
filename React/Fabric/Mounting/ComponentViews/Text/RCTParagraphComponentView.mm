@@ -68,4 +68,20 @@ using namespace facebook::react;
                                           frame:frame];
 }
 
+#pragma mark - Accessibility
+
+- (NSString *)accessibilityLabel
+{
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
+  if (superAccessibilityLabel) {
+    return superAccessibilityLabel;
+  }
+
+  if (!_paragraphLocalData) {
+    return nil;
+  }
+
+  return RCTNSStringFromString(_paragraphLocalData->getAttributedString().getString());
+}
+
 @end
