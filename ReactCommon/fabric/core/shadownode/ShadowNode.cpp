@@ -110,10 +110,18 @@ void ShadowNode::appendChild(const SharedShadowNode &child) {
   nonConstChildren->push_back(child);
 }
 
-void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild) {
+void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex) {
   ensureUnsealed();
 
   auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
+
+  if (suggestedIndex != -1 && suggestedIndex < nonConstChildren->size()) {
+    if (nonConstChildren->at(suggestedIndex) == oldChild) {
+      (*nonConstChildren)[suggestedIndex] = newChild;
+      return;
+    }
+  }
+
   std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
 }
 

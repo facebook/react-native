@@ -93,7 +93,7 @@ public:
 #pragma mark - Mutating Methods
 
   void appendChild(const SharedShadowNode &child);
-  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
+  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex = -1);
   void clearSourceNode();
 
   /*

@@ -91,7 +91,7 @@ protected:
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
    */
-  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child) = 0;
+  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) = 0;
 
   /*
    * Sets layout metrics for the shadow node.

@@ -108,11 +108,11 @@ public:
     }
   }
 
-  LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child) override {
+  LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) override {
     ensureUnsealed();
     auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
     auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone());
-    ShadowNode::replaceChild(childShadowNode->shared_from_this(), clonedChildShadowNode);
+    ShadowNode::replaceChild(childShadowNode->shared_from_this(), clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }
 
