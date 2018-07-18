@@ -16,9 +16,13 @@ const Metro = require('metro');
 
 const {Terminal} = require('metro-core');
 
+const messageSocket = require('./util/messageSocket');
 const morgan = require('morgan');
 const path = require('path');
+const webSocketProxy = require('./util/webSocketProxy');
 const MiddlewareManager = require('./middleware/MiddlewareManager');
+
+const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {ConfigT} from 'metro';
 
@@ -55,20 +59,30 @@ async function runServer(args: Args, config: ConfigT) {
   const serverInstance = await Metro.runServer({
     config: {
       ...config,
-      hmrEnabled: true,
-      maxWorkers: args.maxWorkers,
-      reporter,
-      secure: args.https,
-      secureKey: args.key,
-      secureCert: args.cert,
+      assetRegistryPath: ASSET_REGISTRY_PATH,
+      enhanceMiddleware: middleware =>
+        middlewareManager.getConnectInstance().use(middleware),
       transformModulePath: args.transformer
         ? path.resolve(args.transformer)
         : config.getTransformModulePath(),
-      watch: !args.nonPersistent,
     },
+    hmrEnabled: true,
     host: args.host,
+    maxWorkers: args.maxWorkers,
     port: args.port,
+    reporter,
+    secure: args.https,
+    secureCert: args.cert,
+    secureKey: args.key,
   });
+
+  const wsProxy = webSocketProxy.attachToServer(
+    serverInstance,
+    '/debugger-proxy',
+  );
+  const ms = messageSocket.attachToServer(serverInstance, '/message');
+  middlewareManager.attachDevToolsSocket(wsProxy);
+  middlewareManager.attachDevToolsSocket(ms);
 
   // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
   // early versions of Node 8, this was implemented in a buggy way which caused
