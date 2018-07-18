@@ -23,11 +23,11 @@ install:
     - set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
 
     - yes 2> nul | sdkmanager --licenses > nul
-    - sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
-      "platforms;android-26" \
-      "build-tools;26.0.3" \
-      "add-ons;addon-google_apis-google-23" \
-      "extras;android;m2repository"
+    - sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+    - sdkmanager "platforms;android-26"
+    - sdkmanager  "build-tools;26.0.3"
+    - sdkmanager "add-ons;addon-google_apis-google-23"
+    - sdkmanager "extras;android;m2repository"
 
     - ps: Install-Product node $env:nodejs_version
     - npm install
