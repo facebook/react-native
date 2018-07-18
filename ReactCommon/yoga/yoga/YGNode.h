@@ -40,22 +40,6 @@ struct YGNode {
   explicit YGNode(const YGConfigRef newConfig);
   YGNode(const YGNode& node);
   YGNode& operator=(const YGNode& node);
-  YGNode(
-      void* context,
-      YGPrintFunc print,
-      bool hasNewLayout,
-      YGNodeType nodeType,
-      YGMeasureFunc measure,
-      YGBaselineFunc baseline,
-      YGDirtiedFunc dirtied,
-      YGStyle style,
-      const YGLayout& layout,
-      uint32_t lineIndex,
-      YGNodeRef owner,
-      const YGVector& children,
-      YGConfigRef config,
-      bool isDirty,
-      std::array<YGValue, 2> resolvedDimensions);
 
   // Getters
   void* getContext() const {

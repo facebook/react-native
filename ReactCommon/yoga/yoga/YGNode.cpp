@@ -292,38 +292,6 @@ YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
   config_ = newConfig;
 }
 
-YGNode::YGNode(
-    void* context,
-    YGPrintFunc print,
-    bool hasNewLayout,
-    YGNodeType nodeType,
-    YGMeasureFunc measure,
-    YGBaselineFunc baseline,
-    YGDirtiedFunc dirtied,
-    YGStyle style,
-    const YGLayout& layout,
-    uint32_t lineIndex,
-    YGNodeRef owner,
-    const YGVector& children,
-    YGConfigRef config,
-    bool isDirty,
-    std::array<YGValue, 2> resolvedDimensions)
-    : context_(context),
-      print_(print),
-      hasNewLayout_(hasNewLayout),
-      nodeType_(nodeType),
-      measure_(measure),
-      baseline_(baseline),
-      dirtied_(dirtied),
-      style_(style),
-      layout_(layout),
-      lineIndex_(lineIndex),
-      owner_(owner),
-      children_(children),
-      config_(config),
-      isDirty_(isDirty),
-      resolvedDimensions_(resolvedDimensions) {}
-
 YGNode& YGNode::operator=(const YGNode& node) {
   if (&node == this) {
     return *this;
