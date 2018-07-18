@@ -12,15 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  Alert,
-  Animated,
-  Button,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const {Alert, Animated, Button, StyleSheet, Text, View} = ReactNative;
 
 const RNTesterPage = require('./RNTesterPage');
 
@@ -38,8 +30,6 @@ const {
   renderSmallSwitchOption,
   renderStackedItem,
 } = require('./ListExampleShared');
-
-const AnimatedSectionList = Animated.createAnimatedComponent(SectionList);
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -90,7 +80,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     {useNativeDriver: true},
   );
 
-  _sectionListRef: any;
+  _sectionListRef: Animated.SectionList;
   _captureRef = ref => {
     this._sectionListRef = ref;
   };
@@ -150,7 +140,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
           </View>
         </View>
         <SeparatorComponent />
-        <AnimatedSectionList
+        <Animated.SectionList
           ref={this._captureRef}
           ListHeaderComponent={HeaderComponent}
           ListFooterComponent={FooterComponent}

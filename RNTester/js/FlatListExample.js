@@ -13,7 +13,7 @@
 const Alert = require('Alert');
 const React = require('react');
 const ReactNative = require('react-native');
-const {Animated, FlatList, StyleSheet, View} = ReactNative;
+const {Animated, StyleSheet, View} = ReactNative;
 
 const RNTesterPage = require('./RNTesterPage');
 
@@ -33,8 +33,6 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('./ListExampleShared');
-
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -114,7 +112,7 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
             </View>
           </View>
           <SeparatorComponent />
-          <AnimatedFlatList
+          <Animated.FlatList
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}
@@ -201,7 +199,7 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
-  _listRef: AnimatedFlatList;
+  _listRef: Animated.FlatList;
 }
 
 const styles = StyleSheet.create({
