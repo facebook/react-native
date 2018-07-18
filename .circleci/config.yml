@@ -498,7 +498,12 @@ jobs:
             brew install applesimutils
 
       - run: *yarn
-      
+
+      - run:
+          name: Build iOS app for simulator
+          command: |
+            yarn run build-ios-e2e
+
       - run:
           name: Run Detox Tests
           command: |

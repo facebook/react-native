@@ -138,7 +138,8 @@
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
-    "test-ios-e2e": "detox build -c ios.sim.release && detox test -c ios.sim.release --cleanup"
+    "build-ios-e2e": "detox build -c ios.sim.release",
+    "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -230,7 +231,7 @@
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -quiet",
         "type": "ios.simulator",
         "name": "iPhone 8"
       }
