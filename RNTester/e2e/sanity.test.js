@@ -1,3 +1,5 @@
+/* global device, element, by, expect */
+
 describe('Sanity', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
