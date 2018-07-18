@@ -8,9 +8,9 @@
 
 #include <memory>
 
-#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/core/ReactPrimitives.h>
+#include <fabric/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {

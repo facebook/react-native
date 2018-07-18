@@ -8,8 +8,7 @@
 
 #include <memory>
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/EventPrimitives.h>
+#include <fabric/events/primitives.h>
 #include <folly/dynamic.h>
 
 namespace facebook {

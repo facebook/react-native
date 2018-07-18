@@ -10,9 +10,8 @@
 #include <mutex>
 
 #include <folly/dynamic.h>
-#include <fabric/core/EventDispatcher.h>
-#include <fabric/core/EventPrimitives.h>
-#include <fabric/core/ReactPrimitives.h>
+#include <fabric/events/EventDispatcher.h>
+#include <fabric/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -29,6 +28,12 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  * TODO: Reconsider naming of all event-related things.
  */
 class EventEmitter {
+
+  /*
+   * We have to repeat `Tag` type definition here because `events` module does
+   * not depend on `core` module (and should not).
+   */
+  using Tag = int32_t;
 
 public:
   EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher);

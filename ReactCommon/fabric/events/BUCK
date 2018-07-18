@@ -1,4 +1,4 @@
-load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
 load(
     "//ReactNative:DEFS.bzl",
     "ANDROID",
@@ -14,7 +14,7 @@ load(
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
-    name = "uimanager",
+    name = "events",
     srcs = glob(
         ["**/*.cpp"],
         exclude = glob(["tests/**/*.cpp"]),
@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/uimanager",
+        prefix = "fabric/events",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -56,11 +56,7 @@ rn_xplat_cxx_library(
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
-        react_native_xplat_target("fabric/components/root:root"),
-        react_native_xplat_target("fabric/components/view:view"),
-        react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/events:events"),
     ],
 )
 
@@ -79,6 +75,6 @@ fb_xplat_cxx_test(
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",
-        ":uimanager",
+        ":events",
     ],
 )

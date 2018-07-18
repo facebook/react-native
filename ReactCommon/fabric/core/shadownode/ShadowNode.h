@@ -11,11 +11,11 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/events/EventEmitter.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {

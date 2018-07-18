@@ -9,10 +9,10 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
 #import <fabric/components/view/ViewEventEmitter.h>
+#import <fabric/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

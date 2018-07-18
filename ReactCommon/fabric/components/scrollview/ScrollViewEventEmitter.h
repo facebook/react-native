@@ -9,9 +9,8 @@
 #include <memory>
 
 #include <fabric/components/view/ViewEventEmitter.h>
+#include <fabric/events/EventEmitter.h>
 #include <fabric/graphics/Geometry.h>
-#include <fabric/core/EventEmitter.h>
-
 #include <folly/dynamic.h>
 
 namespace facebook {

@@ -52,6 +52,7 @@ rn_xplat_cxx_library(
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
         react_native_xplat_target("fabric/debug:debug"),
+        react_native_xplat_target("fabric/events:events"),
         react_native_xplat_target("fabric/graphics:graphics"),
     ],
 )
