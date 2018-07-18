@@ -463,8 +463,6 @@ jobs:
           command: |
             brew install node@8
             brew link node@8
-            brew tap wix/brew
-            brew install applesimutils
             node -v
 
       - run: *run-objc-ios-e2e-tests
@@ -491,13 +489,18 @@ jobs:
           command: |
             brew install node@8
             brew link node@8
-            brew tap wix/brew
-            brew install applesimutils
             node -v
-        -run:
-          name: Run Detox Tests
-          command: |
-          yarn run test-ios-e2e
+
+        - run:
+            name: Install Apple Simulator Utilities
+            command: |
+              brew tap wix/brew
+              brew install applesimutils
+
+        - run:
+            name: Run Detox Tests
+            command: |
+              yarn run test-ios-e2e
 
   # Publishes new version onto npm
   publish_npm_package:
@@ -709,6 +712,12 @@ workflows:
 
       # End-to-end tests
       - test_end_to_end:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
+      # End-to-end tests (Detox)
+      - test_end_to_end_detox:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
