@@ -497,6 +497,8 @@ jobs:
             brew tap wix/brew
             brew install applesimutils
 
+      - run: *yarn
+      
       - run:
           name: Run Detox Tests
           command: |
