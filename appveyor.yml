@@ -23,7 +23,7 @@ install:
     - yes 2> nul | sdkmanager --licenses > nul
     - sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
     - sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-    - sdkmanager  "build-tools;26.0.3"
+    - sdkmanager  "build-tools;%ANDROID_TOOLS_VERSION%"
     - sdkmanager "add-ons;addon-google_apis-google-23"
     - sdkmanager "extras;android;m2repository"
 
