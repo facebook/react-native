@@ -30,12 +30,12 @@ install:
     - sdkmanager "extras;android;m2repository"
 
     - ps: Install-Product node $env:nodejs_version
-    - npm install
+    - node --version
+    - npm --version
+    - appveyor-retry npm install
 
 build_script:
   - gradlew.bat RNTester:android:app:assembleRelease
 
 test_script:
-    - node --version
-    - npm --version
     - npm test
