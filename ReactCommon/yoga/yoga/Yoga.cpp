@@ -104,15 +104,7 @@ static int YGDefaultLog(const YGConfigRef config,
 #endif
 
 bool YGFloatIsUndefined(const float value) {
-  // Value of a float in the case of it being not defined is 10.1E20. Earlier
-  // it used to be NAN, the benefit of which was that if NAN is involved in any
-  // mathematical expression the result was NAN. But since we want to have
-  // `-ffast-math` flag being used by compiler which assumes that the floating
-  // point values are not NAN and Inf, we represent YGUndefined as 10.1E20. But
-  // now if YGUndefined is involved in any mathematical operations this
-  // value(10.1E20) would change. So the following check makes sure that if the
-  // value is outside a range (-10E8, 10E8) then it is undefined.
-  return value >= 10E8 || value <= -10E8;
+  return facebook::yoga::isUndefined(value);
 }
 
 const YGValue* YGComputedEdgeValue(

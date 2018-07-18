@@ -9,9 +9,12 @@
 #include <cstdlib>
 #include <iostream>
 #include "Yoga.h"
+#include "Yoga-internal.h"
+
+using namespace facebook;
 
 YGFloatOptional::YGFloatOptional(float value) {
-  if (YGFloatIsUndefined(value)) {
+  if (yoga::isUndefined(value)) {
     isUndefined_ = true;
     value_ = 0;
   } else {
@@ -41,7 +44,7 @@ bool YGFloatOptional::operator!=(const YGFloatOptional& op) const {
 }
 
 bool YGFloatOptional::operator==(float val) const {
-  if (YGFloatIsUndefined(val) == isUndefined_) {
+  if (yoga::isUndefined(val) == isUndefined_) {
     return isUndefined_ || val == value_;
   }
   return false;

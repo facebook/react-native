@@ -8,6 +8,8 @@
 #include "YGLayout.h"
 #include "Utils.h"
 
+using namespace facebook;
+
 const std::array<float, 2> kYGDefaultDimensionValues = {
     {YGUndefined, YGUndefined}};
 
@@ -46,13 +48,13 @@ bool YGLayout::operator==(YGLayout layout) const {
     isEqual = isEqual && cachedMeasurements[i] == layout.cachedMeasurements[i];
   }
 
-  if (!YGFloatIsUndefined(measuredDimensions[0]) ||
-      !YGFloatIsUndefined(layout.measuredDimensions[0])) {
+  if (!yoga::isUndefined(measuredDimensions[0]) ||
+      !yoga::isUndefined(layout.measuredDimensions[0])) {
     isEqual =
         isEqual && (measuredDimensions[0] == layout.measuredDimensions[0]);
   }
-  if (!YGFloatIsUndefined(measuredDimensions[1]) ||
-      !YGFloatIsUndefined(layout.measuredDimensions[1])) {
+  if (!yoga::isUndefined(measuredDimensions[1]) ||
+      !yoga::isUndefined(layout.measuredDimensions[1])) {
     isEqual =
         isEqual && (measuredDimensions[1] == layout.measuredDimensions[1]);
   }

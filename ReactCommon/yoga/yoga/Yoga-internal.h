@@ -24,6 +24,26 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
 
 YG_EXTERN_C_END
 
+namespace facebook {
+namespace yoga {
+
+inline bool isUndefined(float value) {
+  // Value of a float in the case of it being not defined is 10.1E20. Earlier
+  // it used to be NAN, the benefit of which was that if NAN is involved in any
+  // mathematical expression the result was NAN. But since we want to have
+  // `-ffast-math` flag being used by compiler which assumes that the floating
+  // point values are not NAN and Inf, we represent YGUndefined as 10.1E20. But
+  // now if YGUndefined is involved in any mathematical operations this
+  // value(10.1E20) would change. So the following check makes sure that if the
+  // value is outside a range (-10E8, 10E8) then it is undefined.
+  return value >= 10E8 || value <= -10E8;
+}
+
+} // namespace yoga
+} // namespace facebook
+
+using namespace facebook;
+
 extern const std::array<YGEdge, 4> trailing;
 extern const std::array<YGEdge, 4> leading;
 extern bool YGValueEqual(const YGValue a, const YGValue b);
@@ -63,20 +83,20 @@ struct YGCachedMeasurement {
     bool isEqual = widthMeasureMode == measurement.widthMeasureMode &&
         heightMeasureMode == measurement.heightMeasureMode;
 
-    if (!YGFloatIsUndefined(availableWidth) ||
-        !YGFloatIsUndefined(measurement.availableWidth)) {
+    if (!yoga::isUndefined(availableWidth) ||
+        !yoga::isUndefined(measurement.availableWidth)) {
       isEqual = isEqual && availableWidth == measurement.availableWidth;
     }
-    if (!YGFloatIsUndefined(availableHeight) ||
-        !YGFloatIsUndefined(measurement.availableHeight)) {
+    if (!yoga::isUndefined(availableHeight) ||
+        !yoga::isUndefined(measurement.availableHeight)) {
       isEqual = isEqual && availableHeight == measurement.availableHeight;
     }
-    if (!YGFloatIsUndefined(computedWidth) ||
-        !YGFloatIsUndefined(measurement.computedWidth)) {
+    if (!yoga::isUndefined(computedWidth) ||
+        !yoga::isUndefined(measurement.computedWidth)) {
       isEqual = isEqual && computedWidth == measurement.computedWidth;
     }
-    if (!YGFloatIsUndefined(computedHeight) ||
-        !YGFloatIsUndefined(measurement.computedHeight)) {
+    if (!yoga::isUndefined(computedHeight) ||
+        !yoga::isUndefined(measurement.computedHeight)) {
       isEqual = isEqual && computedHeight == measurement.computedHeight;
     }
 

@@ -9,6 +9,8 @@
 #include <iostream>
 #include "Utils.h"
 
+using namespace facebook;
+
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection& axis,
     const float& axisSize) const {
@@ -500,7 +502,7 @@ bool YGNode::isNodeFlexible() {
 float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.border[YGEdgeStart].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(style_.border[YGEdgeStart].value) &&
+      !yoga::isUndefined(style_.border[YGEdgeStart].value) &&
       style_.border[YGEdgeStart].value >= 0.0f) {
     return style_.border[YGEdgeStart].value;
   }
@@ -513,7 +515,7 @@ float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
 float YGNode::getTrailingBorder(const YGFlexDirection& flexDirection) const {
   if (YGFlexDirectionIsRow(flexDirection) &&
       style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(style_.border[YGEdgeEnd].value) &&
+      !yoga::isUndefined(style_.border[YGEdgeEnd].value) &&
       style_.border[YGEdgeEnd].value >= 0.0f) {
     return style_.border[YGEdgeEnd].value;
   }
