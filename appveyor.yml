@@ -1,6 +1,6 @@
 environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
-    ANDROID_NDK: "C:\\android-sdk-windows\\ndk-bundle"
+    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r10e"
     ANDROID_BUILD_VERSION: 26
     ANDROID_TOOLS_VERSION: 26.0.3
 
@@ -19,7 +19,7 @@ install:
     - appveyor DownloadFile "%SDK_TOOLS_URL%" -FileName "%TMP%/sdk-tools.zip"
     - 7z x "%TMP%/sdk-tools.zip" -o"%ANDROID_HOME%" > nul
     - appveyor DownloadFile "%NDK_TOOLS_URL%" -FileName "%TMP%/ndk.zip"
-    - 7z x "%TMP%/ndk.zip" -o"%ANDROID_NDK%" > nul
+    - 7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul
     - set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
 
     - yes 2> nul | sdkmanager --licenses > nul
