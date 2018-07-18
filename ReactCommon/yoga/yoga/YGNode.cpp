@@ -271,22 +271,7 @@ YGNode::YGNode()
       isDirty_(false),
       resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
 
-YGNode::YGNode(const YGNode& node)
-    : context_(node.context_),
-      print_(node.print_),
-      hasNewLayout_(node.hasNewLayout_),
-      nodeType_(node.nodeType_),
-      measure_(node.measure_),
-      baseline_(node.baseline_),
-      dirtied_(node.dirtied_),
-      style_(node.style_),
-      layout_(node.layout_),
-      lineIndex_(node.lineIndex_),
-      owner_(node.owner_),
-      children_(node.children_),
-      config_(node.config_),
-      isDirty_(node.isDirty_),
-      resolvedDimensions_(node.resolvedDimensions_) {}
+YGNode::YGNode(const YGNode& node) = default;
 
 YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
   config_ = newConfig;
