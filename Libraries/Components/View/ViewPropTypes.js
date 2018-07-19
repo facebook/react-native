@@ -21,14 +21,14 @@ const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
   AccessibilityRoles,
-  CurrentViewStates,
+  AccessibilityStates,
 } = require('ViewAccessibility');
 
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
   AccessibilityRole,
-  CurrentViewState,
+  AccessibilityState,
 } from 'ViewAccessibility';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
@@ -94,7 +94,7 @@ export type ViewProps = $ReadOnly<{|
   accessibilityIgnoresInvertColors?: boolean,
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   accessibilityRole?: AccessibilityRole,
-  currentViewStates?: Array<CurrentViewState>,
+  accessibilityStates?: Array<AccessibilityState>,
   accessibilityViewIsModal?: boolean,
   accessibilityElementsHidden?: boolean,
   children?: ?React.Node,
@@ -153,7 +153,7 @@ module.exports = {
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-  currentViewStates: PropTypes.arrayOf(PropTypes.oneOf(CurrentViewStates)),
+  accessibilityStates: PropTypes.arrayOf(PropTypes.oneOf(AccessibilityStates)),
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
