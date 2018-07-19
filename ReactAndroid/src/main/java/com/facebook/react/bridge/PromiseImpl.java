@@ -28,6 +28,8 @@ public class PromiseImpl implements Promise {
   public void resolve(Object value) {
     if (mResolve != null) {
       mResolve.invoke(value);
+      mResolve = null;
+      mReject = null;
     }
   }
 
@@ -67,5 +69,7 @@ public class PromiseImpl implements Promise {
       // TODO(8850038): add the stack trace info in, need to figure out way to serialize that
       mReject.invoke(errorInfo);
     }
+    mResolve = null;
+    mReject = null;
   }
 }
