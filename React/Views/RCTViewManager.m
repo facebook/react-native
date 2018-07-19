@@ -153,14 +153,9 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(currentViewStates, UIAccessibilityTraits, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, UIAccessibilityTraits, RCTView)
 {
-    UIAccessibilityTraits traits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
-    view.reactAccessibilityElement.accessibilityTraits |= traits;
-    if (traits == UIAccessibilityTraitNotEnabled || traits == (UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected))
-    {
-        view.userInteractionEnabled = NO;
-    } 
+    view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
