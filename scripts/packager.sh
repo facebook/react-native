@@ -6,6 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 
 THIS_DIR=$(dirname "$0")
-source "${THIS_DIR}/.packager.env"
+if [ -f "${THIS_DIR}/.packager.env" ]; then
+  source "${THIS_DIR}/.packager.env"
+fi
 cd "$THIS_DIR/.."
 node "./local-cli/cli.js" start "$@"
