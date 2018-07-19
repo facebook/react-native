@@ -254,29 +254,6 @@ void YGNode::setPosition(
       trailing[crossAxis]);
 }
 
-YGNode::YGNode()
-    : context_(nullptr),
-      print_(nullptr),
-      hasNewLayout_(true),
-      nodeType_(YGNodeTypeDefault),
-      measure_(nullptr),
-      baseline_(nullptr),
-      dirtied_(nullptr),
-      style_(YGStyle()),
-      layout_(YGLayout()),
-      lineIndex_(0),
-      owner_(nullptr),
-      children_(YGVector()),
-      config_(nullptr),
-      isDirty_(false),
-      resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
-
-YGNode::YGNode(const YGNode& node) = default;
-
-YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
-  config_ = newConfig;
-}
-
 YGNode& YGNode::operator=(const YGNode& node) {
   if (&node == this) {
     return *this;
@@ -358,11 +335,6 @@ YGDirection YGNode::resolveDirection(const YGDirection ownerDirection) {
 void YGNode::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
-}
-
-YGNode::~YGNode() {
-  // All the member variables are deallocated externally, so no need to
-  // deallocate here
 }
 
 // Other Methods

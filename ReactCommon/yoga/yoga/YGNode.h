@@ -14,31 +14,32 @@
 
 struct YGNode {
  private:
-  void* context_;
-  YGPrintFunc print_;
-  bool hasNewLayout_;
-  YGNodeType nodeType_;
-  YGMeasureFunc measure_;
-  YGBaselineFunc baseline_;
-  YGDirtiedFunc dirtied_;
-  YGStyle style_;
-  YGLayout layout_;
-  uint32_t lineIndex_;
-  YGNodeRef owner_;
-  YGVector children_;
-  YGConfigRef config_;
-  bool isDirty_;
-  std::array<YGValue, 2> resolvedDimensions_;
+  void* context_ = nullptr;
+  YGPrintFunc print_ = nullptr;
+  bool hasNewLayout_ = true;
+  YGNodeType nodeType_ = YGNodeTypeDefault;
+  YGMeasureFunc measure_ = nullptr;
+  YGBaselineFunc baseline_ = nullptr;
+  YGDirtiedFunc dirtied_ = nullptr;
+  YGStyle style_ = {};
+  YGLayout layout_ = {};
+  uint32_t lineIndex_ = 0;
+  YGNodeRef owner_ = nullptr;
+  YGVector children_ = {};
+  YGConfigRef config_ = nullptr;
+  bool isDirty_ = false;
+  std::array<YGValue, 2> resolvedDimensions_ = {
+      {YGValueUndefined, YGValueUndefined}};
 
   YGFloatOptional relativePosition(
       const YGFlexDirection& axis,
       const float& axisSize) const;
 
  public:
-  YGNode();
-  ~YGNode();
-  explicit YGNode(const YGConfigRef newConfig);
-  YGNode(const YGNode& node);
+  YGNode() = default;
+  ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
+  explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
+  YGNode(const YGNode& node) = default;
   YGNode& operator=(const YGNode& node);
 
   // Getters

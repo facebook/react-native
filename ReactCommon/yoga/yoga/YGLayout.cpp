@@ -61,7 +61,3 @@ bool YGLayout::operator==(YGLayout layout) const {
 
   return isEqual;
 }
-
-bool YGLayout::operator!=(YGLayout layout) const {
-  return !(*this == layout);
-}
