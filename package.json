@@ -199,7 +199,7 @@
     "yargs": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.48",
+    "@babel/core": "7.0.0-beta.54",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0-beta.2",
     "babel-generator": "^6.26.0",
