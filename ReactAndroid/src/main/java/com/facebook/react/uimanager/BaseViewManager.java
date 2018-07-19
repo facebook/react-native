@@ -30,7 +30,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
-  private static final String PROP_CURRENT_VIEW_STATES = "currentViewStates";
+  private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -124,12 +124,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     AccessibilityRoleUtil.updateAccessibilityRole(view, accessibilityRole);
   }
 
-  @ReactProp(name = PROP_CURRENT_VIEW_STATES)
-  public void setViewStates(T view, ReadableArray currentViewStates) {
+  @ReactProp(name = PROP_ACCESSIBILITY_STATES)
+  public void setViewStates(T view, ReadableArray accessibilityStates) {
     view.setSelected(false);
     view.setEnabled(true);
-    for (int i = 0; i < currentViewStates.size(); i++) {
-      String state = currentViewStates.getString(i);
+    for (int i = 0; i < accessibilityStates.size(); i++) {
+      String state = accessibilityStates.getString(i);
       if (state.equals("selected")) {
         view.setSelected(true);
       } else if (state.equals("disabled")) {
