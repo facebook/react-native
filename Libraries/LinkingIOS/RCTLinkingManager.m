@@ -95,7 +95,8 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     }
   };
   
-  if (@available(iOS 10.0, *)) {
+  BOOL canRespond = [[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)];
+  if (canRespond) {
     [RCTSharedApplication() openURL: URL options:@{} completionHandler: ^(BOOL opened) {
       callBack(opened);
     }];
