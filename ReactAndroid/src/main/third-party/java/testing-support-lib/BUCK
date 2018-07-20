@@ -6,8 +6,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "testing-support-lib-runner-download",
-    sha1 = "f88e837a5fdf63ed6c9d9852816d929f958cbec7",
-    url = "mvn:com.android.support.test:runner:aar:1.0.2",
+    sha1 = "a31e7e8db98ca19fb3fab23f120d19a6f4e3e8a9",
+    url = "mvn:com.android.support.test:runner:aar:0.3",
 )
 
 android_prebuilt_aar(
@@ -18,6 +18,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "testing-support-instrumentation",
-    sha1 = "d46bd0c37b1c193f2f53b6c21efc222077113b80",
-    url = "mvn:com.android.support.test:exposed-instrumentation-api-publish:aar:0.5",
+    sha1 = "a7161eafdfbd02a39461f076c9dce0c8e5e7a149",
+    url = "mvn:com.android.support.test:exposed-instrumentation-api-publish:aar:0.3",
 )
