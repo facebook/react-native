@@ -49,11 +49,6 @@ public class ReactViewGroup extends ViewGroup implements
     ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView,
     ReactZIndexedViewGroup {
 
-  /**
-   * Kill switch to make overflow hidden by default. This flag will eventually be removed.
-   */
-  public static boolean sDefaultOverflowHidden;
-
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
@@ -119,7 +114,7 @@ public class ReactViewGroup extends ViewGroup implements
   public ReactViewGroup(Context context) {
     super(context);
     // TODO: Remove this check after a couple public releases.
-    if (!sDefaultOverflowHidden) {
+    if (!ViewProps.sDefaultOverflowHidden) {
       setClipChildren(false);
     }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
