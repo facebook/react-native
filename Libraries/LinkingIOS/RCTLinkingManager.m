@@ -87,11 +87,21 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  BOOL opened = [RCTSharedApplication() openURL:URL];
-  if (opened) {
-    resolve(nil);
+  void (^callBack)(BOOL) = ^(BOOL opened){
+    if (opened) {
+      resolve(nil);
+    } else {
+      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+    }
+  };
+  
+  if (@available(iOS 10.0, *)) {
+    [RCTSharedApplication() openURL: URL options:@{} completionHandler: ^(BOOL opened) {
+      callBack(opened);
+    }];
   } else {
-    reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+    BOOL opened = [RCTSharedApplication() openURL:URL];
+    callBack(opened);
   }
 }
 
