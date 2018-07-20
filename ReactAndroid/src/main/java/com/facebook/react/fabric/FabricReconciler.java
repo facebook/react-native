@@ -73,7 +73,7 @@ public class FabricReconciler {
       if (prevNode.getReactTag() != newNode.getReactTag()) {
         break;
       }
-      enqueueUpdateProperties(newNode);
+      enqueueUpdateProperties(newNode, prevNode);
       manageChildren(prevNode, prevNode.getChildrenList(), newNode.getChildrenList());
       newNode.setOriginalReactShadowNode(null);
     }
@@ -88,7 +88,7 @@ public class FabricReconciler {
     for (int k = firstRemovedOrAddedViewIndex; k < newList.size(); k++) {
       ReactShadowNode newNode = newList.get(k);
       if (newNode.isVirtual()) continue;
-      enqueueUpdateProperties(newNode);
+      enqueueUpdateProperties(newNode, newNode.getOriginalReactShadowNode());
       viewsToAdd.add(new ViewAtIndex(newNode.getReactTag(), k));
       List previousChildrenList = newNode.getOriginalReactShadowNode() == null ? null : newNode.getOriginalReactShadowNode().getChildrenList();
       manageChildren(newNode, previousChildrenList, newNode.getChildrenList());
@@ -131,24 +131,28 @@ public class FabricReconciler {
     }
   }
 
-  private void enqueueUpdateProperties(ReactShadowNode node) {
-    int reactTag = node.getReactTag();
+  private void enqueueUpdateProperties(ReactShadowNode newNode, ReactShadowNode prevNode) {
+    int reactTag = newNode.getReactTag();
     if (DEBUG) {
       FLog.d(
         TAG,
         "manageChildren.enqueueUpdateProperties " +
           "\n\ttag: " + reactTag +
-          "\n\tviewClass: " + node.getViewClass() +
-          "\n\tinstanceHandle: " + node.getInstanceHandle() +
-          "\n\tnewProps: " + node.getNewProps());
+          "\n\tviewClass: " + newNode.getViewClass() +
+          "\n\tinstanceHandle: " + newNode.getInstanceHandle() +
+          "\n\tnewProps: " + newNode.getNewProps());
     }
 
-    if (node.getNewProps() != null) {
+    if (prevNode != null) {
+      newNode.updateScreenLayout(prevNode);
+    }
+
+    if (newNode.getNewProps() != null) {
       uiViewOperationQueue.enqueueUpdateProperties(
-        reactTag, node.getViewClass(), node.getNewProps());
+        reactTag, newNode.getViewClass(), newNode.getNewProps());
     }
 
     uiViewOperationQueue.enqueueUpdateInstanceHandle(
-      reactTag, node.getInstanceHandle());
+      reactTag, newNode.getInstanceHandle());
   }
 }

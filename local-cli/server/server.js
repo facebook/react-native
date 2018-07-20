@@ -10,7 +10,6 @@
 
 'use strict';
 
-const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
@@ -20,37 +19,10 @@ import type {Args as RunServerArgs} from './runServer';
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv: mixed, config: RNConfig, allArgs: Object) {
-  const {root, ...args} = allArgs;
-  args.projectRoots = args.projectRoots.concat(root);
-
-  const startedCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_started',
-      port: args.port,
-      projectRoots: args.projectRoots,
-    });
-
-    process.on('uncaughtException', error => {
-      logReporter.update({
-        type: 'initialize_failed',
-        port: args.port,
-        error,
-      });
-
-      process.exit(11);
-    });
-  };
-
-  const readyCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_done',
-    });
-  };
-  const runServerArgs: RunServerArgs = args;
+function server(argv: mixed, config: RNConfig, args: RunServerArgs) {
   /* $FlowFixMe(site=react_native_fb) ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
-  runServer(runServerArgs, configT, startedCallback, readyCallback);
+  runServer(args, configT);
 }
 
 module.exports = {
@@ -68,17 +40,20 @@ module.exports = {
       default: '',
     },
     {
-      command: '--root [list]',
-      description:
-        'add another root(s) to be used by the packager in this project',
-      parse: (val: string) => val.split(',').map(root => path.resolve(root)),
-      default: [],
+      command: '--projectRoot [string]',
+      description: 'Specify the main project root',
+      default: (config: ConfigT) => {
+        return config.getProjectRoot();
+      },
     },
     {
-      command: '--projectRoots [list]',
-      description: 'override the root(s) to be used by the packager',
+      command: '--watchFolders [list]',
+      description:
+        'Specify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getProjectRoots(),
+      default: (config: ConfigT) => {
+        return config.getWatchFolders();
+      },
     },
     {
       command: '--assetExts [list]',

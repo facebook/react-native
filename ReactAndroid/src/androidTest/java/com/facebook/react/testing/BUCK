@@ -4,7 +4,7 @@ rn_android_library(
     name = "testing",
     srcs = glob(
         ["**/*.java"],
-        excludes = [
+        exclude = [
             "idledetection/**/*.java",
             "network/**/*.java",
         ],

@@ -25,9 +25,15 @@ public final class ReactTextInputLocalData {
   public ReactTextInputLocalData(EditText editText) {
     mText = new SpannableStringBuilder(editText.getText());
     mTextSize = editText.getTextSize();
-    mMinLines = editText.getMinLines();
-    mMaxLines = editText.getMaxLines();
     mInputType = editText.getInputType();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      mMinLines = editText.getMinLines();
+      mMaxLines = editText.getMaxLines();
+    } else {
+      mMinLines = 1;
+      mMaxLines = 1;
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       mBreakStrategy = editText.getBreakStrategy();

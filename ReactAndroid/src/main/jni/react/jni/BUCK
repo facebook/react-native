@@ -26,7 +26,7 @@ rn_xplat_cxx_library(
     srcs = glob(["*.cpp"]),
     headers = glob(
         ["*.h"],
-        excludes = EXPORTED_HEADERS,
+        exclude = EXPORTED_HEADERS,
     ),
     header_namespace = "react/jni",
     exported_headers = EXPORTED_HEADERS,

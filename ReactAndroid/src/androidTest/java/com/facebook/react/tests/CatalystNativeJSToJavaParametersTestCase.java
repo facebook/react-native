@@ -29,7 +29,6 @@ import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
@@ -85,7 +84,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
     final UIManagerModule mUIManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override

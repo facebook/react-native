@@ -22,10 +22,19 @@ inline void fromDynamic(const folly::dynamic &value, int &result) {
   // So this always converts the value to int64 instead.
   result = value.asInt();
 }
+inline void fromDynamic(const folly::dynamic &value, float &result) { result = (float)value.asDouble(); }
+inline void fromDynamic(const folly::dynamic &value, double &result) { result = value.asDouble(); }
 inline void fromDynamic(const folly::dynamic &value, std::string &result) { result = value.getString(); }
 
 template <typename T>
 inline void fromDynamic(const folly::dynamic &value, std::vector<T> &result) {
+  if (!value.isArray()) {
+    T itemResult;
+    fromDynamic(value, itemResult);
+    result = {itemResult};
+    return;
+  }
+
   result.clear();
   T itemResult;
   for (auto &itemValue : value) {
@@ -41,12 +50,12 @@ inline T convertRawProp(
   const T &sourceValue,
   const T &defaultValue = T()
 ) {
-  auto &&iterator = rawProps.find(name);
+  const auto &iterator = rawProps.find(name);
   if (iterator == rawProps.end()) {
     return sourceValue;
   }
 
-  auto &&value = iterator->second;
+  const auto &value = iterator->second;
 
   // Special case: `null` always means `the prop was removed, use default value`.
   if (value.isNull()) {
@@ -65,12 +74,12 @@ inline static folly::Optional<T> convertRawProp(
   const folly::Optional<T> &sourceValue,
   const folly::Optional<T> &defaultValue = {}
 ) {
-  auto &&iterator = rawProps.find(name);
+  const auto &iterator = rawProps.find(name);
   if (iterator == rawProps.end()) {
     return sourceValue;
   }
 
-  auto &&value = iterator->second;
+  const auto &value = iterator->second;
 
   // Special case: `null` always means `the prop was removed, use default value`.
   if (value.isNull()) {

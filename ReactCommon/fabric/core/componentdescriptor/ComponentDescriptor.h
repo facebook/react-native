@@ -54,7 +54,7 @@ public:
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
-  virtual SharedShadowNode cloneShadowNode(
+  virtual UnsharedShadowNode cloneShadowNode(
     const SharedShadowNode &shadowNode,
     const SharedProps &props = nullptr,
     const SharedEventEmitter &eventEmitter = nullptr,
@@ -85,7 +85,7 @@ public:
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    const InstanceHandle &instanceHandle,
+    const EventTarget &eventTarget,
     const Tag &tag
   ) const = 0;
 };

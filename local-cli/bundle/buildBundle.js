@@ -75,7 +75,6 @@ async function buildBundle(
       : defaultProvidesModuleNodeModules;
 
   const terminal = new Terminal(process.stdout);
-
   const server = new Server({
     asyncRequireModulePath: config.getAsyncRequireModulePath(),
     assetExts: defaultAssetExts.concat(assetExts),
@@ -96,7 +95,7 @@ async function buildBundle(
     platforms: defaultPlatforms.concat(platforms),
     postMinifyProcess: config.postMinifyProcess,
     postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    projectRoots: config.getProjectRoots(),
+    projectRoot: config.getProjectRoot(),
     providesModuleNodeModules: providesModuleNodeModules,
     reporter: new TerminalReporter(terminal),
     resetCache: args.resetCache,
@@ -104,26 +103,27 @@ async function buildBundle(
     sourceExts: sourceExts.concat(defaultSourceExts),
     transformModulePath: transformModulePath,
     watch: false,
+    watchFolders: config.getWatchFolders(),
     workerPath: config.getWorkerPath && config.getWorkerPath(),
   });
 
-  const bundle = await output.build(server, requestOpts);
+  try {
+    const bundle = await output.build(server, requestOpts);
 
-  await output.save(bundle, args, log);
+    await output.save(bundle, args, log);
 
-  // Save the assets of the bundle
-  const outputAssets = await server.getAssets({
-    ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...requestOpts,
-    bundleType: 'todo',
-  });
+    // Save the assets of the bundle
+    const outputAssets = await server.getAssets({
+      ...Server.DEFAULT_BUNDLE_OPTIONS,
+      ...requestOpts,
+      bundleType: 'todo',
+    });
 
-  // When we're done saving bundle output and the assets, we're done.
-  const assets = await saveAssets(outputAssets, args.platform, args.assetsDest);
-
-  server.end();
-
-  return assets;
+    // When we're done saving bundle output and the assets, we're done.
+    return await saveAssets(outputAssets, args.platform, args.assetsDest);
+  } finally {
+    server.end();
+  }
 }
 
 module.exports = buildBundle;

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/EventDispatcher.h>
-#include <fabric/core/EventPrimitives.h>
+#include <fabric/events/EventDispatcher.h>
+#include <fabric/events/primitives.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <folly/dynamic.h>
 
@@ -31,14 +31,15 @@ public:
 
 #pragma mark - EventDispatcher
 
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const override;
-
   void dispatchEvent(
     const EventTarget &eventTarget,
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority
   ) const override;
+
+
+  void releaseEventTarget(const EventTarget &eventTarget) const override;
 
 private:
 

@@ -50,7 +50,7 @@ inline void fromDynamic(const folly::dynamic &value, FontWeight &result) {
 }
 
 inline std::string toString(const FontWeight &fontWeight) {
-  return std::to_string((int)fontWeight);
+  return folly::to<std::string>((int)fontWeight);
 }
 
 inline void fromDynamic(const folly::dynamic &value, FontStyle &result) {

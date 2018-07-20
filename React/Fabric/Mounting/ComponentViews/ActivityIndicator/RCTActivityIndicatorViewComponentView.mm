@@ -7,7 +7,7 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <fabric/activityindicator/ActivityIndicatorViewProps.h>
+#import <fabric/components/activityindicator/ActivityIndicatorViewProps.h>
 
 using namespace facebook::react;
 
@@ -30,7 +30,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.bounds];
     _activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    auto &&defaultProps = ActivityIndicatorViewProps();
+    const auto &defaultProps = ActivityIndicatorViewProps();
 
     if (defaultProps.animating) {
       [_activityIndicatorView startAnimating];

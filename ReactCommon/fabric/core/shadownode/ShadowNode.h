@@ -11,11 +11,11 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/events/EventEmitter.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -28,9 +28,8 @@ using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
-using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
-using ShadowNodeCloneFunction = std::function<SharedShadowNode(
+using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
   const SharedShadowNode &shadowNode,
   const SharedProps &props,
   const SharedEventEmitter &eventEmitter,
@@ -65,7 +64,7 @@ public:
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  SharedShadowNode clone(
+  UnsharedShadowNode clone(
     const SharedProps &props = nullptr,
     const SharedShadowNodeSharedList &children = nullptr
   ) const;
@@ -82,14 +81,6 @@ public:
   Tag getRootTag() const;
 
   /*
-   * Returns the node which was used as a prototype in clone constructor.
-   * The node is held as a weak reference so that the method may return
-   * `nullptr` in cases where the node was constructed using the explicit
-   * constructor or the node was already deallocated.
-   */
-  SharedShadowNode getSourceNode() const;
-
-  /*
    * Returns a local data associated with the node.
    * `LocalData` object might be used for data exchange between native view and
    * shadow node instances.
@@ -102,7 +93,7 @@ public:
 #pragma mark - Mutating Methods
 
   void appendChild(const SharedShadowNode &child);
-  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
+  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex = -1);
   void clearSourceNode();
 
   /*
@@ -110,15 +101,6 @@ public:
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);
-
-  /*
-   * Replaces the current source node with its source node.
-   * This method might be used for illuminating side-effects caused by the last
-   * cloning operation which are not desirable from the diffing algorithm
-   * perspective.
-   * The node must be unsealed at this point.
-   */
-  void shallowSourceNode();
 
 #pragma mark - Equality
 
@@ -145,7 +127,6 @@ protected:
   SharedProps props_;
   SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
-  WeakShadowNode sourceNode_;
   SharedLocalData localData_;
 
 private:
