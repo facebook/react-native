@@ -11,7 +11,6 @@
 
 const Color = require('art/core/color');
 const Path = require('ARTSerializablePath');
-const Platform = require('Platform');
 const Transform = require('art/core/transform');
 
 const React = require('React');
@@ -154,11 +153,8 @@ class Surface extends React.Component {
     const height = extractNumber(this.props.height, 0);
     const width = extractNumber(this.props.width, 0);
 
-    // WORKAROUND: Android bug in which canvas does not reflect size changes.
-    const key = Platform.OS === 'android' ? height + ',' + width : null;
-
     return (
-      <NativeSurfaceView key={key} style={[this.props.style, {height, width}]}>
+      <NativeSurfaceView style={[this.props.style, {height, width}]}>
         {this.props.children}
       </NativeSurfaceView>
     );
