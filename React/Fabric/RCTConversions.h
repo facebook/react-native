@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <fabric/components/view/primitives.h>
 #import <fabric/graphics/Color.h>
 #import <fabric/graphics/Geometry.h>
-#import <fabric/view/primitives.h>
 
 inline NSString *_Nullable RCTNSStringFromString(const std::string &string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
   return [NSString stringWithCString:string.c_str() encoding:encoding];

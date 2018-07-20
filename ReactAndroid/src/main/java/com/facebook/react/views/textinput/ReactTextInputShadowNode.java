@@ -41,9 +41,11 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   private @Nullable ReactTextInputLocalData mLocalData;
 
   @VisibleForTesting public static final String PROP_TEXT = "text";
+  @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
+  private @Nullable String mPlaceholder = null;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
@@ -148,8 +150,9 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
       }
     }
 
-
-    editText.measure(
+     // make sure the placeholder content is also being measured
+     editText.setHint(getPlaceholder());
+     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
 
@@ -191,6 +194,16 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   public @Nullable String getText() {
     return mText;
+  }
+
+  @ReactProp(name = PROP_PLACEHOLDER)
+  public void setPlaceholder(@Nullable String placeholder) {
+    mPlaceholder = placeholder;
+    markUpdated();
+  }
+
+  public @Nullable String getPlaceholder() {
+    return mPlaceholder;
   }
 
   @Override

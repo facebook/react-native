@@ -150,11 +150,11 @@ class Surface extends React.Component {
   }
 
   render() {
-    const props = this.props;
-    const w = extractNumber(props.width, 0);
-    const h = extractNumber(props.height, 0);
+    const height = extractNumber(this.props.height, 0);
+    const width = extractNumber(this.props.width, 0);
+
     return (
-      <NativeSurfaceView style={[props.style, {width: w, height: h}]}>
+      <NativeSurfaceView style={[this.props.style, {height, width}]}>
         {this.props.children}
       </NativeSurfaceView>
     );

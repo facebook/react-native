@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
   xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.facebook.react.uiapp"
-  android:versionCode="1"
-  android:versionName="1.0">
+  package="com.facebook.react.uiapp">
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -15,10 +13,6 @@
   <!--Just to show permissions example-->
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.READ_CALENDAR"/>
-
-  <uses-sdk
-    android:minSdkVersion="16"
-    android:targetSdkVersion="23" />
 
   <!--
   android:icon is used to display launcher icon on mobile devices.

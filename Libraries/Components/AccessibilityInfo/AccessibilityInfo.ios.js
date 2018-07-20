@@ -93,8 +93,6 @@ const AccessibilityInfo = {
   /**
    * Set accessibility focus to a react component.
    *
-   * @platform ios
-   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {

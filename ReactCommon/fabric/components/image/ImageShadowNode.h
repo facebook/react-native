@@ -9,9 +9,9 @@
 
 #include <fabric/components/image/ImageEventEmitter.h>
 #include <fabric/components/image/ImageProps.h>
+#include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/imagemanager/ImageManager.h>
 #include <fabric/imagemanager/primitives.h>
-#include <fabric/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {

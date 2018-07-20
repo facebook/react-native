@@ -26,11 +26,6 @@ void SchedulerEventDispatcher::setUIManager(std::shared_ptr<const FabricUIManage
   uiManager_ = uiManager;
 }
 
-EventTarget SchedulerEventDispatcher::createEventTarget(const InstanceHandle &instanceHandle) const {
-  assert(uiManager_ && "Attempted to create EventTarget after FabricUIManager dies.");
-  return uiManager_->createEventTarget(instanceHandle);
-}
-
 void SchedulerEventDispatcher::dispatchEvent(
   const EventTarget &eventTarget,
   const std::string &type,
@@ -41,14 +36,15 @@ void SchedulerEventDispatcher::dispatchEvent(
     return;
   }
   // TODO: Schedule the event based on priority.
-  uiManager_->dispatchEvent(eventTarget, normalizeEventType(type), payload);
+  uiManager_->dispatchEventToTarget(eventTarget, normalizeEventType(type), payload);
 }
 
 void SchedulerEventDispatcher::releaseEventTarget(const EventTarget &eventTarget) const {
   if (!uiManager_) {
     return;
   }
-  uiManager_->releaseEventTarget(eventTarget);
+  // TODO(shergin): This needs to move to the destructor of EventEmitter. For now we'll leak.
+  // uiManager_->releaseEventTarget(eventTarget);
 }
 
 } // namespace react

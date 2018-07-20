@@ -106,7 +106,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @Nullable
   @DoNotStrip
   public ReactShadowNode createNode(
-      int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
+      int reactTag, String viewName, int rootTag, ReadableNativeMap props, long eventTarget) {
     if (DEBUG) {
       FLog.d(TAG, "createNode \n\ttag: " + reactTag +
           "\n\tviewName: " + viewName +
@@ -119,7 +119,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       ReactShadowNode rootNode = getRootNode(rootTag);
       node.setRootTag(rootNode.getReactTag());
       node.setViewClassName(viewName);
-      node.setInstanceHandle(instanceHandle);
+      node.setInstanceHandle(eventTarget);
       node.setReactTag(reactTag);
       node.setThemedContext(rootNode.getThemedContext());
 
@@ -157,7 +157,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    */
   @Nullable
   @DoNotStrip
-  public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
+  public ReactShadowNode cloneNode(ReactShadowNode node) {
     if (DEBUG) {
       FLog.d(TAG, "cloneNode \n\tnode: " + node);
     }
@@ -166,7 +166,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       "FabricUIManager.cloneNode")
       .flush();
     try {
-      ReactShadowNode clone = node.mutableCopy(instanceHandle);
+      ReactShadowNode clone = node.mutableCopy(node.getInstanceHandle());
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -184,7 +184,7 @@ public class FabricUIManager implements UIManager, JSHandler {
    */
   @Nullable
   @DoNotStrip
-  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
+  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node) {
     if (DEBUG) {
       FLog.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
     }
@@ -193,7 +193,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       "FabricUIManager.cloneNodeWithNewChildren")
       .flush();
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewChildren(instanceHandle);
+      ReactShadowNode clone = node.mutableCopyWithNewChildren(node.getInstanceHandle());
       assertReactShadowNodeCopy(node, clone);
       return clone;
     } catch (Throwable t) {
@@ -212,7 +212,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @Nullable
   @DoNotStrip
   public ReactShadowNode cloneNodeWithNewProps(
-      ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
+      ReactShadowNode node, @Nullable ReadableNativeMap newProps) {
     if (DEBUG) {
       FLog.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
     }
@@ -221,7 +221,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       "FabricUIManager.cloneNodeWithNewProps")
       .flush();
     try {
-      ReactShadowNode clone = node.mutableCopyWithNewProps(instanceHandle,
+      ReactShadowNode clone = node.mutableCopyWithNewProps(node.getInstanceHandle(),
             newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -242,7 +242,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   @Nullable
   @DoNotStrip
   public ReactShadowNode cloneNodeWithNewChildrenAndProps(
-      ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
+      ReactShadowNode node, ReadableNativeMap newProps) {
     if (DEBUG) {
       FLog.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
     }
@@ -252,7 +252,7 @@ public class FabricUIManager implements UIManager, JSHandler {
       .flush();
     try {
       ReactShadowNode clone =
-          node.mutableCopyWithNewChildrenAndProps(instanceHandle,
+          node.mutableCopyWithNewChildrenAndProps(node.getInstanceHandle(),
               newProps == null ? null : new ReactStylesDiffMap(newProps));
       assertReactShadowNodeCopy(node, clone);
       return clone;
@@ -610,16 +610,9 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   @Nullable
   @DoNotStrip
-  public long createEventTarget(int reactTag) {
+  public long getEventTarget(int reactTag) {
     long instanceHandle = mNativeViewHierarchyManager.getInstanceHandle(reactTag);
-    long context = mJSContext.get();
-    long eventTarget = mBinding.createEventTarget(context, instanceHandle);
-    if (DEBUG) {
-      FLog.d(
-        TAG,
-        "Created EventTarget: " + eventTarget + " for tag: " + reactTag + " with instanceHandle: " + instanceHandle);
-    }
-    return eventTarget;
+    return instanceHandle;
   }
 
   @DoNotStrip
