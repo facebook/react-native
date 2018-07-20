@@ -58,6 +58,55 @@ class Alert {
       AlertAndroid.alert(title, message, buttons, options);
     }
   }
+
+  /**
+   * Launches an alert dialog and always returns a promise, that resolves with the result
+   * of the onPress/onDismiss callback that got called.
+   *
+   * When the callback is not provided (often the case for onDismiss), the promise resolves to undefined.
+   * When an error is thrown in a callback, the promise rejects.
+   * When the callback itself returns a promise, the alertAsync promise will be chained to it.
+   */
+  static alertAsync(
+    title: ?string,
+    message?: ?string,
+    buttons?: Buttons,
+    options?: Options,
+    type?: AlertType,
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const interceptCallback = callback => {
+        if (!callback) {
+          resolve();
+        } else {
+          try {
+            const maybePromise = callback();
+            if (maybePromise instanceof Promise) {
+              maybePromise.then(resolve, reject);
+            } else {
+              resolve(maybePromise);
+            }
+          } catch (e) {
+            reject(e);
+          }
+        }
+      };
+
+      const interceptedButtons = buttons
+        ? buttons.map(button => ({
+            ...button,
+            onPress: () => interceptCallback(button.onPress),
+          }))
+        : buttons;
+
+      const interceptedOptions = {
+        ...options,
+        onDismiss: () => interceptCallback(options.onDismiss),
+      };
+
+      Alert.alert(title, message, interceptedButtons, interceptedOptions, type);
+    });
+  }
 }
 
 /**
