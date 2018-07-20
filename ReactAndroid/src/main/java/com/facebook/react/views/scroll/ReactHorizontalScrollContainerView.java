@@ -14,11 +14,13 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 public class ReactHorizontalScrollContainerView extends ViewGroup {
 
   private int mLayoutDirection;
+  private int mCurrentWidth;
 
   public ReactHorizontalScrollContainerView(Context context) {
     super(context);
     mLayoutDirection =
         I18nUtil.getInstance().isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR;
+    mCurrentWidth = 0;
   }
 
   @Override
@@ -32,12 +34,12 @@ public class ReactHorizontalScrollContainerView extends ViewGroup {
       setLeft(newLeft);
       setRight(newRight);
 
-      // Fix the ScrollX position when using RTL language
-      int offsetX = computeHorizontalScrollRange() - getScrollX();
-
       // Call with the present values in order to re-layout if necessary
       HorizontalScrollView parent = (HorizontalScrollView) getParent();
+      // Fix the ScrollX position when using RTL language
+      int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth;
       parent.scrollTo(offsetX, parent.getScrollY());
     }
+    mCurrentWidth = getWidth();
   }
 }
