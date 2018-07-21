@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PickerAndroid
+ * @format
  * @flow
  */
 
@@ -21,6 +21,9 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 const processColor = require('processColor');
 const requireNativeComponent = require('requireNativeComponent');
 
+const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
+const DialogPicker = requireNativeComponent('AndroidDialogPicker');
+
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
@@ -34,15 +37,18 @@ type Event = Object;
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
-class PickerAndroid extends React.Component<{
-  style?: $FlowFixMe,
-  selectedValue?: any,
-  enabled?: boolean,
-  mode?: 'dialog' | 'dropdown',
-  onValueChange?: Function,
-  prompt?: string,
-  testID?: string,
-}, *> {
+class PickerAndroid extends React.Component<
+  {
+    style?: $FlowFixMe,
+    selectedValue?: any,
+    enabled?: boolean,
+    mode?: 'dialog' | 'dropdown',
+    onValueChange?: Function,
+    prompt?: string,
+    testID?: string,
+  },
+  *,
+> {
   static propTypes = {
     ...ViewPropTypes,
     style: pickerStyleType,
@@ -69,7 +75,7 @@ class PickerAndroid extends React.Component<{
   }
 
   // Translate prop and children into stuff that the native picker understands.
-  _stateFromProps = (props) => {
+  _stateFromProps = props => {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
@@ -88,7 +94,8 @@ class PickerAndroid extends React.Component<{
   };
 
   render() {
-    const Picker = this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+    const Picker =
+      this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
 
     const nativeProps = {
       enabled: this.props.enabled,
@@ -131,8 +138,13 @@ class PickerAndroid extends React.Component<{
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.refs[REF_PICKER] && this.state.selectedIndex !== this._lastNativePosition) {
-      this.refs[REF_PICKER].setNativeProps({selected: this.state.selectedIndex});
+    if (
+      this.refs[REF_PICKER] &&
+      this.state.selectedIndex !== this._lastNativePosition
+    ) {
+      this.refs[REF_PICKER].setNativeProps({
+        selected: this.state.selectedIndex,
+      });
       this._lastNativePosition = this.state.selectedIndex;
     }
   }
@@ -148,15 +160,5 @@ const styles = StyleSheet.create({
     height: 50,
   },
 });
-
-const cfg = {
-  nativeOnly: {
-    items: true,
-    selected: true,
-  }
-};
-
-const DropdownPicker = requireNativeComponent('AndroidDropdownPicker', PickerAndroid, cfg);
-const DialogPicker = requireNativeComponent('AndroidDialogPicker', PickerAndroid, cfg);
 
 module.exports = PickerAndroid;

@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
@@ -14,33 +17,29 @@ const log = require('../util/log').out('bundle');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
-function saveAssets(
-  assets,
-  platform,
-  assetsDest
-) {
+function saveAssets(assets, platform, assetsDest) {
   if (!assetsDest) {
     console.warn('Assets destination folder is not set, skipping...');
     return Promise.resolve();
   }
 
-  const getAssetDestPath = platform === 'android'
-    ? getAssetDestPathAndroid
-    : getAssetDestPathIOS;
+  const getAssetDestPath =
+    platform === 'android' ? getAssetDestPathAndroid : getAssetDestPathIOS;
 
   const filesToCopy = Object.create(null); // Map src -> dest
-  assets
-    .forEach(asset => {
-      const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
-      asset.scales.forEach((scale, idx) => {
-        if (!validScales.has(scale)) {
-          return;
-        }
-        const src = asset.files[idx];
-        const dest = path.join(assetsDest, getAssetDestPath(asset, scale));
-        filesToCopy[src] = dest;
-      });
+  assets.forEach(asset => {
+    const validScales = new Set(
+      filterPlatformAssetScales(platform, asset.scales),
+    );
+    asset.scales.forEach((scale, idx) => {
+      if (!validScales.has(scale)) {
+        return;
+      }
+      const src = asset.files[idx];
+      const dest = path.join(assetsDest, getAssetDestPath(asset, scale));
+      filesToCopy[src] = dest;
     });
+  });
 
   return copyAll(filesToCopy);
 }
@@ -53,7 +52,7 @@ function copyAll(filesToCopy) {
 
   log('Copying ' + queue.length + ' asset files');
   return new Promise((resolve, reject) => {
-    const copyNext = (error) => {
+    const copyNext = error => {
       if (error) {
         return reject(error);
       }

@@ -118,8 +118,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactToolbar view) {
-    final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
-        .getEventDispatcher();
+    final EventDispatcher mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     view.setNavigationOnClickListener(
         new View.OnClickListener() {
           @Override

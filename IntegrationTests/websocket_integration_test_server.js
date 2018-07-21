@@ -7,7 +7,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule websocket_integration_test_server
+ * @format
  */
 'use strict';
 
@@ -27,8 +27,8 @@ An incoming message of 'exit' will shut down the server.
 `);
 
 const server = new WebSocket.Server({port: 5555});
-server.on('connection', (ws) => {
-  ws.on('message', (message) => {
+server.on('connection', ws => {
+  ws.on('message', message => {
     console.log('Received message:', message);
     if (message === 'exit') {
       console.log('WebSocket integration test server exit');

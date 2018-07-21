@@ -1,5 +1,3 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -33,6 +31,7 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
+#import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/Platform.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
@@ -189,6 +188,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
 }
 
+- (std::shared_ptr<MessageQueueThread>)jsMessageThread
+{
+  return _jsMessageThread;
+}
+
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
@@ -305,7 +309,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   [self registerExtraModules];
   // Initialize all native modules that cannot be loaded lazily
-  [self _initModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
+  (void)[self _initializeModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
 
@@ -337,7 +341,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
-         , nullptr
       ));
     }
   } else {
@@ -400,7 +403,11 @@ struct RCTInstanceCallback : public InstanceCallback {
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
 
-    NSDictionary *userInfo = source ? @{ RCTBridgeDidDownloadScriptNotificationSourceKey: source } : nil;
+    NSDictionary *userInfo = @{
+      RCTBridgeDidDownloadScriptNotificationSourceKey: source ?: [NSNull null],
+      RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey: self->_bridgeDescription ?: [NSNull null],
+    };
+
     [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
     _onSourceLoad(error, source);
@@ -631,9 +638,9 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-- (void)_initModules:(NSArray<id<RCTBridgeModule>> *)modules
-   withDispatchGroup:(dispatch_group_t)dispatchGroup
-    lazilyDiscovered:(BOOL)lazilyDiscovered
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
 {
   RCTAssert(!(RCTIsMainQueue() && lazilyDiscovered), @"Lazy discovery can only happen off the Main Queue");
 
@@ -684,11 +691,15 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTProfileHookModules(self);
   }
 #endif
+  return moduleDataById;
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
 {
-  [self _initModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+  NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+  if (_reactInstance) {
+    _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
+  }
 }
 
 - (void)_prepareModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -865,6 +876,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)reload
 {
+  if (!_valid) {
+    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
   [_parentBridge reload];
 }
 

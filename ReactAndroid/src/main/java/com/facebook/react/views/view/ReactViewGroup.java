@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
@@ -36,6 +37,7 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
@@ -111,6 +113,10 @@ public class ReactViewGroup extends ViewGroup implements
 
   public ReactViewGroup(Context context) {
     super(context);
+    // TODO: Remove this check after a couple public releases.
+    if (!ViewProps.sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -668,7 +674,12 @@ public class ReactViewGroup extends ViewGroup implements
       if (rootView != null) {
         rootView.handleException(e);
       } else {
-        throw e;
+        if (getContext() instanceof  ReactContext) {
+          ReactContext reactContext = (ReactContext) getContext();
+          reactContext.handleException(new IllegalViewOperationException("StackOverflowException", this, e));
+        } else {
+          throw e;
+        }
       }
     }
   }
@@ -676,18 +687,20 @@ public class ReactViewGroup extends ViewGroup implements
   private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
-        case "visible":
+        case ViewProps.VISIBLE:
           if (mPath != null) {
             mPath.rewind();
           }
           break;
-        case "hidden":
-          if (mReactBackgroundDrawable != null) {
-            float left = 0f;
-            float top = 0f;
-            float right = getWidth();
-            float bottom = getHeight();
+        case ViewProps.HIDDEN:
+          float left = 0f;
+          float top = 0f;
+          float right = getWidth();
+          float bottom = getHeight();
 
+          boolean hasClipPath = false;
+
+          if (mReactBackgroundDrawable != null) {
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
@@ -810,9 +823,12 @@ public class ReactViewGroup extends ViewGroup implements
                 },
                 Path.Direction.CW);
               canvas.clipPath(mPath);
-            } else {
-              canvas.clipRect(new RectF(left, top, right, bottom));
+              hasClipPath = true;
             }
+          }
+
+          if (!hasClipPath) {
+            canvas.clipRect(new RectF(left, top, right, bottom));
           }
           break;
         default:

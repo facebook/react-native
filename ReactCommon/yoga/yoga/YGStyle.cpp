@@ -1,15 +1,15 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #include "YGStyle.h"
 
 const YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
-const YGValue kYGValueAuto = {YGUndefined, YGUnitAuto};
+const YGValue kYGValueAuto = {0, YGUnitAuto};
 
 const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
     {kYGValueUndefined,
@@ -42,7 +42,7 @@ YGStyle::YGStyle()
       flex(YGFloatOptional()),
       flexGrow(YGFloatOptional()),
       flexShrink(YGFloatOptional()),
-      flexBasis({0, YGUnitAuto}),
+      flexBasis(kYGValueAuto),
       margin(kYGDefaultEdgeValuesUnit),
       position(kYGDefaultEdgeValuesUnit),
       padding(kYGDefaultEdgeValuesUnit),
@@ -50,7 +50,7 @@ YGStyle::YGStyle()
       dimensions(kYGDefaultDimensionValuesAutoUnit),
       minDimensions(kYGDefaultDimensionValuesUnit),
       maxDimensions(kYGDefaultDimensionValuesUnit),
-      aspectRatio(YGUndefined) {}
+      aspectRatio(YGFloatOptional()) {}
 
 // Yoga specific properties, not compatible with flexbox specification
 bool YGStyle::operator==(const YGStyle& style) {
@@ -91,17 +91,10 @@ bool YGStyle::operator==(const YGStyle& style) {
         flexShrink.getValue() == style.flexShrink.getValue();
   }
 
-  if (!(YGFloatIsUndefined(aspectRatio) &&
-        YGFloatIsUndefined(style.aspectRatio))) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
+  if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual &&
+        aspectRatio.getValue() == style.aspectRatio.getValue();
   }
 
   return areNonFloatValuesEqual;
 }
-
-bool YGStyle::operator!=(YGStyle style) {
-  return !(*this == style);
-}
-
-YGStyle::~YGStyle() {}

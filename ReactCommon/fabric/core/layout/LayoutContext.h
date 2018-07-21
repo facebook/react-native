@@ -7,9 +7,6 @@
 
 #pragma once
 
-#include <unordered_set>
-
-#include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/graphics/Geometry.h>
 
 namespace facebook {
@@ -26,10 +23,12 @@ struct LayoutContext {
   Point absolutePosition {0, 0};
 
   /*
-   * Collection of shadow nodes which were chanded during the layout pass,
-   * and which associated views might need to be updated.
+   * Reflects the scale factor needed to convert from the logical coordinate
+   * space into the device coordinate space of the physical screen.
+   * Some layout systems *might* use this to round layout metric values
+   * to `pixel value`.
    */
-  std::shared_ptr<std::unordered_set<SharedLayoutableShadowNode>> affectedShadowNodes {nullptr};
+  Float pointScaleFactor = {1.0};
 };
 
 } // namespace react

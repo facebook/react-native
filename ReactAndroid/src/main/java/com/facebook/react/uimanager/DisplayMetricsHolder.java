@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.os.Build;
@@ -104,18 +106,37 @@ public class DisplayMetricsHolder {
     return sScreenDisplayMetrics;
   }
 
-  public static WritableNativeMap getDisplayMetricsMap(double fontScale) {
+  public static Map<String, Map<String, Object>> getDisplayMetricsMap(double fontScale) {
+    Assertions.assertNotNull(
+        sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
+        "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
+    final Map<String, Map<String, Object>> result = new HashMap<>();
+    result.put("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
+    result.put("screenPhysicalPixels", getPhysicalPixelsMap(sScreenDisplayMetrics, fontScale));
+    return result;
+  }
+
+  public static WritableNativeMap getDisplayMetricsNativeMap(double fontScale) {
     Assertions.assertNotNull(
         sWindowDisplayMetrics != null || sScreenDisplayMetrics != null,
         "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics");
     final WritableNativeMap result = new WritableNativeMap();
-    result.putMap("windowPhysicalPixels", getPhysicalPixelsMap(sWindowDisplayMetrics, fontScale));
-    result.putMap("screenPhysicalPixels", getPhysicalPixelsMap(sScreenDisplayMetrics, fontScale));
-
+    result.putMap("windowPhysicalPixels", getPhysicalPixelsNativeMap(sWindowDisplayMetrics, fontScale));
+    result.putMap("screenPhysicalPixels", getPhysicalPixelsNativeMap(sScreenDisplayMetrics, fontScale));
     return result;
   }
 
-  private static WritableNativeMap getPhysicalPixelsMap(DisplayMetrics displayMetrics, double fontScale) {
+  private static Map<String, Object> getPhysicalPixelsMap(DisplayMetrics displayMetrics, double fontScale) {
+    final Map<String, Object> result = new HashMap<>();
+    result.put("width", displayMetrics.widthPixels);
+    result.put("height", displayMetrics.heightPixels);
+    result.put("scale", displayMetrics.density);
+    result.put("fontScale", fontScale);
+    result.put("densityDpi", displayMetrics.densityDpi);
+    return result;
+  }
+
+  private static WritableNativeMap getPhysicalPixelsNativeMap(DisplayMetrics displayMetrics, double fontScale) {
     final WritableNativeMap result = new WritableNativeMap();
     result.putInt("width", displayMetrics.widthPixels);
     result.putInt("height", displayMetrics.heightPixels);
@@ -124,5 +145,4 @@ public class DisplayMetricsHolder {
     result.putDouble("densityDpi", displayMetrics.densityDpi);
     return result;
   }
-
 }

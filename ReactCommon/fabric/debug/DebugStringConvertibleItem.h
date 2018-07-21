@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {

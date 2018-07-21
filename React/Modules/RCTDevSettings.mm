@@ -18,7 +18,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTJSCSamplingProfiler.h"
 #import "RCTLog.h"
-#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
@@ -35,6 +34,7 @@ static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamp
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if ENABLE_PACKAGER_CONNECTION
+#import "RCTPackagerClient.h"
 #import "RCTPackagerConnection.h"
 #endif
 
@@ -201,6 +201,7 @@ RCT_EXPORT_MODULE()
 #endif
 }
 
+#if ENABLE_PACKAGER_CONNECTION
 static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientResponder *const responder)
 {
   if (!bridge) {
@@ -224,6 +225,7 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
     [responder respondWithResult:results];
   }
 }
+#endif
 
 - (dispatch_queue_t)methodQueue
 {

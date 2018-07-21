@@ -7,6 +7,8 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
@@ -42,11 +44,14 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.common.MeasureSpecProvider;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import javax.annotation.Nullable;
@@ -84,24 +89,32 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private int mRootViewTag;
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
-  private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
+  private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper = new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-  private @Nullable Runnable mJSEntryPoint;
-  private boolean mIsFabric = false;
+  private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
     super(context);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    init();
+  }
+
+  private void init() {
+    if (!ViewProps.sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
   }
 
   @Override
@@ -147,11 +160,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
+        enableLayoutCalculation();
       } else {
+        enableLayoutCalculation();
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
-
-      enableLayoutCalculation();
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -183,9 +196,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
+      return;
+    }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
-      .getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
   }
 
@@ -264,9 +282,14 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
+    if (mJSTouchDispatcher == null) {
+      FLog.w(
+        ReactConstants.TAG,
+        "Unable to dispatch touch to JS before the dispatcher is available");
+      return;
+    }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
-      .getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
   }
 
@@ -390,10 +413,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           new GuardedRunnable(reactApplicationContext) {
             @Override
             public void runGuarded() {
-              reactApplicationContext
-                  .getCatalystInstance()
-                  .getNativeModule(UIManagerModule.class)
-                  .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
+              UIManagerHelper
+                .getUIManager(reactApplicationContext, getUIManagerType())
+                .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
             }
           });
     }
@@ -408,12 +430,18 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public void unmountReactApplication() {
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
+      mReactInstanceManager = null;
       mIsAttachedToInstance = false;
     }
     mShouldLogContentAppeared = false;
   }
 
   public void onAttachedToReactInstance() {
+    // Create the touch dispatcher here instead of having it always available, to make sure
+    // that all touch events are only passed to JS after React/JS side is ready to consume
+    // them. Otherwise, these events might break the states expected by JS.
+    // Note that this callback was invoked from within the UI thread.
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -435,7 +463,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
     if (getRootViewTag() != 0) {
-      invokeJSEntryPoint();
+      runApplication();
     }
   }
 
@@ -443,34 +471,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /*package */ void invokeJSEntryPoint() {
-    if (mJSEntryPoint == null) {
-      defaultJSEntryPoint();
-    } else {
-      mJSEntryPoint.run();
-    }
-  }
-
-  /**
-   * Set a custom entry point for invoking JS. By default, this is AppRegistry.runApplication
-   * @param jsEntryPoint
-   */
-  public void setJSEntryPoint(Runnable jsEntryPoint) {
-    mJSEntryPoint = jsEntryPoint;
-  }
-
-  public void invokeDefaultJSEntryPoint(@Nullable Bundle appProperties) {
-    UiThreadUtil.assertOnUiThread();
-    if (appProperties != null) {
-      mAppProperties = appProperties;
-    }
-    defaultJSEntryPoint();
-  }
-
-  /**
-   * Calls the default entry point into JS which is AppRegistry.runApplication()
-   */
-  private void defaultJSEntryPoint() {
+  /* package */ void runApplication() {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
       try {
         if (mReactInstanceManager == null || !mIsAttachedToInstance) {
@@ -490,6 +491,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         if (appProperties != null) {
           appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
         }
+        if (getUIManagerType() == FABRIC) {
+          appParams.putBoolean("fabric", true);
+        }
 
         mShouldLogContentAppeared = true;
 
@@ -507,6 +511,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -552,34 +557,29 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   @Override
-  public void handleException(Throwable t) {
+  public void handleException(final Throwable t) {
     if (mReactInstanceManager == null
       || mReactInstanceManager.getCurrentReactContext() == null) {
         throw new RuntimeException(t);
     }
 
-    // Adding special exception management for StackOverflowError for logging purposes.
-    // This will be removed in the future.
-    Exception e = (t instanceof StackOverflowError) ?
-      new IllegalViewOperationException("StackOverflowException", this, t) :
-      t instanceof Exception ? (Exception) t : new RuntimeException(t);
-
+    Exception e = new IllegalViewOperationException(t.getMessage(), this, t);
     mReactInstanceManager.getCurrentReactContext().handleException(e);
   }
 
   public void setIsFabric(boolean isFabric) {
-    mIsFabric = isFabric;
+    mUIManagerType = isFabric ? FABRIC : DEFAULT;
   }
 
-  public boolean isFabric() {
-    return mIsFabric;
+  public @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
   }
 
   @Nullable
   public ReactInstanceManager getReactInstanceManager() {
     return mReactInstanceManager;
   }
-  
+
   /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.getCurrentReactContext()

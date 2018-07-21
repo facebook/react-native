@@ -35,9 +35,17 @@ public class PositionError {
   public static WritableMap buildError(int code, String message) {
     WritableMap error = Arguments.createMap();
     error.putInt("code", code);
+
     if (message != null) {
       error.putString("message", message);
     }
+    
+    /**
+    * Provide error types in error message. Feature parity with iOS
+    */
+    error.putInt("PERMISSION_DENIED", PERMISSION_DENIED);
+    error.putInt("POSITION_UNAVAILABLE", POSITION_UNAVAILABLE);
+    error.putInt("TIMEOUT", TIMEOUT);
     return error;
   }
 }

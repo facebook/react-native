@@ -22,6 +22,11 @@ local_ref<JByteBuffer> createEmpty() {
 }
 }
 
+void JBuffer::rewind() const {
+  static auto meth = javaClassStatic()->getMethod<alias_ref<JBuffer>()>("rewind");
+  meth(self());
+}
+
 local_ref<JByteBuffer> JByteBuffer::wrapBytes(uint8_t* data, size_t size) {
   // env->NewDirectByteBuffer requires that size is positive. Android's
   // dalvik returns an invalid result and Android's art aborts if size == 0.

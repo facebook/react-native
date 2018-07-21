@@ -8,8 +8,14 @@ package com.facebook.react.uimanager;
 
 import static java.lang.System.arraycopy;
 
+import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
@@ -21,7 +27,7 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeClonedFunction;
+import com.facebook.yoga.YogaNodeCloneFunction;
 import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
@@ -58,27 +64,45 @@ import javax.annotation.Nullable;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
+  private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  private static final String TAG = ReactShadowNodeImpl.class.getSimpleName();
   private static final YogaConfig sYogaConfig;
   static {
     sYogaConfig = ReactYogaConfigProvider.get();
-    sYogaConfig.setOnNodeCloned(new YogaNodeClonedFunction() {
+    sYogaConfig.setOnCloneNode(new YogaNodeCloneFunction() {
       @Override
-      public void onNodeCloned(YogaNode oldYogaNode,
-          YogaNode newYogaNode,
+      public YogaNode cloneNode(YogaNode oldYogaNode,
           YogaNode parent,
           int childIndex) {
-        ReactShadowNode parentReactShadowNode = (ReactShadowNode) parent.getData();
-        Assertions.assertNotNull(parentReactShadowNode);
+        SystraceMessage.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "FabricReconciler.YogaNodeCloneFunction")
+          .flush();
+        try {
+          ReactShadowNodeImpl parentReactShadowNode = (ReactShadowNodeImpl) parent.getData();
+          Assertions.assertNotNull(parentReactShadowNode);
+          ReactShadowNodeImpl oldReactShadowNode = (ReactShadowNodeImpl) oldYogaNode.getData();
+          Assertions.assertNotNull(oldReactShadowNode);
 
-        ReactShadowNode newReactShadowNode = (ReactShadowNode) newYogaNode.getData();
-        Assertions.assertNotNull(newReactShadowNode);
+          if (DEBUG) {
+            FLog.d(
+              TAG,
+              "YogaNode started cloning: oldYogaNode: " + oldReactShadowNode + " - parent: "
+                + parentReactShadowNode + " index: " + childIndex);
+          }
+
+          ReactShadowNodeImpl newNode = oldReactShadowNode.mutableCopy(oldReactShadowNode.getInstanceHandle());
+          parentReactShadowNode.replaceChild(newNode, childIndex);
+          return newNode.mYogaNode;
+        } finally{
+          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        }
       }
     });
   }
 
   private int mReactTag;
   private @Nullable String mViewClassName;
-  private @Nullable ReactShadowNodeImpl mRootNode;
   private int mRootTag;
   private @Nullable ThemedReactContext mThemedContext;
   private boolean mShouldNotifyOnLayout;
@@ -95,15 +119,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private int mScreenY;
   private int mScreenWidth;
   private int mScreenHeight;
-  private final Spacing mDefaultPadding = new Spacing(0);
+  private final Spacing mDefaultPadding;
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private YogaNode mYogaNode;
+  private int mGenerationDebugInformation = 1;
   private ReactShadowNode mOriginalReactShadowNode = null;
 
   private @Nullable ReactStylesDiffMap mNewProps;
+  private long mInstanceHandle;
+  private boolean mIsSealed = false;
 
   public ReactShadowNodeImpl() {
+    mDefaultPadding = new Spacing(0);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
       mYogaNode = node == null ? new YogaNode(sYogaConfig) : node;
@@ -118,21 +146,32 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mReactTag = original.mReactTag;
     mRootTag = original.mRootTag;
     mViewClassName = original.mViewClassName;
-    mRootNode = original.mRootNode;
     mThemedContext = original.mThemedContext;
     mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
-    mNodeUpdated = original.mNodeUpdated;
     mIsLayoutOnly = original.mIsLayoutOnly;
     mNativeParent = original.mNativeParent;
-    mScreenX = original.mScreenX;
-    mScreenY = original.mScreenY;
-    mScreenWidth = original.mScreenWidth;
-    mScreenHeight = original.mScreenHeight;
+    mDefaultPadding = new Spacing(original.mDefaultPadding);
+    // Cloned nodes should be always updated.
+    mNodeUpdated = true;
+    // "cached" screen coordinates are not cloned because FabricJS not always clone the last
+    // ReactShadowNode that was rendered in the screen.
+    mScreenX = 0;
+    mScreenY = 0;
+    mScreenWidth = 0;
+    mScreenHeight = 0;
+    mGenerationDebugInformation = original.mGenerationDebugInformation + 1;
     arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
     arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
     mNewProps = null;
     mParent = null;
     mOriginalReactShadowNode = original;
+    mIsSealed = false;
+  }
+
+  private void replaceChild(ReactShadowNodeImpl newNode, int childIndex) {
+    mChildren.remove(childIndex);
+    mChildren.add(childIndex, newNode);
+    newNode.mParent = this;
   }
 
   /**
@@ -143,41 +182,61 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
+  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode;
-    // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //mYogaNode = original.mYogaNode.clone();
-    copy.mNativeChildren = mNativeChildren == null ? null : new ArrayList<>(mNativeChildren);
-    copy.mTotalNativeChildren = mTotalNativeChildren;
-    copy.mChildren = mChildren == null ? null : new ArrayList<>(mChildren);
-    copy.mYogaNode.setData(this);
-    if (mChildren != null) {
-      for (ReactShadowNode child : mChildren) {
-        if (child.getOriginalReactShadowNode() == null) {
-          child.setOriginalReactShadowNode(child);
-        }
-      }
+    Assertions.assertCondition(
+        getClass() == copy.getClass(),
+        "Copied shadow node must use the same class");
+    copy.mInstanceHandle = instanceHandle;
+    if (mYogaNode != null) {
+      copy.mYogaNode = mYogaNode.clone();
+      copy.mYogaNode.setData(copy);
+    } else {
+      // Virtual ReactShadowNode do not have a YogaNode associated
+      copy.mYogaNode = null;
     }
+    copy.mTotalNativeChildren = mTotalNativeChildren;
+    copy.mNativeChildren = copyChildren(mNativeChildren);
+    copy.mChildren = copyChildren(mChildren);
+
     return copy;
   }
 
+  @Nullable
+  private ArrayList<ReactShadowNodeImpl> copyChildren(@Nullable List<ReactShadowNodeImpl> list){
+    ArrayList<ReactShadowNodeImpl> result = list == null ? null : new ArrayList<>(list);
+    if (result != null) {
+      for (ReactShadowNodeImpl child : result) {
+        child.mParent = null;
+      }
+    }
+    return result;
+  }
+
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
+  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
     ReactShadowNodeImpl copy = copy();
-    copy.mYogaNode = mYogaNode;
-    // TODO: T26729293 clone YogaNode instead of reusing the same instance
-    //mYogaNode = original.mYogaNode.cloneWithNewChildren();
+    copy.mInstanceHandle = instanceHandle;
+    Assertions.assertCondition(
+        getClass() == copy.getClass(),
+        "Copied shadow node must use the same class");
+    if (mYogaNode != null) {
+      copy.mYogaNode = mYogaNode.cloneWithNewChildren();
+      copy.mYogaNode.setData(copy);
+    } else {
+      // Virtual ReactShadowNode do not have a YogaNode associated
+      copy.mYogaNode = null;
+    }
     copy.mNativeChildren = null;
     copy.mChildren = null;
     copy.mTotalNativeChildren = 0;
-    copy.mYogaNode.setData(this);
     return copy;
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps) {
-    ReactShadowNodeImpl copy = mutableCopy();
+  public ReactShadowNodeImpl mutableCopyWithNewProps(long instanceHandle,
+      @Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopy(instanceHandle);
     if (newProps != null) {
       copy.updateProperties(newProps);
       copy.mNewProps = newProps;
@@ -186,8 +245,9 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps) {
-    ReactShadowNodeImpl copy = mutableCopyWithNewChildren();
+  public ReactShadowNodeImpl mutableCopyWithNewChildrenAndProps(long instanceHandle,
+      @Nullable ReactStylesDiffMap newProps) {
+    ReactShadowNodeImpl copy = mutableCopyWithNewChildren(instanceHandle);
     if (newProps != null) {
       copy.updateProperties(newProps);
       copy.mNewProps = newProps;
@@ -239,6 +299,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public final void markUpdateSeen() {
+    assertNotSealed();
     mNodeUpdated = false;
     if (hasNewLayout()) {
       markLayoutSeen();
@@ -264,6 +325,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void dirty() {
+    assertNotSealed();
     if (!isVirtual()) {
       mYogaNode.dirty();
     }
@@ -276,6 +338,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void addChildAt(ReactShadowNodeImpl child, int i) {
+    assertNotSealed();
     if (mChildren == null) {
       mChildren = new ArrayList<>(4);
     }
@@ -295,16 +358,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
                 + toString()
                 + "')");
       }
-      // TODO: T26729293 This is a temporary code that will be replaced as part of T26729293.
-      YogaNode parent = childYogaNode.getParent();
-      if (parent != null) {
-        for (int k = 0; k < parent.getChildCount(); k++) {
-          if (parent.getChildAt(k) == childYogaNode) {
-            parent.removeChildAt(k);
-            break;
-          }
-        }
-      }
       mYogaNode.addChildAt(childYogaNode, i);
     }
     markUpdated();
@@ -317,6 +370,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public ReactShadowNodeImpl removeChildAt(int i) {
+    assertNotSealed();
     if (mChildren == null) {
       throw new ArrayIndexOutOfBoundsException(
         "Index " + i + " out of bounds: node has no children");
@@ -489,21 +543,25 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setReactTag(int reactTag) {
+    assertNotSealed();
     mReactTag = reactTag;
   }
 
   @Override
-  public final ReactShadowNodeImpl getRootNode() {
-    return Assertions.assertNotNull(mRootNode);
+  public final int getRootTag() {
+    Assertions.assertCondition(mRootTag != 0);
+    return mRootTag;
   }
 
   @Override
-  public final void setRootNode(ReactShadowNodeImpl rootNode) {
-    mRootNode = rootNode;
+  public final void setRootTag(int rootTag) {
+    assertNotSealed();
+    mRootTag = rootTag;
   }
 
   @Override
   public final void setViewClassName(String viewClassName) {
+    assertNotSealed();
     mViewClassName = viewClassName;
   }
 
@@ -545,6 +603,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public final void markLayoutSeen() {
+    assertNotSealed();
     if (mYogaNode != null) {
       mYogaNode.markLayoutSeen();
     }
@@ -556,6 +615,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    */
   @Override
   public final void addNativeChildAt(ReactShadowNodeImpl child, int nativeIndex) {
+    assertNotSealed();
     Assertions.assertCondition(!mIsLayoutOnly);
     Assertions.assertCondition(!child.mIsLayoutOnly);
 
@@ -607,6 +667,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
    */
   @Override
   public final void setIsLayoutOnly(boolean isLayoutOnly) {
+    assertNotSealed();
     Assertions.assertCondition(getParent() == null, "Must remove from no opt parent first");
     Assertions.assertCondition(mNativeParent == null, "Must remove from native parent first");
     Assertions.assertCondition(getNativeChildCount() == 0, "Must remove all native children first");
@@ -755,6 +816,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setLayoutDirection(YogaDirection direction) {
+    assertNotSealed();
     mYogaNode.setDirection(direction);
   }
 
@@ -765,36 +827,43 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setStyleWidth(float widthPx) {
+    assertNotSealed();
     mYogaNode.setWidth(widthPx);
   }
 
   @Override
   public void setStyleWidthPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setWidthPercent(percent);
   }
 
   @Override
   public void setStyleWidthAuto() {
+    assertNotSealed();
     mYogaNode.setWidthAuto();
   }
 
   @Override
   public void setStyleMinWidth(float widthPx) {
+    assertNotSealed();
     mYogaNode.setMinWidth(widthPx);
   }
 
   @Override
   public void setStyleMinWidthPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setMinWidthPercent(percent);
   }
 
   @Override
   public void setStyleMaxWidth(float widthPx) {
+    assertNotSealed();
     mYogaNode.setMaxWidth(widthPx);
   }
 
   @Override
   public void setStyleMaxWidthPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setMaxWidthPercent(percent);
   }
 
@@ -805,126 +874,151 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setStyleHeight(float heightPx) {
+    assertNotSealed();
     mYogaNode.setHeight(heightPx);
   }
 
   @Override
   public void setStyleHeightPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setHeightPercent(percent);
   }
 
   @Override
   public void setStyleHeightAuto() {
+    assertNotSealed();
     mYogaNode.setHeightAuto();
   }
 
   @Override
   public void setStyleMinHeight(float widthPx) {
+    assertNotSealed();
     mYogaNode.setMinHeight(widthPx);
   }
 
   @Override
   public void setStyleMinHeightPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setMinHeightPercent(percent);
   }
 
   @Override
   public void setStyleMaxHeight(float widthPx) {
+    assertNotSealed();
     mYogaNode.setMaxHeight(widthPx);
   }
 
   @Override
   public void setStyleMaxHeightPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setMaxHeightPercent(percent);
   }
 
   @Override
   public void setFlex(float flex) {
+    assertNotSealed();
     mYogaNode.setFlex(flex);
   }
 
   @Override
   public void setFlexGrow(float flexGrow) {
+    assertNotSealed();
     mYogaNode.setFlexGrow(flexGrow);
   }
 
   @Override
   public void setFlexShrink(float flexShrink) {
+    assertNotSealed();
     mYogaNode.setFlexShrink(flexShrink);
   }
 
   @Override
   public void setFlexBasis(float flexBasis) {
+    assertNotSealed();
     mYogaNode.setFlexBasis(flexBasis);
   }
 
   @Override
   public void setFlexBasisAuto() {
+    assertNotSealed();
     mYogaNode.setFlexBasisAuto();
   }
 
   @Override
   public void setFlexBasisPercent(float percent) {
+    assertNotSealed();
     mYogaNode.setFlexBasisPercent(percent);
   }
 
   @Override
   public void setStyleAspectRatio(float aspectRatio) {
+    assertNotSealed();
     mYogaNode.setAspectRatio(aspectRatio);
   }
 
   @Override
   public void setFlexDirection(YogaFlexDirection flexDirection) {
+    assertNotSealed();
     mYogaNode.setFlexDirection(flexDirection);
   }
 
   @Override
   public void setFlexWrap(YogaWrap wrap) {
+    assertNotSealed();
     mYogaNode.setWrap(wrap);
   }
 
   @Override
   public void setAlignSelf(YogaAlign alignSelf) {
+    assertNotSealed();
     mYogaNode.setAlignSelf(alignSelf);
   }
 
   @Override
   public void setAlignItems(YogaAlign alignItems) {
+    assertNotSealed();
     mYogaNode.setAlignItems(alignItems);
   }
 
   @Override
   public void setAlignContent(YogaAlign alignContent) {
+    assertNotSealed();
     mYogaNode.setAlignContent(alignContent);
   }
 
   @Override
   public void setJustifyContent(YogaJustify justifyContent) {
+    assertNotSealed();
     mYogaNode.setJustifyContent(justifyContent);
   }
 
   @Override
   public void setOverflow(YogaOverflow overflow) {
+    assertNotSealed();
     mYogaNode.setOverflow(overflow);
   }
 
   @Override
   public void setDisplay(YogaDisplay display) {
+    assertNotSealed();
     mYogaNode.setDisplay(display);
   }
 
   @Override
   public void setMargin(int spacingType, float margin) {
+    assertNotSealed();
     mYogaNode.setMargin(YogaEdge.fromInt(spacingType), margin);
   }
 
   @Override
   public void setMarginPercent(int spacingType, float percent) {
+    assertNotSealed();
     mYogaNode.setMarginPercent(YogaEdge.fromInt(spacingType), percent);
   }
 
   @Override
   public void setMarginAuto(int spacingType) {
+    assertNotSealed();
     mYogaNode.setMarginAuto(YogaEdge.fromInt(spacingType));
   }
 
@@ -940,12 +1034,14 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setDefaultPadding(int spacingType, float padding) {
+    assertNotSealed();
     mDefaultPadding.set(spacingType, padding);
     updatePadding();
   }
 
   @Override
   public void setPadding(int spacingType, float padding) {
+    assertNotSealed();
     mPadding[spacingType] = padding;
     mPaddingIsPercent[spacingType] = false;
     updatePadding();
@@ -953,12 +1049,14 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setPaddingPercent(int spacingType, float percent) {
+    assertNotSealed();
     mPadding[spacingType] = percent;
     mPaddingIsPercent[spacingType] = !YogaConstants.isUndefined(percent);
     updatePadding();
   }
 
   private void updatePadding() {
+    assertNotSealed();
     for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
       if (spacingType == Spacing.LEFT
           || spacingType == Spacing.RIGHT
@@ -994,36 +1092,43 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void setBorder(int spacingType, float borderWidth) {
+    assertNotSealed();
     mYogaNode.setBorder(YogaEdge.fromInt(spacingType), borderWidth);
   }
 
   @Override
   public void setPosition(int spacingType, float position) {
+    assertNotSealed();
     mYogaNode.setPosition(YogaEdge.fromInt(spacingType), position);
   }
 
   @Override
   public void setPositionPercent(int spacingType, float percent) {
+    assertNotSealed();
     mYogaNode.setPositionPercent(YogaEdge.fromInt(spacingType), percent);
   }
 
   @Override
   public void setPositionType(YogaPositionType positionType) {
+    assertNotSealed();
     mYogaNode.setPositionType(positionType);
   }
 
   @Override
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
+    assertNotSealed();
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
   @Override
   public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+    assertNotSealed();
     mYogaNode.setBaselineFunction(baselineFunction);
   }
 
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
+    assertNotSealed();
     mYogaNode.setMeasureFunction(measureFunction);
   }
 
@@ -1042,17 +1147,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private void getHierarchyInfoWithIndentation(StringBuilder result, int level) {
     // Spaces and tabs are dropped by IntelliJ logcat integration, so rely on __ instead.
     for (int i = 0; i < level; ++i) {
-      result.append("__");
+      result.append("  ");
     }
 
-    result.append(getClass().getSimpleName()).append(" ").append(getReactTag()).append(" ");
+    result.append("<").append(getClass().getSimpleName()).append(" view='").append(getViewClass())
+      .append("' tag=").append(getReactTag()).append(" gen=").append(mGenerationDebugInformation);
     if (mYogaNode != null) {
-      result.append(getScreenX()).append(";").append(getScreenY()).append(";")
-        .append(getLayoutWidth()).append(";").append(getLayoutHeight());
+      result.append(" layout='x:").append(getScreenX())
+        .append(" y:").append(getScreenY()).append(" w:").append(getLayoutWidth()).append(" h:")
+        .append(getLayoutHeight()).append("'");
     } else {
       result.append("(virtual node)");
     }
-    result.append("\n");
+    result.append(">\n");
 
     if (getChildCount() == 0) {
       return;
@@ -1085,5 +1192,40 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void setOriginalReactShadowNode(ReactShadowNode node) {
     mOriginalReactShadowNode = node;
+  }
+
+  @Override
+  public long getInstanceHandle() {
+    return mInstanceHandle;
+  }
+
+  @Override
+  public void setInstanceHandle(long instanceHandle) {
+    assertNotSealed();
+    mInstanceHandle = instanceHandle;
+  }
+
+  @Override
+  public void markAsSealed() {
+    mIsSealed = true;
+  }
+
+  @Override
+  public boolean isSealed() {
+    return mIsSealed;
+  }
+
+  private void assertNotSealed() {
+    if (mIsSealed) {
+      throw new IllegalStateException("Can not modify sealed node " + toString());
+    }
+  }
+
+  @Override
+  public void updateScreenLayout(ReactShadowNode prevNode) {
+    mScreenHeight = prevNode.getScreenHeight();
+    mScreenWidth = prevNode.getScreenWidth();
+    mScreenX = prevNode.getScreenX();
+    mScreenY = prevNode.getScreenY();
   }
 }

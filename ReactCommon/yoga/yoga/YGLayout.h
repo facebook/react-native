@@ -1,11 +1,12 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #pragma once
+#include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
 struct YGLayout {
@@ -17,13 +18,13 @@ struct YGLayout {
   YGDirection direction;
 
   uint32_t computedFlexBasisGeneration;
-  float computedFlexBasis;
+  YGFloatOptional computedFlexBasis;
   bool hadOverflow;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
   uint32_t generationCount;
-  YGDirection lastParentDirection;
+  YGDirection lastOwnerDirection;
 
   uint32_t nextCachedMeasurementsIndex;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>
@@ -37,5 +38,7 @@ struct YGLayout {
   YGLayout();
 
   bool operator==(YGLayout layout) const;
-  bool operator!=(YGLayout layout) const;
+  bool operator!=(YGLayout layout) const {
+    return !(*this == layout);
+  }
 };

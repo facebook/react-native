@@ -4,25 +4,134 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Slider
+ * @format
  * @flow
  */
+
 'use strict';
 
-const Image = require('Image');
-const ColorPropType = require('ColorPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const ReactNative = require('ReactNative');
 const Platform = require('Platform');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {ImageSource} from 'ImageSource';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+const RCTSlider = requireNativeComponent('RCTSlider');
+
 type Event = Object;
+
+type IOSProps = $ReadOnly<{|
+  /**
+   * Assigns a single image for the track. Only static images are supported.
+   * The center pixel of the image will be stretched to fill the track.
+   */
+  trackImage?: ?ImageSource,
+
+  /**
+   * Assigns a minimum track image. Only static images are supported. The
+   * rightmost pixel of the image will be stretched to fill the track.
+   */
+  minimumTrackImage?: ?ImageSource,
+
+  /**
+   * Assigns a maximum track image. Only static images are supported. The
+   * leftmost pixel of the image will be stretched to fill the track.
+   */
+  maximumTrackImage?: ?ImageSource,
+
+  /**
+   * Sets an image for the thumb. Only static images are supported.
+   */
+  thumbImage?: ?ImageSource,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  /**
+   * Color of the foreground switch grip.
+   * @platform android
+   */
+  thumbTintColor?: ?ColorValue,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...IOSProps,
+  ...AndroidProps,
+
+  /**
+   * Used to style and layout the `Slider`.  See `StyleSheet.js` and
+   * `ViewStylePropTypes.js` for more info.
+   */
+  style?: ?ViewStyleProp,
+
+  /**
+   * Initial value of the slider. The value should be between minimumValue
+   * and maximumValue, which default to 0 and 1 respectively.
+   * Default value is 0.
+   *
+   * *This is not a controlled component*, you don't need to update the
+   * value during dragging.
+   */
+  value?: ?number,
+
+  /**
+   * Step value of the slider. The value should be
+   * between 0 and (maximumValue - minimumValue).
+   * Default value is 0.
+   */
+  step?: ?number,
+
+  /**
+   * Initial minimum value of the slider. Default value is 0.
+   */
+  minimumValue?: ?number,
+
+  /**
+   * Initial maximum value of the slider. Default value is 1.
+   */
+  maximumValue?: ?number,
+
+  /**
+   * The color used for the track to the left of the button.
+   * Overrides the default blue gradient image on iOS.
+   */
+  minimumTrackTintColor?: ?ColorValue,
+
+  /**
+   * The color used for the track to the right of the button.
+   * Overrides the default blue gradient image on iOS.
+   */
+  maximumTrackTintColor?: ?ColorValue,
+
+  /**
+   * If true the user won't be able to move the slider.
+   * Default value is false.
+   */
+  disabled?: ?boolean,
+
+  /**
+   * Callback continuously called while the user is dragging the slider.
+   */
+  onValueChange?: ?Function,
+
+  /**
+   * Callback that is called when the user releases the slider,
+   * regardless if the value has changed. The current value is passed
+   * as an argument to the callback handler.
+   */
+  onSlidingComplete?: ?Function,
+
+  /**
+   * Used to locate this view in UI automation tests.
+   */
+  testID?: ?string,
+|}>;
 
 /**
  * A component used to select a single value from a range of values.
@@ -84,173 +193,63 @@ type Event = Object;
  *```
  *
  */
-const Slider = createReactClass({
-  displayName: 'Slider',
-  mixins: [NativeMethodsMixin],
+const Slider = (
+  props: Props,
+  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
+) => {
+  const style = StyleSheet.compose(
+    styles.slider,
+    props.style,
+  );
 
-  propTypes: {
-    ...ViewPropTypes,
-
-    /**
-     * Used to style and layout the `Slider`.  See `StyleSheet.js` and
-     * `ViewStylePropTypes.js` for more info.
-     */
-    style: ViewPropTypes.style,
-
-    /**
-     * Initial value of the slider. The value should be between minimumValue
-     * and maximumValue, which default to 0 and 1 respectively.
-     * Default value is 0.
-     *
-     * *This is not a controlled component*, you don't need to update the
-     * value during dragging.
-     */
-    value: PropTypes.number,
-
-    /**
-     * Step value of the slider. The value should be
-     * between 0 and (maximumValue - minimumValue).
-     * Default value is 0.
-     */
-    step: PropTypes.number,
-
-    /**
-     * Initial minimum value of the slider. Default value is 0.
-     */
-    minimumValue: PropTypes.number,
-
-    /**
-     * Initial maximum value of the slider. Default value is 1.
-     */
-    maximumValue: PropTypes.number,
-
-    /**
-     * The color used for the track to the left of the button.
-     * Overrides the default blue gradient image on iOS.
-     */
-    minimumTrackTintColor: ColorPropType,
-
-    /**
-     * The color used for the track to the right of the button.
-     * Overrides the default blue gradient image on iOS.
-     */
-    maximumTrackTintColor: ColorPropType,
-
-    /**
-     * If true the user won't be able to move the slider.
-     * Default value is false.
-     */
-    disabled: PropTypes.bool,
-
-    /**
-     * Assigns a single image for the track. Only static images are supported.
-     * The center pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
-    trackImage: Image.propTypes.source,
-
-    /**
-     * Assigns a minimum track image. Only static images are supported. The
-     * rightmost pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
-    minimumTrackImage: Image.propTypes.source,
-
-    /**
-     * Assigns a maximum track image. Only static images are supported. The
-     * leftmost pixel of the image will be stretched to fill the track.
-     * @platform ios
-     */
-    maximumTrackImage: Image.propTypes.source,
-
-    /**
-     * Sets an image for the thumb. Only static images are supported.
-     * @platform ios
-     */
-    thumbImage: Image.propTypes.source,
-
-    /**
-     * Color of the foreground switch grip.
-     * @platform android
-     */
-    thumbTintColor: ColorPropType,
-
-    /**
-     * Callback continuously called while the user is dragging the slider.
-     */
-    onValueChange: PropTypes.func,
-
-    /**
-     * Callback that is called when the user releases the slider,
-     * regardless if the value has changed. The current value is passed
-     * as an argument to the callback handler.
-     */
-    onSlidingComplete: PropTypes.func,
-
-    /**
-     * Used to locate this view in UI automation tests.
-     */
-    testID: PropTypes.string,
-  },
-
-  getDefaultProps: function() : any {
-    return {
-      disabled: false,
-      value: 0,
-      minimumValue: 0,
-      maximumValue: 1,
-      step: 0
-    };
-  },
-
-  viewConfig: {
-    uiViewClassName: 'RCTSlider',
-    validAttributes: {
-      ...ReactNativeViewAttributes.RCTView,
-      value: true
-    }
-  },
-
-  render: function() {
-    const {style, onValueChange, onSlidingComplete, ...props} = this.props;
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.style = [styles.slider, style];
-
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onValueChange = onValueChange && ((event: Event) => {
+  const onValueChange =
+    props.onValueChange &&
+    ((event: Event) => {
       let userEvent = true;
       if (Platform.OS === 'android') {
         // On Android there's a special flag telling us the user is
         // dragging the slider.
         userEvent = event.nativeEvent.fromUser;
       }
-      onValueChange && userEvent && onValueChange(event.nativeEvent.value);
+      props.onValueChange &&
+        userEvent &&
+        props.onValueChange(event.nativeEvent.value);
     });
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onChange = props.onValueChange;
+  const onChange = onValueChange;
 
-    /* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.54 was deployed. To see the error
-     * delete this comment and run Flow. */
-    props.onSlidingComplete = onSlidingComplete && ((event: Event) => {
-      onSlidingComplete && onSlidingComplete(event.nativeEvent.value);
+  const onSlidingComplete =
+    props.onSlidingComplete &&
+    ((event: Event) => {
+      props.onSlidingComplete &&
+        props.onSlidingComplete(event.nativeEvent.value);
     });
 
-    return <RCTSlider
+  return (
+    <RCTSlider
       {...props}
-      enabled={!this.props.disabled}
+      ref={forwardedRef}
+      style={style}
+      onChange={onChange}
+      onSlidingComplete={onSlidingComplete}
+      onValueChange={onValueChange}
+      enabled={!props.disabled}
       onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}
-    />;
-  }
-});
+    />
+  );
+};
+
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const SliderWithRef = React.forwardRef(Slider);
+
+SliderWithRef.defaultProps = {
+  disabled: false,
+  value: 0,
+  minimumValue: 0,
+  maximumValue: 1,
+  step: 0,
+};
 
 let styles;
 if (Platform.OS === 'ios') {
@@ -265,14 +264,4 @@ if (Platform.OS === 'ios') {
   });
 }
 
-let options = {};
-if (Platform.OS === 'android') {
-  options = {
-    nativeOnly: {
-      enabled: true,
-    }
-  };
-}
-const RCTSlider = requireNativeComponent('RCTSlider', Slider, options);
-
-module.exports = Slider;
+module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);

@@ -4,15 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule fetch
- *
+ * @format
  */
 
- /* globals Headers, Request, Response */
+/* globals Headers, Request, Response */
 
 'use strict';
 
-import whatwg from 'whatwg-fetch';
+const whatwg = require('whatwg-fetch');
 
 if (whatwg && whatwg.fetch) {
   module.exports = whatwg;

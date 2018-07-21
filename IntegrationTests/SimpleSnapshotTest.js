@@ -4,23 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule SimpleSnapshotTest
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
+const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
-var {
-  StyleSheet,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const {StyleSheet, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class SimpleSnapshotTest extends React.Component<{}> {
   componentDidMount() {
@@ -30,7 +28,7 @@ class SimpleSnapshotTest extends React.Component<{}> {
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
   }
 
-  done = (success : boolean) => {
+  done = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
@@ -44,7 +42,7 @@ class SimpleSnapshotTest extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   box1: {
     width: 80,
     height: 50,
