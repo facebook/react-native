@@ -326,18 +326,8 @@ const TextInput = createReactClass({
   statics: {
     State: {
       currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: (textFieldID: ?number) => {
-        console.warn(
-          '`focusTextInput` is deprecated, use the `focus` method of the `TextInput` ref instead.',
-        );
-        TextInputState.focusTextInput(textFieldID);
-      },
-      blurTextInput: (textFieldID: ?number) => {
-        console.warn(
-          '`blurTextInput` is deprecated, use `Keyboard.dismiss` or the `blur` method of the `TextInput` ref.',
-        );
-        TextInputState.blurTextInput(textFieldID);
-      },
+      focusTextInput: TextInputState.focusTextInput,
+      blurTextInput: TextInputState.blurTextInput,
     },
   },
   propTypes: {
