@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 
@@ -46,10 +47,16 @@ public final class AsyncStorageModule
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
 
-  // Borrowed from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
-  private static class SerialExecutor implements Executor {
-    final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
-    Runnable mActive;
+  // Adapted from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
+  private class SerialExecutor implements Executor {
+    private final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+    private Runnable mActive;
+    private final Executor executor;
+
+    SerialExecutor(Executor executor) {
+      this.executor = executor;
+    }
+
     public synchronized void execute(final Runnable r) {
       mTasks.offer(new Runnable() {
         public void run() {
@@ -64,17 +71,23 @@ public final class AsyncStorageModule
         scheduleNext();
       }
     }
-    protected synchronized void scheduleNext() {
+    synchronized void scheduleNext() {
       if ((mActive = mTasks.poll()) != null) {
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(mActive);
+        executor.execute(mActive);
       }
     }
   }
 
-  private static final Executor ASYNC_STORAGE_EXECUTOR = new SerialExecutor();
-
+  private final SerialExecutor executor;
+  
   public AsyncStorageModule(ReactApplicationContext reactContext) {
+    this(reactContext, AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  @VisibleForTesting
+  AsyncStorageModule(ReactApplicationContext reactContext, Executor executor) {
     super(reactContext);
+    this.executor = new SerialExecutor(executor);
     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
   }
 
@@ -171,7 +184,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -238,7 +251,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -289,7 +302,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -352,7 +365,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -375,7 +388,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -409,7 +422,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    }.executeOnExecutor(ASYNC_STORAGE_EXECUTOR);
+    }.executeOnExecutor(executor);
   }
 
   /**
