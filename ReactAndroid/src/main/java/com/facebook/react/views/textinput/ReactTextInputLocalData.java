@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.textinput;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
@@ -48,6 +49,7 @@ public final class ReactTextInputLocalData {
     editText.setMinLines(mMinLines);
     editText.setMaxLines(mMaxLines);
     editText.setInputType(mInputType);
+    editText.setBackgroundColor(Color.TRANSPARENT);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       editText.setBreakStrategy(mBreakStrategy);
     }
