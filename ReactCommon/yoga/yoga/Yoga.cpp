@@ -48,6 +48,19 @@ const YGValue YGValueZero = {0, YGUnitPoint};
 const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
 const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
 
+bool operator==(const YGValue& lhs, const YGValue& rhs) {
+  if ((lhs.unit == YGUnitUndefined && rhs.unit == YGUnitUndefined) ||
+      (lhs.unit == YGUnitAuto && rhs.unit == YGUnitAuto)) {
+    return true;
+  }
+
+  return lhs.unit == rhs.unit && lhs.value == rhs.value;
+}
+
+bool operator!=(const YGValue& lhs, const YGValue& rhs) {
+  return !(lhs == rhs);
+}
+
 #ifdef ANDROID
 #include <android/log.h>
 static int YGAndroidLog(
