@@ -138,7 +138,7 @@
 <p><block class="android" /></p>
 <p>Follow the instructions for building apps with native code from the <a href="/react-native/docs/0.39/getting-started">Getting Started guide</a> to configure your development environment for building React Native apps for Android.</p>
 <h3><a class="anchor" aria-hidden="true" id="1-set-up-directory-structure-1"></a><a href="#1-set-up-directory-structure-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Set up directory structure</h3>
-<p>To ensure a smooth experience, create a new folder for your integrated React Native project, then copy your existing Android project to a <code>/android</code> subfolder.</p>
+<p>To ensure a smooth experience, create a new folder for your integrated React Native project, then copy your existing Android project to an <code>/android</code> subfolder.</p>
 <p><block class="objc swift android" /></p>
 <h3><a class="anchor" aria-hidden="true" id="2-install-javascript-dependencies"></a><a href="#2-install-javascript-dependencies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Install JavaScript dependencies</h3>
 <p>Go to the root directory for your project and create a new <code>package.json</code> file with the following contents:</p>
@@ -151,13 +151,19 @@
   }
 }
 </code></pre>
-<p>Next, you will install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the root directory for your project and type the following commands:</p>
-<pre><code class="hljs">$ npm install --save react@<span class="hljs-number">16.0</span><span class="hljs-number">.0</span>-beta<span class="hljs-number">.5</span> react-native
-</code></pre>
+<p>Next, make sure you have <a href="https://yarnpkg.com/lang/en/docs/install/">installed the yarn package manager</a>.</p>
+<p>Install the <code>react</code> and <code>react-native</code> packages. Open a terminal or command prompt, then navigate to the directory with your <code>package.json</code> file and run:</p>
+<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react-native
+</span></code></pre>
+<p>This will print a message similar to the following (scroll up in the yarn output to see it):</p>
 <blockquote>
-<p>Make sure you use the same React version as specified in the <a href="https://github.com/facebook/react-native/blob/master/package.json">React Native package.json</a> for your release. This will only be necessary as long as React Native depends on a pre-release version of React.</p>
+<p>warning &quot;react-native@0.52.2&quot; has unmet peer dependency &quot;react@16.2.0&quot;.</p>
 </blockquote>
-<p>This will create a new <code>/node_modules</code> folder in your project's root directory. This folder stores all the JavaScript dependencies required to build your project.</p>
+<p>This is OK, it means we also need to install React:</p>
+<pre><code class="hljs">$ yarn <span class="hljs-keyword">add</span><span class="bash"> react@version_printed_above
+</span></code></pre>
+<p>Yarn has created a new <code>/node_modules</code> folder. This folder stores all the JavaScript dependencies required to build your project.</p>
+<p>Add <code>node_modules/</code> to your <code>.gitignore</code> file.</p>
 <p><block class="objc swift" /></p>
 <h3><a class="anchor" aria-hidden="true" id="3-install-cocoapods"></a><a href="#3-install-cocoapods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Install CocoaPods</h3>
 <p><a href="http://cocoapods.org">CocoaPods</a> is a package management tool for iOS and macOS development. We use it to add the actual React Native framework code locally into your current project.</p>
@@ -175,6 +181,9 @@
 <p>Assume the <a href="https://github.com/JoelMarcey/swift-2048">app for integration</a> is a <a href="https://en.wikipedia.org/wiki/2048_%28video_game%29">2048</a> game. Here is what the main menu of the native application looks like without React Native.</p>
 <p><block class="objc swift" /></p>
 <p><img src="/react-native/docs/assets/react-native-existing-app-integration-ios-before.png" alt="Before RN Integration"></p>
+<h3><a class="anchor" aria-hidden="true" id="command-line-tools-for-xcode"></a><a href="#command-line-tools-for-xcode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Command Line Tools for Xcode</h3>
+<p>Install the Command Line Tools. Choose &quot;Preferences...&quot; in the Xcode menu. Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.</p>
+<p><img src="/react-native/docs/assets/GettingStartedXcodeCommandLineTools.png" alt="Xcode Command Line Tools"></p>
 <h3><a class="anchor" aria-hidden="true" id="configuring-cocoapods-dependencies"></a><a href="#configuring-cocoapods-dependencies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuring CocoaPods dependencies</h3>
 <p>Before you integrate React Native into your application, you will want to decide what parts of the React Native framework you would like to integrate. We will use CocoaPods to specify which of these &quot;subspecs&quot; your app will depend on.</p>
 <p>The list of supported <code>subspec</code>s is available in <a href="https://github.com/facebook/react-native/blob/master/React.podspec"><code>/node_modules/react-native/React.podspec</code></a>. They are generally named by functionality. For example, you will generally always want the <code>Core</code> <code>subspec</code>. That will get you the <code>AppRegistry</code>, <code>StyleSheet</code>, <code>View</code> and other core React Native libraries. If you want to add the React Native <code>Text</code> library (e.g., for <code>&lt;Text&gt;</code> elements), then you will need the <code>RCTText</code> <code>subspec</code>. If you want the <code>Image</code> library (e.g., for <code>&lt;Image&gt;</code> elements), then you will need the <code>RCTImage</code> <code>subspec</code>.</p>
@@ -191,11 +200,11 @@ target <span class="hljs-string">'NumberTileGame'</span> <span class="hljs-keywo
   pod <span class="hljs-string">'React'</span>, <span class="hljs-symbol">:path</span> =&gt; <span class="hljs-string">'../node_modules/react-native'</span>, <span class="hljs-symbol">:subspecs</span> =&gt; [
     <span class="hljs-string">'Core'</span>,
     <span class="hljs-string">'CxxBridge'</span>, <span class="hljs-comment"># Include this for RN &gt;= 0.47</span>
-    <span class="hljs-string">'BatchedBridge'</span>, <span class="hljs-comment"># Include this for RN &lt;= 0.46</span>
     <span class="hljs-string">'DevSupport'</span>, <span class="hljs-comment"># Include this to enable In-App Devmenu if RN &gt;= 0.43</span>
     <span class="hljs-string">'RCTText'</span>,
     <span class="hljs-string">'RCTNetwork'</span>,
-    <span class="hljs-string">'RCTWebSocket'</span>, <span class="hljs-comment"># needed for debugging</span>
+    <span class="hljs-string">'RCTWebSocket'</span>, <span class="hljs-comment"># Needed for debugging</span>
+    <span class="hljs-string">'RCTAnimation'</span>, <span class="hljs-comment"># Needed for FlatList and animations running on native UI thread</span>
     <span class="hljs-comment"># Add any other subspecs you want to use in your project</span>
   ]
   <span class="hljs-comment"># Explicitly include Yoga if you are using RN &gt;= 0.42.0</span>
@@ -223,7 +232,6 @@ target <span class="hljs-string">'swift-2048'</span> <span class="hljs-keyword">
   pod <span class="hljs-string">'React'</span>, <span class="hljs-symbol">:path</span> =&gt; <span class="hljs-string">'../node_modules/react-native'</span>, <span class="hljs-symbol">:subspecs</span> =&gt; [
     <span class="hljs-string">'Core'</span>,
     <span class="hljs-string">'CxxBridge'</span>, <span class="hljs-comment"># Include this for RN &gt;= 0.47</span>
-    <span class="hljs-string">'BatchedBridge'</span>, <span class="hljs-comment"># Include this for RN &lt;= 0.46</span>
     <span class="hljs-string">'DevSupport'</span>, <span class="hljs-comment"># Include this to enable In-App Devmenu if RN &gt;= 0.43</span>
     <span class="hljs-string">'RCTText'</span>,
     <span class="hljs-string">'RCTNetwork'</span>,
@@ -254,6 +262,9 @@ Integrating<span class="hljs-built_in"> client </span>project
 Sending stats
 Pod installation complete! There are 3 dependencies <span class="hljs-keyword">from</span> the Podfile <span class="hljs-keyword">and</span> 1 total pod installed.
 </code></pre>
+<blockquote>
+<p>If this fails with errors mentioning <code>xcrun</code>, make sure that in Xcode in Preferences &gt; Locations the Command Line Tools are assigned.</p>
+</blockquote>
 <p><block class="swift" /></p>
 <blockquote>
 <p>If you get a warning such as &quot;<em>The <code>swift-2048 [Debug]</code> target overrides the <code>FRAMEWORK_SEARCH_PATHS</code> build setting defined in <code>Pods/Target Support Files/Pods-swift-2048/Pods-swift-2048.debug.xcconfig</code>. This can lead to problems with the CocoaPods installation</em>&quot;, then make sure the <code>Framework Search Paths</code> in <code>Build Settings</code> for both <code>Debug</code> and <code>Release</code> only contain <code>$(inherited)</code>.</p>
@@ -453,20 +464,20 @@ $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 <pre><code class="hljs"><span class="hljs-keyword">dependencies</span> {
     <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.android.support:appcompat-v7:23.0.1'</span>
     ...
-    <span class="hljs-keyword">compile</span> <span class="hljs-string">"com.facebook.react:react-native:+"</span> <span class="hljs-comment">// From node_modules.</span>
+    <span class="hljs-keyword">compile</span> <span class="hljs-string">"com.facebook.react:react-native:+"</span> <span class="hljs-comment">// From node_modules</span>
 }
 </code></pre>
 <blockquote>
 <p>If you want to ensure that you are always using a specific React Native version in your native build, replace <code>+</code> with an actual React Native version you've downloaded from <code>npm</code>.</p>
 </blockquote>
-<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block:</p>
+<p>Add an entry for the local React Native maven directory to <code>build.gradle</code>. Be sure to add it to the &quot;allprojects&quot; block, above other maven repositories:</p>
 <pre><code class="hljs">allprojects {
     repositories {
-        ...
         maven {
             <span class="hljs-regexp">//</span> All <span class="hljs-keyword">of</span> React Native (JS, Android binaries) <span class="hljs-keyword">is</span> installed <span class="hljs-keyword">from</span> <span class="hljs-built_in">npm</span>
             url <span class="hljs-string">"$rootDir/../node_modules/react-native/android"</span>
         }
+        ...
     }
     ...
 }
@@ -481,7 +492,7 @@ $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 <p>If you need to access to the <code>DevSettingsActivity</code> add to your <code>AndroidManifest.xml</code>:</p>
 <pre><code class="hljs">&lt;activity android:name=&quot;com.facebook.react.devsupport.DevSettingsActivity&quot; /&gt;
 </code></pre>
-<p>This is only really used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.</p>
+<p>This is only used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.</p>
 <h3><a class="anchor" aria-hidden="true" id="code-integration-1"></a><a href="#code-integration-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code integration</h3>
 <p>Now we will actually modify the native Android application to integrate React Native.</p>
 <h4><a class="anchor" aria-hidden="true" id="the-react-native-component-1"></a><a href="#the-react-native-component-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native component</h4>
@@ -518,8 +529,12 @@ $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span>, () =&gt; HelloWorld);
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" id="3-configure-permissions-for-development-error-overlay"></a><a href="#3-configure-permissions-for-development-error-overlay" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure permissions for development error overlay</h5>
-<p>If your app is targeting the Android <code>API level 23</code> or greater, make sure you have the <code>overlay</code> permission enabled for the development build. You can check it with <code>Settings.canDrawOverlays(this);</code>. This is required in dev builds because react native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23, the user needs to approve it. This can be achieved by adding the following code to the Activity file in the onCreate() method. OVERLAY_PERMISSION_REQ_CODE is a field of the class which would be responsible for passing the result back to the Activity.</p>
-<pre><code class="hljs css languages- java"><span class="hljs-keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) {
+<p>If your app is targeting the Android <code>API level 23</code> or greater, make sure you have the permission <code>android.permission.SYSTEM_ALERT_WINDOW</code> enabled for the development build. You can check this with <code>Settings.canDrawOverlays(this);</code>. This is required in dev builds because React Native development errors must be displayed above all the other windows. Due to the new permissions system introduced in the API level 23 (Android M), the user needs to approve it. This can be achieved by adding the following code to your Activity's in <code>onCreate()</code> method.</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> OVERLAY_PERMISSION_REQ_CODE = <span class="hljs-number">1</span>;  <span class="hljs-comment">// Choose any value</span>
+
+...
+
+<span class="hljs-keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) {
     <span class="hljs-keyword">if</span> (!Settings.canDrawOverlays(<span class="hljs-keyword">this</span>)) {
         Intent intent = <span class="hljs-keyword">new</span> Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                    Uri.parse(<span class="hljs-string">"package:"</span> + getPackageName()));
@@ -533,14 +548,14 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
     <span class="hljs-keyword">if</span> (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
         <span class="hljs-keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) {
             <span class="hljs-keyword">if</span> (!Settings.canDrawOverlays(<span class="hljs-keyword">this</span>)) {
-                <span class="hljs-comment">// SYSTEM_ALERT_WINDOW permission not granted...</span>
+                <span class="hljs-comment">// SYSTEM_ALERT_WINDOW permission not granted</span>
             }
         }
     }
 }
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="the-magic-reactrootview"></a><a href="#the-magic-reactrootview" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Magic: <code>ReactRootView</code></h4>
-<p>You need to add some native code in order to start the React Native runtime and get it to render something. To do this, we're going to create an <code>Activity</code> that creates a <code>ReactRootView</code>, starts a React application inside it and sets it as the main content view.</p>
+<p>Let's add some native code in order to start the React Native runtime and tell it to render our JS component. To do this, we're going to create an <code>Activity</code> that creates a <code>ReactRootView</code>, starts a React application inside it and sets it as the main content view.</p>
 <blockquote>
 <p>If you are targetting Android version &lt;5, use the <code>AppCompatActivity</code> class from the <code>com.android.support:appcompat</code> package instead of <code>Activity</code>.</p>
 </blockquote>
@@ -561,6 +576,8 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
+        <span class="hljs-comment">// The string here (e.g. "MyReactNativeApp") has to match</span>
+        <span class="hljs-comment">// the string in AppRegistry.registerComponent() in index.js</span>
         mReactRootView.startReactApplication(mReactInstanceManager, <span class="hljs-string">"MyReactNativeApp"</span>, <span class="hljs-keyword">null</span>);
 
         setContentView(mReactRootView);
@@ -575,8 +592,8 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
 <blockquote>
 <p>If you are using a starter kit for React Native, replace the &quot;HelloWorld&quot; string with the one in your index.js file (it’s the first argument to the <code>AppRegistry.registerComponent()</code> method).</p>
 </blockquote>
-<p>If you are using Android Studio, use <code>Alt + Enter</code> to add all missing imports in your MyReactActivity class. Be careful to use your package’s <code>BuildConfig</code> and not the one from the <code>...facebook...</code> package.</p>
-<p>We need set the theme of <code>MyReactActivity</code> to <code>Theme.AppCompat.Light.NoActionBar</code> because some components rely on this theme.</p>
+<p>If you are using Android Studio, use <code>Alt + Enter</code> to add all missing imports in your MyReactActivity class. Be careful to use your package’s <code>BuildConfig</code> and not the one from the <code>facebook</code> package.</p>
+<p>We need set the theme of <code>MyReactActivity</code> to <code>Theme.AppCompat.Light.NoActionBar</code> because some React Native UI components rely on this theme.</p>
 <pre><code class="hljs css languages- xml"><span class="hljs-tag">&lt;<span class="hljs-name">activity</span>
   <span class="hljs-attr">android:name</span>=<span class="hljs-string">".MyReactActivity"</span>
   <span class="hljs-attr">android:label</span>=<span class="hljs-string">"@string/app_name"</span>
@@ -584,9 +601,9 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
 <span class="hljs-tag">&lt;/<span class="hljs-name">activity</span>&gt;</span>
 </code></pre>
 <blockquote>
-<p>A <code>ReactInstanceManager</code> can be shared amongst multiple activities and/or fragments. You will want to make your own <code>ReactFragment</code> or <code>ReactActivity</code> and have a singleton <em>holder</em> that holds a <code>ReactInstanceManager</code>. When you need the <code>ReactInstanceManager</code> (e.g., to hook up the <code>ReactInstanceManager</code> to the lifecycle of those Activities or Fragments) use the one provided by the singleton.</p>
+<p>A <code>ReactInstanceManager</code> can be shared by multiple activities and/or fragments. You will want to make your own <code>ReactFragment</code> or <code>ReactActivity</code> and have a singleton <em>holder</em> that holds a <code>ReactInstanceManager</code>. When you need the <code>ReactInstanceManager</code> (e.g., to hook up the <code>ReactInstanceManager</code> to the lifecycle of those Activities or Fragments) use the one provided by the singleton.</p>
 </blockquote>
-<p>Next, we need to pass some activity lifecycle callbacks down to the <code>ReactInstanceManager</code>:</p>
+<p>Next, we need to pass some activity lifecycle callbacks to the <code>ReactInstanceManager</code> and <code>ReactRootView</code>:</p>
 <pre><code class="hljs css languages- java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onPause</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">super</span>.onPause();
@@ -612,6 +629,9 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
     <span class="hljs-keyword">if</span> (mReactInstanceManager != <span class="hljs-keyword">null</span>) {
         mReactInstanceManager.onHostDestroy(<span class="hljs-keyword">this</span>);
     }
+    <span class="hljs-keyword">if</span> (mReactRootView != <span class="hljs-keyword">null</span>) {
+        mReactRootView.unmountReactApplication();
+    }
 }
 </code></pre>
 <p>We also need to pass back button events to React Native:</p>
@@ -624,7 +644,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
     }
 }
 </code></pre>
-<p>This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle a back press, your <code>invokeDefaultOnBackPressed</code> method will be called. By default this simply finishes your <code>Activity</code>.</p>
+<p>This allows JavaScript to control what happens when the user presses the hardware back button (e.g. to implement navigation). When JavaScript doesn't handle the back button press, your <code>invokeDefaultOnBackPressed</code> method will be called. By default this simply finishes your <code>Activity</code>.</p>
 <p>Finally, we need to hook up the dev menu. By default, this is activated by (rage) shaking the device, but this is not very useful in emulators. So we make it show when you press the hardware menu button (use <code>Ctrl + M</code> if you're using Android Studio emulator):</p>
 <pre><code class="hljs css languages- java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">onKeyUp</span><span class="hljs-params">(<span class="hljs-keyword">int</span> keyCode, KeyEvent event)</span> </span>{
@@ -640,7 +660,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
 <p>You have now done all the basic steps to integrate React Native with your current application. Now we will start the React Native packager to build the <code>index.bundle</code> package and the server running on localhost to serve it.</p>
 <h5><a class="anchor" aria-hidden="true" id="1-run-the-packager"></a><a href="#1-run-the-packager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Run the packager</h5>
 <p>To run your app, you need to first start the development server. To do this, simply run the following command in the root directory of your React Native project:</p>
-<pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> npm start</span>
+<pre><code class="hljs"><span class="hljs-meta">$</span><span class="bash"> yarn start</span>
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" id="2-run-the-app"></a><a href="#2-run-the-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Run the app</h5>
 <p>Now build and run your Android app as normal.</p>
