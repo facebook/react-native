@@ -18,8 +18,8 @@
 namespace facebook {
 namespace react {
 
-using CreateEventTargetFunction = EventTarget (InstanceHandle instanceHandle);
-using DispatchEventFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
+using DispatchEventToEmptyTargetFunction = void (EventHandler eventHandler, std::string type, folly::dynamic payload);
+using DispatchEventToTargetFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
 using ReleaseEventHandlerFunction = void (EventHandler eventHandler);
 using ReleaseEventTargetFunction = void (EventTarget eventTarget);
 
@@ -44,24 +44,24 @@ public:
   /*
    * Registers callback functions.
    */
-  void setCreateEventTargetFunction(std::function<CreateEventTargetFunction> createEventTargetFunction);
-  void setDispatchEventFunction(std::function<DispatchEventFunction> dispatchEventFunction);
+  void setDispatchEventToEmptyTargetFunction(std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction);
+  void setDispatchEventToTargetFunction(std::function<DispatchEventToTargetFunction> dispatchEventFunction);
   void setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction);
   void setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction);
 
 #pragma mark - Native-facing Interface
 
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const;
-  void dispatchEvent(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
+  void dispatchEventToEmptyTarget(const std::string &type, const folly::dynamic &payload) const;
+  void dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
   void releaseEventTarget(const EventTarget &eventTarget) const;
 
 #pragma mark - JavaScript/React-facing Interface
 
-  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNode(const SharedShadowNode &node, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps, InstanceHandle instanceHandle);
+  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, EventTarget eventTarget);
+  SharedShadowNode cloneNode(const SharedShadowNode &node);
+  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node);
+  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props);
+  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps);
   void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
@@ -73,8 +73,8 @@ private:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   EventHandler eventHandler_;
-  std::function<CreateEventTargetFunction> createEventTargetFunction_;
-  std::function<DispatchEventFunction> dispatchEventFunction_;
+  std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
+  std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
   std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction_;
   std::function<ReleaseEventTargetFunction> releaseEventTargetFunction_;
 };

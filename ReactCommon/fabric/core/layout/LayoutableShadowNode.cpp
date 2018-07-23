@@ -72,15 +72,9 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     }
 
     child->ensureUnsealed();
+    child->setHasNewLayout(false);
 
-    // The assumption:
-    // All `sealed` children were replaced with not-yet-sealed clones
-    // somewhere in `layoutChildren`.
-    auto nonConstChild = std::const_pointer_cast<LayoutableShadowNode>(child);
-
-    nonConstChild->setHasNewLayout(false);
-
-    const LayoutMetrics childLayoutMetrics = nonConstChild->getLayoutMetrics();
+    const LayoutMetrics childLayoutMetrics = child->getLayoutMetrics();
     if (childLayoutMetrics.displayType == DisplayType::None) {
       continue;
     }
@@ -88,7 +82,7 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     LayoutContext childLayoutContext = LayoutContext(layoutContext);
     childLayoutContext.absolutePosition += childLayoutMetrics.frame.origin;
 
-    nonConstChild->layout(layoutContext);
+    child->layout(layoutContext);
   }
 }
 

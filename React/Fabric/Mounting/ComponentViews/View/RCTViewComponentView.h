@@ -9,10 +9,10 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewEventEmitter.h>
+#import <fabric/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,6 +50,16 @@ NS_ASSUME_NONNULL_BEGIN
  * Must be used by subclasses only.
  */
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
+
+/**
+ * Returns the object - usually (sub)view - which represents this
+ * component view in terms of accessibility.
+ * All accessibility properties will be applied to this object.
+ * May be overridden in subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
 /**
  * Insets used when hit testing inside this view.

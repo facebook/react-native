@@ -78,6 +78,7 @@ const Config = {
     ],
     getProjectRoots,
     getPolyfills,
+    getWatchFolders: () => [getProjectPath()],
     getResolverMainFields: () => ['react-native', 'browser', 'main'],
     getTransformModulePath: () =>
       require.resolve('metro/src/reactNativeTransformer'),

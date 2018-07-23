@@ -77,6 +77,21 @@ public:
     assert(std::dynamic_pointer_cast<const PropsT>(props_));
     return std::static_pointer_cast<const PropsT>(props_);
   }
+
+  /*
+   * Returns subset of children that are inherited from `SpecificShadowNodeT`.
+   */
+  template<typename SpecificShadowNodeT>
+  std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
+    std::vector<SpecificShadowNodeT *> children;
+    for (const auto &childShadowNode : *getChildren()) {
+      auto specificChildShadowNode = dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
+      if (specificChildShadowNode) {
+        children.push_back(const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
+      }
+    }
+    return children;
+  }
 };
 
 } // namespace react

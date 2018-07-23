@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright (c) 2015-present, Facebook, Inc.
 #
@@ -9,7 +9,7 @@
 echo -en "\033]0;Metro Bundler\a"
 clear
 
-THIS_DIR=$(dirname "$0")
+THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 . "$THIS_DIR/packager.sh"
 
 echo "Process terminated. Press <enter> to close the window"

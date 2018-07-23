@@ -67,13 +67,13 @@ aliases:
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.03.26.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.03.26.01-
+      - v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2018.06.25.01-      
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.03.26.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -146,7 +146,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.03.26.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.06.25.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -177,7 +177,7 @@ aliases:
   - &configure-android-path
     name: Configure Environment Variables
     command: |
-      echo 'export PATH=${ANDROID_NDK}:~/react-native/gradle-2.9/bin:~/buck/bin:$PATH' >> $BASH_ENV
+      echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
       source $BASH_ENV
 
   - &install-android-packages

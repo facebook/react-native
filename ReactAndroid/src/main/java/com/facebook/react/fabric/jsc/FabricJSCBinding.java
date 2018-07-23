@@ -29,13 +29,18 @@ public class FabricJSCBinding implements FabricBinding {
   private static native HybridData initHybrid();
 
   @Override
-  public native long createEventTarget(long jsContextNativePointer, long instanceHandlePointer);
-
-  @Override
   public native void releaseEventTarget(long jsContextNativePointer, long eventTargetPointer);
 
   @Override
   public native void releaseEventHandler(long jsContextNativePointer, long eventHandlerPointer);
+
+  @Override
+  public native void dispatchEventToEmptyTarget(
+    long jsContextNativePointer,
+    long eventHandlerPointer,
+    String type,
+    NativeMap payload
+  );
 
   @Override
   public native void dispatchEventToTarget(
