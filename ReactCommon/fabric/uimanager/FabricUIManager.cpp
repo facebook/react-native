@@ -9,13 +9,13 @@
 
 #include <glog/logging.h>
 
+#include <fabric/components/view/ViewComponentDescriptor.h>
+#include <fabric/components/view/ViewProps.h>
+#include <fabric/components/view/ViewShadowNode.h>
 #include <fabric/core/componentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/view/ViewComponentDescriptor.h>
-#include <fabric/view/ViewProps.h>
-#include <fabric/view/ViewShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -230,16 +230,6 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedS
 void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, const SharedShadowNode &childShadowNode) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::appendChild(parentShadowNode: " << parentShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", childShadowNode: " << childShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[parentShadowNode];
-
-  // TODO: Remove this after we move this to JS side.
-  if (childShadowNode->getSealed()) {
-    auto childComponentDescriptor = (*componentDescriptorRegistry_)[childShadowNode];
-    auto clonedChildShadowNode = childComponentDescriptor->cloneShadowNode(childShadowNode);
-    auto nonConstClonedChildShadowNode = std::const_pointer_cast<ShadowNode>(clonedChildShadowNode);
-    componentDescriptor->appendChild(parentShadowNode, clonedChildShadowNode);
-    return;
-  }
-
   componentDescriptor->appendChild(parentShadowNode, childShadowNode);
 }
 

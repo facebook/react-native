@@ -539,7 +539,7 @@ public class DevServerHelper {
     mOnChangePollingEnabled = true;
     mOnServerContentChangeListener = onServerContentChangeListener;
     mOnChangePollingClient = new OkHttpClient.Builder()
-        .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MINUTES))
+        .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS))
         .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .build();
     enqueueOnChangeEndpointLongPolling();

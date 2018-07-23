@@ -19,6 +19,8 @@ jest
   .setMock('View', ClassComponentMock)
   .setMock('Image', ClassComponentMock)
   .setMock('ScrollView', ClassComponentMock)
+  .setMock('FlatList', ClassComponentMock)
+  .setMock('SectionList', ClassComponentMock)
   .setMock('React', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},

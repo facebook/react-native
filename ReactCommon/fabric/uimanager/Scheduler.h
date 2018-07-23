@@ -15,8 +15,6 @@
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/view/ViewShadowNode.h>
-#include <fabric/view/RootShadowNode.h>
 
 namespace facebook {
 namespace react {

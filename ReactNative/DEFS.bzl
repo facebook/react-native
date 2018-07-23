@@ -260,3 +260,14 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
         results[key] = f
 
     return results
+
+def oss_cxx_library(**kwargs):
+    cxx_library(**kwargs)
+
+def jni_instrumentation_test_lib(**kwargs):
+    """A noop stub for OSS build."""
+    pass
+
+def fb_xplat_cxx_test(**kwargs):
+    """A noop stub for OSS build."""
+    pass

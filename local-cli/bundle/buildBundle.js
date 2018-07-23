@@ -107,23 +107,23 @@ async function buildBundle(
     workerPath: config.getWorkerPath && config.getWorkerPath(),
   });
 
-  const bundle = await output.build(server, requestOpts);
+  try {
+    const bundle = await output.build(server, requestOpts);
 
-  await output.save(bundle, args, log);
+    await output.save(bundle, args, log);
 
-  // Save the assets of the bundle
-  const outputAssets = await server.getAssets({
-    ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...requestOpts,
-    bundleType: 'todo',
-  });
+    // Save the assets of the bundle
+    const outputAssets = await server.getAssets({
+      ...Server.DEFAULT_BUNDLE_OPTIONS,
+      ...requestOpts,
+      bundleType: 'todo',
+    });
 
-  // When we're done saving bundle output and the assets, we're done.
-  const assets = await saveAssets(outputAssets, args.platform, args.assetsDest);
-
-  server.end();
-
-  return assets;
+    // When we're done saving bundle output and the assets, we're done.
+    return await saveAssets(outputAssets, args.platform, args.assetsDest);
+  } finally {
+    server.end();
+  }
 }
 
 module.exports = buildBundle;

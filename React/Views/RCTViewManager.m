@@ -33,9 +33,11 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"header": @(UIAccessibilityTraitHeader),
   @"search": @(UIAccessibilityTraitSearchField),
   @"image": @(UIAccessibilityTraitImage),
+  @"imagebutton": @(UIAccessibilityTraitImage | UIAccessibilityTraitButton),
   @"selected": @(UIAccessibilityTraitSelected),
   @"plays": @(UIAccessibilityTraitPlaysSound),
   @"key": @(UIAccessibilityTraitKeyboardKey),
+  @"keyboardkey": @(UIAccessibilityTraitKeyboardKey),
   @"text": @(UIAccessibilityTraitStaticText),
   @"summary": @(UIAccessibilityTraitSummaryElement),
   @"disabled": @(UIAccessibilityTraitNotEnabled),
@@ -144,6 +146,16 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
   view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // TODO: Improve this by enabling edge antialiasing only for transforms with rotation or skewing
   view.layer.allowsEdgeAntialiasing = !CATransform3DIsIdentity(view.layer.transform);
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
+{
+    view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, UIAccessibilityTraits, RCTView)
+{
+    view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)

@@ -77,7 +77,7 @@ public:
     return shadowNode;
   }
 
-  SharedShadowNode cloneShadowNode(
+  UnsharedShadowNode cloneShadowNode(
     const SharedShadowNode &sourceShadowNode,
     const SharedProps &props = nullptr,
     const SharedEventEmitter &eventEmitter = nullptr,
