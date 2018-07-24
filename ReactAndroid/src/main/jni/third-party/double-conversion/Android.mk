@@ -18,6 +18,5 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 CXX11_FLAGS := -std=c++11 -Wno-unused-variable -Wno-unused-local-typedefs
 LOCAL_CFLAGS += $(CXX11_FLAGS)
-LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 include $(BUILD_STATIC_LIBRARY)

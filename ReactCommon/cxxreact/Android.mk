@@ -34,9 +34,8 @@ LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
 LOCAL_CFLAGS += -Wall -Werror -fexceptions -frtti
-CXX11_FLAGS := -std=c++11
+CXX11_FLAGS := -std=c++1y
 LOCAL_CFLAGS += $(CXX11_FLAGS)
-LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_STATIC_LIBRARIES := jschelpers
 LOCAL_SHARED_LIBRARIES := libfb libfolly_json libjsc libglog
