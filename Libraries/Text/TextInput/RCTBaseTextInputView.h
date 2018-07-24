@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSNumber *maxLength;
 @property (nonatomic, copy) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
+@property (nonatomic, assign) UIKeyboardType keyboardType;
 
 @end
 

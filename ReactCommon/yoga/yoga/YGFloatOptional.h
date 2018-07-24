@@ -1,9 +1,11 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
+#pragma once
 
 struct YGFloatOptional {
  private:
@@ -11,8 +13,8 @@ struct YGFloatOptional {
   bool isUndefined_;
 
  public:
-  YGFloatOptional(const float& value);
-  YGFloatOptional();
+  explicit YGFloatOptional(float value);
+  explicit YGFloatOptional() : value_(0), isUndefined_(true) {}
 
   // Program will terminate if the value of an undefined is accessed. Please
   // make sure to check if the optional is defined before calling this function.
@@ -20,7 +22,23 @@ struct YGFloatOptional {
   float getValue() const;
 
   // Sets the value of float optional, and thus isUndefined is assigned false.
-  void setValue(const float& val);
+  void setValue(float val) {
+    value_ = val;
+    isUndefined_ = false;
+  }
 
-  bool isUndefined() const;
+  bool isUndefined() const {
+    return isUndefined_;
+  }
+
+  YGFloatOptional operator+(const YGFloatOptional& op);
+  bool operator>(const YGFloatOptional& op) const;
+  bool operator<(const YGFloatOptional& op) const;
+  bool operator>=(const YGFloatOptional& op) const;
+  bool operator<=(const YGFloatOptional& op) const;
+  bool operator==(const YGFloatOptional& op) const;
+  bool operator!=(const YGFloatOptional& op) const;
+
+  bool operator==(float val) const;
+  bool operator!=(float val) const;
 };

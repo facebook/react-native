@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ComponentDescriptorRegistry.h"
 
@@ -13,13 +16,13 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(SharedComponentDes
   _registryByName[componentName] = componentDescriptor;
 }
 
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const SharedShadowNode &shadowNode) {
+const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const SharedShadowNode &shadowNode) const {
   ComponentHandle componentHandle = shadowNode->getComponentHandle();
-  return _registryByHandle[componentHandle];
+  return _registryByHandle.at(componentHandle);
 }
 
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const ComponentName &componentName) {
-  return _registryByName[componentName];
+const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const ComponentName &componentName) const {
+  return _registryByName.at(componentName);
 }
 
 } // namespace react

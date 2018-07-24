@@ -40,7 +40,7 @@ struct YGCollectFlexItemsRowValues {
   float sizeConsumedOnCurrentLine;
   float totalFlexGrowFactors;
   float totalFlexShrinkScaledFactors;
-  float endOfLineIndex;
+  uint32_t endOfLineIndex;
   std::vector<YGNodeRef> relativeChildren;
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin
@@ -64,6 +64,10 @@ bool YGFloatsEqual(const float a, const float b);
 // as fmax has the same behaviour, but with NAN we cannot use `-ffast-math`
 // compiler flag.
 float YGFloatMax(const float a, const float b);
+
+YGFloatOptional YGFloatOptionalMax(
+    const YGFloatOptional& op1,
+    const YGFloatOptional& op2);
 
 // We need custom min function, since we want that, if one argument is
 // YGUndefined then the min funtion should return the other argument as the min
@@ -93,12 +97,6 @@ float YGFloatSanitize(const float& val);
 // op.value otherwise
 // TODO: Get rid off this function
 float YGUnwrapFloatOptional(const YGFloatOptional& op);
-
-// This function returns true if val and optional both are undefined or if val
-// and optional.val is true, otherwise its false.
-bool YGFloatOptionalFloatEquals(
-    const YGFloatOptional& optional,
-    const float& val);
 
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
@@ -142,8 +140,9 @@ inline YGFlexDirection YGResolveFlexDirection(
   return flexDirection;
 }
 
-static inline float YGResolveValueMargin(
+static inline YGFloatOptional YGResolveValueMargin(
     const YGValue value,
     const float ownerSize) {
-  return value.unit == YGUnitAuto ? 0 : YGUnwrapFloatOptional(YGResolveValue(value, ownerSize));
+  return value.unit == YGUnitAuto ? YGFloatOptional(0)
+                                  : YGResolveValue(value, ownerSize);
 }

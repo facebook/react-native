@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule LayoutPropTypes
- * @flow
+ * @format
+ * @flow strict
  */
+
 'use strict';
 
-var ReactPropTypes = require('prop-types');
+const ReactPropTypes = require('prop-types');
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -24,16 +25,13 @@ var ReactPropTypes = require('prop-types');
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-var LayoutPropTypes = {
+const LayoutPropTypes = {
   /** `display` sets the display type of this component.
    *
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display: ReactPropTypes.oneOf([
-    'none',
-    'flex',
-  ]),
+  display: ReactPropTypes.oneOf(['none', 'flex']),
 
   /** `width` sets the width of this component.
    *
@@ -74,10 +72,7 @@ var LayoutPropTypes = {
    *
    * This style takes precedence over the `left` and `right` styles.
    */
-  end: ReactPropTypes.oneOfType([
-    ReactPropTypes.number,
-    ReactPropTypes.string,
-  ]),
+  end: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.string]),
 
   /** `top` is the number of logical pixels to offset the top edge of
    *  this component.
@@ -88,10 +83,7 @@ var LayoutPropTypes = {
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/top
    *  for more details of how `top` affects layout.
    */
-  top: ReactPropTypes.oneOfType([
-    ReactPropTypes.number,
-    ReactPropTypes.string,
-  ]),
+  top: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.string]),
 
   /** `left` is the number of logical pixels to offset the left edge of
    *  this component.
@@ -405,10 +397,7 @@ var LayoutPropTypes = {
    *  for more details on how `position` differs between React Native
    *  and CSS.
    */
-  position: ReactPropTypes.oneOf([
-    'absolute',
-    'relative'
-  ]),
+  position: ReactPropTypes.oneOf(['absolute', 'relative']),
 
   /** `flexDirection` controls which directions children of a container go.
    *  `row` goes left to right, `column` goes top to bottom, and you may
@@ -421,7 +410,7 @@ var LayoutPropTypes = {
     'row',
     'row-reverse',
     'column',
-    'column-reverse'
+    'column-reverse',
   ]),
 
   /** `flexWrap` controls whether children can wrap around after they
@@ -430,10 +419,7 @@ var LayoutPropTypes = {
    *  See https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap
    *  for more details.
    */
-  flexWrap: ReactPropTypes.oneOf([
-    'wrap',
-    'nowrap'
-  ]),
+  flexWrap: ReactPropTypes.oneOf(['wrap', 'nowrap', 'wrap-reverse']),
 
   /** `justifyContent` aligns children in the main direction.
    *  For example, if children are flowing vertically, `justifyContent`
@@ -448,7 +434,7 @@ var LayoutPropTypes = {
     'center',
     'space-between',
     'space-around',
-    'space-evenly'
+    'space-evenly',
   ]),
 
   /** `alignItems` aligns children in the cross direction.
@@ -463,7 +449,7 @@ var LayoutPropTypes = {
     'flex-end',
     'center',
     'stretch',
-    'baseline'
+    'baseline',
   ]),
 
   /** `alignSelf` controls how a child aligns in the cross direction,
@@ -478,7 +464,7 @@ var LayoutPropTypes = {
     'flex-end',
     'center',
     'stretch',
-    'baseline'
+    'baseline',
   ]),
 
   /** `alignContent` controls how rows align in the cross direction,
@@ -492,7 +478,7 @@ var LayoutPropTypes = {
     'center',
     'stretch',
     'space-between',
-    'space-around'
+    'space-around',
   ]),
 
   /** `overflow` controls how children are measured and displayed.
@@ -504,11 +490,7 @@ var LayoutPropTypes = {
    *  `overflow: visible` only works on iOS. On Android, all views will clip
    *  their children.
    */
-  overflow: ReactPropTypes.oneOf([
-    'visible',
-    'hidden',
-    'scroll',
-  ]),
+  overflow: ReactPropTypes.oneOf(['visible', 'hidden', 'scroll']),
 
   /** In React Native `flex` does not work the same way that it does in CSS.
    *  `flex` is a number rather than a string, and it works
@@ -573,11 +555,7 @@ var LayoutPropTypes = {
    *  for more details.
    *  @platform ios
    */
-  direction: ReactPropTypes.oneOf([
-    'inherit',
-    'ltr',
-    'rtl',
-  ]),
+  direction: ReactPropTypes.oneOf(['inherit', 'ltr', 'rtl']),
 };
 
 module.exports = LayoutPropTypes;

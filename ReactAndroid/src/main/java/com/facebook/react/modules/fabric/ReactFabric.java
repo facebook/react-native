@@ -13,6 +13,6 @@ public interface ReactFabric extends JavaScriptModule {
    * JS method used to unmount Fabric surfaces.
    * @param rootTag {@link int} react tag of Root {@link com.facebook.react.uimanager.ReactShadowNode}
    */
-  void unmountComponentAtNodeAndRemoveContainer(int rootTag);
+  void unmountComponentAtNode(int rootTag);
 
 }

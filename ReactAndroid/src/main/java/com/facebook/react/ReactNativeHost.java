@@ -7,21 +7,16 @@
 
 package com.facebook.react;
 
-import com.facebook.react.bridge.JSIModulesProvider;
-import javax.annotation.Nullable;
-
-import java.util.List;
-
 import android.app.Application;
-
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -75,8 +70,7 @@ public abstract class ReactNativeHost {
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
       .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-      .setUIImplementationProvider(getUIImplementationProvider())
-      .setJSIModulesProvider(getJSIModulesProvider())
+      .setJSIModulesPackage(getJSIModulePackage())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -113,18 +107,8 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  /**
-   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
-   * custom UI implementation.
-   *
-   * Note: this is very advanced functionality, in 99% of cases you don't need to override this.
-   */
-  protected UIImplementationProvider getUIImplementationProvider() {
-    return new UIImplementationProvider();
-  }
-
   protected @Nullable
-  JSIModulesProvider getJSIModulesProvider() {
+  JSIModulePackage getJSIModulePackage() {
     return null;
   }
 

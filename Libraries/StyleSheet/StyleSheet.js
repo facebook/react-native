@@ -4,21 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheet
  * @flow
  * @format
  */
 'use strict';
 
 const PixelRatio = require('PixelRatio');
-const ReactNativePropRegistry = require('ReactNativePropRegistry');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const StyleSheetValidation = require('StyleSheetValidation');
 
 const flatten = require('flattenStyle');
 
 import type {
-  ____StyleSheetInternalStyleIdentifier_Internal as StyleSheetInternalStyleIdentifier,
   ____Styles_Internal,
   ____DangerouslyImpreciseStyle_Internal,
   ____DangerouslyImpreciseStyleProp_Internal,
@@ -171,16 +168,16 @@ if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFillObject: LayoutStyle = {
+const absoluteFill: LayoutStyle = {
   position: 'absolute',
   left: 0,
   right: 0,
   top: 0,
   bottom: 0,
 };
-const absoluteFill: StyleSheetInternalStyleIdentifier = ReactNativePropRegistry.register(
-  absoluteFillObject,
-); // This also freezes it
+if (__DEV__) {
+  Object.freeze(absoluteFill);
+}
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -253,7 +250,7 @@ module.exports = {
    * so `absoluteFill` can be used for convenience and to reduce duplication of these repeated
    * styles.
    */
-  absoluteFill,
+  absoluteFill: (absoluteFill: any), // TODO: This should be updated after we fix downstream Flow sites.
 
   /**
    * Sometimes you may want `absoluteFill` but with a couple tweaks - `absoluteFillObject` can be
@@ -267,7 +264,7 @@ module.exports = {
    *     },
    *   });
    */
-  absoluteFillObject,
+  absoluteFillObject: absoluteFill,
 
   /**
    * Combines two styles such that `style2` will override any styles in `style1`.
@@ -275,12 +272,12 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose(
-    style1: ?DangerouslyImpreciseStyleProp,
-    style2: ?DangerouslyImpreciseStyleProp,
-  ): ?DangerouslyImpreciseStyleProp {
+  compose<T: DangerouslyImpreciseStyleProp>(
+    style1: ?T,
+    style2: ?T,
+  ): ?T | $ReadOnlyArray<T> {
     if (style1 != null && style2 != null) {
-      return [style1, style2];
+      return ([style1, style2]: $ReadOnlyArray<T>);
     } else {
       return style1 != null ? style1 : style2;
     }
@@ -361,14 +358,18 @@ module.exports = {
   /**
    * Creates a StyleSheet style reference from the given object.
    */
-  create<+S: ____Styles_Internal>(
-    obj: S,
-  ): $ObjMap<S, (Object) => StyleSheetInternalStyleIdentifier> {
-    const result = {};
-    for (const key in obj) {
-      StyleSheetValidation.validateStyle(key, obj);
-      result[key] = obj[key] && ReactNativePropRegistry.register(obj[key]);
+  create<+S: ____Styles_Internal>(obj: S): $ObjMap<S, (Object) => any> {
+    // TODO: This should return S as the return type. But first,
+    // we need to codemod all the callsites that are typing this
+    // return value as a number (even though it was opaque).
+    if (__DEV__) {
+      for (const key in obj) {
+        StyleSheetValidation.validateStyle(key, obj);
+        if (obj[key]) {
+          Object.freeze(obj[key]);
+        }
+      }
     }
-    return result;
+    return obj;
   },
 };

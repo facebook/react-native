@@ -34,7 +34,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
     @Override
     public boolean getUseDeveloperSupport() {
-      return true;
+      return BuildConfig.DEBUG;
     }
 
     @Override

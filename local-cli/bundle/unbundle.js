@@ -3,27 +3,28 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
-const bundleWithOutput = require('./bundle').withOutput;
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const outputUnbundle = require('metro/src/shared/output/unbundle');
-
-/**
- * Builds the bundle starting to look for dependencies at the given entry path.
- */
-function unbundle(argv, config, args) {
-  return bundleWithOutput(argv, config, args, outputUnbundle);
-}
 
 module.exports = {
   name: 'unbundle',
-  description: 'builds javascript as "unbundle" for offline use',
-  func: unbundle,
+  description: 'Deprecated. Renamed to `ram-bundle`.',
+  func: () => {
+    throw new Error(
+      'The `unbundle` command has been renamed `ram-bundle` to better ' +
+        'represent the actual functionality. `ram` mean "Random Access ' +
+        'Module", this particular format of bundle. Functionality remained ' +
+        'unchanged.',
+    );
+  },
   options: bundleCommandLineArgs.concat({
     command: '--indexed-unbundle',
-    description: 'Force indexed unbundle file format, even when building for android',
+    description: 'Deprecated. Renamed to `--indexed-ram-bundle`.',
     default: false,
   }),
 };

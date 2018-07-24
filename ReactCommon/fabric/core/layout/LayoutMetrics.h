@@ -20,8 +20,16 @@ struct LayoutMetrics {
   Rect frame;
   EdgeInsets contentInsets {0};
   EdgeInsets borderWidth {0};
-  DisplayType displayType {Flex};
-  LayoutDirection layoutDirection {Undefined};
+  DisplayType displayType {DisplayType::Flex};
+  LayoutDirection layoutDirection {LayoutDirection::Undefined};
+  Float pointScaleFactor {1.0};
+
+  Rect getContentFrame() const {
+    return Rect {
+      Point {contentInsets.left, contentInsets.top},
+      Size {frame.size.width - contentInsets.left - contentInsets.right, frame.size.height - contentInsets.top - contentInsets.bottom}
+    };
+  }
 
   bool operator ==(const LayoutMetrics& rhs) const {
     return

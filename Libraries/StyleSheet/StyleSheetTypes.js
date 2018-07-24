@@ -4,16 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheetTypes
  * @flow
  * @format
  */
 
 'use strict';
 
-import AnimatedNode from 'AnimatedNode';
-
-export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
+const AnimatedNode = require('AnimatedNode');
 
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
@@ -59,7 +56,7 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
   borderTopWidth?: number,
   position?: 'absolute' | 'relative',
   flexDirection?: 'row' | 'row-reverse' | 'column' | 'column-reverse',
-  flexWrap?: 'wrap' | 'nowrap',
+  flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse',
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -95,24 +92,26 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
 export type ____TransformStyle_Internal = $ReadOnly<{|
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
-    | {|+rotate: string|}
-    | {|+rotateX: string|}
-    | {|+rotateY: string|}
-    | {|+rotateZ: string|}
+    | {|+rotate: string | AnimatedNode|}
+    | {|+rotateX: string | AnimatedNode|}
+    | {|+rotateY: string | AnimatedNode|}
+    | {|+rotateZ: string | AnimatedNode|}
     | {|+scale: number | AnimatedNode|}
     | {|+scaleX: number | AnimatedNode|}
     | {|+scaleY: number | AnimatedNode|}
     | {|+translateX: number | AnimatedNode|}
     | {|+translateY: number | AnimatedNode|}
     | {|
-      +translate: [number | AnimatedNode, number | AnimatedNode] | AnimatedNode,
-    |}
+        +translate:
+          | [number | AnimatedNode, number | AnimatedNode]
+          | AnimatedNode,
+      |}
     | {|+skewX: string|}
     | {|+skewY: string|}
     // TODO: what is the actual type it expects?
     | {|
-      +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-    |},
+        +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
+      |},
   >,
 |}>;
 
@@ -139,23 +138,23 @@ export type ____ViewStyle_Internal = $ReadOnly<{|
   borderRightColor?: ColorValue,
   borderStartColor?: ColorValue,
   borderTopColor?: ColorValue,
-  borderRadius?: number,
-  borderBottomEndRadius?: number,
-  borderBottomLeftRadius?: number,
-  borderBottomRightRadius?: number,
-  borderBottomStartRadius?: number,
-  borderTopEndRadius?: number,
-  borderTopLeftRadius?: number,
-  borderTopRightRadius?: number,
-  borderTopStartRadius?: number,
+  borderRadius?: number | AnimatedNode,
+  borderBottomEndRadius?: number | AnimatedNode,
+  borderBottomLeftRadius?: number | AnimatedNode,
+  borderBottomRightRadius?: number | AnimatedNode,
+  borderBottomStartRadius?: number | AnimatedNode,
+  borderTopEndRadius?: number | AnimatedNode,
+  borderTopLeftRadius?: number | AnimatedNode,
+  borderTopRightRadius?: number | AnimatedNode,
+  borderTopStartRadius?: number | AnimatedNode,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
-  borderWidth?: number,
-  borderBottomWidth?: number,
-  borderEndWidth?: number,
-  borderLeftWidth?: number,
-  borderRightWidth?: number,
-  borderStartWidth?: number,
-  borderTopWidth?: number,
+  borderWidth?: number | AnimatedNode,
+  borderBottomWidth?: number | AnimatedNode,
+  borderEndWidth?: number | AnimatedNode,
+  borderLeftWidth?: number | AnimatedNode,
+  borderRightWidth?: number | AnimatedNode,
+  borderStartWidth?: number | AnimatedNode,
+  borderTopWidth?: number | AnimatedNode,
   opacity?: number | AnimatedNode,
   elevation?: number,
 |}>;
@@ -186,8 +185,8 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'proportional-nums',
   >,
   textShadowOffset?: $ReadOnly<{|
-    width?: number,
-    height?: number,
+    width: number,
+    height: number,
   |}>,
   textShadowRadius?: number,
   textShadowColor?: ColorValue,
@@ -203,6 +202,7 @@ export type ____TextStyle_Internal = $ReadOnly<{|
     | 'underline line-through',
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ColorValue,
+  textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
 |}>;
 
@@ -224,8 +224,6 @@ type GenericStyleProp<+T> =
   | null
   | void
   | T
-  | ____StyleSheetInternalStyleIdentifier_Internal
-  | number
   | false
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;

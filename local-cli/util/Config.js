@@ -42,6 +42,9 @@ function getProjectPath() {
 
 const resolveSymlinksForRoots = roots =>
   roots.reduce(
+    /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.70 was deployed. To see the error delete this
+     * comment and run Flow. */
     (arr, rootPath) => arr.concat(findSymlinkedModules(rootPath, roots)),
     [...roots],
   );
@@ -70,11 +73,15 @@ const Config = {
   DEFAULT: ({
     ...MetroConfig.DEFAULT,
     getBlacklistRE,
-    getProjectRoots,
-    getPolyfills,
     getModulesRunBeforeMainModule: () => [
       require.resolve('../../Libraries/Core/InitializeCore'),
     ],
+    getProjectRoots,
+    getPolyfills,
+    getWatchFolders: () => [getProjectPath()],
+    getResolverMainFields: () => ['react-native', 'browser', 'main'],
+    getTransformModulePath: () =>
+      require.resolve('metro/src/reactNativeTransformer'),
   }: ConfigT),
 
   find(startDir: string): ConfigT {

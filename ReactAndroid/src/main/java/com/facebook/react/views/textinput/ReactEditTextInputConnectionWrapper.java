@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.textinput;
 
-import javax.annotation.Nullable;
-
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -16,6 +14,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import javax.annotation.Nullable;
 
 /**
  * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.

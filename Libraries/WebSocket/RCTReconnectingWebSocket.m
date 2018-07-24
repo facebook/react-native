@@ -9,15 +9,43 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <fishhook/fishhook.h>
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+#if __has_include(<React/fishhook.h>)
+#import <React/fishhook.h>
+#else
+#import <fishhook/fishhook.h>
+#endif
+
+#if __has_include(<os/log.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100300 /* __IPHONE_10_3 */
 #import <os/log.h>
-#endif /* __IPHONE_11_0 */
+#endif /* __IPHONE_10_3 */
 
 #import "RCTSRWebSocket.h"
 
 #if RCT_DEV // Only supported in dev mode
+
+#if __has_include(<os/log.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100300 /* __IPHONE_10_3 */
+
+// From https://github.com/apple/swift/blob/ad40c770bfe372f879b530443a3d94761fe258a6/stdlib/public/SDK/os/os_log.m
+typedef struct os_log_pack_s {
+  uint64_t olp_continuous_time;
+  struct timespec olp_wall_time;
+  const void *olp_mh;
+  const void *olp_pc;
+  const char *olp_format;
+  uint8_t olp_data[0];
+} os_log_pack_s, *os_log_pack_t;
+
+static void (*orig__nwlog_pack)(os_log_pack_t pack, os_log_type_t logType);
+
+static void my__nwlog_pack(os_log_pack_t pack, os_log_type_t logType)
+{
+  if (logType == OS_LOG_TYPE_ERROR && strstr(pack->olp_format, "Connection has no connected handler") == NULL) {
+    orig__nwlog_pack(pack, logType);
+  }
+}
+
+#endif /* __IPHONE_10_3 */
 
 static void (*orig_nwlog_legacy_v)(int, char*, va_list);
 
@@ -63,6 +91,11 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
     rebind_symbols((struct rebinding[1]){
       {"nwlog_legacy_v", my_nwlog_legacy_v, (void *)&orig_nwlog_legacy_v}
     }, 1);
+#if __has_include(<os/log.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100300 /* __IPHONE_10_3 */
+    rebind_symbols((struct rebinding[1]){
+      {"__nwlog_pack", my__nwlog_pack, (void *)&orig__nwlog_pack}
+    }, 1);
+#endif /* __IPHONE_10_3 */
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     rebind_symbols((struct rebinding[1]){
       {"_os_log_error_impl", my_os_log_error_impl, (void *)&orig_os_log_error_impl}

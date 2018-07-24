@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -30,7 +31,6 @@ import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.drawable.RoundedColorDrawable;
-
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -53,7 +53,6 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -184,6 +183,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private @Nullable ImageSource mImageSource;
   private @Nullable ImageSource mCachedImageSource;
+  private @Nullable Drawable mDefaultImageDrawable;
   private @Nullable Drawable mLoadingImageDrawable;
   private @Nullable RoundedColorDrawable mBackgroundImageDrawable;
   private int mBackgroundColor = 0x00000000;
@@ -233,8 +233,7 @@ public class ReactImageView extends GenericDraweeView {
     if (!shouldNotify) {
       mControllerListener = null;
     } else {
-      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).
-        getNativeModule(UIManagerModule.class).getEventDispatcher();
+      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override
@@ -369,6 +368,11 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setDefaultSource(@Nullable String name) {
+    mDefaultImageDrawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
+    mIsDirty = true;
+  }
+
   public void setLoadingIndicatorSource(@Nullable String name) {
     Drawable drawable = ResourceDrawableIdHelper.getInstance().getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
@@ -427,6 +431,10 @@ public class ReactImageView extends GenericDraweeView {
 
     GenericDraweeHierarchy hierarchy = getHierarchy();
     hierarchy.setActualImageScaleType(mScaleType);
+
+    if (mDefaultImageDrawable != null) {
+      hierarchy.setPlaceholderImage(mDefaultImageDrawable, ScalingUtils.ScaleType.CENTER);
+    }
 
     if (mLoadingImageDrawable != null) {
       hierarchy.setPlaceholderImage(mLoadingImageDrawable, ScalingUtils.ScaleType.CENTER);
@@ -602,4 +610,3 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 }
-

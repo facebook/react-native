@@ -153,6 +153,11 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 - (void)_dismissPicker:(UIImagePickerController *)picker args:(NSArray *)args
 {
   NSUInteger index = [_pickers indexOfObject:picker];
+  if (index == NSNotFound) {
+    // This happens if the user selects multiple items in succession.
+    return;
+  }
+
   RCTResponseSenderBlock successCallback = _pickerCallbacks[index];
   RCTResponseSenderBlock cancelCallback = _pickerCancelCallbacks[index];
 

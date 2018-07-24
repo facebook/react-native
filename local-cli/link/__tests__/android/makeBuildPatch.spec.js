@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -18,8 +19,9 @@ const normalizedScopedName = normalizeProjectName('@scoped/test');
 
 describe('makeBuildPatch', () => {
   it('should build a patch function', () => {
-    expect(Object.prototype.toString(makeBuildPatch(name)))
-      .toBe('[object Object]');
+    expect(Object.prototype.toString(makeBuildPatch(name))).toBe(
+      '[object Object]',
+    );
   });
 
   it('should make a correct patch', () => {
@@ -33,7 +35,6 @@ describe('makeBuildPatch', () => {
     expect(installPattern.toString()).toBe(match);
   });
 });
-
 
 describe('makeBuildPatchWithScopedPackage', () => {
   it('should make a correct patch', () => {

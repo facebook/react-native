@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 package com.facebook.yoga;
 
 public class YogaConstants {
@@ -17,8 +17,6 @@ public class YogaConstants {
    * https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
    */
   public static final float UNDEFINED = (float) (10E20);
-
-  public static boolean shouldUseFastMath = false;
 
   public static boolean isUndefined(float value) {
     // Value of a float in the case of it being not defined is 10.1E20. Earlier it used to be NAN,

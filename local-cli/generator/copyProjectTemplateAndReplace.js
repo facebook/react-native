@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const chalk = require('chalk');
@@ -26,24 +29,42 @@ const walk = require('../util/walk');
  *          ignorePaths: ['template/file/to/ignore.md'],
  *        }
  */
-function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, options) {
-  if (!srcPath) { throw new Error('Need a path to copy from'); }
-  if (!destPath) { throw new Error('Need a path to copy to'); }
-  if (!newProjectName) { throw new Error('Need a project name'); }
+function copyProjectTemplateAndReplace(
+  srcPath,
+  destPath,
+  newProjectName,
+  options,
+) {
+  if (!srcPath) {
+    throw new Error('Need a path to copy from');
+  }
+  if (!destPath) {
+    throw new Error('Need a path to copy to');
+  }
+  if (!newProjectName) {
+    throw new Error('Need a project name');
+  }
 
   options = options || {};
 
   walk(srcPath).forEach(absoluteSrcFilePath => {
-
     // 'react-native upgrade'
     if (options.upgrade) {
       // Don't upgrade these files
       const fileName = path.basename(absoluteSrcFilePath);
       // This also includes __tests__/index.*.js
-      if (fileName === 'index.ios.js') { return; }
-      if (fileName === 'index.android.js') { return; }
-      if (fileName === 'index.js') { return; }
-      if (fileName === 'App.js') { return; }
+      if (fileName === 'index.ios.js') {
+        return;
+      }
+      if (fileName === 'index.android.js') {
+        return;
+      }
+      if (fileName === 'index.js') {
+        return;
+      }
+      if (fileName === 'App.js') {
+        return;
+      }
     }
 
     const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);
@@ -59,14 +80,16 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       if (!Array.isArray(options.ignorePaths)) {
         throw new Error('options.ignorePaths must be an array');
       }
-      if (options.ignorePaths.some(ignorePath => ignorePath === relativeFilePath)) {
+      if (
+        options.ignorePaths.some(ignorePath => ignorePath === relativeFilePath)
+      ) {
         // Skip copying this file
         return;
       }
     }
 
     let contentChangedCallback = null;
-    if (options.upgrade && (!options.force)) {
+    if (options.upgrade && !options.force) {
       contentChangedCallback = (_, contentChanged) => {
         return upgradeFileContentChangedCallback(
           absoluteSrcFilePath,
@@ -80,8 +103,8 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
       path.resolve(destPath, relativeRenamedPath),
       {
         'Hello App Display Name': options.displayName || newProjectName,
-        'HelloWorld': newProjectName,
-        'helloworld': newProjectName.toLowerCase(),
+        HelloWorld: newProjectName,
+        helloworld: newProjectName.toLowerCase(),
       },
       contentChangedCallback,
     );
@@ -97,7 +120,9 @@ function copyProjectTemplateAndReplace(srcPath, destPath, newProjectName, option
  * behavior of automatically renaming .gitignore to .npmignore.
  */
 function dotFilePath(path) {
-  if (!path) {return path;}
+  if (!path) {
+    return path;
+  }
   return path
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')
@@ -110,20 +135,28 @@ function dotFilePath(path) {
 function upgradeFileContentChangedCallback(
   absoluteSrcFilePath,
   relativeDestPath,
-  contentChanged
+  contentChanged,
 ) {
   if (contentChanged === 'new') {
     console.log(chalk.bold('new') + ' ' + relativeDestPath);
     return 'overwrite';
   } else if (contentChanged === 'changed') {
-    console.log(chalk.bold(relativeDestPath) + ' ' +
-      'has changed in the new version.\nDo you want to keep your ' +
-      relativeDestPath + ' or replace it with the ' +
-      'latest version?\nIf you ever made any changes ' +
-      'to this file, you\'ll probably want to keep it.\n' +
-      'You can see the new version here: ' + absoluteSrcFilePath + '\n' +
-      'Do you want to replace ' + relativeDestPath + '? ' +
-      'Answer y to replace, n to keep your version: ');
+    console.log(
+      chalk.bold(relativeDestPath) +
+        ' ' +
+        'has changed in the new version.\nDo you want to keep your ' +
+        relativeDestPath +
+        ' or replace it with the ' +
+        'latest version?\nIf you ever made any changes ' +
+        "to this file, you'll probably want to keep it.\n" +
+        'You can see the new version here: ' +
+        absoluteSrcFilePath +
+        '\n' +
+        'Do you want to replace ' +
+        relativeDestPath +
+        '? ' +
+        'Answer y to replace, n to keep your version: ',
+    );
     const answer = prompt();
     if (answer === 'y') {
       console.log('Replacing ' + relativeDestPath);
@@ -135,7 +168,9 @@ function upgradeFileContentChangedCallback(
   } else if (contentChanged === 'identical') {
     return 'keep';
   } else {
-    throw new Error(`Unknown file changed state: ${relativeDestPath}, ${contentChanged}`);
+    throw new Error(
+      `Unknown file changed state: ${relativeDestPath}, ${contentChanged}`,
+    );
   }
 }
 

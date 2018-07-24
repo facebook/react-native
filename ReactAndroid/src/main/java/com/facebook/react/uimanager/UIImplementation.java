@@ -205,7 +205,12 @@ public class UIImplementation {
     int heightMeasureSpec = rootView.getHeightMeasureSpec();
     updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
-    mShadowNodeRegistry.addRootNode(rootCSSNode);
+    context.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mShadowNodeRegistry.addRootNode(rootCSSNode);
+      }
+    });
 
     // register it within NativeViewHierarchyManager
     mOperationsQueue.addRootView(tag, rootView, context);
@@ -771,8 +776,14 @@ public class UIImplementation {
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+
+    if (node == null) {
+      //TODO: this should only happen when using Fabric renderer. This is a temporary approach
+      //and it will be refactored when fabric supports JS Responder.
+      return;
+    }
+
     while (node.isVirtual() || node.isLayoutOnly()) {
       node = node.getParent();
     }
@@ -783,7 +794,7 @@ public class UIImplementation {
     mOperationsQueue.enqueueClearJSResponder();
   }
 
-  public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
+  public void dispatchViewManagerCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     assertViewExists(reactTag, "dispatchViewManagerCommand");
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }

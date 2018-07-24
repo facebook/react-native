@@ -59,5 +59,10 @@ public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
     }
   }
 
+  @Override
+  public String getName() {
+    return "ProxyJavaScriptExecutor";
+  }
+
   private native static HybridData initHybrid(JavaJSExecutor executor);
 }

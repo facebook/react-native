@@ -2,6 +2,7 @@
   "haste": {
     "defaultPlatform": "ios",
     "platforms": ["android", "ios", "native"],
+    "hasteImplModulePath": "<rootDir>/node_modules/react-native/jest/hasteImpl.js",
     "providesModuleNodeModules": [
       "react-native"
     ]
@@ -14,7 +15,7 @@
   ],
   "transform": {
     "^.+\\.js$": "babel-jest",
-    "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
+    "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
   },
   "transformIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"

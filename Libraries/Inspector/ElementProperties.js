@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ElementProperties
+ * @format
  * @flow
  */
+
 'use strict';
 
 const BoxInspector = require('BoxInspector');
@@ -80,16 +81,14 @@ class ElementProperties extends React.Component<{
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
-                  <Text style={styles.breadItemText}>
-                    {hierarchyItem.name}
-                  </Text>
+                  <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              (i) => (
+              i => (
                 <Text key={'sep-' + i} style={styles.breadSep}>
                   &#9656;
                 </Text>
-              )
+              ),
             )}
           </View>
           <View style={styles.row}>
@@ -99,7 +98,8 @@ class ElementProperties extends React.Component<{
             </View>
             {
               // $FlowFixMe found when converting React.createClass to ES6
-            <BoxInspector style={style} frame={this.props.frame} />}
+              <BoxInspector style={style} frame={this.props.frame} />
+            }
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   openButtonTitle: {
     color: 'white',
     fontSize: 8,
-  }
+  },
 });
 
 module.exports = ElementProperties;
