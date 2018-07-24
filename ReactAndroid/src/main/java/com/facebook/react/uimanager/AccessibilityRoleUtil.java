@@ -6,13 +6,16 @@
 package com.facebook.react.uimanager;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 /**
@@ -32,7 +35,7 @@ public class AccessibilityRoleUtil {
   public enum AccessibilityRole {
     NONE(null),
     BUTTON("android.widget.Button"),
-    LINK("android.widget.Button"),
+    LINK("android.widget.ViewGroup"),
     SEARCH("android.widget.EditText"),
     IMAGE("android.widget.ImageView"),
     IMAGEBUTTON("android.widget.ImageView"),
@@ -65,7 +68,7 @@ public class AccessibilityRoleUtil {
     // No instances
   }
 
-  public static void setRole(View view, final AccessibilityRole role) {
+  public static void setRole(final View view, final AccessibilityRole role) {
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)) {
@@ -76,32 +79,42 @@ public class AccessibilityRoleUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            setRole(info, role);
+            setRole(info, role, view.getContext());
           }
         });
     }
   }
 
-  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role) {
+  /**
+   * Strings for setting the Role Description in english
+   */
+
+  //TODO: Eventually support fot other languages on talkback
+
+  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role, final Context context) {
     nodeInfo.setClassName(role.getValue());
-    if (role.equals(AccessibilityRole.LINK)) {
-      nodeInfo.setRoleDescription("Link");
-    }
-    if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription("Search Field");
-    }
-    if (role.equals(AccessibilityRole.IMAGE)) {
-      nodeInfo.setRoleDescription("Image");
+    if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
+      if (role.equals(AccessibilityRole.LINK)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.link_description));
+      }
+      if (role.equals(AccessibilityRole.SEARCH)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.search_description));
+      }
+      if (role.equals(AccessibilityRole.IMAGE)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.image_description));
+      }
+      if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.image_button_description));
+      }
+      if (role.equals(AccessibilityRole.ADJUSTABLE)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.adjustable_description));
+      }
     }
     if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
-      nodeInfo.setRoleDescription("Button Image");
       nodeInfo.setClickable(true);
     }
-    if (role.equals(AccessibilityRole.ADJUSTABLE)) {
-      nodeInfo.setRoleDescription("Adjustable");
-    }
   }
-  
+
   /**
    * Method for setting accessibilityRole on view properties.
    */
