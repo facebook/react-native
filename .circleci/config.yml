@@ -47,16 +47,6 @@ aliases:
       - ~/.gradle
     key: v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
 
-  - &restore-cache-apt
-    keys:
-      - v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
-      # Fallback in case this is a first-time run on a fork
-      - v1-apt-master-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
-  - &save-cache-apt
-    paths:
-      - ~/vendor/apt
-    key: v1-apt-{{ .Branch }}-{{ checksum "scripts/circleci/apt-get-android-deps.sh" }}
-
   - &restore-cache-ndk
     keys:
       - v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
@@ -68,7 +58,7 @@ aliases:
   - &restore-cache-downloads-buck
     keys:
       - v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.06.25.01-      
+      - v3-buck-v2018.06.25.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
@@ -490,9 +480,8 @@ jobs:
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
-      - restore-cache: *restore-cache-apt
+      # Android build deps install from the network faster than cache
       - run: *install-android-build-dependencies
-      - save-cache: *save-cache-apt
 
       - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
