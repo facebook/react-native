@@ -110,14 +110,16 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   _onLayout = (event: ViewLayoutEvent) => {
-    this._frame = event.nativeEvent.layout;
+    if (!this.frame || this.props.behavior != 'height')
+      this._frame = event.nativeEvent.layout;
   };
 
   UNSAFE_componentWillUpdate(nextProps: Props, nextState: State): void {
     if (
       nextState.bottom === this.state.bottom &&
       this.props.behavior === 'height' &&
-      nextProps.behavior === 'height'
+      nextProps.behavior === 'height' &&
+      !this.frame
     ) {
       // If the component rerenders without an internal state change, e.g.
       // triggered by parent component re-rendering, no need for bottom to change.
