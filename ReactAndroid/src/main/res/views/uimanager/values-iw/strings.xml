@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: he_IL -->
+
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">קישור</string>
+    <string name="image_description" gender="unknown">תמונה</string>
+</resources>

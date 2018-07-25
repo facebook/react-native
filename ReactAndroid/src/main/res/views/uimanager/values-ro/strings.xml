@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ro_RO -->
+
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Imagine</string>
+</resources>
