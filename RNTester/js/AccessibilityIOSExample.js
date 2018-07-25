@@ -12,7 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {AccessibilityInfo, Text, View} = ReactNative;
+var {AccessibilityInfo, Text, View, TouchableOpacity} = ReactNative;
 
 class AccessibilityIOSExample extends React.Component<{}> {
   render() {
@@ -39,6 +39,31 @@ class AccessibilityIOSExample extends React.Component<{}> {
         <Text accessibilityLabel="Test of accessibilityLabel" accessible={true}>
           This text component's accessibilityLabel is set explicitly.
         </Text>
+        <View
+          accessibilityLabel="Test of accessibilityHint"
+          accessibilityHint="The hint provides more info than the label does"
+          accessible={true}>
+          <Text>
+            This view component has both an accessibilityLabel and an
+            accessibilityHint explicitly set.
+          </Text>
+        </View>
+        <Text
+          accessibilityLabel="Test of accessibilityHint"
+          accessibilityHint="The hint provides more info than the label does">
+          This text component has both an accessibilityLabel and an
+          accessibilityHint explicitly set.
+        </Text>
+        <TouchableOpacity
+          accessibilityLabel="Test of accessibilityHint"
+          accessibilityHint="The hint provides more info than the label does">
+          <View>
+            <Text>
+              This button has both an accessibilityLabel and an
+              accessibilityHint explicitly set.
+            </Text>
+          </View>
+        </TouchableOpacity>
         <View accessibilityElementsHidden={true}>
           <Text>
             This view's children are hidden from the accessibility tree

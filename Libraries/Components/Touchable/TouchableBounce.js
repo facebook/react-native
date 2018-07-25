@@ -160,6 +160,7 @@ const TouchableBounce = ((createReactClass({
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityHint={this.props.accessibilityHint}
         accessibilityComponentType={this.props.accessibilityComponentType}
         accessibilityTraits={this.props.accessibilityTraits}
         nativeID={this.props.nativeID}
