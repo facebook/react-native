@@ -100,6 +100,8 @@ module.exports = {
         [require('@babel/plugin-transform-for-of'), {loose: true}],
         [require('@babel/plugin-transform-react-display-name')],
         [require('@babel/plugin-transform-react-jsx-source')],
+        // used to hoist jest mocks
+        [require('babel-plugin-jest-hoist')],
       ],
     });
 

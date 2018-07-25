@@ -14,7 +14,7 @@
     "<rootDir>/node_modules/react-native/Libraries/react-native/"
   ],
   "transform": {
-    "^.+\\.js$": "babel-jest",
+    "^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
     "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
   },
   "transformIgnorePatterns": [
