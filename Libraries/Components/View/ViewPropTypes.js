@@ -136,6 +136,13 @@ module.exports = {
   accessibilityActions: PropTypes.arrayOf(PropTypes.string),
 
   /**
+   * Prevents view from being inverted if set to true and color inversion is turned on.
+   *
+   * @platform ios
+   */
+  accessibilityIgnoresInvertColors: PropTypes.bool,
+
+  /**
    * Indicates to accessibility services to treat UI component like a
    * native one. Works for Android only.
    *
