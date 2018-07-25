@@ -21,6 +21,7 @@ const morgan = require('morgan');
 const path = require('path');
 const webSocketProxy = require('./util/webSocketProxy');
 const MiddlewareManager = require('./middleware/MiddlewareManager');
+const {convertOldToNew} = require('metro-config/src/convertConfig');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
@@ -57,20 +58,23 @@ async function runServer(args: Args, config: ConfigT) {
   args.watchFolders.forEach(middlewareManager.serveStatic);
 
   const serverInstance = await Metro.runServer({
-    config: {
-      ...config,
-      assetRegistryPath: ASSET_REGISTRY_PATH,
-      enhanceMiddleware: middleware =>
-        middlewareManager.getConnectInstance().use(middleware),
-      transformModulePath: args.transformer
-        ? path.resolve(args.transformer)
-        : config.getTransformModulePath(),
-    },
+    config: convertOldToNew({
+      config: {
+        ...config,
+        assetRegistryPath: ASSET_REGISTRY_PATH,
+        enhanceMiddleware: middleware =>
+          middlewareManager.getConnectInstance().use(middleware),
+        transformModulePath: args.transformer
+          ? path.resolve(args.transformer)
+          : config.getTransformModulePath(),
+      },
+      maxWorkers: args.maxWorkers,
+      port: args.port,
+      reporter,
+    }),
+
     hmrEnabled: true,
     host: args.host,
-    maxWorkers: args.maxWorkers,
-    port: args.port,
-    reporter,
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,

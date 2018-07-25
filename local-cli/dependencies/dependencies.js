@@ -10,6 +10,7 @@
 'use strict';
 
 const Metro = require('metro');
+const {convert} = require('metro-config');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -17,36 +18,22 @@ const path = require('path');
 
 const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
-function dependencies(argv, config, args, packagerInstance) {
+async function dependencies(argv, configPromise, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
+  const config = await configPromise;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
     return Promise.reject(
       new Error(`File ${rootModuleAbsolutePath} does not exist`),
     );
   }
 
-  const transformModulePath = args.transformer
+  config.cacheStores = [];
+  config.transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
+    : config.transformModulePath;
+  config.transformer.transformModulePath = ASSET_REGISTRY_PATH;
 
-  const packageOpts = {
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    cacheStores: [],
-    projectRoot: config.getProjectRoot(),
-    blacklistRE: config.getBlacklistRE(),
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    getPolyfills: config.getPolyfills,
-    getTransformOptions: config.getTransformOptions,
-    hasteImplModulePath: config.hasteImplModulePath,
-    postMinifyProcess: config.postMinifyProcess,
-    transformModulePath: transformModulePath,
-    extraNodeModules: config.extraNodeModules,
-    verbose: config.verbose,
-    watchFolders: config.getWatchFolders(),
-    workerPath: config.getWorkerPath(),
-  };
+  const {serverOptions: packageOpts} = convert.convertNewToOld(config);
 
   const relativePath = path.relative(
     packageOpts.projectRoot,
