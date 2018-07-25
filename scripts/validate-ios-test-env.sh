@@ -7,6 +7,9 @@
 # It also checks that the correct Node version is installed. Node 10 is not fully 
 # supported at the time and Node 6 is no longer supported.
 
+# Function used to compare dot seperated version numbers
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+
 # Check that node is installed.
 if [ -z "$(which node)" ]; then
   echo "You need to install nodejs."
@@ -40,9 +43,10 @@ if [ -z "$(which xcodebuild)" ]; then
   exit 1
 fi
 
+MIN_XCODE_VERSION=8.0
 # Check that the correct version of Xcode is installed
 XCODE_VERSION="$(command xcodebuild -version | sed '$ d' | sed 's/[-/a-zA-Z]//g')"
-if (( $(echo "${XCODE_VERSION} <= 8.0" | bc -l) )); then
+if (version_gt $MIN_XCODE_VERSION $XCODE_VERSION) && [ "$XCODE_VERSION" != "$MIN_XCODE_VERSION" ]; then
   echo "Xcode ${XCODE_VERSION} detected. Please upgrade to a later version using the AppStore."
   echo "Older versions of Xcode may cause cryptic build errors."
   exit 1
