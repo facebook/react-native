@@ -10379,6 +10379,11 @@ function mountIndeterminateComponent(
     // Proceed under the assumption that this is a class instance
     workInProgress.tag = ClassComponent;
 
+    // Push context providers early to prevent context stack mismatches.
+    // During mounting we don't know the child context yet as the instance doesn't exist.
+    // We will invalidate the child context in finishClassComponent() right after rendering.
+    var hasContext = pushContextProvider(workInProgress);
+
     workInProgress.memoizedState =
       value.state !== null && value.state !== undefined ? value.state : null;
 
@@ -10391,10 +10396,6 @@ function mountIndeterminateComponent(
       );
     }
 
-    // Push context providers early to prevent context stack mismatches.
-    // During mounting we don't know the child context yet as the instance doesn't exist.
-    // We will invalidate the child context in finishClassComponent() right after rendering.
-    var hasContext = pushContextProvider(workInProgress);
     adoptClassInstance(workInProgress, value);
     mountClassInstance(workInProgress, renderExpirationTime);
     return finishClassComponent(
