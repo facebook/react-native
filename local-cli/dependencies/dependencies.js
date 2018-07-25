@@ -16,8 +16,6 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
 
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
 async function dependencies(argv, configPromise, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
   const config = await configPromise;
@@ -31,12 +29,9 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
   config.transformModulePath = args.transformer
     ? path.resolve(args.transformer)
     : config.transformModulePath;
-  config.transformer.transformModulePath = ASSET_REGISTRY_PATH;
-
-  const {serverOptions: packageOpts} = convert.convertNewToOld(config);
 
   const relativePath = path.relative(
-    packageOpts.projectRoot,
+    config.projectRoot,
     rootModuleAbsolutePath,
   );
 
@@ -53,10 +48,12 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
+  const {serverOptions} = convert.convertNewToOld(config);
+
   return Promise.resolve(
     (packagerInstance
       ? packagerInstance.getOrderedDependencyPaths(options)
-      : Metro.getOrderedDependencyPaths(packageOpts, options)
+      : Metro.getOrderedDependencyPaths(serverOptions, options)
     ).then(deps => {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.
@@ -64,7 +61,7 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
         // (a) JS code to not depend on anything outside this directory, or
         // (b) Come up with a way to declare this dependency in Buck.
         const isInsideProjectRoots =
-          packageOpts.watchFolders.filter(root => modulePath.startsWith(root))
+          config.watchFolders.filter(root => modulePath.startsWith(root))
             .length > 0;
 
         if (isInsideProjectRoots) {

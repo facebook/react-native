@@ -14,14 +14,11 @@ const log = require('../util/log').out('bundle');
 /* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 
-const {convert} = require('metro-config');
-
 /* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
+const {convert} = require('metro-config');
 const path = require('path');
 const saveAssets = require('./saveAssets');
-
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
 import type {ConfigT} from 'metro-config/src/configTypes.flow';
@@ -48,6 +45,10 @@ async function buildBundle(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  config.transformModulePath = args.transformer
+    ? path.resolve(args.transformer)
+    : config.transformModulePath;
+
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl,
@@ -55,13 +56,6 @@ async function buildBundle(
     minify: args.minify !== undefined ? args.minify : !args.dev,
     platform: args.platform,
   };
-
-  const transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.transformModulePath;
-
-  config.transformModulePath = transformModulePath;
-  config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
 
   const {serverOptions} = convert.convertNewToOld(config);
 
