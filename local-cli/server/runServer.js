@@ -60,8 +60,7 @@ async function runServer(args: Args, config: ConfigT) {
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 
-  const serverInstance = await Metro.runServer({
-    config,
+  const serverInstance = await Metro.runServer(config, {
     host: args.host,
     secure: args.https,
     secureCert: args.cert,

@@ -16,7 +16,6 @@ const Server = require('metro/src/Server');
 
 /* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
-const {convert} = require('metro-config');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 
@@ -57,9 +56,7 @@ async function buildBundle(
     platform: args.platform,
   };
 
-  const {serverOptions} = convert.convertNewToOld(config);
-
-  const server = new Server(serverOptions);
+  const server = new Server(config);
 
   try {
     const bundle = await output.build(server, requestOpts);

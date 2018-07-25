@@ -10,7 +10,6 @@
 'use strict';
 
 const Metro = require('metro');
-const {convert} = require('metro-config');
 
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -48,12 +47,10 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  const {serverOptions} = convert.convertNewToOld(config);
-
   return Promise.resolve(
     (packagerInstance
       ? packagerInstance.getOrderedDependencyPaths(options)
-      : Metro.getOrderedDependencyPaths(serverOptions, options)
+      : Metro.getOrderedDependencyPaths(config, options)
     ).then(deps => {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.
