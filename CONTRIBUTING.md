@@ -141,15 +141,11 @@ Copy and paste this to the top of your new file(s):
 ```JS
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 ```
-
-If you've added a new module, add a `@providesModule <moduleName>` at the end of the comment. This will allow the haste package manager to find it.
 
 #### Contributor License Agreement (CLA)
 
@@ -210,5 +206,5 @@ However, there are still some styles that the linter cannot pick up.
 
 ## License
 
-By contributing to React Native, you agree that your contributions will be licensed under its BSD license.
+By contributing to React Native, you agree that your contributions will be licensed under its MIT license.
 <!-- generated_contributing_end -->

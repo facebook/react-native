@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Linking
+ * @format
  * @flow
  */
+
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
@@ -17,17 +16,18 @@ const Platform = require('Platform');
 
 const invariant = require('fbjs/lib/invariant');
 
-const LinkingManager = Platform.OS === 'android' ?
-  NativeModules.IntentAndroid : NativeModules.LinkingManager;
+const LinkingManager =
+  Platform.OS === 'android'
+    ? NativeModules.IntentAndroid
+    : NativeModules.LinkingManager;
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
  * and outgoing app links.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/linking.html
  */
 class Linking extends NativeEventEmitter {
-
   constructor() {
     super(LinkingManager);
   }
@@ -35,7 +35,7 @@ class Linking extends NativeEventEmitter {
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/linking.html#addeventlistener
    */
   addEventListener(type: string, handler: Function) {
@@ -44,10 +44,10 @@ class Linking extends NativeEventEmitter {
 
   /**
    * Remove a handler by passing the `url` event type and the handler.
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/linking.html#removeeventlistener
    */
-  removeEventListener(type: string, handler: Function ) {
+  removeEventListener(type: string, handler: Function) {
     this.removeListener(type, handler);
   }
 
@@ -84,12 +84,9 @@ class Linking extends NativeEventEmitter {
   _validateURL(url: string) {
     invariant(
       typeof url === 'string',
-      'Invalid URL: should be a string. Was: ' + url
+      'Invalid URL: should be a string. Was: ' + url,
     );
-    invariant(
-      url,
-      'Invalid URL: cannot be empty'
-    );
+    invariant(url, 'Invalid URL: cannot be empty');
   }
 }
 

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTouchHandler.h"
@@ -214,7 +212,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   BOOL canBeCoalesced = [eventName isEqualToString:@"touchMove"];
 
   // We increment `_coalescingKey` twice here just for sure that
-  // this `_coalescingKey` will not be reused by ahother (preceding or following) event
+  // this `_coalescingKey` will not be reused by another (preceding or following) event
   // (yes, even if coalescing only happens (and makes sense) on events of the same type).
 
   if (!canBeCoalesced) {

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #if __OBJC__
@@ -105,6 +103,17 @@
  */
 #define RCT_CONCAT2(A, B) A ## B
 #define RCT_CONCAT(A, B) RCT_CONCAT2(A, B)
+
+/**
+  * This attribute is used for static analysis.
+  */
+#if !defined RCT_DYNAMIC
+#if __has_attribute(objc_dynamic)
+#define RCT_DYNAMIC __attribute__((objc_dynamic))
+#else
+#define RCT_DYNAMIC
+#endif
+#endif
 
 /**
  * Throw an assertion for unimplemented methods.

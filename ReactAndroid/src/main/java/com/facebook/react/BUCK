@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_native_target")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "react",
@@ -27,11 +27,15 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/appregistry:appregistry"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
+        react_native_target("java/com/facebook/react/modules/fabric:fabric"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/modules/deviceinfo:deviceinfo"),
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
         react_native_target("java/com/facebook/react/modules/toast:toast"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
+    ],
+    exported_deps = [
+        react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
     ],
 )

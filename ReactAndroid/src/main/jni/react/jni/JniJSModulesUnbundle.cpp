@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JniJSModulesUnbundle.h"
 
@@ -82,7 +85,7 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(uint32_t moduleId) con
     buffer = static_cast<const char *>(AAsset_getBuffer(asset.get()));
   }
   if (buffer == nullptr) {
-    throw ModuleNotFound("Module not found: " + sourceUrl);
+    throw ModuleNotFound(moduleId);
   }
   return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
 }

@@ -13,6 +13,7 @@ LOCAL_SRC_FILES:= \
        jni/jni_helpers.cpp \
        jni/LocalString.cpp \
        jni/OnLoad.cpp \
+       jni/ReadableByteChannel.cpp \
        jni/References.cpp \
        jni/WeakReference.cpp \
        log.cpp \
@@ -31,7 +32,7 @@ ifeq ($(TOOLCHAIN_PERMISSIVE),true)
 endif
 LOCAL_CFLAGS += -DHAVE_POSIX_CLOCKS
 
-CXX11_FLAGS := -std=gnu++11
+CXX11_FLAGS := -std=c++11
 LOCAL_CFLAGS += $(CXX11_FLAGS)
 
 LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)

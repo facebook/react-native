@@ -73,23 +73,17 @@ curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundl
 rm temp.bundle
 
 # Run tests
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
   build test \
-  | xcpretty --report junit --output ~/react-native/reports/junit/objc-xcodebuild-results.xml
+  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml"
 
 else
 
 # Don't run tests. No need to pass -destination to xcodebuild.
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \

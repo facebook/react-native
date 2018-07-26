@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const chalk = require('chalk');
@@ -28,20 +29,19 @@ function _logAndroid() {
 
     const adbArgs = ['logcat', '*:S', 'ReactNative:V', 'ReactNativeJS:V'];
 
-    console.log(chalk.bold(
-      `Starting the logger (${adbPath} ${adbArgs.join(' ')})...`
-    ));
+    console.log(
+      chalk.bold(`Starting the logger (${adbPath} ${adbArgs.join(' ')})...`),
+    );
 
     const log = child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
 
     if (log.error !== null) {
       throw log.error;
     }
-
   } catch (e) {
-    console.log(chalk.red(
-      'adb invocation failed. Do you have adb in your PATH?'
-    ));
+    console.log(
+      chalk.red('adb invocation failed. Do you have adb in your PATH?'),
+    );
     return Promise.reject();
   }
 }

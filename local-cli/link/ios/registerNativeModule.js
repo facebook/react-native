@@ -1,10 +1,10 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const xcode = require('xcode');
@@ -31,14 +31,22 @@ const getGroup = require('./getGroup');
  *
  * If library is already linked, this action is a no-op.
  */
-module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfig) {
+module.exports = function registerNativeModuleIOS(
+  dependencyConfig,
+  projectConfig,
+) {
   const project = xcode.project(projectConfig.pbxprojPath).parseSync();
-  const dependencyProject = xcode.project(dependencyConfig.pbxprojPath).parseSync();
+  const dependencyProject = xcode
+    .project(dependencyConfig.pbxprojPath)
+    .parseSync();
 
-  const libraries = createGroupWithMessage(project, projectConfig.libraryFolder);
+  const libraries = createGroupWithMessage(
+    project,
+    projectConfig.libraryFolder,
+  );
   const file = addFileToProject(
     project,
-    path.relative(projectConfig.sourceDir, dependencyConfig.projectPath)
+    path.relative(projectConfig.sourceDir, dependencyConfig.projectPath),
   );
 
   const targets = getTargets(project);
@@ -48,20 +56,20 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
   getTargets(dependencyProject).forEach(product => {
     var i;
     if (!product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(!targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (!targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
-            target: targets[i].uuid
+            target: targets[i].uuid,
           });
         }
       }
     }
 
     if (product.isTVOS) {
-      for (i=0; i<targets.length; i++) {
-        if(targets[i].isTVOS) {
+      for (i = 0; i < targets.length; i++) {
+        if (targets[i].isTVOS) {
           project.addStaticLibrary(product.name, {
-            target: targets[i].uuid
+            target: targets[i].uuid,
           });
         }
       }
@@ -74,12 +82,9 @@ module.exports = function registerNativeModuleIOS(dependencyConfig, projectConfi
   if (!isEmpty(headers)) {
     addToHeaderSearchPaths(
       project,
-      getHeaderSearchPath(projectConfig.sourceDir, headers)
+      getHeaderSearchPath(projectConfig.sourceDir, headers),
     );
   }
 
-  fs.writeFileSync(
-    projectConfig.pbxprojPath,
-    project.writeSync()
-  );
+  fs.writeFileSync(projectConfig.pbxprojPath, project.writeSync());
 };

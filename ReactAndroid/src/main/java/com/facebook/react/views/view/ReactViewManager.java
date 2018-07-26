@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.view;
@@ -58,8 +56,16 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactPropGroup(
-    names = {
+  @ReactProp(name = "hasTVPreferredFocus")
+  public void setTVPreferredFocus(ReactViewGroup view, boolean hasTVPreferredFocus) {
+    if (hasTVPreferredFocus) {
+      view.setFocusable(true);
+      view.setFocusableInTouchMode(true);
+      view.requestFocus();
+    }
+  }
+
+  @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
       ViewProps.BORDER_TOP_RIGHT_RADIUS,

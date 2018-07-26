@@ -1,17 +1,16 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule UTFSequence
  * @flow
  * @format
  */
 
 'use strict';
+
+const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 
 /**
  * A collection of Unicode sequences for various characters and emoji.
@@ -20,7 +19,10 @@
  *  - Source code should be limitted to ASCII.
  *  - Less chance of typos.
  */
-const UTFSequence = {
+const UTFSequence = deepFreezeAndThrowOnMutationInDev({
+  BOM: '\ufeff', // byte order mark
+  BULLET: '\u2022', // bullet: &#8226;
+  BULLET_SP: '\u00A0\u2022\u00A0', // &nbsp;&#8226;&nbsp;
   MIDDOT: '\u00B7', // normal middle dot: &middot;
   MIDDOT_SP: '\u00A0\u00B7\u00A0', // &nbsp;&middot;&nbsp;
   MIDDOT_KATAKANA: '\u30FB', // katakana middle dot
@@ -30,6 +32,8 @@ const UTFSequence = {
   NDASH_SP: '\u00A0\u2013\u00A0', // &nbsp;&ndash;&nbsp;
   NBSP: '\u00A0', // non-breaking space: &nbsp;
   PIZZA: '\uD83C\uDF55',
-};
+  TRIANGLE_LEFT: '\u25c0', // black left-pointing triangle
+  TRIANGLE_RIGHT: '\u25b6', // black right-pointing triangle
+});
 
 module.exports = UTFSequence;

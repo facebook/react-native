@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule RNTesterStatePersister
  */
+
 'use strict';
 
 const AsyncStorage = require('AsyncStorage');
@@ -37,13 +36,19 @@ function createContainer<Props: Object, State>(
     version?: string,
   },
 ): React.ComponentType<Props> {
-  return class ComponentWithPersistedState extends React.Component<Props, $FlowFixMeState> {
+  return class ComponentWithPersistedState extends React.Component<
+    Props,
+    $FlowFixMeState,
+  > {
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
-    static displayName = `RNTesterStatePersister(${Component.displayName || Component.name})`;
+    static displayName = `RNTesterStatePersister(${Component.displayName ||
+      Component.name})`;
     state = {value: spec.getInitialState(this.props)};
-    _cacheKey = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(this.props)}`;
+    _cacheKey = `RNTester:${spec.version || 'v1'}:${spec.cacheKeySuffix(
+      this.props,
+    )}`;
     componentDidMount() {
       AsyncStorage.getItem(this._cacheKey, (err, value) => {
         if (!err && value) {
@@ -52,7 +57,7 @@ function createContainer<Props: Object, State>(
       });
     }
     _passSetState = (stateLamda: (state: State) => State): void => {
-      this.setState((state) => {
+      this.setState(state => {
         const value = stateLamda(state.value);
         AsyncStorage.setItem(this._cacheKey, JSON.stringify(value));
         return {value};

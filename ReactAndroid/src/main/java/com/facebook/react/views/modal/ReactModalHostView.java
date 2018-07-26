@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.modal;
@@ -252,7 +250,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     if (mHardwareAccelerated) {
       mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
     }
-    if (currentActivity == null || !currentActivity.isFinishing()) {
+    if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
     }
   }
@@ -277,6 +275,17 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    */
   private void updateProperties() {
     Assertions.assertNotNull(mDialog, "mDialog must exist when we call updateProperties");
+
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity != null) {
+      int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
+      if ((activityWindowFlags
+          & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+        mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      } else {
+        mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      }
+    }
 
     if (mTransparent) {
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

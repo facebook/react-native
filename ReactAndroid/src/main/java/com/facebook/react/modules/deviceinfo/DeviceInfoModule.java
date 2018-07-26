@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.deviceinfo;
@@ -15,13 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -29,9 +24,11 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 /**
  * Module that exposes Android Constants to JS.
  */
-@ReactModule(name = "DeviceInfo")
+@ReactModule(name = DeviceInfoModule.sModuleName)
 public class DeviceInfoModule extends BaseJavaModule implements
     LifecycleEventListener {
+
+  static final String sModuleName = "DeviceInfo";
 
   private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
@@ -50,7 +47,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
 
   @Override
   public String getName() {
-    return "DeviceInfo";
+    return sModuleName;
   }
 
   @Override
@@ -90,6 +87,6 @@ public class DeviceInfoModule extends BaseJavaModule implements
 
     mReactApplicationContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsMap(mFontScale));
+        .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
   }
 }

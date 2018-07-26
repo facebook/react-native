@@ -1,16 +1,15 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTShadowView.h"
 
 #import "RCTConvert.h"
 #import "RCTI18nUtil.h"
+#import "RCTLayout.h"
 #import "RCTLog.h"
 #import "RCTShadowView+Layout.h"
 #import "RCTUtils.h"
@@ -286,6 +285,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     return;
   }
 
+  YGNodeSetHasNewLayout(yogaNode, false);
+
   RCTLayoutMetrics layoutMetrics = RCTLayoutMetricsFromYogaNode(yogaNode);
 
   layoutContext.absolutePosition.x += layoutMetrics.frame.origin.x;
@@ -323,6 +324,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
       continue;
     }
 
+    YGNodeSetHasNewLayout(childYogaNode, false);
+
     RCTLayoutMetrics childLayoutMetrics = RCTLayoutMetricsFromYogaNode(childYogaNode);
 
     layoutContext.absolutePosition.x += childLayoutMetrics.frame.origin.x;
@@ -338,10 +341,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef clonedYogaNode = YGNodeClone(self.yogaNode);
   YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
 
-  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+  YGNodeInsertChild(constraintYogaNode, clonedYogaNode, 0);
 
   YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
   YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
@@ -352,7 +355,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     constraintYogaNode,
     YGUndefined,
     YGUndefined,
-    self.layoutMetrics.layoutDirection
+    RCTYogaLayoutDirectionFromUIKitLayoutDirection(self.layoutMetrics.layoutDirection)
   );
 
   CGSize measuredSize = (CGSize){
@@ -360,9 +363,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
   };
 
-  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
-  YGNodeFree(clonnedYogaNode);
+  YGNodeFree(clonedYogaNode);
 
   return measuredSize;
 }

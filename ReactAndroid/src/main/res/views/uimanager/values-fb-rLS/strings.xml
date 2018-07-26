@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: fb_LS -->
+
+<resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Search Field \@\@\@</string>
+    <string name="image_description" gender="unknown">Image \@\@\@</string>
+    <string name="image_button_description" gender="unknown">Button, Image\@\@\@\@\@\@</string>
+    <string name="adjustable_description" gender="unknown">Adjustable\@\@\@\@\@\@</string>
+</resources>

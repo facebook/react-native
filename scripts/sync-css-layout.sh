@@ -8,10 +8,9 @@ function patchfile {
   # Add React Native copyright
   printf "/**\n"  > /tmp/yogasync.tmp
   printf " * Copyright (c) 2014-present, Facebook, Inc.\n"  >> /tmp/yogasync.tmp
-  printf " * All rights reserved.\n" >> /tmp/yogasync.tmp
-  printf " * This source code is licensed under the BSD-style license found in the\n"  >> /tmp/yogasync.tmp
-  printf " * LICENSE file in the root directory of this source tree. An additional grant\n"  >> /tmp/yogasync.tmp
-  printf " * of patent rights can be found in the PATENTS file in the same directory.\n"  >> /tmp/yogasync.tmp
+  printf " *\n" >> /tmp/yogasync.tmp
+  printf " * This source code is licensed under the MIT license found in the\n"  >> /tmp/yogasync.tmp
+  printf " * LICENSE file in the root directory of this source tree.\n"  >> /tmp/yogasync.tmp
   printf " */\n\n"  >> /tmp/yogasync.tmp
   printf "// NOTE: this file is auto-copied from https://github.com/facebook/css-layout\n" >> /tmp/yogasync.tmp
   # The following is split over four lines so Phabricator doesn't think this file is generated

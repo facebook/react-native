@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule IncrementalExample
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
@@ -38,7 +37,10 @@ JSEventLoopWatchdog.install({thresholdMS: 200});
 
 let totalWidgets = 0;
 
-class SlowWidget extends React.Component<$FlowFixMeProps, {ctorTimestamp: number, timeToMount: number}> {
+class SlowWidget extends React.Component<
+  $FlowFixMeProps,
+  {ctorTimestamp: number, timeToMount: number},
+> {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -72,7 +74,9 @@ function stopInteraction() {
 }
 
 function Block(props: Object) {
-  const IncrementalContainer = props.stream ? IncrementalGroup : IncrementalPresenter;
+  const IncrementalContainer = props.stream
+    ? IncrementalGroup
+    : IncrementalPresenter;
   return (
     <IncrementalContainer name={'b_' + props.idx}>
       <TouchableOpacity
@@ -119,32 +123,37 @@ class IncrementalExample extends React.Component<mixed, {stats: ?Object}> {
   }
   render(): React.Node {
     return (
-      <IncrementalGroup
-        disabled={false}
-        name="root"
-        onDone={this._onDone}>
+      <IncrementalGroup disabled={false} name="root" onDone={this._onDone}>
         <ScrollView style={styles.scrollView}>
           <Text style={styles.headerText}>
             Press and hold on a row to pause rendering.
           </Text>
-          {this.state.stats && <Text>
-            Finished: {JSON.stringify(this.state.stats, null, 2)}
-          </Text>}
-          {Array(8).fill().map((_, blockIdx) => {
-            return (
-              <Block key={blockIdx} idx={blockIdx} stream={blockIdx < 2}>
-                {Array(4).fill().map((_b, rowIdx) => (
-                  <Row key={rowIdx}>
-                    {Array(14).fill().map((_c, widgetIdx) => (
-                      <Incremental key={widgetIdx} name={'w_' + widgetIdx}>
-                        <SlowWidget idx={widgetIdx} />
-                      </Incremental>
+          {this.state.stats && (
+            <Text>Finished: {JSON.stringify(this.state.stats, null, 2)}</Text>
+          )}
+          {Array(8)
+            .fill()
+            .map((_, blockIdx) => {
+              return (
+                <Block key={blockIdx} idx={blockIdx} stream={blockIdx < 2}>
+                  {Array(4)
+                    .fill()
+                    .map((_b, rowIdx) => (
+                      <Row key={rowIdx}>
+                        {Array(14)
+                          .fill()
+                          .map((_c, widgetIdx) => (
+                            <Incremental
+                              key={widgetIdx}
+                              name={'w_' + widgetIdx}>
+                              <SlowWidget idx={widgetIdx} />
+                            </Incremental>
+                          ))}
+                      </Row>
                     ))}
-                  </Row>
-                ))}
-              </Block>
-            );
-          })}
+                </Block>
+              );
+            })}
         </ScrollView>
       </IncrementalGroup>
     );
@@ -153,10 +162,10 @@ class IncrementalExample extends React.Component<mixed, {stats: ?Object}> {
 
 function burnCPU(milliseconds) {
   const start = performanceNow();
-  while (performanceNow() < (start + milliseconds)) {}
+  while (performanceNow() < start + milliseconds) {}
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   scrollView: {
     margin: 10,
     backgroundColor: 'white',

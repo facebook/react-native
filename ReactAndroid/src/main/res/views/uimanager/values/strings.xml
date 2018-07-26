@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string
+      name="link_description"
+      >Link</string>
+  <string
+    name="search_description"
+    >Search Field</string>
+  <string
+    name="image_description"
+    >Image</string>
+  <string
+    name="image_button_description"
+    >Button, Image</string>
+  <string
+    name="adjustable_description"
+    >Adjustable</string>
+</resources>

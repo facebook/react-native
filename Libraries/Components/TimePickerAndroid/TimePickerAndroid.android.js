@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TimePickerAndroid
+ * @format
  * @flow
  */
+
 'use strict';
 
 const TimePickerModule = require('NativeModules').TimePickerAndroid;
@@ -34,7 +33,6 @@ const TimePickerModule = require('NativeModules').TimePickerAndroid;
  * ```
  */
 class TimePickerAndroid {
-
   /**
    * Opens the standard Android time picker dialog.
    *
@@ -61,11 +59,15 @@ class TimePickerAndroid {
   /**
    * A time has been selected.
    */
-  static get timeSetAction() { return 'timeSetAction'; }
+  static get timeSetAction() {
+    return 'timeSetAction';
+  }
   /**
    * The dialog has been dismissed.
    */
-  static get dismissedAction() { return 'dismissedAction'; }
+  static get dismissedAction() {
+    return 'dismissedAction';
+  }
 }
 
 module.exports = TimePickerAndroid;

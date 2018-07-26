@@ -1,14 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ElementProperties
+ * @format
  * @flow
  */
+
 'use strict';
 
 const BoxInspector = require('BoxInspector');
@@ -25,11 +24,11 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
-import type {StyleObj} from 'StyleSheetTypes';
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
 class ElementProperties extends React.Component<{
   hierarchy: Array<$FlowFixMe>,
-  style?: StyleObj,
+  style?: DangerouslyImpreciseStyleProp,
   source?: {
     fileName?: string,
     lineNumber?: number,
@@ -82,16 +81,14 @@ class ElementProperties extends React.Component<{
                   style={[styles.breadItem, i === selection && styles.selected]}
                   // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
-                  <Text style={styles.breadItemText}>
-                    {hierarchyItem.name}
-                  </Text>
+                  <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              (i) => (
+              i => (
                 <Text key={'sep-' + i} style={styles.breadSep}>
                   &#9656;
                 </Text>
-              )
+              ),
             )}
           </View>
           <View style={styles.row}>
@@ -101,7 +98,8 @@ class ElementProperties extends React.Component<{
             </View>
             {
               // $FlowFixMe found when converting React.createClass to ES6
-            <BoxInspector style={style} frame={this.props.frame} />}
+              <BoxInspector style={style} frame={this.props.frame} />
+            }
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
   openButtonTitle: {
     color: 'white',
     fontSize: 8,
-  }
+  },
 });
 
 module.exports = ElementProperties;

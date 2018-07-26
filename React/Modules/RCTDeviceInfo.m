@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDeviceInfo.h"
@@ -105,7 +103,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   return @{
     @"Dimensions": RCTExportedDimensions(_bridge),
     // Note:
-    // This prop is deprecated and will be removed right after June 01, 2018.
+    // This prop is deprecated and will be removed in a future release.
     // Please use this only for a quick and temporary solution.
     // Use <SafeAreaView> instead.
     @"isIPhoneX_deprecated": @(RCTIsIPhoneX()),

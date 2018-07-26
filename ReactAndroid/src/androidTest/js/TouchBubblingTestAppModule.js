@@ -1,12 +1,10 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchBubblingTestAppModule
+ * @format
  */
 
 'use strict';
@@ -19,16 +17,20 @@ var View = require('View');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 class TouchBubblingTestApp extends React.Component {
-  handlePress = (record) => {
+  handlePress = record => {
     Recording.record(record);
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={this.handlePress.bind(this, 'outer')} testID="D">
+        <TouchableWithoutFeedback
+          onPress={this.handlePress.bind(this, 'outer')}
+          testID="D">
           <View style={styles.outer}>
-            <TouchableWithoutFeedback onPress={this.handlePress.bind(this, 'inner')} testID="B">
+            <TouchableWithoutFeedback
+              onPress={this.handlePress.bind(this, 'inner')}
+              testID="B">
               <View style={styles.inner}>
                 <View style={styles.superinner} testID="A" />
               </View>
@@ -36,7 +38,9 @@ class TouchBubblingTestApp extends React.Component {
             <View style={styles.inner} testID="C" />
           </View>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={this.handlePress.bind(this, 'outsider')} testID="E">
+        <TouchableWithoutFeedback
+          onPress={this.handlePress.bind(this, 'outsider')}
+          testID="E">
           <View style={styles.element} />
         </TouchableWithoutFeedback>
       </View>
@@ -71,7 +75,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     height: 20,
     width: 20,
-  }
+  },
 });
 
 module.exports = TouchBubblingTestApp;

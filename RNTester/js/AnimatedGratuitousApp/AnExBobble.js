@@ -1,33 +1,31 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnExBobble
+ * @format
  * @flow
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  Animated,
-  PanResponder,
-  StyleSheet,
-  View,
-} = ReactNative;
+var {Animated, PanResponder, StyleSheet, View} = ReactNative;
 
 var NUM_BOBBLES = 5;
 var RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);
 var RADIUS = 160;
-var BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {  // static positions
-  return i === 0 ? {x: 0, y: 0} : {                         // first bobble is the selector
-    x: -Math.cos(RAD_EACH * (i - 1)) * RADIUS,
-    y: -Math.sin(RAD_EACH * (i - 1)) * RADIUS,
-  };
+var BOBBLE_SPOTS = [...Array(NUM_BOBBLES)].map((_, i) => {
+  // static positions
+  return i === 0
+    ? {x: 0, y: 0}
+    : {
+        // first bobble is the selector
+        x: -Math.cos(RAD_EACH * (i - 1)) * RADIUS,
+        y: -Math.sin(RAD_EACH * (i - 1)) * RADIUS,
+      };
 });
 
 class AnExBobble extends React.Component<Object, any> {
@@ -38,18 +36,19 @@ class AnExBobble extends React.Component<Object, any> {
       return new Animated.ValueXY();
     });
     this.state.selectedBobble = null;
-    var bobblePanListener = (e, gestureState) => {     // async events => change selection
+    var bobblePanListener = (e, gestureState) => {
+      // async events => change selection
       var newSelected = computeNewSelected(gestureState);
       if (this.state.selectedBobble !== newSelected) {
         if (this.state.selectedBobble !== null) {
           var restSpot = BOBBLE_SPOTS[this.state.selectedBobble];
           Animated.spring(this.state.bobbles[this.state.selectedBobble], {
-            toValue: restSpot,       // return previously selected bobble to rest position
+            toValue: restSpot, // return previously selected bobble to rest position
           }).start();
         }
         if (newSelected !== null && newSelected !== 0) {
           Animated.spring(this.state.bobbles[newSelected], {
-            toValue: this.state.bobbles[0],    // newly selected should track the selector
+            toValue: this.state.bobbles[0], // newly selected should track the selector
           }).start();
         }
         this.state.selectedBobble = newSelected;
@@ -58,7 +57,7 @@ class AnExBobble extends React.Component<Object, any> {
     var releaseBobble = () => {
       this.state.bobbles.forEach((bobble, i) => {
         Animated.spring(bobble, {
-          toValue: {x: 0, y: 0}           // all bobbles return to zero
+          toValue: {x: 0, y: 0}, // all bobbles return to zero
         }).start();
       });
     };
@@ -67,14 +66,14 @@ class AnExBobble extends React.Component<Object, any> {
       onPanResponderGrant: () => {
         BOBBLE_SPOTS.forEach((spot, idx) => {
           Animated.spring(this.state.bobbles[idx], {
-            toValue: spot,                // spring each bobble to its spot
-            friction: 3,                  // less friction => bouncier
+            toValue: spot, // spring each bobble to its spot
+            friction: 3, // less friction => bouncier
           }).start();
         });
       },
       onPanResponderMove: Animated.event(
-        [ null, {dx: this.state.bobbles[0].x, dy: this.state.bobbles[0].y} ],
-        {listener: bobblePanListener}     // async state changes with arbitrary logic
+        [null, {dx: this.state.bobbles[0].x, dy: this.state.bobbles[0].y}],
+        {listener: bobblePanListener}, // async state changes with arbitrary logic
       ),
       onPanResponderRelease: releaseBobble,
       onPanResponderTerminate: releaseBobble,
@@ -92,10 +91,13 @@ class AnExBobble extends React.Component<Object, any> {
               {...handlers}
               key={i}
               source={{uri: BOBBLE_IMGS[j]}}
-              style={[styles.circle, {
-                backgroundColor: randColor(),                             // re-renders are obvious
-                transform: this.state.bobbles[j].getTranslateTransform(), // simple conversion
-              }]}
+              style={[
+                styles.circle,
+                {
+                  backgroundColor: randColor(), // re-renders are obvious
+                  transform: this.state.bobbles[j].getTranslateTransform(), // simple conversion
+                },
+              ]}
             />
           );
         })}
@@ -122,9 +124,7 @@ var styles = StyleSheet.create({
   },
 });
 
-function computeNewSelected(
-  gestureState: Object,
-): ?number {
+function computeNewSelected(gestureState: Object): ?number {
   var {dx, dy} = gestureState;
   var minDist = Infinity;
   var newSelected = null;
@@ -143,7 +143,7 @@ function computeNewSelected(
 }
 
 function randColor(): string {
-  var colors = [0,1,2].map(() => Math.floor(Math.random() * 150 + 100));
+  var colors = [0, 1, 2].map(() => Math.floor(Math.random() * 150 + 100));
   return 'rgb(' + colors.join(',') + ')';
 }
 

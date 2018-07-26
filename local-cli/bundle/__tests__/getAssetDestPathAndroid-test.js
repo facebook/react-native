@@ -1,18 +1,16 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+javascript_foundation
  */
+
 'use strict';
 
-jest
-  .dontMock('../getAssetDestPathAndroid')
-  .dontMock('../assetPathUtils');
+jest.dontMock('../getAssetDestPathAndroid').dontMock('../assetPathUtils');
 
 const getAssetDestPathAndroid = require('../getAssetDestPathAndroid');
 
@@ -26,7 +24,9 @@ describe('getAssetDestPathAndroid', () => {
 
     const expectDestPathForScaleToStartWith = (scale, path) => {
       if (!getAssetDestPathAndroid(asset, scale).startsWith(path)) {
-        throw new Error(`asset for scale ${scale} should start with path '${path}'`);
+        throw new Error(
+          `asset for scale ${scale} should start with path '${path}'`,
+        );
       }
     };
 
@@ -45,7 +45,7 @@ describe('getAssetDestPathAndroid', () => {
     };
 
     expect(getAssetDestPathAndroid(asset, 1)).toBe(
-      'drawable-mdpi/app_test_icon.png'
+      'drawable-mdpi/app_test_icon.png',
     );
   });
 
@@ -56,9 +56,7 @@ describe('getAssetDestPathAndroid', () => {
       httpServerLocation: '/assets/RKJSModules/Apps/AndroidSample/Assets',
     };
 
-    expect(
-      getAssetDestPathAndroid(asset, 1).startsWith('assets_')
-    ).toBeFalsy();
+    expect(getAssetDestPathAndroid(asset, 1).startsWith('assets_')).toBeFalsy();
   });
 
   it('should put non-drawable resources to `raw/`', () => {
@@ -68,8 +66,6 @@ describe('getAssetDestPathAndroid', () => {
       httpServerLocation: '/assets/app/test',
     };
 
-    expect(getAssetDestPathAndroid(asset, 1)).toBe(
-      'raw/app_test_video.mp4'
-    );
+    expect(getAssetDestPathAndroid(asset, 1)).toBe('raw/app_test_video.mp4');
   });
 });

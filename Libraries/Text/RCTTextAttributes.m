@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextAttributes.h"
@@ -23,12 +21,14 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (self = [super init]) {
     _fontSize = NAN;
     _letterSpacing = NAN;
+    _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
     _textShadowRadius = NAN;
     _opacity = NAN;
+    _textTransform = RCTTextTransformUndefined;
   }
 
   return self;
@@ -74,6 +74,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted;  // *
   _tag = textAttributes->_tag ?: _tag;
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
+  _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
@@ -190,7 +191,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (CGFloat)effectiveFontSizeMultiplier
 {
-  return _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+  return !RCTHasFontHandlerSet() && _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
 }
 
 - (UIColor *)effectiveForegroundColor
@@ -213,6 +214,21 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   return effectiveBackgroundColor ?: [UIColor clearColor];
+}
+
+- (NSString *)applyTextAttributesToText:(NSString *)text
+{
+  switch (_textTransform) {
+    case RCTTextTransformUndefined:
+    case RCTTextTransformNone:
+      return text;
+    case RCTTextTransformLowercase:
+      return [text lowercaseString];
+    case RCTTextTransformUppercase:
+      return [text uppercaseString];
+    case RCTTextTransformCapitalize:
+      return [text capitalizedString];
+  }
 }
 
 - (RCTTextAttributes *)copyWithZone:(NSZone *)zone
@@ -264,7 +280,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     // Special
     RCTTextAttributesCompareOthers(_isHighlighted) &&
     RCTTextAttributesCompareObjects(_tag) &&
-    RCTTextAttributesCompareOthers(_layoutDirection);
+    RCTTextAttributesCompareOthers(_layoutDirection) &&
+    RCTTextAttributesCompareOthers(_textTransform);
 }
 
 @end

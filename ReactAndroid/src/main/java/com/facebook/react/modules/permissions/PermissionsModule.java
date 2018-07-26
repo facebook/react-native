@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.permissions;
@@ -88,9 +86,9 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
   }
 
   /**
-   * Request the given permission. successCallback is called with true if the permission had been
-   * granted, false otherwise. For devices before Android M, this instead checks if the user has
-   * the permission given or not.
+   * Request the given permission. successCallback is called with GRANTED if the permission had been
+   * granted, DENIED or NEVER_ASK_AGAIN otherwise. For devices before Android M, this checks if the user has
+   * the permission given or not and resolves with GRANTED or DENIED.
    * See {@link Activity#checkSelfPermission}.
    */
   @ReactMethod
@@ -98,7 +96,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
     Context context = getReactApplicationContext().getBaseContext();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.resolve(context.checkPermission(permission, Process.myPid(), Process.myUid()) ==
-              PackageManager.PERMISSION_GRANTED);
+              PackageManager.PERMISSION_GRANTED ? GRANTED : DENIED);
       return;
     }
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {

@@ -11,7 +11,7 @@ def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
 
-gradle.projectsEvaluated {
+afterEvaluate {
     android.applicationVariants.all { def variant ->
         // Create variant and target names
         def targetName = variant.name.capitalize()
