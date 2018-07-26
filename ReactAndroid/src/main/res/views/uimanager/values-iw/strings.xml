@@ -6,4 +6,5 @@
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">קישור</string>
     <string name="image_description" gender="unknown">תמונה</string>
+    <string name="image_button_description" gender="unknown">לחצן, תמונה</string>
 </resources>

@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Odkaz</string>
+    <string name="search_description" gender="unknown">Pole pro vyhledávání</string>
     <string name="image_description" gender="unknown">Obrázek</string>
+    <string name="image_button_description" gender="unknown">Tlačítko, obrázek</string>
+    <string name="adjustable_description" gender="unknown">Upravitelný</string>
 </resources>

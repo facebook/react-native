@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Länk</string>
+    <string name="search_description" gender="unknown">Sökfält</string>
     <string name="image_description" gender="unknown">Bild</string>
+    <string name="image_button_description" gender="unknown">Knapp, bild</string>
+    <string name="adjustable_description" gender="unknown">Justerbar</string>
 </resources>

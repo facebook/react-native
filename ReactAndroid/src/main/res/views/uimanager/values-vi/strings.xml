@@ -5,6 +5,7 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Liên kết</string>
+    <string name="search_description" gender="unknown">Trường tìm kiếm</string>
     <string name="image_description" gender="unknown">Hình ảnh</string>
     <string name="image_button_description" gender="unknown">Nút, hình ảnh</string>
     <string name="adjustable_description" gender="unknown">Có thể điều chỉnh</string>
