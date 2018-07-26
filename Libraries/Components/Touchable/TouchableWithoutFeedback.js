@@ -22,6 +22,8 @@ const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
+  AccessibilityRoles,
+  AccessibilityStates,
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
@@ -29,6 +31,8 @@ import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
+  AccessibilityRole,
+  AccessibilityState,
   AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
@@ -44,6 +48,8 @@ export type Props = $ReadOnly<{|
     | Array<any>
     | any,
   accessibilityHint?: string,
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?Array<AccessibilityState>,
   accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
@@ -78,6 +84,10 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityLabel: PropTypes.node,
     accessibilityHint: PropTypes.string,
     accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+    accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+    accessibilityStates: PropTypes.arrayOf(
+      PropTypes.oneOf(AccessibilityStates),
+    ),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
