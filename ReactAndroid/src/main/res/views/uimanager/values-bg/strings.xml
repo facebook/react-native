@@ -5,5 +5,7 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Връзка</string>
+    <string name="search_description" gender="unknown">Поле за търсене</string>
     <string name="image_description" gender="unknown">Изображение</string>
+    <string name="image_button_description" gender="unknown">Бутон, изображение</string>
 </resources>

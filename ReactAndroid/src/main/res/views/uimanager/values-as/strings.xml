@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">লিংক</string>
+    <string name="search_description" gender="unknown">সন্ধান ক্ষেত্ৰ</string>
     <string name="image_description" gender="unknown">ছবি</string>
+    <string name="image_button_description" gender="unknown">বুটাম, ছবি</string>
+    <string name="adjustable_description" gender="unknown">মিলাব পৰা</string>
 </resources>
