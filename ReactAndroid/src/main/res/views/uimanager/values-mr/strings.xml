@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">दुवा</string>
+    <string name="search_description" gender="unknown">फील्ड शोधा</string>
     <string name="image_description" gender="unknown">प्रतिमा</string>
+    <string name="image_button_description" gender="unknown">बटण, प्रतिमा</string>
+    <string name="adjustable_description" gender="unknown">समायोजित करण्याजोगे</string>
 </resources>

@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">లింక్</string>
+    <string name="search_description" gender="unknown">శోధన ఫీల్డ్</string>
     <string name="image_description" gender="unknown">చిత్రం</string>
+    <string name="image_button_description" gender="unknown">బటన్, చిత్రం</string>
+    <string name="adjustable_description" gender="unknown">సర్దుబాటు చేయదగినది</string>
 </resources>

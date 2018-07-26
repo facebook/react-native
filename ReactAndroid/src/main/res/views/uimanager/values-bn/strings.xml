@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">লিঙ্ক</string>
+    <string name="search_description" gender="unknown">ক্ষেত্র সন্ধান করুন</string>
     <string name="image_description" gender="unknown">চিত্র</string>
+    <string name="image_button_description" gender="unknown">বোতাম, চিত্র</string>
+    <string name="adjustable_description" gender="unknown">নিয়ন্ত্রণযোগ্য</string>
 </resources>

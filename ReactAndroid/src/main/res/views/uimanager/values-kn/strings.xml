@@ -4,6 +4,9 @@
 <!-- FB Locale: kn_IN -->
 
 <resources exclude-from-buck-resource-map="true">
-    <string name="link_description" gender="unknown">ಕೊಂಡಿ</string>
+    <string name="link_description" gender="unknown">ಲಿಂಕ್</string>
+    <string name="search_description" gender="unknown">ಕ್ಷೇತ್ರವನ್ನು ಹುಡುಕಿ</string>
     <string name="image_description" gender="unknown">ಚಿತ್ರ</string>
+    <string name="image_button_description" gender="unknown">ಬಟನ್, ಚಿತ್ರ</string>
+    <string name="adjustable_description" gender="unknown">ಹೊಂದಾಣಿಕೆ</string>
 </resources>
