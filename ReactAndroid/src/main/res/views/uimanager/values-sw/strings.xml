@@ -5,4 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Kiungo</string>
+    <string name="search_description" gender="unknown">Tafuta Uga</string>
+    <string name="image_description" gender="unknown">Taswira</string>
+    <string name="image_button_description" gender="unknown">Kitufe, Taswira</string>
+    <string name="adjustable_description" gender="unknown">Inaweza kurekebishwa</string>
 </resources>
