@@ -29,7 +29,10 @@ class AccessibilityIOSExample extends React.Component<{}> {
         <View accessibilityLabel="Some announcement" accessible={true}>
           <Text>Accessibility label example</Text>
         </View>
-        <View accessibilityTraits={['button', 'selected']} accessible={true}>
+        <View
+          accessibilityRole="button"
+          accessibilityStates={['selected']}
+          accessible={true}>
           <Text>Accessibility traits example</Text>
         </View>
         <Text>
