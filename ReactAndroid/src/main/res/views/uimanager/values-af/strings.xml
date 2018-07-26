@@ -5,4 +5,5 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Skakel</string>
+    <string name="image_description" gender="unknown">Prent</string>
 </resources>
