@@ -79,8 +79,18 @@ afterEvaluate {
         currentBundleTask.ext.generatedResFolders = files(resourcesDir).builtBy(currentBundleTask)
         currentBundleTask.ext.generatedAssetsFolders = files(jsBundleDir).builtBy(currentBundleTask)
 
-        variant.registerGeneratedResFolders(currentBundleTask.generatedResFolders)
+        // registerGeneratedResFolders for Android plugin 3.x
+        if (variant.respondsTo("registerGeneratedResFolders")) {
+            variant.registerGeneratedResFolders(currentBundleTask.generatedResFolders)
+        } else {
+            variant.registerResGeneratingTask(currentBundleTask)
+        }
         variant.mergeResources.dependsOn(currentBundleTask)
+
+        // packageApplication for Android plugin 3.x
+        def packageTask = variant.hasProperty("packageApplication")
+            ? variant.packageApplication
+            : tasks.findByName("package${targetName}")
 
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
@@ -98,7 +108,7 @@ afterEvaluate {
                 enabled currentBundleTask.enabled
             }
 
-            variant.packageApplication.dependsOn(currentCopyResTask)
+            packageTask.dependsOn(currentCopyResTask)
         }
 
         def currentAssetsCopyTask = tasks.create(
@@ -117,6 +127,6 @@ afterEvaluate {
             enabled currentBundleTask.enabled
         }
 
-        variant.packageApplication.dependsOn(currentAssetsCopyTask)
+        packageTask.dependsOn(currentAssetsCopyTask)
     }
 }
