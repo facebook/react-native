@@ -5,4 +5,7 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Lien</string>
+    <string name="search_description" gender="unknown">Champ de recherche</string>
+    <string name="image_button_description" gender="unknown">Bouton, image</string>
+    <string name="adjustable_description" gender="unknown">Ajustable</string>
 </resources>

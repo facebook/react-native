@@ -5,5 +5,8 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">リンク</string>
+    <string name="search_description" gender="unknown">検索フィールド</string>
     <string name="image_description" gender="unknown">画像</string>
+    <string name="image_button_description" gender="unknown">ボタン、画像</string>
+    <string name="adjustable_description" gender="unknown">調整可能</string>
 </resources>

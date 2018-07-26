@@ -4,5 +4,7 @@
 <!-- FB Locale: ro_RO -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Câmpul Căutare</string>
     <string name="image_description" gender="unknown">Imagine</string>
+    <string name="image_button_description" gender="unknown">Buton, imagine</string>
 </resources>

@@ -4,5 +4,8 @@
 <!-- FB Locale: nl_NL -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Zoekveld</string>
     <string name="image_description" gender="unknown">Afbeelding</string>
+    <string name="image_button_description" gender="unknown">Knop, afbeelding</string>
+    <string name="adjustable_description" gender="unknown">Aanpasbaar</string>
 </resources>

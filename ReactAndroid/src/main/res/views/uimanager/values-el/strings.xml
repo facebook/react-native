@@ -5,5 +5,7 @@
 
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Σύνδεσμος</string>
+    <string name="search_description" gender="unknown">Πεδίο αναζήτησης</string>
     <string name="image_description" gender="unknown">Εικόνα</string>
+    <string name="image_button_description" gender="unknown">Κουμπί, εικόνα</string>
 </resources>
