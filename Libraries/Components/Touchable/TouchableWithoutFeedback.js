@@ -32,7 +32,7 @@ import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
   AccessibilityRole,
-  AccessibilityState,
+  AccessibilityStates as AccessibilityStatesFlow,
   AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
@@ -49,7 +49,7 @@ export type Props = $ReadOnly<{|
     | any,
   accessibilityHint?: string,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityStates?: ?Array<AccessibilityState>,
+  accessibilityStates?: ?AccessibilityStatesFlow,
   accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
@@ -252,6 +252,8 @@ const TouchableWithoutFeedback = ((createReactClass({
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
       testID: this.props.testID,

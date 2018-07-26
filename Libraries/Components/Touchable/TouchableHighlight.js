@@ -349,8 +349,8 @@ const TouchableHighlight = ((createReactClass({
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraUnderlayStyle,
