@@ -15,6 +15,7 @@ const path = require('path');
 const ROOTS = [
   path.resolve(__dirname, '..') + path.sep,
   path.resolve(__dirname, '../../react-native-windows') + path.sep,
+  path.resolve(__dirname, '../../react-native-dom') + path.sep,
 ];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
@@ -36,7 +37,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
   // strip .android/.ios/.native/.web suffix
-  [/^(.*)\.(android|ios|native|web|windows)$/, '$1'],
+  [/^(.*)\.(android|ios|native|web|windows|dom)$/, '$1'],
 ];
 
 const haste = {
