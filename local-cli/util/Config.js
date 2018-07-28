@@ -84,8 +84,10 @@ const Config = {
   getProjectPath,
   getProjectRoots,
 
-  async load(configFile: string): Promise<ConfigT> {
-    const config: ConfigT = await loadConfig({config: configFile});
+  async load(configFile: ?string): Promise<ConfigT> {
+    const config: ConfigT = await loadConfig(
+      configFile ? {config: configFile} : {},
+    );
 
     return mergeConfig(config, this.DEFAULT);
   },

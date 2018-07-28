@@ -129,7 +129,9 @@ const defaultRNConfig = {
  */
 async function getCliConfig(): Promise<RNConfig> {
   const cliArgs = minimist(process.argv.slice(2));
-  const config = await Config.load(path.resolve(__dirname, cliArgs.config));
+  const config = await Config.load(
+    cliArgs.config != null ? path.resolve(__dirname, cliArgs.config) : null,
+  );
 
   config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
   config.resolver.hasteImplModulePath = defaultConfig.hasteImplModulePath;
