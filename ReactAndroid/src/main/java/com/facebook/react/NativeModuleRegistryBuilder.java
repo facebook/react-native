@@ -49,12 +49,12 @@ public class NativeModuleRegistryBuilder {
     if (reactPackage instanceof LazyReactPackage) {
       LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
       List<ModuleSpec> moduleSpecs = lazyReactPackage.getNativeModules(mReactApplicationContext);
-      Map<Class, ReactModuleInfo> reactModuleInfoMap = lazyReactPackage.getReactModuleInfoProvider()
-        .getReactModuleInfos();
+      Map<String, ReactModuleInfo> reactModuleInfoMap =
+          lazyReactPackage.getReactModuleInfoProvider().getReactModuleInfos();
 
       for (ModuleSpec moduleSpec : moduleSpecs) {
         Class<? extends NativeModule> type = moduleSpec.getType();
-        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type);
+        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type.getCanonicalName());
         ModuleHolder moduleHolder;
         if (reactModuleInfo == null) {
           if (BaseJavaModule.class.isAssignableFrom(type)) {

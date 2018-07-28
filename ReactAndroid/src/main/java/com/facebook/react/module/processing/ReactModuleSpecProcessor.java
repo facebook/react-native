@@ -62,7 +62,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);
   private static final TypeName MAP_TYPE = ParameterizedTypeName.get(
     Map.class,
-    Class.class,
+    String.class,
     ReactModuleInfo.class);
   private static final TypeName INSTANTIATED_MAP_TYPE = ParameterizedTypeName.get(HashMap.class);
 
@@ -155,7 +155,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
       for (String nativeModule : nativeModules) {
-        String keyString = nativeModule + ".class";
+        String keyString = nativeModule;
 
         TypeElement typeElement = mElements.getTypeElement(nativeModule);
         if (typeElement == null) {
@@ -191,7 +191,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
           .append(")")
           .toString();
 
-        builder.addStatement("map.put(" + keyString + ", " + valueString + ")");
+        builder.addStatement("map.put(\"" + keyString + "\", " + valueString + ")");
       }
       builder.addStatement("return map");
     }
