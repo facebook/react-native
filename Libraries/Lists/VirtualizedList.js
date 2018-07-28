@@ -1736,6 +1736,7 @@ class CellRenderer extends React.Component<
   }
 
   _onLayout = (e): void =>
+    this.props.onLayout &&
     this.props.onLayout(e, this.props.cellKey, this.props.index);
 
   shouldComponentUpdate(nextProps, nextState) {
