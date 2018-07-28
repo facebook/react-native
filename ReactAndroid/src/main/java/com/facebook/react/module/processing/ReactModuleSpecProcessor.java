@@ -5,6 +5,8 @@
 
 package com.facebook.react.module.processing;
 
+import com.facebook.react.bridge.CxxModuleWrapper;
+import com.facebook.react.bridge.OnBatchCompleteListener;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -21,6 +23,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +75,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private Elements mElements;
   @SuppressFieldNotInitialized
   private Messager mMessager;
+  private Types mTypes;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -80,6 +84,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     mFiler = processingEnv.getFiler();
     mElements = processingEnv.getElementUtils();
     mMessager = processingEnv.getMessager();
+    mTypes = processingEnv.getTypeUtils();
   }
 
   @Override
@@ -154,6 +159,9 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
+      TypeMirror cxxModuleWrapperTypeMirror = mElements.getTypeElement(CxxModuleWrapper.class.getName()).asType();
+      TypeMirror onBatchCompleteListenerTypeMirror = mElements.getTypeElement(OnBatchCompleteListener.class.getName()).asType();
+
       for (String nativeModule : nativeModules) {
         String keyString = nativeModule;
 
@@ -163,6 +171,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
             keyString + " not found by ReactModuleSpecProcessor. " +
             "Did you misspell the module?");
         }
+
         ReactModule reactModule = typeElement.getAnnotation(ReactModule.class);
         if (reactModule == null) {
           throw new ReactModuleSpecException(
@@ -182,12 +191,27 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                       name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
+        boolean isCxxModule = mTypes.isAssignable(typeElement.asType(), cxxModuleWrapperTypeMirror);
+       boolean hasOnBatchCompleteListener = false;
+       try {
+         hasOnBatchCompleteListener = mTypes.isAssignable(typeElement.asType(), onBatchCompleteListenerTypeMirror);
+       } catch (RuntimeException e) {
+         // This is SUPER ugly, but we need to do this, especially for AsyncStorageModule which implements ModuleDataCleaner
+         // In the case of that specific class, we get the exception
+         // com.sun.tools.javac.code.Symbol$CompletionFailure: class file for ModuleDataCleaner not found.
+         // The exception is caused because the class is not loaded the first time. However, catching it and
+         // running it again the second time loads the class and does what the following statement originally intended
+         hasOnBatchCompleteListener = mTypes.isAssignable(typeElement.asType(), onBatchCompleteListenerTypeMirror);
+       }
+
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
-          .append(hasConstants)
+          .append(hasConstants).append(", ")
+          .append(isCxxModule).append(", ")
+          .append(hasOnBatchCompleteListener)
           .append(")")
           .toString();
 

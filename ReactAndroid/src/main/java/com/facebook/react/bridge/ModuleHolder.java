@@ -40,6 +40,8 @@ public class ModuleHolder {
   private final String mName;
   private final boolean mCanOverrideExistingModule;
   private final boolean mHasConstants;
+  private final boolean mIsCxxModule;
+  private final boolean mHasOnBatchCompleteListener;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
   // Outside of the constructur, these should only be checked or set when synchronized on this
@@ -55,6 +57,8 @@ public class ModuleHolder {
     mCanOverrideExistingModule = moduleInfo.canOverrideExistingModule();
     mHasConstants = moduleInfo.hasConstants();
     mProvider = provider;
+    mHasOnBatchCompleteListener = moduleInfo.hasOnBatchCompleteListener();
+    mIsCxxModule = moduleInfo.isCxxModule();
     if (moduleInfo.needsEagerInit()) {
       mModule = create();
     }
@@ -64,6 +68,8 @@ public class ModuleHolder {
     mName = nativeModule.getName();
     mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
     mHasConstants = true;
+    mIsCxxModule = CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass());
+    mHasOnBatchCompleteListener = OnBatchCompleteListener.class.isAssignableFrom(nativeModule.getClass());
     mModule = nativeModule;
     PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
@@ -112,6 +118,10 @@ public class ModuleHolder {
   public boolean getHasConstants() {
     return mHasConstants;
   }
+
+  public boolean isCxxModule() {return mIsCxxModule; }
+
+  public boolean hasOnBatchCompleteListener() {return mHasOnBatchCompleteListener; }
 
   @DoNotStrip
   public NativeModule getModule() {

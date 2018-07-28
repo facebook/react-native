@@ -32,8 +32,8 @@ public class NativeModuleRegistryBuilder {
   private final ReactInstanceManager mReactInstanceManager;
   private final boolean mLazyNativeModulesEnabled;
 
-  private final Map<Class<? extends NativeModule>, ModuleHolder> mModules = new HashMap<>();
-  private final Map<String, Class<? extends NativeModule>> namesToType = new HashMap<>();
+  private final Map<String, ModuleHolder> mModules = new HashMap<>();
+  private final Map<String,String> namesToType = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
@@ -53,16 +53,10 @@ public class NativeModuleRegistryBuilder {
           lazyReactPackage.getReactModuleInfoProvider().getReactModuleInfos();
 
       for (ModuleSpec moduleSpec : moduleSpecs) {
-        Class<? extends NativeModule> type = moduleSpec.getType();
-        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type.getCanonicalName());
+        String className = moduleSpec.getClassName();
+        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(className);
         ModuleHolder moduleHolder;
         if (reactModuleInfo == null) {
-          if (BaseJavaModule.class.isAssignableFrom(type)) {
-            throw new IllegalStateException(
-                "Native Java module "
-                    + type.getSimpleName()
-                    + " should be annotated with @ReactModule and added to a @ReactModuleList.");
-          }
           NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
@@ -78,7 +72,7 @@ public class NativeModuleRegistryBuilder {
         }
 
         String name = moduleHolder.getName();
-        putModuleTypeAndHolderToModuleMaps(type, name, moduleHolder);
+        putModuleTypeAndHolderToModuleMaps(className, name, moduleHolder);
       }
     } else {
       FLog.d(
@@ -103,20 +97,20 @@ public class NativeModuleRegistryBuilder {
   public void addNativeModule(NativeModule nativeModule) {
     String name = nativeModule.getName();
     Class<? extends NativeModule> type = nativeModule.getClass();
-    putModuleTypeAndHolderToModuleMaps(type, name, new ModuleHolder(nativeModule));
+    putModuleTypeAndHolderToModuleMaps(type.getName(), name, new ModuleHolder(nativeModule));
   }
 
   private void putModuleTypeAndHolderToModuleMaps(
-      Class<? extends NativeModule> type, String underName, ModuleHolder moduleHolder)
+      String className, String underName, ModuleHolder moduleHolder)
       throws IllegalStateException {
     if (namesToType.containsKey(underName)) {
-      Class<? extends NativeModule> existingNativeModule = namesToType.get(underName);
+      String existingNativeModule = namesToType.get(underName);
       if (!moduleHolder.getCanOverrideExistingModule()) {
         throw new IllegalStateException(
             "Native module "
-                + type.getSimpleName()
+                + className
                 + " tried to override "
-                + existingNativeModule.getSimpleName()
+                + existingNativeModule
                 + " for module name "
                 + underName
                 + ". Check the getPackages() method in MainApplication.java, it might be "
@@ -127,14 +121,14 @@ public class NativeModuleRegistryBuilder {
       mModules.remove(existingNativeModule);
     }
 
-    namesToType.put(underName, type);
-    mModules.put(type, moduleHolder);
+    namesToType.put(underName, className);
+    mModules.put(className, moduleHolder);
   }
 
   public NativeModuleRegistry build() {
     ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
-    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      if (OnBatchCompleteListener.class.isAssignableFrom(entry.getKey())) {
+    for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
+      if (entry.getValue().hasOnBatchCompleteListener()) {
         batchCompleteListenerModules.add(entry.getValue());
       }
     }
