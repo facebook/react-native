@@ -70,6 +70,11 @@ public class ModuleSpec {
     return new ModuleSpec(provider, type.getName());
   }
 
+  public static ModuleSpec nativeModuleSpec(
+      String className, Provider<? extends NativeModule> provider) {
+    return new ModuleSpec(provider, className);
+  }
+
   private ModuleSpec(
       @Nullable Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
     mType = type;
