@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Platform
- * @flow
+ * @format
+ * @flow strict
  */
 
 'use strict';
@@ -26,7 +26,7 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.uiMode === 'tv';
   },
-  select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
+  select: (obj: Object) => ('android' in obj ? obj.android : obj.default),
 };
 
 module.exports = Platform;

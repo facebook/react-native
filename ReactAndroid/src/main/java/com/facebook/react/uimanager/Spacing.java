@@ -68,9 +68,9 @@ public class Spacing {
     256, /*ALL*/
   };
 
-  private final float[] mSpacing = newFullSpacingArray();
+  private final float[] mSpacing;
   private int mValueFlags = 0;
-  private float mDefaultValue;
+  private final float mDefaultValue;
   private boolean mHasAliasesSet;
 
   public Spacing() {
@@ -79,6 +79,14 @@ public class Spacing {
 
   public Spacing(float defaultValue) {
     mDefaultValue = defaultValue;
+    mSpacing = newFullSpacingArray();
+  }
+
+  public Spacing(Spacing original) {
+    mDefaultValue = original.mDefaultValue;
+    mSpacing = Arrays.copyOf(original.mSpacing, original.mSpacing.length);
+    mValueFlags = original.mValueFlags;
+    mHasAliasesSet = original.mHasAliasesSet;
   }
 
   /**

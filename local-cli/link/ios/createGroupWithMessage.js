@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 const log = require('npmlog');
@@ -24,7 +26,7 @@ module.exports = function createGroupWithMessage(project, path) {
 
     log.warn(
       'ERRGROUP',
-      `Group '${path}' does not exist in your Xcode project. We have created it automatically for you.`
+      `Group '${path}' does not exist in your Xcode project. We have created it automatically for you.`,
     );
   }
 

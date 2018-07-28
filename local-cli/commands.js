@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-const { getProjectCommands } = require('./core');
+const {getProjectCommands} = require('./core');
 
-import type { RNConfig } from './core';
+import type {RNConfig} from './core';
 
 export type CommandT = {
   name: string,
@@ -40,6 +42,7 @@ const documentedCommands = [
   require('./library/library'),
   require('./bundle/bundle'),
   require('./bundle/unbundle'),
+  require('./bundle/ramBundle'),
   require('./eject/eject'),
   require('./link/link'),
   require('./link/unlink'),
@@ -58,10 +61,12 @@ const undocumentedCommands = [
   {
     name: 'init',
     func: () => {
-      console.log([
-        'Looks like React Native project already exists in the current',
-        'folder. Run this command from a different folder or remove node_modules/react-native',
-      ].join('\n'));
+      console.log(
+        [
+          'Looks like React Native project already exists in the current',
+          'folder. Run this command from a different folder or remove node_modules/react-native',
+        ].join('\n'),
+      );
     },
   },
 ];

@@ -11,7 +11,9 @@
 
 #include <fabric/core/ConcreteComponentDescriptor.h>
 #include <fabric/core/ConcreteShadowNode.h>
+#include <fabric/core/LocalData.h>
 #include <fabric/core/ShadowNode.h>
+#include <folly/dynamic.h>
 
 using namespace facebook::react;
 
@@ -20,13 +22,25 @@ using namespace facebook::react;
  * To be used for testing purpose.
  */
 
+class TestLocalData: public LocalData {
+public:
+  void setNumber(const int &number) {
+    number_ = number;
+  }
+
+  int getNumber() const {
+    return number_;
+  }
+
+private:
+  int number_ {0};
+};
+
 class TestProps : public Props {
 public:
-  TestProps() {
-    RawProps raw;
-    raw["nativeID"] = "testNativeID";
-    apply(raw);
-  }
+  using Props::Props;
+  TestProps():
+    Props(Props(), {{"nativeID", "testNativeID"}}) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
 
@@ -43,6 +57,8 @@ public:
 
 class TestComponentDescriptor: public ConcreteComponentDescriptor<TestShadowNode> {
 public:
+  using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
+
   // TODO (shergin): Why does this gets repeated here and the shadow node class?
   ComponentName getComponentName() const override {
     return "Test";

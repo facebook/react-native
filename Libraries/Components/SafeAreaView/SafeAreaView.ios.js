@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SafeAreaView
  * @flow
  * @format
  */
@@ -14,6 +13,8 @@ const ViewPropTypes = require('ViewPropTypes');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+
+const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
 
 type Props = ViewProps & {
   children: any,
@@ -34,13 +35,5 @@ class SafeAreaView extends React.Component<Props> {
     return <RCTSafeAreaView {...this.props} />;
   }
 }
-
-const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView', {
-  name: 'RCTSafeAreaView',
-  displayName: 'RCTSafeAreaView',
-  propTypes: {
-    ...ViewPropTypes,
-  },
-});
 
 module.exports = SafeAreaView;

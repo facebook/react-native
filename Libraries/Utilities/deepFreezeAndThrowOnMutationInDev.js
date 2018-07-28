@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule deepFreezeAndThrowOnMutationInDev
+ * @format
  * @flow
  */
 
@@ -29,20 +29,27 @@
  */
 function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
   if (__DEV__) {
-    if (typeof object !== 'object' ||
-        object === null ||
-        Object.isFrozen(object) ||
-        Object.isSealed(object)) {
+    if (
+      typeof object !== 'object' ||
+      object === null ||
+      Object.isFrozen(object) ||
+      Object.isSealed(object)
+    ) {
       return object;
     }
 
-    var keys = Object.keys(object);
+    const keys = Object.keys(object);
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
 
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
-      if (object.hasOwnProperty(key)) {
-        object.__defineGetter__(key, identity.bind(null, object[key]));
-        object.__defineSetter__(key, throwOnImmutableMutation.bind(null, key));
+      if (hasOwnProperty.call(object, key)) {
+        Object.defineProperty(object, key, {
+          get: identity.bind(null, object[key]),
+        });
+        Object.defineProperty(object, key, {
+          set: throwOnImmutableMutation.bind(null, key),
+        });
       }
     }
 
@@ -51,7 +58,7 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
 
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
-      if (object.hasOwnProperty(key)) {
+      if (hasOwnProperty.call(object, key)) {
         deepFreezeAndThrowOnMutationInDev(object[key]);
       }
     }
@@ -61,9 +68,12 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
 
 function throwOnImmutableMutation(key, value) {
   throw Error(
-    'You attempted to set the key `' + key + '` with the value `' +
-    JSON.stringify(value) + '` on an object that is meant to be immutable ' +
-    'and has been frozen.'
+    'You attempted to set the key `' +
+      key +
+      '` with the value `' +
+      JSON.stringify(value) +
+      '` on an object that is meant to be immutable ' +
+      'and has been frozen.',
   );
 }
 

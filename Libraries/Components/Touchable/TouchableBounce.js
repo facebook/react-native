@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableBounce
  * @flow
  * @format
  */
@@ -17,6 +16,12 @@ const React = require('React');
 const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
 const Touchable = require('Touchable');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const ViewPropTypes = require('ViewPropTypes');
+
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {ViewStyleProp} from 'StyleSheet';
 
 type Event = Object;
 
@@ -27,6 +32,17 @@ type State = {
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
+type Props = $ReadOnly<{|
+  ...TouchableWithoutFeedbackProps,
+
+  onPressWithCompletion?: ?Function,
+  onPressAnimationComplete?: ?Function,
+  pressRetentionOffset?: ?EdgeInsetsProp,
+  releaseVelocity?: ?number,
+  releaseBounciness?: ?number,
+  style?: ?ViewStyleProp,
+|}>;
+
 /**
  * Example of using the `TouchableMixin` to play well with other responder
  * locking views including `ScrollView`. `TouchableMixin` provides touchable
@@ -34,20 +50,12 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
-const TouchableBounce = createReactClass({
+const TouchableBounce = ((createReactClass({
   displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
-    /**
-     * When true, indicates that the view is an accessibility element. By default,
-     * all the touchable elements are accessible.
-     */
-    accessible: PropTypes.bool,
-
-    onPress: PropTypes.func,
-    onPressIn: PropTypes.func,
-    onPressOut: PropTypes.func,
+    ...TouchableWithoutFeedback.propTypes,
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
     // to update UI before starting the animation.
@@ -62,17 +70,13 @@ const TouchableBounce = createReactClass({
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
     pressRetentionOffset: EdgeInsetsPropType,
-    /**
-     * This defines how far your touch can start away from the button. This is
-     * added to `pressRetentionOffset` when moving off of the button.
-     * ** NOTE **
-     * The touch area never extends past the parent view bounds and the Z-index
-     * of sibling views always takes precedence if a touch hits two overlapping
-     * views.
-     */
-    hitSlop: EdgeInsetsPropType,
     releaseVelocity: PropTypes.number.isRequired,
     releaseBounciness: PropTypes.number.isRequired,
+    /**
+     * Style to apply to the container/underlay. Most commonly used to make sure
+     * rounded corners match the wrapped component.
+     */
+    style: ViewPropTypes.style,
   },
 
   getDefaultProps: function() {
@@ -153,30 +157,13 @@ const TouchableBounce = createReactClass({
   render: function(): React.Element<any> {
     return (
       <Animated.View
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
         accessibilityLabel={this.props.accessibilityLabel}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
-        accessibilityTraits={this.props.accessibilityTraits}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
-        /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-         * comment suppresses an error when upgrading Flow's support for React.
-         * To see the error delete this comment and run Flow. */
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
@@ -187,10 +174,7 @@ const TouchableBounce = createReactClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
-        {
-          // $FlowFixMe(>=0.41.0)
-          this.props.children
-        }
+        {this.props.children}
         {Touchable.renderDebugView({
           color: 'orange',
           hitSlop: this.props.hitSlop,
@@ -198,6 +182,6 @@ const TouchableBounce = createReactClass({
       </Animated.View>
     );
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableBounce;

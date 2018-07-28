@@ -7,16 +7,10 @@
 
 package com.facebook.react.views.drawer;
 
-import javax.annotation.Nullable;
-
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
@@ -33,6 +27,9 @@ import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
+import java.lang.reflect.Method;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * View Manager for {@link ReactDrawerLayout} components.

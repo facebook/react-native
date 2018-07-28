@@ -7,12 +7,15 @@
 
 #import <React/RCTConvert.h>
 
+#import "RCTTextTransform.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTConvert (Text)
 
 + (UITextAutocorrectionType)UITextAutocorrectionType:(nullable id)json;
 + (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
++ (RCTTextTransform)RCTTextTransform:(nullable id)json;
 
 @end
 

@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeRefreshLayoutTestModule
+ * @format
  */
 
 'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var RecordingModule = require('NativeModules').SwipeRefreshLayoutRecordingModule;
+var RecordingModule = require('NativeModules')
+  .SwipeRefreshLayoutRecordingModule;
 var ScrollView = require('ScrollView');
 var RefreshControl = require('RefreshControl');
 var Text = require('Text');
@@ -27,9 +28,7 @@ class Row extends React.Component {
     return (
       <TouchableWithoutFeedback onPress={this._onPress}>
         <View>
-          <Text>
-            {this.state.clicks + ' clicks'}
-          </Text>
+          <Text>{this.state.clicks + ' clicks'}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -78,12 +77,12 @@ var SwipeRefreshLayoutTestModule = {
     if (app != null) {
       app.setState({rows});
     }
-  }
+  },
 };
 
 BatchedBridge.registerCallableModule(
   'SwipeRefreshLayoutTestModule',
-  SwipeRefreshLayoutTestModule
+  SwipeRefreshLayoutTestModule,
 );
 
 module.exports = SwipeRefreshLayoutTestModule;

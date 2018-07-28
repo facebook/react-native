@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Set
+ * @format
  * @preventMunge
  * @typechecks
  */
@@ -13,10 +13,10 @@
 
 'use strict';
 
-var Map = require('Map');
+const Map = require('Map');
 
-var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-var toIterator = require('toIterator');
+const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
+const toIterator = require('toIterator');
 
 module.exports = (function(global) {
   // Since our implementation is spec-compliant for the most part we can safely
@@ -70,7 +70,6 @@ module.exports = (function(global) {
    */
 
   class Set {
-
     /**
      * 23.2.1.1
      *
@@ -81,16 +80,18 @@ module.exports = (function(global) {
      * @param {*} iterable
      */
     constructor(iterable) {
-      if (this == null ||
-          (typeof this !== 'object' && typeof this !== 'function')) {
+      if (
+        this == null ||
+        (typeof this !== 'object' && typeof this !== 'function')
+      ) {
         throw new TypeError('Wrong set object type.');
       }
 
       initSet(this);
 
       if (iterable != null) {
-        var it = toIterator(iterable);
-        var next;
+        const it = toIterator(iterable);
+        let next;
         while (!(next = it.next()).done) {
           this.add(next.value);
         }
@@ -130,7 +131,7 @@ module.exports = (function(global) {
      * @return {boolean}
      */
     delete(value) {
-      var ret = this._map.delete(value);
+      const ret = this._map.delete(value);
       this.size = this._map.size;
       return ret;
     }
@@ -152,9 +153,9 @@ module.exports = (function(global) {
      * @param {function} callback
      */
     forEach(callback) {
-      var thisArg = arguments[1];
-      var it = this._map.keys();
-      var next;
+      const thisArg = arguments[1];
+      const it = this._map.keys();
+      let next;
       while (!(next = it.next()).done) {
         callback.call(thisArg, next.value, next.value, this);
       }

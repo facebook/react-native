@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageEditor
  * @flow
  * @format
  */
@@ -51,7 +50,9 @@ class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called.
+   * loaded/downloaded, the failure callback will be called. On Android, a
+   * downloaded image may be cached in external storage, a publicly accessible
+   * location, if it has more available space than internal storage.
    *
    * If the cropping process is successful, the resultant cropped image
    * will be stored in the ImageStore, and the URI returned in the success

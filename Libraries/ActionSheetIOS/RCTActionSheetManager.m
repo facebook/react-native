@@ -186,17 +186,4 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
-#pragma mark UIActionSheetDelegate Methods
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-  RCTResponseSenderBlock callback = [_callbacks objectForKey:actionSheet];
-  if (callback) {
-    callback(@[@(buttonIndex)]);
-    [_callbacks removeObjectForKey:actionSheet];
-  } else {
-    RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
-  }
-}
-
 @end

@@ -96,6 +96,7 @@ public:
 #pragma mark - DebugStringConvertible
 
   std::string getDebugName() const override;
+  std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
 
 private:

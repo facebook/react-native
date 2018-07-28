@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (ReactTag)tagByComponentView:(UIView<RCTComponentViewProtocol> *)componentView;
 
+/**
+ * Creates a component view with a given type and puts it to the recycle pool.
+ */
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName;
+
 @end
 
 NS_ASSUME_NONNULL_END
