@@ -8,7 +8,7 @@
 package com.facebook.react.modules.storage;
 
 import java.util.HashSet;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.database.Cursor;
@@ -43,7 +43,7 @@ public final class AsyncStorageModule
 
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
-  private Executor executor = Executors.newSingleThreadExecutor();
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -63,6 +63,7 @@ public final class AsyncStorageModule
 
   @Override
   public void onCatalystInstanceDestroy() {
+    executor.shutdown();
     mShuttingDown = true;
   }
 
@@ -392,6 +393,10 @@ public final class AsyncStorageModule
   }
 
   private void execute(Runnable r) {
-    executor.execute(r);
+    try {
+      executor.execute(r);
+    } catch (RuntimeException e) {
+      getReactApplicationContext().handleException(e);
+    }
   }
 }
