@@ -679,7 +679,8 @@ workflows:
       - publish_npm_package:
           filters:
             branches:
-              ignore: /.*/
+              only:
+                - /.*-stable/
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
