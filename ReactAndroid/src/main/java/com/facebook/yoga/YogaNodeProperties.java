@@ -164,4 +164,6 @@ public interface YogaNodeProperties {
   float getLayoutBorder(YogaEdge edge);
 
   YogaDirection getLayoutDirection();
+
+  void freeNatives();
 }
