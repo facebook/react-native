@@ -144,6 +144,9 @@ const ReactNative = {
   get TouchableWithoutFeedback() {
     return require('TouchableWithoutFeedback');
   },
+  get TouchableScale() {
+    return require('TouchableScale');
+  },
   get View() {
     return require('View');
   },
