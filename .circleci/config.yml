@@ -49,21 +49,21 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.06.25.01-
+      - v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2018.07.23.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -136,7 +136,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.06.25.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.07.23.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -324,16 +324,12 @@ aliases:
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
     command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-      fi
+      node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
     name: tvOS End-to-End Test Suite
     command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
-      fi
+      node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
     name: Android End-to-End Test Suite
@@ -365,7 +361,7 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
@@ -443,13 +439,13 @@ jobs:
   # Runs end to end tests
   test_end_to_end:
     <<: *macos_defaults
-    parallelism: 2
     steps:
       - attach_workspace:
           at: ~/react-native
 
-      - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
+      - run:
+          name: Boot iOS Simulator
+          command: xcrun simctl boot "iPhone 5s" || true
 
       - run:
           name: Configure Environment Variables
@@ -465,8 +461,20 @@ jobs:
             node -v
 
       - run: *run-objc-ios-e2e-tests
-      # Disabled for now
-      # - run: *run-objc-tvos-e2e-tests
+
+      - run:
+          name: Install Apple Simulator Utilities
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+
+      - run:
+          name: Build iOS App for Simulator
+          command: yarn run build-ios-e2e
+
+      - run:
+          name: Run Detox Tests
+          command: yarn run test-ios-e2e
 
       - store_test_results:
           path: ~/react-native/reports/junit

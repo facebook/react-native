@@ -33,7 +33,9 @@ public class YogaValue {
     if (other instanceof YogaValue) {
       final YogaValue otherValue = (YogaValue) other;
       if (unit == otherValue.unit) {
-        return unit == YogaUnit.UNDEFINED || Float.compare(value, otherValue.value) == 0;
+        return unit == YogaUnit.UNDEFINED
+            || unit == YogaUnit.AUTO
+            || Float.compare(value, otherValue.value) == 0;
       }
     }
     return false;
