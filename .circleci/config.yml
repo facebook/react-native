@@ -324,16 +324,12 @@ aliases:
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
     command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-      fi
+      node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
     name: tvOS End-to-End Test Suite
     command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
-      fi
+      node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
     name: Android End-to-End Test Suite
@@ -443,13 +439,13 @@ jobs:
   # Runs end to end tests
   test_end_to_end:
     <<: *macos_defaults
-    parallelism: 2
     steps:
       - attach_workspace:
           at: ~/react-native
 
-      - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
+      - run:
+          name: Boot iOS Simulator
+          command: xcrun simctl boot "iPhone 5s" || true
 
       - run:
           name: Configure Environment Variables
@@ -465,8 +461,20 @@ jobs:
             node -v
 
       - run: *run-objc-ios-e2e-tests
-      # Disabled for now
-      # - run: *run-objc-tvos-e2e-tests
+
+      - run:
+          name: Install Apple Simulator Utilities
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+
+      - run:
+          name: Build iOS App for Simulator
+          command: yarn run build-ios-e2e
+
+      - run:
+          name: Run Detox Tests
+          command: yarn run test-ios-e2e
 
       - store_test_results:
           path: ~/react-native/reports/junit

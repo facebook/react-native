@@ -33,7 +33,8 @@
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
-      "local-cli/templates/"
+      "local-cli/templates/",
+      "RNTester/e2e"
     ],
     "haste": {
       "defaultPlatform": "ios",
@@ -137,7 +138,9 @@
     "test-android-all": "yarn run docker-build-android && yarn run test-android-run-unit && yarn run test-android-run-instrumentation && yarn run test-android-run-e2e",
     "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
-    "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e"
+    "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
+    "build-ios-e2e": "detox build -c ios.sim.release",
+    "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
@@ -203,6 +206,7 @@
     "async": "^2.4.0",
     "babel-eslint": "9.0.0-beta.2",
     "babel-generator": "^6.26.0",
+    "detox": "^8.0.0",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
@@ -220,5 +224,18 @@
     "react-test-renderer": "16.4.1",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
+  },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "RNTester/e2e/config.json",
+    "specs": "RNTester/e2e",
+    "configurations": {
+      "ios.sim.release": {
+        "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      }
+    }
   }
 }
