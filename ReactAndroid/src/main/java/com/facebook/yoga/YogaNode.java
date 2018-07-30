@@ -21,6 +21,9 @@ public class YogaNode implements Cloneable {
     SoLoader.loadLibrary("yoga");
   }
 
+  public static final int BYTE_BUFFER = 1;
+  public static final int HYBRID = 2;
+
   /** Get native instance count. Useful for testing only. */
   static native int jni_YGNodeGetInstanceCount();
 
@@ -39,12 +42,30 @@ public class YogaNode implements Cloneable {
     mDelegate = new YogaNodePropertiesJNI(this, config);
   }
 
-  public YogaNode(boolean unsafeClownyUseByteBufferValueDoesNotMatter) {
-    mDelegate = new YogaNodePropertiesByteBuffer(this);
+  public YogaNode(int storageType) {
+    switch (storageType) {
+      case BYTE_BUFFER:
+        mDelegate = new YogaNodePropertiesByteBuffer(this);
+        break;
+      case HYBRID:
+        mDelegate = new YogaNodePropertiesHybrid(this);
+        break;
+      default:
+        mDelegate = new YogaNodePropertiesJNI(this);
+    }
   }
 
-  public YogaNode(boolean unsafeClownyUseByteBufferValueDoesNotMatter, YogaConfig config) {
-    mDelegate = new YogaNodePropertiesByteBuffer(this, config);
+  public YogaNode(int storageType, YogaConfig config) {
+    switch (storageType) {
+      case BYTE_BUFFER:
+        mDelegate = new YogaNodePropertiesByteBuffer(this, config);
+        break;
+      case HYBRID:
+        mDelegate = new YogaNodePropertiesHybrid(this, config);
+        break;
+      default:
+        mDelegate = new YogaNodePropertiesJNI(this, config);
+    }
   }
 
   public long getNativePointer() {

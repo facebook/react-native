@@ -20,13 +20,13 @@ public class YogaNodePropertiesJNI implements Cloneable, YogaNodeProperties {
   private long mNativePointer;
 
   /* Those flags needs be in sync with YGJNI.cpp */
-  private static final int MARGIN = 1;
-  private static final int PADDING = 2;
-  private static final int BORDER = 4;
+  protected static final int MARGIN = 1;
+  protected static final int PADDING = 2;
+  protected static final int BORDER = 4;
 
-  @DoNotStrip private int mEdgeSetFlag = 0;
+  @DoNotStrip protected int mEdgeSetFlag = 0;
 
-  private boolean mHasSetPosition = false;
+  protected boolean mHasSetPosition = false;
 
   @DoNotStrip private float mWidth = YogaConstants.UNDEFINED;
   @DoNotStrip private float mHeight = YogaConstants.UNDEFINED;

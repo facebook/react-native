@@ -33,6 +33,12 @@ struct JYogaNodePropertiesByteBuffer
       "Lcom/facebook/yoga/YogaNodePropertiesByteBuffer";
 };
 
+struct JYogaNodePropertiesHybrid
+    : public JavaClass<JYogaNodePropertiesHybrid, JYogaNodePropertiesJNI> {
+  static constexpr auto kJavaDescriptor =
+      "Lcom/facebook/yoga/YogaNodePropertiesHybrid";
+};
+
 struct YGConfigContext {
   global_ref<jobject>* logger;
   global_ref<jobject>* config;
@@ -857,6 +863,11 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeNativeMethod(jni_YGNodeIsDirty),
             YGMakeNativeMethod(jni_getStyleBuffer),
             YGMakeNativeMethod(jni_getLayoutBuffer),
+        });
+    registerNatives(
+        "com/facebook/yoga/YogaNodePropertiesHybrid",
+        {
+            YGMakeNativeMethod(jni_getStyleBuffer),
         });
   });
 }
