@@ -60,7 +60,10 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style} ref={this._captureRef}>
+      <View
+        accessibilityIgnoresInvertColors={true}
+        style={style}
+        ref={this._captureRef}>
         <Image
           {...props}
           style={[

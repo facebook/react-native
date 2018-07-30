@@ -14,9 +14,9 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {Alert, Button, View} = ReactNative;
 
-const onButtonPress = () => {
-  Alert.alert('Button has been pressed!');
-};
+function onButtonPress(buttonName) {
+  Alert.alert(`${buttonName} has been pressed!`);
+}
 
 exports.displayName = 'ButtonExample';
 exports.framework = 'React';
@@ -33,7 +33,7 @@ exports.examples = [
     render: function() {
       return (
         <Button
-          onPress={onButtonPress}
+          onPress={() => onButtonPress('Simple')}
           title="Press Me"
           accessibilityLabel="See an informative alert"
         />
@@ -49,7 +49,7 @@ exports.examples = [
     render: function() {
       return (
         <Button
-          onPress={onButtonPress}
+          onPress={() => onButtonPress('Purple')}
           title="Press Purple"
           color="#841584"
           accessibilityLabel="Learn more about purple"
@@ -65,12 +65,12 @@ exports.examples = [
       return (
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Button
-            onPress={onButtonPress}
+            onPress={() => onButtonPress('Left')}
             title="This looks great!"
             accessibilityLabel="This sounds great!"
           />
           <Button
-            onPress={onButtonPress}
+            onPress={() => onButtonPress('Right')}
             title="Ok!"
             color="#841584"
             accessibilityLabel="Ok, Great!"
@@ -86,7 +86,7 @@ exports.examples = [
       return (
         <Button
           disabled
-          onPress={onButtonPress}
+          onPress={() => onButtonPress('Disabled')}
           title="I Am Disabled"
           accessibilityLabel="See an informative alert"
         />

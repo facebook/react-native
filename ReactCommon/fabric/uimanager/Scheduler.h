@@ -9,13 +9,12 @@
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
+#include <fabric/uimanager/ContextContainer.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
 #include <fabric/uimanager/SchedulerEventDispatcher.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/view/ViewShadowNode.h>
-#include <fabric/view/RootShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -31,7 +30,7 @@ class Scheduler final:
 
 public:
 
-  Scheduler();
+  Scheduler(const SharedContextContainer &contextContainer);
   ~Scheduler();
 
 #pragma mark - Shadow Tree Management
@@ -74,6 +73,7 @@ private:
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
   SharedSchedulerEventDispatcher eventDispatcher_;
+  SharedContextContainer contextContainer_;
 };
 
 } // namespace react

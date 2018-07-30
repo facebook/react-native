@@ -72,3 +72,4 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
+RNTester/build

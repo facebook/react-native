@@ -64,7 +64,7 @@ public:
     assert(std::dynamic_pointer_cast<const ConcreteProps>(props));
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter));
 
-    auto &&shadowNode = std::make_shared<ShadowNodeT>(
+    const auto &shadowNode = std::make_shared<ShadowNodeT>(
       tag,
       rootTag,
       std::static_pointer_cast<const ConcreteProps>(props),
@@ -77,7 +77,7 @@ public:
     return shadowNode;
   }
 
-  SharedShadowNode cloneShadowNode(
+  UnsharedShadowNode cloneShadowNode(
     const SharedShadowNode &sourceShadowNode,
     const SharedProps &props = nullptr,
     const SharedEventEmitter &eventEmitter = nullptr,
@@ -85,7 +85,7 @@ public:
   ) const override {
     assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
 
-    auto &&shadowNode = std::make_shared<ShadowNodeT>(
+    const auto &shadowNode = std::make_shared<ShadowNodeT>(
       std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
       std::static_pointer_cast<const ConcreteProps>(props),
       std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),
@@ -113,10 +113,10 @@ public:
   };
 
   virtual SharedEventEmitter createEventEmitter(
-    const InstanceHandle &instanceHandle,
+    const EventTarget &eventTarget,
     const Tag &tag
   ) const override {
-    return std::make_shared<ConcreteEventEmitter>(instanceHandle, tag, eventDispatcher_);
+    return std::make_shared<ConcreteEventEmitter>(eventTarget, tag, eventDispatcher_);
   }
 
 protected:

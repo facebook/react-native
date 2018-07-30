@@ -35,6 +35,25 @@
   objc_setAssociatedObject(self, @selector(nativeID), nativeID, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (BOOL)shouldAccessibilityIgnoresInvertColors
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if (@available(iOS 11.0, *)) {
+        return self.accessibilityIgnoresInvertColors;
+    }
+#endif
+    return NO;
+}
+
+- (void)setShouldAccessibilityIgnoresInvertColors:(BOOL)shouldAccessibilityIgnoresInvertColors
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if (@available(iOS 11.0, *)) {
+        self.accessibilityIgnoresInvertColors = shouldAccessibilityIgnoresInvertColors;
+    }
+#endif
+}
+
 - (BOOL)isReactRootView
 {
   return RCTIsReactRootView(self.reactTag);

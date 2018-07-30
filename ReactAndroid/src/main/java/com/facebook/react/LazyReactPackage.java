@@ -74,7 +74,7 @@ public abstract class LazyReactPackage implements ReactPackage {
         .flush();
       ReactMarker.logMarker(
         ReactMarkerConstants.CREATE_MODULE_START,
-        holder.getType().getSimpleName());
+        holder.getClassName());
       try {
         nativeModule = holder.getProvider().get();
       } finally {

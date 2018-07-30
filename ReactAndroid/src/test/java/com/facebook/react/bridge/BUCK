@@ -8,7 +8,7 @@ rn_android_library(
     name = "testhelpers",
     srcs = glob(
         ["*.java"],
-        excludes = STANDARD_TEST_SRCS,
+        exclude = STANDARD_TEST_SRCS,
     ),
     visibility = [
         "PUBLIC",

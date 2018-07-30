@@ -27,4 +27,9 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param commandArgs {@link ReadableArray} parameters associated with the command
    */
   void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
+
+  void setJSResponder(int reactTag, boolean blockNativeResponder);
+
+  void clearJSResponder();
+
 }

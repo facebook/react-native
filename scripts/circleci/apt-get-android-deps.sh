@@ -13,7 +13,7 @@ fi
 if ! [[ -d ~/vendor/apt/archives ]]; then
   # It doesn't so download the packages
   echo "Downloading build dependencies..."
-  sudo apt-get install --download-only ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev file -y
+  sudo apt-get install --download-only ant autoconf automake g++ gcc libqt5widgets5 lib32z1 lib32stdc++6 make maven python-dev python3-dev qml-module-qtquick-controls qtdeclarative5-dev libpulse0 file -y
   # Then move them to our cache directory
   sudo cp -R /var/cache/apt ~/vendor/
   # Making sure our user has ownership, in order to cache

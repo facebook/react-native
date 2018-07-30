@@ -85,12 +85,12 @@ def enableProguardInReleaseBuilds = true
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -114,15 +114,14 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
-    }
-
-    lintOptions {
-        abortOnError false
     }
 
     // applicationVariants are e.g. debug, release

@@ -55,10 +55,6 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromDynamic(const folly::dynamic &value, Float &result) {
-  result = value.asDouble();
-}
-
 inline void fromDynamic(const folly::dynamic &value, Point &result) {
   if (value.isObject()) {
     result = Point {(Float)value["x"].asDouble(), (Float)value["y"].asDouble()};
@@ -84,6 +80,11 @@ inline void fromDynamic(const folly::dynamic &value, Size &result) {
 }
 
 inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = EdgeInsets {number, number, number, number};
+    return;
+  }
   if (value.isObject()) {
     result = EdgeInsets {
       (Float)value["top"].asDouble(),
@@ -95,6 +96,33 @@ inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
   }
   if (value.isArray()) {
     result = EdgeInsets {
+      (Float)value[0].asDouble(),
+      (Float)value[1].asDouble(),
+      (Float)value[2].asDouble(),
+      (Float)value[3].asDouble()
+    };
+    return;
+  }
+  abort();
+}
+
+inline void fromDynamic(const folly::dynamic &value, CornerInsets &result) {
+  if (value.isNumber()) {
+    const Float number = value.asDouble();
+    result = CornerInsets {number, number, number, number};
+    return;
+  }
+  if (value.isObject()) {
+    result = CornerInsets {
+      (Float)value["topLeft"].asDouble(),
+      (Float)value["topRight"].asDouble(),
+      (Float)value["bottomLeft"].asDouble(),
+      (Float)value["bottomRight"].asDouble()
+    };
+    return;
+  }
+  if (value.isArray()) {
+    result = CornerInsets {
       (Float)value[0].asDouble(),
       (Float)value[1].asDouble(),
       (Float)value[2].asDouble(),
@@ -123,6 +151,14 @@ inline std::string toString(const EdgeInsets &edgeInsets) {
     folly::to<std::string>(edgeInsets.top) + ", " +
     folly::to<std::string>(edgeInsets.right) + ", " +
     folly::to<std::string>(edgeInsets.bottom) + "}";
+}
+
+inline std::string toString(const CornerInsets &cornerInsets) {
+  return "{" +
+    folly::to<std::string>(cornerInsets.topLeft) + ", " +
+    folly::to<std::string>(cornerInsets.topRight) + ", " +
+    folly::to<std::string>(cornerInsets.bottomLeft) + ", " +
+    folly::to<std::string>(cornerInsets.bottomRight) + "}";
 }
 
 } // namespace react

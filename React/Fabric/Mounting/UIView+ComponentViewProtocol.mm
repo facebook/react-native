@@ -10,6 +10,8 @@
 #import <React/RCTAssert.h>
 #import "RCTConversions.h"
 
+using namespace facebook::react;
+
 @implementation UIView (ComponentViewProtocol)
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
@@ -25,31 +27,40 @@
   [childComponentView removeFromSuperview];
 }
 
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps
+- (void)updateProps:(SharedProps)props
+           oldProps:(SharedProps)oldProps
 {
   // Default implementation does nothing.
 }
 
-- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLocalData:(facebook::react::SharedLocalData)localData
-           oldLocalData:(facebook::react::SharedLocalData)oldLocalData
+- (void)updateLocalData:(SharedLocalData)localData
+           oldLocalData:(SharedLocalData)oldLocalData
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
     self.frame = RCTCGRectFromRect(layoutMetrics.frame);
   }
 
-  // TODO: Apply another layout metrics here.
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+    self.semanticContentAttribute =
+      layoutMetrics.layoutDirection == LayoutDirection::RightToLeft ?
+        UISemanticContentAttributeForceRightToLeft :
+        UISemanticContentAttributeForceLeftToRight;
+  }
+
+  if (layoutMetrics.displayType != oldLayoutMetrics.displayType) {
+    self.hidden = layoutMetrics.displayType == DisplayType::None;
+  }
 }
 
 - (void)prepareForRecycle

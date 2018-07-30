@@ -6,7 +6,7 @@
 # virtual device configuration.
 # This is useful for running integration tests on a local machine.
 
-THIS_DIR=$(dirname "$0")
+THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
 STATE=`adb get-state`
 

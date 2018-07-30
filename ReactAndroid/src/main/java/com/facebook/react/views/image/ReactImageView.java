@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -609,4 +610,3 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 }
-

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <folly/dynamic.h>
 
@@ -25,7 +26,7 @@ using InstanceHandle = struct InstanceHandleDummyStruct {} *;
  * `RawProps` represents untyped map with props comes from JavaScript side.
  */
 // TODO(T26954420): Use iterator as underlying type for RawProps.
-using RawProps = std::map<std::string, folly::dynamic>;
+using RawProps = std::unordered_map<std::string, folly::dynamic>;
 using SharedRawProps = std::shared_ptr<const RawProps>;
 
 /*

@@ -28,6 +28,12 @@
 @property (nonatomic, copy) NSString *nativeID;
 
 /**
+ * Determines whether or not a view should ignore inverted colors or not. Used to set
+ * UIView property accessibilityIgnoresInvertColors in iOS 11+.
+ */
+@property (nonatomic, assign) BOOL shouldAccessibilityIgnoresInvertColors;
+
+/**
  * Layout direction of the view.
  * Internally backed to `semanticContentAttribute` property.
  * Defaults to `LeftToRight` in case of ambiguity.

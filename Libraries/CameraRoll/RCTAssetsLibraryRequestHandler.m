@@ -8,6 +8,8 @@
 #import "RCTAssetsLibraryRequestHandler.h"
 
 #import <stdatomic.h>
+#import <dlfcn.h>
+#import <objc/runtime.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -23,10 +25,20 @@
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
+static Class _ALAssetsLibrary = nil;
+static void ensureAssetsLibLoaded(void)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    void * handle = dlopen("/System/Library/Frameworks/AssetsLibrary.framework/AssetsLibrary", RTLD_LAZY);
+#pragma unused(handle)
+    _ALAssetsLibrary = objc_getClass("ALAssetsLibrary");
+  });
+}
 - (ALAssetsLibrary *)assetsLibrary
 {
-  return _assetsLibrary ?: (_assetsLibrary = [ALAssetsLibrary new]);
+  ensureAssetsLibLoaded();
+  return _assetsLibrary ?: (_assetsLibrary = [_ALAssetsLibrary new]);
 }
 
 #pragma mark - RCTURLRequestHandler

@@ -6,15 +6,8 @@
 #include "Scheduler.h"
 
 #include <fabric/core/LayoutContext.h>
-#include <fabric/scrollview/ScrollViewComponentDescriptor.h>
-#include <fabric/text/ParagraphComponentDescriptor.h>
-#include <fabric/text/RawTextComponentDescriptor.h>
-#include <fabric/text/TextComponentDescriptor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/view/ViewComponentDescriptor.h>
-#include <fabric/view/ViewProps.h>
-#include <fabric/view/ViewShadowNode.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -22,9 +15,10 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler() {
-  auto &&eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
-  auto &&componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher);
+Scheduler::Scheduler(const SharedContextContainer &contextContainer):
+  contextContainer_(contextContainer) {
+  const auto &eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
+  const auto &componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
 
   uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
   uiManager_->setDelegate(this);
@@ -35,30 +29,31 @@ Scheduler::Scheduler() {
 
 Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
+  eventDispatcher_->setUIManager(nullptr);
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
-  auto &&shadowTree = std::make_shared<ShadowTree>(rootTag);
+  const auto &shadowTree = std::make_shared<ShadowTree>(rootTag);
   shadowTree->setDelegate(this);
   shadowTreeRegistry_.insert({rootTag, shadowTree});
 }
 
 void Scheduler::unregisterRootTag(Tag rootTag) {
-  auto &&iterator = shadowTreeRegistry_.find(rootTag);
-  auto &&shadowTree = iterator->second;
+  const auto &iterator = shadowTreeRegistry_.find(rootTag);
+  const auto &shadowTree = iterator->second;
   assert(shadowTree);
   shadowTree->setDelegate(nullptr);
   shadowTreeRegistry_.erase(iterator);
 }
 
 Size Scheduler::measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  const auto &shadowTree = shadowTreeRegistry_.at(rootTag);
   assert(shadowTree);
   return shadowTree->measure(layoutConstraints, layoutContext);
 }
 
 void Scheduler::constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) {
-  auto &&shadowTree = shadowTreeRegistry_.at(rootTag);
+  const auto &shadowTree = shadowTreeRegistry_.at(rootTag);
   assert(shadowTree);
   return shadowTree->constraintLayout(layoutConstraints, layoutContext);
 }
@@ -84,8 +79,8 @@ void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const Tr
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  auto &&iterator = shadowTreeRegistry_.find(rootTag);
-  auto &&shadowTree = iterator->second;
+  const auto &iterator = shadowTreeRegistry_.find(rootTag);
+  const auto &shadowTree = iterator->second;
   assert(shadowTree);
   return shadowTree->complete(rootChildNodes);
 }
