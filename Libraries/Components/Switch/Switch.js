@@ -21,7 +21,7 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...ViewProps,
   /**
    * The value of the switch.  If true the switch will be turned on.

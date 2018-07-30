@@ -128,6 +128,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setViewStates(T view, ReadableArray accessibilityStates) {
     view.setSelected(false);
     view.setEnabled(true);
+    if (accessibilityStates == null) {
+      return;
+    }
     for (int i = 0; i < accessibilityStates.size(); i++) {
       String state = accessibilityStates.getString(i);
       if (state.equals("selected")) {

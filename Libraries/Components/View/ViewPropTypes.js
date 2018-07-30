@@ -87,6 +87,7 @@ export type ViewProps = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
@@ -129,11 +130,29 @@ module.exports = {
   accessibilityLabel: PropTypes.node,
 
   /**
+   * An accessibility hint helps users understand what will happen when they perform
+   * an action on the accessibility element when that result is not obvious from the
+   * accessibility label.
+   *
+   * @platform ios
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
+   */
+  accessibilityHint: PropTypes.string,
+
+  /**
    * Provides an array of custom actions available for accessibility.
    *
    * @platform ios
    */
   accessibilityActions: PropTypes.arrayOf(PropTypes.string),
+
+  /**
+   * Prevents view from being inverted if set to true and color inversion is turned on.
+   *
+   * @platform ios
+   */
+  accessibilityIgnoresInvertColors: PropTypes.bool,
 
   /**
    * Indicates to accessibility services to treat UI component like a

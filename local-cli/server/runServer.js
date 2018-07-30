@@ -22,9 +22,7 @@ const path = require('path');
 const webSocketProxy = require('./util/webSocketProxy');
 const MiddlewareManager = require('./middleware/MiddlewareManager');
 
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
-import type {ConfigT} from 'metro';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -56,21 +54,14 @@ async function runServer(args: Args, config: ConfigT) {
 
   args.watchFolders.forEach(middlewareManager.serveStatic);
 
-  const serverInstance = await Metro.runServer({
-    config: {
-      ...config,
-      assetRegistryPath: ASSET_REGISTRY_PATH,
-      enhanceMiddleware: middleware =>
-        middlewareManager.getConnectInstance().use(middleware),
-      transformModulePath: args.transformer
-        ? path.resolve(args.transformer)
-        : config.getTransformModulePath(),
-    },
-    hmrEnabled: true,
+  config.maxWorkers = args.maxWorkers;
+  config.server.port = args.port;
+  config.reporter = reporter;
+  config.server.enhanceMiddleware = middleware =>
+    middlewareManager.getConnectInstance().use(middleware);
+
+  const serverInstance = await Metro.runServer(config, {
     host: args.host,
-    maxWorkers: args.maxWorkers,
-    port: args.port,
-    reporter,
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,

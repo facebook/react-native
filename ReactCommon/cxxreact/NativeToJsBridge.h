@@ -94,6 +94,11 @@ private:
   std::unique_ptr<JSExecutor> m_executor;
   std::shared_ptr<MessageQueueThread> m_executorMessageQueueThread;
 
+  // Keep track of whether the JS bundle containing the application logic causes
+  // exception when evaluated initially. If so, more calls to JS will very
+  // likely fail as well, so this flag can help prevent them.
+  bool m_applicationScriptHasFailure = false;
+
   #ifdef WITH_FBSYSTRACE
   std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
   #endif
