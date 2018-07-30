@@ -49,21 +49,21 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.06.25.01-
+      - v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2018.07.23.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -136,7 +136,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.06.25.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.07.23.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -365,7 +365,7 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
