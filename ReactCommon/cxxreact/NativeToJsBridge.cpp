@@ -5,6 +5,7 @@
 
 #include "NativeToJsBridge.h"
 
+#include <boost/core/ignore_unused.hpp>
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
@@ -162,6 +163,7 @@ void NativeToJsBridge::callFunction(
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       #endif
+      boost::ignore_unused(systraceCookie);
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
       // that will happen on this thread
@@ -192,6 +194,7 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           systraceCookie);
       SystraceSection s("NativeToJsBridge::invokeCallback");
       #endif
+      boost::ignore_unused(systraceCookie);
       executor->invokeCallback(callbackId, arguments);
     });
 }

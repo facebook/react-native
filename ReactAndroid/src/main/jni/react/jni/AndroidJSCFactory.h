@@ -10,7 +10,7 @@
 
 namespace folly {
 
-class dynamic;
+struct dynamic;
 
 }
 

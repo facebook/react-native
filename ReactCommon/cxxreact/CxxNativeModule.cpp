@@ -4,15 +4,17 @@
 // LICENSE file in the root directory of this source tree.
 
 #include "CxxNativeModule.h"
-#include "Instance.h"
 
-#include <iterator>
-#include <glog/logging.h>
+#include <boost/core/ignore_unused.hpp>
 #include <folly/json.h>
+#include <glog/logging.h>
+#include <iterator>
+
 
 #include "JsArgumentHelpers.h"
-#include "SystraceSection.h"
+#include "Instance.h"
 #include "MessageQueueThread.h"
+#include "SystraceSection.h"
 
 using facebook::xplat::module::CxxModule;
 namespace facebook {
@@ -137,6 +139,7 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
   #endif
+    boost::ignore_unused(callId);
     SystraceSection s(method.name.c_str());
     try {
       method.func(std::move(params), first, second);
