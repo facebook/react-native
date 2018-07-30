@@ -11,18 +11,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.modules.storage.AsyncStorageModule;
-import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,13 +33,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+import org.robolectric.util.concurrent.RoboExecutorService;
 
 import static org.mockito.Mockito.mock;
 import static org.fest.assertions.api.Assertions.assertThat;
-
 /**
  * Tests for {@link AsyncStorageModule}.
  */
@@ -81,7 +72,7 @@ public class AsyncStorageModuleTest {
      });
 
     // don't use Robolectric before initializing mocks
-    mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest());
+    mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest(), new RoboExecutorService());
     mEmptyArray = new JavaOnlyArray();
   }
 

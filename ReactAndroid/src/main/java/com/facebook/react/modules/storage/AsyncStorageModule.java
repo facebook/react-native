@@ -15,6 +15,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -43,11 +44,17 @@ public final class AsyncStorageModule
 
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
-  private ExecutorService executor = Executors.newSingleThreadExecutor();
+  private ExecutorService mExecutor;
 
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
+    mExecutor = Executors.newSingleThreadExecutor();
+  }
+
+  public AsyncStorageModule(ReactApplicationContext reactContext, ExecutorService executor) {
+    this(reactContext);
+    mExecutor = executor;
   }
 
   @Override
@@ -63,7 +70,7 @@ public final class AsyncStorageModule
 
   @Override
   public void onCatalystInstanceDestroy() {
-    executor.shutdown();
+    mExecutor.shutdown();
     mShuttingDown = true;
   }
 
@@ -393,8 +400,9 @@ public final class AsyncStorageModule
   }
 
   private void execute(Runnable r) {
+    Assertions.assertNotNull(mExecutor);
     try {
-      executor.execute(r);
+      mExecutor.execute(r);
     } catch (RuntimeException e) {
       getReactApplicationContext().handleException(e);
     }
