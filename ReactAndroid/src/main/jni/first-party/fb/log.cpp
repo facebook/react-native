@@ -26,8 +26,9 @@ int fb_printLog(int prio, const char *tag,  const char *fmt, ...) {
   va_end(va_args);
   if (gLogHandler != NULL) {
       gLogHandler(prio, tag, logBuffer);
+  } else {
+    __android_log_write(prio, tag, logBuffer);
   }
-  __android_log_write(prio, tag, logBuffer);
   return result;
 }
 

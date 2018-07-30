@@ -10,6 +10,7 @@
 
 namespace facebook {
 namespace react {
+namespace JSLogging {
 
 void reactAndroidLoggingHook(
     const std::string& message,
@@ -18,5 +19,8 @@ void reactAndroidLoggingHook(
     const std::string& message,
     unsigned int logLevel);
 
+void registerNatives();
+
+} // namespace JSLogging
 } // namespace react
 } // namespace facebook
