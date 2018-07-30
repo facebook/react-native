@@ -87,6 +87,7 @@ export type ViewProps = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
@@ -127,6 +128,17 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#accessibilitylabel
    */
   accessibilityLabel: PropTypes.node,
+
+  /**
+   * An accessibility hint helps users understand what will happen when they perform
+   * an action on the accessibility element when that result is not obvious from the
+   * accessibility label.
+   *
+   * @platform ios
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
+   */
+  accessibilityHint: PropTypes.string,
 
   /**
    * Provides an array of custom actions available for accessibility.

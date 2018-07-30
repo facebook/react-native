@@ -148,9 +148,6 @@ const mockNativeModules = {
     logout: jest.fn(),
     queryGraphPath: jest.fn((path, method, params, callback) => callback()),
   },
-  FbRelayNativeAdapter: {
-    updateCLC: jest.fn(),
-  },
   GraphPhotoUpload: {
     upload: jest.fn(),
   },

@@ -369,7 +369,7 @@ YGConfigRef YGConfigNew(void) {
 }
 
 void YGConfigFree(const YGConfigRef config) {
-  free(config);
+  delete config;
   gConfigInstanceCount--;
 }
 

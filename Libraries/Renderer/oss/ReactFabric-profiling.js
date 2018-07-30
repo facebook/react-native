@@ -3531,34 +3531,37 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
       prepareToReadContext(workInProgress, renderExpirationTime);
       fn = fn(updateExpirationTime, unmaskedContext);
       workInProgress.effectTag |= 1;
-      "object" === typeof fn &&
-      null !== fn &&
-      "function" === typeof fn.render &&
-      void 0 === fn.$$typeof
-        ? ((unmaskedContext = workInProgress.type),
-          (workInProgress.tag = 2),
-          (workInProgress.memoizedState =
-            null !== fn.state && void 0 !== fn.state ? fn.state : null),
-          (unmaskedContext = unmaskedContext.getDerivedStateFromProps),
-          "function" === typeof unmaskedContext &&
-            applyDerivedStateFromProps(
-              workInProgress,
-              unmaskedContext,
-              updateExpirationTime
-            ),
-          (updateExpirationTime = pushContextProvider(workInProgress)),
-          (fn.updater = classComponentUpdater),
-          (workInProgress.stateNode = fn),
-          (fn._reactInternalFiber = workInProgress),
-          mountClassInstance(workInProgress, renderExpirationTime),
-          (current$$1 = finishClassComponent(
-            current$$1,
+      if (
+        "object" === typeof fn &&
+        null !== fn &&
+        "function" === typeof fn.render &&
+        void 0 === fn.$$typeof
+      ) {
+        var Component = workInProgress.type;
+        workInProgress.tag = 2;
+        unmaskedContext = pushContextProvider(workInProgress);
+        workInProgress.memoizedState =
+          null !== fn.state && void 0 !== fn.state ? fn.state : null;
+        Component = Component.getDerivedStateFromProps;
+        "function" === typeof Component &&
+          applyDerivedStateFromProps(
             workInProgress,
-            !0,
-            updateExpirationTime,
-            renderExpirationTime
-          )))
-        : ((workInProgress.tag = 1),
+            Component,
+            updateExpirationTime
+          );
+        fn.updater = classComponentUpdater;
+        workInProgress.stateNode = fn;
+        fn._reactInternalFiber = workInProgress;
+        mountClassInstance(workInProgress, renderExpirationTime);
+        current$$1 = finishClassComponent(
+          current$$1,
+          workInProgress,
+          !0,
+          unmaskedContext,
+          renderExpirationTime
+        );
+      } else
+        (workInProgress.tag = 1),
           reconcileChildren(
             current$$1,
             workInProgress,
@@ -3566,7 +3569,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
             renderExpirationTime
           ),
           (workInProgress.memoizedProps = updateExpirationTime),
-          (current$$1 = workInProgress.child));
+          (current$$1 = workInProgress.child);
       return current$$1;
     case 1:
       return (
@@ -3589,10 +3592,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
           var props = workInProgress.pendingProps,
             ctor = workInProgress.type;
           fn = getUnmaskedContext(workInProgress);
-          var needsContext =
+          unmaskedContext = (Component =
             2 === workInProgress.tag &&
-            null != workInProgress.type.contextTypes;
-          unmaskedContext = needsContext
+            null != workInProgress.type.contextTypes)
             ? getMaskedContext(workInProgress, fn)
             : emptyContextObject;
           props = new ctor(props, unmaskedContext);
@@ -3601,17 +3603,17 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
           props.updater = classComponentUpdater;
           workInProgress.stateNode = props;
           props._reactInternalFiber = workInProgress;
-          needsContext &&
-            ((needsContext = workInProgress.stateNode),
-            (needsContext.__reactInternalMemoizedUnmaskedChildContext = fn),
-            (needsContext.__reactInternalMemoizedMaskedChildContext = unmaskedContext));
+          Component &&
+            ((Component = workInProgress.stateNode),
+            (Component.__reactInternalMemoizedUnmaskedChildContext = fn),
+            (Component.__reactInternalMemoizedMaskedChildContext = unmaskedContext));
           mountClassInstance(workInProgress, renderExpirationTime);
           fn = !0;
         } else {
           var ctor$jscomp$0 = workInProgress.type;
           unmaskedContext = workInProgress.stateNode;
           props = workInProgress.memoizedProps;
-          needsContext = workInProgress.pendingProps;
+          Component = workInProgress.pendingProps;
           unmaskedContext.props = props;
           var oldContext = unmaskedContext.context;
           ctor = getUnmaskedContext(workInProgress);
@@ -3624,11 +3626,11 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
               typeof unmaskedContext.UNSAFE_componentWillReceiveProps &&
               "function" !==
                 typeof unmaskedContext.componentWillReceiveProps) ||
-            ((props !== needsContext || oldContext !== ctor) &&
+            ((props !== Component || oldContext !== ctor) &&
               callComponentWillReceiveProps(
                 workInProgress,
                 unmaskedContext,
-                needsContext,
+                Component,
                 ctor
               ));
           hasForceUpdate = !1;
@@ -3639,12 +3641,12 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
             (processUpdateQueue(
               workInProgress,
               updateQueue,
-              needsContext,
+              Component,
               unmaskedContext,
               renderExpirationTime
             ),
             (oldContext = workInProgress.memoizedState));
-          props !== needsContext ||
+          props !== Component ||
           oldState !== oldContext ||
           didPerformWorkStackCursor.current ||
           fn ||
@@ -3653,7 +3655,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                 (applyDerivedStateFromProps(
                   workInProgress,
                   getDerivedStateFromProps,
-                  needsContext
+                  Component
                 ),
                 (oldContext = workInProgress.memoizedState)),
               (fn =
@@ -3662,7 +3664,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                 checkShouldComponentUpdate(
                   workInProgress,
                   props,
-                  needsContext,
+                  Component,
                   oldState,
                   oldContext,
                   ctor
@@ -3681,9 +3683,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                     (workInProgress.effectTag |= 4))
                 : ("function" === typeof unmaskedContext.componentDidMount &&
                     (workInProgress.effectTag |= 4),
-                  (workInProgress.memoizedProps = needsContext),
+                  (workInProgress.memoizedProps = Component),
                   (workInProgress.memoizedState = oldContext)),
-              (unmaskedContext.props = needsContext),
+              (unmaskedContext.props = Component),
               (unmaskedContext.state = oldContext),
               (unmaskedContext.context = ctor))
             : ("function" === typeof unmaskedContext.componentDidMount &&
@@ -3693,9 +3695,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
       else
         (ctor$jscomp$0 = workInProgress.type),
           (unmaskedContext = workInProgress.stateNode),
-          (needsContext = workInProgress.memoizedProps),
+          (Component = workInProgress.memoizedProps),
           (props = workInProgress.pendingProps),
-          (unmaskedContext.props = needsContext),
+          (unmaskedContext.props = Component),
           (oldContext = unmaskedContext.context),
           (ctor = getUnmaskedContext(workInProgress)),
           (ctor = getMaskedContext(workInProgress, ctor)),
@@ -3707,7 +3709,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
               typeof unmaskedContext.UNSAFE_componentWillReceiveProps &&
               "function" !==
                 typeof unmaskedContext.componentWillReceiveProps) ||
-            ((needsContext !== props || oldContext !== ctor) &&
+            ((Component !== props || oldContext !== ctor) &&
               callComponentWillReceiveProps(
                 workInProgress,
                 unmaskedContext,
@@ -3727,7 +3729,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
               renderExpirationTime
             ),
             (oldState = workInProgress.memoizedState)),
-          needsContext !== props ||
+          Component !== props ||
           oldContext !== oldState ||
           didPerformWorkStackCursor.current ||
           fn ||
@@ -3744,7 +3746,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                 fn ||
                 checkShouldComponentUpdate(
                   workInProgress,
-                  needsContext,
+                  Component,
                   props,
                   oldContext,
                   oldState,
@@ -3775,12 +3777,12 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                     typeof unmaskedContext.getSnapshotBeforeUpdate &&
                     (workInProgress.effectTag |= 256))
                 : ("function" !== typeof unmaskedContext.componentDidUpdate ||
-                    (needsContext === current$$1.memoizedProps &&
+                    (Component === current$$1.memoizedProps &&
                       oldContext === current$$1.memoizedState) ||
                     (workInProgress.effectTag |= 4),
                   "function" !==
                     typeof unmaskedContext.getSnapshotBeforeUpdate ||
-                    (needsContext === current$$1.memoizedProps &&
+                    (Component === current$$1.memoizedProps &&
                       oldContext === current$$1.memoizedState) ||
                     (workInProgress.effectTag |= 256),
                   (workInProgress.memoizedProps = props),
@@ -3789,11 +3791,11 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
               (unmaskedContext.state = oldState),
               (unmaskedContext.context = ctor))
             : ("function" !== typeof unmaskedContext.componentDidUpdate ||
-                (needsContext === current$$1.memoizedProps &&
+                (Component === current$$1.memoizedProps &&
                   oldContext === current$$1.memoizedState) ||
                 (workInProgress.effectTag |= 4),
               "function" !== typeof unmaskedContext.getSnapshotBeforeUpdate ||
-                (needsContext === current$$1.memoizedProps &&
+                (Component === current$$1.memoizedProps &&
                   oldContext === current$$1.memoizedState) ||
                 (workInProgress.effectTag |= 256),
               (fn = !1));
@@ -3946,9 +3948,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
         updateExpirationTime = workInProgress.type._context;
         fn = workInProgress.pendingProps;
         unmaskedContext = workInProgress.memoizedProps;
-        needsContext = fn.value;
+        Component = fn.value;
         workInProgress.memoizedProps = fn;
-        if (null === unmaskedContext) needsContext = 1073741823;
+        if (null === unmaskedContext) Component = 1073741823;
         else if (unmaskedContext.value === fn.value) {
           if (
             unmaskedContext.children === fn.children &&
@@ -3963,12 +3965,12 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
             );
             break a;
           }
-          needsContext = 0;
+          Component = 0;
         } else if (
           ((props = unmaskedContext.value),
-          (props === needsContext &&
-            (0 !== props || 1 / props === 1 / needsContext)) ||
-            (props !== props && needsContext !== needsContext))
+          (props === Component &&
+            (0 !== props || 1 / props === 1 / Component)) ||
+            (props !== props && Component !== Component))
         ) {
           if (
             unmaskedContext.children === fn.children &&
@@ -3983,14 +3985,14 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
             );
             break a;
           }
-          needsContext = 0;
+          Component = 0;
         } else if (
-          ((needsContext =
+          ((Component =
             "function" === typeof updateExpirationTime._calculateChangedBits
-              ? updateExpirationTime._calculateChangedBits(props, needsContext)
+              ? updateExpirationTime._calculateChangedBits(props, Component)
               : 1073741823),
-          (needsContext |= 0),
-          0 === needsContext)
+          (Component |= 0),
+          0 === Component)
         ) {
           if (
             unmaskedContext.children === fn.children &&
@@ -4009,10 +4011,10 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
           propagateContextChange(
             workInProgress,
             updateExpirationTime,
-            needsContext,
+            Component,
             renderExpirationTime
           );
-        workInProgress.stateNode = needsContext;
+        workInProgress.stateNode = Component;
         pushProvider(workInProgress);
         reconcileChildren(
           current$$1,
