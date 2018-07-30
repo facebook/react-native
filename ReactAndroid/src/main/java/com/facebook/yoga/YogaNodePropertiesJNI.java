@@ -10,6 +10,7 @@ package com.facebook.yoga;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
+@DoNotStrip
 public class YogaNodePropertiesJNI implements Cloneable, YogaNodeProperties {
 
   static {
@@ -105,7 +106,7 @@ public class YogaNodePropertiesJNI implements Cloneable, YogaNodeProperties {
   private static native void jni_YGTransferLayoutOutputsRecursive(long nativePointer);
 
   @Override
-  public void onAfterCalculateLayout() {
+  public void onAfterCalculateLayout(boolean hasNewLayoutIgnoredSetByNative) {
     jni_YGTransferLayoutOutputsRecursive(mNativePointer);
   }
 

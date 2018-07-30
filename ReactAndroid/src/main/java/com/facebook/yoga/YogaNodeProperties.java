@@ -13,7 +13,7 @@ public interface YogaNodeProperties {
 
   long getNativePointer();
 
-  void onAfterCalculateLayout();
+  void onAfterCalculateLayout(boolean hasNewLayout);
 
   void reset();
 
