@@ -10,13 +10,16 @@ package com.facebook.react.modules.storage;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.os.AsyncTask;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -35,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.mockito.verification.VerificationMode;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -42,7 +46,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+import org.robolectric.util.concurrent.RoboExecutorService;
 
 import static org.mockito.Mockito.mock;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -81,7 +85,10 @@ public class AsyncStorageModuleTest {
      });
 
     // don't use Robolectric before initializing mocks
-    mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest());
+    mStorage = new AsyncStorageModule(
+        ReactTestHelper.createCatalystContextForTest(),
+        new RoboExecutorService()
+    );
     mEmptyArray = new JavaOnlyArray();
   }
 
@@ -104,7 +111,7 @@ public class AsyncStorageModuleTest {
 
     Callback setCallback = mock(Callback.class);
     mStorage.multiSet(keyValues, setCallback);
-    Mockito.verify(setCallback, Mockito.times(1)).invoke();
+    verify(setCallback, Mockito.times(1)).invoke();
 
     JavaOnlyArray keys = new JavaOnlyArray();
     keys.pushString(key1);
@@ -112,7 +119,7 @@ public class AsyncStorageModuleTest {
 
     Callback getCallback = mock(Callback.class);
     mStorage.multiGet(keys, getCallback);
-    Mockito.verify(getCallback, Mockito.times(1)).invoke(null, keyValues);
+    verify(getCallback, Mockito.times(1)).invoke(null, keyValues);
 
     keys.pushString(fakeKey);
     JavaOnlyArray row3 = new JavaOnlyArray();
@@ -122,7 +129,7 @@ public class AsyncStorageModuleTest {
 
     Callback getCallback2 = mock(Callback.class);
     mStorage.multiGet(keys, getCallback2);
-    Mockito.verify(getCallback2, Mockito.times(1)).invoke(null, keyValues);
+    verify(getCallback2, Mockito.times(1)).invoke(null, keyValues);
   }
 
   @Test
@@ -143,22 +150,22 @@ public class AsyncStorageModuleTest {
 
     Callback getCallback = mock(Callback.class);
     mStorage.multiRemove(keys, getCallback);
-    Mockito.verify(getCallback, Mockito.times(1)).invoke();
+    verify(getCallback, Mockito.times(1)).invoke();
 
     Callback getAllCallback = mock(Callback.class);
     mStorage.getAllKeys(getAllCallback);
-    Mockito.verify(getAllCallback, Mockito.times(1)).invoke(null, mEmptyArray);
+    verify(getAllCallback, Mockito.times(1)).invoke(null, mEmptyArray);
 
     mStorage.multiSet(keyValues, mock(Callback.class));
 
     keys.pushString("fakeKey");
     Callback getCallback2 = mock(Callback.class);
     mStorage.multiRemove(keys, getCallback2);
-    Mockito.verify(getCallback2, Mockito.times(1)).invoke();
+    verify(getCallback2, Mockito.times(1)).invoke();
 
     Callback getAllCallback2 = mock(Callback.class);
     mStorage.getAllKeys(getAllCallback2);
-    Mockito.verify(getAllCallback2, Mockito.times(1)).invoke(null, mEmptyArray);
+    verify(getAllCallback2, Mockito.times(1)).invoke(null, mEmptyArray);
   }
 
   @Test
@@ -175,7 +182,7 @@ public class AsyncStorageModuleTest {
     {
       Callback callback = mock(Callback.class);
       mStorage.multiGet(getArray(mergeKey), callback);
-      Mockito.verify(callback, Mockito.times(1))
+      verify(callback, Mockito.times(1))
           .invoke(null, JavaOnlyArray.of(getArray(mergeKey, value.toString())));
     }
 
@@ -200,7 +207,7 @@ public class AsyncStorageModuleTest {
     value.put("foo2", createJSONObject("key1", "val3", "key2", "val2"));
     Callback callback = mock(Callback.class);
     mStorage.multiGet(getArray(mergeKey), callback);
-    Mockito.verify(callback, Mockito.times(1))
+    verify(callback, Mockito.times(1))
         .invoke(null, JavaOnlyArray.of(getArray(mergeKey, value.toString())));
   }
 
@@ -219,18 +226,18 @@ public class AsyncStorageModuleTest {
 
     Callback getAllCallback = mock(Callback.class);
     mStorage.getAllKeys(getAllCallback);
-    Mockito.verify(getAllCallback, Mockito.times(1)).invoke(null, storedKeys);
+    verify(getAllCallback, Mockito.times(1)).invoke(null, storedKeys);
 
     Callback getAllCallback2 = mock(Callback.class);
     mStorage.multiRemove(getArray(keys[0]), mock(Callback.class));
 
     mStorage.getAllKeys(getAllCallback2);
-    Mockito.verify(getAllCallback2, Mockito.times(1)).invoke(null, getArray(keys[1]));
+    verify(getAllCallback2, Mockito.times(1)).invoke(null, getArray(keys[1]));
 
     mStorage.multiRemove(getArray(keys[1]), mock(Callback.class));
     Callback getAllCallback3 = mock(Callback.class);
     mStorage.getAllKeys(getAllCallback3);
-    Mockito.verify(getAllCallback3, Mockito.times(1)).invoke(null, mEmptyArray);
+    verify(getAllCallback3, Mockito.times(1)).invoke(null, mEmptyArray);
   }
 
   @Test
@@ -242,11 +249,11 @@ public class AsyncStorageModuleTest {
 
     Callback clearCallback2 = mock(Callback.class);
     mStorage.clear(clearCallback2);
-    Mockito.verify(clearCallback2, Mockito.times(1)).invoke();
+    verify(clearCallback2, Mockito.times(1)).invoke();
 
     Callback getAllCallback2 = mock(Callback.class);
     mStorage.getAllKeys(getAllCallback2);
-    Mockito.verify(getAllCallback2, Mockito.times(1)).invoke(null, mEmptyArray);
+    verify(getAllCallback2, Mockito.times(1)).invoke(null, mEmptyArray);
   }
 
   @Test
@@ -338,5 +345,15 @@ public class AsyncStorageModuleTest {
       array.pushString(value);
     }
     return array;
+  }
+
+  private static void waitForAsync() {
+    Robolectric.flushForegroundThreadScheduler();
+    Robolectric.flushBackgroundThreadScheduler();
+  }
+
+  private static <T> T verify(T mock, VerificationMode mode) {
+    waitForAsync();
+    return Mockito.verify(mock, mode);
   }
 }

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {AccessibilityRole} from 'ViewAccessibility';
+import type {AccessibilityState} from 'ViewAccessibility';
 import type {AccessibilityTrait} from 'ViewAccessibility';
 
 import type {Node} from 'react';
@@ -29,6 +31,8 @@ export type PressRetentionOffset = $ReadOnly<{|
  */
 export type TextProps = $ReadOnly<{
   accessible?: ?boolean,
+  accessibilityRole?: AccessibilityRole,
+  accessibilityStates?: Array<AccessibilityState>,
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
   allowFontScaling?: ?boolean,
   children?: Node,

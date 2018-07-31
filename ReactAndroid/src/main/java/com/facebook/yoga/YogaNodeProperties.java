@@ -13,7 +13,7 @@ public interface YogaNodeProperties {
 
   long getNativePointer();
 
-  void onAfterCalculateLayout();
+  void onAfterCalculateLayout(boolean hasNewLayout);
 
   void reset();
 
@@ -164,4 +164,6 @@ public interface YogaNodeProperties {
   float getLayoutBorder(YogaEdge edge);
 
   YogaDirection getLayoutDirection();
+
+  void freeNatives();
 }

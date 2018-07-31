@@ -1199,6 +1199,10 @@
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
+		BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
+		BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
+		BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
+		BA0501B12109DD1C00A6BBC4 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		C60128AB1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		C60128AC1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = C60128AA1F3D1258009DF9FF /* RCTCxxConvert.m */; };
@@ -1517,6 +1521,7 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
+				BA0501B12109DD1C00A6BBC4 /* YGConfig.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
 				3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */,
 				3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */,
@@ -1530,6 +1535,7 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */,
 				598FD1921F816A2A006C54CB /* RAMBundleRegistry.h in Copy Headers */,
 				3DA9823B1E5B1053004F2374 /* CxxModule.h in Copy Headers */,
 				3DA9823C1E5B1053004F2374 /* CxxNativeModule.h in Copy Headers */,
@@ -4361,6 +4367,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */,
 				53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5762038FF9700A3B97E /* YGStyle.cpp in Sources */,
@@ -4426,6 +4433,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */,
 				3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */,
 				13F8878E1E29726300C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */,
 				13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */,

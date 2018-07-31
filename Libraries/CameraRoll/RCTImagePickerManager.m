@@ -123,7 +123,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   // WARNING: Using ImageStoreManager may cause a memory leak because the
   // image isn't automatically removed from store once we're done using it.
   [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
-    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, height, width] : nil];
+    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, RCTNullIfNil(height), RCTNullIfNil(width)] : nil];
   }];
 }
 

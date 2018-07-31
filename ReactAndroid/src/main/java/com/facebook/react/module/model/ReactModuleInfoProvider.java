@@ -12,5 +12,5 @@ import java.util.Map;
  */
 public interface ReactModuleInfoProvider {
 
-  Map<Class, ReactModuleInfo> getReactModuleInfos();
+  Map<String, ReactModuleInfo> getReactModuleInfos();
 }

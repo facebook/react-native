@@ -17,8 +17,8 @@ rn_prebuilt_jar(
 
 remote_file(
     name = "mockito-binary.jar",
-    sha1 = "e8546f5bef4e061d8dd73895b4e8f40e3fe6effe",
-    url = "mvn:org.mockito:mockito-core:jar:1.10.19",
+    sha1 = "c54c55cae0f4742ad6bf8a1987ada35363f2c4e2",
+    url = "mvn:org.mockito:mockito-core:jar:2.19.1",
 )
 
 rn_prebuilt_jar(
