@@ -570,7 +570,7 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (child != null && mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }
