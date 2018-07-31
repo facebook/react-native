@@ -1,15 +1,13 @@
 ---
 name: 🗣 Start a Discussion
-about: Use https://discuss.reactjs.org/ to propose changes or discuss feature requests.
+about: Use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests.
 ---
 
-Please use https://discuss.reactjs.org/ to propose changes or discuss feature requests.
+Please use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests.
 
-If you feel strongly about starting a discussion as a GitHub Issue instead of using the discussion forum, you may follow this template.
+We kindly ask that issues of this type are kept in that dedicated repo, to ensure bug reports and regressions are given the priority they require.
 
-We kindly ask that issues of this type are kept to a minimum to ensure bug reports and regressions are given the priority they require.
-
-Maintainers may flag an issue for Stack Overflow or kindly ask you to move the discussion to https://discuss.reactjs.org at their own discretion.
+Maintainers may flag an issue for Stack Overflow or kindly ask you to move the discussion to https://github.com/react-native-community/discussions-and-proposals at their own discretion.
 
 ---
 
