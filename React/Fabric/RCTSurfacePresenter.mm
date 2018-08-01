@@ -201,6 +201,11 @@ using namespace facebook::react;
   return _scheduler.uiManager_DO_NOT_USE;
 }
 
+- (RCTBridge *)bridge_DO_NOT_USE
+{
+  return _bridge;
+}
+
 @end
 
 @implementation RCTBridge (RCTSurfacePresenter)
