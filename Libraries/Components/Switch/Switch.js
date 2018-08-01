@@ -78,21 +78,6 @@ export type Props = $ReadOnly<{|
    * Identifier used to find this view in tests.
    */
   testID?: ?string,
-
-  /**
-   * @deprecated See `thumbColor`.
-   */
-  thumbTintColor?: ?ColorValue,
-
-  /**
-   * @deprecated See `trackColor.false`.
-   */
-  tintColor?: ?ColorValue,
-
-  /**
-   * @deprecated See `trackColor.true`.
-   */
-  onTintColor?: ?ColorValue,
 |}>;
 
 // @see ReactSwitchManager.java
@@ -146,13 +131,10 @@ class Switch extends React.Component<Props> {
       disabled,
       ios_backgroundColor,
       onChange,
-      onTintColor,
       onValueChange,
       style,
       testID,
       thumbColor,
-      thumbTintColor,
-      tintColor,
       trackColor,
       value,
       ...props
@@ -163,15 +145,31 @@ class Switch extends React.Component<Props> {
     let _trackColorForFalse = trackColor?.false;
     let _trackColorForTrue = trackColor?.true;
 
-    // TODO: Add a warning when used.
+    // TODO: Remove support for these props after a couple releases.
+    const {thumbTintColor, tintColor, onTintColor} = (props: $FlowFixMe);
     if (thumbTintColor != null) {
       _thumbColor = thumbTintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `thumbTintColor` is deprecated, use `_thumbColor` instead.',
+        );
+      }
     }
     if (tintColor != null) {
       _trackColorForFalse = tintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `tintColor` is deprecated, use `trackColor` instead.',
+        );
+      }
     }
     if (onTintColor != null) {
       _trackColorForTrue = onTintColor;
+      if (__DEV__) {
+        console.warn(
+          'Switch: `onTintColor` is deprecated, use `trackColor` instead.',
+        );
+      }
     }
 
     const platformProps =
