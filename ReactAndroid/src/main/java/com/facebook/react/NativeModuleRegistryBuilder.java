@@ -60,7 +60,7 @@ public class NativeModuleRegistryBuilder {
           NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getType().getName());
+            moduleSpec.getClassName());
           try {
             module = moduleSpec.getProvider().get();
           } finally {
