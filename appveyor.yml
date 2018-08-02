@@ -40,3 +40,9 @@ build_script:
 
 test_script:
     - npm test
+
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%/Yarn"
+  - "%USERPROFILE%/.gradle/caches"
+  - "%USERPROFILE%/.gradle/wrapper"
