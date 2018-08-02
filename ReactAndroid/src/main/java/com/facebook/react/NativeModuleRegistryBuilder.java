@@ -30,19 +30,15 @@ public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final ReactInstanceManager mReactInstanceManager;
-  private final boolean mLazyNativeModulesEnabled;
 
   private final Map<String, ModuleHolder> mModules = new HashMap<>();
   private final Map<String,String> namesToType = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
-    ReactInstanceManager reactInstanceManager,
-    boolean lazyNativeModulesEnabled) {
+    ReactInstanceManager reactInstanceManager) {
     mReactApplicationContext = reactApplicationContext;
     mReactInstanceManager = reactInstanceManager;
-    // TODO T32034141 Remove mLazyNativeModulesEnabled
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
   public void processPackage(ReactPackage reactPackage) {
