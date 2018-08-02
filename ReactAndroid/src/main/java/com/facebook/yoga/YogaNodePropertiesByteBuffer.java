@@ -25,6 +25,7 @@ public class YogaNodePropertiesByteBuffer implements YogaNodeProperties, Cloneab
   private final long mNativePointer;
   private boolean mHasBorderSet = false;
   private boolean mHasNewLayout = true;
+  private boolean isFreed = false;
 
   private static native ByteBuffer jni_getStyleBuffer(long nativePointer);
 
@@ -48,12 +49,10 @@ public class YogaNodePropertiesByteBuffer implements YogaNodeProperties, Cloneab
     mLayoutBuffer = jni_getLayoutBuffer(nativePointer).order(ByteOrder.LITTLE_ENDIAN);
   }
 
-  private static native void jni_YGNodeFree(long nativePointer);
-
   @Override
   protected void finalize() throws Throwable {
     try {
-      jni_YGNodeFree(getNativePointer());
+      freeNatives();
     } finally {
       super.finalize();
     }
@@ -482,9 +481,14 @@ public class YogaNodePropertiesByteBuffer implements YogaNodeProperties, Cloneab
     return YogaDirection.fromInt(getLayoutDirectionInt());
   }
 
+  private static native void jni_YGNodeFree(long nativePointer);
+
   @Override
   public void freeNatives() {
-    jni_YGNodeFree(mNativePointer);
+    if (!isFreed) {
+      isFreed = true;
+      jni_YGNodeFree(mNativePointer);
+    }
   }
 
   private int getLayoutDirectionInt() {

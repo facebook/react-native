@@ -66,12 +66,13 @@ public class YogaNodePropertiesJNI implements Cloneable, YogaNodeProperties {
     }
   }
 
-  private native void jni_YGNodeFree(long nativePointer);
+  private static native void jni_YGNodeFree(long nativePointer);
 
   @Override
   public void freeNatives() {
-    jni_YGNodeFree(mNativePointer);
+    long nativePointer = mNativePointer;
     mNativePointer = 0;
+    jni_YGNodeFree(nativePointer);
   }
 
   @Override

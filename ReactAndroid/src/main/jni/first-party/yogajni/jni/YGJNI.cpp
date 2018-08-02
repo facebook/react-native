@@ -384,7 +384,7 @@ jlong jni_YGNodeCloneNoProps(
   return jni_YGNodeClone(cls, nativePointer, clonedJavaObject, nullptr);
 }
 
-void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
+void jni_YGNodeFree(alias_ref<jclass> thiz, jlong nativePointer) {
   if (nativePointer == 0) {
     return;
   }
