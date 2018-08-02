@@ -297,4 +297,24 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       parent.removeAllViews();
     }
   }
+
+  @Override
+  public void startViewTransition(ReactViewGroup parent, View view) {
+    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
+    if (removeClippedSubviews) {
+      parent.startViewTransitionWithSubviewClippingEnabled(view);
+    } else {
+      parent.startViewTransition(view);
+    }
+  }
+
+  @Override
+  public void endViewTransition(ReactViewGroup parent, View view) {
+    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
+    if (removeClippedSubviews) {
+      parent.endViewTransitionWithSubviewClippingEnabled(view);
+    } else {
+      parent.endViewTransition(view);
+    }
+  }
 }
