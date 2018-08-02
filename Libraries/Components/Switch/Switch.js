@@ -73,11 +73,6 @@ export type Props = $ReadOnly<{|
    * event, use `onChange`.
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
-
-  /**
-   * Identifier used to find this view in tests.
-   */
-  testID?: ?string,
 |}>;
 
 // @see ReactSwitchManager.java
@@ -133,7 +128,6 @@ class Switch extends React.Component<Props> {
       onChange,
       onValueChange,
       style,
-      testID,
       thumbColor,
       trackColor,
       value,
