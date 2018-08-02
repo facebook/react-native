@@ -385,6 +385,9 @@ jlong jni_YGNodeCloneNoProps(
 }
 
 void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
+  if (nativePointer == 0) {
+    return;
+  }
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   delete reinterpret_cast<JNINodeContext*>(node->getContext());
   YGNodeFree(node);

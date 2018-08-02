@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 public class YogaNode implements Cloneable {
 
   static {
-    SoLoader.loadLibrary("yoga");
+      SoLoader.loadLibrary("yoga");
   }
 
   public static final int BYTE_BUFFER = 1;
@@ -96,7 +96,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
-
   public void addChildAt(YogaNode child, int i) {
     if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
@@ -172,7 +171,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
-
   public YogaNode removeChildAt(int i) {
     if (mChildren == null) {
       throw new IllegalStateException(
@@ -185,10 +183,12 @@ public class YogaNode implements Cloneable {
   }
 
   /**
-   * @returns the {@link YogaNode} that owns this {@link YogaNode}. The owner is used to identify
-   *     the YogaTree that a {@link YogaNode} belongs to. This method will return the parent of the
-   *     {@link YogaNode} when the {@link YogaNode} only belongs to one YogaTree or null when the
-   *     {@link YogaNode} is shared between two or more YogaTrees.
+   * @returns the {@link YogaNode} that owns this {@link YogaNode}.
+   * The owner is used to identify the YogaTree that a {@link YogaNode} belongs
+   * to.
+   * This method will return the parent of the {@link YogaNode} when the
+   * {@link YogaNode} only belongs to one YogaTree or null when the
+   * {@link YogaNode} is shared between two or more YogaTrees.
    */
   @Nullable
   public YogaNode getOwner() {
@@ -218,7 +218,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeMarkDirty(long nativePointer);
-
   public void dirty() {
     jni_YGNodeMarkDirty(getNativePointer());
   }
@@ -234,7 +233,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeCopyStyle(long dstNativePointer, long srcNativePointer);
-
   public void copyStyle(YogaNode srcNode) {
     jni_YGNodeCopyStyle(getNativePointer(), srcNode.getNativePointer());
   }
@@ -528,7 +526,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeSetHasMeasureFunc(long nativePointer, boolean hasMeasureFunc);
-
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
     jni_YGNodeSetHasMeasureFunc(getNativePointer(), measureFunction != null);
@@ -554,7 +551,6 @@ public class YogaNode implements Cloneable {
   }
 
   private native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
-
   public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
     mBaselineFunction = baselineFunction;
     jni_YGNodeSetHasBaselineFunc(getNativePointer(), baselineFunction != null);
@@ -580,8 +576,8 @@ public class YogaNode implements Cloneable {
   private native void jni_YGNodePrint(long nativePointer);
 
   /**
-   * Use the set logger (defaults to adb log) to print out the styles, children, and computed layout
-   * of the tree rooted at this node.
+   * Use the set logger (defaults to adb log) to print out the styles, children, and computed
+   * layout of the tree rooted at this node.
    */
   public void print() {
     jni_YGNodePrint(getNativePointer());
