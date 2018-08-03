@@ -447,7 +447,7 @@ module.exports = {
     {
       command: '--port [number]',
       default: process.env.RCT_METRO_PORT || 8081,
-      parse: (val) => Number(val),
+      parse: (val: string) => Number(val),
     },
   ],
 };
