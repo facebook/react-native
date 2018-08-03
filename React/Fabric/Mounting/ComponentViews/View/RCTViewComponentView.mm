@@ -125,6 +125,11 @@ using namespace facebook::react;
     self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
   }
 
+  // `overflow`
+  if (oldViewProps.yogaStyle.overflow != newViewProps.yogaStyle.overflow) {
+    self.clipsToBounds = newViewProps.yogaStyle.overflow != YGOverflowVisible;
+  }
+
   // `zIndex`
   if (oldViewProps.zIndex != newViewProps.zIndex) {
     self.layer.zPosition = (CGFloat)newViewProps.zIndex;
