@@ -27,24 +27,24 @@ inline CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColo
   return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
 }
 
-inline CGPoint RCTCGPointFromPoint(facebook::react::Point point) {
+inline CGPoint RCTCGPointFromPoint(const facebook::react::Point &point) {
   return {point.x, point.y};
 }
 
-inline CGSize RCTCGSizeFromSize(facebook::react::Size size) {
+inline CGSize RCTCGSizeFromSize(const facebook::react::Size &size) {
   return {size.width, size.height};
 }
 
-inline CGRect RCTCGRectFromRect(facebook::react::Rect rect) {
+inline CGRect RCTCGRectFromRect(const facebook::react::Rect &rect) {
   return {RCTCGPointFromPoint(rect.origin), RCTCGSizeFromSize(rect.size)};
 }
 
-inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(facebook::react::EdgeInsets edgeInsets) {
+inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeInsets &edgeInsets) {
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
 
-inline CATransform3D RCTCATransform3DFromTransformMatrix(facebook::react::Transform transformMatrix) {
+inline CATransform3D RCTCATransform3DFromTransformMatrix(const facebook::react::Transform &transformMatrix) {
   return {
     (CGFloat)transformMatrix.matrix[0],
     (CGFloat)transformMatrix.matrix[1],
@@ -65,18 +65,18 @@ inline CATransform3D RCTCATransform3DFromTransformMatrix(facebook::react::Transf
   };
 }
 
-inline facebook::react::Point RCTPointFromCGPoint(CGPoint point) {
+inline facebook::react::Point RCTPointFromCGPoint(const CGPoint &point) {
   return {point.x, point.y};
 }
 
-inline facebook::react::Size RCTSizeFromCGSize(CGSize size) {
+inline facebook::react::Size RCTSizeFromCGSize(const CGSize &size) {
   return {size.width, size.height};
 }
 
-inline facebook::react::Rect RCTRectFromCGRect(CGRect rect) {
+inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect) {
   return {RCTPointFromCGPoint(rect.origin), RCTSizeFromCGSize(rect.size)};
 }
 
-inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(UIEdgeInsets edgeInsets) {
+inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeInsets &edgeInsets) {
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
