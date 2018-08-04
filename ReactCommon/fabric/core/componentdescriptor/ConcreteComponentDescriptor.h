@@ -45,22 +45,13 @@ public:
   }
 
   SharedShadowNode createShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedEventEmitter &eventEmitter,
-    const SharedProps &props
+    const ShadowNodeFragment &fragment
   ) const override {
-    assert(std::dynamic_pointer_cast<const ConcreteProps>(props));
-    assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter));
+    assert(std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
+    assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(fragment.eventEmitter));
 
-    const auto &shadowNode = std::make_shared<ShadowNodeT>(
-      ShadowNodeFragment {
-        .tag = tag,
-        .rootTag = rootTag,
-        .props = props,
-        .eventEmitter = eventEmitter,
-        .children = ShadowNode::emptySharedShadowNodeSharedList()
-      },
+    auto shadowNode = std::make_shared<ShadowNodeT>(
+      fragment,
       getCloneFunction()
     );
 
@@ -70,20 +61,12 @@ public:
   }
 
   UnsharedShadowNode cloneShadowNode(
-    const SharedShadowNode &sourceShadowNode,
-    const SharedProps &props = nullptr,
-    const SharedEventEmitter &eventEmitter = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   ) const override {
-    assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
-
-    const auto &shadowNode = std::make_shared<ShadowNodeT>(
-      *std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
-      ShadowNodeFragment {
-        .props = props,
-        .eventEmitter = eventEmitter,
-        .children = children
-      }
+    auto shadowNode = std::make_shared<ShadowNodeT>(
+      sourceShadowNode,
+      fragment
     );
 
     adopt(shadowNode);
@@ -130,7 +113,7 @@ private:
     if (!cloneFunction_) {
       cloneFunction_ = [this](const SharedShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
         assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
-        return this->cloneShadowNode(shadowNode, fragment.props, fragment.eventEmitter, fragment.children);
+        return this->cloneShadowNode(*shadowNode, fragment);
       };
     }
 
