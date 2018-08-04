@@ -17,7 +17,7 @@ namespace react {
 
 class AccessibleShadowNode;
 
-typedef std::shared_ptr<const AccessibleShadowNode> SharedAccessibleShadowNode;
+using SharedAccessibleShadowNode = std::shared_ptr<const AccessibleShadowNode>;
 
 class AccessibleShadowNode {
 

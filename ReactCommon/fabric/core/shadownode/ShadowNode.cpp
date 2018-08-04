@@ -23,42 +23,33 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-  const Tag &tag,
-  const Tag &rootTag,
-  const SharedProps &props,
-  const SharedEventEmitter &eventEmitter,
-  const SharedShadowNodeSharedList &children,
+  const ShadowNodeFragment &fragment,
   const ShadowNodeCloneFunction &cloneFunction
 ):
-  tag_(tag),
-  rootTag_(rootTag),
-  props_(props),
-  eventEmitter_(eventEmitter),
-  children_(std::make_shared<SharedShadowNodeList>(*children)),
+  tag_(fragment.tag),
+  rootTag_(fragment.rootTag),
+  props_(fragment.props),
+  eventEmitter_(fragment.eventEmitter),
+  children_(std::make_shared<SharedShadowNodeList>(*fragment.children)),
   cloneFunction_(cloneFunction),
   revision_(1) {}
 
 ShadowNode::ShadowNode(
-  const SharedShadowNode &shadowNode,
-  const SharedProps &props,
-  const SharedEventEmitter &eventEmitter,
-  const SharedShadowNodeSharedList &children
+  const SharedShadowNode &sourceShadowNode,
+  const ShadowNodeFragment &fragment
 ):
-  tag_(shadowNode->tag_),
-  rootTag_(shadowNode->rootTag_),
-  props_(props ? props : shadowNode->props_),
-  eventEmitter_(eventEmitter ? eventEmitter : shadowNode->eventEmitter_),
-  children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
-  localData_(shadowNode->localData_),
-  cloneFunction_(shadowNode->cloneFunction_),
-  revision_(shadowNode->revision_ + 1) {}
+  tag_(fragment.tag ?: sourceShadowNode->tag_),
+  rootTag_(fragment.rootTag ?: sourceShadowNode->rootTag_),
+  props_(fragment.props ?: sourceShadowNode->props_),
+  eventEmitter_(fragment.eventEmitter ?: sourceShadowNode->eventEmitter_),
+  children_(std::make_shared<SharedShadowNodeList>(*(fragment.children ?: sourceShadowNode->children_))),
+  localData_(fragment.localData ?: sourceShadowNode->localData_),
+  cloneFunction_(sourceShadowNode->cloneFunction_),
+  revision_(sourceShadowNode->revision_ + 1) {}
 
-UnsharedShadowNode ShadowNode::clone(
-  const SharedProps &props,
-  const SharedShadowNodeSharedList &children
-) const {
+UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
   assert(cloneFunction_);
-  return cloneFunction_(shared_from_this(), props_, eventEmitter_, children_);
+  return cloneFunction_(shared_from_this(), fragment);
 }
 
 #pragma mark - Getters

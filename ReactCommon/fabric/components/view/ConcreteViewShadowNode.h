@@ -43,7 +43,6 @@ class ConcreteViewShadowNode:
   static_assert(std::is_base_of<AccessibilityProps, ViewPropsT>::value, "ViewPropsT must be a descendant of AccessibilityProps");
 
 public:
-
   using ConcreteViewProps = ViewPropsT;
   using SharedConcreteViewProps = std::shared_ptr<const ViewPropsT>;
   using ConcreteViewEventEmitter = ViewEventEmitterT;
@@ -51,55 +50,43 @@ public:
   using SharedConcreteViewShadowNode = std::shared_ptr<const ConcreteViewShadowNode>;
 
   ConcreteViewShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
+    const ShadowNodeFragment &fragment,
     const ShadowNodeCloneFunction &cloneFunction
   ):
     ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>(
-      tag,
-      rootTag,
-      props,
-      eventEmitter,
-      children,
+      fragment,
       cloneFunction
     ),
     AccessibleShadowNode(
-      props
+      std::static_pointer_cast<const ConcreteViewProps>(fragment.props)
     ),
     YogaLayoutableShadowNode() {
 
-    YogaLayoutableShadowNode::setProps(*props);
+    YogaLayoutableShadowNode::setProps(*std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
   };
 
   ConcreteViewShadowNode(
-    const SharedConcreteViewShadowNode &shadowNode,
-    const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
+    const SharedShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   ):
     ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>(
-      shadowNode,
-      props,
-      eventEmitter,
-      children
+      sourceShadowNode,
+      fragment
     ),
     AccessibleShadowNode(
-      shadowNode,
-      props
+      std::static_pointer_cast<const ConcreteViewShadowNode>(sourceShadowNode),
+      std::static_pointer_cast<const ConcreteViewProps>(fragment.props)
     ),
     YogaLayoutableShadowNode(
-      *shadowNode
+      *std::static_pointer_cast<const ConcreteViewShadowNode>(sourceShadowNode)
     ) {
 
-    if (props) {
-      YogaLayoutableShadowNode::setProps(*props);
+    if (fragment.props) {
+      YogaLayoutableShadowNode::setProps(*std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     }
 
-    if (children) {
+    if (fragment.children) {
       YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
     }
   };
@@ -119,7 +106,7 @@ public:
   LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) override {
     ensureUnsealed();
     auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
-    auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone());
+    auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone({}));
     ShadowNode::replaceChild(childShadowNode->shared_from_this(), clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }

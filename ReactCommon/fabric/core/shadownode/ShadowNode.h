@@ -29,45 +29,51 @@ using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
+struct ShadowNodeFragment {
+  Tag tag;
+  Tag rootTag;
+  SharedProps props;
+  SharedEventEmitter eventEmitter;
+  SharedShadowNodeSharedList children;
+  SharedLocalData localData;
+};
+
 using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
-  const SharedShadowNode &shadowNode,
-  const SharedProps &props,
-  const SharedEventEmitter &eventEmitter,
-  const SharedShadowNodeSharedList &children
+  const SharedShadowNode &sourceShadowNode,
+  const ShadowNodeFragment &fragment
 )>;
 
 class ShadowNode:
   public virtual Sealable,
   public virtual DebugStringConvertible,
   public std::enable_shared_from_this<ShadowNode> {
+
 public:
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
 #pragma mark - Constructors
 
+  /*
+   * Creates a Shadow Node based on fields specified in a `fragment`.
+   */
   ShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
+    const ShadowNodeFragment &fragment,
     const ShadowNodeCloneFunction &cloneFunction
   );
 
+  /*
+   * Creates a Shadow Node via cloning given `sourceShadowNode` and
+   * applying fields from given `fragment`.
+   */
   ShadowNode(
-    const SharedShadowNode &shadowNode,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
+    const SharedShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   );
 
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  UnsharedShadowNode clone(
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
-  ) const;
+  UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
 
 #pragma mark - Getters
 

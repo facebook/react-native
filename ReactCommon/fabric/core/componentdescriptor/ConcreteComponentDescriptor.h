@@ -54,11 +54,13 @@ public:
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(eventEmitter));
 
     const auto &shadowNode = std::make_shared<ShadowNodeT>(
-      tag,
-      rootTag,
-      std::static_pointer_cast<const ConcreteProps>(props),
-      std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),
-      ShadowNode::emptySharedShadowNodeSharedList(),
+      ShadowNodeFragment {
+        .tag = tag,
+        .rootTag = rootTag,
+        .props = props,
+        .eventEmitter = eventEmitter,
+        .children = ShadowNode::emptySharedShadowNodeSharedList()
+      },
       getCloneFunction()
     );
 
@@ -77,9 +79,11 @@ public:
 
     const auto &shadowNode = std::make_shared<ShadowNodeT>(
       std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
-      std::static_pointer_cast<const ConcreteProps>(props),
-      std::static_pointer_cast<const ConcreteEventEmitter>(eventEmitter),
-      children
+      ShadowNodeFragment {
+        .props = props,
+        .eventEmitter = eventEmitter,
+        .children = children
+      }
     );
 
     adopt(shadowNode);
@@ -124,9 +128,9 @@ private:
 
   ShadowNodeCloneFunction getCloneFunction() const {
     if (!cloneFunction_) {
-      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventEmitter &eventEmitter, const SharedShadowNodeSharedList &children) {
+      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
         assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
-        return this->cloneShadowNode(shadowNode, props, eventEmitter, children);
+        return this->cloneShadowNode(shadowNode, fragment.props, fragment.eventEmitter, fragment.children);
       };
     }
 
