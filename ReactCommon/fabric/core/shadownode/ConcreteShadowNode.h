@@ -28,6 +28,8 @@ class ConcreteShadowNode: public ShadowNode {
   static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
 
 public:
+  using ShadowNode::ShadowNode;
+
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<const PropsT>;
   using ConcreteEventEmitter = EventEmitterT;
@@ -50,36 +52,6 @@ public:
     static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();
     return defaultSharedProps;
   }
-
-  ConcreteShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedConcreteProps &props,
-    const SharedConcreteEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
-    const ShadowNodeCloneFunction &cloneFunction
-  ):
-    ShadowNode(
-      tag,
-      rootTag,
-      (SharedProps)props,
-      eventEmitter,
-      children,
-      cloneFunction
-    ) {};
-
-  ConcreteShadowNode(
-    const SharedConcreteShadowNode &shadowNode,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
-  ):
-    ShadowNode(
-      shadowNode,
-      (SharedProps)props,
-      eventEmitter,
-      children
-    ) {}
 
   ComponentName getComponentName() const override {
     return ComponentName(concreteComponentName);
