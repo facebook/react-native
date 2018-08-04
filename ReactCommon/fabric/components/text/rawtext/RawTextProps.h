@@ -23,7 +23,6 @@ class RawTextProps:
   public Props {
 
 public:
-
   RawTextProps() = default;
   RawTextProps(const RawTextProps &sourceProps, const RawProps &rawProps);
 

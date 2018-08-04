@@ -12,9 +12,7 @@
 namespace facebook {
 namespace react {
 
-ComponentName RootShadowNode::getComponentName() const {
-  return ComponentName("RootView");
-}
+const char RootComponentName[] = "RootView";
 
 void RootShadowNode::layout() {
   ensureUnsealed();

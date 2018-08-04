@@ -24,7 +24,6 @@ class RootProps final:
   public ViewProps {
 
 public:
-
   RootProps() = default;
   RootProps(
     const RootProps &sourceProps,

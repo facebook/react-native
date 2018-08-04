@@ -35,8 +35,6 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
-  TestShadowNode *nodePtr = node.get();
-  ASSERT_EQ(node->getComponentHandle(), typeid(*nodePtr).hash_code());
   ASSERT_EQ(node->getChildren()->size(), 0);
 
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");

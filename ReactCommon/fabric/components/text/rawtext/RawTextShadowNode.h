@@ -7,18 +7,13 @@
 
 #pragma once
 
-#include <memory>
-
 #include <fabric/components/text/RawTextProps.h>
 #include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-class RawTextShadowNode;
-
-using SharedRawTextShadowNode = std::shared_ptr<const RawTextShadowNode>;
+extern const char RawTextComponentName[];
 
 /*
  * `ShadowNode` for <RawText> component, represents a purely regular string
@@ -26,14 +21,11 @@ using SharedRawTextShadowNode = std::shared_ptr<const RawTextShadowNode>;
  * is represented as `<RawText text="Hello!"/>`.
  * <RawText> component must not have any children.
  */
-class RawTextShadowNode:
-  public ConcreteShadowNode<RawTextProps> {
-
-public:
-  using ConcreteShadowNode::ConcreteShadowNode;
-
-  ComponentName getComponentName() const override;
-};
+using RawTextShadowNode =
+  ConcreteShadowNode<
+    RawTextComponentName,
+    RawTextProps
+  >;
 
 } // namespace react
 } // namespace facebook

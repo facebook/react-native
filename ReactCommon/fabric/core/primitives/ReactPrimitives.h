@@ -35,7 +35,7 @@ using SharedRawProps = std::shared_ptr<const RawProps>;
  * Practically, it's something that concrete ShadowNode and concrete
  * ComponentDescriptor have in common.
  */
-using ComponentHandle = size_t;
+using ComponentHandle = int64_t;
 
 /*
  * String identifier for components used for addressing them from

@@ -21,6 +21,8 @@ class RootShadowNode;
 using SharedRootShadowNode = std::shared_ptr<const RootShadowNode>;
 using UnsharedRootShadowNode = std::shared_ptr<RootShadowNode>;
 
+extern const char RootComponentName[];
+
 /*
  * `ShadowNode` for the root component.
  * Besides all functionality of the `View` component, `RootShadowNode` contains
@@ -28,13 +30,14 @@ using UnsharedRootShadowNode = std::shared_ptr<RootShadowNode>;
  * shadow tree.
  */
 class RootShadowNode final:
-  public ConcreteViewShadowNode<RootProps> {
+  public ConcreteViewShadowNode<
+    RootComponentName,
+    RootProps
+  > {
 
 public:
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
 
   /*
    * Layouts the shadow tree.

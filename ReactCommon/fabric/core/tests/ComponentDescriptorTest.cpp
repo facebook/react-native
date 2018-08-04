@@ -14,7 +14,8 @@ using namespace facebook::react;
 TEST(ComponentDescriptorTest, createShadowNode) {
   SharedComponentDescriptor descriptor = std::make_shared<TestComponentDescriptor>(nullptr);
 
-  ASSERT_EQ(descriptor->getComponentHandle(), typeid(TestShadowNode).hash_code());
+  ASSERT_EQ(descriptor->getComponentHandle(), TestShadowNode::Handle());
+  ASSERT_STREQ(descriptor->getComponentName().c_str(), TestShadowNode::Name().c_str());
   ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
 
   RawProps raw;
@@ -22,7 +23,8 @@ TEST(ComponentDescriptorTest, createShadowNode) {
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node = descriptor->createShadowNode(9, 1, descriptor->createEventEmitter(0, 9), props);
 
-  ASSERT_EQ(node->getComponentHandle(), typeid(TestShadowNode).hash_code());
+  ASSERT_EQ(node->getComponentHandle(), TestShadowNode::Handle());
+  ASSERT_STREQ(node->getComponentName().c_str(), TestShadowNode::Name().c_str());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
@@ -38,7 +40,6 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   SharedShadowNode node = descriptor->createShadowNode(9, 1, descriptor->createEventEmitter(0, 9), props);
   SharedShadowNode cloned = descriptor->cloneShadowNode(node);
 
-  ASSERT_EQ(cloned->getComponentHandle(), typeid(TestShadowNode).hash_code());
   ASSERT_STREQ(cloned->getComponentName().c_str(), "Test");
   ASSERT_EQ(cloned->getTag(), 9);
   ASSERT_EQ(cloned->getRootTag(), 1);

@@ -30,7 +30,7 @@ public:
   }
 
   void adopt(UnsharedShadowNode shadowNode) const override {
-    ConcreteComponentDescriptor<ParagraphShadowNode>::adopt(shadowNode);
+    ConcreteComponentDescriptor::adopt(shadowNode);
 
     assert(std::dynamic_pointer_cast<ParagraphShadowNode>(shadowNode));
     auto paragraphShadowNode = std::static_pointer_cast<ParagraphShadowNode>(shadowNode);

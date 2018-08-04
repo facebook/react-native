@@ -24,9 +24,17 @@ namespace react {
  * as <View> and similar basic behaviour).
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
-template <typename ViewPropsT = ViewProps, typename ViewEventEmitterT = ViewEventEmitter>
+template <
+  const char *concreteComponentName,
+  typename ViewPropsT = ViewProps,
+  typename ViewEventEmitterT = ViewEventEmitter
+>
 class ConcreteViewShadowNode:
-  public ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>,
+  public ConcreteShadowNode<
+    concreteComponentName,
+    ViewPropsT,
+    ViewEventEmitterT
+  >,
   public AccessibleShadowNode,
   public YogaLayoutableShadowNode {
 
@@ -50,7 +58,7 @@ public:
     const SharedShadowNodeSharedList &children,
     const ShadowNodeCloneFunction &cloneFunction
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
+    ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>(
       tag,
       rootTag,
       props,
@@ -64,7 +72,7 @@ public:
     YogaLayoutableShadowNode() {
 
     YogaLayoutableShadowNode::setProps(*props);
-    YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+    YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
   };
 
   ConcreteViewShadowNode(
@@ -73,7 +81,7 @@ public:
     const SharedConcreteViewEventEmitter &eventEmitter,
     const SharedShadowNodeSharedList &children
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
+    ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>(
       shadowNode,
       props,
       eventEmitter,
@@ -92,7 +100,7 @@ public:
     }
 
     if (children) {
-      YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+      YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
     }
   };
 

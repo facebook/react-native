@@ -37,22 +37,11 @@ public:
     eventDispatcher_(eventDispatcher) {}
 
   ComponentHandle getComponentHandle() const override {
-    return typeid(ShadowNodeT).hash_code();
+    return ShadowNodeT::Handle();
   }
 
   ComponentName getComponentName() const override {
-    // Even if this looks suboptimal, it is the only way to call
-    // a virtual non-static method of `ShadowNodeT`.
-    // Because it is not a hot path (it is executed once per an app run),
-    // it's fine.
-    return std::make_shared<ShadowNodeT>(
-      0,
-      0,
-      std::make_shared<const ConcreteProps>(),
-      nullptr,
-      ShadowNode::emptySharedShadowNodeSharedList(),
-      nullptr
-    )->ShadowNodeT::getComponentName();
+    return ShadowNodeT::Name();
   }
 
   SharedShadowNode createShadowNode(
@@ -74,6 +63,7 @@ public:
     );
 
     adopt(shadowNode);
+
     return shadowNode;
   }
 
@@ -123,6 +113,7 @@ protected:
 
   virtual void adopt(UnsharedShadowNode shadowNode) const {
     // Default implementation does nothing.
+    assert(shadowNode->getComponentHandle() == getComponentHandle());
   }
 
 private:

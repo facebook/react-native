@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/components/activityindicator/ActivityIndicatorViewShadowNode.h>
+#include "ActivityIndicatorViewShadowNode.h"
 
 namespace facebook {
 namespace react {
 
-ComponentName ActivityIndicatorViewShadowNode::getComponentName() const {
-  return ComponentName("ActivityIndicatorView");
-}
+const char ActivityIndicatorViewComponentName[] = "ActivityIndicatorView";
 
 } // namespace react
 } // namespace facebook

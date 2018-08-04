@@ -14,18 +14,17 @@
 namespace facebook {
 namespace react {
 
+extern const char SwitchComponentName[];
+
 /*
  * `ShadowNode` for <Switch> component.
  */
-class SwitchShadowNode final:
-  public ConcreteViewShadowNode<SwitchProps, SwitchEventEmitter> {
-
-public:
-
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
-};
+using SwitchShadowNode =
+  ConcreteViewShadowNode<
+    SwitchComponentName,
+    SwitchProps,
+    SwitchEventEmitter
+  >;
 
 } // namespace react
 } // namespace facebook
