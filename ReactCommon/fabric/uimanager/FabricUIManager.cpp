@@ -14,6 +14,7 @@
 #include <fabric/components/view/ViewShadowNode.h>
 #include <fabric/core/componentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
+#include <fabric/core/ShadowNodeFragment.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 

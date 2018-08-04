@@ -14,6 +14,7 @@
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/core/ShadowNode.h>
+#include <fabric/core/ShadowNodeFragment.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <fabric/core/ShadowNodeFragment.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 

@@ -21,6 +21,8 @@
 namespace facebook {
 namespace react {
 
+struct ShadowNodeFragment;
+
 class ShadowNode;
 
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
@@ -28,15 +30,6 @@ using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
-
-struct ShadowNodeFragment {
-  Tag tag;
-  Tag rootTag;
-  SharedProps props;
-  SharedEventEmitter eventEmitter;
-  SharedShadowNodeSharedList children;
-  SharedLocalData localData;
-};
 
 using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
   const SharedShadowNode &sourceShadowNode,
