@@ -138,10 +138,22 @@ protected:
 private:
 
   /*
+   * Clones the list of children (and creates a new `shared_ptr` to it) if
+   * `childrenAreShared_` flag is `true`.
+   */
+  void cloneChildrenIfShared();
+
+  /*
    * A reference to a cloning function that understands how to clone
    * the specific type of ShadowNode.
    */
   ShadowNodeCloneFunction cloneFunction_;
+
+  /*
+   * Indicates that `children` list is shared between nodes and need
+   * to be cloned before the first mutation.
+   */
+  bool childrenAreShared_;
 
   /*
    * A number of the generation of the ShadowNode instance;

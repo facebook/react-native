@@ -30,9 +30,14 @@ ShadowNode::ShadowNode(
   rootTag_(fragment.rootTag),
   props_(fragment.props),
   eventEmitter_(fragment.eventEmitter),
-  children_(std::make_shared<SharedShadowNodeList>(*fragment.children)),
+  children_(fragment.children ?: emptySharedShadowNodeSharedList()),
   cloneFunction_(cloneFunction),
-  revision_(1) {}
+  childrenAreShared_(true),
+  revision_(1) {
+
+  assert(props_);
+  assert(children_);
+}
 
 ShadowNode::ShadowNode(
   const SharedShadowNode &sourceShadowNode,
@@ -42,10 +47,15 @@ ShadowNode::ShadowNode(
   rootTag_(fragment.rootTag ?: sourceShadowNode->rootTag_),
   props_(fragment.props ?: sourceShadowNode->props_),
   eventEmitter_(fragment.eventEmitter ?: sourceShadowNode->eventEmitter_),
-  children_(std::make_shared<SharedShadowNodeList>(*(fragment.children ?: sourceShadowNode->children_))),
+  children_(fragment.children ?: sourceShadowNode->children_),
   localData_(fragment.localData ?: sourceShadowNode->localData_),
   cloneFunction_(sourceShadowNode->cloneFunction_),
-  revision_(sourceShadowNode->revision_ + 1) {}
+  childrenAreShared_(true),
+  revision_(sourceShadowNode->revision_ + 1) {
+
+  assert(props_);
+  assert(children_);
+}
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
   assert(cloneFunction_);
@@ -97,12 +107,15 @@ void ShadowNode::sealRecursive() const {
 void ShadowNode::appendChild(const SharedShadowNode &child) {
   ensureUnsealed();
 
+  cloneChildrenIfShared();
   auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
   nonConstChildren->push_back(child);
 }
 
 void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex) {
   ensureUnsealed();
+
+  cloneChildrenIfShared();
 
   auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
 
@@ -119,6 +132,14 @@ void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShad
 void ShadowNode::setLocalData(const SharedLocalData &localData) {
   ensureUnsealed();
   localData_ = localData;
+}
+
+void ShadowNode::cloneChildrenIfShared() {
+  if (!childrenAreShared_) {
+    return;
+  }
+  childrenAreShared_ = false;
+  children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
 #pragma mark - Equality
