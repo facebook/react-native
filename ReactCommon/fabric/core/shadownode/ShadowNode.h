@@ -80,7 +80,7 @@ public:
   virtual ComponentHandle getComponentHandle() const = 0;
   virtual ComponentName getComponentName() const = 0;
 
-  SharedShadowNodeSharedList getChildren() const;
+  const SharedShadowNodeList &getChildren() const;
   SharedProps getProps() const;
   SharedEventEmitter getEventEmitter() const;
   Tag getTag() const;

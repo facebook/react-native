@@ -59,8 +59,8 @@ TEST(ComponentDescriptorTest, appendChild) {
   descriptor->appendChild(node1, node2);
   descriptor->appendChild(node1, node3);
 
-  SharedShadowNodeSharedList node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children->size(), 2);
-  ASSERT_EQ(node1Children->at(0), node2);
-  ASSERT_EQ(node1Children->at(1), node3);
+  auto node1Children = node1->getChildren();
+  ASSERT_EQ(node1Children.size(), 2);
+  ASSERT_EQ(node1Children.at(0), node2);
+  ASSERT_EQ(node1Children.at(1), node3);
 }

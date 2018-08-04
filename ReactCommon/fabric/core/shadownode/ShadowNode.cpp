@@ -54,8 +54,8 @@ UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
 
 #pragma mark - Getters
 
-SharedShadowNodeSharedList ShadowNode::getChildren() const {
-  return children_;
+const SharedShadowNodeList &ShadowNode::getChildren() const {
+  return *children_;
 }
 
 SharedProps ShadowNode::getProps() const {

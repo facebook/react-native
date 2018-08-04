@@ -72,7 +72,7 @@ public:
   template<typename SpecificShadowNodeT>
   std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
     std::vector<SpecificShadowNodeT *> children;
-    for (const auto &childShadowNode : *getChildren()) {
+    for (const auto &childShadowNode : getChildren()) {
       auto specificChildShadowNode = dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
       if (specificChildShadowNode) {
         children.push_back(const_cast<SpecificShadowNodeT *>(specificChildShadowNode));

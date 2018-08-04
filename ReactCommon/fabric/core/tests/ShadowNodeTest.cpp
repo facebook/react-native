@@ -43,7 +43,7 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
-  ASSERT_EQ(node->getChildren()->size(), 0);
+  ASSERT_EQ(node->getChildren().size(), 0);
 
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
 
@@ -78,17 +78,17 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
 
   node1->appendChild(node2);
   node1->appendChild(node3);
-  SharedShadowNodeSharedList node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children->size(), 2);
-  ASSERT_EQ(node1Children->at(0), node2);
-  ASSERT_EQ(node1Children->at(1), node3);
+  auto node1Children = node1->getChildren();
+  ASSERT_EQ(node1Children.size(), 2);
+  ASSERT_EQ(node1Children.at(0), node2);
+  ASSERT_EQ(node1Children.at(1), node3);
 
   auto node4 = std::make_shared<TestShadowNode>(node2, ShadowNodeFragment {});
   node1->replaceChild(node2, node4);
   node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children->size(), 2);
-  ASSERT_EQ(node1Children->at(0), node4);
-  ASSERT_EQ(node1Children->at(1), node3);
+  ASSERT_EQ(node1Children.size(), 2);
+  ASSERT_EQ(node1Children.at(0), node4);
+  ASSERT_EQ(node1Children.at(1), node3);
 
   // Seal the entire tree.
   node1->sealRecursive();

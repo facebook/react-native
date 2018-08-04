@@ -18,11 +18,11 @@ namespace react {
 
 AttributedString BaseTextShadowNode::getAttributedString(
   const TextAttributes &textAttributes,
-  const SharedShadowNodeSharedList &childNodes
+  const SharedShadowNodeList &childNodes
 ) const {
   AttributedString attributedString;
 
-  for (const auto &childNode : *childNodes) {
+  for (const auto &childNode : childNodes) {
     // RawShadowNode
     auto rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {
