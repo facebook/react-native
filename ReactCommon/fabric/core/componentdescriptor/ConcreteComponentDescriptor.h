@@ -113,9 +113,8 @@ private:
 
   ShadowNodeCloneFunction getCloneFunction() const {
     if (!cloneFunction_) {
-      cloneFunction_ = [this](const SharedShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
-        assert(std::dynamic_pointer_cast<const ShadowNodeT>(shadowNode));
-        return this->cloneShadowNode(*shadowNode, fragment);
+      cloneFunction_ = [this](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
+        return this->cloneShadowNode(shadowNode, fragment);
       };
     }
 

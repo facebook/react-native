@@ -32,7 +32,7 @@ using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
 using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
-  const SharedShadowNode &sourceShadowNode,
+  const ShadowNode &sourceShadowNode,
   const ShadowNodeFragment &fragment
 )>;
 

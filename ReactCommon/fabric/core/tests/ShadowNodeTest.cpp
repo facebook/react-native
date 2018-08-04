@@ -117,9 +117,9 @@ TEST(ShadowNodeTest, handleCloneFunction) {
       .props = std::make_shared<const TestProps>(),
       .children = ShadowNode::emptySharedShadowNodeSharedList()
     },
-    [](const SharedShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
+    [](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
       return std::make_shared<TestShadowNode>(
-        *std::static_pointer_cast<const TestShadowNode>(shadowNode),
+        shadowNode,
         fragment
       );
     }

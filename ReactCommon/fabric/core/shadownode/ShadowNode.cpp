@@ -60,7 +60,7 @@ ShadowNode::ShadowNode(
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
   assert(cloneFunction_);
-  return cloneFunction_(shared_from_this(), fragment);
+  return cloneFunction_(*this, fragment);
 }
 
 #pragma mark - Getters
