@@ -32,7 +32,7 @@ public:
   );
 
   AccessibleShadowNode(
-    const SharedAccessibleShadowNode &shadowNode,
+    const AccessibleShadowNode &shadowNode,
     const SharedAccessibilityProps &props = nullptr
   );
 };

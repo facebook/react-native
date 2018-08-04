@@ -66,7 +66,7 @@ public:
    * applying fields from given `fragment`.
    */
   ShadowNode(
-    const SharedShadowNode &sourceShadowNode,
+    const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment
   );
 

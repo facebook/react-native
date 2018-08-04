@@ -54,7 +54,7 @@ UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &
   auto oldRootShadowNode = rootShadowNode_;
   const auto &props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode =
-    std::make_shared<RootShadowNode>(oldRootShadowNode, ShadowNodeFragment {.props = props});
+    std::make_shared<RootShadowNode>(*oldRootShadowNode, ShadowNodeFragment {.props = props});
   return newRootShadowNode;
 }
 
@@ -62,7 +62,7 @@ void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) {
   auto oldRootShadowNode = rootShadowNode_;
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(
-      oldRootShadowNode,
+      *oldRootShadowNode,
       ShadowNodeFragment {
         .children = SharedShadowNodeSharedList(rootChildNodes)
       }

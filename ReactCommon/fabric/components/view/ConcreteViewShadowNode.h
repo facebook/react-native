@@ -68,7 +68,7 @@ public:
   };
 
   ConcreteViewShadowNode(
-    const SharedShadowNode &sourceShadowNode,
+    const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment
   ):
     BaseShadowNode(
@@ -76,11 +76,11 @@ public:
       fragment
     ),
     AccessibleShadowNode(
-      std::static_pointer_cast<const ConcreteViewShadowNode>(sourceShadowNode),
+      static_cast<const ConcreteViewShadowNode &>(sourceShadowNode),
       std::static_pointer_cast<const ConcreteViewProps>(fragment.props)
     ),
     YogaLayoutableShadowNode(
-      *std::static_pointer_cast<const ConcreteViewShadowNode>(sourceShadowNode)
+      static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)
     ) {
 
     if (fragment.props) {

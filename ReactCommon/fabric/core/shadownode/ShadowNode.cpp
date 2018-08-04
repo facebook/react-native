@@ -40,18 +40,18 @@ ShadowNode::ShadowNode(
 }
 
 ShadowNode::ShadowNode(
-  const SharedShadowNode &sourceShadowNode,
+  const ShadowNode &sourceShadowNode,
   const ShadowNodeFragment &fragment
 ):
-  tag_(fragment.tag ?: sourceShadowNode->tag_),
-  rootTag_(fragment.rootTag ?: sourceShadowNode->rootTag_),
-  props_(fragment.props ?: sourceShadowNode->props_),
-  eventEmitter_(fragment.eventEmitter ?: sourceShadowNode->eventEmitter_),
-  children_(fragment.children ?: sourceShadowNode->children_),
-  localData_(fragment.localData ?: sourceShadowNode->localData_),
-  cloneFunction_(sourceShadowNode->cloneFunction_),
+  tag_(fragment.tag ?: sourceShadowNode.tag_),
+  rootTag_(fragment.rootTag ?: sourceShadowNode.rootTag_),
+  props_(fragment.props ?: sourceShadowNode.props_),
+  eventEmitter_(fragment.eventEmitter ?: sourceShadowNode.eventEmitter_),
+  children_(fragment.children ?: sourceShadowNode.children_),
+  localData_(fragment.localData ?: sourceShadowNode.localData_),
+  cloneFunction_(sourceShadowNode.cloneFunction_),
   childrenAreShared_(true),
-  revision_(sourceShadowNode->revision_ + 1) {
+  revision_(sourceShadowNode.revision_ + 1) {
 
   assert(props_);
   assert(children_);

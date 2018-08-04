@@ -78,7 +78,7 @@ public:
     assert(std::dynamic_pointer_cast<const ShadowNodeT>(sourceShadowNode));
 
     const auto &shadowNode = std::make_shared<ShadowNodeT>(
-      std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
+      *std::static_pointer_cast<const ShadowNodeT>(sourceShadowNode),
       ShadowNodeFragment {
         .props = props,
         .eventEmitter = eventEmitter,

@@ -62,7 +62,7 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
     },
     nullptr
   );
-  auto node2 = std::make_shared<TestShadowNode>(node, ShadowNodeFragment {});
+  auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment {});
 
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
@@ -83,7 +83,7 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   ASSERT_EQ(node1Children.at(0), node2);
   ASSERT_EQ(node1Children.at(1), node3);
 
-  auto node4 = std::make_shared<TestShadowNode>(node2, ShadowNodeFragment {});
+  auto node4 = std::make_shared<TestShadowNode>(*node2, ShadowNodeFragment {});
   node1->replaceChild(node2, node4);
   node1Children = node1->getChildren();
   ASSERT_EQ(node1Children.size(), 2);
@@ -99,7 +99,7 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   // No more mutation after sealing.
   EXPECT_THROW(node4->setLocalData(nullptr), std::runtime_error);
 
-  auto node5 = std::make_shared<TestShadowNode>(node4, ShadowNodeFragment {});
+  auto node5 = std::make_shared<TestShadowNode>(*node4, ShadowNodeFragment {});
   node5->setLocalData(nullptr);
   ASSERT_EQ(node5->getLocalData(), nullptr);
 }
@@ -119,7 +119,7 @@ TEST(ShadowNodeTest, handleCloneFunction) {
     },
     [](const SharedShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
       return std::make_shared<TestShadowNode>(
-        std::static_pointer_cast<const TestShadowNode>(shadowNode),
+        *std::static_pointer_cast<const TestShadowNode>(shadowNode),
         fragment
       );
     }
