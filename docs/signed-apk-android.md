@@ -103,6 +103,9 @@ By default, the generated APK has the native code for both x86 and ARMv7a CPU ar
 
 You can create an APK for each CPU by changing the following line in android/app/build.gradle:
 ``` diff
+- ndk {
+-   abiFilters "armeabi-v7a", "x86"
+- }
 - def enableSeparateBuildPerCPUArchitecture = false
 + def enableSeparateBuildPerCPUArchitecture = true
 ```
