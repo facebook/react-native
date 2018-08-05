@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_library")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_library", "JAVA_STUBS_TARGET")
 
 rn_android_library(
     name = "yoga",
@@ -10,4 +10,7 @@ rn_android_library(
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
+    provided_deps = [
+        JAVA_STUBS_TARGET,
+    ]
 )

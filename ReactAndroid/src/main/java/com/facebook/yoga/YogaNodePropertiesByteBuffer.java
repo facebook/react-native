@@ -31,16 +31,16 @@ public class YogaNodePropertiesByteBuffer implements YogaNodeProperties, Cloneab
 
   private static native ByteBuffer jni_getLayoutBuffer(long nativePointer);
 
-  private static native long jni_YGNodeNewByteBuffer(YogaNode node);
+  private static native long jni_YGNodeNewNoProps(YogaNode node);
 
   public YogaNodePropertiesByteBuffer(YogaNode node) {
-    this(jni_YGNodeNewByteBuffer(node));
+    this(jni_YGNodeNewNoProps(node));
   }
 
-  private static native long jni_YGNodeNewByteBufferWithConfig(YogaNode node, long configPointer);
+  private static native long jni_YGNodeNewNoPropsWithConfig(YogaNode node, long configPointer);
 
   public YogaNodePropertiesByteBuffer(YogaNode node, YogaConfig config) {
-    this(jni_YGNodeNewByteBufferWithConfig(node, config.mNativePointer));
+    this(jni_YGNodeNewNoPropsWithConfig(node, config.mNativePointer));
   }
 
   public YogaNodePropertiesByteBuffer(long nativePointer) {
@@ -84,6 +84,7 @@ public class YogaNodePropertiesByteBuffer implements YogaNodeProperties, Cloneab
   @Override
   public void reset() {
     mHasBorderSet = false;
+    mHasNewLayout = true;
     jni_YGNodeReset(getNativePointer());
   }
 

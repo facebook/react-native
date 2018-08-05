@@ -23,6 +23,7 @@ public class YogaNode implements Cloneable {
 
   public static final int BYTE_BUFFER = 1;
   public static final int HYBRID = 2;
+  public static final int UNSAFE = 3;
 
   /** Get native instance count. Useful for testing only. */
   static native int jni_YGNodeGetInstanceCount();
@@ -50,6 +51,9 @@ public class YogaNode implements Cloneable {
       case HYBRID:
         mDelegate = new YogaNodePropertiesHybrid(this);
         break;
+      case UNSAFE:
+        mDelegate = new YogaNodePropertiesUnsafe(this);
+        break;
       default:
         mDelegate = new YogaNodePropertiesJNI(this);
     }
@@ -62,6 +66,9 @@ public class YogaNode implements Cloneable {
         break;
       case HYBRID:
         mDelegate = new YogaNodePropertiesHybrid(this, config);
+        break;
+      case UNSAFE:
+        mDelegate = new YogaNodePropertiesUnsafe(this, config);
         break;
       default:
         mDelegate = new YogaNodePropertiesJNI(this, config);
