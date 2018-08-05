@@ -300,7 +300,7 @@ module.exports =<span class="hljs-built_in"> config;
   waitingModuleNames.length
 );
 
-<span class="hljs-comment">// grab this text blob, and put it in a file named packager/moduleNames.js</span>
+<span class="hljs-comment">// grab this text blob, and put it in a file named packager/modulePaths.js</span>
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`module.exports = <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(loadedModuleNames.sort())}</span>;`</span>);
 </code></pre>
 <p>When you run your app, you can look in the console and see how many modules have been loaded, and how many are waiting. You may want to read the moduleNames and see if there are any surprises. Note that inline requires are invoked the first time the imports are referenced. You may need to investigate and refactor to ensure only the modules you want are loaded on startup. Note that you can change the Systrace object on require to help debug problematic requires.</p>
@@ -310,70 +310,23 @@ module.exports =<span class="hljs-built_in"> config;
   }
 }
 </code></pre>
-<p>Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named packager/moduleNames.js.</p>
-<h3><a class="anchor" aria-hidden="true" id="transforming-to-module-paths"></a><a href="#transforming-to-module-paths" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Transforming to Module Paths</h3>
-<p>The loaded module names get us part of the way there, but we actually need absolute module paths, so the next script will set that up. Add <code>packager/generateModulePaths.js</code> to your project with the following:</p>
-<pre><code class="hljs"><span class="hljs-comment">// @flow</span>
-<span class="hljs-comment">/* eslint-disable no-console */</span>
-<span class="hljs-keyword">const</span> execSync = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>).execSync;
-<span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
-<span class="hljs-keyword">const</span> moduleNames = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./moduleNames'</span>);
-
-<span class="hljs-keyword">const</span> pjson = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../package.json'</span>);
-<span class="hljs-keyword">const</span> localPrefix = <span class="hljs-string">`<span class="hljs-subst">${pjson.name}</span>/`</span>;
-
-<span class="hljs-keyword">const</span> modulePaths = moduleNames.map(<span class="hljs-function"><span class="hljs-params">moduleName</span> =&gt;</span> {
-  <span class="hljs-keyword">if</span> (moduleName.startsWith(localPrefix)) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">`./<span class="hljs-subst">${moduleName.substring(localPrefix.length)}</span>`</span>;
-  }
-  <span class="hljs-keyword">if</span> (moduleName.endsWith(<span class="hljs-string">'.js'</span>)) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">`./node_modules/<span class="hljs-subst">${moduleName}</span>`</span>;
-  }
-  <span class="hljs-keyword">try</span> {
-    <span class="hljs-keyword">const</span> result = execSync(
-      <span class="hljs-string">`grep "@providesModule <span class="hljs-subst">${moduleName}</span>" $(find . -name <span class="hljs-subst">${moduleName}</span>\\\\.js) -l`</span>
-    )
-      .toString()
-      .trim()
-      .split(<span class="hljs-string">'\n'</span>)[<span class="hljs-number">0</span>];
-    <span class="hljs-keyword">if</span> (result != <span class="hljs-literal">null</span>) {
-      <span class="hljs-keyword">return</span> result;
-    }
-  } <span class="hljs-keyword">catch</span> (e) {
-    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
-  }
-  <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
-});
-
-<span class="hljs-keyword">const</span> paths = modulePaths
-  .filter(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> path != <span class="hljs-literal">null</span>)
-  .map(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">`'<span class="hljs-subst">${path}</span>'`</span>)
-  .join(<span class="hljs-string">',\n'</span>);
-
-<span class="hljs-keyword">const</span> fileData = <span class="hljs-string">`module.exports = [<span class="hljs-subst">${paths}</span>];`</span>;
-
-fs.writeFile(<span class="hljs-string">'./packager/modulePaths.js'</span>, fileData, <span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
-  <span class="hljs-keyword">if</span> (err) {
-    <span class="hljs-built_in">console</span>.log(err);
-  }
-
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Done'</span>);
-});
-</code></pre>
-<p>You can run via <code>node packager/generateModulePaths.js</code>.</p>
-<p>This script attempts to map from the module names to module paths. Its not foolproof though, for instance, it ignores platform specific files (*ios.js, and *.android.js). However based on initial testing, it handles 95% of cases. When it runs, after some time it should complete and output a file named <code>packager/modulePaths.js</code>. It should contain paths to module files that are relative to your projects root. You can commit modulePaths.js to your repo so it is transportable.</p>
+<p>Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named <code>packager/modulePaths.js</code>.</p>
 <h3><a class="anchor" aria-hidden="true" id="updating-the-configjs"></a><a href="#updating-the-configjs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Updating the config.js</h3>
 <p>Returning to packager/config.js we should update it to use our newly generated modulePaths.js file.</p>
 <pre><code class="hljs"><span class="hljs-keyword">const</span> modulePaths = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./modulePaths'</span>);
 <span class="hljs-keyword">const</span> resolve = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>).resolve;
 <span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 
+<span class="hljs-comment">// Update the following line if the root folder of your app is somewhere else.</span>
+<span class="hljs-keyword">const</span> ROOT_FOLDER = path.resolve(__dirname, <span class="hljs-string">'..'</span>);
+
 <span class="hljs-keyword">const</span> config = {
   <span class="hljs-attr">getTransformOptions</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
     <span class="hljs-keyword">const</span> moduleMap = {};
     modulePaths.forEach(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> {
+      path = resolve(ROOT_FOLDER, path);
       <span class="hljs-keyword">if</span> (fs.existsSync(path)) {
-        moduleMap[resolve(path)] = <span class="hljs-literal">true</span>;
+        moduleMap[path] = <span class="hljs-literal">true</span>;
       }
     });
     <span class="hljs-keyword">return</span> {
