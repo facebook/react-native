@@ -452,22 +452,34 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end to end tests
-  test_end_to_end:
+  # Runs end to end tests (Objective-C)
+  test_objc_end_to_end:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
-      - run: *brew-install-watchman
+
+      - run: *run-objc-ios-e2e-tests
+
+      - store_test_results:
+          path: ~/react-native/reports/junit
+
+  # Runs end to end tests (Detox)
+  test_detox_end_to_end:
+    <<: *macos_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native
+
+      - run: *boot-simulator-iphone
 
       - run: *install-node-8
       - run: *install-apple-simulator-utils
       - run: *build-ios-app-e2e
 
       - run: *run-ios-detox-tests
-      - run: *run-objc-ios-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -663,10 +675,16 @@ workflows:
             - checkout_code
 
       # End-to-end tests
-      - test_end_to_end:
+      - test_objc_end_to_end:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
+      - test_detox_end_to_end:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
 
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
@@ -680,8 +698,7 @@ workflows:
             - test_javascript
             - test_objc
             - test_android
-            - test_end_to_end
-            - analyze
+            - test_objc_end_to_end
 
   # Only runs on PRs
   analyze:
