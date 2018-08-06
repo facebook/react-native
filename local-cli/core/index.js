@@ -106,9 +106,7 @@ const defaultRNConfig = {
   getDependencyConfig(packageName: string) {
     const platforms = this.getPlatformConfig();
     const folder = path.join(process.cwd(), 'node_modules', packageName);
-    const rnpm = getRNPMConfig(
-      path.join(process.cwd(), 'node_modules', packageName),
-    );
+    const rnpm = getRNPMConfig(folder);
 
     let config = Object.assign({}, rnpm, {
       assets: findAssets(folder, rnpm.assets),
