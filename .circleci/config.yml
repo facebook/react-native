@@ -128,10 +128,6 @@ aliases:
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
 
-  - &install-node-dependencies
-    |
-      npm install --no-package-lock --no-spin --no-progress
-
   - &install-buck
     name: Install BUCK
     command: |
@@ -146,13 +142,6 @@ aliases:
       fi
       mkdir -p ~/react-native/tooling/junit
       cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
-
-
-  - &install-node
-    name: Install Node
-    command: |
-      curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      sudo apt-get install -y nodejs
 
   - &create-ndk-directory
     name: Create Android NDK Directory
@@ -194,17 +183,11 @@ aliases:
   # eslint sometimes runs into trouble generating the reports
   - &run-lint-checks
     name: Lint code
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
-      fi
+    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
   - &run-flow-checks
     name: Check for errors in code using Flow
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        yarn flow check
-      fi
+    command: yarn flow check
 
   - &run-sanity-checks
     name: Sanity checks
@@ -282,35 +265,45 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
       mkdir -p ~/react-native/reports/outputs/
 
+  - &brew-install-watchman
+    name: Install Watchman
+    command: |
+      brew install watchman
+      touch .watchmanconfig
+
   - &boot-simulator-iphone
+    name: Boot iPhone Simulator
+    command: xcrun simctl boot "iPhone 5s" || true
+
+  - &boot-simulator-iphone-with-parallelism
     name: Boot iPhone Simulator
     command: |
       if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
         xcrun simctl boot "iPhone 5s" || true
       fi
 
-  - &boot-simulator-appletv
+  - &boot-simulator-appletv-with-parallelism
     name: Boot Apple TV Simulator
     command: |
       if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
         xcrun simctl boot "Apple TV" || true
       fi
 
-  - &run-objc-ios-tests
+  - &run-objc-ios-tests-with-parallelism
     name: iOS Test Suite
     command: |
       if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
         ./scripts/objc-test-ios.sh test
       fi
 
-  - &run-objc-tvos-tests
+  - &run-objc-tvos-tests-with-parallelism
     name: tvOS Test Suite
     command: |
       if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
         ./scripts/objc-test-tvos.sh test
       fi
 
-  - &run-podspec-tests
+  - &run-podspec-tests-with-parallelism
     name: Test CocoaPods
     command: |
       if [ $((2 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
@@ -320,6 +313,29 @@ aliases:
   - &run-e2e-tests
     name: End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
+
+  - &install-node-8
+    name: Install Node 8
+    command: |
+      echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+      source $BASH_ENV
+      brew install node@8
+      brew link node@8
+      node -v
+
+  - &install-apple-simulator-utils
+    name: Install Apple Simulator Utilities
+    command: |
+      brew tap wix/brew
+      brew install applesimutils
+
+  - &build-ios-app-e2e
+    name: Build iOS App for Simulator
+    command: yarn run build-ios-e2e
+
+  - &run-ios-detox-tests
+    name: Run Detox Tests
+    command: yarn run test-ios-e2e
 
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
@@ -425,56 +441,45 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
-      - run: brew install watchman
+      - run: *boot-simulator-iphone-with-parallelism
+      - run: *boot-simulator-appletv-with-parallelism
+      - run: *brew-install-watchman
 
-      - run: *run-objc-ios-tests
-      - run: *run-objc-tvos-tests
-      - run: *run-podspec-tests
+      - run: *run-objc-ios-tests-with-parallelism
+      - run: *run-objc-tvos-tests-with-parallelism
+      - run: *run-podspec-tests-with-parallelism
 
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end to end tests
-  test_end_to_end:
+  # Runs end to end tests (Objective-C)
+  test_objc_end_to_end:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
-      - run:
-          name: Boot iOS Simulator
-          command: xcrun simctl boot "iPhone 5s" || true
-
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
-          name: Install Node 8
-          command: |
-            brew install node@8
-            brew link node@8
-            node -v
+      - run: *boot-simulator-iphone
 
       - run: *run-objc-ios-e2e-tests
 
-      - run:
-          name: Install Apple Simulator Utilities
-          command: |
-            brew tap wix/brew
-            brew install applesimutils
+      - store_test_results:
+          path: ~/react-native/reports/junit
 
-      - run:
-          name: Build iOS App for Simulator
-          command: yarn run build-ios-e2e
+  # Runs end to end tests (Detox)
+  test_detox_end_to_end:
+    <<: *macos_defaults
+    steps:
+      - attach_workspace:
+          at: ~/react-native
 
-      - run:
-          name: Run Detox Tests
-          command: yarn run test-ios-e2e
+      - run: *boot-simulator-iphone
+
+      - run: *install-node-8
+      - run: *install-apple-simulator-utils
+      - run: *build-ios-app-e2e
+
+      - run: *run-ios-detox-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -670,10 +675,16 @@ workflows:
             - checkout_code
 
       # End-to-end tests
-      - test_end_to_end:
+      - test_objc_end_to_end:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
+      - test_detox_end_to_end:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
+
 
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
@@ -687,8 +698,7 @@ workflows:
             - test_javascript
             - test_objc
             - test_android
-            - test_end_to_end
-            - analyze
+            - test_objc_end_to_end
 
   # Only runs on PRs
   analyze:
