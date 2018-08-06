@@ -267,7 +267,9 @@ aliases:
 
   - &brew-install-watchman
     name: Install Watchman
-    command: brew install watchman
+    command: |
+      brew install watchman
+      touch .watchmanconfig
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
