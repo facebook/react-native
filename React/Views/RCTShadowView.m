@@ -281,10 +281,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
   RCTAssert(!YGNodeIsDirty(yogaNode), @"Attempt to get layout metrics from dirtied Yoga node.");
 
-  if (!YGNodeGetHasNewLayout(yogaNode)) {
-    return;
-  }
-
   YGNodeSetHasNewLayout(yogaNode, false);
 
   RCTLayoutMetrics layoutMetrics = RCTLayoutMetricsFromYogaNode(yogaNode);
