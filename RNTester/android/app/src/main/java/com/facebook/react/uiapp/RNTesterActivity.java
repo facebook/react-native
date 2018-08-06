@@ -14,7 +14,7 @@ import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 
-import javax.annotation.Nullable;
+import android.support.annotation.Nullable;
 
 public class RNTesterActivity extends ReactActivity {
   public static class RNTesterActivityDelegate extends ReactActivityDelegate {
