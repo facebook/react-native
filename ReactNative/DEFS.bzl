@@ -271,5 +271,3 @@ def jni_instrumentation_test_lib(**kwargs):
 def fb_xplat_cxx_test(**kwargs):
     """A noop stub for OSS build."""
     pass
-
-JAVA_STUBS_TARGET = "//ReactAndroid:stubs"

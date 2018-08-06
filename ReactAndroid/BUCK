@@ -1,7 +1,0 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library")
-
-rn_android_library(
-    name = "stubs",
-    srcs = glob(["stubs/src/**/*.java"]),
-    visibility = ["PUBLIC"],
-)
