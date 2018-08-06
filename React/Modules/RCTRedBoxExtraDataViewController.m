@@ -43,7 +43,7 @@
         self.keyLabel.textColor = [UIColor whiteColor];
         self.keyLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.keyLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.keyLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.keyLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif
         self.valueLabel = [UILabel new];
@@ -63,7 +63,7 @@
         self.valueLabel.textColor = [UIColor whiteColor];
         self.valueLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.valueLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.valueLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.valueLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif
     }

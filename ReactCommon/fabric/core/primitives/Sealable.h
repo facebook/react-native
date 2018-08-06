@@ -40,6 +40,18 @@ namespace react {
  *   3. Call `seal()` at some point from which any modifications
  *      must be prevented.
  */
+
+#ifdef NDEBUG
+
+class Sealable {
+public:
+  inline void seal() const {}
+  inline bool getSealed() const { return true; }
+  inline void ensureUnsealed() const {}
+};
+
+#else
+
 class Sealable {
 public:
   Sealable();
@@ -69,6 +81,8 @@ public:
 private:
   mutable std::atomic<bool> sealed_ {false};
 };
+
+#endif
 
 } // namespace react
 } // namespace facebook

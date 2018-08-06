@@ -18,8 +18,8 @@ namespace react {
  */
 void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
-  SharedShadowNode oldNode,
-  SharedShadowNode newNode
+  const SharedShadowNode &oldNode,
+  const SharedShadowNode &newNode
 );
 
 } // namespace react

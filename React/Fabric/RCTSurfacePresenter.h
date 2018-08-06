@@ -63,6 +63,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
 
+/**
+ * Returns a underlying bridge.
+ */
+- (RCTBridge *)bridge_DO_NOT_USE;
+
 @end
 
 @interface RCTBridge (RCTSurfacePresenter)

@@ -15,41 +15,22 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
 
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
-function dependencies(argv, config, args, packagerInstance) {
+async function dependencies(argv, configPromise, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
+  const config = await configPromise;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
     return Promise.reject(
       new Error(`File ${rootModuleAbsolutePath} does not exist`),
     );
   }
 
-  const transformModulePath = args.transformer
+  config.cacheStores = [];
+  config.transformModulePath = args.transformer
     ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
-
-  const packageOpts = {
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    cacheStores: [],
-    projectRoot: config.getProjectRoot(),
-    blacklistRE: config.getBlacklistRE(),
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    getPolyfills: config.getPolyfills,
-    getTransformOptions: config.getTransformOptions,
-    hasteImplModulePath: config.hasteImplModulePath,
-    postMinifyProcess: config.postMinifyProcess,
-    transformModulePath: transformModulePath,
-    extraNodeModules: config.extraNodeModules,
-    verbose: config.verbose,
-    watchFolders: config.getWatchFolders(),
-    workerPath: config.getWorkerPath(),
-  };
+    : config.transformModulePath;
 
   const relativePath = path.relative(
-    packageOpts.projectRoot,
+    config.projectRoot,
     rootModuleAbsolutePath,
   );
 
@@ -69,7 +50,7 @@ function dependencies(argv, config, args, packagerInstance) {
   return Promise.resolve(
     (packagerInstance
       ? packagerInstance.getOrderedDependencyPaths(options)
-      : Metro.getOrderedDependencyPaths(packageOpts, options)
+      : Metro.getOrderedDependencyPaths(config, options)
     ).then(deps => {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.
@@ -77,7 +58,7 @@ function dependencies(argv, config, args, packagerInstance) {
         // (a) JS code to not depend on anything outside this directory, or
         // (b) Come up with a way to declare this dependency in Buck.
         const isInsideProjectRoots =
-          packageOpts.watchFolders.filter(root => modulePath.startsWith(root))
+          config.watchFolders.filter(root => modulePath.startsWith(root))
             .length > 0;
 
         if (isInsideProjectRoots) {

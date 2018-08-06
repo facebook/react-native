@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/components/switch/SwitchShadowNode.h>
+#include "SwitchShadowNode.h"
 
 namespace facebook {
 namespace react {
 
-ComponentName SwitchShadowNode::getComponentName() const {
-  return ComponentName("Switch");
-}
+extern const char SwitchComponentName[] = "Switch";
 
 } // namespace react
 } // namespace facebook

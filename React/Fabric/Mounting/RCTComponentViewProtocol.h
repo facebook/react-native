@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LocalData.h>
 #import <fabric/core/Props.h>
 #import <fabric/core/LayoutMetrics.h>
+#import <fabric/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN

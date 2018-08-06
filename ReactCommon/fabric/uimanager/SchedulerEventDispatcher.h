@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/EventDispatcher.h>
-#include <fabric/core/EventPrimitives.h>
+#include <fabric/events/EventDispatcher.h>
+#include <fabric/events/primitives.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <folly/dynamic.h>
 

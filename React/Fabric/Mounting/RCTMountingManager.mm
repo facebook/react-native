@@ -82,7 +82,7 @@ using namespace facebook::react;
         }
 
         // Layout
-        SharedLayoutableShadowNode layoutableNewShadowNode =
+        auto layoutableNewShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(instruction.getNewChildNode());
 
         if (layoutableNewShadowNode) {
@@ -141,11 +141,11 @@ using namespace facebook::react;
         }
 
         // Layout
-        SharedLayoutableShadowNode layoutableOldShadowNode =
+        auto layoutableOldShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
 
         if (layoutableOldShadowNode) {
-          SharedLayoutableShadowNode layoutableNewShadowNode =
+          auto layoutableNewShadowNode =
             std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
 
           if (layoutableOldShadowNode->getLayoutMetrics() != layoutableNewShadowNode->getLayoutMetrics()) {

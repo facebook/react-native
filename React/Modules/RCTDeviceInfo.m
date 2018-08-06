@@ -51,6 +51,22 @@ RCT_EXPORT_MODULE()
 #endif
 }
 
+static BOOL RCTIsIPhoneX() {
+  static BOOL isIPhoneX = NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    RCTAssertMainQueue();
+
+    isIPhoneX = CGSizeEqualToSize(
+      [UIScreen mainScreen].nativeBounds.size,
+      CGSizeMake(1125, 2436)
+    );
+  });
+
+  return isIPhoneX;
+}
+
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
@@ -86,6 +102,11 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   return @{
     @"Dimensions": RCTExportedDimensions(_bridge),
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated": @(RCTIsIPhoneX()),
   };
 }
 

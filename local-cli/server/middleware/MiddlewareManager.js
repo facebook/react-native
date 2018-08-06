@@ -19,8 +19,8 @@ const indexPageMiddleware = require('./indexPage');
 const copyToClipBoardMiddleware = require('./copyToClipBoardMiddleware');
 const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
-const statusPageMiddleware = require('./statusPageMiddleware.js');
-const systraceProfileMiddleware = require('./systraceProfileMiddleware.js');
+const statusPageMiddleware = require('./statusPageMiddleware');
+const systraceProfileMiddleware = require('./systraceProfileMiddleware');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
 
 type Options = {

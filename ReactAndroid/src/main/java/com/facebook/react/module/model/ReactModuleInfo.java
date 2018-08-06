@@ -15,16 +15,22 @@ public class ReactModuleInfo {
   private final boolean mCanOverrideExistingModule;
   private final boolean mNeedsEagerInit;
   private final boolean mHasConstants;
+  private final boolean mIsCxxModule;
+  private final boolean mHasOnBatchCompleteListener;
 
   public ReactModuleInfo(
     String name,
     boolean canOverrideExistingModule,
     boolean needsEagerInit,
-    boolean hasConstants) {
+    boolean hasConstants,
+    boolean isCxxModule,
+    boolean hasOnBatchCompleteListener) {
     mName = name;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mNeedsEagerInit = needsEagerInit;
     mHasConstants = hasConstants;
+    mIsCxxModule = isCxxModule;
+    mHasOnBatchCompleteListener = hasOnBatchCompleteListener;
   }
 
   public String name() {
@@ -41,5 +47,11 @@ public class ReactModuleInfo {
 
   public boolean hasConstants() {
     return mHasConstants;
+  }
+
+  public boolean isCxxModule() {return mIsCxxModule; }
+
+  public boolean hasOnBatchCompleteListener() {
+    return mHasOnBatchCompleteListener;
   }
 }

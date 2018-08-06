@@ -179,6 +179,7 @@
         shutdownJSRuntime();
         Page.setState({status: {type: 'disconnected'}});
       } else if (object.method === 'executeApplicationScript') {
+        appExecuted = false;
         worker.postMessage({
           ...object,
           url: await getBlobUrl(object.url),
