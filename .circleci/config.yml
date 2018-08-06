@@ -265,6 +265,14 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
       mkdir -p ~/react-native/reports/outputs/
 
+  - &brew-install-watchman
+    name: Install Watchman
+    command: brew install watchman
+
+  - &boot-simulator-iphone
+    name: Boot iPhone Simulator
+    command: xcrun simctl boot "iPhone 5s" || true
+
   - &boot-simulator-iphone-with-parallelism
     name: Boot iPhone Simulator
     command: |
@@ -433,7 +441,7 @@ jobs:
 
       - run: *boot-simulator-iphone-with-parallelism
       - run: *boot-simulator-appletv-with-parallelism
-      - run: brew install watchman
+      - run: *brew-install-watchman
 
       - run: *run-objc-ios-tests-with-parallelism
       - run: *run-objc-tvos-tests-with-parallelism
@@ -449,12 +457,10 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run:
-          name: Boot iOS Simulator
-          command: xcrun simctl boot "iPhone 5s" || true
+      - run: *boot-simulator-iphone
+      - run: *brew-install-watchman
 
       - run: *install-node-8
-
       - run: *install-apple-simulator-utils
       - run: *build-ios-app-e2e
 
