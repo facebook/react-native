@@ -22,12 +22,12 @@ import com.facebook.systrace.Systrace;
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final Map<Class<? extends NativeModule>, ModuleHolder> mModules;
+  private final Map<String, ModuleHolder> mModules;
   private final ArrayList<ModuleHolder> mBatchCompleteListenerModules;
 
   public NativeModuleRegistry(
     ReactApplicationContext reactApplicationContext,
-    Map<Class<? extends NativeModule>, ModuleHolder> modules,
+    Map<String, ModuleHolder> modules,
     ArrayList<ModuleHolder> batchCompleteListenerModules) {
     mReactApplicationContext = reactApplicationContext;
     mModules = modules;
@@ -37,7 +37,7 @@ public class NativeModuleRegistry {
   /**
    * Private getters for combining NativeModuleRegistrys
    */
-  private Map<Class<? extends NativeModule>, ModuleHolder> getModuleMap() {
+  private Map<String, ModuleHolder> getModuleMap() {
     return mModules;
   }
 
@@ -52,9 +52,10 @@ public class NativeModuleRegistry {
   /* package */ Collection<JavaModuleWrapper> getJavaModules(
       JSInstance jsInstance) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
-    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      Class<? extends NativeModule> type = entry.getKey();
-      if (!CxxModuleWrapperBase.class.isAssignableFrom(type)) {
+    for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
+      String type = entry.getKey();
+      if (!entry.getValue().isCxxModule()) {
+      //if (!CxxModuleWrapperBase.class.isAssignableFrom(entry.getValue().getModule().getClass())) {
         javaModules.add(new JavaModuleWrapper(jsInstance, type, entry.getValue()));
       }
     }
@@ -63,9 +64,8 @@ public class NativeModuleRegistry {
 
   /* package */ Collection<ModuleHolder> getCxxModules() {
     ArrayList<ModuleHolder> cxxModules = new ArrayList<>();
-    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      Class<?> type = entry.getKey();
-      if (CxxModuleWrapperBase.class.isAssignableFrom(type)) {
+    for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
+      if (entry.getValue().isCxxModule()) {
         cxxModules.add(entry.getValue());
       }
     }
@@ -80,11 +80,11 @@ public class NativeModuleRegistry {
     Assertions.assertCondition(mReactApplicationContext.equals(newRegister.getReactApplicationContext()),
       "Extending native modules with non-matching application contexts.");
 
-    Map<Class<? extends NativeModule>, ModuleHolder> newModules = newRegister.getModuleMap();
+    Map<String, ModuleHolder> newModules = newRegister.getModuleMap();
     ArrayList<ModuleHolder> batchCompleteListeners = newRegister.getBatchCompleteListenerModules();
 
-    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : newModules.entrySet()) {
-      Class<? extends NativeModule> key = entry.getKey();
+    for (Map.Entry<String, ModuleHolder> entry : newModules.entrySet()) {
+      String key = entry.getKey();
       if (!mModules.containsKey(key)) {
         ModuleHolder value = entry.getValue();
         if (batchCompleteListeners.contains(value)) {
@@ -137,12 +137,12 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
-    return mModules.containsKey(moduleInterface);
+    return mModules.containsKey(moduleInterface.getName());
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
     return (T) Assertions.assertNotNull(
-        mModules.get(moduleInterface), moduleInterface.getSimpleName()).getModule();
+        mModules.get(moduleInterface.getName()), moduleInterface.getSimpleName()).getModule();
   }
 
   public List<NativeModule> getAllModules() {

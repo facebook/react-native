@@ -18,7 +18,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
  * the instance manager for more information, like {@link DevSupportManager}.
  *
  * TODO(t11394819): Consolidate this with LazyReactPackage
+ * Use {@link ReactPackage} or {@link LazyReactPackage} and inject reactInstanceManager as a part of when plugins are initialized.
  */
+@Deprecated
 public abstract class ReactInstancePackage implements ReactPackage {
 
   public abstract List<NativeModule> createNativeModules(

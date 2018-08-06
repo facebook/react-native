@@ -42,7 +42,6 @@ namespace {
 
 class Exception : public jni::JavaClass<Exception> {
  public:
-  static auto constexpr kJavaDescriptor = "Ljava/lang/Exception;";
 };
 
 class JInstanceCallback : public InstanceCallback {

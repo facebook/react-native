@@ -158,7 +158,6 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private final boolean mLazyNativeModulesEnabled;
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private List<ViewManager> mViewManagers;
 
@@ -202,7 +201,6 @@ public class ReactInstanceManager {
     LifecycleState initialLifecycleState,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     @Nullable RedBoxHandler redBoxHandler,
-    boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     int minNumShakes,
@@ -236,7 +234,6 @@ public class ReactInstanceManager {
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
@@ -1016,7 +1013,7 @@ public class ReactInstanceManager {
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
-    rootView.invokeJSEntryPoint();
+    rootView.runApplication();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",
@@ -1126,8 +1123,7 @@ public class ReactInstanceManager {
     boolean checkAndUpdatePackageMembership) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
       reactContext,
-      this,
-      mLazyNativeModulesEnabled);
+      this);
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 

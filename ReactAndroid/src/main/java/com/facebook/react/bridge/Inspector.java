@@ -86,7 +86,9 @@ public class Inspector {
 
   @DoNotStrip
   public interface RemoteConnection {
+    @DoNotStrip
     void onMessage(String message);
+    @DoNotStrip
     void onDisconnect();
   }
 

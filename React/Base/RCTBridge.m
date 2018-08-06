@@ -246,7 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
 {
   NSMutableArray *modules = [NSMutableArray new];
-  for (Class moduleClass in self.moduleClasses) {
+  for (Class moduleClass in [self.moduleClasses copy]) {
     if ([moduleClass conformsToProtocol:protocol]) {
       id module = [self moduleForClass:moduleClass];
       if (module) {

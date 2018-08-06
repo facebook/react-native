@@ -11,8 +11,10 @@
 'use strict';
 
 const AnimatedImplementation = require('AnimatedImplementation');
+const FlatList = require('FlatList');
 const Image = require('Image');
 const ScrollView = require('ScrollView');
+const SectionList = require('SectionList');
 const Text = require('Text');
 const View = require('View');
 
@@ -22,4 +24,6 @@ module.exports = {
   Text: AnimatedImplementation.createAnimatedComponent(Text),
   Image: AnimatedImplementation.createAnimatedComponent(Image),
   ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),
+  FlatList: AnimatedImplementation.createAnimatedComponent(FlatList),
+  SectionList: AnimatedImplementation.createAnimatedComponent(SectionList),
 };

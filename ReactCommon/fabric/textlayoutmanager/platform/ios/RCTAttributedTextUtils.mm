@@ -176,7 +176,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
   for (auto fragment : attributedString.getFragments()) {
     NSAttributedString *nsAttributedStringFragment;
 
-    SharedLayoutableShadowNode layoutableShadowNode =
+    auto layoutableShadowNode =
       std::dynamic_pointer_cast<const LayoutableShadowNode>(fragment.shadowNode);
 
     if (layoutableShadowNode) {

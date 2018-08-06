@@ -16,11 +16,13 @@ const Metro = require('metro');
 
 const {Terminal} = require('metro-core');
 
+const messageSocket = require('./util/messageSocket');
 const morgan = require('morgan');
 const path = require('path');
+const webSocketProxy = require('./util/webSocketProxy');
 const MiddlewareManager = require('./middleware/MiddlewareManager');
 
-import type {ConfigT} from 'metro';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
@@ -52,23 +54,26 @@ async function runServer(args: Args, config: ConfigT) {
 
   args.watchFolders.forEach(middlewareManager.serveStatic);
 
-  const serverInstance = await Metro.runServer({
-    config: {
-      ...config,
-      hmrEnabled: true,
-      maxWorkers: args.maxWorkers,
-      reporter,
-      secure: args.https,
-      secureKey: args.key,
-      secureCert: args.cert,
-      transformModulePath: args.transformer
-        ? path.resolve(args.transformer)
-        : config.getTransformModulePath(),
-      watch: !args.nonPersistent,
-    },
+  config.maxWorkers = args.maxWorkers;
+  config.server.port = args.port;
+  config.reporter = reporter;
+  config.server.enhanceMiddleware = middleware =>
+    middlewareManager.getConnectInstance().use(middleware);
+
+  const serverInstance = await Metro.runServer(config, {
     host: args.host,
-    port: args.port,
+    secure: args.https,
+    secureCert: args.cert,
+    secureKey: args.key,
   });
+
+  const wsProxy = webSocketProxy.attachToServer(
+    serverInstance,
+    '/debugger-proxy',
+  );
+  const ms = messageSocket.attachToServer(serverInstance, '/message');
+  middlewareManager.attachDevToolsSocket(wsProxy);
+  middlewareManager.attachDevToolsSocket(ms);
 
   // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
   // early versions of Node 8, this was implemented in a buggy way which caused
@@ -80,7 +85,7 @@ async function runServer(args: Args, config: ConfigT) {
   //
   // For more info: https://github.com/nodejs/node/issues/13391
   //
-  // $FlowFixMe
+  // $FlowFixMe (site=react_native_fb)
   serverInstance.keepAliveTimeout = 30000;
 }
 

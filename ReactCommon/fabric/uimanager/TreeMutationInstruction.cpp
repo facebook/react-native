@@ -150,6 +150,21 @@ std::string TreeMutationInstruction::getDebugName() const {
   }
 };
 
+std::string TreeMutationInstruction::getDebugValue() const {
+  switch (type_) {
+    case Creation:
+      return "[*" + folly::to<std::string>(newChildNode_->getTag()) + "]";
+    case Deletion:
+      return "[~" + folly::to<std::string>(oldChildNode_->getTag()) + "]";
+    case Insertion:
+      return "[" + folly::to<std::string>(newChildNode_->getTag()) + "->" + folly::to<std::string>(parentNode_->getTag()) + "]";
+    case Removal:
+      return "[" + folly::to<std::string>(oldChildNode_->getTag()) + "<~" + folly::to<std::string>(parentNode_->getTag()) + "]";
+    case Replacement:
+      return "[=" + folly::to<std::string>(oldChildNode_->getTag()) + "]";
+  }
+};
+
 SharedDebugStringConvertibleList TreeMutationInstruction::getDebugProps() const {
   DebugStringConvertibleOptions options = {.maximumDepth = 1, .format = false};
 
@@ -176,7 +191,7 @@ SharedDebugStringConvertibleList TreeMutationInstruction::getDebugProps() const 
       };
     case Replacement:
       return SharedDebugStringConvertibleList {
-        std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_->getDebugDescription(options)),
+        std::make_shared<DebugStringConvertibleItem>("parentNode", parentNode_ ? parentNode_->getDebugDescription(options) : "nullptr"),
         std::make_shared<DebugStringConvertibleItem>("oldChildNode", oldChildNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("newChildNode", newChildNode_->getDebugDescription(options)),
         std::make_shared<DebugStringConvertibleItem>("index", folly::to<std::string>(index_))

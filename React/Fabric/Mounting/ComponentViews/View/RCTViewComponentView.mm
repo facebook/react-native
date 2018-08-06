@@ -7,8 +7,8 @@
 
 #import "RCTViewComponentView.h"
 
-#import <fabric/view/ViewProps.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewProps.h>
+#import <fabric/components/view/ViewEventEmitter.h>
 
 #import "RCTConversions.h"
 
@@ -123,6 +123,11 @@ using namespace facebook::react;
   // `hitSlop`
   if (oldViewProps.hitSlop != newViewProps.hitSlop) {
     self.hitTestEdgeInsets = RCTUIEdgeInsetsFromEdgeInsets(newViewProps.hitSlop);
+  }
+
+  // `overflow`
+  if (oldViewProps.yogaStyle.overflow != newViewProps.yogaStyle.overflow) {
+    self.clipsToBounds = newViewProps.yogaStyle.overflow != YGOverflowVisible;
   }
 
   // `zIndex`

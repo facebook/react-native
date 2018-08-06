@@ -238,7 +238,7 @@
   if (_selectable && action == @selector(copy:)) {
     return YES;
   }
-  
+
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
 

@@ -10,21 +10,16 @@
 'use strict';
 
 const findSymlinkedModules = require('./findSymlinkedModules');
-const fs = require('fs');
 const getPolyfills = require('../../rn-get-polyfills');
-const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {Config: MetroConfig, createBlacklist} = require('metro');
-
-const RN_CLI_CONFIG = 'rn-cli.config.js';
-
-import type {ConfigT as MetroConfigT} from 'metro';
+const {createBlacklist} = require('metro');
+const {loadConfig} = require('metro-config');
 
 /**
  * Configuration file of the CLI.
  */
-export type ConfigT = MetroConfigT;
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 function getProjectPath() {
   if (
@@ -70,68 +65,31 @@ const getBlacklistRE = () => {
  * hierarchy, an error will be thrown.
  */
 const Config = {
-  DEFAULT: ({
-    ...MetroConfig.DEFAULT,
-    getBlacklistRE,
-    getModulesRunBeforeMainModule: () => [
-      require.resolve('../../Libraries/Core/InitializeCore'),
-    ],
-    getProjectRoots,
-    getPolyfills,
-    getWatchFolders: () => [getProjectPath()],
-    getResolverMainFields: () => ['react-native', 'browser', 'main'],
-    getTransformModulePath: () =>
-      require.resolve('metro/src/reactNativeTransformer'),
-  }: ConfigT),
+  DEFAULT: {
+    resolver: {
+      resolverMainFields: ['react-native', 'browser', 'main'],
+      blacklistRE: getBlacklistRE(),
+    },
+    serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('../../Libraries/Core/InitializeCore'),
+      ],
+      getPolyfills,
+    },
 
-  find(startDir: string): ConfigT {
-    return this.findWithPath(startDir).config;
-  },
-
-  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
-    const configPath = findConfigPath(startDir);
-    invariant(
-      configPath,
-      `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
-    );
-    const projectPath = path.dirname(configPath);
-    return {config: this.load(configPath, startDir), projectPath};
-  },
-
-  findOptional(startDir: string): ConfigT {
-    const configPath = findConfigPath(startDir);
-    return configPath ? this.load(configPath, startDir) : {...Config.DEFAULT};
+    watchFolders: [getProjectPath(), ...getProjectRoots()],
+    transformModulePath: require.resolve('metro/src/reactNativeTransformer'),
   },
 
   getProjectPath,
   getProjectRoots,
 
-  load(configFile: string): ConfigT {
-    return MetroConfig.load(configFile, Config.DEFAULT);
+  async load(configFile: ?string): Promise<ConfigT> {
+    return await loadConfig(
+      configFile ? {config: configFile} : {},
+      this.DEFAULT,
+    );
   },
 };
-
-function findConfigPath(cwd: string): ?string {
-  const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
-  return parentDir ? path.join(parentDir, RN_CLI_CONFIG) : null;
-}
-
-// Finds the most near ancestor starting at `currentFullPath` that has
-// a file named `filename`
-function findParentDirectory(currentFullPath, filename) {
-  const root = path.parse(currentFullPath).root;
-  const testDir = parts => {
-    if (parts.length === 0) {
-      return null;
-    }
-
-    const fullPath = path.join(root, parts.join(path.sep));
-
-    var exists = fs.existsSync(path.join(fullPath, filename));
-    return exists ? fullPath : testDir(parts.slice(0, -1));
-  };
-
-  return testDir(currentFullPath.substring(root.length).split(path.sep));
-}
 
 module.exports = Config;

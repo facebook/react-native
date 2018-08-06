@@ -8,11 +8,11 @@
 #include <memory>
 #include <mutex>
 
+#include <fabric/components/root/RootShadowNode.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/view/RootShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -77,7 +77,7 @@ private:
 
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
   void complete(UnsharedRootShadowNode newRootShadowNode);
-  bool commit(const SharedRootShadowNode &newRootShadowNode);
+  bool commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode);
   void emitLayoutEvents(const TreeMutationInstructionList &instructions);
 
   const Tag rootTag_;
