@@ -3983,23 +3983,16 @@
 				TargetAttributes = {
 					139D7E871E25C6D100323FB7 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = V9WTTPBFK9;
-						ProvisioningStyle = Automatic;
 					};
 					139D7ECD1E25DB7D00323FB7 = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = V9WTTPBFK9;
-						ProvisioningStyle = Automatic;
 					};
 					2D2A28121D9B038B00D4039D = {
 						CreatedOnToolsVersion = 8.0;
-						ProvisioningStyle = Automatic;
 					};
 					3D383D211EBD27B6005632C8 = {
-						DevelopmentTeam = V9WTTPBFK9;
 					};
 					3D383D3D1EBD27B9005632C8 = {
-						DevelopmentTeam = V9WTTPBFK9;
 					};
 					83CBBA2D1A601D0E00E9B192 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -4735,7 +4728,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4752,7 +4744,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4769,7 +4760,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4788,7 +4778,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4844,7 +4833,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "third-party";
@@ -4864,7 +4852,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "third-party";
@@ -4882,7 +4869,6 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "double-conversion";
@@ -4900,7 +4886,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = V9WTTPBFK9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "double-conversion";
