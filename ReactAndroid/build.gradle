@@ -245,12 +245,12 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -304,7 +304,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
     implementation 'com.squareup.okio:okio:1.14.0'
-    compile 'org.webkit:android-jsc:r174650'
+    api 'org.webkit:android-jsc:r174650'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
