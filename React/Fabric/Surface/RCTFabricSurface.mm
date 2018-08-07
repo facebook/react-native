@@ -74,14 +74,17 @@
 
     [self _run];
 
+    // TODO: This will be moved to RCTSurfacePresenter.
+    RCTBridge *bridge = surfacePresenter.bridge_DO_NOT_USE;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleJavaScriptWillStartLoadingNotification:)
                                                  name:RCTJavaScriptWillStartLoadingNotification
-                                               object:_bridge];
+                                               object:bridge];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleJavaScriptDidLoadNotification:)
                                                  name:RCTJavaScriptDidLoadNotification
-                                               object:_bridge];
+                                               object:bridge];
   }
 
   return self;

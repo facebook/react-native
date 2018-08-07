@@ -59,17 +59,21 @@ class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
       <View>
         <Switch
           onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
-          onTintColor="#00ff00"
           style={{marginBottom: 10}}
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
           onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
-          onTintColor="#00ff00"
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorTrueSwitchIsOn}
         />
       </View>

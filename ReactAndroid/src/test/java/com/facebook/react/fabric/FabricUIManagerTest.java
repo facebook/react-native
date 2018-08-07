@@ -103,7 +103,7 @@ public class FabricUIManagerTest {
     ReactShadowNode child = createViewNode();
     node.addChildAt(child, 0);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node, 0);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node);
 
     assertThat(clonedNode).isNotSameAs(node);
     assertThat(clonedNode.getOriginalReactShadowNode()).isSameAs(node);
@@ -112,27 +112,12 @@ public class FabricUIManagerTest {
     assertThat(clonedNode.getChildAt(0)).isEqualTo(child);
   }
 
-
-  @Test
-  public void testCloneWithInstanceHandle() {
-    ReactShadowNode node = createViewNode();
-
-    long oldInstanceHandle = node.getInstanceHandle();
-    long newInstanceHandle = oldInstanceHandle + 1;
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node, newInstanceHandle);
-
-    assertThat(clonedNode).isNotSameAs(node);
-    assertThat(clonedNode.getInstanceHandle()).isSameAs(newInstanceHandle);
-    assertThat(node.getInstanceHandle()).isSameAs(oldInstanceHandle);
-  }
-
-
   @Test
   public void testDefaultSpacingCloning() {
     ReactShadowNode node = createViewNode();
     node.setDefaultPadding(Spacing.LEFT, 10);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node, 0);
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNode(node);
 
     node.setDefaultPadding(Spacing.LEFT, 20);
     assertThat(clonedNode.getStylePadding(Spacing.LEFT).value).isEqualTo(10f, Offset.offset(0.01f));
@@ -165,7 +150,7 @@ public class FabricUIManagerTest {
     ReactShadowNode child = createViewNode();
     node.addChildAt(child, 0);
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildren(node, randomInstanceHandle());
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildren(node);
 
     assertThat(clonedNode.getChildCount()).isZero();
     assertSameFields(clonedNode, node);
@@ -176,7 +161,7 @@ public class FabricUIManagerTest {
     ReactShadowNode node = createViewNode();
     ReadableNativeMap props = null; // TODO(ayc): Figure out how to create a Native map from tests.
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewProps(node, props, randomInstanceHandle());
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewProps(node, props);
   }
 
   @Test
@@ -184,7 +169,7 @@ public class FabricUIManagerTest {
     ReactShadowNode node = createViewNode();
     ReadableNativeMap props = null;
 
-    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildrenAndProps(node, props, randomInstanceHandle());
+    ReactShadowNode clonedNode = mFabricUIManager.cloneNodeWithNewChildrenAndProps(node, props);
 
     assertThat(clonedNode.getChildCount()).isZero();
   }
@@ -299,10 +284,10 @@ public class FabricUIManagerTest {
     mFabricUIManager.appendChildToSet(childSet, container);
     mFabricUIManager.completeRoot(rootTag, childSet);
 
-    ReactShadowNode aaClone = mFabricUIManager.cloneNodeWithNewProps(aa, null, 0);
-    ReactShadowNode aClone = mFabricUIManager.cloneNodeWithNewChildren(a, 0);
+    ReactShadowNode aaClone = mFabricUIManager.cloneNodeWithNewProps(aa, null);
+    ReactShadowNode aClone = mFabricUIManager.cloneNodeWithNewChildren(a);
     mFabricUIManager.appendChild(aClone, aaClone);
-    ReactShadowNode containerClone = mFabricUIManager.cloneNodeWithNewChildren(container, 0);
+    ReactShadowNode containerClone = mFabricUIManager.cloneNodeWithNewChildren(container);
     mFabricUIManager.appendChild(containerClone, b);
     mFabricUIManager.appendChild(containerClone, aClone);
     List<ReactShadowNode> childSet2 = mFabricUIManager.createChildSet(rootTag);

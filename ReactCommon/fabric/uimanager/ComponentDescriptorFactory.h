@@ -10,7 +10,7 @@
 #include <memory>
 
 #include <fabric/core/ComponentDescriptor.h>
-#include <fabric/core/EventDispatcher.h>
+#include <fabric/events/EventDispatcher.h>
 #include <fabric/uimanager/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"

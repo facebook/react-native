@@ -40,6 +40,9 @@ flow-github/
 [options]
 emoji=true
 
+esproposal.optional_chaining=enable
+esproposal.nullish_coalescing=enable
+
 module.system=haste
 module.system.haste.use_name_reducers=true
 # keep the following in sync with server/haste/hasteImpl.js
@@ -97,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.75.0
+^0.77.0

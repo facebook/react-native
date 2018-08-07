@@ -49,7 +49,7 @@ private:
     SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
 
     void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
-    contextContainer->registerInstance(typeid(ImageManager), std::make_shared<ImageManager>(imageLoader));
+    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
 
     _scheduler = std::make_shared<Scheduler>(contextContainer);
     _scheduler->setDelegate(_delegateProxy.get());

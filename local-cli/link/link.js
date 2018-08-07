@@ -143,9 +143,9 @@ function link(args: Array<string>, config: RNConfig) {
   }
 
   let packageName = args[0];
-  // Check if install package by specific version (eg. package@latest)
+  // Trim the version / tag out of the package name (eg. package@latest)
   if (packageName !== undefined) {
-    packageName = packageName.split('@')[0];
+    packageName = packageName.replace(/^(.+?)(@.+?)$/gi, '$1');
   }
 
   const dependencies = getDependencyConfig(

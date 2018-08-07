@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright (c) 2015-present, Facebook, Inc.
 #
@@ -9,7 +9,7 @@
 echo -en "\033]0;Web Socket Test Server\a"
 clear
 
-THIS_DIR=$(dirname "$0")
+THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 pushd "$THIS_DIR"
 ./websocket_integration_test_server.js
 popd

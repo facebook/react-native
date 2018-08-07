@@ -777,6 +777,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       return;
     }
     node.dirty();
+    mUIImplementation.dispatchViewUpdates(-1);
   }
 
   /**

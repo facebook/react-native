@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
@@ -71,7 +72,7 @@ public class ReactImageView extends GenericDraweeView {
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
 
   public static final String REMOTE_TRANSPARENT_BITMAP_URI =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
@@ -579,8 +580,8 @@ public class ReactImageView extends GenericDraweeView {
     mImageSource = null;
     if (mSources.isEmpty()) {
       ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
-       mSources.add(imageSource);
-     } else if (hasMultipleSources()) {
+      mSources.add(imageSource);
+    } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
         MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
       mImageSource = multiSource.getBestResult();

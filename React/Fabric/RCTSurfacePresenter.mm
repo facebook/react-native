@@ -67,7 +67,10 @@ using namespace facebook::react;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
+#pragma mark - RCTSchedulerDelegate
+
+- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
+                                        rootTag:(ReactTag)rootTag
 {
   [_mountingManager mutateComponentViewTreeWithMutationInstructions:instructions
                                                             rootTag:rootTag];
@@ -75,7 +78,7 @@ using namespace facebook::react;
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName
 {
-  // TODO: To be implemeted.
+  [_mountingManager preliminaryCreateComponentViewWithName:componentName];
 }
 
 #pragma mark - Internal Surface-dedicated Interface
@@ -196,6 +199,11 @@ using namespace facebook::react;
 - (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
   return _scheduler.uiManager_DO_NOT_USE;
+}
+
+- (RCTBridge *)bridge_DO_NOT_USE
+{
+  return _bridge;
 }
 
 @end

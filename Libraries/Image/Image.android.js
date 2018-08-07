@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -184,7 +184,7 @@ let Image = (
   props: ImagePropsType,
   forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'RKImage'>,
 ) => {
-  const source = resolveAssetSource(props.source);
+  let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
@@ -210,6 +210,10 @@ let Image = (
     throw new Error(
       'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
     );
+  }
+
+  if (source && !source.uri && !Array.isArray(source)) {
+    source = null;
   }
 
   let style;

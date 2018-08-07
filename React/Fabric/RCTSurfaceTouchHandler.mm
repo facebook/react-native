@@ -8,7 +8,7 @@
 #import "RCTSurfaceTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewEventEmitter.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 

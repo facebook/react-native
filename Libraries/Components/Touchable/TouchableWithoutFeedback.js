@@ -22,6 +22,8 @@ const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
+  AccessibilityRoles,
+  AccessibilityStates,
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
@@ -29,6 +31,8 @@ import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
+  AccessibilityRole,
+  AccessibilityStates as AccessibilityStatesFlow,
   AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
@@ -43,6 +47,9 @@ export type Props = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStatesFlow,
   accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
@@ -75,7 +82,12 @@ const TouchableWithoutFeedback = ((createReactClass({
   propTypes: {
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
+    accessibilityHint: PropTypes.string,
     accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+    accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+    accessibilityStates: PropTypes.arrayOf(
+      PropTypes.oneOf(AccessibilityStates),
+    ),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
@@ -238,7 +250,10 @@ const TouchableWithoutFeedback = ((createReactClass({
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
       testID: this.props.testID,

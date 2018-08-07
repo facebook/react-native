@@ -54,8 +54,7 @@ public class ReactTestHelper {
         if (mNativeModuleRegistryBuilder == null) {
           mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
             (ReactApplicationContext) mContext,
-            null,
-            false);
+            null);
         }
         Assertions.assertNotNull(nativeModule);
         mNativeModuleRegistryBuilder.addNativeModule(nativeModule);
@@ -67,8 +66,7 @@ public class ReactTestHelper {
         if (mNativeModuleRegistryBuilder == null) {
           mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
             (ReactApplicationContext) mContext,
-            null,
-            false);
+            null);
         }
         JavaScriptExecutor executor = null;
         try {

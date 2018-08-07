@@ -53,6 +53,7 @@ struct ArgsArraySetter<idx, Arg, Args...> {
 template <int idx>
 struct ArgsArraySetter<idx> {
   static void set(alias_ref<JArrayClass<jobject>::javaobject> array) {
+    (void)array;
   }
 };
 

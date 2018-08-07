@@ -272,12 +272,12 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose(
-    style1: ?DangerouslyImpreciseStyleProp,
-    style2: ?DangerouslyImpreciseStyleProp,
-  ): ?DangerouslyImpreciseStyleProp {
+  compose<T: DangerouslyImpreciseStyleProp>(
+    style1: ?T,
+    style2: ?T,
+  ): ?T | $ReadOnlyArray<T> {
     if (style1 != null && style2 != null) {
-      return [style1, style2];
+      return ([style1, style2]: $ReadOnlyArray<T>);
     } else {
       return style1 != null ? style1 : style2;
     }

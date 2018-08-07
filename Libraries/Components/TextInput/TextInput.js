@@ -326,18 +326,8 @@ const TextInput = createReactClass({
   statics: {
     State: {
       currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: (textFieldID: ?number) => {
-        console.warn(
-          '`focusTextInput` is deprecated, use the `focus` method of the `TextInput` ref instead.',
-        );
-        TextInputState.focusTextInput(textFieldID);
-      },
-      blurTextInput: (textFieldID: ?number) => {
-        console.warn(
-          '`blurTextInput` is deprecated, use `Keyboard.dismiss` or the `blur` method of the `TextInput` ref.',
-        );
-        TextInputState.blurTextInput(textFieldID);
-      },
+      focusTextInput: TextInputState.focusTextInput,
+      blurTextInput: TextInputState.blurTextInput,
     },
   },
   propTypes: {
@@ -971,7 +961,8 @@ const TextInput = createReactClass({
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
-        accessibilityTraits={props.accessibilityTraits}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1022,7 +1013,8 @@ const TextInput = createReactClass({
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
-        accessibilityTraits={props.accessibilityTraits}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1082,7 +1074,8 @@ const TextInput = createReactClass({
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}

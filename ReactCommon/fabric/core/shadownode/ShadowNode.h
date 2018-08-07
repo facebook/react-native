@@ -11,15 +11,17 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/EventEmitter.h>
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/events/EventEmitter.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
+
+struct ShadowNodeFragment;
 
 class ShadowNode;
 
@@ -28,66 +30,54 @@ using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
-using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
-using ShadowNodeCloneFunction = std::function<SharedShadowNode(
-  const SharedShadowNode &shadowNode,
-  const SharedProps &props,
-  const SharedEventEmitter &eventEmitter,
-  const SharedShadowNodeSharedList &children
+using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
+  const ShadowNode &sourceShadowNode,
+  const ShadowNodeFragment &fragment
 )>;
 
 class ShadowNode:
   public virtual Sealable,
   public virtual DebugStringConvertible,
   public std::enable_shared_from_this<ShadowNode> {
+
 public:
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
 #pragma mark - Constructors
 
+  /*
+   * Creates a Shadow Node based on fields specified in a `fragment`.
+   */
   ShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
+    const ShadowNodeFragment &fragment,
     const ShadowNodeCloneFunction &cloneFunction
   );
 
+  /*
+   * Creates a Shadow Node via cloning given `sourceShadowNode` and
+   * applying fields from given `fragment`.
+   */
   ShadowNode(
-    const SharedShadowNode &shadowNode,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   );
 
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
-  SharedShadowNode clone(
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
-  ) const;
+  UnsharedShadowNode clone(const ShadowNodeFragment &fragment) const;
 
 #pragma mark - Getters
 
   virtual ComponentHandle getComponentHandle() const = 0;
   virtual ComponentName getComponentName() const = 0;
 
-  SharedShadowNodeSharedList getChildren() const;
+  const SharedShadowNodeList &getChildren() const;
   SharedProps getProps() const;
   SharedEventEmitter getEventEmitter() const;
   Tag getTag() const;
   Tag getRootTag() const;
-
-  /*
-   * Returns the node which was used as a prototype in clone constructor.
-   * The node is held as a weak reference so that the method may return
-   * `nullptr` in cases where the node was constructed using the explicit
-   * constructor or the node was already deallocated.
-   */
-  SharedShadowNode getSourceNode() const;
 
   /*
    * Returns a local data associated with the node.
@@ -102,7 +92,7 @@ public:
 #pragma mark - Mutating Methods
 
   void appendChild(const SharedShadowNode &child);
-  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild);
+  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex = -1);
   void clearSourceNode();
 
   /*
@@ -110,15 +100,6 @@ public:
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);
-
-  /*
-   * Replaces the current source node with its source node.
-   * This method might be used for illuminating side-effects caused by the last
-   * cloning operation which are not desirable from the diffing algorithm
-   * perspective.
-   * The node must be unsealed at this point.
-   */
-  void shallowSourceNode();
 
 #pragma mark - Equality
 
@@ -145,16 +126,27 @@ protected:
   SharedProps props_;
   SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
-  WeakShadowNode sourceNode_;
   SharedLocalData localData_;
 
 private:
+
+  /*
+   * Clones the list of children (and creates a new `shared_ptr` to it) if
+   * `childrenAreShared_` flag is `true`.
+   */
+  void cloneChildrenIfShared();
 
   /*
    * A reference to a cloning function that understands how to clone
    * the specific type of ShadowNode.
    */
   ShadowNodeCloneFunction cloneFunction_;
+
+  /*
+   * Indicates that `children` list is shared between nodes and need
+   * to be cloned before the first mutation.
+   */
+  bool childrenAreShared_;
 
   /*
    * A number of the generation of the ShadowNode instance;

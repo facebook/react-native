@@ -195,8 +195,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
             accessibilityLabel="touchable feedback events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
+            accessibilityRole="button"
             onPress={() => this._appendEvent('press')}
             onPressIn={() => this._appendEvent('pressIn')}
             onPressOut={() => this._appendEvent('pressOut')}
