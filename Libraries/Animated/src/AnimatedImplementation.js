@@ -419,7 +419,7 @@ const stagger = function(
 
 type LoopAnimationConfig = {
   iterations: number,
-  resetBeforeIteratios: boolean,
+  resetBeforeIteration: boolean,
 };
 
 const loop = function(
