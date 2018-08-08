@@ -1,6 +1,6 @@
 [ignore]
 ; We fork some components by platform
-.*/*[.]android.js
+.*/*[.]ios.js
 
 ; Ignore templates for 'react-native init'
 .*/local-cli/templates/.*
@@ -50,7 +50,7 @@ module.system.haste.use_name_reducers=true
 module.system.haste.name_reducers='^.*/\([a-zA-Z0-9$_.-]+\.js\(\.flow\)?\)$' -> '\1'
 # strip .js or .js.flow suffix
 module.system.haste.name_reducers='^\(.*\)\.js\(\.flow\)?$' -> '\1'
-# strip .ios suffix
+# strip .android suffix
 module.system.haste.name_reducers='^\(.*\)\.ios$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
@@ -71,8 +71,8 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_android\\)?_oss|react_native\\(_android\\)?_fb][a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_android\\)?_oss|react_native\\(_android\\)?_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
@@ -100,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.78.0
+^0.77.0
