@@ -108,7 +108,10 @@ $ ./gradlew assembleRelease
 <h3><a class="anchor" aria-hidden="true" id="split-apks-by-abi-to-reduce-file-size"></a><a href="#split-apks-by-abi-to-reduce-file-size" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Split APKs by ABI to reduce file size</h3>
 <p>By default, the generated APK has the native code for both x86 and ARMv7a CPU architectures. This makes it easier to share APKs that run on almost all Android devices. However, this has the downside that there will be some unused native code on any device, leading to unnecessarily bigger APKs.</p>
 <p>You can create an APK for each CPU by changing the following line in android/app/build.gradle:</p>
-<pre><code class="hljs css languages- diff"><span class="hljs-deletion">- def enableSeparateBuildPerCPUArchitecture = false</span>
+<pre><code class="hljs css languages- diff"><span class="hljs-deletion">- ndk {</span>
+<span class="hljs-deletion">-   abiFilters "armeabi-v7a", "x86"</span>
+<span class="hljs-deletion">- }</span>
+<span class="hljs-deletion">- def enableSeparateBuildPerCPUArchitecture = false</span>
 <span class="hljs-addition">+ def enableSeparateBuildPerCPUArchitecture = true</span>
 </code></pre>
 <p>Upload both these files to markets which support device targetting, such as <a href="https://developer.android.com/google/play/publishing/multiple-apks.html">Google Play</a> and <a href="https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html">Amazon AppStore</a>, and the users will automatically get the appropriate APK. If you want to upload to other markets, such as <a href="https://www.apkfiles.com/">APKFiles</a>, which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.</p>
