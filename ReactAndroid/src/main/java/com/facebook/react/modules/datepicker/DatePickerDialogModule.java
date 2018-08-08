@@ -9,13 +9,13 @@ package com.facebook.react.modules.datepicker;
 
 import javax.annotation.Nullable;
 
-import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.DatePicker;
 
 import com.facebook.react.bridge.NativeModule;
@@ -118,7 +118,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void open(@Nullable final ReadableMap options, Promise promise) {
-    Activity activity = getCurrentActivity();
+    AppCompatActivity activity = (AppCompatActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
           ERROR_NO_ACTIVITY,
@@ -126,7 +126,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
       return;
     }
 
-    FragmentManager fragmentManager = activity.getFragmentManager();
+    FragmentManager fragmentManager = activity.getSupportFragmentManager();
     DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
     if (oldFragment != null) {
       oldFragment.dismiss();

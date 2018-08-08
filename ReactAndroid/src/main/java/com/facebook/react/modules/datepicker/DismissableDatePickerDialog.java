@@ -10,7 +10,6 @@ package com.facebook.react.modules.datepicker;
 import android.app.DatePickerDialog;
 import javax.annotation.Nullable;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Build;
 
