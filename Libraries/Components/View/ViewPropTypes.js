@@ -134,7 +134,6 @@ module.exports = {
    * an action on the accessibility element when that result is not obvious from the
    * accessibility label.
    *
-   * @platform ios
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
    */
@@ -165,7 +164,7 @@ module.exports = {
   accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
 
   /**
-   * Indicates to accessibility services to treat UI component like a
+   * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
 
