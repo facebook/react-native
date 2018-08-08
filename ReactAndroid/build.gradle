@@ -297,12 +297,12 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.10.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
+    compile "com.facebook.fresco:fresco:${FRESCO_VERSION}"
+    compile "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
     compile 'com.facebook.soloader:soloader:0.5.1'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+    compile "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
+    compile "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
     compile 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 
