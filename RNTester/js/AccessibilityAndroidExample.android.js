@@ -114,7 +114,7 @@ class AccessibilityAndroidExample extends React.Component {
           </View>
         </RNTesterBlock>
 
-        <RNTesterBlock title="Touchable with component type = button">
+        <RNTesterBlock title="Touchable with accessibilityRole = button">
           <TouchableWithoutFeedback
             onPress={() =>
               ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
@@ -125,6 +125,68 @@ class AccessibilityAndroidExample extends React.Component {
               <Text>Or not</Text>
             </View>
           </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Disabled Touchable with accessibilityRole = button">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="button"
+            accessibilityStates={['disabled']}
+            disabled={true}>
+            <View>
+              <Text>I am disabled</Text>
+              <Text>Clicking me will not trigger any action.</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Touchable with accessibilityRole = button and accessibilityHint">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="button"
+            accessibilityHint="Triggers
+            Toasts">
+            <View>
+              <Text>Click Me!</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityStates={['selected']}
+            accessibilityHint="accessibility hint">
+            <Text>Accessible view with hint, role, and state</Text>
+            <Text style={{color: 'gray'}}>
+              Talkback will say: accessibility hint button, selected{' '}
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with label, hint, role, and state">
+          <View
+            accessible={true}
+            accessibilityLabel="accessibility Label"
+            accessibilityRole="button"
+            accessibilityStates={['selected']}
+            accessibilityHint="accessibility Hint">
+            <Text>Accessible view with label, hint, role, and state</Text>
+            <Text style={{color: 'gray'}}>
+              Talkback will say: accessibility label, hint button, selected{' '}
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Accessible View with no other properties set">
+          <View accessible={true}>
+            <Text>This accessible view has no label, so the text is read.</Text>
+          </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="LiveRegion">
