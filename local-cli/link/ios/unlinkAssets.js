@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
@@ -19,24 +28,24 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
   if (!plist) {
     return log.error(
       'ERRPLIST',
-      'Could not locate Info.plist file. Check if your project has \'INFOPLIST_FILE\' set properly'
+      "Could not locate Info.plist file. Check if your project has 'INFOPLIST_FILE' set properly",
     );
   }
 
   if (!project.pbxGroupByName('Resources')) {
     return log.error(
       'ERRGROUP',
-      'Group \'Resources\' does not exist in your Xcode project. There is nothing to unlink.'
+      "Group 'Resources' does not exist in your Xcode project. There is nothing to unlink.",
     );
   }
 
-  const removeResourceFile = function (f) {
+  const removeResourceFile = function(f) {
     (f || [])
       .map(asset =>
         project.removeResourceFile(
           path.relative(projectConfig.sourceDir, asset),
-          { target: project.getFirstTarget().uuid }
-        )
+          {target: project.getFirstTarget().uuid},
+        ),
       )
       .map(file => file.basename);
   };
@@ -47,10 +56,7 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
 
   plist.UIAppFonts = difference(plist.UIAppFonts || [], fonts);
 
-  fs.writeFileSync(
-    projectConfig.pbxprojPath,
-    project.writeSync()
-  );
+  fs.writeFileSync(projectConfig.pbxprojPath, project.writeSync());
 
   writePlist(project, projectConfig.sourceDir, plist);
 };

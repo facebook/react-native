@@ -1,9 +1,8 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing.network;
@@ -48,7 +47,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     mCompleteRequest = completeRequest;
   }
 
-  public static interface RequestListener {
+  public interface RequestListener {
     public void onRequest(String method, String url, ReadableArray header, ReadableMap data);
   }
 

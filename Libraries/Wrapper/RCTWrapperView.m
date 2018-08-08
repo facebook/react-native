@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #import "RCTWrapperView.h"
 
@@ -77,14 +80,14 @@
 
 - (CGSize)intrinsicContentSize
 {
-  return [self sizeThatFits:CGSizeMake(INFINITY, INFINITY)];
+  return [self sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
   UIView *contentView = self.contentView;
   if (!contentView) {
-    return size;
+    return [super sizeThatFits:size];
   }
 
   return [contentView sizeThatFits:size];

@@ -1,15 +1,24 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
 
 #import <React/RCTConvert.h>
+
+typedef UIFont *(^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescription);
+
+/**
+ * React Native will use the System font for rendering by default. If you want to
+ * provide a different base font, use this override. The font weight supplied to your
+ * handler will be one of "ultralight", "thin", "light", "regular", "medium",
+ * "semibold", "extrabold", "bold", "heavy", or "black".
+ */
+RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
+RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
 
 @interface RCTFont : NSObject
 

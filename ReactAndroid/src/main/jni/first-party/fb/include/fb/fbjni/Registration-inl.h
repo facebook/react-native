@@ -1,10 +1,8 @@
 /*
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -18,7 +16,7 @@ namespace jni {
 namespace detail {
 
 #ifdef __i386__
-// X86 ABI forces 16 byte stack allignment on calls. Unfortunately
+// X86 ABI forces 16 byte stack alignment on calls. Unfortunately
 // sometimes Dalvik chooses not to obey the ABI:
 // - https://code.google.com/p/android/issues/detail?id=61012
 // - https://android.googlesource.com/platform/ndk/+/81696d2%5E!/

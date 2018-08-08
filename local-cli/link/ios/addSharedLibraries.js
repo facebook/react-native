@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 const createGroupWithMessage = require('./createGroupWithMessage');
 
 module.exports = function addSharedLibraries(project, libraries) {
@@ -11,6 +20,6 @@ module.exports = function addSharedLibraries(project, libraries) {
   const target = project.getFirstTarget().uuid;
 
   for (var name of libraries) {
-    project.addFramework(name, { target });
+    project.addFramework(name, {target});
   }
 };

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
- * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
- * file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
@@ -54,6 +52,8 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
       view.setEllipsizeLocation(TextUtils.TruncateAt.START);
     } else if (ellipsizeMode.equals("middle")) {
       view.setEllipsizeLocation(TextUtils.TruncateAt.MIDDLE);
+    } else if (ellipsizeMode.equals("clip")) {
+      view.setEllipsizeLocation(null);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid ellipsizeMode: " + ellipsizeMode);
     }

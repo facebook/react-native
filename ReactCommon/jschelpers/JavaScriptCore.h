@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -124,6 +122,7 @@ jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithC
 #define JSC_JSValueToObject(...) __jsc_wrapper(JSValueToObject, __VA_ARGS__)
 #define JSC_JSValueToStringCopy(...) __jsc_wrapper(JSValueToStringCopy, __VA_ARGS__)
 #define JSC_JSValueUnprotect(...) __jsc_wrapper(JSValueUnprotect, __VA_ARGS__)
+#define JSC_JSValueIsNull(...) __jsc_wrapper(JSValueIsNull, __VA_ARGS__)
 
 jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSValueIsArray
            JSValueIsBoolean JSValueIsDate JSValueIsEqual JSValueIsInstanceOfConstructor
@@ -135,6 +134,7 @@ jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSVal
 
 // JSClass
 #define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
+#define JSC_JSClassRetain(...) __jsc_bool_wrapper(JSClassRetain, __VA_ARGS__)
 #define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
 
 jsc_poison(JSClassCreate JSClassRelease JSClassRetain)

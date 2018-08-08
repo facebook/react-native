@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CheckBox
  * @flow
  * @format
  */
@@ -20,6 +17,8 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+
+const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
 
 type DefaultProps = {
   value: boolean,
@@ -155,14 +154,6 @@ let styles = StyleSheet.create({
   rctCheckBox: {
     height: 32,
     width: 32,
-  },
-});
-
-let RCTCheckBox = requireNativeComponent('AndroidCheckBox', CheckBox, {
-  nativeOnly: {
-    onChange: true,
-    on: true,
-    enabled: true,
   },
 });
 

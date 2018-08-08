@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @format
  * @flow
@@ -12,21 +10,16 @@
 'use strict';
 
 const findSymlinkedModules = require('./findSymlinkedModules');
-const fs = require('fs');
 const getPolyfills = require('../../rn-get-polyfills');
-const invariant = require('fbjs/lib/invariant');
 const path = require('path');
 
-const {Config: MetroConfig} = require('metro');
-
-const RN_CLI_CONFIG = 'rn-cli.config.js';
-
-import type {ConfigT as MetroConfigT} from 'metro';
+const {createBlacklist} = require('metro');
+const {loadConfig} = require('metro-config');
 
 /**
  * Configuration file of the CLI.
  */
-export type ConfigT = MetroConfigT;
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 function getProjectPath() {
   if (
@@ -44,6 +37,9 @@ function getProjectPath() {
 
 const resolveSymlinksForRoots = roots =>
   roots.reduce(
+    /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.70 was deployed. To see the error delete this
+     * comment and run Flow. */
     (arr, rootPath) => arr.concat(findSymlinkedModules(rootPath, roots)),
     [...roots],
   );
@@ -56,6 +52,10 @@ const getProjectRoots = () => {
   return resolveSymlinksForRoots([getProjectPath()]);
 };
 
+const getBlacklistRE = () => {
+  return createBlacklist([/.*\/__fixtures__\/.*/]);
+};
+
 /**
  * Module capable of getting the configuration out of a given file.
  *
@@ -65,60 +65,31 @@ const getProjectRoots = () => {
  * hierarchy, an error will be thrown.
  */
 const Config = {
-  DEFAULT: ({
-    ...MetroConfig.DEFAULT,
-    getProjectRoots,
-    getPolyfills,
-    getModulesRunBeforeMainModule: () => [
-      require.resolve('../../Libraries/Core/InitializeCore'),
-    ],
-  }: ConfigT),
+  DEFAULT: {
+    resolver: {
+      resolverMainFields: ['react-native', 'browser', 'main'],
+      blacklistRE: getBlacklistRE(),
+    },
+    serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('../../Libraries/Core/InitializeCore'),
+      ],
+      getPolyfills,
+    },
 
-  find(startDir: string): ConfigT {
-    return this.findWithPath(startDir).config;
+    watchFolders: [getProjectPath(), ...getProjectRoots()],
+    transformModulePath: require.resolve('metro/src/reactNativeTransformer'),
   },
 
-  findWithPath(startDir: string): {config: ConfigT, projectPath: string} {
-    const configPath = findConfigPath(startDir);
-    invariant(
-      configPath,
-      `Can't find "${RN_CLI_CONFIG}" file in any parent folder of "${startDir}"`,
+  getProjectPath,
+  getProjectRoots,
+
+  async load(configFile: ?string): Promise<ConfigT> {
+    return await loadConfig(
+      configFile ? {config: configFile} : {},
+      this.DEFAULT,
     );
-    const projectPath = path.dirname(configPath);
-    return {config: this.load(configPath, startDir), projectPath};
-  },
-
-  findOptional(startDir: string): ConfigT {
-    const configPath = findConfigPath(startDir);
-    return configPath ? this.load(configPath, startDir) : {...Config.DEFAULT};
-  },
-
-  load(configFile: string): ConfigT {
-    return MetroConfig.load(configFile, Config.DEFAULT);
   },
 };
-
-function findConfigPath(cwd: string): ?string {
-  const parentDir = findParentDirectory(cwd, RN_CLI_CONFIG);
-  return parentDir ? path.join(parentDir, RN_CLI_CONFIG) : null;
-}
-
-// Finds the most near ancestor starting at `currentFullPath` that has
-// a file named `filename`
-function findParentDirectory(currentFullPath, filename) {
-  const root = path.parse(currentFullPath).root;
-  const testDir = parts => {
-    if (parts.length === 0) {
-      return null;
-    }
-
-    const fullPath = path.join(root, parts.join(path.sep));
-
-    var exists = fs.existsSync(path.join(fullPath, filename));
-    return exists ? fullPath : testDir(parts.slice(0, -1));
-  };
-
-  return testDir(currentFullPath.substring(root.length).split(path.sep));
-}
 
 module.exports = Config;

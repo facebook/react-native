@@ -1,29 +1,23 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule WebSocketTest
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var { View } = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 
-const WS_EVENTS = [
-  'close',
-  'error',
-  'message',
-  'open',
-];
+const WS_EVENTS = ['close', 'error', 'message', 'open'];
 const WS_STATES = [
   /* 0 */ 'CONNECTING',
   /* 1 */ 'OPEN',
@@ -32,14 +26,14 @@ const WS_STATES = [
 ];
 
 type State = {
-  url: string;
-  fetchStatus: ?string;
-  socket: ?WebSocket;
-  socketState: ?number;
-  lastSocketEvent: ?string;
-  lastMessage: ?string | ?ArrayBuffer;
-  testMessage: string;
-  testExpectedResponse: string;
+  url: string,
+  fetchStatus: ?string,
+  socket: ?WebSocket,
+  socketState: ?number,
+  lastSocketEvent: ?string,
+  lastMessage: ?string | ?ArrayBuffer,
+  testMessage: string,
+  testExpectedResponse: string,
 };
 
 class WebSocketTest extends React.Component<{}, State> {
@@ -51,13 +45,13 @@ class WebSocketTest extends React.Component<{}, State> {
     lastSocketEvent: null,
     lastMessage: null,
     testMessage: 'testMessage',
-    testExpectedResponse: 'testMessage_response'
+    testExpectedResponse: 'testMessage_response',
   };
 
   _waitFor = (condition: any, timeout: any, callback: any) => {
-    var remaining = timeout;
-    var t;
-    var timeoutFunction =  function() {
+    let remaining = timeout;
+    let t;
+    const timeoutFunction = function() {
       if (condition()) {
         callback(true);
         return;
@@ -66,11 +60,11 @@ class WebSocketTest extends React.Component<{}, State> {
       if (remaining === 0) {
         callback(false);
       } else {
-        t = setTimeout(timeoutFunction,1000);
+        t = setTimeout(timeoutFunction, 1000);
       }
     };
-    t = setTimeout(timeoutFunction,1000);
-  }
+    t = setTimeout(timeoutFunction, 1000);
+  };
 
   _connect = () => {
     const socket = new WebSocket(this.state.url);
@@ -83,11 +77,11 @@ class WebSocketTest extends React.Component<{}, State> {
 
   _socketIsConnected = () => {
     return this.state.socketState === 1; //'OPEN'
-  }
+  };
 
   _socketIsDisconnected = () => {
     return this.state.socketState === 3; //'CLOSED'
-  }
+  };
 
   _disconnect = () => {
     if (!this.state.socket) {
@@ -119,7 +113,7 @@ class WebSocketTest extends React.Component<{}, State> {
   };
 
   _receivedTestExpectedResponse = () => {
-    return (this.state.lastMessage === this.state.testExpectedResponse);
+    return this.state.lastMessage === this.state.testExpectedResponse;
   };
 
   componentDidMount() {
@@ -127,36 +121,42 @@ class WebSocketTest extends React.Component<{}, State> {
   }
 
   testConnect = () => {
-    var component = this;
+    const component = this;
     component._connect();
-    component._waitFor(component._socketIsConnected, 5, function(connectSucceeded) {
+    component._waitFor(component._socketIsConnected, 5, function(
+      connectSucceeded,
+    ) {
       if (!connectSucceeded) {
         TestModule.markTestPassed(false);
         return;
       }
       component.testSendAndReceive();
     });
-  }
+  };
 
   testSendAndReceive = () => {
-    var component = this;
+    const component = this;
     component._sendTestMessage();
-    component._waitFor(component._receivedTestExpectedResponse, 5, function(messageReceived) {
+    component._waitFor(component._receivedTestExpectedResponse, 5, function(
+      messageReceived,
+    ) {
       if (!messageReceived) {
         TestModule.markTestPassed(false);
         return;
       }
       component.testDisconnect();
     });
-  }
+  };
 
   testDisconnect = () => {
-    var component = this;
+    const component = this;
     component._disconnect();
-    component._waitFor(component._socketIsDisconnected, 5, function(disconnectSucceeded) {
+    component._waitFor(component._socketIsDisconnected, 5, function(
+      disconnectSucceeded,
+    ) {
       TestModule.markTestPassed(disconnectSucceeded);
     });
-  }
+  };
 
   render(): React.Node {
     return <View />;

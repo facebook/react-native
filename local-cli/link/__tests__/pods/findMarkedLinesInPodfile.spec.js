@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -28,12 +25,19 @@ describe('pods::findMarkedLinesInPodfile', () => {
 
   it('returns empty array for Simple Podfile', () => {
     const podfile = readPodfile(path.join(PODFILES_PATH, 'PodfileSimple'));
-    expect(findMarkedLinesInPodfile(podfile, LINE_AFTER_TARGET_IN_TEST_PODFILE)).toEqual([]);
+    expect(
+      findMarkedLinesInPodfile(podfile, LINE_AFTER_TARGET_IN_TEST_PODFILE),
+    ).toEqual([]);
   });
 
   it('returns correct line numbers for Podfile with marker', () => {
     const podfile = readPodfile(path.join(PODFILES_PATH, 'PodfileWithMarkers'));
-    const expectedObject = [{ line: 18, indentation: 2 }, { line: 31, indentation: 4 }];
-    expect(findMarkedLinesInPodfile(podfile, LINE_AFTER_TARGET_IN_TEST_PODFILE)).toEqual(expectedObject);
+    const expectedObject = [
+      {line: 18, indentation: 2},
+      {line: 31, indentation: 4},
+    ];
+    expect(
+      findMarkedLinesInPodfile(podfile, LINE_AFTER_TARGET_IN_TEST_PODFILE),
+    ).toEqual(expectedObject);
   });
 });

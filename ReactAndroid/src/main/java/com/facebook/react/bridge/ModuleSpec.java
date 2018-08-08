@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -27,6 +25,7 @@ public class ModuleSpec {
 
   private final @Nullable Class<? extends NativeModule> mType;
   private final Provider<? extends NativeModule> mProvider;
+  private final String mClassName;
 
   /**
    * Simple spec for modules with a default constructor.
@@ -68,18 +67,32 @@ public class ModuleSpec {
 
   public static ModuleSpec nativeModuleSpec(
       Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
-    return new ModuleSpec(type, provider);
+    return new ModuleSpec(provider, type.getName());
+  }
+
+  public static ModuleSpec nativeModuleSpec(
+      String className, Provider<? extends NativeModule> provider) {
+    return new ModuleSpec(provider, className);
   }
 
   private ModuleSpec(
       @Nullable Class<? extends NativeModule> type, Provider<? extends NativeModule> provider) {
     mType = type;
     mProvider = provider;
+    mClassName = type == null ? null : type.getName();
+  }
+
+  public ModuleSpec(Provider<? extends NativeModule> provider, String name) {
+    mType = null;
+    mProvider = provider;
+    mClassName = name;
   }
 
   public @Nullable Class<? extends NativeModule> getType() {
     return mType;
   }
+
+  public String getClassName(){return mClassName;}
 
   public Provider<? extends NativeModule> getProvider() {
     return mProvider;

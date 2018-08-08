@@ -1,20 +1,19 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule PromiseTest
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var { View } = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class PromiseTest extends React.Component<{}> {
   shouldResolve = false;
@@ -28,24 +27,26 @@ class PromiseTest extends React.Component<{}> {
       this.testShouldReject(),
       this.testShouldSucceedAsync(),
       this.testShouldThrowAsync(),
-    ]).then(() => TestModule.markTestPassed(
-      this.shouldResolve && this.shouldReject &&
-      this.shouldSucceedAsync && this.shouldThrowAsync
-    ));
+    ]).then(() =>
+      TestModule.markTestPassed(
+        this.shouldResolve &&
+          this.shouldReject &&
+          this.shouldSucceedAsync &&
+          this.shouldThrowAsync,
+      ),
+    );
   }
 
   testShouldResolve = () => {
-    return TestModule
-      .shouldResolve()
-      .then(() => this.shouldResolve = true)
-      .catch(() => this.shouldResolve = false);
+    return TestModule.shouldResolve()
+      .then(() => (this.shouldResolve = true))
+      .catch(() => (this.shouldResolve = false));
   };
 
   testShouldReject = () => {
-    return TestModule
-      .shouldReject()
-      .then(() => this.shouldReject = false)
-      .catch(() => this.shouldReject = true);
+    return TestModule.shouldReject()
+      .then(() => (this.shouldReject = false))
+      .catch(() => (this.shouldReject = true));
   };
 
   testShouldSucceedAsync = async (): Promise<any> => {

@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <JavaScriptCore/JavaScriptCore.h>
@@ -63,7 +61,7 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 
 /**
  * The block that creates the modules' instances to be added to the bridge.
- * Exposed for the RCTBatchedBridge
+ * Exposed for RCTCxxBridge
  */
 @property (nonatomic, copy, readonly) RCTBridgeModuleListProvider moduleProvider;
 
@@ -74,14 +72,7 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 
 @end
 
-@interface RCTBridge (RCTBatchedBridge)
-
-/**
- * Access the underlying JavaScript executor. You can use this in unit tests to detect
- * when the executor has been invalidated, or when you want to schedule calls on the
- * JS VM outside of React Native. Use with care!
- */
-@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+@interface RCTBridge (RCTCxxBridge)
 
 /**
  * Used by RCTModuleData
@@ -130,22 +121,11 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 - (void)stopProfiling:(void (^)(NSData *))callback;
 
 /**
- * Exposed for the RCTJSCExecutor for sending native methods called from
- * JavaScript in the middle of a batch.
- */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
-
-/**
  * Synchronously call a specific native module's method and return the result
  */
 - (id)callNativeModule:(NSUInteger)moduleID
                 method:(NSUInteger)methodID
                 params:(NSArray *)params;
-
-/**
- * Exposed for the RCTJSCExecutor for lazily loading native modules
- */
-- (NSArray *)configForModuleName:(NSString *)moduleName;
 
 /**
  * Hook exposed for RCTLog to send logs to JavaScript when not running in JSC
@@ -174,13 +154,8 @@ RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 
 @end
 
-@interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
-
-@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
-@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
-@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
+@interface RCTCxxBridge : RCTBridge
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-- (void)start;
 
 @end

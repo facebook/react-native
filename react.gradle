@@ -6,112 +6,127 @@ def cliPath = config.cliPath ?: "node_modules/react-native/local-cli/cli.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
 def bundleCommand = config.bundleCommand ?: "bundle"
-
-// because elvis operator
-def elvisFile(thing) {
-    return thing ? file(thing) : null;
-}
-
-def reactRoot = elvisFile(config.root) ?: file("../../")
+def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
-void runBefore(String dependentTaskName, Task task) {
-    Task dependentTask = tasks.findByPath(dependentTaskName);
-    if (dependentTask != null) {
-        dependentTask.dependsOn task
-    }
-}
 
-gradle.projectsEvaluated {
-    // Grab all build types and product flavors
-    def buildTypes = android.buildTypes.collect { type -> type.name }
-    def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
+afterEvaluate {
+    android.applicationVariants.all { def variant ->
+        // Create variant and target names
+        def targetName = variant.name.capitalize()
+        def targetPath = variant.dirName
 
-    // When no product flavors defined, use empty
-    if (!productFlavors) productFlavors.add('')
+        // React js bundle directories
+        def jsBundleDir = file("$buildDir/generated/assets/react/${targetPath}")
+        def resourcesDir = file("$buildDir/generated/res/react/${targetPath}")
 
-    productFlavors.each { productFlavorName ->
-        buildTypes.each { buildTypeName ->
-            // Create variant and target names
-            def flavorNameCapitalized = "${productFlavorName.capitalize()}"
-            def buildNameCapitalized = "${buildTypeName.capitalize()}"
-            def targetName = "${flavorNameCapitalized}${buildNameCapitalized}"
-            def targetPath = productFlavorName ?
-                    "${productFlavorName}/${buildTypeName}" :
-                    "${buildTypeName}"
+        def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
 
-            // React js bundle directories
-            def jsBundleDirConfigName = "jsBundleDir${targetName}"
-            def jsBundleDir = elvisFile(config."$jsBundleDirConfigName") ?:
-                    file("$buildDir/intermediates/assets/${targetPath}")
+        // Additional node and packager commandline arguments
+        def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+        def extraPackagerArgs = config.extraPackagerArgs ?: []
 
-            def resourcesDirConfigName = "resourcesDir${targetName}"
-            def resourcesDir = elvisFile(config."${resourcesDirConfigName}") ?:
-                    file("$buildDir/intermediates/res/merged/${targetPath}")
-            def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
+        def currentBundleTask = tasks.create(
+            name: "bundle${targetName}JsAndAssets",
+            type: Exec) {
+            group = "react"
+            description = "bundle JS and assets for ${targetName}."
 
-            // Bundle task name for variant
-            def bundleJsAndAssetsTaskName = "bundle${targetName}JsAndAssets"
-
-            // Additional node and packager commandline arguments
-            def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-            def extraPackagerArgs = config.extraPackagerArgs ?: []
-
-            def currentBundleTask = tasks.create(
-                    name: bundleJsAndAssetsTaskName,
-                    type: Exec) {
-                group = "react"
-                description = "bundle JS and assets for ${targetName}."
-
-                // Create dirs if they are not there (e.g. the "clean" task just ran)
-                doFirst {
-                    jsBundleDir.mkdirs()
-                    resourcesDir.mkdirs()
-                }
-
-                // Set up inputs and outputs so gradle can cache the result
-                inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
-                outputs.dir jsBundleDir
-                outputs.dir resourcesDir
-
-                // Set up the call to the react-native cli
-                workingDir reactRoot
-
-                // Set up dev mode
-                def devEnabled = !(config."devDisabledIn${targetName}"
-                    || targetName.toLowerCase().contains("release"))
-
-                def extraArgs = extraPackagerArgs;
-
-                if (bundleConfig) {
-                  extraArgs = extraArgs.clone()
-                  extraArgs.add("--config");
-                  extraArgs.add(bundleConfig);
-                }
-
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
-                } else {
-                    commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                            "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
-                }
-
-                enabled config."bundleIn${targetName}" ||
-                    config."bundleIn${buildTypeName.capitalize()}" ?:
-                            targetName.toLowerCase().contains("release")
+            // Create dirs if they are not there (e.g. the "clean" task just ran)
+            doFirst {
+                jsBundleDir.deleteDir()
+                jsBundleDir.mkdirs()
+                resourcesDir.deleteDir()
+                resourcesDir.mkdirs()
             }
 
-            // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
-            currentBundleTask.dependsOn("merge${targetName}Resources")
-            currentBundleTask.dependsOn("merge${targetName}Assets")
+            // Set up inputs and outputs so gradle can cache the result
+            inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
+            outputs.dir jsBundleDir
+            outputs.dir resourcesDir
 
-            runBefore("process${flavorNameCapitalized}Armeabi-v7a${buildNameCapitalized}Resources", currentBundleTask)
-            runBefore("process${flavorNameCapitalized}X86${buildNameCapitalized}Resources", currentBundleTask)
-            runBefore("processUniversal${targetName}Resources", currentBundleTask)
-            runBefore("process${targetName}Resources", currentBundleTask)
-            runBefore("dataBindingProcessLayouts${targetName}", currentBundleTask)
+            // Set up the call to the react-native cli
+            workingDir reactRoot
+
+            // Set up dev mode
+            def devEnabled = !(config."devDisabledIn${targetName}"
+                || targetName.toLowerCase().contains("release"))
+
+            def extraArgs = extraPackagerArgs;
+
+            if (bundleConfig) {
+                extraArgs = extraArgs.clone()
+                extraArgs.add("--config");
+                extraArgs.add(bundleConfig);
+            }
+
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+            } else {
+                commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+            }
+
+            enabled config."bundleIn${targetName}" ||
+                config."bundleIn${variant.buildType.name.capitalize()}" ?:
+                targetName.toLowerCase().contains("release")
         }
+
+        // Expose a minimal interface on the application variant and the task itself:
+        variant.ext.bundleJsAndAssets = currentBundleTask
+        currentBundleTask.ext.generatedResFolders = files(resourcesDir).builtBy(currentBundleTask)
+        currentBundleTask.ext.generatedAssetsFolders = files(jsBundleDir).builtBy(currentBundleTask)
+
+        // registerGeneratedResFolders for Android plugin 3.x
+        if (variant.respondsTo("registerGeneratedResFolders")) {
+            variant.registerGeneratedResFolders(currentBundleTask.generatedResFolders)
+        } else {
+            variant.registerResGeneratingTask(currentBundleTask)
+        }
+        variant.mergeResources.dependsOn(currentBundleTask)
+
+        // packageApplication for Android plugin 3.x
+        def packageTask = variant.hasProperty("packageApplication")
+            ? variant.packageApplication
+            : tasks.findByName("package${targetName}")
+
+        def resourcesDirConfigValue = config."resourcesDir${targetName}"
+        if (resourcesDirConfigValue) {
+            def currentCopyResTask = tasks.create(
+                name: "copy${targetName}BundledResources",
+                type: Copy) {
+                group = "react"
+                description = "copy bundled resources into custom location for ${targetName}."
+
+                from resourcesDir
+                into file(resourcesDirConfigValue)
+
+                dependsOn(currentBundleTask)
+
+                enabled currentBundleTask.enabled
+            }
+
+            packageTask.dependsOn(currentCopyResTask)
+        }
+
+        def currentAssetsCopyTask = tasks.create(
+            name: "copy${targetName}BundledJs",
+            type: Copy) {
+            group = "react"
+            description = "copy bundled JS into ${targetName}."
+
+            from jsBundleDir
+            into file(config."jsBundleDir${targetName}" ?:
+                "$buildDir/intermediates/assets/${targetPath}")
+
+            // mergeAssets must run first, as it clears the intermediates directory
+            dependsOn(variant.mergeAssets)
+
+            enabled currentBundleTask.enabled
+        }
+
+        packageTask.dependsOn(currentAssetsCopyTask)
     }
 }

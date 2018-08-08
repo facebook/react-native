@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -28,6 +26,7 @@ import com.facebook.systrace.TraceListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -81,6 +80,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final Object mJSCallsPendingInitLock = new Object();
 
   private final NativeModuleRegistry mNativeModuleRegistry;
+  private final JSIModuleRegistry mJSIModuleRegistry = new JSIModuleRegistry();
   private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
@@ -134,8 +134,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // and determine there's an inaccessible cycle.
     private final WeakReference<CatalystInstanceImpl> mOuter;
 
-    public BridgeCallback(CatalystInstanceImpl outer) {
-      mOuter = new WeakReference<CatalystInstanceImpl>(outer);
+    BridgeCallback(CatalystInstanceImpl outer) {
+      mOuter = new WeakReference<>(outer);
     }
 
     @Override
@@ -221,10 +221,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
+  /* package */ void loadScriptFromDeltaBundle(
+    String sourceURL,
+    NativeDeltaClient deltaClient,
+    boolean loadSynchronously) {
+    mSourceURL = sourceURL;
+    jniLoadScriptFromDeltaBundle(sourceURL, deltaClient, loadSynchronously);
+  }
+
   private native void jniSetSourceURL(String sourceURL);
   private native void jniRegisterSegment(int segmentId, String path);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
   private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+  private native void jniLoadScriptFromDeltaBundle(String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {
@@ -329,10 +338,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
           @Override
           public void run() {
             mNativeModuleRegistry.notifyJSInstanceDestroy();
+            mJSIModuleRegistry.notifyJSInstanceDestroy();
             boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
-            if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
+            if (!mBridgeIdleListeners.isEmpty()) {
               for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
-                listener.onTransitionToBridgeIdle();
+                if (!wasIdle) {
+                  listener.onTransitionToBridgeIdle();
+                }
+                listener.onBridgeDestroyed();
               }
             }
             AsyncTask.execute(
@@ -342,7 +355,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                     // Kill non-UI threads from neutral third party
                     // potentially expensive, so don't run on UI thread
 
-                    // contextHolder is used as a lock to guard against other users of the JS VM having
+                    // contextHolder is used as a lock to guard against other users of the JS VM
+                    // having
                     // the VM destroyed underneath them, so notify them before we resetNative
                     mJavaScriptContextHolder.clear();
 
@@ -454,6 +468,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaScriptContextHolder;
   }
 
+  @Override
+  public void addJSIModules(List<JSIModuleSpec> jsiModules) {
+    mJSIModuleRegistry.registerModules(jsiModules);
+  }
+
+  @Override
+  public <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface) {
+    return mJSIModuleRegistry.getModule(jsiModuleInterface);
+  }
+
   private native long getJavaScriptContext();
 
   private void incrementPendingJSCalls() {
@@ -553,6 +577,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {

@@ -1,13 +1,11 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageEditor
  * @flow
+ * @format
  */
 'use strict';
 
@@ -52,7 +50,9 @@ class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called.
+   * loaded/downloaded, the failure callback will be called. On Android, a
+   * downloaded image may be cached in external storage, a publicly accessible
+   * location, if it has more available space than internal storage.
    *
    * If the cropping process is successful, the resultant cropped image
    * will be stored in the ImageStore, and the URI returned in the success
@@ -63,7 +63,7 @@ class ImageEditor {
     uri: string,
     cropData: ImageCropData,
     success: (uri: string) => void,
-    failure: (error: Object) => void
+    failure: (error: Object) => void,
   ) {
     RCTImageEditingManager.cropImage(uri, cropData, success, failure);
   }

@@ -1,17 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Number.es6
+ * @format
  * @polyfill
  * @nolint
  */
-
-/* eslint-disable strict */
 
 if (Number.EPSILON === undefined) {
   Object.defineProperty(Number, 'EPSILON', {
@@ -29,7 +25,6 @@ if (Number.MIN_SAFE_INTEGER === undefined) {
   });
 }
 if (!Number.isNaN) {
-  // eslint-disable-next-line max-len
   // https://github.com/dherman/tc39-codex-wiki/blob/master/data/es6/number/index.md#polyfill-for-numberisnan
   const globalIsNaN = global.isNaN;
   Object.defineProperty(Number, 'isNaN', {

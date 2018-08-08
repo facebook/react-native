@@ -56,7 +56,7 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/packager.sh --max-workers=1 || echo "Can't start packager automatically" &
+npm run start --max-workers=1 || echo "Can't start packager automatically" &
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
@@ -73,22 +73,17 @@ curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundl
 rm temp.bundle
 
 # Run tests
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
-  build test
+  build test \
+  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml"
 
 else
 
 # Don't run tests. No need to pass -destination to xcodebuild.
-# TODO: We use xcodebuild because xctool would stall when collecting info about
-# the tests before running them. Switch back when this issue with xctool has
-# been resolved.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \

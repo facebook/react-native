@@ -1,25 +1,23 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AssetSourceResolver
  * @flow
+ * @format
  */
 'use strict';
 
-export type ResolvedAssetSource = {
-  __packager_asset: boolean,
-  width: ?number,
-  height: ?number,
-  uri: string,
-  scale: number,
-};
+export type ResolvedAssetSource = {|
+  +__packager_asset: boolean,
+  +width: ?number,
+  +height: ?number,
+  +uri: string,
+  +scale: number,
+|};
 
-import type { PackagerAsset } from 'AssetRegistry';
+import type {PackagerAsset} from 'AssetRegistry';
 
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
@@ -31,9 +29,9 @@ const invariant = require('fbjs/lib/invariant');
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
 function getScaledAssetPath(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  var assetDir = assetPathUtils.getBasePath(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+  const assetDir = assetPathUtils.getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
@@ -41,24 +39,23 @@ function getScaledAssetPath(asset): string {
  * Returns a path like 'drawable-mdpi/icon.png'
  */
 function getAssetPathInDrawableFolder(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var drawbleFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
-  var fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const drawbleFolder = assetPathUtils.getAndroidResourceFolderName(
+    asset,
+    scale,
+  );
+  const fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
   return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
-
   serverUrl: ?string;
   // where the jsbundle is being run from
   jsbundleUrl: ?string;
   // the asset to resolve
   asset: PackagerAsset;
 
-  constructor(serverUrl: ?string,
-    jsbundleUrl: ?string,
-    asset: PackagerAsset
-  ) {
+  constructor(serverUrl: ?string, jsbundleUrl: ?string, asset: PackagerAsset) {
     this.serverUrl = serverUrl;
     this.jsbundleUrl = jsbundleUrl;
     this.asset = asset;
@@ -78,9 +75,9 @@ class AssetSourceResolver {
     }
 
     if (Platform.OS === 'android') {
-      return this.isLoadedFromFileSystem() ?
-        this.drawableFolderInBundle() :
-        this.resourceIdentifierWithoutScale();
+      return this.isLoadedFromFileSystem()
+        ? this.drawableFolderInBundle()
+        : this.resourceIdentifierWithoutScale();
     } else {
       return this.scaledAssetURLNearBundle();
     }
@@ -93,8 +90,12 @@ class AssetSourceResolver {
   assetServerURL(): ResolvedAssetSource {
     invariant(!!this.serverUrl, 'need server to load from');
     return this.fromSource(
-      this.serverUrl + getScaledAssetPath(this.asset) +
-      '?platform=' + Platform.OS + '&hash=' + this.asset.hash
+      this.serverUrl +
+        getScaledAssetPath(this.asset) +
+        '?platform=' +
+        Platform.OS +
+        '&hash=' +
+        this.asset.hash,
     );
   }
 
@@ -122,8 +123,13 @@ class AssetSourceResolver {
    * E.g. 'assets_awesomemodule_icon'
    */
   resourceIdentifierWithoutScale(): ResolvedAssetSource {
-    invariant(Platform.OS === 'android', 'resource identifiers work on Android');
-    return this.fromSource(assetPathUtils.getAndroidResourceIdentifier(this.asset));
+    invariant(
+      Platform.OS === 'android',
+      'resource identifiers work on Android',
+    );
+    return this.fromSource(
+      assetPathUtils.getAndroidResourceIdentifier(this.asset),
+    );
   }
 
   /**
@@ -133,9 +139,7 @@ class AssetSourceResolver {
    */
   drawableFolderInBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
-    return this.fromSource(
-      path + getAssetPathInDrawableFolder(this.asset)
-    );
+    return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
   }
 
   fromSource(source: string): ResolvedAssetSource {
@@ -150,7 +154,7 @@ class AssetSourceResolver {
 
   static pickScale(scales: Array<number>, deviceScale: number): number {
     // Packager guarantees that `scales` array is sorted
-    for (var i = 0; i < scales.length; i++) {
+    for (let i = 0; i < scales.length; i++) {
       if (scales[i] >= deviceScale) {
         return scales[i];
       }
@@ -161,7 +165,6 @@ class AssetSourceResolver {
     // in which case we default to 1
     return scales[scales.length - 1] || 1;
   }
-
 }
 
- module.exports = AssetSourceResolver;
+module.exports = AssetSourceResolver;

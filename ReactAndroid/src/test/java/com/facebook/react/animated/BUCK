@@ -1,4 +1,4 @@
-include_defs("//ReactAndroid/DEFS")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
 
 rn_robolectric_test(
     name = "animated",

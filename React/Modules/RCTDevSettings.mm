@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDevSettings.h"
@@ -20,7 +18,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTJSCSamplingProfiler.h"
 #import "RCTLog.h"
-#import "RCTPackagerClient.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
@@ -37,6 +34,7 @@ static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamp
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if ENABLE_PACKAGER_CONNECTION
+#import "RCTPackagerClient.h"
 #import "RCTPackagerConnection.h"
 #endif
 
@@ -195,16 +193,15 @@ RCT_EXPORT_MODULE()
   // finished with its initialisation. But it does finish by the time it
   // relinquishes control of the main thread, so only queue on the JS thread
   // after the current main thread operation is done.
-  if (self.isNuclideDebuggingAvailable) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [bridge dispatchBlock:^{
-        [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
-      } queue:RCTJSThread];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [bridge dispatchBlock:^{
+      [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
+    } queue:RCTJSThread];
+  });
 #endif
 }
 
+#if ENABLE_PACKAGER_CONNECTION
 static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientResponder *const responder)
 {
   if (!bridge) {
@@ -228,6 +225,7 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
     [responder respondWithResult:results];
   }
 }
+#endif
 
 - (dispatch_queue_t)methodQueue
 {

@@ -1,25 +1,19 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule ImageCachePolicyTest
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  Image,
-  View,
-  Text,
-  StyleSheet,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, View, Text, StyleSheet} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 /*
  * The reload and force-cache tests don't actually verify that the complete functionality.
@@ -33,22 +27,25 @@ var { TestModule } = ReactNative.NativeModules;
 
 const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'];
 
-type Props = {}
+type Props = {};
 type State = {
   'only-if-cached'?: boolean,
-  'default'?: boolean,
-  'reload'?: boolean,
+  default?: boolean,
+  reload?: boolean,
   'force-cache'?: boolean,
-}
+};
 
 class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
-  state = {}
+  state = {};
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
     const results: Array<?boolean> = TESTS.map(x => nextState[x]);
 
     if (!results.includes(undefined)) {
-      const result: boolean = results.reduce((x,y) => x === y === true, true);
+      const result: boolean = results.reduce(
+        (x, y) => (x === y) === true,
+        true,
+      );
       TestModule.markTestPassed(result);
     }
 
@@ -63,38 +60,46 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
     return (
       <View style={{flex: 1}}>
         <Text>Hello</Text>
-      <Image
-        source={{
-              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
-              cache: 'only-if-cached'
-            }}
-        onLoad={() => this.testComplete('only-if-cached', false)}
-        onError={() => this.testComplete('only-if-cached', true)}
-        style={styles.base}
-      />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
-              cache: 'default'
-            }}
+            uri:
+              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'only-if-cached',
+          }}
+          onLoad={() => this.testComplete('only-if-cached', false)}
+          onError={() => this.testComplete('only-if-cached', true)}
+          style={styles.base}
+        />
+        <Image
+          source={{
+            uri:
+              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'default',
+          }}
           onLoad={() => this.testComplete('default', true)}
           onError={() => this.testComplete('default', false)}
           style={styles.base}
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
-              cache: 'reload'
-            }}
+            uri:
+              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'reload',
+          }}
           onLoad={() => this.testComplete('reload', true)}
           onError={() => this.testComplete('reload', false)}
           style={styles.base}
         />
         <Image
           source={{
-              uri: 'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' + Date.now(),
-              cache: 'force-cache'
-            }}
+            uri:
+              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              Date.now(),
+            cache: 'force-cache',
+          }}
           onLoad={() => this.testComplete('force-cache', true)}
           onError={() => this.testComplete('force-cache', false)}
           style={styles.base}

@@ -1,10 +1,8 @@
 /*
  * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include "YGNodePrint.h"
@@ -29,22 +27,24 @@ static bool areFourValuesEqual(const std::array<YGValue, YGEdgeCount>& four) {
 }
 
 static void appendFormatedString(string* str, const char* fmt, ...) {
-  char buffer[1024];
   va_list args;
   va_start(args, fmt);
   va_list argsCopy;
   va_copy(argsCopy, args);
+  std::vector<char> buf(1 + vsnprintf(NULL, 0, fmt, args));
   va_end(args);
-  vsnprintf(buffer, 1024, fmt, argsCopy);
+  vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
-  string result = string(buffer);
+  string result = string(buf.begin(), buf.end() - 1);
   str->append(result);
 }
 
-static void
-appendFloatIfNotUndefined(string* base, const string key, const float num) {
-  if (!YGFloatIsUndefined(num)) {
-    appendFormatedString(base, "%s: %g; ", key.c_str(), num);
+static void appendFloatOptionalIfDefined(
+    string* base,
+    const string key,
+    const YGFloatOptional num) {
+  if (!num.isUndefined()) {
+    appendFormatedString(base, "%s: %g; ", key.c_str(), num.getValue());
   }
 }
 
@@ -72,7 +72,10 @@ appendNumberIfNotAuto(string* base, const string& key, const YGValue number) {
 
 static void
 appendNumberIfNotZero(string* base, const string& str, const YGValue number) {
-  if (!YGFloatsEqual(number.value, 0)) {
+
+  if (number.unit == YGUnitAuto) {
+    base->append(str + ": auto; ");
+  } else if (!YGFloatsEqual(number.value, 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }
@@ -154,10 +157,11 @@ void YGNodeToString(
       appendFormatedString(
           str, "align-self: %s; ", YGAlignToString(node->getStyle().alignSelf));
     }
-    appendFloatIfNotUndefined(str, "flex-grow", node->getStyle().flexGrow);
-    appendFloatIfNotUndefined(str, "flex-shrink", node->getStyle().flexShrink);
+    appendFloatOptionalIfDefined(str, "flex-grow", node->getStyle().flexGrow);
+    appendFloatOptionalIfDefined(
+        str, "flex-shrink", node->getStyle().flexShrink);
     appendNumberIfNotAuto(str, "flex-basis", node->getStyle().flexBasis);
-    appendFloatIfNotUndefined(str, "flex", node->getStyle().flex);
+    appendFloatOptionalIfDefined(str, "flex", node->getStyle().flex);
 
     if (node->getStyle().flexWrap != YGNode().getStyle().flexWrap) {
       appendFormatedString(
@@ -212,7 +216,7 @@ void YGNodeToString(
   }
   appendFormatedString(str, ">");
 
-  const uint32_t childCount = node->getChildren().size();
+  const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
   if (options & YGPrintOptionsChildren && childCount > 0) {
     for (uint32_t i = 0; i < childCount; i++) {
       appendFormatedString(str, "\n");

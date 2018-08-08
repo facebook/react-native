@@ -1,6 +1,6 @@
-include_defs("//ReactCommon/DEFS")
+load("//ReactNative:DEFS.bzl", "GLOG_DEP", "cxx_library")
 
-fb_xplat_cxx_library(
+cxx_library(
     name = "microprofiler",
     srcs = [
         "MicroProfiler.cpp",
@@ -14,6 +14,7 @@ fb_xplat_cxx_library(
         "-Werror",
         "-std=c++11",
         "-fexceptions",
+        "-fno-data-sections",
     ],
     force_static = True,
     visibility = [

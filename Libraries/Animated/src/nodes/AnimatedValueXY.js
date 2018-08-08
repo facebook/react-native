@@ -1,12 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedValueXY
  * @flow
  * @format
  */
@@ -33,7 +30,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
   _listeners: {[key: string]: {x: string, y: string}};
 
   constructor(
-    valueIn?: ?{x: number | AnimatedValue, y: number | AnimatedValue},
+    valueIn?: ?{+x: number | AnimatedValue, +y: number | AnimatedValue},
   ) {
     super();
     const value: any = valueIn || {x: 0, y: 0}; // @flowfixme: shouldn't need `: any`
@@ -43,7 +40,7 @@ class AnimatedValueXY extends AnimatedWithChildren {
     } else {
       invariant(
         value.x instanceof AnimatedValue && value.y instanceof AnimatedValue,
-        'AnimatedValueXY must be initalized with an object of numbers or ' +
+        'AnimatedValueXY must be initialized with an object of numbers or ' +
           'AnimatedValues.',
       );
       this.x = value.x;

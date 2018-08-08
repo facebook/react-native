@@ -1,17 +1,15 @@
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule String.prototype.es6
+ * @format
  * @polyfill
  * @nolint
  */
 
-/* eslint-disable strict, no-extend-native, no-bitwise */
+/* eslint-disable no-extend-native, no-bitwise */
 
 /*
  * NOTE: We use (Number(x) || 0) to replace NaN values with zero.
@@ -24,8 +22,7 @@ if (!String.prototype.startsWith) {
       throw TypeError();
     }
     var string = String(this);
-    var pos = arguments.length > 1 ?
-      (Number(arguments[1]) || 0) : 0;
+    var pos = arguments.length > 1 ? Number(arguments[1]) || 0 : 0;
     var start = Math.min(Math.max(pos, 0), string.length);
     return string.indexOf(String(search), pos) === start;
   };
@@ -40,8 +37,7 @@ if (!String.prototype.endsWith) {
     var string = String(this);
     var stringLength = string.length;
     var searchString = String(search);
-    var pos = arguments.length > 1 ?
-      (Number(arguments[1]) || 0) : stringLength;
+    var pos = arguments.length > 1 ? Number(arguments[1]) || 0 : stringLength;
     var end = Math.min(Math.max(pos, 0), stringLength);
     var start = end - searchString.length;
     if (start < 0) {

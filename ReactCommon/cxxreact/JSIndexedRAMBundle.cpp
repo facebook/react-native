@@ -1,10 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSIndexedRAMBundle.h"
 
 #include <folly/Memory.h>
-
-#include "oss-compat-util.h"
 
 namespace facebook {
 namespace react {
@@ -19,8 +20,8 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
     m_bundle (sourcePath, std::ios_base::in) {
   if (!m_bundle) {
     throw std::ios_base::failure(
-      toString("Bundle ", sourcePath,
-               "cannot be opened: ", m_bundle.rdstate()));
+      folly::to<std::string>("Bundle ", sourcePath,
+                             "cannot be opened: ", m_bundle.rdstate()));
   }
 
   // read in magic header, number of entries, and length of the startup section
@@ -30,8 +31,8 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
     "header size must exactly match the input file format");
 
   readBundle(reinterpret_cast<char *>(header), sizeof(header));
-  const size_t numTableEntries = littleEndianToHost(header[1]);
-  const size_t startupCodeSize = littleEndianToHost(header[2]);
+  const size_t numTableEntries = folly::Endian::little(header[1]);
+  const size_t startupCodeSize = folly::Endian::little(header[2]);
 
   // allocate memory for meta data and lookup table.
   m_table = ModuleTable(numTableEntries);
@@ -49,7 +50,7 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) :
 
 JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(uint32_t moduleId) const {
   Module ret;
-  ret.name = toString(moduleId, ".js");
+  ret.name = folly::to<std::string>(moduleId, ".js");
   ret.code = getModuleCode(moduleId);
   return ret;
 }
@@ -63,14 +64,14 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
   const auto moduleData = id < m_table.numEntries ? &m_table.data[id] : nullptr;
 
   // entries without associated code have offset = 0 and length = 0
-  const uint32_t length = moduleData ? littleEndianToHost(moduleData->length) : 0;
+  const uint32_t length = moduleData ? folly::Endian::little(moduleData->length) : 0;
   if (length == 0) {
     throw std::ios_base::failure(
-      toString("Error loading module", id, "from RAM Bundle"));
+      folly::to<std::string>("Error loading module", id, "from RAM Bundle"));
   }
 
   std::string ret(length - 1, '\0');
-  readBundle(&ret.front(), length - 1, m_baseOffset + littleEndianToHost(moduleData->offset));
+  readBundle(&ret.front(), length - 1, m_baseOffset + folly::Endian::little(moduleData->offset));
   return ret;
 }
 
@@ -80,7 +81,7 @@ void JSIndexedRAMBundle::readBundle(char *buffer, const std::streamsize bytes) c
       throw std::ios_base::failure("Unexpected end of RAM Bundle file");
     }
     throw std::ios_base::failure(
-      toString("Error reading RAM Bundle: ", m_bundle.rdstate()));
+      folly::to<std::string>("Error reading RAM Bundle: ", m_bundle.rdstate()));
   }
 }
 
@@ -91,7 +92,7 @@ void JSIndexedRAMBundle::readBundle(
 
   if (!m_bundle.seekg(position)) {
     throw std::ios_base::failure(
-      toString("Error reading RAM Bundle: ", m_bundle.rdstate()));
+      folly::to<std::string>("Error reading RAM Bundle: ", m_bundle.rdstate()));
   }
   readBundle(buffer, bytes);
 }

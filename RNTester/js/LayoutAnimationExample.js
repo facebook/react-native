@@ -1,49 +1,42 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule LayoutAnimationExample
  */
+
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} = ReactNative;
+const {LayoutAnimation, StyleSheet, Text, View, TouchableOpacity} = ReactNative;
 
 class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     views: [],
   };
 
-  componentWillUpdate() {
+  UNSAFE_componentWillUpdate() {
     LayoutAnimation.easeInEaseOut();
   }
 
   _onPressAddView = () => {
-    this.setState((state) => ({views: [...state.views, {}]}));
+    this.setState(state => ({views: [...state.views, {}]}));
   };
 
   _onPressRemoveView = () => {
-    this.setState((state) => ({views: state.views.slice(0, -1)}));
+    this.setState(state => ({views: state.views.slice(0, -1)}));
   };
 
   render() {
-    const views = this.state.views.map((view, i) =>
+    const views = this.state.views.map((view, i) => (
       <View key={i} style={styles.view}>
         <Text>{i}</Text>
       </View>
-    );
+    ));
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={this._onPressAddView}>
@@ -56,23 +49,23 @@ class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
             <Text>Remove view</Text>
           </View>
         </TouchableOpacity>
-        <View style={styles.viewContainer}>
-          {views}
-        </View>
+        <View style={styles.viewContainer}>{views}</View>
       </View>
     );
   }
 }
 
-const GreenSquare = () =>
+const GreenSquare = () => (
   <View style={styles.greenSquare}>
     <Text>Green square</Text>
-  </View>;
+  </View>
+);
 
-const BlueSquare = () =>
+const BlueSquare = () => (
   <View style={styles.blueSquare}>
     <Text>Blue square</Text>
-  </View>;
+  </View>
+);
 
 class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -81,7 +74,7 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
 
   _onPressToggle = () => {
     LayoutAnimation.easeInEaseOut();
-    this.setState((state) => ({toggled: !state.toggled}));
+    this.setState(state => ({toggled: !state.toggled}));
   };
 
   render() {
@@ -93,11 +86,60 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
           </View>
         </TouchableOpacity>
         <View style={styles.viewContainer}>
-          {
-            this.state.toggled ?
-            <GreenSquare /> :
-            <BlueSquare />
-          }
+          {this.state.toggled ? <GreenSquare /> : <BlueSquare />}
+        </View>
+      </View>
+    );
+  }
+}
+
+class LayoutUpdateExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    width: 200,
+    height: 100,
+  };
+
+  timeout = null;
+
+  componentWillUnmount() {
+    this._clearTimeout();
+  }
+
+  _clearTimeout = () => {
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+  };
+
+  _onPressToggle = () => {
+    this._clearTimeout();
+    this.setState({width: 150});
+
+    LayoutAnimation.configureNext({
+      duration: 1000,
+      update: {
+        type: LayoutAnimation.Types.linear,
+      },
+    });
+
+    this.timeout = setTimeout(() => this.setState({width: 100}), 500);
+  };
+
+  render() {
+    const {width, height} = this.state;
+
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this._onPressToggle}>
+          <View style={styles.button}>
+            <Text>Make box square</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={[styles.view, {width, height}]}>
+          <Text>
+            {width}x{height}
+          </Text>
         </View>
       </View>
     );
@@ -148,14 +190,23 @@ const styles = StyleSheet.create({
 
 exports.title = 'Layout Animation';
 exports.description = 'Layout animation';
-exports.examples = [{
-  title: 'Add and remove views',
-  render(): React.Element<any> {
-    return <AddRemoveExample />;
+exports.examples = [
+  {
+    title: 'Add and remove views',
+    render(): React.Element<any> {
+      return <AddRemoveExample />;
+    },
   },
-}, {
-  title: 'Cross fade views',
-  render(): React.Element<any> {
-    return <CrossFadeExample />;
+  {
+    title: 'Cross fade views',
+    render(): React.Element<any> {
+      return <CrossFadeExample />;
+    },
   },
-}];
+  {
+    title: 'Layout update during animation',
+    render(): React.Element<any> {
+      return <LayoutUpdateExample />;
+    },
+  },
+];

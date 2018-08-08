@@ -1,39 +1,37 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ReactNativeStyleAttributes
+ * @format
  * @flow
  */
 
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const ImageStylePropTypes = require('ImageStylePropTypes');
+const TextStylePropTypes = require('TextStylePropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
-var keyMirror = require('fbjs/lib/keyMirror');
-var processColor = require('processColor');
-var processTransform = require('processTransform');
-var sizesDiffer = require('sizesDiffer');
+const keyMirror = require('fbjs/lib/keyMirror');
+const processColor = require('processColor');
+const processTransform = require('processTransform');
+const sizesDiffer = require('sizesDiffer');
 
-var ReactNativeStyleAttributes = {
+const ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),
   ...keyMirror(TextStylePropTypes),
   ...keyMirror(ImageStylePropTypes),
 };
 
-ReactNativeStyleAttributes.transform = { process: processTransform };
-ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
+ReactNativeStyleAttributes.transform = {process: processTransform};
+ReactNativeStyleAttributes.shadowOffset = {diff: sizesDiffer};
 
-var colorAttributes = { process: processColor };
+const colorAttributes = {process: processColor};
 ReactNativeStyleAttributes.backgroundColor = colorAttributes;
 ReactNativeStyleAttributes.borderBottomColor = colorAttributes;
 ReactNativeStyleAttributes.borderColor = colorAttributes;

@@ -1,30 +1,25 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule PointerEventsExample
  */
+
 'use strict';
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {StyleSheet, Text, View} = ReactNative;
 
 class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
     log: [],
   };
 
-  handleLog = (msg) => {
+  handleLog = msg => {
     this.state.log = this.state.log.concat([msg]);
   };
 
@@ -51,8 +46,7 @@ class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
             * React. To see the error delete this comment and run Flow. */}
           <this.props.Component onLog={this.handleLog} />
         </View>
-        <View
-          style={styles.logBox}>
+        <View style={styles.logBox}>
           <DemoText style={styles.logText}>
             {this.state.log.join('\n')}
           </DemoText>
@@ -68,9 +62,7 @@ class NoneExample extends React.Component<$FlowFixMeProps> {
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
         style={styles.box}>
-        <DemoText style={styles.text}>
-          A: unspecified
-        </DemoText>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="none"
           onTouchStart={() => this.props.onLog('B none touched')}
@@ -99,10 +91,7 @@ class DemoText extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View pointerEvents="none">
-        <Text
-          style={this.props.style}>
-          {this.props.children}
-        </Text>
+        <Text style={this.props.style}>{this.props.children}</Text>
       </View>
     );
   }
@@ -114,9 +103,7 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
         style={styles.box}>
-        <DemoText style={styles.text}>
-          A: unspecified
-        </DemoText>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="box-none"
           onTouchStart={() => this.props.onLog('B box-none touched')}
@@ -127,17 +114,15 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
             style={styles.box}>
-            <DemoText style={styles.text}>
-              C: unspecified
-            </DemoText>
+            <DemoText style={styles.text}>C: unspecified</DemoText>
           </View>
           <View
             pointerEvents="auto"
-            onTouchStart={() => this.props.onLog('C explicitly unspecified touched')}
+            onTouchStart={() =>
+              this.props.onLog('C explicitly unspecified touched')
+            }
             style={[styles.box]}>
-            <DemoText style={[styles.text]}>
-              C: explicitly unspecified
-            </DemoText>
+            <DemoText style={[styles.text]}>C: explicitly unspecified</DemoText>
           </View>
         </View>
       </View>
@@ -151,16 +136,12 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
       <View
         onTouchStart={() => this.props.onLog('A unspecified touched')}
         style={styles.box}>
-        <DemoText style={styles.text}>
-          A: unspecified
-        </DemoText>
+        <DemoText style={styles.text}>A: unspecified</DemoText>
         <View
           pointerEvents="box-only"
           onTouchStart={() => this.props.onLog('B box-only touched')}
           style={styles.box}>
-          <DemoText style={styles.text}>
-            B: box-only
-          </DemoText>
+          <DemoText style={styles.text}>B: box-only</DemoText>
           <View
             onTouchStart={() => this.props.onLog('C unspecified touched')}
             style={[styles.box, styles.boxPassedThrough]}>
@@ -170,7 +151,9 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
           </View>
           <View
             pointerEvents="auto"
-            onTouchStart={() => this.props.onLog('C explicitly unspecified touched')}
+            onTouchStart={() =>
+              this.props.onLog('C explicitly unspecified touched')
+            }
             style={[styles.box, styles.boxPassedThrough]}>
             <DemoText style={[styles.text, styles.textPassedThrough]}>
               C: explicitly unspecified
@@ -192,21 +175,24 @@ var exampleClasses: Array<ExampleClass> = [
   {
     Component: NoneExample,
     title: '`none`',
-    description: '`none` causes touch events on the container and its child components to pass through to the parent container.',
+    description:
+      '`none` causes touch events on the container and its child components to pass through to the parent container.',
   },
   {
     Component: BoxNoneExample,
     title: '`box-none`',
-    description: '`box-none` causes touch events on the container to pass through and will only detect touch events on its child components.',
+    description:
+      '`box-none` causes touch events on the container to pass through and will only detect touch events on its child components.',
   },
   {
     Component: BoxOnlyExample,
     title: '`box-only`',
-    description: '`box-only` causes touch events on the container\'s child components to pass through and will only detect touch events on the container itself.',
-  }
+    description:
+      "`box-only` causes touch events on the container's child components to pass through and will only detect touch events on the container itself.",
+  },
 ];
 
-var infoToExample = (info) => {
+var infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
@@ -251,6 +237,10 @@ var styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Pointer Events';
-exports.description = 'Demonstrates the use of the pointerEvents prop of a ' +
+exports.description =
+  'Demonstrates the use of the pointerEvents prop of a ' +
   'View to control how touches should be handled.';
+/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.70 was deployed. To see the error delete this comment
+ * and run Flow. */
 exports.examples = exampleClasses.map(infoToExample);

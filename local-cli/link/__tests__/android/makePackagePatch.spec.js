@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -16,7 +13,7 @@
 const makePackagePatch = require('../../android/patches/makePackagePatch');
 const applyParams = require('../../android/patches/applyParams');
 
-const packageInstance = 'new SomeLibrary(${foo}, ${bar}, \'something\')';
+const packageInstance = "new SomeLibrary(${foo}, ${bar}, 'something')";
 const name = 'some-library';
 const params = {
   foo: 'foo',
@@ -26,8 +23,7 @@ const params = {
 describe('makePackagePatch@0.20', () => {
   it('should build a patch', () => {
     const packagePatch = makePackagePatch(packageInstance, params, name);
-    expect(Object.prototype.toString(packagePatch))
-      .toBe('[object Object]');
+    expect(Object.prototype.toString(packagePatch)).toBe('[object Object]');
   });
 
   it('MainActivity contains a correct 0.20 import patch', () => {

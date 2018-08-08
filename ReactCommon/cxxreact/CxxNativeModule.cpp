@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "CxxNativeModule.h"
 #include "Instance.h"
@@ -110,7 +113,7 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
   params.resize(params.size() - method.callbacks);
 
   // I've got a few flawed options here.  I can let the C++ exception
-  // propogate, and the registry will log/convert them to java exceptions.
+  // propagate, and the registry will log/convert them to java exceptions.
   // This lets all the java and red box handling work ok, but the only info I
   // can capture about the C++ exception is the what() string, not the stack.
   // I can std::terminate() the app.  This causes the full, accurate C++

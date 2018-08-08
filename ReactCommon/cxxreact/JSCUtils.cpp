@@ -1,6 +1,13 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSCUtils.h"
+
+#include "RAMBundleRegistry.h"
+
+#include <folly/Conv.h>
 
 namespace facebook {
 namespace react {
@@ -11,34 +18,6 @@ String jsStringFromBigString(JSContextRef ctx, const JSBigString& bigstr) {
   } else {
     return String(ctx, bigstr.c_str());
   }
-}
-
-std::pair<uint32_t, uint32_t> parseNativeRequireParameters(
-    const JSGlobalContextRef& context,
-    const JSValueRef arguments[],
-    size_t argumentCount) {
-  double moduleId = 0, bundleId = 0;
-
-  if (argumentCount == 1) {
-    moduleId = Value(context, arguments[0]).asNumber();
-  } else if (argumentCount == 2) {
-    moduleId = Value(context, arguments[0]).asNumber();
-    bundleId = Value(context, arguments[1]).asNumber();
-  } else {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  if (moduleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ",
-                                                       Value(context, arguments[0]).toString().str()));
-  }
-
-  if (bundleId < 0) {
-    throw std::invalid_argument(folly::to<std::string>("Received invalid bundle ID: ",
-                                                       Value(context, arguments[1]).toString().str()));
-  }
-
-  return std::make_pair(static_cast<uint32_t>(bundleId), static_cast<uint32_t>(moduleId));
 }
 
 }

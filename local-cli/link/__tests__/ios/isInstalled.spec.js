@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
@@ -23,18 +20,20 @@ const baseProjectConfig = {
 
 describe('ios::isInstalled', () => {
   it('should return true when .xcodeproj in Libraries', () => {
-    const dependencyConfig = { projectName: 'React.xcodeproj' };
+    const dependencyConfig = {projectName: 'React.xcodeproj'};
     expect(isInstalled(baseProjectConfig, dependencyConfig)).toBeTruthy();
   });
 
   it('should return false when .xcodeproj not in Libraries', () => {
-    const dependencyConfig = { projectName: 'Missing.xcodeproj' };
+    const dependencyConfig = {projectName: 'Missing.xcodeproj'};
     expect(isInstalled(baseProjectConfig, dependencyConfig)).toBeFalsy();
   });
 
   it('should return false when `LibraryFolder` is missing', () => {
-    const dependencyConfig = { projectName: 'React.xcodeproj' };
-    const projectConfig = Object.assign({}, baseProjectConfig, { libraryFolder: 'Missing' });
+    const dependencyConfig = {projectName: 'React.xcodeproj'};
+    const projectConfig = Object.assign({}, baseProjectConfig, {
+      libraryFolder: 'Missing',
+    });
     expect(isInstalled(projectConfig, dependencyConfig)).toBeFalsy();
   });
 });

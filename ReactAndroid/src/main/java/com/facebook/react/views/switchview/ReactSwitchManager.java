@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 // switchview because switch is a keyword
@@ -14,18 +12,19 @@ import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -42,7 +41,37 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     private boolean mMeasured;
 
     private ReactSwitchShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy(instanceHandle);
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    protected ReactSwitchShadowNode copy() {
+      return new ReactSwitchShadowNode(this);
     }
 
     @Override
@@ -57,6 +86,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         // support setting custom switch text, this is fine, as all switches will measure the same
         // on a specific device/theme/locale combination.
         ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
+        reactSwitch.setShowText(false);
         final int spec = View.MeasureSpec.makeMeasureSpec(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             View.MeasureSpec.UNSPECIFIED);

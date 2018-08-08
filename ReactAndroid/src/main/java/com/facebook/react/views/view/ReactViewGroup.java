@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.view;
@@ -23,19 +21,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.ReactZIndexedViewGroup;
+import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -103,6 +108,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
+  private @Nullable List<View> mTransitioningViews;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
@@ -110,6 +116,10 @@ public class ReactViewGroup extends ViewGroup implements
 
   public ReactViewGroup(Context context) {
     super(context);
+    // TODO: Remove this check after a couple public releases.
+    if (!ViewProps.sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -327,16 +337,16 @@ public class ReactViewGroup extends ViewGroup implements
 
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
-    int clippedSoFar = 0;
+    int childIndexOffset = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
-      updateSubviewClipStatus(clippingRect, i, clippedSoFar);
-      if (mAllChildren[i].getParent() == null) {
-        clippedSoFar++;
+      updateSubviewClipStatus(clippingRect, i, childIndexOffset);
+      if (!isChildInViewGroup(mAllChildren[i])) {
+        childIndexOffset++;
       }
     }
   }
 
-  private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
+  private void updateSubviewClipStatus(Rect clippingRect, int idx, int childIndexOffset) {
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects = clippingRect
@@ -353,10 +363,10 @@ public class ReactViewGroup extends ViewGroup implements
     if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
-      super.removeViewsInLayout(idx - clippedSoFar, 1);
+      super.removeViewsInLayout(idx - childIndexOffset, 1);
       needUpdateClippingRecursive = true;
     } else if (intersects && child.getParent() == null) {
-      super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
+      super.addViewInLayout(child, idx - childIndexOffset, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -392,17 +402,23 @@ public class ReactViewGroup extends ViewGroup implements
     boolean oldIntersects = (subview.getParent() != null);
 
     if (intersects != oldIntersects) {
-      int clippedSoFar = 0;
+      int childIndexOffset = 0;
       for (int i = 0; i < mAllChildrenCount; i++) {
         if (mAllChildren[i] == subview) {
-          updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
+          updateSubviewClipStatus(mClippingRect, i, childIndexOffset);
           break;
         }
-        if (mAllChildren[i].getParent() == null) {
-          clippedSoFar++;
+        if (!isChildInViewGroup(mAllChildren[i])) {
+          childIndexOffset++;
         }
       }
     }
+  }
+
+  private boolean isChildInViewGroup(View view) {
+    // A child is in the group if it's not clipped and it's not transitioning.
+    return view.getParent() != null
+      && (mTransitioningViews == null || !mTransitioningViews.contains(view));
   }
 
   @Override
@@ -502,13 +518,13 @@ public class ReactViewGroup extends ViewGroup implements
     addInArray(child, index);
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
-    int clippedSoFar = 0;
+    int childIndexOffset = 0;
     for (int i = 0; i < index; i++) {
-      if (mAllChildren[i].getParent() == null) {
-        clippedSoFar++;
+      if (!isChildInViewGroup(mAllChildren[i])) {
+        childIndexOffset++;
       }
     }
-    updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
+    updateSubviewClipStatus(mClippingRect, index, childIndexOffset);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
   }
 
@@ -518,14 +534,14 @@ public class ReactViewGroup extends ViewGroup implements
     Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (mAllChildren[index].getParent() != null) {
-      int clippedSoFar = 0;
+    if (isChildInViewGroup(mAllChildren[index])) {
+      int childIndexOffset = 0;
       for (int i = 0; i < index; i++) {
-        if (mAllChildren[i].getParent() == null) {
-          clippedSoFar++;
+        if (!isChildInViewGroup(mAllChildren[i])) {
+          childIndexOffset++;
         }
       }
-      super.removeViewsInLayout(index - clippedSoFar, 1);
+      super.removeViewsInLayout(index - childIndexOffset, 1);
     }
     removeFromArray(index);
   }
@@ -538,6 +554,26 @@ public class ReactViewGroup extends ViewGroup implements
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
+  }
+
+  /*package*/ void startViewTransitionWithSubviewClippingEnabled(View view) {
+    // We're mirroring ViewGroup's mTransitioningViews since when a transitioning child is removed,
+    // its parent is not set to null unlike a regular child. Normally this wouldn't be an issue as
+    // ViewGroup pretends the transitioning child doesn't exist when calling any methods that expose
+    // child views, but we keep track of our children directly when subview clipping is enabled and
+    // need to be aware of these.
+    if (mTransitioningViews == null) {
+      mTransitioningViews = new ArrayList<>();
+    }
+    mTransitioningViews.add(view);
+    startViewTransition(view);
+  }
+
+  /*package*/ void endViewTransitionWithSubviewClippingEnabled(View view) {
+    if (mTransitioningViews != null) {
+      mTransitioningViews.remove(view);
+    }
+    endViewTransition(view);
   }
 
   private int indexOfChildInAllChildren(View child) {
@@ -657,26 +693,49 @@ public class ReactViewGroup extends ViewGroup implements
 
   @Override
   protected void dispatchDraw(Canvas canvas) {
+    try {
+      dispatchOverflowDraw(canvas);
+      super.dispatchDraw(canvas);
+    } catch (StackOverflowError e) {
+      // Adding special exception management for StackOverflowError for logging purposes.
+      // This will be removed in the future.
+      RootView rootView = RootViewUtil.getRootView(ReactViewGroup.this);
+      if (rootView != null) {
+        rootView.handleException(e);
+      } else {
+        if (getContext() instanceof  ReactContext) {
+          ReactContext reactContext = (ReactContext) getContext();
+          reactContext.handleException(new IllegalViewOperationException("StackOverflowException", this, e));
+        } else {
+          throw e;
+        }
+      }
+    }
+  }
+
+  private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
-        case "visible":
+        case ViewProps.VISIBLE:
           if (mPath != null) {
             mPath.rewind();
           }
           break;
-        case "hidden":
-          if (mReactBackgroundDrawable != null) {
-            float left = 0f;
-            float top = 0f;
-            float right = getWidth();
-            float bottom = getHeight();
+        case ViewProps.HIDDEN:
+          float left = 0f;
+          float top = 0f;
+          float right = getWidth();
+          float bottom = getHeight();
 
+          boolean hasClipPath = false;
+
+          if (mReactBackgroundDrawable != null) {
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
-                || borderWidth.left > 0
-                || borderWidth.bottom > 0
-                || borderWidth.right > 0) {
+              || borderWidth.left > 0
+              || borderWidth.bottom > 0
+              || borderWidth.right > 0) {
               left += borderWidth.left;
               top += borderWidth.top;
               right -= borderWidth.right;
@@ -685,32 +744,32 @@ public class ReactViewGroup extends ViewGroup implements
 
             final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
             float topLeftBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
             float topRightBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
             float bottomLeftBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
             float bottomRightBorderRadius =
-                mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
-                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
+              mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
               final boolean isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL;
               float topStartBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_START);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_START);
               float topEndBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_END);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_END);
               float bottomStartBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_START);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_START);
               float bottomEndBorderRadius =
-                  mReactBackgroundDrawable.getBorderRadius(
-                      ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
+                mReactBackgroundDrawable.getBorderRadius(
+                  ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_END);
 
               if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(getContext())) {
                 if (YogaConstants.isUndefined(topStartBorderRadius)) {
@@ -730,13 +789,13 @@ public class ReactViewGroup extends ViewGroup implements
                 }
 
                 final float directionAwareTopLeftRadius =
-                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                  isRTL ? topEndBorderRadius : topStartBorderRadius;
                 final float directionAwareTopRightRadius =
-                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                  isRTL ? topStartBorderRadius : topEndBorderRadius;
                 final float directionAwareBottomLeftRadius =
-                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                  isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
                 final float directionAwareBottomRightRadius =
-                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+                  isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
 
                 topLeftBorderRadius = directionAwareTopLeftRadius;
                 topRightBorderRadius = directionAwareTopRightRadius;
@@ -744,13 +803,13 @@ public class ReactViewGroup extends ViewGroup implements
                 bottomRightBorderRadius = directionAwareBottomRightRadius;
               } else {
                 final float directionAwareTopLeftRadius =
-                    isRTL ? topEndBorderRadius : topStartBorderRadius;
+                  isRTL ? topEndBorderRadius : topStartBorderRadius;
                 final float directionAwareTopRightRadius =
-                    isRTL ? topStartBorderRadius : topEndBorderRadius;
+                  isRTL ? topStartBorderRadius : topEndBorderRadius;
                 final float directionAwareBottomLeftRadius =
-                    isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
+                  isRTL ? bottomEndBorderRadius : bottomStartBorderRadius;
                 final float directionAwareBottomRightRadius =
-                    isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
+                  isRTL ? bottomStartBorderRadius : bottomEndBorderRadius;
 
                 if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
                   topLeftBorderRadius = directionAwareTopLeftRadius;
@@ -771,37 +830,39 @@ public class ReactViewGroup extends ViewGroup implements
             }
 
             if (topLeftBorderRadius > 0
-                || topRightBorderRadius > 0
-                || bottomRightBorderRadius > 0
-                || bottomLeftBorderRadius > 0) {
+              || topRightBorderRadius > 0
+              || bottomRightBorderRadius > 0
+              || bottomLeftBorderRadius > 0) {
               if (mPath == null) {
                 mPath = new Path();
               }
 
               mPath.rewind();
               mPath.addRoundRect(
-                  new RectF(left, top, right, bottom),
-                  new float[] {
-                    Math.max(topLeftBorderRadius - borderWidth.left, 0),
-                    Math.max(topLeftBorderRadius - borderWidth.top, 0),
-                    Math.max(topRightBorderRadius - borderWidth.right, 0),
-                    Math.max(topRightBorderRadius - borderWidth.top, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth.right, 0),
-                    Math.max(bottomRightBorderRadius - borderWidth.bottom, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth.left, 0),
-                    Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
-                  },
-                  Path.Direction.CW);
+                new RectF(left, top, right, bottom),
+                new float[]{
+                  Math.max(topLeftBorderRadius - borderWidth.left, 0),
+                  Math.max(topLeftBorderRadius - borderWidth.top, 0),
+                  Math.max(topRightBorderRadius - borderWidth.right, 0),
+                  Math.max(topRightBorderRadius - borderWidth.top, 0),
+                  Math.max(bottomRightBorderRadius - borderWidth.right, 0),
+                  Math.max(bottomRightBorderRadius - borderWidth.bottom, 0),
+                  Math.max(bottomLeftBorderRadius - borderWidth.left, 0),
+                  Math.max(bottomLeftBorderRadius - borderWidth.bottom, 0),
+                },
+                Path.Direction.CW);
               canvas.clipPath(mPath);
-            } else {
-              canvas.clipRect(new RectF(left, top, right, bottom));
+              hasClipPath = true;
             }
+          }
+
+          if (!hasClipPath) {
+            canvas.clipRect(new RectF(left, top, right, bottom));
           }
           break;
         default:
           break;
       }
     }
-    super.dispatchDraw(canvas);
   }
 }

@@ -1,99 +1,87 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
 const {OS} = require('Platform');
 const processColor = require('processColor');
 
-const platformSpecific = OS === 'android'
-  ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
-  : x => x;
+const platformSpecific =
+  OS === 'android'
+    ? unsigned => unsigned | 0 //eslint-disable-line no-bitwise
+    : x => x;
 
 describe('processColor', () => {
-
   describe('predefined color names', () => {
-
     it('should convert red', () => {
-      var colorFromString = processColor('red');
-      var expectedInt = 0xFFFF0000;
+      const colorFromString = processColor('red');
+      const expectedInt = 0xffff0000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
     it('should convert white', () => {
-      var colorFromString = processColor('white');
-      var expectedInt = 0xFFFFFFFF;
+      const colorFromString = processColor('white');
+      const expectedInt = 0xffffffff;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
     it('should convert black', () => {
-      var colorFromString = processColor('black');
-      var expectedInt = 0xFF000000;
+      const colorFromString = processColor('black');
+      const expectedInt = 0xff000000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
     it('should convert transparent', () => {
-      var colorFromString = processColor('transparent');
-      var expectedInt = 0x00000000;
+      const colorFromString = processColor('transparent');
+      const expectedInt = 0x00000000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
   });
 
   describe('RGB strings', () => {
-
     it('should convert rgb(x, y, z)', () => {
-      var colorFromString = processColor('rgb(10, 20, 30)');
-      var expectedInt = 0xFF0A141E;
+      const colorFromString = processColor('rgb(10, 20, 30)');
+      const expectedInt = 0xff0a141e;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
-
   });
 
   describe('RGBA strings', () => {
-
     it('should convert rgba(x, y, z, a)', () => {
-      var colorFromString = processColor('rgba(10, 20, 30, 0.4)');
-      var expectedInt = 0x660A141E;
+      const colorFromString = processColor('rgba(10, 20, 30, 0.4)');
+      const expectedInt = 0x660a141e;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
-
   });
 
   describe('HSL strings', () => {
-
     it('should convert hsl(x, y%, z%)', () => {
-      var colorFromString = processColor('hsl(318, 69%, 55%)');
-      var expectedInt = 0xFFDB3DAC;
+      const colorFromString = processColor('hsl(318, 69%, 55%)');
+      const expectedInt = 0xffdb3dac;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
-
   });
 
   describe('HSLA strings', () => {
-
     it('should convert hsla(x, y%, z%, a)', () => {
-      var colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
-      var expectedInt = 0x40DB3DAC;
+      const colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
+      const expectedInt = 0x40db3dac;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
-
   });
 
   describe('hex strings', () => {
-
     it('should convert #xxxxxx', () => {
-      var colorFromString = processColor('#1e83c9');
-      var expectedInt = 0xFF1E83C9;
+      const colorFromString = processColor('#1e83c9');
+      const expectedInt = 0xff1e83c9;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
-
   });
-
 });

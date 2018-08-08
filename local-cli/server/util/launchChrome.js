@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -16,11 +16,16 @@
 const opn = require('opn');
 const execSync = require('child_process').execSync;
 
-function commandExistsUnixSync (commandName, callback) {
+function commandExistsUnixSync(commandName, callback) {
   try {
-    var stdout = execSync('command -v ' + commandName +
-          ' 2>/dev/null' +
-          ' && { echo >&1 \'' + commandName + ' found\'; exit 0; }');
+    var stdout = execSync(
+      'command -v ' +
+        commandName +
+        ' 2>/dev/null' +
+        " && { echo >&1 '" +
+        commandName +
+        " found'; exit 0; }",
+    );
     return !!stdout;
   } catch (error) {
     return false;
@@ -29,20 +34,20 @@ function commandExistsUnixSync (commandName, callback) {
 
 function getChromeAppName(): string {
   switch (process.platform) {
-  case 'darwin':
-    return 'google chrome';
-  case 'win32':
-    return 'chrome';
-  case 'linux':
-    if (commandExistsUnixSync('google-chrome')) {
+    case 'darwin':
+      return 'google chrome';
+    case 'win32':
+      return 'chrome';
+    case 'linux':
+      if (commandExistsUnixSync('google-chrome')) {
+        return 'google-chrome';
+      } else if (commandExistsUnixSync('chromium-browser')) {
+        return 'chromium-browser';
+      } else {
+        return 'chromium';
+      }
+    default:
       return 'google-chrome';
-    } else if (commandExistsUnixSync('chromium-browser')) {
-      return 'chromium-browser';
-    } else {
-      return 'chromium';
-    }
-  default:
-    return 'google-chrome';
   }
 }
 
