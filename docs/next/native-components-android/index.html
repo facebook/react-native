@@ -44,47 +44,23 @@
 <li>Implement the JavaScript module</li>
 </ol>
 <h2><a class="anchor" aria-hidden="true" id="1-create-the-viewmanager-subclass"></a><a href="#1-create-the-viewmanager-subclass" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create the <code>ViewManager</code> subclass</h2>
-<p>In this example we create view manager class <code>ReactImageManager</code> that extends <code>SimpleViewManager</code> of type <code>ReactImageView</code>. <code>ReactImageView</code> is the type of object managed by the manager, this will be the custom native view. Set the initializers and set the name <code>REACT_CLASS</code> to <code>CustomRCTImageView</code> as <code>RCTImageView</code> is already used by React. Name returned by <code>getName</code> is used to reference the native view type from JavaScript.</p>
-<pre><code class="hljs css languages- java"><span class="hljs-comment">// ReactImageManager.java</span>
-
-<span class="hljs-keyword">package</span> com.your-app-name;
-
-<span class="hljs-keyword">import</span> javax.annotation.Nullable;
-
-<span class="hljs-keyword">import</span> com.facebook.drawee.backends.pipeline.Fresco;
-<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReadableArray;
-<span class="hljs-keyword">import</span> com.facebook.react.uimanager.SimpleViewManager;
-<span class="hljs-keyword">import</span> com.facebook.react.uimanager.ThemedReactContext;
-<span class="hljs-keyword">import</span> com.facebook.react.uimanager.ViewProps;
-<span class="hljs-keyword">import</span> com.facebook.react.uimanager.annotations.ReactProp;
-<span class="hljs-keyword">import</span> com.facebook.react.views.image.ImageResizeMode;
-<span class="hljs-keyword">import</span> com.facebook.react.views.image.ReactImageView;
+<p>In this example we create view manager class <code>ReactImageManager</code> that extends <code>SimpleViewManager</code> of type <code>ReactImageView</code>. <code>ReactImageView</code> is the type of object managed by the manager, this will be the custom native view. Name returned by <code>getName</code> is used to reference the native view type from JavaScript.</p>
+<pre><code class="hljs css languages- java">...
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactImageManager</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleViewManager</span>&lt;<span class="hljs-title">ReactImageView</span>&gt; </span>{
 
-  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String REACT_CLASS = <span class="hljs-string">"CustomRCTImageView"</span>;
-    <span class="hljs-keyword">private</span> Object mCallerContext;
-
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ReactImageManagerModule</span><span class="hljs-params">()</span> </span>{
-  }
-
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ReactImageManagerModule</span><span class="hljs-params">(Object mCallerContext)</span> </span>{
-      <span class="hljs-keyword">this</span>.mCallerContext = mCallerContext;
-  }
+  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String REACT_CLASS = <span class="hljs-string">"RCTImageView"</span>;
 
   <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
-      <span class="hljs-keyword">return</span> REACT_CLASS;
+    <span class="hljs-keyword">return</span> REACT_CLASS;
   }
-}
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="2-implement-method-createviewinstance"></a><a href="#2-implement-method-createviewinstance" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Implement method <code>createViewInstance</code></h2>
 <p>Views are created in the <code>createViewInstance</code> method, the view should initialize itself in its default state, any properties will be set via a follow up call to <code>updateView.</code></p>
-<pre><code class="hljs css languages- java"><span class="hljs-comment">// ReactImageManager.java</span>
-
-  <span class="hljs-meta">@Override</span>
+<pre><code class="hljs css languages- java">  <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> ReactImageView <span class="hljs-title">createViewInstance</span><span class="hljs-params">(ThemedReactContext context)</span> </span>{
-    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReactImageView(context, Fresco.newDraweeControllerBuilder(), <span class="hljs-keyword">null</span>, mCallerContext);
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReactImageView(context, Fresco.newDraweeControllerBuilder(), mCallerContext);
   }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="3-expose-view-property-setters-using-reactprop-or-reactpropgroup-annotation"></a><a href="#3-expose-view-property-setters-using-reactprop-or-reactpropgroup-annotation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Expose view property setters using <code>@ReactProp</code> (or <code>@ReactPropGroup</code>) annotation</h2>
@@ -93,9 +69,7 @@
 <p>Except from <code>name</code>, <code>@ReactProp</code> annotation may take following optional arguments: <code>defaultBoolean</code>, <code>defaultInt</code>, <code>defaultFloat</code>. Those arguments should be of the corresponding primitive type (accordingly <code>boolean</code>, <code>int</code>, <code>float</code>) and the value provided will be passed to the setter method in case when the property that the setter is referencing has been removed from the component. Note that &quot;default&quot; values are only provided for primitive types, in case when setter is of some complex type, <code>null</code> will be provided as a default value in case when corresponding property gets removed.</p>
 <p>Setter declaration requirements for methods annotated with <code>@ReactPropGroup</code> are different than for <code>@ReactProp</code>, please refer to the <code>@ReactPropGroup</code> annotation class docs for more information about it.</p>
 <p><strong>IMPORTANT!</strong> in ReactJS updating the property value will result in setter method call. Note that one of the ways we can update component is by removing properties that have been set before. In that case setter method will be called as well to notify view manager that property has changed. In that case &quot;default&quot; value will be provided (for primitive types &quot;default&quot; can value can be specified using <code>defaultBoolean</code>, <code>defaultFloat</code>, etc. arguments of <code>@ReactProp</code> annotation, for complex types setter will be called with value set to <code>null</code>).</p>
-<pre><code class="hljs css languages- java"><span class="hljs-comment">// ReactImageManager.java</span>
-
-  <span class="hljs-meta">@ReactProp</span>(name = <span class="hljs-string">"src"</span>)
+<pre><code class="hljs css languages- java">  <span class="hljs-meta">@ReactProp</span>(name = <span class="hljs-string">"src"</span>)
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setSrc</span><span class="hljs-params">(ReactImageView view, @Nullable ReadableArray sources)</span> </span>{
     view.setSource(sources);
   }
@@ -112,100 +86,30 @@
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="4-register-the-viewmanager"></a><a href="#4-register-the-viewmanager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4. Register the <code>ViewManager</code></h2>
 <p>The final Java step is to register the ViewManager to the application, this happens in a similar way to <a href="/react-native/docs/next/native-modules-android">Native Modules</a>, via the applications package member function <code>createViewManagers.</code></p>
-<pre><code class="hljs css languages- java"><span class="hljs-comment">//ReactImageManagerPackage.java</span>
-
-<span class="hljs-keyword">package</span> com.your-app-name;
-
-<span class="hljs-keyword">import</span> com.facebook.react.ReactPackage;
-<span class="hljs-keyword">import</span> com.facebook.react.bridge.NativeModule;
-<span class="hljs-keyword">import</span> com.facebook.react.bridge.ReactApplicationContext;
-<span class="hljs-keyword">import</span> com.facebook.react.uimanager.ViewManager;
-
-<span class="hljs-keyword">import</span> java.util.ArrayList;
-<span class="hljs-keyword">import</span> java.util.Arrays;
-<span class="hljs-keyword">import</span> java.util.List;
-
-<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactImageManagerPackage</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ReactPackage</span> </span>{
-
-  <span class="hljs-meta">@Override</span>
+<pre><code class="hljs css languages- java">  <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;ViewManager&gt; <span class="hljs-title">createViewManagers</span><span class="hljs-params">(
                             ReactApplicationContext reactContext)</span> </span>{
     <span class="hljs-keyword">return</span> Arrays.&lt;ViewManager&gt;asList(
-      <span class="hljs-keyword">new</span> MainReactPackage(),
-      <span class="hljs-keyword">new</span> ReactImageManager() <span class="hljs-comment">// &lt;- new UI Component here</span>
+      <span class="hljs-keyword">new</span> ReactImageManager()
     );
   }
-  
-  <span class="hljs-meta">@Override</span>
-    <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;NativeModule&gt; <span class="hljs-title">createNativeModules</span><span class="hljs-params">(ReactApplicationContext reactContext)</span> </span>{
-        List&lt;NativeModule&gt; modules = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
-
-        modules.add(<span class="hljs-keyword">new</span> ReactImageManagerModule(reactContext));
-
-        <span class="hljs-keyword">return</span> modules;
-    }
- }
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="5-implement-the-javascript-module"></a><a href="#5-implement-the-javascript-module" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>5. Implement the JavaScript module</h2>
-<p>The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the <code>propTypes</code>.</p>
+<p>The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. It is recommended for you to document the component interface in this module (e.g. using Flow, TypeScript, or plain old comments).</p>
 <pre><code class="hljs css languages- javascript"><span class="hljs-comment">// ImageView.js</span>
 
-<span class="hljs-keyword">import</span> PropTypes <span class="hljs-keyword">from</span> <span class="hljs-string">'prop-types'</span>;
-<span class="hljs-keyword">import</span> {
-    requireNativeComponent,
-    ViewPropTypes
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> {requireNativeComponent} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-keyword">var</span> iface = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">'CustomImageView'</span>,
-  <span class="hljs-attr">propTypes</span>: {
-      <span class="hljs-attr">src</span>: PropTypes.arrayOf(
-              PropTypes.shape({
-                  <span class="hljs-attr">uri</span>: PropTypes.string,
-          })
-      ),
-      <span class="hljs-attr">borderRadius</span>: PropTypes.number,
-      <span class="hljs-attr">resizeMode</span>: PropTypes.oneOf([<span class="hljs-string">'cover'</span>, <span class="hljs-string">'contain'</span>, <span class="hljs-string">'stretch'</span>]),
-      ...ViewPropTypes, <span class="hljs-comment">// include the default view properties</span>
-  },
-};
-
-<span class="hljs-built_in">module</span>.exports = requireNativeComponent(<span class="hljs-string">'CustomRCTImageView'</span>, iface);
+<span class="hljs-comment">/**
+ * Composes `View`.
+ *
+ * - src: string
+ * - borderRadius: number
+ * - resizeMode: 'cover' | 'contain' | 'stretch'
+ */</span>
+<span class="hljs-built_in">module</span>.exports = requireNativeComponent(<span class="hljs-string">'RCTImageView'</span>);
 </code></pre>
-<p><code>requireNativeComponent</code> commonly takes two parameters, the first is the name of the native view and the second is an object that describes the component interface. The component interface should declare a friendly <code>name</code> for use in debug messages and must declare the <code>propTypes</code> reflected by the Native View. The <code>propTypes</code> are used for checking the validity of a user's use of the native view. Now we can use the created component in our React-Native application. Dont worry why we have to set wrap the <code>uri-Object</code> into <code>[]</code> for now. When you use already creatred <code>&lt;Image /&gt;</code> component you do not have to do that.</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-comment">// App.js</span>
-
-<span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> {
-  Platform,
-  StyleSheet,
-  Text,
-  View
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
-<span class="hljs-keyword">import</span> CustomImageView <span class="hljs-keyword">from</span> <span class="hljs-string">'./bridge/ImageView.js'</span>;
-
-type Props = {};
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span>&lt;<span class="hljs-title">Props</span>&gt; </span>{
-  render() {
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">CustomImageView</span> <span class="hljs-attr">src</span>=<span class="hljs-string">{[{</span> <span class="hljs-attr">uri:</span> '<span class="hljs-attr">https:</span>//<span class="hljs-attr">facebook.github.io</span>/<span class="hljs-attr">react</span>/<span class="hljs-attr">logo-og.png</span>'}]}
-          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">400</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">400</span> }} /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-});
-</span></code></pre>
-<p>Note that if you need your JavaScript component to do more than just specify a name and propTypes, like do custom event handling, you can wrap the native component in a normal react component. In that case, you want to pass in the wrapper component instead of <code>iface</code> to <code>requireNativeComponent</code>. This is illustrated in the <code>MyCustomView</code> example below.</p>
+<p>The <code>requireNativeComponent</code> function takes the name of the native view. Note that if your component needs to do anything more sophisticated (e.g. custom event handling), you should wrap the native component in another React component. This is illustrated in the <code>MyCustomView</code> example below.</p>
 <h1><a class="anchor" aria-hidden="true" id="events"></a><a href="#events" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h1>
 <p>So now we know how to expose native view components that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning? When a native event occurs the native code should issue an event to the JavaScript representation of the View, and the two views are linked with the value returned from the <code>getId()</code> method.</p>
 <pre><code class="hljs css languages- java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">View</span> </span>{
@@ -261,11 +165,8 @@ MyCustomView.propTypes = {
   ...
 };
 
-var RCTMyCustomView = requireNativeComponent(`RCTMyCustomView`, MyCustomView, {
-  nativeOnly: {onChange: true}
-});
+var RCTMyCustomView = requireNativeComponent(`RCTMyCustomView`);
 </span></code></pre>
-<p>Note the use of <code>nativeOnly</code> above. Sometimes you'll have some special properties that you need to expose for the native component, but don't actually want them as part of the API for the associated React component. For example, <code>Switch</code> has a custom <code>onChange</code> handler for the raw native event, and exposes an <code>onValueChange</code> handler property that is invoked with just the boolean value rather than the raw event (similar to <code>onChangeMessage</code> in the example above). Since you don't want these native only properties to be part of the API, you don't want to put them in <code>propTypes</code>, but if you don't you'll get an error. The solution is simply to call them out via the <code>nativeOnly</code> option.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/next/native-modules-android">← Native Modules</a><a class="docs-next button" href="/react-native/docs/next/headless-js-android">Headless JS →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
               var search = docsearch({
