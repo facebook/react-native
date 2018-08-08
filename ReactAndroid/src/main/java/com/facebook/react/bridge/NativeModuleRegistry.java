@@ -7,14 +7,12 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.systrace.Systrace;
 
 /**
   * A set of Java APIs to expose to a particular JavaScript instance.
@@ -23,15 +21,12 @@ public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final Map<String, ModuleHolder> mModules;
-  private final ArrayList<ModuleHolder> mBatchCompleteListenerModules;
 
   public NativeModuleRegistry(
     ReactApplicationContext reactApplicationContext,
-    Map<String, ModuleHolder> modules,
-    ArrayList<ModuleHolder> batchCompleteListenerModules) {
+    Map<String, ModuleHolder> modules) {
     mReactApplicationContext = reactApplicationContext;
     mModules = modules;
-    mBatchCompleteListenerModules = batchCompleteListenerModules;
   }
 
   /**
@@ -43,10 +38,6 @@ public class NativeModuleRegistry {
 
   private ReactApplicationContext getReactApplicationContext() {
     return mReactApplicationContext;
-  }
-
-  private ArrayList<ModuleHolder> getBatchCompleteListenerModules() {
-    return mBatchCompleteListenerModules;
   }
 
   /* package */ Collection<JavaModuleWrapper> getJavaModules(
@@ -81,15 +72,11 @@ public class NativeModuleRegistry {
       "Extending native modules with non-matching application contexts.");
 
     Map<String, ModuleHolder> newModules = newRegister.getModuleMap();
-    ArrayList<ModuleHolder> batchCompleteListeners = newRegister.getBatchCompleteListenerModules();
 
     for (Map.Entry<String, ModuleHolder> entry : newModules.entrySet()) {
       String key = entry.getKey();
       if (!mModules.containsKey(key)) {
         ModuleHolder value = entry.getValue();
-        if (batchCompleteListeners.contains(value)) {
-          mBatchCompleteListenerModules.add(value);
-        }
         mModules.put(key, value);
       }
     }
@@ -129,10 +116,13 @@ public class NativeModuleRegistry {
   }
 
   public void onBatchComplete() {
-    for (ModuleHolder moduleHolder : mBatchCompleteListenerModules) {
-      if (moduleHolder.hasInstance()) {
-        ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
-      }
+    // The only native module that uses the onBatchComplete is the UI Manager. Hence, instead of
+    // iterating over all the modules for find this one instance, and then calling it, we short-circuit
+    // the search, and simply call OnBatchComplete on the UI Manager.
+    // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
+    ModuleHolder moduleHolder = mModules.get("com.facebook.react.uimanager.UIManagerModule");
+    if (moduleHolder != null && moduleHolder.hasInstance()) {
+      ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
     }
   }
 
