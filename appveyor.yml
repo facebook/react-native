@@ -32,8 +32,8 @@ install:
 
     - ps: Install-Product node $env:nodejs_version
     - node --version
-    - npm --version
-    - appveyor-retry npm install
+    - yarn --version
+    - appveyor-retry yarn install
 
 build_script:
   - gradlew.bat RNTester:android:app:assembleRelease
