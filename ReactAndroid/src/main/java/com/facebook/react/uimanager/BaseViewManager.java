@@ -28,6 +28,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
+  private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
@@ -119,9 +120,24 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
   }
 
+  @ReactProp(name = PROP_ACCESSIBILITY_HINT)
+  public void setAccessibilityHint(T view, String accessibilityHint) {
+    view.setTag(R.id.accessibility_hint, accessibilityHint);
+  }
+
   @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(T view, String accessibilityRole) {
-    AccessibilityRoleUtil.updateAccessibilityRole(view, accessibilityRole);
+    if (accessibilityRole == null) {
+      return;
+    }
+    try {
+     AccessibilityDelegateUtil.AccessibilityRole.valueOf(accessibilityRole.toUpperCase());
+    } catch (NullPointerException e) {
+      throw new IllegalArgumentException("Invalid Role " + accessibilityRole + " Passed In");
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid Role " + accessibilityRole + " Passed In");
+    }
+    view.setTag(R.id.accessibility_role, accessibilityRole);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
@@ -238,5 +254,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setScaleX(1);
     view.setScaleY(1);
     view.setCameraDistance(0);
+  }
+
+  private void updateViewAccessibility(T view) {
+    AccessibilityDelegateUtil.setDelegate(view);
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(T view) {
+    super.onAfterUpdateTransaction(view);
+    updateViewAccessibility(view);
   }
 }

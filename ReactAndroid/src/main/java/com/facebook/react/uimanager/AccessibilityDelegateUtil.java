@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  * AccessibilityNodeInfo.
  */
 
-public class AccessibilityRoleUtil {
+public class AccessibilityDelegateUtil {
 
   /**
    * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
@@ -41,7 +41,9 @@ public class AccessibilityRoleUtil {
     IMAGEBUTTON("android.widget.ImageView"),
     KEYBOARDKEY("android.inputmethodservice.Keyboard$Key"),
     TEXT("android.widget.ViewGroup"),
-    ADJUSTABLE("android.widget.SeekBar");
+    ADJUSTABLE("android.widget.SeekBar"),
+    SUMMARY("android.widget.ViewGroup"),
+    HEADER("android.widget.ViewGroup");
 
     @Nullable private final String mValue;
 
@@ -64,11 +66,11 @@ public class AccessibilityRoleUtil {
     }
   }
 
-  private AccessibilityRoleUtil() {
+  private AccessibilityDelegateUtil() {
     // No instances
   }
 
-  public static void setRole(final View view, final AccessibilityRole role) {
+  public static void setDelegate(final View view) {
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)) {
@@ -79,7 +81,18 @@ public class AccessibilityRoleUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            setRole(info, role, view.getContext());
+            String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+            AccessibilityRole accessibilityRole = getAccessibilityRole((String) view.getTag(R.id.accessibility_role));
+            setRole(info, accessibilityRole, view.getContext());
+            if (!(accessibilityHint == null)) {
+              String contentDescription=(String)info.getContentDescription();
+              if (contentDescription != null) {
+                contentDescription = contentDescription + ", " + accessibilityHint;
+                info.setContentDescription(contentDescription);
+              } else {
+                info.setContentDescription(accessibilityHint);
+              }
+            }
           }
         });
     }
@@ -89,7 +102,7 @@ public class AccessibilityRoleUtil {
    * Strings for setting the Role Description in english
    */
 
-  //TODO: Eventually support fot other languages on talkback
+  //TODO: Eventually support for other languages on talkback
 
   public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role, final Context context) {
     nodeInfo.setClassName(role.getValue());
@@ -118,16 +131,10 @@ public class AccessibilityRoleUtil {
   /**
    * Method for setting accessibilityRole on view properties.
    */
-  public static void updateAccessibilityRole(View view, String role) {
+  public static AccessibilityRole getAccessibilityRole(String role) {
     if (role == null) {
-      view.setAccessibilityDelegate(null);
+      return AccessibilityRole.NONE;
     }
-    try {
-      setRole(view, AccessibilityRole.valueOf(role.toUpperCase()));
-    } catch (NullPointerException e) {
-      view.setAccessibilityDelegate(null);
-    } catch (IllegalArgumentException e) {
-      view.setAccessibilityDelegate(null);
-    }
+    return AccessibilityRole.valueOf(role.toUpperCase());
   }
 }
