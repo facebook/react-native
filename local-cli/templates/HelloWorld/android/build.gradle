@@ -38,3 +38,8 @@ ext {
     targetSdkVersion = 26
     supportLibVersion = "26.1.0"
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4'
+    distributionUrl = distributionUrl.replace("bin", "all")
+}
