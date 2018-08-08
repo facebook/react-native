@@ -560,6 +560,26 @@ class TextExample extends React.Component<{}> {
               a<Text style={{textTransform: 'none'}}>b</Text>c
             </Text>
           </Text>
+          <Text style={{textTransform: 'none'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'uppercase'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'lowercase'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
         </RNTesterBlock>
       </RNTesterPage>
     );

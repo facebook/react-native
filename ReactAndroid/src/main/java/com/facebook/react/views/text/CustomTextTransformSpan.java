@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.style.ReplacementSpan;
+import java.text.BreakIterator;
 
 public class CustomTextTransformSpan extends ReplacementSpan {
 
@@ -59,14 +60,24 @@ public class CustomTextTransformSpan extends ReplacementSpan {
     return transformed;
   }
 
-  private String capitalize(String rawString) {
-    String[] stringParts = rawString.split(" ");
-    for(int i = 0; i < stringParts.length; i++) {
-      if(stringParts[i].length() == 0) continue;
-      stringParts[i] = stringParts[i].substring(0, 1).toUpperCase() + stringParts[i].substring(1).toLowerCase();
+  private String capitalize(String text) {
+    BreakIterator wordIterator = BreakIterator.getWordInstance();
+    wordIterator.setText(text);
+
+    StringBuilder res = new StringBuilder(text.length());
+    int start = wordIterator.first();
+    for (int end = wordIterator.next(); end != BreakIterator.DONE; end = wordIterator.next()) {
+      String word = text.substring(start, end);
+      if (Character.isLetterOrDigit(word.charAt(0))) {
+        res.append(Character.toUpperCase(word.charAt(0)));
+        res.append(word.substring(1).toLowerCase());
+      } else {
+        res.append(word);
+      }
+      start = end;
     }
 
-    return String.join(" ", stringParts);
+    return res.toString();
   }
 
 }
