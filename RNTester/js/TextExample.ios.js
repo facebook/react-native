@@ -255,25 +255,6 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
           {marker}
         </View>
 
-        {/* <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text> */
-        /* <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-          {marker}
-          <Text selectable={true}>
-            Some text.
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'baseline',
-                backgroundColor: '#eee',
-              }}>
-              {marker}
-              <Text>Text inside View.</Text>
-              {marker}
-            </View>
-          </Text>
-          {marker}
-        </View> */}
-
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
