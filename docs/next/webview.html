@@ -44,6 +44,21 @@
   }
 }
 </code></pre>
+<p>Minimal example with inline HTML:</p>
+<pre><code class="hljs"><span class="hljs-keyword">import</span> <span class="hljs-type">React</span>, { <span class="hljs-type">Component</span> } from <span class="hljs-symbol">'reac</span>t';
+<span class="hljs-keyword">import</span> { <span class="hljs-type">WebView</span> } from <span class="hljs-symbol">'react</span>-native';
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyInlineWeb</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> (
+      &lt;<span class="hljs-type">WebView</span>
+        originWhitelist={['*']}
+        source={{ html: '&lt;h1&gt;<span class="hljs-type">Hello</span> world&lt;/h1&gt;' }}
+      /&gt;
+    );
+  }
+}
+</code></pre>
 <p>You can use this component to navigate back and forth in the web view's history and configure various properties for the web content.</p>
 <blockquote>
 <p><strong>Security Warning:</strong> Currently, <code>onMessage</code> and <code>postMessage</code> do not allow specifying an origin. This can lead to cross-site scripting attacks if an unexpected document is loaded within a <code>WebView</code> instance. Please refer to the MDN documentation for <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"><code>Window.postMessage()</code></a> for more details on the security implications of this.</p>
