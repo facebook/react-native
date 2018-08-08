@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
+load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_resource", "react_native_dep", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
@@ -19,6 +19,7 @@ rn_android_library(
     ],
     exported_deps = [
         ":classes-for-react-native",
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
     ],
 )
 

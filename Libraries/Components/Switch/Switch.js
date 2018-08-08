@@ -10,16 +10,15 @@
 
 'use strict';
 
+const SwitchNativeComponent = require('SwitchNativeComponent');
 const Platform = require('Platform');
 const React = require('React');
-const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
-
-const requireNativeComponent = require('requireNativeComponent');
 
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeAndroidProps, NativeIOSProps} from 'SwitchNativeComponent';
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -75,41 +74,6 @@ export type Props = $ReadOnly<{|
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
 
-// @see ReactSwitchManager.java
-type NativeAndroidProps = $ReadOnly<{|
-  ...ViewProps,
-  enabled?: ?boolean,
-  on?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
-|}>;
-
-// @see RCTSwitchManager.m
-type NativeIOSProps = $ReadOnly<{|
-  ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  onTintColor?: ?string,
-  thumbTintColor?: ?string,
-  tintColor?: ?string,
-  value?: ?boolean,
-|}>;
-
-type NativeSwitchType = Class<
-  ReactNative.NativeComponent<
-    $ReadOnly<{|
-      ...NativeAndroidProps,
-      ...NativeIOSProps,
-    |}>,
-  >,
->;
-
-const NativeSwitch: NativeSwitchType =
-  Platform.OS === 'android'
-    ? (requireNativeComponent('AndroidSwitch'): any)
-    : (requireNativeComponent('RCTSwitch'): any);
-
 /**
  * A visual toggle between two mutually exclusive states.
  *
@@ -119,7 +83,7 @@ const NativeSwitch: NativeSwitchType =
  * supplied `value` prop instead of the expected result of any user actions.
  */
 class Switch extends React.Component<Props> {
-  _nativeSwitchRef: ?React.ElementRef<NativeSwitchType>;
+  _nativeSwitchRef: ?React.ElementRef<typeof SwitchNativeComponent>;
 
   render() {
     const {
@@ -197,13 +161,13 @@ class Switch extends React.Component<Props> {
           }: NativeIOSProps);
 
     return (
-      <NativeSwitch
+      <SwitchNativeComponent
         {...props}
         {...platformProps}
         onChange={this._handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={this._handleNativeSwitchRef}
+        ref={this._handleSwitchNativeComponentRef}
       />
     );
   }
@@ -230,7 +194,9 @@ class Switch extends React.Component<Props> {
     }
   };
 
-  _handleNativeSwitchRef = (ref: ?React.ElementRef<NativeSwitchType>) => {
+  _handleSwitchNativeComponentRef = (
+    ref: ?React.ElementRef<typeof SwitchNativeComponent>,
+  ) => {
     this._nativeSwitchRef = ref;
   };
 }
