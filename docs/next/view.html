@@ -98,6 +98,8 @@
 <li><a href="/react-native/docs/next/view#importantforaccessibility"><code>importantForAccessibility</code></a></li>
 <li><a href="/react-native/docs/next/view#needsoffscreenalphacompositing"><code>needsOffscreenAlphaCompositing</code></a></li>
 <li><a href="/react-native/docs/next/view#rendertohardwaretextureandroid"><code>renderToHardwareTextureAndroid</code></a></li>
+<li><a href="/react-native/docs/next/view#accessibilityrole"><code>accessibilityRole</code></a></li>
+<li><a href="/react-native/docs/next/view#accessibilitystates"><code>accessibilityStates</code></a></li>
 <li><a href="/react-native/docs/next/view#accessibilitytraits"><code>accessibilityTraits</code></a></li>
 <li><a href="/react-native/docs/next/view#accessibilityviewismodal"><code>accessibilityViewIsModal</code></a></li>
 <li><a href="/react-native/docs/next/view#accessibilityElementsHidden"><code>accessibilityElementsHidden</code></a></li>
@@ -395,6 +397,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="accessibilitycomponenttype"></a><a href="#accessibilitycomponenttype" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityComponentType</code></h3>
+<p><em>&gt; Note: <code>accessibilityComponentType</code>will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead.</em></p>
 <p>Indicates to accessibility services to treat UI component like a native one. Works for Android only.</p>
 <p>Possible values are one of:</p>
 <ul>
@@ -483,7 +486,56 @@
 </tbody>
 </table>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="accessibilityrole"></a><a href="#accessibilityrole" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityRole</code></h3>
+<p><em>&gt; Note: <code>AccessibilityRole</code> and <code>AccessibilityStates</code> are meant to be a cross-platform solution to replace <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>, which will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</em></p>
+<p>Tells the screen reader to treat the currently focused on element as having a specific role.</p>
+<p>Possible values for <code>AccessibilityRole</code> is one of:</p>
+<ul>
+<li><code>'none'</code> - The element has no role.</li>
+<li><code>'button'</code> - The element should be treated as a button.</li>
+<li><code>'link'</code> - The element should be treated as a link.</li>
+<li><code>'header'</code> - The element is a header that divides content into sections.</li>
+<li><code>'search'</code> - The element should be treated as a search field.</li>
+<li><code>'image'</code> - The element should be treated as an image.</li>
+<li><code>'key'</code> - The element should be treated like a keyboard key.</li>
+<li><code>'text'</code> - The element should be treated as text.</li>
+<li><code>'summary'</code> - The element provides app summary information.</li>
+<li><code>'imagebutton'</code> - The element has the role of both an image and also a button.</li>
+<li><code>'adjustable'</code> - The element allows adjustment over a range of values.</li>
+</ul>
+<p>On iOS, these roles map to corresponding Accessibility Traits. Image button has the same functionality as if the trait was set to both 'image' and 'button'.
+See the <a href="/react-native/docs/next/accessibility#accessibilitytraits-ios">Accessibility guide</a> for more information.</p>
+<p>On Android, these roles have similar functionality on TalkBack as adding Accessibility Traits does on Voiceover in iOS</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>AccessibilityRole</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="accessibilitystates"></a><a href="#accessibilitystates" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityStates</code></h3>
+<p><em>&gt; Note: <code>AccessibilityRole</code> and <code>AccessibilityStates</code> are meant to be a cross-platform solution to replace <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>, which will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</em></p>
+<p>Tells the screen reader to treat the currently focused on element as being in a specific state.</p>
+<p>You can provide one state, no state, or both states. The states must be passed in through an array.
+Ex: ['selected'] or ['selected', 'disabled']</p>
+<p>Possible values for <code>AccessibilityStates</code> are:</p>
+<ul>
+<li><code>'selected'</code> - The element is in a selcted state.</li>
+<li><code>'disabled'</code> - The element is in a disabled state.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>array of AccessibilitStates</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="accessibilitytraits"></a><a href="#accessibilitytraits" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>accessibilityTraits</code></h3>
+<p><em>&gt; Note: <code>accessibilityTraits</code> will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead.</em></p>
 <p>Provides additional traits to screen reader. By default no traits are provided unless specified otherwise in element.</p>
 <p>You can provide one trait or an array of many traits.</p>
 <p>Possible values for <code>AccessibilityTraits</code> are:</p>
