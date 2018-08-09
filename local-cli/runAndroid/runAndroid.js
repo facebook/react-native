@@ -348,7 +348,7 @@ function runOnAllDevices(
   }
 }
 
-function startServerInNewWindow(port, terminalArg) {
+function startServerInNewWindow(port, terminal = process.env.REACT_TERMINAL) {
   // set up OS-specific filenames and commands
   const isWindows = /^win/.test(process.platform);
   const scriptFile = isWindows
@@ -363,7 +363,6 @@ function startServerInNewWindow(port, terminalArg) {
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
-  const terminal = terminalArg || process.env.REACT_TERMINAL;
 
   // set up the .packager.(env|bat) file to ensure the packager starts on the right port
   const packagerEnvFile = path.join(
