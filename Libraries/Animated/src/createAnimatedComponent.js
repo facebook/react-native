@@ -163,7 +163,7 @@ function createAnimatedComponent(Component: any): any {
         />
       );
     }
-  
+
     _internalSetComponentRef(c) {
       this._prevComponent = this._component;
       this._component = c;
