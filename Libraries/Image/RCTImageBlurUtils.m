@@ -35,6 +35,12 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   size_t bytes = buffer1.rowBytes * buffer1.height;
   buffer1.data = malloc(bytes);
   buffer2.data = malloc(bytes);
+  if (!buffer1.data || !buffer2.data) {
+    // CWE - 391 : Unchecked error condition
+    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+    abort();
+  }
 
   // A description of how to compute the box kernel width from the Gaussian
   // radius (aka standard deviation) appears in the SVG spec:
@@ -45,6 +51,12 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   //create temp buffer
   void *tempBuffer = malloc((size_t)vImageBoxConvolve_ARGB8888(&buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize,
                                                                NULL, kvImageEdgeExtend + kvImageGetTempBufferSize));
+  if (!tempBuffer) {
+    // CWE - 391 : Unchecked error condition
+    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+    abort();
+  }
 
   //copy image data
   CFDataRef dataSource = CGDataProviderCopyData(CGImageGetDataProvider(imageRef));
