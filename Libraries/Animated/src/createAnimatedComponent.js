@@ -36,7 +36,7 @@ function createAnimatedComponent(Component: any): any {
 
     constructor(props: Object) {
       super(props);
-      this._setComponentRef = this._setComponentRef.bind(this);
+      this._setComponentRef = this._internalSetComponentRef.bind(this);
     }
 
     componentWillUnmount() {
@@ -163,8 +163,8 @@ function createAnimatedComponent(Component: any): any {
         />
       );
     }
-
-    _setComponentRef(c) {
+  
+    _internalSetComponentRef(c) {
       this._prevComponent = this._component;
       this._component = c;
     }
