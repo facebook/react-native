@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 
@@ -19,7 +21,6 @@ import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
-import javax.annotation.Nullable;
 
 /**
  * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
@@ -36,7 +37,7 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  public ReactActivityDelegate(AppCompatActivity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@NonNull AppCompatActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
