@@ -441,7 +441,7 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    if(props.hasKey(ViewProps.OVERFLOW) && YogaOverflow.HIDDEN.name().equalsIgnoreCase(props.getString(ViewProps.OVERFLOW))){
+    if (props.hasKey(ViewProps.OVERFLOW) && YogaOverflow.HIDDEN.name().equalsIgnoreCase(props.getString(ViewProps.OVERFLOW))) {
       return false;
     }
 
