@@ -255,25 +255,6 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
           {marker}
         </View>
 
-        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
-        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-          {marker}
-          <Text selectable={true}>
-            Some text.
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'baseline',
-                backgroundColor: '#eee',
-              }}>
-              {marker}
-              <Text>Text inside View.</Text>
-              {marker}
-            </View>
-          </Text>
-          {marker}
-        </View>
-
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -751,26 +732,6 @@ exports.examples = [
     },
   },
   {
-    title: 'Inline views',
-    render: function() {
-      return (
-        <View>
-          <Text>
-            This text contains an inline blue view{' '}
-            <View
-              style={{width: 25, height: 25, backgroundColor: 'steelblue'}}
-            />{' '}
-            and an inline image{' '}
-            <Image
-              source={require('./flux.png')}
-              style={{width: 30, height: 11, resizeMode: 'cover'}}
-            />. Neat, huh?
-          </Text>
-        </View>
-      );
-    },
-  },
-  {
     title: 'Text shadow',
     render: function() {
       return (
@@ -840,31 +801,6 @@ exports.examples = [
             2222{'\n'}
           </Text>
         </View>
-      );
-    },
-  },
-  {
-    title: 'Nested content',
-    render: function() {
-      return (
-        <Text>
-          This text has a view
-          <View style={{borderColor: 'red', borderWidth: 1}}>
-            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
-            <Text style={{borderColor: 'green', borderWidth: 1}}>
-              another text inside.
-            </Text>
-            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
-              And moreover, it has another view
-              <View style={{borderColor: 'red', borderWidth: 1}}>
-                <Text style={{borderColor: 'blue', borderWidth: 1}}>
-                  with another text inside!
-                </Text>
-              </View>
-            </Text>
-          </View>
-          Because we need to go deeper.
-        </Text>
       );
     },
   },
