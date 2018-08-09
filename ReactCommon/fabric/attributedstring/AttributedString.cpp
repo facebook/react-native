@@ -39,6 +39,14 @@ const std::vector<Fragment> &AttributedString::getFragments() const {
   return fragments_;
 }
 
+std::string AttributedString::getString() const {
+  std::string string;
+  for (const auto &fragment : fragments_) {
+    string += fragment.string;
+  }
+  return string;
+}
+
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {

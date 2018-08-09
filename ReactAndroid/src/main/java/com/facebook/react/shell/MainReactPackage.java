@@ -12,6 +12,7 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
@@ -71,6 +72,35 @@ import javax.inject.Provider;
 /**
  * Package defining basic modules and view managers.
  */
+@ReactModuleList(nativeModules = {
+  AccessibilityInfoModule.class,
+  AppStateModule.class,
+  BlobModule.class,
+  FileReaderModule.class,
+  AsyncStorageModule.class,
+  CameraRollManager.class,
+  ClipboardModule.class,
+  DatePickerDialogModule.class,
+  DialogModule.class,
+  FrescoModule.class,
+  I18nManagerModule.class,
+  ImageEditingManager.class,
+  ImageLoaderModule.class,
+  ImageStoreManager.class,
+  IntentModule.class,
+  LocationModule.class,
+  NativeAnimatedModule.class,
+  NetworkingModule.class,
+  NetInfoModule.class,
+  PermissionsModule.class,
+  ShareModule.class,
+  StatusBarModule.class,
+  TimePickerDialogModule.class,
+  ToastModule.class,
+  VibrationModule.class,
+  WebSocketModule.class,
+
+})
 public class MainReactPackage extends LazyReactPackage {
 
   private MainPackageConfig mConfig;

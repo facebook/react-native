@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTFabricSurface : NSObject
 
 @property (atomic, readonly) RCTSurfaceStage stage;
-@property (atomic, readonly) RCTBridge *bridge;
 @property (atomic, readonly) NSString *moduleName;
 @property (atomic, readonly) ReactTag rootTag;
 

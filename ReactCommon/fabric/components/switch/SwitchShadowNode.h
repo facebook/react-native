@@ -9,23 +9,22 @@
 
 #include <fabric/components/switch/SwitchEventEmitter.h>
 #include <fabric/components/switch/SwitchProps.h>
-#include <fabric/view/ConcreteViewShadowNode.h>
+#include <fabric/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {
 
+extern const char SwitchComponentName[];
+
 /*
  * `ShadowNode` for <Switch> component.
  */
-class SwitchShadowNode final:
-  public ConcreteViewShadowNode<SwitchProps, SwitchEventEmitter> {
-
-public:
-
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
-};
+using SwitchShadowNode =
+  ConcreteViewShadowNode<
+    SwitchComponentName,
+    SwitchProps,
+    SwitchEventEmitter
+  >;
 
 } // namespace react
 } // namespace facebook

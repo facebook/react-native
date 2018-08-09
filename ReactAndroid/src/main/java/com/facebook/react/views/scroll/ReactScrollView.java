@@ -47,6 +47,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
+  private final Rect mRect = new Rect(); // for reuse to avoid allocation
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -351,6 +352,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         mEndBackground.draw(canvas);
       }
     }
+    getDrawingRect(mRect);
+    canvas.clipRect(mRect);
     super.draw(canvas);
   }
 

@@ -31,8 +31,8 @@ public:
 #pragma mark - Fields
 
   // Color
-  SharedColor foregroundColor {nullptr};
-  SharedColor backgroundColor {nullptr};
+  SharedColor foregroundColor {};
+  SharedColor backgroundColor {};
   Float opacity {std::numeric_limits<Float>::quiet_NaN()};
 
   // Font
@@ -51,7 +51,7 @@ public:
   folly::Optional<WritingDirection> baseWritingDirection {};
 
   // Decoration
-  SharedColor textDecorationColor {nullptr};
+  SharedColor textDecorationColor {};
   folly::Optional<TextDecorationLineType> textDecorationLineType {};
   folly::Optional<TextDecorationLineStyle> textDecorationLineStyle {};
   folly::Optional<TextDecorationLinePattern> textDecorationLinePattern {};
@@ -60,7 +60,7 @@ public:
   // TODO: Use `Point` type instead of `Size` for `textShadowOffset` attribute.
   folly::Optional<Size> textShadowOffset {};
   Float textShadowRadius {std::numeric_limits<Float>::quiet_NaN()};
-  SharedColor textShadowColor {nullptr};
+  SharedColor textShadowColor {};
 
   // Special
   folly::Optional<bool> isHighlighted {};

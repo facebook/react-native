@@ -12,11 +12,10 @@
 
 const React = require('React');
 const TextAncestor = require('TextAncestor');
+const ViewNativeComponent = require('ViewNativeComponent');
 
 const invariant = require('fbjs/lib/invariant');
-const requireNativeComponent = require('requireNativeComponent');
 
-import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
 
 export type Props = ViewProps;
@@ -28,11 +27,13 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-const RCTView = requireNativeComponent('RCTView');
 
-let ViewToExport = RCTView;
+let ViewToExport = ViewNativeComponent;
 if (__DEV__) {
-  const View = (props: Props, forwardedRef: ?React.Ref<'RCTView'>) => {
+  const View = (
+    props: Props,
+    forwardedRef: React.Ref<typeof ViewNativeComponent>,
+  ) => {
     return (
       <TextAncestor.Consumer>
         {hasTextAncestor => {
@@ -40,7 +41,7 @@ if (__DEV__) {
             !hasTextAncestor,
             'Nesting of <View> within <Text> is not currently supported.',
           );
-          return <RCTView {...props} ref={forwardedRef} />;
+          return <ViewNativeComponent {...props} ref={forwardedRef} />;
         }}
       </TextAncestor.Consumer>
     );
@@ -49,6 +50,4 @@ if (__DEV__) {
   ViewToExport = React.forwardRef(View);
 }
 
-module.exports = ((ViewToExport: $FlowFixMe): Class<
-  NativeComponent<ViewProps>,
->);
+module.exports = ((ViewToExport: $FlowFixMe): typeof ViewNativeComponent);

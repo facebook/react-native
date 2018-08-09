@@ -64,7 +64,7 @@
 
 #endif
 
-const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
+const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 @implementation RCTComponentViewRegistry {
   NSMapTable<id, UIView<RCTComponentViewProtocol> *> *_registry;
@@ -119,6 +119,13 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 256;
   [_registry removeObjectForKey:(__bridge id)(void *)tag];
   componentView.tag = 0;
   [self _enqueueComponentViewWithName:componentName componentView:componentView];
+}
+
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName
+{
+  RCTAssertMainQueue();
+  [self _enqueueComponentViewWithName:componentName
+                        componentView:[self _createComponentViewWithName:componentName]];
 }
 
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag

@@ -50,7 +50,9 @@ class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called.
+   * loaded/downloaded, the failure callback will be called. On Android, a
+   * downloaded image may be cached in external storage, a publicly accessible
+   * location, if it has more available space than internal storage.
    *
    * If the cropping process is successful, the resultant cropped image
    * will be stored in the ImageStore, and the URI returned in the success

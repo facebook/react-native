@@ -5,6 +5,7 @@
 
 package com.facebook.react.module.processing;
 
+import com.facebook.react.bridge.CxxModuleWrapper;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -21,6 +22,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,7 +64,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);
   private static final TypeName MAP_TYPE = ParameterizedTypeName.get(
     Map.class,
-    Class.class,
+    String.class,
     ReactModuleInfo.class);
   private static final TypeName INSTANTIATED_MAP_TYPE = ParameterizedTypeName.get(HashMap.class);
 
@@ -72,6 +74,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private Elements mElements;
   @SuppressFieldNotInitialized
   private Messager mMessager;
+  private Types mTypes;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -80,6 +83,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     mFiler = processingEnv.getFiler();
     mElements = processingEnv.getElementUtils();
     mMessager = processingEnv.getMessager();
+    mTypes = processingEnv.getTypeUtils();
   }
 
   @Override
@@ -154,8 +158,10 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
+      TypeMirror cxxModuleWrapperTypeMirror = mElements.getTypeElement(CxxModuleWrapper.class.getName()).asType();
+
       for (String nativeModule : nativeModules) {
-        String keyString = nativeModule + ".class";
+        String keyString = nativeModule;
 
         TypeElement typeElement = mElements.getTypeElement(nativeModule);
         if (typeElement == null) {
@@ -163,6 +169,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
             keyString + " not found by ReactModuleSpecProcessor. " +
             "Did you misspell the module?");
         }
+
         ReactModule reactModule = typeElement.getAnnotation(ReactModule.class);
         if (reactModule == null) {
           throw new ReactModuleSpecException(
@@ -182,16 +189,19 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                       name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
+        boolean isCxxModule = mTypes.isAssignable(typeElement.asType(), cxxModuleWrapperTypeMirror);
+
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
-          .append(hasConstants)
+          .append(hasConstants).append(", ")
+          .append(isCxxModule)
           .append(")")
           .toString();
 
-        builder.addStatement("map.put(" + keyString + ", " + valueString + ")");
+        builder.addStatement("map.put(\"" + keyString + "\", " + valueString + ")");
       }
       builder.addStatement("return map");
     }

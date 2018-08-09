@@ -14,7 +14,7 @@ var formatBanner = require('metro-core/src/formatBanner');
 var semver = require('semver');
 
 module.exports = function() {
-  if (!semver.satisfies(process.version, '>=8')) {
+  if (!semver.satisfies(process.version, '>=8.3')) {
     var engine = semver.satisfies(process.version, '<1') ? 'Node' : 'io.js';
 
     var message =
@@ -24,15 +24,12 @@ module.exports = function() {
       process.version +
       '.\n' +
       '\n' +
-      'React Native runs on Node 8.0 or newer. There are several ways to ' +
+      'React Native runs on Node 8.3 or newer. There are several ways to ' +
       'upgrade Node.js depending on your preference.\n' +
       '\n' +
-      'nvm:       nvm install node && nvm alias default node\n' +
-      'Homebrew:  brew unlink iojs; brew install node\n' +
-      'Installer: download the Mac .pkg from https://nodejs.org/\n' +
-      '\n' +
-      'About Node.js:   https://nodejs.org\n' +
-      'Follow along at: https://github.com/facebook/react-native/issues/19226';
+      'nvm:       nvm install 8.3 --reinstall-packages-from=node\n' +
+      'Homebrew:  brew update && brew upgrade node\n' +
+      'Installer: download from https://nodejs.org/\n';
     console.log(
       formatBanner(message, {
         chalkFunction: chalk.green,

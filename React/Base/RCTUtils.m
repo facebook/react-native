@@ -806,6 +806,8 @@ static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
     case kCGColorSpaceModelLab:
     case kCGColorSpaceModelPattern:
     case kCGColorSpaceModelUnknown:
+    // TODO: kCGColorSpaceModelXYZ should be added sometime after Xcode 10 release.
+    default:
     {
 
 #ifdef RCT_DEBUG

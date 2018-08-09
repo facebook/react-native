@@ -18,7 +18,7 @@
  *  - added JestMockFn.mock.thrownErrors
  *  - added JestMockFn.mock.returnValues
  *  - added jest.setTimeout
- * @flow
+ * @flow strict
  * @format
  */
 

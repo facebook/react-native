@@ -11,8 +11,10 @@ import android.content.Context;
 
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.packagerconnection.RequestHandler;
 
 import java.lang.reflect.Constructor;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +43,8 @@ public class DevSupportManagerFactory {
       enableOnCreate,
       null,
       null,
-      minNumShakes);
+      minNumShakes,
+      null);
   }
 
   public static DevSupportManager create(
@@ -51,7 +54,8 @@ public class DevSupportManagerFactory {
     boolean enableOnCreate,
     @Nullable RedBoxHandler redBoxHandler,
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
-    int minNumShakes) {
+    int minNumShakes,
+    @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
     if (!enableOnCreate) {
       return new DisabledDevSupportManager();
     }
@@ -74,7 +78,8 @@ public class DevSupportManagerFactory {
           boolean.class,
           RedBoxHandler.class,
           DevBundleDownloadListener.class,
-          int.class);
+          int.class,
+          Map.class);
       return (DevSupportManager) constructor.newInstance(
         applicationContext,
         reactInstanceManagerHelper,
@@ -82,7 +87,8 @@ public class DevSupportManagerFactory {
         true,
         redBoxHandler,
         devBundleDownloadListener,
-        minNumShakes);
+        minNumShakes,
+        customPackagerCommandHandlers);
     } catch (Exception e) {
       throw new RuntimeException(
         "Requested enabled DevSupportManager, but DevSupportManagerImpl class was not found" +

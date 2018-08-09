@@ -41,7 +41,7 @@ public class BaseJavaModuleTest {
   @Before
   public void setup() {
     ModuleHolder moduleHolder = new ModuleHolder(new MethodsModule());
-    mWrapper = new JavaModuleWrapper(null, MethodsModule.class, moduleHolder);
+    mWrapper = new JavaModuleWrapper(null, MethodsModule.class.getName(), moduleHolder);
     mMethods = mWrapper.getMethodDescriptors();
     PowerMockito.mockStatic(SoLoader.class);
     mArguments = PowerMockito.mock(ReadableNativeArray.class);

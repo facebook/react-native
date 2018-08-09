@@ -6,15 +6,8 @@
 #include "Scheduler.h"
 
 #include <fabric/core/LayoutContext.h>
-#include <fabric/scrollview/ScrollViewComponentDescriptor.h>
-#include <fabric/text/ParagraphComponentDescriptor.h>
-#include <fabric/text/RawTextComponentDescriptor.h>
-#include <fabric/text/TextComponentDescriptor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/view/ViewComponentDescriptor.h>
-#include <fabric/view/ViewProps.h>
-#include <fabric/view/ViewShadowNode.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
