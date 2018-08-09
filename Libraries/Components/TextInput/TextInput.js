@@ -582,6 +582,12 @@ const TextInput = createReactClass({
      */
     placeholderTextColor: ColorPropType,
     /**
+     * If `false`, scrolling of the text view will be disabled.
+     * The default value is `true`. Does only work with 'multiline={true}'.
+     * @platform ios
+     */
+    scrollEnabled: PropTypes.bool,
+    /**
      * If `true`, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
      */
