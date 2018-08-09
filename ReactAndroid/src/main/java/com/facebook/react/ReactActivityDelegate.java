@@ -6,12 +6,11 @@
 package com.facebook.react;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
@@ -29,8 +28,7 @@ import javax.annotation.Nullable;
  */
 public class ReactActivityDelegate {
 
-  private final @Nullable Activity mActivity;
-  private final @Nullable FragmentActivity mFragmentActivity;
+  private final @Nullable AppCompatActivity mActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -38,18 +36,9 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(AppCompatActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
-    mFragmentActivity = null;
-  }
-
-  public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
-    mFragmentActivity = fragmentActivity;
-    mMainComponentName = mainComponentName;
-    mActivity = null;
   }
 
   protected @Nullable Bundle getLaunchOptions() {
@@ -62,7 +51,7 @@ public class ReactActivityDelegate {
 
   /**
    * Get the {@link ReactNativeHost} used by this app. By default, assumes
-   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls
+   * {@link AppCompatActivity#getApplication()} is an instance of {@link ReactApplication} and calls
    * {@link ReactApplication#getReactNativeHost()}. Override this method if your application class
    * does not implement {@code ReactApplication} or you simply have a different mechanism for
    * storing a {@code ReactNativeHost}, e.g. as a static field somewhere.
@@ -206,13 +195,10 @@ public class ReactActivityDelegate {
   }
 
   private Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return Assertions.assertNotNull(mFragmentActivity);
+    return Assertions.assertNotNull(mActivity);
   }
 
-  private Activity getPlainActivity() {
-    return ((Activity) getContext());
+  private AppCompatActivity getPlainActivity() {
+    return ((AppCompatActivity) getContext());
   }
 }
