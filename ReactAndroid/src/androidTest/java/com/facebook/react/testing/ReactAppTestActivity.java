@@ -6,13 +6,10 @@
  */
 package com.facebook.react.testing;
 
-import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -48,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 
-public class ReactAppTestActivity extends FragmentActivity
+public class ReactAppTestActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   public static final String EXTRA_IS_FABRIC_TEST = "is_fabric_test";
