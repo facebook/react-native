@@ -115,20 +115,20 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   __weak RCTBridge *batchedBridge;
   NSNumber *rootTag;
+  RCTLogFunction defaultLogFunction = RCTGetLogFunction();
+  // Catch all error logs, that are equivalent to redboxes in dev mode.
+  __block NSMutableArray<NSString *> *errors = nil;
+  RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+    defaultLogFunction(level, source, fileName, lineNumber, message);
+    if (level >= RCTLogLevelError) {
+      if (errors == nil) {
+        errors = [NSMutableArray new];
+      }
+      [errors addObject:message];
+    }
+  });
 
   @autoreleasepool {
-    __block NSMutableArray<NSString *> *errors = nil;
-    RCTLogFunction defaultLogFunction = RCTGetLogFunction();
-    RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
-      defaultLogFunction(level, source, fileName, lineNumber, message);
-      if (level >= RCTLogLevelError) {
-        if (errors == nil) {
-          errors = [NSMutableArray new];
-        }
-        [errors addObject:message];
-      }
-    });
-
     RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
                                               moduleProvider:_moduleProvider
                                                launchOptions:nil];
@@ -172,7 +172,16 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       testModule.view = nil;
     }
 
-    RCTSetLogFunction(defaultLogFunction);
+    // From this point on catch only fatal errors.
+    RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+      defaultLogFunction(level, source, fileName, lineNumber, message);
+      if (level >= RCTLogLevelFatal) {
+        if (errors == nil) {
+          errors = [NSMutableArray new];
+        }
+        [errors addObject:message];
+      }
+    });
 
 #if RCT_DEV
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
@@ -208,8 +217,10 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  // Note: this deallocation isn't consistently working in test setup, so disable the assertion.
-  // RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
+  RCTAssert(errors == nil, @"RedBox errors during bridge invalidation: %@", errors);
+  RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
+
+  RCTSetLogFunction(defaultLogFunction);
 }
 
 @end
