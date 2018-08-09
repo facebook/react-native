@@ -41,7 +41,7 @@
 <li>Scroll loading.</li>
 <li>ScrollToIndex support.</li>
 </ul>
-<p>If you need section support, use <a href="/react-native/docs/0.56/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
+<p>If you need section support, use <a href="/react-native/docs/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
 <p>Minimal Example:</p>
 <pre><code class="hljs">&lt;FlatList
   data={[{key: 'a'}, {key: 'b'}]}
@@ -109,52 +109,52 @@ class MultiSelectList extends React.PureComponent {
   }
 }
 </code></pre>
-<p>This is a convenience wrapper around <a href="/react-native/docs/0.56/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/react-native/docs/0.56/scrollview"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed here, along with the following caveats:</p>
+<p>This is a convenience wrapper around <a href="/react-native/docs/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/react-native/docs/scrollview"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
 <li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow- equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
 <li>In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.</li>
 <li>By default, the list looks for a <code>key</code> prop on each item and uses that for the React key. Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
 </ul>
-<p>Also inherits <a href="/react-native/docs/0.56/scrollview#props">ScrollView Props</a>, unless it is nested in another FlatList of same orientation.</p>
+<p>Also inherits <a href="/react-native/docs/scrollview#props">ScrollView Props</a>, unless it is nested in another FlatList of same orientation.</p>
 <h3><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h3>
 <ul>
-<li><a href="/react-native/docs/0.56/scrollview#props"><code>ScrollView</code> props...</a></li>
-<li><a href="/react-native/docs/0.56/virtualizedlist#props"><code>VirtualizedList</code> props...</a></li>
-<li><a href="/react-native/docs/0.56/flatlist#renderitem"><code>renderItem</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#data"><code>data</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#itemseparatorcomponent"><code>ItemSeparatorComponent</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#listemptycomponent"><code>ListEmptyComponent</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#listfootercomponent"><code>ListFooterComponent</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#listheadercomponent"><code>ListHeaderComponent</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#columnwrapperstyle"><code>columnWrapperStyle</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#extradata"><code>extraData</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#getitemlayout"><code>getItemLayout</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#horizontal"><code>horizontal</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#initialnumtorender"><code>initialNumToRender</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#initialscrollindex"><code>initialScrollIndex</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#inverted"><code>inverted</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#keyextractor"><code>keyExtractor</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#numcolumns"><code>numColumns</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#onendreached"><code>onEndReached</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#onendreachedthreshold"><code>onEndReachedThreshold</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#onrefresh"><code>onRefresh</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#onviewableitemschanged"><code>onViewableItemsChanged</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#progressviewoffset"><code>progressViewOffset</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#legacyimplementation"><code>legacyImplementation</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#refreshing"><code>refreshing</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#viewabilityconfig"><code>viewabilityConfig</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#viewabilityconfigcallbackpairs"><code>viewabilityConfigCallbackPairs</code></a></li>
+<li><a href="/react-native/docs/scrollview#props"><code>ScrollView</code> props...</a></li>
+<li><a href="/react-native/docs/virtualizedlist#props"><code>VirtualizedList</code> props...</a></li>
+<li><a href="/react-native/docs/flatlist#renderitem"><code>renderItem</code></a></li>
+<li><a href="/react-native/docs/flatlist#data"><code>data</code></a></li>
+<li><a href="/react-native/docs/flatlist#itemseparatorcomponent"><code>ItemSeparatorComponent</code></a></li>
+<li><a href="/react-native/docs/flatlist#listemptycomponent"><code>ListEmptyComponent</code></a></li>
+<li><a href="/react-native/docs/flatlist#listfootercomponent"><code>ListFooterComponent</code></a></li>
+<li><a href="/react-native/docs/flatlist#listheadercomponent"><code>ListHeaderComponent</code></a></li>
+<li><a href="/react-native/docs/flatlist#columnwrapperstyle"><code>columnWrapperStyle</code></a></li>
+<li><a href="/react-native/docs/flatlist#extradata"><code>extraData</code></a></li>
+<li><a href="/react-native/docs/flatlist#getitemlayout"><code>getItemLayout</code></a></li>
+<li><a href="/react-native/docs/flatlist#horizontal"><code>horizontal</code></a></li>
+<li><a href="/react-native/docs/flatlist#initialnumtorender"><code>initialNumToRender</code></a></li>
+<li><a href="/react-native/docs/flatlist#initialscrollindex"><code>initialScrollIndex</code></a></li>
+<li><a href="/react-native/docs/flatlist#inverted"><code>inverted</code></a></li>
+<li><a href="/react-native/docs/flatlist#keyextractor"><code>keyExtractor</code></a></li>
+<li><a href="/react-native/docs/flatlist#numcolumns"><code>numColumns</code></a></li>
+<li><a href="/react-native/docs/flatlist#onendreached"><code>onEndReached</code></a></li>
+<li><a href="/react-native/docs/flatlist#onendreachedthreshold"><code>onEndReachedThreshold</code></a></li>
+<li><a href="/react-native/docs/flatlist#onrefresh"><code>onRefresh</code></a></li>
+<li><a href="/react-native/docs/flatlist#onviewableitemschanged"><code>onViewableItemsChanged</code></a></li>
+<li><a href="/react-native/docs/flatlist#progressviewoffset"><code>progressViewOffset</code></a></li>
+<li><a href="/react-native/docs/flatlist#legacyimplementation"><code>legacyImplementation</code></a></li>
+<li><a href="/react-native/docs/flatlist#refreshing"><code>refreshing</code></a></li>
+<li><a href="/react-native/docs/flatlist#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
+<li><a href="/react-native/docs/flatlist#viewabilityconfig"><code>viewabilityConfig</code></a></li>
+<li><a href="/react-native/docs/flatlist#viewabilityconfigcallbackpairs"><code>viewabilityConfigCallbackPairs</code></a></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
-<li><a href="/react-native/docs/0.56/flatlist#scrolltoend"><code>scrollToEnd</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#scrolltoindex"><code>scrollToIndex</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#scrolltoitem"><code>scrollToItem</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#scrolltooffset"><code>scrollToOffset</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#recordinteraction"><code>recordInteraction</code></a></li>
-<li><a href="/react-native/docs/0.56/flatlist#flashscrollindicators"><code>flashScrollIndicators</code></a></li>
+<li><a href="/react-native/docs/flatlist#scrolltoend"><code>scrollToEnd</code></a></li>
+<li><a href="/react-native/docs/flatlist#scrolltoindex"><code>scrollToIndex</code></a></li>
+<li><a href="/react-native/docs/flatlist#scrolltoitem"><code>scrollToItem</code></a></li>
+<li><a href="/react-native/docs/flatlist#scrolltooffset"><code>scrollToOffset</code></a></li>
+<li><a href="/react-native/docs/flatlist#recordinteraction"><code>recordInteraction</code></a></li>
+<li><a href="/react-native/docs/flatlist#flashscrollindicators"><code>flashScrollIndicators</code></a></li>
 </ul>
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
@@ -192,7 +192,7 @@ class MultiSelectList extends React.PureComponent {
 </span></code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="data"></a><a href="#data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>data</code></h3>
-<p>For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying <a href="/react-native/docs/0.56/virtualizedlist"><code>VirtualizedList</code></a> directly.</p>
+<p>For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying <a href="/react-native/docs/virtualizedlist"><code>VirtualizedList</code></a> directly.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>

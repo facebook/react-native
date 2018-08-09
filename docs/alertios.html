@@ -43,17 +43,17 @@
   <span class="hljs-built_in">text</span> =&gt; console.<span class="hljs-built_in">log</span>(<span class="hljs-string">"You entered "</span>+<span class="hljs-built_in">text</span>)
 );
 </code></pre>
-<p>We recommend using the <a href="/react-native/docs/0.56/alert"><code>Alert.alert</code></a> method for cross-platform support if you don't need to create iOS-only prompts.</p>
+<p>We recommend using the <a href="/react-native/docs/alert"><code>Alert.alert</code></a> method for cross-platform support if you don't need to create iOS-only prompts.</p>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
-<li><a href="/react-native/docs/0.56/alertios#alert"><code>alert</code></a></li>
-<li><a href="/react-native/docs/0.56/alertios#prompt"><code>prompt</code></a></li>
+<li><a href="/react-native/docs/alertios#alert"><code>alert</code></a></li>
+<li><a href="/react-native/docs/alertios#prompt"><code>prompt</code></a></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="type-definitions"></a><a href="#type-definitions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h3>
 <ul>
-<li><a href="/react-native/docs/0.56/alertios#alerttype"><code>AlertType</code></a></li>
-<li><a href="/react-native/docs/0.56/alertios#alertbuttonstyle"><code>AlertButtonStyle</code></a></li>
-<li><a href="/react-native/docs/0.56/alertios#buttonsarray"><code>ButtonsArray</code></a></li>
+<li><a href="/react-native/docs/alertios#alerttype"><code>AlertType</code></a></li>
+<li><a href="/react-native/docs/alertios#alertbuttonstyle"><code>AlertButtonStyle</code></a></li>
+<li><a href="/react-native/docs/alertios#buttonsarray"><code>ButtonsArray</code></a></li>
 </ul>
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
@@ -70,8 +70,8 @@
 <tbody>
 <tr><td>title</td><td>string</td><td>Yes</td><td>The dialog's title. Passing null or '' will hide the title.</td></tr>
 <tr><td>message</td><td>string</td><td>No</td><td>An optional message that appears below the dialog's title.</td></tr>
-<tr><td>callbackOrButtons</td><td>?(() =&gt; void),<a href="/react-native/docs/0.56/alertios#buttonsarray">ButtonsArray</a></td><td>No</td><td>This optional argument should be either a single-argument function or an array of buttons. If passed a function, it will be called when the user taps 'OK'. If passed an array of button configurations, each button should include a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys. <code>style</code> should be one of 'default', 'cancel' or 'destructive'.</td></tr>
-<tr><td>type</td><td><a href="/react-native/docs/0.56/alertios#alerttype">AlertType</a></td><td>No</td><td>Deprecated, do not use.</td></tr>
+<tr><td>callbackOrButtons</td><td>?(() =&gt; void),<a href="/react-native/docs/alertios#buttonsarray">ButtonsArray</a></td><td>No</td><td>This optional argument should be either a single-argument function or an array of buttons. If passed a function, it will be called when the user taps 'OK'. If passed an array of button configurations, each button should include a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys. <code>style</code> should be one of 'default', 'cancel' or 'destructive'.</td></tr>
+<tr><td>type</td><td><a href="/react-native/docs/alertios#alerttype">AlertType</a></td><td>No</td><td>Deprecated, do not use.</td></tr>
 </tbody>
 </table>
 <p>Example with custom buttons:</p>
@@ -104,8 +104,8 @@
 <tbody>
 <tr><td>title</td><td>string</td><td>Yes</td><td>The dialog's title.</td></tr>
 <tr><td>message</td><td>string</td><td>No</td><td>An optional message that appears above the text input.</td></tr>
-<tr><td>callbackOrButtons</td><td>?((text: string) =&gt; void),<a href="/react-native/docs/0.56/alertios#buttonsarray">ButtonsArray</a></td><td>No</td><td>This optional argument should be either a single-argument function or an array of buttons. If passed a function, it will be called with the prompt's value when the user taps 'OK'. If passed an array of button configurations, each button should include a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys (see example). <code>style</code> should be one of 'default', 'cancel' or 'destructive'.</td></tr>
-<tr><td>type</td><td><a href="/react-native/docs/0.56/alertios#alerttype">AlertType</a></td><td>No</td><td>This configures the text input. One of 'plain-text', 'secure-text' or 'login-password'.</td></tr>
+<tr><td>callbackOrButtons</td><td>?((text: string) =&gt; void),<a href="/react-native/docs/alertios#buttonsarray">ButtonsArray</a></td><td>No</td><td>This optional argument should be either a single-argument function or an array of buttons. If passed a function, it will be called with the prompt's value when the user taps 'OK'. If passed an array of button configurations, each button should include a <code>text</code> key, as well as optional <code>onPress</code> and <code>style</code> keys (see example). <code>style</code> should be one of 'default', 'cancel' or 'destructive'.</td></tr>
+<tr><td>type</td><td><a href="/react-native/docs/alertios#alerttype">AlertType</a></td><td>No</td><td>This configures the text input. One of 'plain-text', 'secure-text' or 'login-password'.</td></tr>
 <tr><td>defaultValue</td><td>string</td><td>No</td><td>The default text in text input.</td></tr>
 <tr><td>keyboardType</td><td>string</td><td>No</td><td>The keyboard type of first text field(if exists). One of 'default', 'email-address', 'numeric', 'phone-pad', 'ascii-capable', 'numbers-and-punctuation', 'url', 'number-pad', 'name-phone-pad', 'decimal-pad', 'twitter' or 'web-search'.</td></tr>
 </tbody>
@@ -202,7 +202,7 @@
 <tbody>
 <tr><td>[text]</td><td>string</td><td>Button label</td></tr>
 <tr><td>[onPress]</td><td>function</td><td>Callback function when button pressed</td></tr>
-<tr><td>[style]</td><td><a href="/react-native/docs/0.56/alertios#alertbuttonstyle">AlertButtonStyle</a></td><td>Button style</td></tr>
+<tr><td>[style]</td><td><a href="/react-native/docs/alertios#alertbuttonstyle">AlertButtonStyle</a></td><td>Button style</td></tr>
 </tbody>
 </table>
 <p><strong>Constants:</strong></p>
