@@ -56,7 +56,6 @@ module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
 module.system.haste.paths.blacklist=.*/__tests__/.*
 module.system.haste.paths.blacklist=.*/__mocks__/.*
-module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
@@ -78,6 +77,7 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
 all=warn
+unnecessary-optional-chain=off
 
 # There is an ESLint rule for this
 unclear-type=off
@@ -100,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.77.0
+^0.78.0
