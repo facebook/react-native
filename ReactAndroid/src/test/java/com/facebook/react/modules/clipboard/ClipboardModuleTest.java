@@ -11,14 +11,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.ClipboardManager;
 
-import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.modules.clipboard.ClipboardModule;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 

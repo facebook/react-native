@@ -46,7 +46,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.util.concurrent.RoboExecutorService;
+import org.robolectric.android.util.concurrent.RoboExecutorService;
 
 import static org.mockito.Mockito.mock;
 import static org.fest.assertions.api.Assertions.assertThat;

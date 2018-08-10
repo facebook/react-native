@@ -23,7 +23,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.util.ActivityController;
+import org.robolectric.android.controller.ActivityController;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

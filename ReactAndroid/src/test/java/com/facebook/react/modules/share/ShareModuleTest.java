@@ -12,7 +12,6 @@ import android.content.Intent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JavaOnlyMap;
 
@@ -30,10 +29,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.internal.ShadowExtractor;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowApplication;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +82,7 @@ public class ShareModuleTest {
     mShareModule.share(content, dialogTitle, promise);
 
     final Intent chooserIntent = 
-      ((ShadowApplication)ShadowExtractor.extract(RuntimeEnvironment.application)).getNextStartedActivity();
+      ((ShadowApplication) Shadow.extract(RuntimeEnvironment.application)).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.getAction());
     assertEquals(dialogTitle, chooserIntent.getExtras().get(Intent.EXTRA_TITLE));
