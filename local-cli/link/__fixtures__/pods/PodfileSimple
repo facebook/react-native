@@ -1,8 +1,0 @@
-source 'https://github.com/CocoaPods/Specs.git'
-platform :ios, '9.0'
-
-target 'Testing' do
-  pod 'TestPod', '~> 3.1'
-  
-  # test should point to this line
-end

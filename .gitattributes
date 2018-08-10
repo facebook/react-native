@@ -1,6 +1,0 @@
-# Force LF line endings for Bash scripts.   On Windows the rest of the source
-# files will typically have CR+LF endings (Git default on Windows), but Bash
-# scripts need to have LF endings to work (under Cygwin), thus override to force
-# that.
-gradlew text eol=lf
-*.sh text eol=lf

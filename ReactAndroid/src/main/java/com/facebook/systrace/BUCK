@@ -1,9 +1,0 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library")
-
-rn_android_library(
-    name = "systrace",
-    srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
-)
