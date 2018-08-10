@@ -15,10 +15,10 @@ extern NSString *const RCTTVRemoteEventSelect;
 extern NSString *const RCTTVRemoteEventLongPlayPause;
 extern NSString *const RCTTVRemoteEventLongSelect;
 
-extern NSString *const RCTTVRemoteEventLeft;
-extern NSString *const RCTTVRemoteEventRight;
-extern NSString *const RCTTVRemoteEventUp;
-extern NSString *const RCTTVRemoteEventDown;
+extern NSString *const RCTTVRemoteEventTapLeft;
+extern NSString *const RCTTVRemoteEventTapRight;
+extern NSString *const RCTTVRemoteEventTapTop;
+extern NSString *const RCTTVRemoteEventTapBottom;
 
 extern NSString *const RCTTVRemoteEventSwipeLeft;
 extern NSString *const RCTTVRemoteEventSwipeRight;
