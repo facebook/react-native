@@ -99,8 +99,8 @@ rn_prebuilt_jar(
 
 remote_file(
     name = "download-xstream.jar",
-    sha1 = "97e5013f391487cce4de6b0eebcde21549e91872",
-    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.2",
+    sha1 = "520d90f30f36a0d6ba2dc929d980831631ad6a92",
+    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.8",
 )
 
 rn_prebuilt_jar(
