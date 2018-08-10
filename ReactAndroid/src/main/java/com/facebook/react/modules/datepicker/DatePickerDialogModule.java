@@ -9,15 +9,13 @@ package com.facebook.react.modules.datepicker;
 
 import javax.annotation.Nullable;
 
-import java.util.Map;
-
-import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.DatePicker;
 
 import com.facebook.react.bridge.NativeModule;
@@ -120,48 +118,28 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void open(@Nullable final ReadableMap options, Promise promise) {
-    Activity activity = getCurrentActivity();
+    AppCompatActivity activity = (AppCompatActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
           ERROR_NO_ACTIVITY,
           "Tried to open a DatePicker dialog while not attached to an Activity");
       return;
     }
-    // We want to support both android.app.Activity and the pre-Honeycomb FragmentActivity
-    // (for apps that use it for legacy reasons). This unfortunately leads to some code duplication.
-    if (activity instanceof android.support.v4.app.FragmentActivity) {
-      android.support.v4.app.FragmentManager fragmentManager =
-          ((android.support.v4.app.FragmentActivity) activity).getSupportFragmentManager();
-      android.support.v4.app.DialogFragment oldFragment =
-          (android.support.v4.app.DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-      if (oldFragment != null) {
-        oldFragment.dismiss();
-      }
-      SupportDatePickerDialogFragment fragment = new SupportDatePickerDialogFragment();
-      if (options != null) {
-        final Bundle args = createFragmentArguments(options);
-        fragment.setArguments(args);
-      }
-      final DatePickerDialogListener listener = new DatePickerDialogListener(promise);
-      fragment.setOnDismissListener(listener);
-      fragment.setOnDateSetListener(listener);
-      fragment.show(fragmentManager, FRAGMENT_TAG);
-    } else {
-      FragmentManager fragmentManager = activity.getFragmentManager();
-      DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
-      if (oldFragment != null) {
-        oldFragment.dismiss();
-      }
-      DatePickerDialogFragment fragment = new DatePickerDialogFragment();
-      if (options != null) {
-        final Bundle args = createFragmentArguments(options);
-        fragment.setArguments(args);
-      }
-      final DatePickerDialogListener listener = new DatePickerDialogListener(promise);
-      fragment.setOnDismissListener(listener);
-      fragment.setOnDateSetListener(listener);
-      fragment.show(fragmentManager, FRAGMENT_TAG);
+
+    FragmentManager fragmentManager = activity.getSupportFragmentManager();
+    DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
+    if (oldFragment != null) {
+      oldFragment.dismiss();
     }
+    DatePickerDialogFragment fragment = new DatePickerDialogFragment();
+    if (options != null) {
+      final Bundle args = createFragmentArguments(options);
+      fragment.setArguments(args);
+    }
+    final DatePickerDialogListener listener = new DatePickerDialogListener(promise);
+    fragment.setOnDismissListener(listener);
+    fragment.setOnDateSetListener(listener);
+    fragment.show(fragmentManager, FRAGMENT_TAG);
   }
 
   private Bundle createFragmentArguments(ReadableMap options) {

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
@@ -20,17 +19,17 @@ import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
+ * Delegate class for {@link ReactActivity}. You can subclass this
  * to provide custom implementations for e.g. {@link #getReactNativeHost()}, if your Application
  * class doesn't implement {@link ReactApplication}.
  */
 public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
-  private final @Nullable FragmentActivity mFragmentActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -38,18 +37,9 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@Nonnull Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
-    mFragmentActivity = null;
-  }
-
-  public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
-    mFragmentActivity = fragmentActivity;
-    mMainComponentName = mainComponentName;
-    mActivity = null;
   }
 
   protected @Nullable Bundle getLaunchOptions() {
@@ -206,10 +196,7 @@ public class ReactActivityDelegate {
   }
 
   private Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return Assertions.assertNotNull(mFragmentActivity);
+    return Assertions.assertNotNull(mActivity);
   }
 
   private Activity getPlainActivity() {

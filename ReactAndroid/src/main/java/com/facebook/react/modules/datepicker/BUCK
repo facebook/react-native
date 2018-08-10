@@ -3,9 +3,6 @@ load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_an
 rn_android_library(
     name = "datepicker",
     srcs = glob(["**/*.java"]),
-    provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-    ],
     visibility = [
         "PUBLIC",
     ],
