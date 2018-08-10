@@ -19,7 +19,7 @@ const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
 
 type Props = $ReadOnly<{|
   ...ViewProps,
-  children?: any,
+  children?: ?React.Node,
   onInsetsChange?: ?Function,
 |}>;
 
