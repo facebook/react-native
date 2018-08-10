@@ -467,6 +467,7 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Runs end to end tests (Detox)
+  # Disabled.
   test_detox_end_to_end:
     <<: *macos_defaults
     steps:
@@ -674,16 +675,18 @@ workflows:
           requires:
             - checkout_code
 
-      # End-to-end tests
-      - test_objc_end_to_end:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
+      # Disabled on master.
 
-      - test_detox_end_to_end:
-          filters: *filter-ignore-gh-pages
-          requires:
-            - checkout_code
+      # End-to-end tests
+      # - test_objc_end_to_end:
+      #     filters: *filter-ignore-gh-pages
+      #     requires:
+      #       - checkout_code
+
+      # - test_detox_end_to_end:
+      #     filters: *filter-ignore-gh-pages
+      #     requires:
+      #       - checkout_code
 
 
       # Only runs on vX.X.X tags if all tests are green
@@ -698,7 +701,7 @@ workflows:
             - test_javascript
             - test_objc
             - test_android
-            - test_objc_end_to_end
+            # - test_objc_end_to_end
 
   # Only runs on PRs
   analyze:
