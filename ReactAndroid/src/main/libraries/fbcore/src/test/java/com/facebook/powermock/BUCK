@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_prebuilt_jar")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "powermock",
@@ -15,7 +15,7 @@ rn_android_library(
         ":powermock-reflect",
         ":xmlpull",
         ":xpp3",
-        ":xstream",
+        react_native_dep("third-party/java/xstream:xstream"),
     ],
 )
 
@@ -89,18 +89,6 @@ remote_file(
     name = "download-powermock-classloading-base.jar",
     sha1 = "c8bfc10731a02d3b241892cf2c334a754d473ca7",
     url = "mvn:org.powermock:powermock-classloading-base:jar:1.6.2",
-)
-
-rn_prebuilt_jar(
-    name = "xstream",
-    binary_jar = ":download-xstream.jar",
-    visibility = ["//ReactAndroid/..."],
-)
-
-remote_file(
-    name = "download-xstream.jar",
-    sha1 = "520d90f30f36a0d6ba2dc929d980831631ad6a92",
-    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.8",
 )
 
 rn_prebuilt_jar(

@@ -15,9 +15,9 @@ rn_android_library(
         ":robolectric-shadows-framework",
         ":robolectric-utils",
         ":guava",
-        ":xstream",
         react_native_dep("third-party/java/asm:asm"),
         react_native_dep("third-party/java/sqlite:sqlite"),
+        react_native_dep("third-party/java/xstream:xstream"),
     ],
 )
 
@@ -127,18 +127,6 @@ remote_file(
     name = "guava-binary.jar",
     sha1 = "89507701249388e1ed5ddcf8c41f4ce1be7831ef",
     url = "mvn:com.google.guava:guava:jar:20.0",
-)
-
-rn_prebuilt_jar(
-    name = "xstream",
-    binary_jar = ":xstream-binary.jar",
-    visibility = ["//ReactAndroid/..."],
-)
-
-remote_file(
-    name = "xstream-binary.jar",
-    sha1 = "520d90f30f36a0d6ba2dc929d980831631ad6a92",
-    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.8",
 )
 
 rn_prebuilt_jar(

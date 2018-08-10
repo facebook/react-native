@@ -1,0 +1,13 @@
+load("//ReactNative:DEFS.bzl", "rn_prebuilt_jar")
+
+rn_prebuilt_jar(
+    name = "xstream",
+    binary_jar = ":xstream.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+remote_file(
+    name = "xstream.jar",
+    sha1 = "520d90f30f36a0d6ba2dc929d980831631ad6a92",
+    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.8",
+)
