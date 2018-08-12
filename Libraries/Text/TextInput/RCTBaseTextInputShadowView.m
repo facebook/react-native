@@ -60,6 +60,7 @@
   }
 
   _localAttributedText = attributedText;
+  _text = attributedText.string;
   [self dirtyLayout];
 }
 
