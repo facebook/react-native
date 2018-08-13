@@ -21,6 +21,8 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
+/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
+ * making Flow check .android.js files. */
 import type {RNTesterExample} from './RNTesterList.ios';
 import type {PassProps} from './RNTesterStatePersister';
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
