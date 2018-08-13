@@ -435,9 +435,10 @@ class WebView extends React.Component {
 
     const viewManager = nativeConfig.viewManager || RCTWebViewManager;
 
-    const compiledWhitelist = (this.props.originWhitelist || []).map(
-      WebViewShared.originWhitelistToRegex,
-    );
+    const compiledWhitelist = [
+      'about:blank',
+      ...(this.props.originWhitelist || []),
+    ].map(WebViewShared.originWhitelistToRegex);
     const onShouldStartLoadWithRequest = (event: Event) => {
       let shouldStart = true;
       const {url} = event.nativeEvent;
