@@ -39,15 +39,12 @@ module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
       // node specific transforms only
-      return babelTransformSync(
-        src,
-        {
-          filename: file,
-          sourceType: 'script',
-          ...nodeOptions,
-          ast: false
-        },
-      ).code;
+      return babelTransformSync(src, {
+        filename: file,
+        sourceType: 'script',
+        ...nodeOptions,
+        ast: false,
+      }).code;
     }
 
     const {ast} = transformer.transform({
