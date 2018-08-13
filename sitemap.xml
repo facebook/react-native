@@ -4,6 +4,7 @@
 <url> <loc>https://facebook.github.io/index</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/index" /> </url>
 <url> <loc>https://facebook.github.io/showcase</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/showcase" /> </url>
 <url> <loc>https://facebook.github.io/versions</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/en/versions" /> </url>
+<url> <loc>https://facebook.github.io/blog/2018/08/13/react-native-accessibility-updates</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/07/04/releasing-react-native-056</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/06/14/state-of-react-native-2018</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/blog/2018/05/07/using-typescript-with-react-native</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
