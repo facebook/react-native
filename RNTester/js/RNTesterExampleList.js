@@ -25,7 +25,7 @@ const View = require('View');
  * making Flow check .android.js files. */
 import type {RNTesterExample} from './RNTesterList.ios';
 import type {PassProps} from './RNTesterStatePersister';
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 
 type Props = {
   onNavigate: Function,
@@ -34,8 +34,8 @@ type Props = {
     APIExamples: Array<RNTesterExample>,
   },
   persister: PassProps<*>,
-  searchTextInputStyle: DangerouslyImpreciseStyleProp,
-  style?: ?DangerouslyImpreciseStyleProp,
+  searchTextInputStyle: TextStyleProp,
+  style?: ?ViewStyleProp,
 };
 
 class RowComponent extends React.PureComponent<{

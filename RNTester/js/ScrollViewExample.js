@@ -9,8 +9,6 @@
  */
 'use strict';
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
-
 const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
 const React = require('react');
@@ -23,6 +21,8 @@ const {
   View,
   Image,
 } = ReactNative;
+
+import type {ViewStyleProp} from 'StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
@@ -79,7 +79,7 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        additionalStyles: typeof StyleSheet,
+        additionalStyles: ViewStyleProp,
       ) {
         let _scrollView: ?ScrollView;
         return (
@@ -261,7 +261,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: DangerouslyImpreciseStyleProp,
+  style?: ViewStyleProp,
 |}> {
   render() {
     const {source} = this.props;

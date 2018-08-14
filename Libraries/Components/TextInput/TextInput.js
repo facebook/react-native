@@ -33,7 +33,7 @@ const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 import type {ColorValue} from 'StyleSheetTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
 let AndroidTextInput;
@@ -169,7 +169,7 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
-  ...ViewProps,
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
   autoCapitalize?: ?AutoCapitalize,

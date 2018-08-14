@@ -18,7 +18,7 @@ const StyleSheet = require('StyleSheet');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {DangerouslyImpreciseStyleProp, ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -104,7 +104,7 @@ type OptionalProps<ItemT> = {
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
+  columnWrapperStyle?: ViewStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
