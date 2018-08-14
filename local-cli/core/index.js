@@ -70,7 +70,7 @@ const defaultConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getPlatforms(): Array<string> {
-    return ['ios', 'android', 'windows', 'web', 'dom'];
+    return ['ios', 'android', ...Object.keys(pluginPlatforms)];
   },
 
   getProvidesModuleNodeModules(): Array<string> {
