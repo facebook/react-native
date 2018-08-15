@@ -79,8 +79,8 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
       dispatch_async(queue, block);
     }
   } else {
-    RCTLogError(@"Attempted to invoke `%u` (method ID) on `%@` (NativeModule name) with an invalid bridge.",
-                methodId, m_moduleData.name);
+    RCTLogWarn(@"Attempted to invoke `%u` (method ID) on `%@` (NativeModule name) with an invalid bridge.",
+               methodId, m_moduleData.name);
   }
 }
 
