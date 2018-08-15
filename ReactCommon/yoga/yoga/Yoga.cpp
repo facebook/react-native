@@ -598,9 +598,7 @@ struct StyleProp {
   }
   static void set(YGNodeRef node, T newValue) {
     if (node->getStyle().*P != newValue) {
-      YGStyle style = node->getStyle();
-      style.*P = newValue;
-      node->setStyle(style);
+      node->getStyle().*P = newValue;
       node->markDirtyAndPropogate();
     }
   }
@@ -618,9 +616,7 @@ struct StyleProp {
     if ((node->getStyle().instanceName.value != value.value &&            \
          value.unit != YGUnitUndefined) ||                                \
         node->getStyle().instanceName.unit != value.unit) {               \
-      YGStyle style = node->getStyle();                                   \
-      style.instanceName = value;                                         \
-      node->setStyle(style);                                              \
+      node->getStyle().instanceName = value;                              \
       node->markDirtyAndPropogate();                                      \
     }                                                                     \
   }                                                                       \
@@ -634,10 +630,7 @@ struct StyleProp {
     if ((node->getStyle().instanceName.value != value.value &&            \
          value.unit != YGUnitUndefined) ||                                \
         node->getStyle().instanceName.unit != value.unit) {               \
-      YGStyle style = node->getStyle();                                   \
-                                                                          \
-      style.instanceName = value;                                         \
-      node->setStyle(style);                                              \
+      node->getStyle().instanceName = value;                              \
       node->markDirtyAndPropogate();                                      \
     }                                                                     \
   }
@@ -652,9 +645,7 @@ struct StyleProp {
     if ((node->getStyle().instanceName.value != value.value &&               \
          value.unit != YGUnitUndefined) ||                                   \
         node->getStyle().instanceName.unit != value.unit) {                  \
-      YGStyle style = node->getStyle();                                      \
-      style.instanceName = value;                                            \
-      node->setStyle(style);                                                 \
+      node->getStyle().instanceName = value;                                 \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }                                                                          \
@@ -663,21 +654,19 @@ struct StyleProp {
       const YGNodeRef node, const type paramName) {                          \
     if (node->getStyle().instanceName.value != YGFloatSanitize(paramName) || \
         node->getStyle().instanceName.unit != YGUnitPercent) {               \
-      YGStyle style = node->getStyle();                                      \
+      YGStyle& style = node->getStyle();                                     \
       style.instanceName.value = YGFloatSanitize(paramName);                 \
       style.instanceName.unit =                                              \
           YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;        \
-      node->setStyle(style);                                                 \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }                                                                          \
                                                                              \
   void YGNodeStyleSet##name##Auto(const YGNodeRef node) {                    \
     if (node->getStyle().instanceName.unit != YGUnitAuto) {                  \
-      YGStyle style = node->getStyle();                                      \
+      YGStyle& style = node->getStyle();                                     \
       style.instanceName.value = 0;                                          \
       style.instanceName.unit = YGUnitAuto;                                  \
-      node->setStyle(style);                                                 \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
@@ -710,10 +699,9 @@ struct StyleProp {
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(type, name, instanceName) \
   void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge) { \
     if (node->getStyle().instanceName[edge].unit != YGUnitAuto) {            \
-      YGStyle style = node->getStyle();                                      \
+      YGStyle& style = node->getStyle();                                     \
       style.instanceName[edge].value = 0;                                    \
       style.instanceName[edge].unit = YGUnitAuto;                            \
-      node->setStyle(style);                                                 \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
@@ -729,9 +717,7 @@ struct StyleProp {
     if ((node->getStyle().instanceName[edge].value != value.value &&     \
          value.unit != YGUnitUndefined) ||                               \
         node->getStyle().instanceName[edge].unit != value.unit) {        \
-      YGStyle style = node->getStyle();                                  \
-      style.instanceName[edge] = value;                                  \
-      node->setStyle(style);                                             \
+      node->getStyle().instanceName[edge] = value;                       \
       node->markDirtyAndPropogate();                                     \
     }                                                                    \
   }                                                                      \
@@ -745,9 +731,7 @@ struct StyleProp {
     if ((node->getStyle().instanceName[edge].value != value.value &&     \
          value.unit != YGUnitUndefined) ||                               \
         node->getStyle().instanceName[edge].unit != value.unit) {        \
-      YGStyle style = node->getStyle();                                  \
-      style.instanceName[edge] = value;                                  \
-      node->setStyle(style);                                             \
+      node->getStyle().instanceName[edge] = value;                       \
       node->markDirtyAndPropogate();                                     \
     }                                                                    \
   }                                                                      \
@@ -875,13 +859,8 @@ YGDisplay YGNodeStyleGetDisplay(const YGNodeRef node) {
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
   if (node->getStyle().flex != flex) {
-    YGStyle style = node->getStyle();
-    if (YGFloatIsUndefined(flex)) {
-      style.flex = YGFloatOptional();
-    } else {
-      style.flex = YGFloatOptional(flex);
-    }
-    node->setStyle(style);
+    node->getStyle().flex =
+        YGFloatIsUndefined(flex) ? YGFloatOptional() : YGFloatOptional(flex);
     node->markDirtyAndPropogate();
   }
 }
@@ -895,13 +874,9 @@ float YGNodeStyleGetFlex(const YGNodeRef node) {
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
   if (node->getStyle().flexGrow != flexGrow) {
-    YGStyle style = node->getStyle();
-    if (YGFloatIsUndefined(flexGrow)) {
-      style.flexGrow = YGFloatOptional();
-    } else {
-      style.flexGrow = YGFloatOptional(flexGrow);
-    }
-    node->setStyle(style);
+    node->getStyle().flexGrow = YGFloatIsUndefined(flexGrow)
+        ? YGFloatOptional()
+        : YGFloatOptional(flexGrow);
     node->markDirtyAndPropogate();
   }
 }
@@ -909,13 +884,9 @@ void YGNodeStyleSetFlexGrow(const YGNodeRef node, const float flexGrow) {
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlexShrink(const YGNodeRef node, const float flexShrink) {
   if (node->getStyle().flexShrink != flexShrink) {
-    YGStyle style = node->getStyle();
-    if (YGFloatIsUndefined(flexShrink)) {
-      style.flexShrink = YGFloatOptional();
-    } else {
-      style.flexShrink = YGFloatOptional(flexShrink);
-    }
-    node->setStyle(style);
+    node->getStyle().flexShrink = YGFloatIsUndefined(flexShrink)
+        ? YGFloatOptional()
+        : YGFloatOptional(flexShrink);
     node->markDirtyAndPropogate();
   }
 }
@@ -937,9 +908,7 @@ void YGNodeStyleSetFlexBasis(const YGNodeRef node, const float flexBasis) {
   if ((node->getStyle().flexBasis.value != value.value &&
        value.unit != YGUnitUndefined) ||
       node->getStyle().flexBasis.unit != value.unit) {
-    YGStyle style = node->getStyle();
-    style.flexBasis = value;
-    node->setStyle(style);
+    node->getStyle().flexBasis = value;
     node->markDirtyAndPropogate();
   }
 }
@@ -949,21 +918,19 @@ void YGNodeStyleSetFlexBasisPercent(
     const float flexBasisPercent) {
   if (node->getStyle().flexBasis.value != flexBasisPercent ||
       node->getStyle().flexBasis.unit != YGUnitPercent) {
-    YGStyle style = node->getStyle();
+    YGStyle& style = node->getStyle();
     style.flexBasis.value = YGFloatSanitize(flexBasisPercent);
     style.flexBasis.unit =
         YGFloatIsUndefined(flexBasisPercent) ? YGUnitAuto : YGUnitPercent;
-    node->setStyle(style);
     node->markDirtyAndPropogate();
   }
 }
 
 void YGNodeStyleSetFlexBasisAuto(const YGNodeRef node) {
   if (node->getStyle().flexBasis.unit != YGUnitAuto) {
-    YGStyle style = node->getStyle();
+    YGStyle& style = node->getStyle();
     style.flexBasis.value = 0;
     style.flexBasis.unit = YGUnitAuto;
-    node->setStyle(style);
     node->markDirtyAndPropogate();
   }
 }
@@ -985,9 +952,7 @@ void YGNodeStyleSetBorder(
   if ((node->getStyle().border[edge].value != value.value &&
        value.unit != YGUnitUndefined) ||
       node->getStyle().border[edge].unit != value.unit) {
-    YGStyle style = node->getStyle();
-    style.border[edge] = value;
-    node->setStyle(style);
+    node->getStyle().border[edge] = value;
     node->markDirtyAndPropogate();
   }
 }
@@ -1014,9 +979,7 @@ float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {
   if (node->getStyle().aspectRatio != aspectRatio) {
-    YGStyle style = node->getStyle();
-    style.aspectRatio = YGFloatOptional(aspectRatio);
-    node->setStyle(style);
+    node->getStyle().aspectRatio = YGFloatOptional(aspectRatio);
     node->markDirtyAndPropogate();
   }
 }
