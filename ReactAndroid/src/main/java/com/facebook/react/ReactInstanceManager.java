@@ -837,6 +837,10 @@ public class ReactInstanceManager {
     return mLifecycleState;
   }
 
+  public String getJsExecutorName() {
+    return mJavaScriptExecutorFactory.toString();
+  }
+
   @ThreadConfined(UI)
   private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
