@@ -23,6 +23,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
 
 const RCTImageView = requireNativeComponent('RCTImageView');
 
+import type {ImageStyleProp} from 'StyleSheet';
 import type {ImageProps as ImagePropsType} from 'ImageProps';
 
 function getSize(
@@ -71,12 +72,14 @@ let Image = (
   };
 
   let sources;
-  let style;
+  let style: ImageStyleProp;
   if (Array.isArray(source)) {
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
     const {width, height, uri} = source;
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
