@@ -654,19 +654,16 @@ struct StyleProp {
       const YGNodeRef node, const type paramName) {                          \
     if (node->getStyle().instanceName.value != YGFloatSanitize(paramName) || \
         node->getStyle().instanceName.unit != YGUnitPercent) {               \
-      YGStyle& style = node->getStyle();                                     \
-      style.instanceName.value = YGFloatSanitize(paramName);                 \
-      style.instanceName.unit =                                              \
-          YGFloatIsUndefined(paramName) ? YGUnitAuto : YGUnitPercent;        \
+      node->getStyle().instanceName = YGFloatIsUndefined(paramName)          \
+          ? YGValue{0, YGUnitAuto}                                           \
+          : YGValue{paramName, YGUnitPercent};                               \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }                                                                          \
                                                                              \
   void YGNodeStyleSet##name##Auto(const YGNodeRef node) {                    \
     if (node->getStyle().instanceName.unit != YGUnitAuto) {                  \
-      YGStyle& style = node->getStyle();                                     \
-      style.instanceName.value = 0;                                          \
-      style.instanceName.unit = YGUnitAuto;                                  \
+      node->getStyle().instanceName = {0, YGUnitAuto};                       \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
@@ -699,9 +696,7 @@ struct StyleProp {
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(type, name, instanceName) \
   void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge) { \
     if (node->getStyle().instanceName[edge].unit != YGUnitAuto) {            \
-      YGStyle& style = node->getStyle();                                     \
-      style.instanceName[edge].value = 0;                                    \
-      style.instanceName[edge].unit = YGUnitAuto;                            \
+      node->getStyle().instanceName[edge] = {0, YGUnitAuto};                 \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
@@ -918,19 +913,16 @@ void YGNodeStyleSetFlexBasisPercent(
     const float flexBasisPercent) {
   if (node->getStyle().flexBasis.value != flexBasisPercent ||
       node->getStyle().flexBasis.unit != YGUnitPercent) {
-    YGStyle& style = node->getStyle();
-    style.flexBasis.value = YGFloatSanitize(flexBasisPercent);
-    style.flexBasis.unit =
-        YGFloatIsUndefined(flexBasisPercent) ? YGUnitAuto : YGUnitPercent;
+    node->getStyle().flexBasis = YGFloatIsUndefined(flexBasisPercent)
+        ? YGValue{0, YGUnitAuto}
+        : YGValue{flexBasisPercent, YGUnitPercent};
     node->markDirtyAndPropogate();
   }
 }
 
 void YGNodeStyleSetFlexBasisAuto(const YGNodeRef node) {
   if (node->getStyle().flexBasis.unit != YGUnitAuto) {
-    YGStyle& style = node->getStyle();
-    style.flexBasis.value = 0;
-    style.flexBasis.unit = YGUnitAuto;
+    node->getStyle().flexBasis = {0, YGUnitAuto};
     node->markDirtyAndPropogate();
   }
 }
@@ -2402,7 +2394,7 @@ static void YGJustifyMainAxis(
     const float& availableInnerCrossDim,
     const float& availableInnerWidth,
     const bool& performLayout) {
-  const YGStyle style = node->getStyle();
+  const YGStyle& style = node->getStyle();
 
   // If we are using "at most" rules in the main axis. Calculate the remaining
   // space when constraint by the min size defined for the main axis.
@@ -2488,7 +2480,7 @@ static void YGJustifyMainAxis(
        i < collectedFlexItemsValues.endOfLineIndex;
        i++) {
     const YGNodeRef child = node->getChild(i);
-    const YGStyle childStyle = child->getStyle();
+    const YGStyle& childStyle = child->getStyle();
     const YGLayout childLayout = child->getLayout();
     if (childStyle.display == YGDisplayNone) {
       continue;
