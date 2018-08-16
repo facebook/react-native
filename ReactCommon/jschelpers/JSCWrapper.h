@@ -128,6 +128,7 @@ struct JSCWrapper {
   // JSValue
   JSC_WRAPPER_METHOD(JSValueCreateJSONString);
   JSC_WRAPPER_METHOD(JSValueGetType);
+  JSC_WRAPPER_METHOD(JSValueGetTypedArrayType);
   JSC_WRAPPER_METHOD(JSValueMakeFromJSONString);
   JSC_WRAPPER_METHOD(JSValueMakeBoolean);
   JSC_WRAPPER_METHOD(JSValueMakeNull);
@@ -141,6 +142,11 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSValueToStringCopy);
   JSC_WRAPPER_METHOD(JSValueUnprotect);
   JSC_WRAPPER_METHOD(JSValueIsNull);
+
+  // JSTypedArray
+  JSC_WRAPPER_METHOD(JSObjectGetTypedArrayLength);
+  JSC_WRAPPER_METHOD(JSObjectGetTypedArrayBytesPtr);
+  JSC_WRAPPER_METHOD(JSObjectGetTypedArrayByteOffset);
 
   // Sampling profiler
   JSC_WRAPPER_METHOD(JSSamplingProfilerEnabled);

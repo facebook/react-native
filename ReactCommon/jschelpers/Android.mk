@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := jschelpers
 
 LOCAL_SRC_FILES := \
+  Crypto.cpp \
   JSCHelpers.cpp \
   Unicode.cpp \
   Value.cpp \
