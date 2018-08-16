@@ -17,12 +17,18 @@ const RCTWKWebView = requireNativeComponent('RCTWKWebView');
 
 type RCTWKWebViewProps = {
   allowsInlineMediaPlayback?: boolean,
+  mediaPlaybackRequiresUserAction?: boolean,
 };
 
 class WKWebView extends React.Component<RCTWKWebViewProps> {
   componentWillReceiveProps(nextProps: RCTWKWebViewProps) {
-    if (this.props.allowsInlineMediaPlayback !== nextProps.allowsInlineMediaPlayback) {
-      console.error('Changes to property allowsInlineMediaPlayback do nothing after the initial render.');
+    this.showRedboxOnPropChanges(nextProps, 'allowsInlineMediaPlayback');
+    this.showRedboxOnPropChanges(nextProps, 'mediaPlaybackRequiresUserAction');
+  }
+
+  showRedboxOnPropChanges(nextProps: RCTWKWebViewProps, propName: string) {
+    if (this.props[propName] !== nextProps[propName]) {
+      console.error(`Changes to property ${propName} do nothing after the initial render.`);
     }
   }
 
