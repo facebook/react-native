@@ -45,4 +45,16 @@ RCT_CUSTOM_VIEW_PROPERTY(decelerationRate, CGFloat, RCTWKWebView) {
   view.decelerationRate = json == nil ? UIScrollViewDecelerationRateNormal : [RCTConvert CGFloat: json];
 }
 
+RCT_EXPORT_METHOD(injectJavaScript:(nonnull NSNumber *)reactTag script:(NSString *)script)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+    } else {
+      [view injectJavaScript:script];
+    }
+  }];
+}
+
 @end

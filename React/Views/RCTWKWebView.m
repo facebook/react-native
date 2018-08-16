@@ -255,4 +255,9 @@ static NSString *const MessageHanderName = @"ReactNative";
   }
 }
 
+- (void)injectJavaScript:(NSString *)script
+{
+  [self evaluateJS: script thenCall: nil];
+}
+
 @end

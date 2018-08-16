@@ -24,5 +24,6 @@
 @property (nonatomic, assign) CGFloat decelerationRate;
 
 - (void)postMessage:(NSString *)message;
+- (void)injectJavaScript:(NSString *)script;
 
 @end
