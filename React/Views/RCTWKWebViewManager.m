@@ -36,4 +36,6 @@ RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)m
   }];
 }
 
+RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
+
 @end
