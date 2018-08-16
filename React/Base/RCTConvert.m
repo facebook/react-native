@@ -361,6 +361,18 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
+
+RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
+ @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
+ @"link": @(WKDataDetectorTypeLink),
+ @"address": @(WKDataDetectorTypeAddress),
+ @"calendarEvent": @(WKDataDetectorTypeCalendarEvent),
+ @"trackingNumber": @(WKDataDetectorTypeTrackingNumber),
+ @"flightNumber": @(WKDataDetectorTypeFlightNumber),
+ @"lookupSuggestion": @(WKDataDetectorTypeLookupSuggestion),
+ @"none": @(WKDataDetectorTypeNone),
+ @"all": @(WKDataDetectorTypeAll),
+ }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
 #endif
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
