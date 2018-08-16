@@ -41,4 +41,8 @@ RCT_CUSTOM_VIEW_PROPERTY(scrollEnabled, BOOL, RCTWKWebView) {
   view.scrollEnabled = json == nil ? true : [RCTConvert BOOL: json];
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(decelerationRate, CGFloat, RCTWKWebView) {
+  view.decelerationRate = json == nil ? UIScrollViewDecelerationRateNormal : [RCTConvert CGFloat: json];
+}
+
 @end

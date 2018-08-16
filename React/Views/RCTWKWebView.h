@@ -21,6 +21,7 @@
 @property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, copy) NSString *injectedJavaScript;
 @property (nonatomic, assign) BOOL scrollEnabled;
+@property (nonatomic, assign) CGFloat decelerationRate;
 
 - (void)postMessage:(NSString *)message;
 

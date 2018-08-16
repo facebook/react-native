@@ -5,7 +5,7 @@
 
 static NSString *const MessageHanderName = @"ReactNative";
 
-@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
+@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
@@ -31,6 +31,7 @@ static NSString *const MessageHanderName = @"ReactNative";
     [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
+    _webView.scrollView.delegate = self;
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
     [self addSubview:_webView];
@@ -83,6 +84,12 @@ static NSString *const MessageHanderName = @"ReactNative";
     }
     [_webView loadRequest:request];
   }
+}
+
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+  scrollView.decelerationRate = _decelerationRate;
 }
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled
