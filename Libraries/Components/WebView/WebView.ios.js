@@ -324,6 +324,8 @@ class WebView extends React.Component {
      * Boolean that controls whether the web content is scaled to fit
      * the view and enables the user to change the scale. The default value
      * is `true`.
+     *
+     * On iOS, when `useWebKit=true`, this prop will not work.
      */
     scalesPageToFit: PropTypes.bool,
 
@@ -403,7 +405,6 @@ class WebView extends React.Component {
 
   static defaultProps = {
     originWhitelist: WebViewShared.defaultOriginWhitelist,
-    scalesPageToFit: true,
   };
 
   state = {
@@ -416,10 +417,27 @@ class WebView extends React.Component {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
+
+    if (
+      this.props.useWebKit === true &&
+      this.props.scalesPageToFit !== undefined
+    ) {
+      console.warn(
+        'The scalesPageToFit property is not supported when useWebKit = true',
+      );
+    }
   }
 
   render() {
     let otherView = null;
+
+    let scalesPageToFit;
+
+    if (this.props.useWebKit) {
+      ({scalesPageToFit} = this.props);
+    } else {
+      ({scalesPageToFit = true} = this.props);
+    }
 
     if (this.state.viewState === WebViewState.LOADING) {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
@@ -523,7 +541,7 @@ class WebView extends React.Component {
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        scalesPageToFit={this.props.scalesPageToFit}
+        scalesPageToFit={scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={
           this.props.mediaPlaybackRequiresUserAction
@@ -685,6 +703,12 @@ class WebView extends React.Component {
     this._showRedboxOnPropChanges(prevProps, 'allowsInlineMediaPlayback');
     this._showRedboxOnPropChanges(prevProps, 'mediaPlaybackRequiresUserAction');
     this._showRedboxOnPropChanges(prevProps, 'dataDetectorTypes');
+
+    if (this.props.scalesPageToFit !== undefined) {
+      console.warn(
+        'The scalesPageToFit property is not supported when useWebKit = true',
+      );
+    }
   }
 
   _showRedboxOnPropChanges(prevProps, propName: string) {
