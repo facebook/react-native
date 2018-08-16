@@ -1,15 +1,15 @@
 #import "RCTWKWebView.h"
-
 #import <WebKit/WebKit.h>
-
 #import <React/RCTConvert.h>
-
 #import "RCTAutoInsetsProtocol.h"
 
-@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate>
+static NSString *const MessageHanderName = @"ReactNative";
+
+@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) WKWebView *webView;
 @end
 
@@ -26,12 +26,30 @@
 {
   if ((self = [super initWithFrame:frame])) {
     super.backgroundColor = [UIColor clearColor];
-    _webView = [[WKWebView alloc] initWithFrame:self.bounds];
+    WKWebViewConfiguration *wkWebViewConfig = [WKWebViewConfiguration new];
+    wkWebViewConfig.userContentController = [WKUserContentController new];
+    [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
+
+    _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
     [self addSubview:_webView];
   }
   return self;
+}
+
+/**
+ * This method is called whenever JavaScript running within the web view calls:
+ *   - window.webkit.messageHandlers.[MessageHanderName].postMessage
+ */
+- (void)userContentController:(WKUserContentController *)userContentController
+       didReceiveScriptMessage:(WKScriptMessage *)message
+{
+  if (_onMessage != nil) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{@"data": message.body}];
+    _onMessage(event);
+  }
 }
 
 - (void)setSource:(NSDictionary *)source
@@ -67,9 +85,21 @@
   }
 }
 
+- (void)postMessage:(NSString *)message
+{
+  NSDictionary *eventInitDict = @{@"data": message};
+  NSString *source = [NSString
+    stringWithFormat:@"document.dispatchEvent(new MessageEvent('message', %@));",
+    RCTJSONStringify(eventInitDict, NULL)
+  ];
+  [self evaluateJS: source thenCall: nil];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+
+  // Ensure webview takes the position and dimensions of RCTWKWebView
   _webView.frame = self.bounds;
 }
 
@@ -161,7 +191,7 @@
           thenCall: (void (^)(NSString*)) callback
 {
   [self.webView evaluateJavaScript: js completionHandler: ^(id result, NSError *error) {
-    if (error == nil) {
+    if (error == nil && callback != nil) {
       callback([NSString stringWithFormat:@"%@", result]);
     }
   }];
@@ -175,6 +205,31 @@
 - (void)      webView:(WKWebView *)webView
   didFinishNavigation:(WKNavigation *)navigation
 {
+  if (_messagingEnabled) {
+    #if RCT_DEV
+
+    // Implementation inspired by Lodash.isNative.
+    NSString *isPostMessageNative = @"String(String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage'))";
+    [self evaluateJS: isPostMessageNative thenCall: ^(NSString *result) {
+      if (! [result isEqualToString:@"true"]) {
+        RCTLogError(@"Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+      }
+    }];
+    #endif
+
+    NSString *source = [NSString stringWithFormat:
+      @"(function() {"
+        "window.originalPostMessage = window.postMessage;"
+
+        "window.postMessage = function(data) {"
+          "window.webkit.messageHandlers.%@.postMessage(String(data));"
+        "};"
+      "})();",
+      MessageHanderName
+    ];
+    [self evaluateJS: source thenCall: nil];
+  }
+
   if (_injectedJavaScript) {
     [self evaluateJS: _injectedJavaScript thenCall: ^(NSString *jsEvaluationValue) {
       NSMutableDictionary *event = [self baseEvent];
