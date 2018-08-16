@@ -270,4 +270,24 @@ static NSString *const MessageHanderName = @"ReactNative";
   [_webView goBack];
 }
 
+- (void)reload
+{
+  /**
+   * When the initial load fails due to network connectivity issues,
+   * [_webView reload] doesn't reload the webpage. Therefore, we must
+   * manually call [_webView loadRequest:request].
+   */
+  NSURLRequest *request = [RCTConvert NSURLRequest:self.source];
+  if (request.URL && !_webView.URL.absoluteString.length) {
+    [_webView loadRequest:request];
+  }
+  else {
+    [_webView reload];
+  }
+}
+
+- (void)stopLoading
+{
+  [_webView stopLoading];
+}
 @end
