@@ -547,6 +547,7 @@ public class FabricUIManager implements UIManager, JSHandler, FabricBinder {
   }
 
   public void removeRootView(int rootTag) {
+    mUIViewOperationQueue.enqueueRemoveRootView(rootTag);
     mRootShadowNodeRegistry.removeNode(rootTag);
   }
 
