@@ -32,6 +32,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL bounces;
 @property (nonatomic, assign) BOOL mediaPlaybackRequiresUserAction;
 @property (nonatomic, assign) WKDataDetectorTypes dataDetectorTypes;
+@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 
 - (void)postMessage:(NSString *)message;
 - (void)injectJavaScript:(NSString *)script;
