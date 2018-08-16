@@ -30,6 +30,8 @@ RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(allowsInlineMediaPlayback, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(mediaPlaybackRequiresUserAction, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(dataDetectorTypes, WKDataDetectorTypes)
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
                          
 /**
  * Expose methods to enable messaging the webview.
