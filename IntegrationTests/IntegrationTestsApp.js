@@ -31,6 +31,7 @@ const TESTS = [
   require('./SimpleSnapshotTest'),
   require('./ImageCachePolicyTest'),
   require('./ImageSnapshotTest'),
+  require('./CryptoTest'),
   require('./PromiseTest'),
   require('./WebViewTest'),
   require('./SyncMethodTest'),
