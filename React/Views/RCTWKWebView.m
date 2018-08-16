@@ -1,5 +1,4 @@
 #import "RCTWKWebView.h"
-#import <WebKit/WebKit.h>
 #import <React/RCTConvert.h>
 #import "RCTAutoInsetsProtocol.h"
 
@@ -43,6 +42,7 @@ static NSString *const MessageHanderName = @"ReactNative";
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
       ? WKAudiovisualMediaTypeAll
       : WKAudiovisualMediaTypeNone;
+    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     _webView.scrollView.delegate = self;
