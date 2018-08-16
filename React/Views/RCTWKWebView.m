@@ -15,6 +15,7 @@ static NSString *const MessageHanderName = @"ReactNative";
 
 @implementation RCTWKWebView
 {
+  UIColor * _savedBackgroundColor;
 }
 
 - (void)dealloc
@@ -54,6 +55,19 @@ static NSString *const MessageHanderName = @"ReactNative";
 
     [self visitSource];
   }
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  _savedBackgroundColor = backgroundColor;
+  if (_webView == nil) {
+    return;
+  }
+
+  CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
+  self.opaque = _webView.opaque = (alpha == 1.0);
+  _webView.scrollView.backgroundColor = backgroundColor;
+  _webView.backgroundColor = backgroundColor;
 }
 
 /**
@@ -236,6 +250,8 @@ static NSString *const MessageHanderName = @"ReactNative";
     }];
     _onLoadingError(event);
   }
+
+  [self setBackgroundColor: _savedBackgroundColor];
 }
 
 - (void)evaluateJS:(NSString *)js
@@ -292,6 +308,8 @@ static NSString *const MessageHanderName = @"ReactNative";
   } else if (_onLoadingFinish) {
     _onLoadingFinish([self baseEvent]);
   }
+
+  [self setBackgroundColor: _savedBackgroundColor];
 }
 
 - (void)injectJavaScript:(NSString *)script
