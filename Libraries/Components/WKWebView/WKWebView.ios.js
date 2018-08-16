@@ -9,6 +9,26 @@
  * @providesModule WKWebView
  */
 
+const React = require('react');
+
 const requireNativeComponent = require('requireNativeComponent');
 
-module.exports = requireNativeComponent('RCTWKWebView');
+const RCTWKWebView = requireNativeComponent('RCTWKWebView');
+
+type RCTWKWebViewProps = {
+  allowsInlineMediaPlayback?: boolean,
+};
+
+class WKWebView extends React.Component<RCTWKWebViewProps> {
+  componentWillReceiveProps(nextProps: RCTWKWebViewProps) {
+    if (this.props.allowsInlineMediaPlayback !== nextProps.allowsInlineMediaPlayback) {
+      console.error('Changes to property allowsInlineMediaPlayback do nothing after the initial render.');
+    }
+  }
+
+  render() {
+    return <RCTWKWebView {...this.props}/>;
+  }
+}
+
+module.exports = WKWebView;
