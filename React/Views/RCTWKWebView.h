@@ -20,6 +20,7 @@
 @property (nonatomic, copy) NSDictionary *source;
 @property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, assign) BOOL scrollEnabled;
 
 - (void)postMessage:(NSString *)message;
 
