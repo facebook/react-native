@@ -9,6 +9,7 @@ static NSString *const MessageHanderName = @"ReactNative";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
 @property (nonatomic, copy) WKWebView *webView;
 @end
@@ -153,6 +154,20 @@ static NSString *const MessageHanderName = @"ReactNative";
 
   WKNavigationType navigationType = navigationAction.navigationType;
   NSURLRequest *request = navigationAction.request;
+
+  if (_onShouldStartLoadWithRequest) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"url": (request.URL).absoluteString,
+      @"navigationType": navigationTypes[@(navigationType)]
+    }];
+    if (![self.delegate webView:self
+      shouldStartLoadForRequest:event
+                   withCallback:_onShouldStartLoadWithRequest]) {
+      decisionHandler(WKNavigationResponsePolicyCancel);
+      return;
+    }
+  }
 
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot

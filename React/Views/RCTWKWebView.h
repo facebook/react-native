@@ -12,6 +12,11 @@
 @class RCTWKWebView;
 
 @protocol RCTWKWebViewDelegate <NSObject>
+
+- (BOOL)webView:(RCTWKWebView *)webView
+shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
+   withCallback:(RCTDirectEventBlock)callback;
+
 @end
 
 @interface RCTWKWebView : RCTView
