@@ -69,6 +69,9 @@ typedef NSURL RCTFileURL;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 #if !TARGET_OS_TV
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
+#endif
+
+#if TARGET_OS_IPHONE
 + (WKDataDetectorTypes)WKDataDetectorTypes:(id)json;
 #endif
 

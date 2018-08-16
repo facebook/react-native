@@ -23,6 +23,25 @@ static NSString *const MessageHanderName = @"ReactNative";
 
 }
 
+/**
+ * See https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DisplayWebContent/Tasks/WebKitAvail.html.
+ */
++ (BOOL)dynamicallyLoadWebKitIfAvailable
+{
+  static BOOL _webkitAvailable=NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    NSBundle *webKitBundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/WebKit.framework"];
+    if (webKitBundle) {
+      _webkitAvailable = [webKitBundle load];
+    }
+  });
+
+  return _webkitAvailable;
+}
+
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
@@ -38,6 +57,10 @@ static NSString *const MessageHanderName = @"ReactNative";
 - (void)didMoveToWindow
 {
   if (self.window != nil) {
+    if (![[self class] dynamicallyLoadWebKitIfAvailable]) {
+      return;
+    };
+
     WKWebViewConfiguration *wkWebViewConfig = [WKWebViewConfiguration new];
     wkWebViewConfig.userContentController = [WKUserContentController new];
     [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
