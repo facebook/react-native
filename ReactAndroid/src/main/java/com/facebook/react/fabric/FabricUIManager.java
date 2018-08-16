@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused") // used from JNI
 @DoNotStrip
-public class FabricUIManager implements UIManager, JSHandler {
+public class FabricUIManager implements UIManager, JSHandler, FabricBinder {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
   private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
@@ -98,6 +98,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     mJSContext = jsContext;
   }
 
+  @Override
   public void setBinding(FabricBinding binding) {
     mBinding = binding;
   }
