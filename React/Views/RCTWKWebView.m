@@ -260,4 +260,14 @@ static NSString *const MessageHanderName = @"ReactNative";
   [self evaluateJS: script thenCall: nil];
 }
 
+- (void)goForward
+{
+  [_webView goForward];
+}
+
+- (void)goBack
+{
+  [_webView goBack];
+}
+
 @end
