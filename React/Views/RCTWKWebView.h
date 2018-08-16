@@ -27,5 +27,7 @@
 - (void)injectJavaScript:(NSString *)script;
 - (void)goForward;
 - (void)goBack;
+- (void)reload;
+- (void)stopLoading;
 
 @end
