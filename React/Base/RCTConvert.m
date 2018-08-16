@@ -362,6 +362,7 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
 
+#if WEBKIT_IOS_10_APIS_AVAILABLE
 RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
  @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
  @"link": @(WKDataDetectorTypeLink),
@@ -373,7 +374,9 @@ RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
  @"none": @(WKDataDetectorTypeNone),
  @"all": @(WKDataDetectorTypeAll),
  }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
-#endif
+ #endif // WEBKIT_IOS_10_APIS_AVAILABLE
+
+ #endif // !TARGET_OS_TV
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),

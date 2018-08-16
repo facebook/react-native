@@ -8,6 +8,7 @@
  */
 
 #import <React/RCTView.h>
+#import <React/RCTDefines.h>
 #import <WebKit/WebKit.h>
 
 @class RCTWKWebView;
@@ -31,7 +32,9 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL allowsInlineMediaPlayback;
 @property (nonatomic, assign) BOOL bounces;
 @property (nonatomic, assign) BOOL mediaPlaybackRequiresUserAction;
+#if WEBKIT_IOS_10_APIS_AVAILABLE
 @property (nonatomic, assign) WKDataDetectorTypes dataDetectorTypes;
+#endif
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 

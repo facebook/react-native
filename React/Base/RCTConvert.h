@@ -71,7 +71,7 @@ typedef NSURL RCTFileURL;
 + (UIDataDetectorTypes)UIDataDetectorTypes:(id)json;
 #endif
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
 + (WKDataDetectorTypes)WKDataDetectorTypes:(id)json;
 #endif
 

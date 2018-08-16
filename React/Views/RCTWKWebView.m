@@ -65,10 +65,12 @@ static NSString *const MessageHanderName = @"ReactNative";
     wkWebViewConfig.userContentController = [WKUserContentController new];
     [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
     wkWebViewConfig.allowsInlineMediaPlayback = _allowsInlineMediaPlayback;
+#if WEBKIT_IOS_10_APIS_AVAILABLE
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
       ? WKAudiovisualMediaTypeAll
       : WKAudiovisualMediaTypeNone;
-    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+   wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+#endif
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     _webView.scrollView.delegate = self;
