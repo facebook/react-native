@@ -11,21 +11,23 @@ namespace facebook {
 namespace react {
 
 SharedColor colorFromComponents(ColorComponents components) {
+  float ratio = 255.9999;
   return SharedColor(
-    ((int)components.alpha & 0xff) << 24 |
-    ((int)components.red & 0xff) << 16 |
-    ((int)components.green & 0xff) << 8 |
-    ((int)components.blue & 0xff)
+    ((int)(components.alpha * ratio) & 0xff) << 24 |
+    ((int)(components.red * ratio) & 0xff) << 16 |
+    ((int)(components.green * ratio) & 0xff) << 8 |
+    ((int)(components.blue * ratio) & 0xff)
   );
 }
 
 ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
+  float ratio = 256;
   Color color = *sharedColor;
   return ColorComponents {
-    (float)((color >> 16) & 0xff),
-    (float)((color >>  8) & 0xff),
-    (float)((color      ) & 0xff),
-    (float)((color >> 24) & 0xff)
+    (float)((color >> 16) & 0xff) / ratio,
+    (float)((color >>  8) & 0xff) / ratio,
+    (float)((color      ) & 0xff) / ratio,
+    (float)((color >> 24) & 0xff) / ratio
   };
 }
 
