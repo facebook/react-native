@@ -18,5 +18,6 @@
 
 @property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 @property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, copy) NSString *injectedJavaScript;
 
 @end
