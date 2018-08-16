@@ -1,8 +1,7 @@
-#import "RCTViewManager.h"
-#import "RCTWKWebView.h"
+#import "RCTWKWebViewManager.h"
 
-@interface RCTWKWebViewManager : RCTViewManager
-@end
+#import "RCTUIManager.h"
+#import "RCTWKWebView.h"
 
 @implementation RCTWKWebViewManager
 
@@ -18,5 +17,23 @@ RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
+
+/**
+ * Expose methods to enable messaging the webview.
+ */
+RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
+
+RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)message)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWKWebView *> *viewRegistry) {
+    RCTWKWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWKWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+    } else {
+      [view postMessage:message];
+    }
+  }];
+}
 
 @end
