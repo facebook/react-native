@@ -85,6 +85,11 @@ static NSString *const MessageHanderName = @"ReactNative";
   }
 }
 
+- (void)setScrollEnabled:(BOOL)scrollEnabled
+{
+  _webView.scrollView.scrollEnabled = scrollEnabled;
+}
+
 - (void)postMessage:(NSString *)message
 {
   NSDictionary *eventInitDict = @{@"data": message};

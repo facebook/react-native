@@ -37,5 +37,8 @@ RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)m
 }
 
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
+RCT_CUSTOM_VIEW_PROPERTY(scrollEnabled, BOOL, RCTWKWebView) {
+  view.scrollEnabled = json == nil ? true : [RCTConvert BOOL: json];
+}
 
 @end
