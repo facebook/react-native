@@ -4,7 +4,7 @@
 
 static NSString *const MessageHanderName = @"ReactNative";
 
-@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate>
+@interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
@@ -29,6 +29,8 @@ static NSString *const MessageHanderName = @"ReactNative";
     super.backgroundColor = [UIColor clearColor];
     _bounces = YES;
     _scrollEnabled = YES;
+    _automaticallyAdjustContentInsets = YES;
+    _contentInset = UIEdgeInsetsZero;
   }
   return self;
 }
@@ -51,6 +53,13 @@ static NSString *const MessageHanderName = @"ReactNative";
     _webView.navigationDelegate = self;
     _webView.scrollView.scrollEnabled = _scrollEnabled;
     _webView.scrollView.bounces = _bounces;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    }
+#endif
+
     [self addSubview:_webView];
 
     [self visitSource];
@@ -93,6 +102,21 @@ static NSString *const MessageHanderName = @"ReactNative";
       [self visitSource];
     }
   }
+}
+
+- (void)setContentInset:(UIEdgeInsets)contentInset
+{
+  _contentInset = contentInset;
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_webView.scrollView
+                      updateOffset:NO];
+}
+
+- (void)refreshContentInset
+{
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_webView.scrollView
+                      updateOffset:YES];
 }
 
 - (void)visitSource
