@@ -110,6 +110,12 @@ class WebView extends React.Component {
     ]),
 
     /**
+     * If true, use WKWebView instead of UIWebView.
+     * @platform ios
+     */
+    useWebKit: PropTypes.bool,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
