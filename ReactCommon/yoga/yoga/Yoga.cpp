@@ -2396,13 +2396,20 @@ static void YGJustifyMainAxis(
     const bool& performLayout) {
   const YGStyle& style = node->getStyle();
 
-  // If we are using "at most" rules in the main axis, make sure that
-  // remainingFreeSpace is 0 when min main dimension is not given
+  // If we are using "at most" rules in the main axis. Calculate the remaining
+  // space when constraint by the min size defined for the main axis.
   if (measureModeMainDim == YGMeasureModeAtMost &&
       collectedFlexItemsValues.remainingFreeSpace > 0) {
-    if (style.minDimensions[dim[mainAxis]].unit == YGUnitUndefined ||
-        YGResolveValue(style.minDimensions[dim[mainAxis]], mainAxisownerSize)
-            .isUndefined()) {
+    if (style.minDimensions[dim[mainAxis]].unit != YGUnitUndefined &&
+        !YGResolveValue(style.minDimensions[dim[mainAxis]], mainAxisownerSize)
+             .isUndefined()) {
+      collectedFlexItemsValues.remainingFreeSpace = YGFloatMax(
+          0,
+          YGUnwrapFloatOptional(YGResolveValue(
+              style.minDimensions[dim[mainAxis]], mainAxisownerSize)) -
+              (availableInnerMainDim -
+               collectedFlexItemsValues.remainingFreeSpace));
+    } else {
       collectedFlexItemsValues.remainingFreeSpace = 0;
     }
   }
