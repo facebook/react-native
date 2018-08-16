@@ -25,5 +25,7 @@
 
 - (void)postMessage:(NSString *)message;
 - (void)injectJavaScript:(NSString *)script;
+- (void)goForward;
+- (void)goBack;
 
 @end
