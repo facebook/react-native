@@ -448,31 +448,23 @@ exports.examples = [
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.leftMargin,
-              {
-                borderWidth: 10,
-                borderTopLeftRadius: 10,
-                borderBottomRightRadius: 20,
-                borderColor: 'green',
-              },
-            ]}
+            style={[styles.base, styles.leftMargin, {
+              borderWidth: 10,
+              borderTopLeftRadius: 10,
+              borderBottomRightRadius: 20,
+              borderColor: 'green',
+            }]}
             source={fullImage}
           />
           <Image
-            style={[
-              styles.base,
-              styles.leftMargin,
-              {
-                borderWidth: 5,
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 20,
-                borderBottomRightRadius: 30,
-                borderBottomLeftRadius: 40,
-                borderColor: 'red',
-              },
-            ]}
+            style={[styles.base, styles.leftMargin, {
+              borderWidth: 5,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 20,
+              borderBottomRightRadius: 30,
+              borderBottomLeftRadius: 40,
+              borderColor: 'red',
+            }]}
             source={fullImage}
           />
         </View>
