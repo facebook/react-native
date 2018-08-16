@@ -7,8 +7,8 @@
 
 package com.facebook.react.fabric;
 
-public interface FabricBinder {
+public interface FabricBinder<T extends FabricBinding> {
 
-  void setBinding(FabricBinding binding);
+  void setBinding(T binding);
 
 }
