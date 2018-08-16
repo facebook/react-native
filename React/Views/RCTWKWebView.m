@@ -27,17 +27,30 @@ static NSString *const MessageHanderName = @"ReactNative";
 {
   if ((self = [super initWithFrame:frame])) {
     super.backgroundColor = [UIColor clearColor];
+    _bounces = YES;
+    _scrollEnabled = YES;
+  }
+  return self;
+}
+
+- (void)didMoveToWindow
+{
+  if (self.window != nil) {
     WKWebViewConfiguration *wkWebViewConfig = [WKWebViewConfiguration new];
     wkWebViewConfig.userContentController = [WKUserContentController new];
     [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
+    wkWebViewConfig.allowsInlineMediaPlayback = _allowsInlineMediaPlayback;
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     _webView.scrollView.delegate = self;
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    _webView.scrollView.scrollEnabled = _scrollEnabled;
+    _webView.scrollView.bounces = _bounces;
     [self addSubview:_webView];
+
+    [self visitSource];
   }
-  return self;
 }
 
 /**
@@ -59,32 +72,39 @@ static NSString *const MessageHanderName = @"ReactNative";
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
 
-    // Check for a static html source first
-    NSString *html = [RCTConvert NSString:source[@"html"]];
-    if (html) {
-      NSURL *baseURL = [RCTConvert NSURL:source[@"baseUrl"]];
-      if (!baseURL) {
-        baseURL = [NSURL URLWithString:@"about:blank"];
-      }
-      [_webView loadHTMLString:html baseURL:baseURL];
-      return;
+    if (_webView != nil) {
+      [self visitSource];
     }
-
-    NSURLRequest *request = [RCTConvert NSURLRequest:source];
-    // Because of the way React works, as pages redirect, we actually end up
-    // passing the redirect urls back here, so we ignore them if trying to load
-    // the same url. We'll expose a call to 'reload' to allow a user to load
-    // the existing page.
-    if ([request.URL isEqual:_webView.URL]) {
-      return;
-    }
-    if (!request.URL) {
-      // Clear the webview
-      [_webView loadHTMLString:@"" baseURL:nil];
-      return;
-    }
-    [_webView loadRequest:request];
   }
+}
+
+- (void)visitSource
+{
+  // Check for a static html source first
+  NSString *html = [RCTConvert NSString:_source[@"html"]];
+  if (html) {
+    NSURL *baseURL = [RCTConvert NSURL:_source[@"baseUrl"]];
+    if (!baseURL) {
+      baseURL = [NSURL URLWithString:@"about:blank"];
+    }
+    [_webView loadHTMLString:html baseURL:baseURL];
+    return;
+  }
+
+  NSURLRequest *request = [RCTConvert NSURLRequest:_source];
+  // Because of the way React works, as pages redirect, we actually end up
+  // passing the redirect urls back here, so we ignore them if trying to load
+  // the same url. We'll expose a call to 'reload' to allow a user to load
+  // the existing page.
+  if ([request.URL isEqual:_webView.URL]) {
+    return;
+  }
+  if (!request.URL) {
+    // Clear the webview
+    [_webView loadHTMLString:@"" baseURL:nil];
+    return;
+  }
+  [_webView loadRequest:request];
 }
 
 
@@ -95,6 +115,7 @@ static NSString *const MessageHanderName = @"ReactNative";
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled
 {
+  _scrollEnabled = scrollEnabled;
   _webView.scrollView.scrollEnabled = scrollEnabled;
 }
 
@@ -304,5 +325,11 @@ static NSString *const MessageHanderName = @"ReactNative";
 - (void)stopLoading
 {
   [_webView stopLoading];
+}
+
+- (void)setBounces:(BOOL)bounces
+{
+  _bounces = bounces;
+  _webView.scrollView.bounces = bounces;
 }
 @end
