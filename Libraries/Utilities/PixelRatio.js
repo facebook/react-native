@@ -68,9 +68,11 @@ class PixelRatio {
    *     - iPhone 4, 4S
    *     - iPhone 5, 5c, 5s
    *     - iPhone 6
+   *     - iPhone SE
    *     - xhdpi Android devices (320 dpi)
    *   - PixelRatio.get() === 3
    *     - iPhone 6 plus
+   *     - iPhone X
    *     - xxhdpi Android devices (480 dpi)
    *   - PixelRatio.get() === 3.5
    *     - Nexus 6
