@@ -18,6 +18,9 @@
 
 @property (nonatomic, weak) id<RCTWKWebViewDelegate> delegate;
 @property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, assign) BOOL messagingEnabled;
 @property (nonatomic, copy) NSString *injectedJavaScript;
+
+- (void)postMessage:(NSString *)message;
 
 @end
