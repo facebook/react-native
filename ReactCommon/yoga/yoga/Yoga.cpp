@@ -639,19 +639,6 @@ struct DimensionProp {
 
 } // namespace
 
-#define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(                          \
-    type, name, paramName, instanceName, dimension)                       \
-  void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) { \
-    DimensionProp<&YGStyle::instanceName>::set<dimension, YGUnitPoint>(   \
-        node, paramName);                                                 \
-  }                                                                       \
-                                                                          \
-  void YGNodeStyleSet##name##Percent(                                     \
-      const YGNodeRef node, const type paramName) {                       \
-    DimensionProp<&YGStyle::instanceName>::set<dimension, YGUnitPercent>( \
-        node, paramName);                                                 \
-  }
-
 #define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(                        \
     type, name, paramName, instanceName)                                     \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {    \
@@ -683,15 +670,6 @@ struct DimensionProp {
       node->getStyle().instanceName = {0, YGUnitAuto};                       \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
-  }
-
-#define YG_NODE_STYLE_PROPERTY_UNIT_IMPL(                               \
-    type, name, paramName, instanceName, dimension)                     \
-  YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(                              \
-      float, name, paramName, instanceName, dimension)                  \
-                                                                        \
-  type YGNodeStyleGet##name(const YGNodeRef node) {                     \
-    return DimensionProp<&YGStyle::instanceName>::get<dimension>(node); \
   }
 
 #define YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(                       \
@@ -1000,30 +978,59 @@ YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(
     Height,
     height,
     dimensions[YGDimensionHeight]);
-YG_NODE_STYLE_PROPERTY_UNIT_IMPL(
-    YGValue,
-    MinWidth,
-    minWidth,
-    minDimensions,
-    YGDimensionWidth);
-YG_NODE_STYLE_PROPERTY_UNIT_IMPL(
-    YGValue,
-    MinHeight,
-    minHeight,
-    minDimensions,
-    YGDimensionHeight);
-YG_NODE_STYLE_PROPERTY_UNIT_IMPL(
-    YGValue,
-    MaxWidth,
-    maxWidth,
-    maxDimensions,
-    YGDimensionWidth);
-YG_NODE_STYLE_PROPERTY_UNIT_IMPL(
-    YGValue,
-    MaxHeight,
-    maxHeight,
-    maxDimensions,
-    YGDimensionHeight);
+
+void YGNodeStyleSetMinWidth(const YGNodeRef node, const float minWidth) {
+  DimensionProp<&YGStyle::minDimensions>::set<YGDimensionWidth, YGUnitPoint>(
+      node, minWidth);
+}
+void YGNodeStyleSetMinWidthPercent(const YGNodeRef node, const float minWidth) {
+  DimensionProp<&YGStyle::minDimensions>::set<YGDimensionWidth, YGUnitPercent>(
+      node, minWidth);
+}
+YGValue YGNodeStyleGetMinWidth(const YGNodeRef node) {
+  return DimensionProp<&YGStyle::minDimensions>::get<YGDimensionWidth>(node);
+};
+
+void YGNodeStyleSetMinHeight(const YGNodeRef node, const float minHeight) {
+  DimensionProp<&YGStyle::minDimensions>::set<YGDimensionHeight, YGUnitPoint>(
+      node, minHeight);
+}
+void YGNodeStyleSetMinHeightPercent(
+    const YGNodeRef node,
+    const float minHeight) {
+  DimensionProp<&YGStyle::minDimensions>::set<YGDimensionHeight, YGUnitPercent>(
+      node, minHeight);
+}
+YGValue YGNodeStyleGetMinHeight(const YGNodeRef node) {
+  return DimensionProp<&YGStyle::minDimensions>::get<YGDimensionHeight>(node);
+};
+
+void YGNodeStyleSetMaxWidth(const YGNodeRef node, const float maxWidth) {
+  DimensionProp<&YGStyle::maxDimensions>::set<YGDimensionWidth, YGUnitPoint>(
+      node, maxWidth);
+}
+void YGNodeStyleSetMaxWidthPercent(const YGNodeRef node, const float maxWidth) {
+  DimensionProp<&YGStyle::maxDimensions>::set<YGDimensionWidth, YGUnitPercent>(
+      node, maxWidth);
+}
+YGValue YGNodeStyleGetMaxWidth(const YGNodeRef node) {
+  return DimensionProp<&YGStyle::maxDimensions>::get<YGDimensionWidth>(node);
+};
+
+void YGNodeStyleSetMaxHeight(const YGNodeRef node, const float maxHeight) {
+  DimensionProp<&YGStyle::maxDimensions>::set<YGDimensionHeight, YGUnitPoint>(
+      node, maxHeight);
+}
+void YGNodeStyleSetMaxHeightPercent(
+    const YGNodeRef node,
+    const float maxHeight) {
+  DimensionProp<&YGStyle::maxDimensions>::set<YGDimensionHeight, YGUnitPercent>(
+      node, maxHeight);
+}
+YGValue YGNodeStyleGetMaxHeight(const YGNodeRef node) {
+  return DimensionProp<&YGStyle::maxDimensions>::get<YGDimensionHeight>(node);
+};
+
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight]);
