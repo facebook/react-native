@@ -648,16 +648,8 @@ struct DimensionProp {
                                                                           \
   void YGNodeStyleSet##name##Percent(                                     \
       const YGNodeRef node, const type paramName) {                       \
-    YGValue value = {                                                     \
-        YGFloatSanitize(paramName),                                       \
-        YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent,  \
-    };                                                                    \
-    if ((node->getStyle().instanceName[dimension].value != value.value && \
-         value.unit != YGUnitUndefined) ||                                \
-        node->getStyle().instanceName[dimension].unit != value.unit) {    \
-      node->getStyle().instanceName[dimension] = value;                   \
-      node->markDirtyAndPropogate();                                      \
-    }                                                                     \
+    DimensionProp<&YGStyle::instanceName>::set<dimension, YGUnitPercent>( \
+        node, paramName);                                                 \
   }
 
 #define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(                        \
