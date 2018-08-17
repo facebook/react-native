@@ -604,6 +604,16 @@ struct StyleProp {
   }
 };
 
+struct Value {
+  template <YGUnit U>
+  static YGValue create(float value) {
+    return {
+        YGFloatSanitize(value),
+        YGFloatIsUndefined(value) ? YGUnitUndefined : U,
+    };
+  }
+};
+
 template <YGStyle::Dimensions YGStyle::*P>
 struct DimensionProp {
   template <YGDimension idx>
@@ -614,6 +624,17 @@ struct DimensionProp {
     }
     return WIN_STRUCT_REF(value);
   }
+
+  template <YGDimension idx, YGUnit U>
+  static void set(YGNodeRef node, float newValue) {
+    YGValue value = Value::create<U>(newValue);
+    if (((node->getStyle().*P)[idx].value != value.value &&
+         value.unit != YGUnitUndefined) ||
+        (node->getStyle().*P)[idx].unit != value.unit) {
+      (node->getStyle().*P)[idx] = value;
+      node->markDirtyAndPropogate();
+    }
+  }
 };
 
 } // namespace
@@ -621,16 +642,8 @@ struct DimensionProp {
 #define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_IMPL(                          \
     type, name, paramName, instanceName, dimension)                       \
   void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) { \
-    YGValue value = {                                                     \
-        YGFloatSanitize(paramName),                                       \
-        YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint,    \
-    };                                                                    \
-    if ((node->getStyle().instanceName[dimension].value != value.value && \
-         value.unit != YGUnitUndefined) ||                                \
-        node->getStyle().instanceName[dimension].unit != value.unit) {               \
-      node->getStyle().instanceName[dimension] = value;                              \
-      node->markDirtyAndPropogate();                                      \
-    }                                                                     \
+    DimensionProp<&YGStyle::instanceName>::set<dimension, YGUnitPoint>(   \
+        node, paramName);                                                 \
   }                                                                       \
                                                                           \
   void YGNodeStyleSet##name##Percent(                                     \
@@ -641,8 +654,8 @@ struct DimensionProp {
     };                                                                    \
     if ((node->getStyle().instanceName[dimension].value != value.value && \
          value.unit != YGUnitUndefined) ||                                \
-        node->getStyle().instanceName[dimension].unit != value.unit) {    \              \
-      node->getStyle().instanceName[dimension] = value;                              \
+        node->getStyle().instanceName[dimension].unit != value.unit) {    \
+      node->getStyle().instanceName[dimension] = value;                   \
       node->markDirtyAndPropogate();                                      \
     }                                                                     \
   }
