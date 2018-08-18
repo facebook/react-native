@@ -350,9 +350,7 @@ public class ReactInstanceManager {
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport
-        && mJSMainModulePath != null
-        && !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+    if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.
@@ -361,30 +359,35 @@ public class ReactInstanceManager {
         // If there is a up-to-date bundle downloaded from server,
         // with remote JS debugging disabled, always use that.
         onJSBundleLoadedFromServer(null);
-      } else if (mBundleLoader == null) {
-        mDevSupportManager.handleReloadJS();
-      } else {
-        mDevSupportManager.isPackagerRunning(
-            new PackagerStatusCallback() {
-              @Override
-              public void onPackagerStatusFetched(final boolean packagerIsRunning) {
-                UiThreadUtil.runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        if (packagerIsRunning) {
-                          mDevSupportManager.handleReloadJS();
-                        } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
-                          recreateReactContextInBackgroundFromBundleLoader();
-                        }
-                      }
-                    });
-              }
-            });
+        return;
       }
-      return;
+
+      if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+        if (mBundleLoader == null) {
+          mDevSupportManager.handleReloadJS();
+        } else {
+          mDevSupportManager.isPackagerRunning(
+              new PackagerStatusCallback() {
+                @Override
+                public void onPackagerStatusFetched(final boolean packagerIsRunning) {
+                  UiThreadUtil.runOnUiThread(
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          if (packagerIsRunning) {
+                            mDevSupportManager.handleReloadJS();
+                          } else {
+                            // If dev server is down, disable the remote JS debugging.
+                            devSettings.setRemoteJSDebugEnabled(false);
+                            recreateReactContextInBackgroundFromBundleLoader();
+                          }
+                        }
+                      });
+                }
+              });
+        }
+        return;
+      }
     }
 
     recreateReactContextInBackgroundFromBundleLoader();
