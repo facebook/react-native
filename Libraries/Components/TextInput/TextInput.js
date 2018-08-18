@@ -156,6 +156,7 @@ type IOSProps = $ReadOnly<{|
     | 'username'
     | 'password'
   ),
+  scrollEnabled?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
