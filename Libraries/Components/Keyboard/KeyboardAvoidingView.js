@@ -65,7 +65,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _frame: ?ViewLayout = null;
   _subscriptions: Array<EmitterSubscription> = [];
-  _initialFrameHeight: 0;
+  _initialFrameHeight: number = 0;
 
   state = {
     bottom: 0,
