@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InputAccessoryViewExample
  * @flow
  * @format
  */
@@ -61,7 +60,8 @@ class TextInputBar extends React.PureComponent<*, *> {
 
 class InputAccessoryViewExample extends React.Component<*> {
   static title = '<InputAccessoryView>';
-  static description = 'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
+  static description =
+    'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
 
   render() {
     return (

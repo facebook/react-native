@@ -16,10 +16,13 @@
 #import "RCTMountItemProtocol.h"
 
 #import "RCTCreateMountItem.h"
+#import "RCTConversions.h"
 #import "RCTDeleteMountItem.h"
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
+#import "RCTUpdateEventEmitterMountItem.h"
+#import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
 
 using namespace facebook::react;
@@ -44,17 +47,16 @@ using namespace facebook::react;
   for (auto instruction : instructions) {
     switch (instruction.getType()) {
       case TreeMutationInstruction::Creation: {
-        NSString *componentName = [NSString stringWithCString:instruction.getNewChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+        NSString *componentName = RCTNSStringFromString(instruction.getNewChildNode()->getComponentName(), NSASCIIStringEncoding);
         RCTCreateMountItem *mountItem =
           [[RCTCreateMountItem alloc] initWithComponentName:componentName
                                                         tag:instruction.getNewChildNode()->getTag()];
         [mountItems addObject:mountItem];
         break;
       }
+
       case TreeMutationInstruction::Deletion: {
-        NSString *componentName = [NSString stringWithCString:instruction.getOldChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+        NSString *componentName = RCTNSStringFromString(instruction.getOldChildNode()->getComponentName(), NSASCIIStringEncoding);
         RCTDeleteMountItem *mountItem =
           [[RCTDeleteMountItem alloc] initWithComponentName:componentName
                                                         tag:instruction.getOldChildNode()->getTag()];
@@ -63,19 +65,24 @@ using namespace facebook::react;
       }
 
       case TreeMutationInstruction::Insertion: {
-        RCTInsertMountItem *mountItem =
-          [[RCTInsertMountItem alloc] initWithChildTag:instruction.getNewChildNode()->getTag()
-                                             parentTag:instruction.getParentNode()->getTag()
-                                                 index:instruction.getIndex()];
-        [mountItems addObject:mountItem];
-
         // Props
         [mountItems addObject:[[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
                                                                   oldProps:nullptr
                                                                   newProps:instruction.getNewChildNode()->getProps()]];
 
+        // EventEmitter
+        [mountItems addObject:[[RCTUpdateEventEmitterMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                     eventEmitter:instruction.getNewChildNode()->getEventEmitter()]];
+
+        // LocalData
+        if (instruction.getNewChildNode()->getLocalData()) {
+          [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                    oldLocalData:nullptr
+                                                                    newLocalData:instruction.getNewChildNode()->getLocalData()]];
+        }
+
         // Layout
-        SharedLayoutableShadowNode layoutableNewShadowNode =
+        auto layoutableNewShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(instruction.getNewChildNode());
 
         if (layoutableNewShadowNode) {
@@ -83,6 +90,14 @@ using namespace facebook::react;
                                                                     oldLayoutMetrics:{}
                                                                     newLayoutMetrics:layoutableNewShadowNode->getLayoutMetrics()]];
         }
+
+        // Insertion
+        RCTInsertMountItem *mountItem =
+        [[RCTInsertMountItem alloc] initWithChildTag:instruction.getNewChildNode()->getTag()
+                                           parentTag:instruction.getParentNode()->getTag()
+                                               index:instruction.getIndex()];
+        [mountItems addObject:mountItem];
+
         break;
       }
 
@@ -108,12 +123,29 @@ using namespace facebook::react;
           [mountItems addObject:mountItem];
         }
 
+        // EventEmitter
+        if (oldShadowNode->getEventEmitter() != newShadowNode->getEventEmitter()) {
+          RCTUpdateEventEmitterMountItem *mountItem =
+            [[RCTUpdateEventEmitterMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
+                                                   eventEmitter:instruction.getOldChildNode()->getEventEmitter()];
+          [mountItems addObject:mountItem];
+        }
+
+        // LocalData
+        if (oldShadowNode->getLocalData() != newShadowNode->getLocalData()) {
+          RCTUpdateLocalDataMountItem *mountItem =
+            [[RCTUpdateLocalDataMountItem alloc] initWithTag:newShadowNode->getTag()
+                                                oldLocalData:oldShadowNode->getLocalData()
+                                                newLocalData:newShadowNode->getLocalData()];
+          [mountItems addObject:mountItem];
+        }
+
         // Layout
-        SharedLayoutableShadowNode layoutableOldShadowNode =
+        auto layoutableOldShadowNode =
           std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
 
         if (layoutableOldShadowNode) {
-          SharedLayoutableShadowNode layoutableNewShadowNode =
+          auto layoutableNewShadowNode =
             std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
 
           if (layoutableOldShadowNode->getLayoutMetrics() != layoutableNewShadowNode->getLayoutMetrics()) {
@@ -147,6 +179,13 @@ using namespace facebook::react;
   }
 
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
+}
+
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName
+{
+  RCTExecuteOnMainQueue(^{
+    [self->_componentViewRegistry preliminaryCreateComponentViewWithName:componentName];
+  });
 }
 
 @end

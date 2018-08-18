@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppState
+ * @format
  * @flow
  */
+
 'use strict';
 
 const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
@@ -24,7 +25,6 @@ const invariant = require('fbjs/lib/invariant');
  * See http://facebook.github.io/react-native/docs/appstate.html
  */
 class AppState extends NativeEventEmitter {
-
   _eventHandlers: Object;
   currentState: ?string;
   isAvailable: boolean = true;
@@ -48,25 +48,21 @@ class AppState extends NativeEventEmitter {
     // prop is up to date, we have to register an observer that updates it
     // whenever the state changes, even if nobody cares. We should just
     // deprecate the `currentState` property and get rid of this.
-    this.addListener(
-      'appStateDidChange',
-      (appStateData) => {
-        eventUpdated = true;
-        this.currentState = appStateData.app_state;
-      }
-    );
+    this.addListener('appStateDidChange', appStateData => {
+      eventUpdated = true;
+      this.currentState = appStateData.app_state;
+    });
 
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the
     // prop and expose `getCurrentAppState` method directly.
-    RCTAppState.getCurrentAppState(
-      (appStateData) => {
-        if (!eventUpdated) {
-          this.currentState = appStateData.app_state;
-        }
-      },
-      logError
-    );
+    RCTAppState.getCurrentAppState(appStateData => {
+      // It's possible that the state will have changed here & listeners need to be notified
+      if (!eventUpdated && this.currentState !== appStateData.app_state) {
+        this.currentState = appStateData.app_state;
+        this.emit('appStateDidChange', appStateData);
+      }
+    }, logError);
   }
 
   // TODO: now that AppState is a subclass of NativeEventEmitter, we could
@@ -74,32 +70,30 @@ class AppState extends NativeEventEmitter {
   // addListener` and `listener.remove()` directly. That will be a breaking
   // change though, as both the method and event names are different
   // (addListener events are currently required to be globally unique).
-   /**
+  /**
    * Add a handler to AppState changes by listening to the `change` event type
    * and providing the handler.
    *
    * See http://facebook.github.io/react-native/docs/appstate.html#addeventlistener
    */
-  addEventListener(
-    type: string,
-    handler: Function
-  ) {
+  addEventListener(type: string, handler: Function) {
     invariant(
       ['change', 'memoryWarning'].indexOf(type) !== -1,
-      'Trying to subscribe to unknown event: "%s"', type
+      'Trying to subscribe to unknown event: "%s"',
+      type,
     );
     if (type === 'change') {
-      this._eventHandlers[type].set(handler, this.addListener(
-        'appStateDidChange',
-        (appStateData) => {
+      this._eventHandlers[type].set(
+        handler,
+        this.addListener('appStateDidChange', appStateData => {
           handler(appStateData.app_state);
-        }
-      ));
+        }),
+      );
     } else if (type === 'memoryWarning') {
-      this._eventHandlers[type].set(handler, this.addListener(
-        'memoryWarning',
-        handler
-      ));
+      this._eventHandlers[type].set(
+        handler,
+        this.addListener('memoryWarning', handler),
+      );
     }
   }
 
@@ -108,13 +102,11 @@ class AppState extends NativeEventEmitter {
    *
    * See http://facebook.github.io/react-native/docs/appstate.html#removeeventlistener
    */
-  removeEventListener(
-    type: string,
-    handler: Function
-  ) {
+  removeEventListener(type: string, handler: Function) {
     invariant(
       ['change', 'memoryWarning'].indexOf(type) !== -1,
-      'Trying to remove listener for unknown event: "%s"', type
+      'Trying to remove listener for unknown event: "%s"',
+      type,
     );
     if (!this._eventHandlers[type].has(handler)) {
       return;

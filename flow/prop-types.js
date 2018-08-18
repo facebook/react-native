@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @nolint
+ * @format
  */
 
 // TODO (bvaughn) Remove this file once flowtype/flow-typed/pull/773 is merged
@@ -14,7 +15,7 @@ type $npm$propTypes$ReactPropsCheckType = (
   props: any,
   propName: string,
   componentName: string,
-  href?: string
+  href?: string,
 ) => ?Error;
 
 declare module 'prop-types' {
@@ -39,6 +40,6 @@ declare module 'prop-types' {
     values: V,
     location: string,
     componentName: string,
-    getStack: ?(() => ?string)
-  ) : void;
+    getStack: ?() => ?string,
+  ): void;
 }

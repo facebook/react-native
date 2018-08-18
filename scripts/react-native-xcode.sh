@@ -62,6 +62,8 @@ fi
 # Set up the nodenv node version manager if present
 if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
   eval "$("$HOME/.nodenv/bin/nodenv" init -)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; then
+  eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
 fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
@@ -92,7 +94,7 @@ type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
-if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
+if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
   IP=$(ipconfig getifaddr en0)
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')

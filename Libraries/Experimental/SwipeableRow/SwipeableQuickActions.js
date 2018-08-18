@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableQuickActions
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const React = require('React');
@@ -41,19 +42,17 @@ class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
         buttons.push(children[i]);
 
         // $FlowFixMe found when converting React.createClass to ES6
-        if (i < this.props.children.length - 1) { // Not last button
+        if (i < this.props.children.length - 1) {
+          // Not last button
           buttons.push(<View key={i} style={styles.divider} />);
         }
       }
-    } else { // 1 child
+    } else {
+      // 1 child
       buttons = children;
     }
 
-    return (
-      <View style={[styles.background, this.props.style]}>
-        {buttons}
-      </View>
-    );
+    return <View style={[styles.background, this.props.style]}>{buttons}</View>;
   }
 }
 

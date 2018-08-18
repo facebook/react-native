@@ -8,10 +8,13 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ShadowNode.h>
+#include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/events/EventDispatcher.h>
 
 namespace facebook {
 namespace react {
@@ -28,27 +31,48 @@ class ConcreteComponentDescriptor: public ComponentDescriptor {
   using SharedShadowNodeT = std::shared_ptr<const ShadowNodeT>;
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
   using SharedConcreteProps = typename ShadowNodeT::SharedConcreteProps;
+  using ConcreteEventEmitter = typename ShadowNodeT::ConcreteEventEmitter;
+  using SharedConcreteEventEmitter = typename ShadowNodeT::SharedConcreteEventEmitter;
 
 public:
+  ConcreteComponentDescriptor(SharedEventDispatcher eventDispatcher):
+    eventDispatcher_(eventDispatcher) {}
+
   ComponentHandle getComponentHandle() const override {
-    return typeid(ShadowNodeT).hash_code();
+    return ShadowNodeT::Handle();
+  }
+
+  ComponentName getComponentName() const override {
+    return ShadowNodeT::Name();
   }
 
   SharedShadowNode createShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const InstanceHandle &instanceHandle,
-    const SharedProps &props
+    const ShadowNodeFragment &fragment
   ) const override {
-    return std::make_shared<ShadowNodeT>(tag, rootTag, instanceHandle, std::static_pointer_cast<const ConcreteProps>(props));
+    assert(std::dynamic_pointer_cast<const ConcreteProps>(fragment.props));
+    assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(fragment.eventEmitter));
+
+    auto shadowNode = std::make_shared<ShadowNodeT>(
+      fragment,
+      getCloneFunction()
+    );
+
+    adopt(shadowNode);
+
+    return shadowNode;
   }
 
-  SharedShadowNode cloneShadowNode(
-    const SharedShadowNode &shadowNode,
-    const SharedProps &props = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+  UnsharedShadowNode cloneShadowNode(
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   ) const override {
-    return std::make_shared<ShadowNodeT>(std::static_pointer_cast<const ShadowNodeT>(shadowNode), std::static_pointer_cast<const ConcreteProps>(props), children);
+    auto shadowNode = std::make_shared<ShadowNodeT>(
+      sourceShadowNode,
+      fragment
+    );
+
+    adopt(shadowNode);
+    return shadowNode;
   }
 
   void appendChild(
@@ -67,6 +91,35 @@ public:
     return ShadowNodeT::Props(rawProps, props);
   };
 
+  virtual SharedEventEmitter createEventEmitter(
+    const EventTarget &eventTarget,
+    const Tag &tag
+  ) const override {
+    return std::make_shared<ConcreteEventEmitter>(eventTarget, tag, eventDispatcher_);
+  }
+
+protected:
+
+  virtual void adopt(UnsharedShadowNode shadowNode) const {
+    // Default implementation does nothing.
+    assert(shadowNode->getComponentHandle() == getComponentHandle());
+  }
+
+private:
+
+  mutable SharedEventDispatcher eventDispatcher_ {nullptr};
+
+  mutable ShadowNodeCloneFunction cloneFunction_;
+
+  ShadowNodeCloneFunction getCloneFunction() const {
+    if (!cloneFunction_) {
+      cloneFunction_ = [this](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
+        return this->cloneShadowNode(shadowNode, fragment);
+      };
+    }
+
+    return cloneFunction_;
+  }
 };
 
 } // namespace react

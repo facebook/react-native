@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedStyle
  * @flow
  * @format
  */
@@ -96,13 +95,13 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     for (const key in this._style) {
       const value = this._style[key];
       if (value instanceof AnimatedNode) {
         value.__makeNative();
       }
     }
+    super.__makeNative();
   }
 
   __getNativeConfig(): Object {

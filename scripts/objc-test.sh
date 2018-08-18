@@ -56,7 +56,7 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/packager.sh --max-workers=1 || echo "Can't start packager automatically" &
+npm run start --max-workers=1 || echo "Can't start packager automatically" &
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
@@ -79,7 +79,7 @@ xcodebuild \
   -sdk $SDK \
   -destination "$DESTINATION" \
   build test \
-  | xcpretty --report junit --output ~/react-native/reports/junit/objc-xcodebuild-results.xml
+  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml"
 
 else
 

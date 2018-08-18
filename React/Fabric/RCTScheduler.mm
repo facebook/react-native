@@ -7,8 +7,14 @@
 
 #import "RCTScheduler.h"
 
+#import <fabric/imagemanager/ImageManager.h>
+#import <fabric/uimanager/ContextContainer.h>
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTBridge+Private.h>
+
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 
@@ -23,7 +29,7 @@ public:
 
   void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:[NSString stringWithCString:componentName.c_str() encoding:NSASCIIStringEncoding]];
+    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
   }
 
 private:
@@ -39,7 +45,13 @@ private:
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>();
+
+    SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
+
+    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
+    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
+
+    _scheduler = std::make_shared<Scheduler>(contextContainer);
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -59,6 +71,20 @@ private:
 - (void)unregisterRootTag:(ReactTag)tag
 {
   _scheduler->unregisterRootTag(tag);
+}
+
+- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                         layoutContext:(LayoutContext)layoutContext
+                               rootTag:(ReactTag)rootTag
+{
+  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
+}
+
+- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                layoutContext:(LayoutContext)layoutContext
+                                      rootTag:(ReactTag)rootTag
+{
+  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
 }
 
 @end

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CheckBox
  * @flow
  * @format
  */
@@ -18,6 +17,8 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+
+const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
 
 type DefaultProps = {
   value: boolean,
@@ -130,7 +131,11 @@ let CheckBox = createReactClass({
     let props = {...this.props};
     props.onStartShouldSetResponder = () => true;
     props.onResponderTerminationRequest = () => false;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.enabled = !this.props.disabled;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.on = this.props.value;
     props.style = [styles.rctCheckBox, this.props.style];
 
@@ -153,14 +158,6 @@ let styles = StyleSheet.create({
   rctCheckBox: {
     height: 32,
     width: 32,
-  },
-});
-
-let RCTCheckBox = requireNativeComponent('AndroidCheckBox', CheckBox, {
-  nativeOnly: {
-    onChange: true,
-    on: true,
-    enabled: true,
   },
 });
 

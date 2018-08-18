@@ -1,23 +1,23 @@
 prebuilt_jar(
     name = "okhttp3",
-    binary_jar = ":okhttp3-binary-jar",
+    binary_jar = ":okhttp3-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
 remote_file(
-    name = "okhttp3-binary-jar",
-    sha1 = "5a11f020cce2d11eb71ba916700600e18c4547e7",
-    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.8.0",
+    name = "okhttp3-binary.jar",
+    sha1 = "7ef0f1d95bf4c0b3ba30bbae25e0e562b05cf75e",
+    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.10.0",
 )
 
 prebuilt_jar(
     name = "okhttp3-urlconnection",
-    binary_jar = ":okhttp3-urlconnection-binary-jar",
+    binary_jar = ":okhttp3-urlconnection-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
 remote_file(
-    name = "okhttp3-urlconnection-binary-jar",
-    sha1 = "265257b82f20bb0371a926cc8ceb5f7bb17c0df8",
-    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.8.0",
+    name = "okhttp3-urlconnection-binary.jar",
+    sha1 = "ec614c05825ddd2267677a99f585d3913474b125",
+    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.10.0",
 )

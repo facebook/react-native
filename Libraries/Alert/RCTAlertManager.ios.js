@@ -4,11 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTAlertManager
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var RCTAlertManager = require('NativeModules').AlertManager;
+const RCTAlertManager = require('NativeModules').AlertManager;
 
 module.exports = RCTAlertManager;

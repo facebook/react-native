@@ -31,12 +31,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.text.CustomTextTransformSpan;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -342,6 +342,70 @@ public class ReactTextTest {
     assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
   }
 
+  @Test
+  public void testTextTransformNoneApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = testTextEntered;
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "none"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformUppercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".AA\tBB\t\tCC  DD EE \r\nZZ I LIKE TO EAT APPLES. \n中文ÉÉ 我喜欢吃苹果。AWDAWD   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "uppercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformLowercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".aa\tbb\t\tcc  dd ee \r\nzz i like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "lowercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformCapitalizeApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".Aa\tBb\t\tCc  Dd Ee \r\nZz I Like To Eat Apples. \n中文Éé 我喜欢吃苹果。Awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "capitalize"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
   // JELLY_BEAN is needed for TextView#getMaxLines(), which is OK, because in the actual code we
   // only use TextView#setMaxLines() which exists since API Level 1.
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -428,7 +492,7 @@ public class ReactTextTest {
             new ReactRawTextManager(),
         });
     UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(reactContext, viewManagers, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

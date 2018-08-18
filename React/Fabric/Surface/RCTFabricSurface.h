@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,9 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTFabricSurface : NSObject
 
 @property (atomic, readonly) RCTSurfaceStage stage;
-@property (atomic, readonly) RCTBridge *bridge;
 @property (atomic, readonly) NSString *moduleName;
-@property (atomic, readonly) NSNumber *rootViewTag;
+@property (atomic, readonly) ReactTag rootTag;
 
 @property (atomic, readwrite, weak, nullable) id<RCTSurfaceDelegate> delegate;
 
@@ -121,6 +121,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTFabricSurface (Internal)
 
 - (void)_setStage:(RCTSurfaceStage)stage;
+
+@end
+
+@interface RCTFabricSurface (Deprecated)
+
+/**
+ * Deprecated. Use `rootTag` instead.
+ */
+@property (atomic, readonly) NSNumber *rootViewTag;
 
 @end
 

@@ -28,12 +28,13 @@ class Props:
   public virtual DebugStringConvertible {
 
 public:
-  virtual void apply(const RawProps &rawProps);
+  Props() = default;
+  Props(const Props &sourceProps, const RawProps &rawProps);
 
-  const std::string &getNativeId() const;
-
-private:
-  std::string nativeId_ {""};
+  const std::string nativeId;
+  #ifdef ANDROID
+  const RawProps rawProps;
+  #endif
 };
 
 } // namespace react

@@ -4,21 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule JSDevSupportModule
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var JSDevSupportModule = {
-  getJSHierarchy: function (tag: string) {
-    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-    const renderers = hook._renderers;
-    const keys = Object.keys(renderers);
-    const renderer = renderers[keys[0]];
+const JSDevSupport = require('NativeModules').JSDevSupport;
+const ReactNative = require('ReactNative');
 
-    var result = renderer.getInspectorDataForViewTag(tag);
-    var path = result.hierarchy.map( (item) => item.name).join(' -> ');
-    require('NativeModules').JSDevSupport.setResult(path, null);
+const JSDevSupportModule = {
+  getJSHierarchy: function(tag: number) {
+    try {
+      const {
+        computeComponentStackForErrorReporting,
+      } = ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+      const componentStack = computeComponentStackForErrorReporting(tag);
+      if (!componentStack) {
+        JSDevSupport.onFailure(
+          JSDevSupport.ERROR_CODE_VIEW_NOT_FOUND,
+          "Component stack doesn't exist for tag " + tag,
+        );
+      } else {
+        JSDevSupport.onSuccess(componentStack);
+      }
+    } catch (e) {
+      JSDevSupport.onFailure(JSDevSupport.ERROR_CODE_EXCEPTION, e.message);
+    }
   },
 };
 

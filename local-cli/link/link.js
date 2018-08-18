@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -35,40 +36,54 @@ import type {RNConfig} from '../core';
 
 log.heading = 'rnpm-link';
 
-const dedupeAssets = (assets) => uniqBy(assets, asset => path.basename(asset));
+const dedupeAssets = assets => uniqBy(assets, asset => path.basename(asset));
 
 const linkDependency = async (platforms, project, dependency) => {
   const params = await pollParams(dependency.config.params);
 
-  Object.keys(platforms || {})
-    .forEach(platform => {
-      if (!project[platform] || !dependency.config[platform]) {
-        return null;
-      }
+  Object.keys(platforms || {}).forEach(platform => {
+    if (!project[platform] || !dependency.config[platform]) {
+      return null;
+    }
 
-      const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
-      if (!linkConfig || !linkConfig.isInstalled || !linkConfig.register) {
-        return null;
-      }
+    const linkConfig =
+      platforms[platform] &&
+      platforms[platform].linkConfig &&
+      platforms[platform].linkConfig();
+    if (!linkConfig || !linkConfig.isInstalled || !linkConfig.register) {
+      return null;
+    }
 
-      const isInstalled = linkConfig.isInstalled(project[platform], dependency.name, dependency.config[platform]);
+    const isInstalled = linkConfig.isInstalled(
+      project[platform],
+      dependency.name,
+      dependency.config[platform],
+    );
 
-      if (isInstalled) {
-        log.info(chalk.grey(`Platform '${platform}' module ${dependency.name} is already linked`));
-        return null;
-      }
-
-      log.info(`Linking ${dependency.name} ${platform} dependency`);
-
-      linkConfig.register(
-        dependency.name,
-        dependency.config[platform],
-        params,
-        project[platform]
+    if (isInstalled) {
+      log.info(
+        chalk.grey(
+          `Platform '${platform}' module ${dependency.name} is already linked`,
+        ),
       );
+      return null;
+    }
 
-      log.info(`Platform '${platform}' module ${dependency.name} has been successfully linked`);
-    });
+    log.info(`Linking ${dependency.name} ${platform} dependency`);
+
+    linkConfig.register(
+      dependency.name,
+      dependency.config[platform],
+      params,
+      project[platform],
+    );
+
+    log.info(
+      `Platform '${platform}' module ${
+        dependency.name
+      } has been successfully linked`,
+    );
+  });
 };
 
 const linkAssets = (platforms, project, assets) => {
@@ -76,16 +91,18 @@ const linkAssets = (platforms, project, assets) => {
     return;
   }
 
-  Object.keys(platforms || {})
-    .forEach(platform => {
-      const linkConfig = platforms[platform] && platforms[platform].linkConfig && platforms[platform].linkConfig();
-      if (!linkConfig || !linkConfig.copyAssets) {
-        return;
-      }
+  Object.keys(platforms || {}).forEach(platform => {
+    const linkConfig =
+      platforms[platform] &&
+      platforms[platform].linkConfig &&
+      platforms[platform].linkConfig();
+    if (!linkConfig || !linkConfig.copyAssets) {
+      return;
+    }
 
-      log.info(`Linking assets to ${platform} project`);
-      linkConfig.copyAssets(assets, project[platform]);
-    });
+    log.info(`Linking assets to ${platform} project`);
+    linkConfig.copyAssets(assets, project[platform]);
+  });
 
   log.info('Assets have been successfully linked to your project');
 };
@@ -106,50 +123,57 @@ function link(args: Array<string>, config: RNConfig) {
   } catch (err) {
     log.error(
       'ERRPACKAGEJSON',
-      'No package found. Are you sure this is a React Native project?'
+      'No package found. Are you sure this is a React Native project?',
     );
     return Promise.reject(err);
   }
 
-  const hasProjectConfig = Object.keys(platforms).reduce((acc, key) => acc || key in project, false);
+  const hasProjectConfig = Object.keys(platforms).reduce(
+    (acc, key) => acc || key in project,
+    false,
+  );
   if (!hasProjectConfig && findReactNativeScripts()) {
     throw new Error(
       '`react-native link` can not be used in Create React Native App projects. ' +
-      'If you need to include a library that relies on custom native code, ' +
-      'you might have to eject first. ' +
-      'See https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md ' +
-      'for more information.'
+        'If you need to include a library that relies on custom native code, ' +
+        'you might have to eject first. ' +
+        'See https://github.com/react-community/create-react-native-app/blob/master/EJECTING.md ' +
+        'for more information.',
     );
   }
 
   let packageName = args[0];
-  // Check if install package by specific version (eg. package@latest)
+  // Trim the version / tag out of the package name (eg. package@latest)
   if (packageName !== undefined) {
-    packageName = packageName.split('@')[0];
+    packageName = packageName.replace(/^(.+?)(@.+?)$/gi, '$1');
   }
 
   const dependencies = getDependencyConfig(
     config,
-    packageName ? [packageName] : getProjectDependencies()
+    packageName ? [packageName] : getProjectDependencies(),
   );
 
-  const assets = dedupeAssets(dependencies.reduce(
-    (acc, dependency) => acc.concat(dependency.config.assets),
-    project.assets
-  ));
+  const assets = dedupeAssets(
+    dependencies.reduce(
+      (acc, dependency) => acc.concat(dependency.config.assets),
+      project.assets,
+    ),
+  );
 
-  const tasks = flatten(dependencies.map(dependency => [
-    () => promisify(dependency.config.commands.prelink || commandStub),
-    () => linkDependency(platforms, project, dependency),
-    () => promisify(dependency.config.commands.postlink || commandStub),
-  ]));
+  const tasks = flatten(
+    dependencies.map(dependency => [
+      () => promisify(dependency.config.commands.prelink || commandStub),
+      () => linkDependency(platforms, project, dependency),
+      () => promisify(dependency.config.commands.postlink || commandStub),
+    ]),
+  );
 
   tasks.push(() => linkAssets(platforms, project, assets));
 
   return promiseWaterfall(tasks).catch(err => {
     log.error(
       `Something went wrong while linking. Error: ${err.message} \n` +
-      'Please file an issue here: https://github.com/facebook/react-native/issues'
+        'Please file an issue here: https://github.com/facebook/react-native/issues',
     );
     throw err;
   });

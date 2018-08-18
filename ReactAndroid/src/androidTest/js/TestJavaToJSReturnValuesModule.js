@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TestJavaToJSReturnValuesModule
+ * @format
  */
 
 'use strict';
@@ -27,12 +27,12 @@ var TestJavaToJSReturnValuesModule = {
     } catch (ex) {
       assertTrue(ex.message.indexOf('Exception triggered') !== -1);
     }
-  }
+  },
 };
 
 BatchedBridge.registerCallableModule(
   'TestJavaToJSReturnValuesModule',
-  TestJavaToJSReturnValuesModule
+  TestJavaToJSReturnValuesModule,
 );
 
 module.exports = TestJavaToJSReturnValuesModule;

@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StaticRenderer
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
@@ -22,7 +23,7 @@ class StaticRenderer extends React.Component<{
     render: PropTypes.func.isRequired,
   };
 
-  shouldComponentUpdate(nextProps: { shouldUpdate: boolean }): boolean {
+  shouldComponentUpdate(nextProps: {shouldUpdate: boolean}): boolean {
     return nextProps.shouldUpdate;
   }
 

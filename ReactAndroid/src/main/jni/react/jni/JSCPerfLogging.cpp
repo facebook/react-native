@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSCPerfLogging.h"
 
@@ -59,6 +62,12 @@ struct JQuickPerformanceLogger : JavaClass<JQuickPerformanceLogger> {
       javaClassStatic()->getMethod<jlong()>("currentMonotonicTimestamp");
     return currentTimestampMethod(self());
   }
+
+  void markerPoint(int markerId, alias_ref<jstring> name, int instanceKey) {
+    static auto markerPointMethod =
+      javaClassStatic()->getMethod<void(jint, jint, alias_ref<jstring>)>("markerPoint");
+    markerPointMethod(self(), markerId, instanceKey, name);
+  }
 };
 
 struct JQuickPerformanceLoggerProvider : JavaClass<JQuickPerformanceLoggerProvider> {
@@ -103,6 +112,14 @@ static bool isNan(double value) {
   return (value != value);
 }
 
+static double grabDouble(
+    JSContextRef ctx,
+    const JSValueRef arguments[],
+    size_t argumentIndex,
+    JSValueRef* exception) {
+  return JSValueToNumber(ctx, arguments[argumentIndex], exception);
+}
+
 // Safely translates JSValues to an array of doubles.
 static bool grabDoubles(
     size_t targetsCount,
@@ -115,7 +132,7 @@ static bool grabDoubles(
     return false;
   }
   for (size_t i = 0 ; i < targetsCount ; i++) {
-    targets[i] = JSValueToNumber(ctx, arguments[i], exception);
+    targets[i] = grabDouble(ctx, arguments, i, exception);
     if (isNan(targets[i])) {
       return false;
     }
@@ -160,7 +177,8 @@ static JSValueRef nativeQPLMarkerEnd(
   if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
-    int16_t actionId = (int16_t) targets[2];
+    // NOTE: avoid undefined behavior when the value does not find in int16_t.
+    int16_t actionId = (int16_t) (int32_t) targets[2];
     int64_t timestamp = (int64_t) targets[3];
     JQuickPerformanceLoggerProvider::get()->markerEnd(markerId, instanceKey, actionId, timestamp);
   }
@@ -213,7 +231,8 @@ static JSValueRef nativeQPLMarkerNote(
   if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
-    int16_t actionId = (int16_t) targets[2];
+    // NOTE: avoid undefined behavior when the value does not find in int16_t.
+    int16_t actionId = (int16_t) (int32_t) targets[2];
     int64_t timestamp = (int64_t) targets[3];
     JQuickPerformanceLoggerProvider::get()->markerNote(markerId, instanceKey, actionId, timestamp);
   }
@@ -251,6 +270,30 @@ static JSValueRef nativeQPLTimestamp(
   return JSValueMakeNumber(ctx, timestamp);
 }
 
+static JSValueRef nativeQPLMarkerPoint(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  if (isReady() && argumentCount == 4) {
+    double markerIdArgument = grabDouble(ctx, arguments, 0, exception);
+    double instanceKeyArgument = grabDouble(ctx, arguments, 2, exception);
+    if (isNan(markerIdArgument) || isNan(instanceKeyArgument)) {
+      return JSValueMakeUndefined(ctx);
+    }
+
+    int32_t markerId = (int32_t) markerIdArgument;
+    local_ref<jstring> name = getJStringFromJSValueRef(ctx, arguments[1]);
+    int32_t instanceKey = (int32_t) instanceKeyArgument;
+    // timestamp is not used as QuickPerformanceLogger::markerPoint with all
+    // params is missing
+    JQuickPerformanceLoggerProvider::get()->markerPoint(markerId, name, instanceKey);
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
 void addNativePerfLoggingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeQPLMarkerStart", nativeQPLMarkerStart);
   installGlobalFunction(ctx, "nativeQPLMarkerEnd", nativeQPLMarkerEnd);
@@ -259,6 +302,7 @@ void addNativePerfLoggingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeQPLMarkerNote", nativeQPLMarkerNote);
   installGlobalFunction(ctx, "nativeQPLMarkerCancel", nativeQPLMarkerCancel);
   installGlobalFunction(ctx, "nativeQPLTimestamp", nativeQPLTimestamp);
+  installGlobalFunction(ctx, "nativeQPLMarkerPoint", nativeQPLMarkerPoint);
 }
 
 } }

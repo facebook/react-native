@@ -10,20 +10,17 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include <memory>
 
 #include <fabric/core/LayoutMetrics.h>
 #include <fabric/core/Sealable.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
 
 struct LayoutConstraints;
 struct LayoutContext;
-
-class LayoutableShadowNode;
-using SharedLayoutableShadowNode = std::shared_ptr<const LayoutableShadowNode>;
-using SharedLayoutableShadowNodeList = std::vector<const SharedLayoutableShadowNode>;
-using LayoutableShadowNodeIterator = std::iterator<std::input_iterator_tag, const SharedLayoutableShadowNode>;
 
 /*
  * Describes all sufficient layout API (in approach-agnostic way)
@@ -88,19 +85,23 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual SharedLayoutableShadowNodeList getLayoutableChildNodes() const = 0;
+  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
    */
-  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) = 0;
+  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) = 0;
 
   /*
    * Sets layout metrics for the shadow node.
    * Returns true if the metrics are different from previous ones.
    */
   virtual bool setLayoutMetrics(LayoutMetrics layoutMetrics);
+
+#pragma mark - DebugStringConvertible
+
+  SharedDebugStringConvertibleList getDebugProps() const;
 
 private:
   LayoutMetrics layoutMetrics_ {};

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.debug.tags;
 
@@ -24,6 +27,16 @@ public class ReactDebugOverlayTags {
           "UI Manager",
           "UI Manager View Operations (requires restart\nwarning: this is spammy)",
           Color.CYAN);
+  public static final DebugOverlayTag FABRIC_UI_MANAGER =
+    new DebugOverlayTag(
+      "FabricUIManager",
+      "Fabric UI Manager View Operations",
+      Color.CYAN);
+  public static final DebugOverlayTag FABRIC_RECONCILER =
+    new DebugOverlayTag(
+      "FabricReconciler",
+      "Reconciler for Fabric",
+      Color.CYAN);
   public static final DebugOverlayTag RELAY =
       new DebugOverlayTag("Relay", "including prefetching", Color.rgb(0xFF, 0x99, 0x00));
 }

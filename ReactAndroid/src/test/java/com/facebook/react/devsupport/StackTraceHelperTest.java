@@ -18,6 +18,16 @@ import org.robolectric.RobolectricTestRunner;
 public class StackTraceHelperTest {
 
   @Test
+  public void testParseAlternateFormatStackFrameWithMethod() {
+    final StackFrame frame = StackTraceHelper.convertJsStackTrace(
+        "at func1 (/path/to/file.js:2:18)")[0];
+    assertThat(frame.getMethod()).isEqualTo("func1");
+    assertThat(frame.getFileName()).isEqualTo("file.js");
+    assertThat(frame.getLine()).isEqualTo(2);
+    assertThat(frame.getColumn()).isEqualTo(18);
+  }
+
+  @Test
   public void testParseStackFrameWithMethod() {
     final StackFrame frame = StackTraceHelper.convertJsStackTrace(
         "render@Test.bundle:1:2000")[0];

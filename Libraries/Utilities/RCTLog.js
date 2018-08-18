@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTLog
+ * @format
  * @flow
  */
+
 'use strict';
 
 const invariant = require('fbjs/lib/invariant');
@@ -19,7 +20,7 @@ const levelsMap = {
   fatal: 'error',
 };
 
-let warningHandler: ?(Array<any> => void) = null;
+let warningHandler: ?(Array<any>) => void = null;
 
 const RCTLog = {
   // level one of log, info, warn, error, mustfix
@@ -40,7 +41,7 @@ const RCTLog = {
     const logFn = levelsMap[level];
     invariant(
       logFn,
-      'Level "' + level + '" not one of ' + Object.keys(levelsMap).toString()
+      'Level "' + level + '" not one of ' + Object.keys(levelsMap).toString(),
     );
 
     console[logFn](...args);
@@ -48,7 +49,7 @@ const RCTLog = {
 
   setWarningHandler(handler: typeof warningHandler): void {
     warningHandler = handler;
-  }
+  },
 };
 
 module.exports = RCTLog;

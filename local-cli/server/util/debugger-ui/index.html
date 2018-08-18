@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   Copyright (c) 2015-present, Facebook, Inc.
-  
+
   This source code is licensed under the MIT license found in the
   LICENSE file in the root directory of this source tree.
 -->
@@ -112,6 +112,8 @@
   function connectToDebuggerProxy() {
     const ws = new WebSocket('ws://' + window.location.host + '/debugger-proxy?role=debugger&name=Chrome');
     let worker;
+    let queuedMessages = [];
+    let appExecuted = false;
 
     function createJSRuntime() {
       // This worker will run the application JavaScript code,
@@ -177,13 +179,26 @@
         shutdownJSRuntime();
         Page.setState({status: {type: 'disconnected'}});
       } else if (object.method === 'executeApplicationScript') {
+        appExecuted = false;
         worker.postMessage({
           ...object,
           url: await getBlobUrl(object.url),
         });
+        appExecuted = true;
+        // Flush any messages queued up and clear them
+        for (const message of queuedMessages) {
+          worker.postMessage(message);
+        }
+        queuedMessages = [];
       } else {
-        // Otherwise, pass through to the worker.
-        worker.postMessage(object);
+        // Otherwise, pass through to the worker provided the
+        // application script has been executed. If not add
+        // it to a queue until it has been executed.
+        if (appExecuted) {
+          worker.postMessage(object);
+        } else {
+          queuedMessages.push(object);
+        }
       }
     };
 

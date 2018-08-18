@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InspectorPanel
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const ElementProperties = require('ElementProperties');
@@ -24,9 +25,7 @@ class InspectorPanel extends React.Component<$FlowFixMeProps> {
   renderWaiting() {
     if (this.props.inspecting) {
       return (
-        <Text style={styles.waitingText}>
-          Tap something to inspect it
-        </Text>
+        <Text style={styles.waitingText}>Tap something to inspect it</Text>
       );
     }
     return <Text style={styles.waitingText}>Nothing is inspected</Text>;
@@ -48,19 +47,11 @@ class InspectorPanel extends React.Component<$FlowFixMeProps> {
         </ScrollView>
       );
     } else if (this.props.perfing) {
-      contents = (
-        <PerformanceOverlay />
-      );
+      contents = <PerformanceOverlay />;
     } else if (this.props.networking) {
-      contents = (
-        <NetworkOverlay />
-      );
+      contents = <NetworkOverlay />;
     } else {
-      contents = (
-        <View style={styles.waiting}>
-          {this.renderWaiting()}
-        </View>
-      );
+      contents = <View style={styles.waiting}>{this.renderWaiting()}</View>;
     }
     return (
       <View style={styles.container}>
@@ -71,15 +62,18 @@ class InspectorPanel extends React.Component<$FlowFixMeProps> {
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          <Button title={'Perf'}
+          <Button
+            title={'Perf'}
             pressed={this.props.perfing}
             onClick={this.props.setPerfing}
           />
-          <Button title={'Network'}
+          <Button
+            title={'Network'}
             pressed={this.props.networking}
             onClick={this.props.setNetworking}
           />
-          <Button title={'Touchables'}
+          <Button
+            title={'Touchables'}
             pressed={this.props.touchTargeting}
             onClick={this.props.setTouchTargeting}
           />
@@ -105,10 +99,9 @@ InspectorPanel.propTypes = {
 class Button extends React.Component<$FlowFixMeProps> {
   render() {
     return (
-      <TouchableHighlight onPress={() => this.props.onClick(!this.props.pressed)} style={[
-        styles.button,
-        this.props.pressed && styles.buttonPressed
-      ]}>
+      <TouchableHighlight
+        onPress={() => this.props.onClick(!this.props.pressed)}
+        style={[styles.button, this.props.pressed && styles.buttonPressed]}>
         <Text style={styles.buttonText}>{this.props.title}</Text>
       </TouchableHighlight>
     );

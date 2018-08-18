@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTNetworking
+ * @format
  * @flow
  */
+
 'use strict';
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
@@ -40,7 +41,6 @@ function generateRequestId(): number {
  * requestId to each network request that can be used to abort that request later on.
  */
 class RCTNetworking extends NativeEventEmitter {
-
   isAvailable: boolean = true;
 
   constructor() {
@@ -57,11 +57,11 @@ class RCTNetworking extends NativeEventEmitter {
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => any,
-    withCredentials: boolean
+    withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
     if (body && body.formData) {
-      body.formData = body.formData.map((part) => ({
+      body.formData = body.formData.map(part => ({
         ...part,
         headers: convertHeadersMapToArray(part.headers),
       }));
@@ -76,7 +76,7 @@ class RCTNetworking extends NativeEventEmitter {
       responseType,
       incrementalUpdates,
       timeout,
-      withCredentials
+      withCredentials,
     );
     callback(requestId);
   }

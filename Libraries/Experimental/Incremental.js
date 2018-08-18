@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Incremental
+ * @format
  * @flow
  */
+
 'use strict';
 
 const InteractionManager = require('InteractionManager');
@@ -80,16 +81,16 @@ const DEBUG = false;
  * component, saving us from ever doing the remaining rendering work.
  */
 export type Props = {
- /**
-  * Called when all the descendants have finished rendering and mounting
-  * recursively.
-  */
- onDone?: () => void,
- /**
-  * Tags instances and associated tasks for easier debugging.
-  */
- name: string,
- children?: any,
+  /**
+   * Called when all the descendants have finished rendering and mounting
+   * recursively.
+   */
+  onDone?: () => void,
+  /**
+   * Tags instances and associated tasks for easier debugging.
+   */
+  name: string,
+  children?: any,
 };
 type DefaultProps = {
   name: string,
@@ -132,30 +133,38 @@ class Incremental extends React.Component<Props, State> {
     if (!ctx) {
       return;
     }
-    this._incrementId = ++(ctx.incrementalCount);
+    this._incrementId = ++ctx.incrementalCount;
     InteractionManager.runAfterInteractions({
       name: 'Incremental:' + this.getName(),
-      gen: () => new Promise(resolve => {
-        if (!this._mounted || this._rendered) {
-          resolve();
-          return;
-        }
-        DEBUG && infoLog('set doIncrementalRender for ' + this.getName());
-        this.setState({doIncrementalRender: true}, resolve);
-      }),
-    }).then(() => {
-      DEBUG && infoLog('call onDone for ' + this.getName());
-      this._mounted && this.props.onDone && this.props.onDone();
-    }).catch((ex) => {
-      ex.message = `Incremental render failed for ${this.getName()}: ${ex.message}`;
-      throw ex;
-    }).done();
+      gen: () =>
+        new Promise(resolve => {
+          if (!this._mounted || this._rendered) {
+            resolve();
+            return;
+          }
+          DEBUG && infoLog('set doIncrementalRender for ' + this.getName());
+          this.setState({doIncrementalRender: true}, resolve);
+        }),
+    })
+      .then(() => {
+        DEBUG && infoLog('call onDone for ' + this.getName());
+        this._mounted && this.props.onDone && this.props.onDone();
+      })
+      .catch(ex => {
+        ex.message = `Incremental render failed for ${this.getName()}: ${
+          ex.message
+        }`;
+        throw ex;
+      })
+      .done();
   }
 
   render(): React.Node {
-    if (this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
-        !this.context.incrementalGroupEnabled ||
-        this.state.doIncrementalRender) {
+    if (
+      this._rendered || // Make sure that once we render once, we stay rendered even if incrementalGroupEnabled gets flipped.
+      !this.context.incrementalGroupEnabled ||
+      this.state.doIncrementalRender
+    ) {
       DEBUG && infoLog('render ' + this.getName());
       this._rendered = true;
       return this.props.children;

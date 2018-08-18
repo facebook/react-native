@@ -16,8 +16,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.LifecycleEventListener;
 
-//
-
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor.
  * It provides also a way to start activities using the viewContext to which RN native views belong.

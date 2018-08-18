@@ -3,6 +3,8 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 /**
@@ -25,22 +27,20 @@ const defaultHeaderPaths = ['"$(inherited)"'];
 module.exports = function headerSearchPathIter(project, func) {
   const config = project.pbxXCBuildConfigurationSection();
 
-  Object
-    .keys(config)
+  Object.keys(config)
     .filter(ref => ref.indexOf('_comment') === -1)
     .forEach(ref => {
       const buildSettings = config[ref].buildSettings;
-      const shouldVisitBuildSettings = (
-          Array.isArray(buildSettings.OTHER_LDFLAGS) ?
-            buildSettings.OTHER_LDFLAGS :
-            []
-        )
-        .indexOf('"-lc++"') >= 0;
+      const shouldVisitBuildSettings =
+        (Array.isArray(buildSettings.OTHER_LDFLAGS)
+          ? buildSettings.OTHER_LDFLAGS
+          : []
+        ).indexOf('"-lc++"') >= 0;
 
       if (shouldVisitBuildSettings) {
-        const searchPaths = buildSettings.HEADER_SEARCH_PATHS ?
-          [].concat(buildSettings.HEADER_SEARCH_PATHS) :
-          defaultHeaderPaths;
+        const searchPaths = buildSettings.HEADER_SEARCH_PATHS
+          ? [].concat(buildSettings.HEADER_SEARCH_PATHS)
+          : defaultHeaderPaths;
 
         buildSettings.HEADER_SEARCH_PATHS = func(searchPaths);
       }

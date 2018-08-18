@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule renderApplication
  * @format
  * @flow
  */
@@ -13,7 +12,7 @@
 
 const AppContainer = require('AppContainer');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactFabricIndicator = require('ReactFabricIndicator');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -25,12 +24,17 @@ function renderApplication<Props: Object>(
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<*>,
+  fabric?: boolean,
+  showFabricIndicator?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
     <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
+      {fabric === true && showFabricIndicator === true ? (
+        <ReactFabricIndicator />
+      ) : null}
     </AppContainer>
   );
 
@@ -49,7 +53,11 @@ function renderApplication<Props: Object>(
     renderable = <AsyncMode>{renderable}</AsyncMode>;
   }
 
-  ReactNative.render(renderable, rootTag);
+  if (fabric) {
+    require('ReactFabric').render(renderable, rootTag);
+  } else {
+    require('ReactNative').render(renderable, rootTag);
+  }
 }
 
 module.exports = renderApplication;

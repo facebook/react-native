@@ -9,6 +9,7 @@
 
 #import <React/RCTComponentViewProtocol.h>
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -24,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateProps:(facebook::react::SharedProps)props
            oldProps:(facebook::react::SharedProps)oldProps;
+
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
+
+- (void)updateLocalData:(facebook::react::SharedLocalData)localData
+           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
 
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;

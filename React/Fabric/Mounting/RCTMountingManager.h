@@ -26,9 +26,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Transfroms mutation insturctions to mount items and execute them.
  * The order of mutation tnstructions matters.
+ * Can be called from any thread.
  */
 - (void)mutateComponentViewTreeWithMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
                                                 rootTag:(ReactTag)rootTag;
+
+/**
+ * Suggests preliminary creation of a component view of given type.
+ * The receiver is free to ignore the request.
+ * Can be called from any thread.
+ */
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName;
 
 @end
 

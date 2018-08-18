@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ShareTestModule
+ * @format
  */
 
 'use strict';
@@ -17,7 +17,7 @@ var View = require('View');
 
 class ShareTestApp extends React.Component {
   render() {
-    return (<View />);
+    return <View />;
   }
 }
 
@@ -26,14 +26,11 @@ var ShareTestModule = {
   showShareDialog: function(content, options) {
     Share.share(content, options).then(
       () => RecordingModule.recordOpened(),
-      ({code, message}) => RecordingModule.recordError()
+      ({code, message}) => RecordingModule.recordError(),
     );
   },
 };
 
-BatchedBridge.registerCallableModule(
-  'ShareTestModule',
-  ShareTestModule
-);
+BatchedBridge.registerCallableModule('ShareTestModule', ShareTestModule);
 
 module.exports = ShareTestModule;

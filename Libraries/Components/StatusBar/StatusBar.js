@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StatusBar
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
@@ -25,7 +26,7 @@ export type StatusBarStyle = $Enum<{
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
-  'default': string,
+  default: string,
   /**
    * Dark background, white texts and icons
    */
@@ -43,15 +44,15 @@ export type StatusBarAnimation = $Enum<{
   /**
    * No animation
    */
-  'none': string,
+  none: string,
   /**
    * Fade animation
    */
-  'fade': string,
+  fade: string,
   /**
    * Slide animation
    */
-  'slide': string,
+  slide: string,
 }>;
 
 type DefaultProps = {
@@ -63,7 +64,7 @@ type DefaultProps = {
  */
 function mergePropsStack(
   propsStack: Array<Object>,
-  defaultValues: Object
+  defaultValues: Object,
 ): Object {
   return propsStack.reduce((prev, cur) => {
     for (const prop in cur) {
@@ -224,7 +225,7 @@ class StatusBar extends React.Component<{
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
       console.warn(
-        '`setNetworkActivityIndicatorVisible` is only available on iOS'
+        '`setNetworkActivityIndicatorVisible` is only available on iOS',
       );
       return;
     }
@@ -346,7 +347,7 @@ class StatusBar extends React.Component<{
       const oldProps = StatusBar._currentValues;
       const mergedProps = mergePropsStack(
         StatusBar._propsStack,
-        StatusBar._defaultProps
+        StatusBar._defaultProps,
       );
 
       // Update the props that have changed using the merged values from the props stack.
@@ -357,13 +358,15 @@ class StatusBar extends React.Component<{
         ) {
           StatusBarManager.setStyle(
             mergedProps.barStyle.value,
-            mergedProps.barStyle.animated
+            mergedProps.barStyle.animated,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           StatusBarManager.setHidden(
             mergedProps.hidden.value,
-            mergedProps.hidden.animated ? mergedProps.hidden.transition : 'none'
+            mergedProps.hidden.animated
+              ? mergedProps.hidden.transition
+              : 'none',
           );
         }
 
@@ -373,7 +376,7 @@ class StatusBar extends React.Component<{
             mergedProps.networkActivityIndicatorVisible
         ) {
           StatusBarManager.setNetworkActivityIndicatorVisible(
-            mergedProps.networkActivityIndicatorVisible
+            mergedProps.networkActivityIndicatorVisible,
           );
         }
       } else if (Platform.OS === 'android') {
@@ -389,7 +392,7 @@ class StatusBar extends React.Component<{
         ) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
-            mergedProps.backgroundColor.animated
+            mergedProps.backgroundColor.animated,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
