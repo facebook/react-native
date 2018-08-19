@@ -483,7 +483,6 @@ export type Props = $ReadOnly<{|
    * See [RefreshControl](docs/refreshcontrol.html).
    */
   refreshControl?: ?React.Element<any>,
-  style?: ?ViewStyleProp,
   children?: React.Node,
 |}>;
 

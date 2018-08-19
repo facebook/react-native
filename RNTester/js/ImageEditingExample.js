@@ -25,24 +25,27 @@ var {
 
 var PAGE_SIZE = 20;
 
-type ImageOffset = {
+type ImageOffset = {|
   x: number,
   y: number,
-};
+|};
 
-type ImageSize = {
+type ImageSize = {|
   width: number,
   height: number,
-};
+|};
 
-type ImageCropData = {
+type ImageCropData = {|
   offset: ImageOffset,
   size: ImageSize,
   displaySize?: ?ImageSize,
   resizeMode?: ?any,
-};
+|};
 
-class SquareImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class SquareImageCropper extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state: any;
   _isMounted: boolean;
   _transformData: ImageCropData;

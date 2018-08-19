@@ -24,4 +24,9 @@ public class JSCJavaScriptExecutorFactory implements JavaScriptExecutorFactory {
     jscConfig.putString("DeviceIdentity", mDeviceName);
     return new JSCJavaScriptExecutor(jscConfig);
   }
+
+  @Override
+  public String toString() {
+    return "JSCExecutor";
+  }
 }

@@ -3,12 +3,9 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
  */
 
-'use strict';
+#import <React/RCTViewManager.h>
 
-/* $FlowFixMe(site=react_native_oss) */
-export type {OutputOptions, RequestOptions} from 'metro/src/shared/types.flow';
+@interface RCTWKWebViewManager : RCTViewManager
+@end

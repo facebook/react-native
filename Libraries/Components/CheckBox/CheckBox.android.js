@@ -131,7 +131,11 @@ let CheckBox = createReactClass({
     let props = {...this.props};
     props.onStartShouldSetResponder = () => true;
     props.onResponderTerminationRequest = () => false;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.enabled = !this.props.disabled;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.on = this.props.value;
     props.style = [styles.rctCheckBox, this.props.style];
 

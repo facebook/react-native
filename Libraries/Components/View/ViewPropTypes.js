@@ -33,6 +33,7 @@ import type {
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {ViewStyleProp} from 'StyleSheet';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -103,7 +104,7 @@ export type ViewProps = $ReadOnly<{|
   nativeID?: string,
   hitSlop?: ?EdgeInsetsProp,
   pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
-  style?: stylePropType,
+  style?: ?ViewStyleProp,
   removeClippedSubviews?: boolean,
   renderToHardwareTextureAndroid?: boolean,
   shouldRasterizeIOS?: boolean,

@@ -3,12 +3,11 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
  */
 
-'use strict';
+package com.facebook.react.views.text;
 
-/* $FlowFixMe(site=react_native_oss) */
-export type {OutputOptions, RequestOptions} from 'metro/src/shared/types.flow';
+/**
+ * Types of text transforms for CustomTextTransformSpan
+ */
+public enum TextTransform { NONE, UPPERCASE, LOWERCASE, CAPITALIZE, UNSET };

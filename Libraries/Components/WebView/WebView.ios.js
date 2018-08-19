@@ -32,6 +32,7 @@ const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const RCTWebViewManager = require('NativeModules').WebViewManager;
+const RCTWKWebViewManager = require('NativeModules').WKWebViewManager;
 
 const BGWASH = 'rgba(255,255,255,0.8)';
 const RCT_WEBVIEW_REF = 'webview';
@@ -66,6 +67,9 @@ const DataDetectorTypes = [
   'link',
   'address',
   'calendarEvent',
+  'trackingNumber',
+  'flightNumber',
+  'lookupSuggestion',
   'none',
   'all',
 ];
@@ -161,6 +165,12 @@ class WebView extends React.Component {
        */
       PropTypes.number,
     ]),
+
+    /**
+     * If true, use WKWebView instead of UIWebView.
+     * @platform ios
+     */
+    useWebKit: PropTypes.bool,
 
     /**
      * Function that returns a view to show if there's an error.
@@ -264,6 +274,11 @@ class WebView extends React.Component {
      * - `'none'`
      * - `'all'`
      *
+     * With the new WebKit implementation, we have three new values:
+     * - `'trackingNumber'`,
+     * - `'flightNumber'`,
+     * - `'lookupSuggestion'`,
+     *
      * @platform ios
      */
     dataDetectorTypes: PropTypes.oneOfType([
@@ -309,6 +324,8 @@ class WebView extends React.Component {
      * Boolean that controls whether the web content is scaled to fit
      * the view and enables the user to change the scale. The default value
      * is `true`.
+     *
+     * On iOS, when `useWebKit=true`, this prop will not work.
      */
     scalesPageToFit: PropTypes.bool,
 
@@ -388,7 +405,6 @@ class WebView extends React.Component {
 
   static defaultProps = {
     originWhitelist: WebViewShared.defaultOriginWhitelist,
-    scalesPageToFit: true,
   };
 
   state = {
@@ -401,10 +417,27 @@ class WebView extends React.Component {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
     }
+
+    if (
+      this.props.useWebKit === true &&
+      this.props.scalesPageToFit !== undefined
+    ) {
+      console.warn(
+        'The scalesPageToFit property is not supported when useWebKit = true',
+      );
+    }
   }
 
   render() {
     let otherView = null;
+
+    let scalesPageToFit;
+
+    if (this.props.useWebKit) {
+      ({scalesPageToFit} = this.props);
+    } else {
+      ({scalesPageToFit = true} = this.props);
+    }
 
     if (this.state.viewState === WebViewState.LOADING) {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
@@ -433,11 +466,18 @@ class WebView extends React.Component {
 
     const nativeConfig = this.props.nativeConfig || {};
 
-    const viewManager = nativeConfig.viewManager || RCTWebViewManager;
+    let viewManager = nativeConfig.viewManager;
 
-    const compiledWhitelist = (this.props.originWhitelist || []).map(
-      WebViewShared.originWhitelistToRegex,
-    );
+    if (this.props.useWebKit) {
+      viewManager = viewManager || RCTWKWebViewManager;
+    } else {
+      viewManager = viewManager || RCTWebViewManager;
+    }
+
+    const compiledWhitelist = [
+      'about:blank',
+      ...(this.props.originWhitelist || []),
+    ].map(WebViewShared.originWhitelistToRegex);
     const onShouldStartLoadWithRequest = (event: Event) => {
       let shouldStart = true;
       const {url} = event.nativeEvent;
@@ -473,7 +513,13 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
-    const NativeWebView = nativeConfig.component || RCTWebView;
+    let NativeWebView = nativeConfig.component;
+
+    if (this.props.useWebKit) {
+      NativeWebView = NativeWebView || RCTWKWebView;
+    } else {
+      NativeWebView = NativeWebView || RCTWebView;
+    }
 
     const webView = (
       <NativeWebView
@@ -495,7 +541,7 @@ class WebView extends React.Component {
         messagingEnabled={messagingEnabled}
         onMessage={this._onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-        scalesPageToFit={this.props.scalesPageToFit}
+        scalesPageToFit={scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
         mediaPlaybackRequiresUserAction={
           this.props.mediaPlaybackRequiresUserAction
@@ -513,13 +559,21 @@ class WebView extends React.Component {
     );
   }
 
+  _getCommands() {
+    if (!this.props.useWebKit) {
+      return UIManager.RCTWebView.Commands;
+    }
+
+    return UIManager.RCTWKWebView.Commands;
+  }
+
   /**
    * Go forward one page in the web view's history.
    */
   goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goForward,
+      this._getCommands().goForward,
       null,
     );
   };
@@ -530,7 +584,7 @@ class WebView extends React.Component {
   goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goBack,
+      this._getCommands().goBack,
       null,
     );
   };
@@ -542,7 +596,7 @@ class WebView extends React.Component {
     this.setState({viewState: WebViewState.LOADING});
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.reload,
+      this._getCommands().reload,
       null,
     );
   };
@@ -553,7 +607,7 @@ class WebView extends React.Component {
   stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.stopLoading,
+      this._getCommands().stopLoading,
       null,
     );
   };
@@ -571,7 +625,7 @@ class WebView extends React.Component {
   postMessage = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.postMessage,
+      this._getCommands().postMessage,
       [String(data)],
     );
   };
@@ -585,7 +639,7 @@ class WebView extends React.Component {
   injectJavaScript = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.injectJavaScript,
+      this._getCommands().injectJavaScript,
       [data],
     );
   };
@@ -640,9 +694,42 @@ class WebView extends React.Component {
     const {onMessage} = this.props;
     onMessage && onMessage(event);
   };
+
+  componentDidUpdate(prevProps) {
+    if (!(prevProps.useWebKit && this.props.useWebKit)) {
+      return;
+    }
+
+    this._showRedboxOnPropChanges(prevProps, 'allowsInlineMediaPlayback');
+    this._showRedboxOnPropChanges(prevProps, 'mediaPlaybackRequiresUserAction');
+    this._showRedboxOnPropChanges(prevProps, 'dataDetectorTypes');
+
+    if (this.props.scalesPageToFit !== undefined) {
+      console.warn(
+        'The scalesPageToFit property is not supported when useWebKit = true',
+      );
+    }
+  }
+
+  _showRedboxOnPropChanges(prevProps, propName: string) {
+    if (this.props[propName] !== prevProps[propName]) {
+      console.error(
+        `Changes to property ${propName} do nothing after the initial render.`,
+      );
+    }
+  }
 }
 
-const RCTWebView = requireNativeComponent('RCTWebView');
+const RCTWebView = requireNativeComponent(
+  'RCTWebView',
+  WebView,
+  WebView.extraNativeComponentConfig,
+);
+const RCTWKWebView = requireNativeComponent(
+  'RCTWKWebView',
+  WebView,
+  WebView.extraNativeComponentConfig,
+);
 
 const styles = StyleSheet.create({
   container: {
