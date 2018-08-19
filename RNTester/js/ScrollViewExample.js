@@ -121,14 +121,8 @@ exports.examples = [
 
       return (
         <View>
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('LTR layout', {direction: 'ltr'})}
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('RTL layout', {direction: 'rtl'})}
+          {renderScrollView('LTR layout', {direction: 'ltr'})}
+          {renderScrollView('RTL layout', {direction: 'rtl'})}
         </View>
       );
     },
