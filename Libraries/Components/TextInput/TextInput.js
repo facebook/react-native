@@ -33,7 +33,7 @@ const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 import type {ColorValue} from 'StyleSheetTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
 let AndroidTextInput;
@@ -156,6 +156,7 @@ type IOSProps = $ReadOnly<{|
     | 'username'
     | 'password'
   ),
+  scrollEnabled?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -169,7 +170,7 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
-  ...ViewProps,
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
   autoCapitalize?: ?AutoCapitalize,
@@ -581,6 +582,12 @@ const TextInput = createReactClass({
      * The text color of the placeholder string.
      */
     placeholderTextColor: ColorPropType,
+    /**
+     * If `false`, scrolling of the text view will be disabled.
+     * The default value is `true`. Does only work with 'multiline={true}'.
+     * @platform ios
+     */
+    scrollEnabled: PropTypes.bool,
     /**
      * If `true`, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
