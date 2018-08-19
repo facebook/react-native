@@ -110,7 +110,10 @@
 - (void)setText:(NSString *)text
 {
   _text = text;
-  _previousAttributedText = _localAttributedText;
+  // Clear `_previousAttributedText` to notify the view about the change
+  // when `text` native prop is set.
+  _previousAttributedText = nil;
+  [self dirtyLayout];
 }
 
 #pragma mark - RCTUIManagerObserver
