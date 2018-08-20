@@ -129,6 +129,14 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
+/**
+ * Determines whether given image URLs are cached locally. The `requests` array is expected
+ * to contain objects convertible to NSURLRequest. The return value maps URLs to strings:
+ * "disk" for images known to be cached in non-volatile storage, "memory" for images known
+ * to be cached in memory. Dictionary items corresponding to images that are not known to be
+ * cached are simply missing.
+ */
+- (NSDictionary *)getImageCacheStatus:(NSArray *)requests;
 
 /**
  * Allows developers to set their own caching implementation for
