@@ -13,6 +13,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import java.util.Locale;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -131,7 +132,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
     try {
-     AccessibilityDelegateUtil.AccessibilityRole.valueOf(accessibilityRole.toUpperCase());
+      AccessibilityDelegateUtil.AccessibilityRole.valueOf(accessibilityRole.toUpperCase(Locale.US));
     } catch (NullPointerException e) {
       throw new IllegalArgumentException("Invalid Role " + accessibilityRole + " Passed In");
     } catch (IllegalArgumentException e) {
