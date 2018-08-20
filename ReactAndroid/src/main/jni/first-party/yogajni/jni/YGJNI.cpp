@@ -5,9 +5,15 @@
  * file in the root directory of this source tree.
  */
 #include <fb/fbjni.h>
+#if __has_include(<ReactYoga/YGNode.h>)
+#include <ReactYoga/YGNode.h>
+#include <ReactYoga/Yoga.h>
+#include <ReactYoga/log.h>
+#else
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <yoga/log.h>
+#endif
 #include <iostream>
 #include <map>
 

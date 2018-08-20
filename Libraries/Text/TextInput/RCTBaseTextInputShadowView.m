@@ -10,7 +10,11 @@
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
+#if __has_include(<ReactYoga/Yoga.h>)
+#import <ReactYoga/Yoga.h>
+#else
 #import <yoga/Yoga.h>
+#endif
 
 #import "NSTextStorage+FontScaling.h"
 #import "RCTBaseTextInputView.h"

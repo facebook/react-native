@@ -15,8 +15,8 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'yoga'
-  spec.version = "#{version}.React"
+  spec.name = 'React-yoga'
+  spec.version = version
   spec.license =  { :type => 'MIT' }
   spec.homepage = 'https://yogalayout.com'
   spec.documentation_url = 'https://yogalayout.com/docs/'
@@ -27,7 +27,8 @@ Pod::Spec.new do |spec|
   spec.authors = 'Facebook'
   spec.source = source
 
-  spec.module_name = 'yoga'
+  spec.module_name = 'ReactYoga'
+  spec.header_dir = 'ReactYoga'
   spec.requires_arc = false
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',

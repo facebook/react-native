@@ -11,8 +11,13 @@
 #include <react/components/view/propsConversions.h>
 #include <react/core/propsConversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
+#if __has_include(<ReactYoga/Yoga.h>)
+#include <ReactYoga/YGNode.h>
+#include <ReactYoga/Yoga.h>
+#else
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#endif
 
 #include "conversions.h"
 

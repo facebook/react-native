@@ -14,7 +14,11 @@
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
+#if __has_include(<ReactYoga/Yoga.h>)
+#import <ReactYoga/Yoga.h>
+#else
 #import <yoga/Yoga.h>
+#endif
 #if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
 #import <WebKit/WebKit.h>
 #endif

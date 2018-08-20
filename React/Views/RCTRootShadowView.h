@@ -6,7 +6,11 @@
  */
 
 #import <React/RCTShadowView.h>
+#if __has_include(<ReactYoga/YGEnums.h>)
+#import <ReactYoga/YGEnums.h>
+#else
 #import <yoga/YGEnums.h>
+#endif
 
 @interface RCTRootShadowView : RCTShadowView
 

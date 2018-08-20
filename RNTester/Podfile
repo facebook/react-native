@@ -29,7 +29,7 @@ target 'RNTester' do
   pod 'React-jsi', :path => '../ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../ReactCommon/jsinspector'
-  pod 'yoga', :path => '../ReactCommon/yoga'
+  pod 'React-yoga', :path => '../ReactCommon/yoga'
 
   # Third party deps podspec link
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'

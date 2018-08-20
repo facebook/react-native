@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if __has_include(<ReactYoga/Yoga.h>)
+#import <ReactYoga/Yoga.h>
+#else
 #import <yoga/Yoga.h>
+#endif
 
 #import "RCTAssert.h"
 #import "RCTShadowView+Layout.h"

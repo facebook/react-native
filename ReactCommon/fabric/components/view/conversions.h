@@ -14,9 +14,15 @@
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
 #include <stdlib.h>
+#if __has_include(<ReactYoga/Yoga.h>)
+#include <ReactYoga/YGEnums.h>
+#include <ReactYoga/YGNode.h>
+#include <ReactYoga/Yoga.h>
+#else
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#endif
 #include <cmath>
 
 namespace facebook {

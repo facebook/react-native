@@ -7,7 +7,11 @@
 
 #pragma once
 
+#if __has_include(<ReactYoga/YGStyle.h>)
+#include <ReactYoga/YGStyle.h>
+#else
 #include <yoga/YGStyle.h>
+#endif
 
 #include <react/core/Props.h>
 #include <react/debug/DebugStringConvertible.h>

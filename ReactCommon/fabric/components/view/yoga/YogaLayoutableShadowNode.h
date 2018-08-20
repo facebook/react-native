@@ -10,7 +10,11 @@
 #include <memory>
 #include <vector>
 
+#if __has_include(<ReactYoga/YGNode.h>)
+#include <ReactYoga/YGNode.h>
+#else
 #include <yoga/YGNode.h>
+#endif
 
 #include <react/components/view/YogaStylableProps.h>
 #include <react/core/LayoutableShadowNode.h>

@@ -8,7 +8,11 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
+#if __has_include(<ReactYoga/Yoga.h>)
+#import <ReactYoga/Yoga.h>
+#else
 #import <yoga/Yoga.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
