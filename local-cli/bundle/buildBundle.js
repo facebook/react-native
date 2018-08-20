@@ -56,7 +56,7 @@ async function buildBundle(
     platform: args.platform,
   };
 
-  const server = new Server(config);
+  const server = new Server({...config, resetCache: args.resetCache});
 
   try {
     const bundle = await output.build(server, requestOpts);
