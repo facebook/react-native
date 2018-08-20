@@ -436,7 +436,8 @@ jobs:
   # Runs unit tests on iOS and Apple TV devices
   test_objc:
     <<: *macos_defaults
-    parallelism: 3
+    # Bump back to 3 whenever podspec tests are re-enabled
+    parallelism: 2
     steps:
       - attach_workspace:
           at: ~/react-native
@@ -447,7 +448,8 @@ jobs:
 
       - run: *run-objc-ios-tests-with-parallelism
       - run: *run-objc-tvos-tests-with-parallelism
-      - run: *run-podspec-tests-with-parallelism
+      # Disabled
+      # - run: *run-podspec-tests-with-parallelism
 
       - store_test_results:
           path: ~/react-native/reports/junit
