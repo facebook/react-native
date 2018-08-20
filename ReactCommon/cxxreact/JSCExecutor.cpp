@@ -143,6 +143,11 @@ JSCExecutor::JSCExecutor(
         "nativeModuleProxy",
         exceptionWrapMethod<&JSCExecutor::getNativeModule>());
   }
+
+  {
+    SystraceSection s("nativeModuleCrypto object");
+    installGlobalCrypto(m_context);
+  }
 }
 
 JSCExecutor::~JSCExecutor() {

@@ -110,6 +110,7 @@ jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithC
 // JSValueRef
 #define JSC_JSValueCreateJSONString(...) __jsc_wrapper(JSValueCreateJSONString, __VA_ARGS__)
 #define JSC_JSValueGetType(...) __jsc_wrapper(JSValueGetType, __VA_ARGS__)
+#define JSC_JSValueGetTypedArrayType(...) __jsc_wrapper(JSValueGetTypedArrayType, __VA_ARGS__)
 #define JSC_JSValueMakeFromJSONString(...) __jsc_wrapper(JSValueMakeFromJSONString, __VA_ARGS__)
 #define JSC_JSValueMakeBoolean(...) __jsc_wrapper(JSValueMakeBoolean, __VA_ARGS__)
 #define JSC_JSValueMakeNull(...) __jsc_wrapper(JSValueMakeNull, __VA_ARGS__)
@@ -175,6 +176,10 @@ jsc_poison(JSObjectCopyPropertyNames JSPropertyNameAccumulatorAddName
            JSPropertyNameArrayRelease JSPropertyNameArrayRetain)
 
 // JSTypedArray
+#define JSC_JSObjectGetTypedArrayLength(...) __jsc_wrapper(JSObjectGetTypedArrayLength, __VA_ARGS__)
+#define JSC_JSObjectGetTypedArrayBytesPtr(...) __jsc_wrapper(JSObjectGetTypedArrayBytesPtr, __VA_ARGS__)
+#define JSC_JSObjectGetTypedArrayByteOffset(...) __jsc_wrapper(JSObjectGetTypedArrayByteOffset, __VA_ARGS__)
+
 jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
            JSObjectMakeTypedArrayWithArrayBuffer
            JSObjectMakeTypedArrayWithArrayBufferAndOffset

@@ -16,6 +16,7 @@ console.disableYellowBox = true;
 require('ProgressBarTestModule');
 require('ViewRenderingTestModule');
 require('TestJavaToJSArgumentsModule');
+require('TestJSCryptoModule');
 require('TestJSLocaleModule');
 require('TestJSToJavaParametersModule');
 require('TestJavaToJSReturnValuesModule');

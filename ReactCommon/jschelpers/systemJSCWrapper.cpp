@@ -108,6 +108,7 @@ const JSCWrapper* systemJSCWrapper() {
 
       .JSValueCreateJSONString = JSValueCreateJSONString,
       .JSValueGetType = JSValueGetType,
+      .JSValueGetTypedArrayType = JSValueGetTypedArrayType,
       .JSValueMakeFromJSONString = JSValueMakeFromJSONString,
       .JSValueMakeBoolean = JSValueMakeBoolean,
       .JSValueMakeNull = JSValueMakeNull,
@@ -121,6 +122,10 @@ const JSCWrapper* systemJSCWrapper() {
       .JSValueToStringCopy = JSValueToStringCopy,
       .JSValueUnprotect = JSValueUnprotect,
       .JSValueIsNull = JSValueIsNull,
+
+      .JSObjectGetTypedArrayLength = JSObjectGetTypedArrayLength,
+      .JSObjectGetTypedArrayBytesPtr = JSObjectGetTypedArrayBytesPtr,
+      .JSObjectGetTypedArrayByteOffset = JSObjectGetTypedArrayByteOffset,
 
       .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
       .JSPokeSamplingProfiler =

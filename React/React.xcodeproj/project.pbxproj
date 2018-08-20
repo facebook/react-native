@@ -199,6 +199,10 @@
 		14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */; };
 		14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */; };
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
+		15698CC82125A6B300EE2C0D /* Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 15698CC62125A6B200EE2C0D /* Crypto.h */; };
+		15698CC92125A6B300EE2C0D /* Crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 15698CC62125A6B200EE2C0D /* Crypto.h */; };
+		15698CCA2125A6B300EE2C0D /* Crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15698CC72125A6B300EE2C0D /* Crypto.cpp */; };
+		15698CCB2125A6B300EE2C0D /* Crypto.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15698CC72125A6B300EE2C0D /* Crypto.cpp */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
 		199B8A6F1F44DB16005DEF67 /* RCTVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 199B8A6E1F44DB16005DEF67 /* RCTVersion.h */; };
@@ -2068,6 +2072,8 @@
 		14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerfMonitor.m; sourceTree = "<group>"; };
 		14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTFPSGraph.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFPSGraph.m; sourceTree = "<group>"; };
+		15698CC62125A6B200EE2C0D /* Crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crypto.h; sourceTree = "<group>"; };
+		15698CC72125A6B300EE2C0D /* Crypto.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Crypto.cpp; sourceTree = "<group>"; };
 		191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControlManager.h; sourceTree = "<group>"; };
 		191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRefreshControlManager.m; sourceTree = "<group>"; };
 		191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControl.h; sourceTree = "<group>"; };
@@ -2759,6 +2765,8 @@
 		3D4A621D1DDD3985001F41B4 /* jschelpers */ = {
 			isa = PBXGroup;
 			children = (
+				15698CC72125A6B300EE2C0D /* Crypto.cpp */,
+				15698CC62125A6B200EE2C0D /* Crypto.h */,
 				19DED2281E77E29200F089BB /* systemJSCWrapper.cpp */,
 				3D7A27DC1DE32541002E3F95 /* JavaScriptCore.h */,
 				3D92B1071E0369AD0018521A /* JSCHelpers.cpp */,
@@ -3376,6 +3384,7 @@
 				19F61C041E8495FF00571D81 /* JSCHelpers.h in Headers */,
 				19F61C051E8495FF00571D81 /* noncopyable.h in Headers */,
 				19F61C061E8495FF00571D81 /* Unicode.h in Headers */,
+				15698CC92125A6B300EE2C0D /* Crypto.h in Headers */,
 				19F61C071E8495FF00571D81 /* Value.h in Headers */,
 				3D3030251DF8295E00D6DDAE /* JavaScriptCore.h in Headers */,
 				3D3030261DF8295E00D6DDAE /* JSCWrapper.h in Headers */,
@@ -3423,6 +3432,7 @@
 				13EBC6821E28733C00880AC5 /* Value.h in Headers */,
 				13EBC6811E28733C00880AC5 /* Unicode.h in Headers */,
 				13EBC6801E28733C00880AC5 /* noncopyable.h in Headers */,
+				15698CC82125A6B300EE2C0D /* Crypto.h in Headers */,
 				13EBC67E1E28726000880AC5 /* JSCHelpers.h in Headers */,
 				3D3CD93D1DE5FC1400167DC4 /* JavaScriptCore.h in Headers */,
 				3D3CD93E1DE5FC1400167DC4 /* JSCWrapper.h in Headers */,
@@ -4387,6 +4397,7 @@
 				13EBC6731E2870DE00880AC5 /* Value.cpp in Sources */,
 				13EBC67D1E28725900880AC5 /* JSCHelpers.cpp in Sources */,
 				135A9C021E7B0F4800587AEB /* systemJSCWrapper.cpp in Sources */,
+				15698CCA2125A6B300EE2C0D /* Crypto.cpp in Sources */,
 				13EBC67B1E28723000880AC5 /* Unicode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4399,6 +4410,7 @@
 				13EBC6781E2870E400880AC5 /* JSCWrapper.cpp in Sources */,
 				13EBC6771E2870E400880AC5 /* JSCHelpers.cpp in Sources */,
 				135A9C011E7B0F4700587AEB /* systemJSCWrapper.cpp in Sources */,
+				15698CCB2125A6B300EE2C0D /* Crypto.cpp in Sources */,
 				13EBC67A1E2870E400880AC5 /* Value.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

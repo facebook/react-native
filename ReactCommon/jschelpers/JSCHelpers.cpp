@@ -15,6 +15,7 @@
 #include <pthread.h>
 #endif
 
+#include "Crypto.h"
 #include "JavaScriptCore.h"
 #include "Value.h"
 #include <privatedata/PrivateDataBase.h>
@@ -202,6 +203,17 @@ void installGlobalProxy(
   JSC_JSClassRelease(isCustomJSC, proxyClass);
 
   Object::getGlobalObject(ctx).setProperty(name, Value(ctx, proxyObj));
+}
+
+void installGlobalCrypto(JSGlobalContextRef ctx) {
+  JSObjectRef cryptoObject = JSC_JSObjectMake(ctx, NULL, NULL);
+
+  JSStringRef getRandomValuesName = JSC_JSStringCreateWithUTF8CString(ctx, "getRandomValues");
+  JSObjectRef getRandomValuesFunction = JSC_JSObjectMakeFunctionWithCallback(ctx, getRandomValuesName, getRandomValues);
+  JSC_JSObjectSetProperty(ctx, cryptoObject, getRandomValuesName, getRandomValuesFunction, kJSPropertyAttributeReadOnly & kJSPropertyAttributeDontDelete, NULL);
+  JSC_JSStringRelease(ctx, getRandomValuesName);
+
+  Object::getGlobalObject(ctx).setProperty("crypto", Value(ctx, cryptoObject));
 }
 
 void removeGlobal(JSGlobalContextRef ctx, const char* name) {

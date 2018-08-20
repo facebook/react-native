@@ -85,6 +85,8 @@ void installGlobalProxy(
     const char* name,
     JSObjectGetPropertyCallback callback);
 
+void installGlobalCrypto(JSGlobalContextRef ctx);
+
 void removeGlobal(JSGlobalContextRef ctx, const char* name);
 
 JSValueRef evaluateScript(
