@@ -103,6 +103,7 @@
     "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
     "scripts/launchPackager.command",
+    "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
     "jest-preset.json",
     "jest",
