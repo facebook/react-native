@@ -13,7 +13,7 @@
 const MatrixMath = require('MatrixMath');
 
 function degreesToRadians(degrees) {
-  return degrees * Math.PI / 180;
+  return (degrees * Math.PI) / 180;
 }
 
 function convertZeroes(degrees) {

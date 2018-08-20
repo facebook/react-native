@@ -167,6 +167,12 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     if (json) {
       freeValueOnCompletion = YES;
       value = malloc(typeSignature.methodReturnLength);
+      if (!value) {
+        // CWE - 391 : Unchecked error condition
+        // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+        // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+        abort();
+      }
       [typeInvocation setArgument:&json atIndex:2];
       [typeInvocation invoke];
       [typeInvocation getReturnValue:value];

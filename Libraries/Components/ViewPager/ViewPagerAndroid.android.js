@@ -19,6 +19,8 @@ const ViewPropTypes = require('ViewPropTypes');
 const dismissKeyboard = require('dismissKeyboard');
 const requireNativeComponent = require('requireNativeComponent');
 
+const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager');
+
 const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
@@ -80,6 +82,8 @@ class ViewPagerAndroid extends React.Component<{
   keyboardDismissMode?: 'none' | 'on-drag',
   scrollEnabled?: boolean,
 }> {
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   static propTypes = {
     ...ViewPropTypes,
     /**
@@ -152,14 +156,20 @@ class ViewPagerAndroid extends React.Component<{
     }
   }
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   getInnerViewNode = (): ReactComponent => {
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
   };
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   _childrenWithOverridenStyle = (): Array => {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     return React.Children.map(this.props.children, function(child) {
       if (!child) {
         return null;
@@ -245,6 +255,8 @@ class ViewPagerAndroid extends React.Component<{
       <NativeAndroidViewPager
         {...this.props}
         ref={VIEWPAGER_REF}
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         style={this.props.style}
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
@@ -254,10 +266,5 @@ class ViewPagerAndroid extends React.Component<{
     );
   }
 }
-
-const NativeAndroidViewPager = requireNativeComponent(
-  'AndroidViewPager',
-  ViewPagerAndroid,
-);
 
 module.exports = ViewPagerAndroid;

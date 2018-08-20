@@ -159,15 +159,15 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopy() {
-    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopy();
+  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopy(instanceHandle);
     copy.initMeasureFunction();
     return copy;
   }
 
   @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren() {
-    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopyWithNewChildren();
+  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
     copy.initMeasureFunction();
     return copy;
   }

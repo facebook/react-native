@@ -8,8 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTScrollableProtocol.h>
 
-@interface RCTRefreshControl : UIRefreshControl
+@interface RCTRefreshControl : UIRefreshControl <RCTCustomRefreshContolProtocol>
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;

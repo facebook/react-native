@@ -34,11 +34,6 @@ UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(configureJSCForIOS)
 
 UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(FBJSContextStartGCTimers)
 
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSWeakCreate)
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSWeakRetain)
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSWeakRelease)
-UNIMPLEMENTED_SYSTEM_JSC_FUNCTION(JSWeakGetObject)
-
 bool JSSamplingProfilerEnabled() {
   return false;
 }
@@ -62,10 +57,6 @@ const JSCWrapper* systemJSCWrapper() {
 
       .JSContextGetGlobalContext = JSContextGetGlobalContext,
       .JSContextGetGlobalObject = JSContextGetGlobalObject,
-      .JSContextGetGroup = JSContextGetGroup,
-      .JSContextGroupRetain = JSContextGroupRetain,
-      .JSContextGroupRelease = JSContextGroupRelease,
-
       .FBJSContextStartGCTimers =
         (decltype(&FBJSContextStartGCTimers))
         Unimplemented_FBJSContextStartGCTimers,
@@ -130,19 +121,6 @@ const JSCWrapper* systemJSCWrapper() {
       .JSValueToStringCopy = JSValueToStringCopy,
       .JSValueUnprotect = JSValueUnprotect,
       .JSValueIsNull = JSValueIsNull,
-
-      .JSWeakCreate =
-        (decltype(&JSWeakCreate))
-        Unimplemented_JSWeakCreate,
-      .JSWeakRetain =
-        (decltype(&JSWeakRetain))
-        Unimplemented_JSWeakRetain,
-      .JSWeakRelease =
-        (decltype(&JSWeakRelease))
-        Unimplemented_JSWeakRelease,
-      .JSWeakGetObject =
-        (decltype(&JSWeakGetObject))
-        Unimplemented_JSWeakGetObject,
 
       .JSSamplingProfilerEnabled = JSSamplingProfilerEnabled,
       .JSPokeSamplingProfiler =

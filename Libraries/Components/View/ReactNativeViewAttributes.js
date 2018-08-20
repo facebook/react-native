@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -21,7 +21,10 @@ ReactNativeViewAttributes.UIView = {
   accessibilityLabel: true,
   accessibilityComponentType: true,
   accessibilityLiveRegion: true,
+  accessibilityRole: true,
+  accessibilityStates: true,
   accessibilityTraits: true,
+  accessibilityHint: true,
   importantForAccessibility: true,
   nativeID: true,
   testID: true,

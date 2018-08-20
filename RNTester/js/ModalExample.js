@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -94,7 +94,7 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   renderSwitch() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (
@@ -191,7 +191,7 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
   renderPickers() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (

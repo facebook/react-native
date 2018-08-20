@@ -104,8 +104,8 @@ try {
   cd('EndToEndTest');
 
   if (argv.android) {
-    echo('Running an Android e2e test');
-    echo('Installing e2e framework');
+    echo('Running an Android end-to-end test');
+    echo('Installing end-to-end framework');
     if (
       tryExecNTimes(
         () =>
@@ -155,14 +155,14 @@ try {
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
     exec('sleep 15s');
-    echo('Executing android e2e test');
+    echo('Executing android end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
         return exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
       }, numberOfRetries)
     ) {
-      echo('Failed to run Android e2e tests');
+      echo('Failed to run Android end-to-end tests');
       echo('Most likely the code is broken');
       exitCode = 1;
       throw Error(exitCode);
@@ -171,7 +171,7 @@ try {
 
   if (argv.ios || argv.tvos) {
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
-    echo('Running the ' + iosTestType + 'app');
+    echo('Running the ' + iosTestType + ' app');
     cd('ios');
     // Make sure we installed local version of react-native
     if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
@@ -193,22 +193,44 @@ try {
       'response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)',
     );
     echo(`Starting packager server, ${SERVER_PID}`);
-    echo('Executing ' + iosTestType + ' e2e test');
+    echo('Executing ' + iosTestType + ' end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
+        let destination = 'platform=iOS Simulator,name=iPhone 5s,OS=11.4';
+        let sdk = 'iphonesimulator';
+        let scheme = 'EndToEndTest';
+
         if (argv.tvos) {
-          return exec(
-            'xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}',
-          ).code;
-        } else {
-          return exec(
-            'xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}',
-          ).code;
+          destination = 'platform=tvOS Simulator,name=Apple TV,OS=11.4';
+          sdk = 'appletvsimulator';
+          scheme = 'EndToEndTest-tvOS';
         }
+
+        return exec(
+          [
+            'xcodebuild',
+            '-destination',
+            `"${destination}"`,
+            '-scheme',
+            `"${scheme}"`,
+            '-sdk',
+            sdk,
+            'test',
+          ].join(' ') +
+            ' | ' +
+            [
+              'xcpretty',
+              '--report',
+              'junit',
+              '--output',
+              `"~/react-native/reports/junit/${iosTestType}-e2e/results.xml"`,
+            ].join(' ') +
+            ' && exit ${PIPESTATUS[0]}',
+        ).code;
       }, numberOfRetries)
     ) {
-      echo('Failed to run ' + iosTestType + ' e2e tests');
+      echo('Failed to run ' + iosTestType + ' end-to-end tests');
       echo('Most likely the code is broken');
       exitCode = 1;
       throw Error(exitCode);

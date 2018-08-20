@@ -9,12 +9,14 @@ package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import com.facebook.react.uimanager.UIManagerModule;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -29,17 +31,15 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.CookieManager;
-
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -48,11 +48,11 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
@@ -61,9 +61,14 @@ import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
-
-import org.json.JSONObject;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Manages instances of {@link WebView}
@@ -321,11 +326,25 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
+    protected void evaluateJavascriptWithFallback(String script) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        evaluateJavascript(script, null);
+        return;
+      }
+
+      try {
+        loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        // UTF-8 should always be supported
+        throw new RuntimeException(e);
+      }
+    }
+
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
           injectedJS != null &&
           !TextUtils.isEmpty(injectedJS)) {
-        loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
+        evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
       }
     }
 
@@ -344,7 +363,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           });
         }
 
-        loadUrl("javascript:(" +
+        evaluateJavascriptWithFallback("(" +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data) {" +
             BRIDGE_NAME + ".postMessage(String(data));" +
@@ -633,9 +652,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_POST_MESSAGE:
         try {
+          ReactWebView reactWebView = (ReactWebView) root;
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(function () {" +
+          reactWebView.evaluateJavascriptWithFallback("(function () {" +
             "var event;" +
             "var data = " + eventInitDict.toString() + ";" +
             "try {" +
@@ -651,7 +671,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         }
         break;
       case COMMAND_INJECT_JAVASCRIPT:
-        root.loadUrl("javascript:" + args.getString(0));
+        ReactWebView reactWebView = (ReactWebView) root;
+        reactWebView.evaluateJavascriptWithFallback(args.getString(0));
         break;
     }
   }

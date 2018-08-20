@@ -5,12 +5,17 @@ import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 
 import javax.annotation.Nullable;
 
-public interface UIManager extends JSIModule {
+public interface UIManager extends JSIModule, PerformanceCounter {
 
   /**
    * Registers a new root view.
    */
   <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView);
+
+  /**
+   * Unregisters a new root view.
+   */
+  void removeRootView(int reactRootTag);
 
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
@@ -27,4 +32,9 @@ public interface UIManager extends JSIModule {
    * @param commandArgs {@link ReadableArray} parameters associated with the command
    */
   void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
+
+  void setJSResponder(int reactTag, boolean blockNativeResponder);
+
+  void clearJSResponder();
+
 }

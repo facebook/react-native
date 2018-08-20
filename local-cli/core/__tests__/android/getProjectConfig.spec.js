@@ -37,6 +37,13 @@ describe('android::getProjectConfig', () => {
     });
   });
 
+  it("returns `null` if manifest file hasn't been found and userConfig is not defined", () => {
+    const userConfig = undefined;
+    const folder = '/noManifest';
+
+    expect(getProjectConfig(folder, userConfig)).toBeNull();
+  });
+
   it("returns `null` if manifest file hasn't been found", () => {
     const userConfig = {};
     const folder = '/noManifest';

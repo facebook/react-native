@@ -19,6 +19,8 @@ jest
   .setMock('View', ClassComponentMock)
   .setMock('Image', ClassComponentMock)
   .setMock('ScrollView', ClassComponentMock)
+  .setMock('FlatList', ClassComponentMock)
+  .setMock('SectionList', ClassComponentMock)
   .setMock('React', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},
@@ -81,7 +83,7 @@ describe('Native Animated', () => {
       // via component refs table that we override here.
       c.refs = {
         node: {
-          setNativeProps: jest.genMockFunction(),
+          setNativeProps: jest.fn(),
         },
       };
 

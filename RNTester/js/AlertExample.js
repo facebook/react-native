@@ -121,8 +121,9 @@ class SimpleAlertExampleBlock extends React.Component {
 class AlertExample extends React.Component {
   static title = 'Alert';
 
-  static description = 'Alerts display a concise and informative message ' +
-  'and prompt the user to make a decision.';
+  static description =
+    'Alerts display a concise and informative message ' +
+    'and prompt the user to make a decision.';
 
   render() {
     return (

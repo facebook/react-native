@@ -1,16 +1,18 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <memory>
 #include <mutex>
-#include <stdatomic.h>
 
+#include <fabric/components/root/RootShadowNode.h>
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/view/RootShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -75,12 +77,13 @@ private:
 
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
   void complete(UnsharedRootShadowNode newRootShadowNode);
-  bool commit(const SharedRootShadowNode &newRootShadowNode);
+  bool commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode);
+  void emitLayoutEvents(const TreeMutationInstructionList &instructions);
 
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;
   ShadowTreeDelegate *delegate_;
-  mutable std::mutex commitMutex_ {};
+  mutable std::mutex commitMutex_;
 };
 
 } // namespace react

@@ -167,25 +167,25 @@ class TouchableText extends React.Component<Props, State> {
       onResponderGrant: (event: SyntheticEvent<>, dispatchID: string): void => {
         nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
         if (this.props.onResponderGrant != null) {
-          this.props.onResponderGrant.apply(this, arguments);
+          this.props.onResponderGrant.call(this, event, dispatchID);
         }
       },
       onResponderMove: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderMove)(event);
         if (this.props.onResponderMove != null) {
-          this.props.onResponderMove.apply(this, arguments);
+          this.props.onResponderMove.call(this, event);
         }
       },
       onResponderRelease: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderRelease)(event);
         if (this.props.onResponderRelease != null) {
-          this.props.onResponderRelease.apply(this, arguments);
+          this.props.onResponderRelease.call(this, event);
         }
       },
       onResponderTerminate: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderTerminate)(event);
         if (this.props.onResponderTerminate != null) {
-          this.props.onResponderTerminate.apply(this, arguments);
+          this.props.onResponderTerminate.call(this, event);
         }
       },
       onResponderTerminationRequest: (): boolean => {
@@ -261,13 +261,16 @@ const RCTVirtualText =
         uiViewClassName: 'RCTVirtualText',
       }));
 
+const Text = (
+  props: TextProps,
+  forwardedRef: ?React.Ref<'RCTText' | 'RCTVirtualText'>,
+) => {
+  return <TouchableText {...props} forwardedRef={forwardedRef} />;
+};
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const Text = React.forwardRef((props, ref) => (
-  <TouchableText {...props} forwardedRef={ref} />
-));
-Text.displayName = 'Text';
+const TextToExport = React.forwardRef(Text);
 
 // TODO: Deprecate this.
-Text.propTypes = TextPropTypes;
+TextToExport.propTypes = TextPropTypes;
 
-module.exports = ((Text: any): Class<NativeComponent<TextProps>>);
+module.exports = (TextToExport: Class<NativeComponent<TextProps>>);

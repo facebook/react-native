@@ -1,10 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "NativeToJsBridge.h"
 
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
+#include <glog/logging.h>
 
 #include "Instance.h"
 #include "JSBigString.h"
@@ -96,7 +100,8 @@ void NativeToJsBridge::loadApplication(
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
   runOnExecutorQueue(
-      [bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
+      [this,
+       bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
        startupScript=folly::makeMoveWrapper(std::move(startupScript)),
        startupScriptSourceURL=std::move(startupScriptSourceURL)]
         (JSExecutor* executor) mutable {
@@ -104,8 +109,13 @@ void NativeToJsBridge::loadApplication(
     if (bundleRegistry) {
       executor->setBundleRegistry(std::move(bundleRegistry));
     }
-    executor->loadApplicationScript(std::move(*startupScript),
-                                    std::move(startupScriptSourceURL));
+    try {
+      executor->loadApplicationScript(std::move(*startupScript),
+                                      std::move(startupScriptSourceURL));
+    } catch (...) {
+      m_applicationScriptHasFailure = true;
+      throw;
+    }
   });
 }
 
@@ -116,8 +126,13 @@ void NativeToJsBridge::loadApplicationSync(
   if (bundleRegistry) {
     m_executor->setBundleRegistry(std::move(bundleRegistry));
   }
-  m_executor->loadApplicationScript(std::move(startupScript),
-                                        std::move(startupScriptSourceURL));
+  try {
+    m_executor->loadApplicationScript(std::move(startupScript),
+                                          std::move(startupScriptSourceURL));
+  } catch (...) {
+    m_applicationScriptHasFailure = true;
+    throw;
+  }
 }
 
 void NativeToJsBridge::callFunction(
@@ -133,8 +148,13 @@ void NativeToJsBridge::callFunction(
       systraceCookie);
   #endif
 
-  runOnExecutorQueue([module = std::move(module), method = std::move(method), arguments = std::move(arguments), systraceCookie]
+  runOnExecutorQueue([this, module = std::move(module), method = std::move(method), arguments = std::move(arguments), systraceCookie]
     (JSExecutor* executor) {
+      if (m_applicationScriptHasFailure) {
+        LOG(ERROR) << "Attempting to call JS function on a bad application bundle: " << module.c_str() << "." << method.c_str() << "()";
+        throw std::runtime_error("Attempting to call JS function on a bad application bundle: " + module + "." + method + "()");
+      }
+
       #ifdef WITH_FBSYSTRACE
       FbSystraceAsyncFlow::end(
           TRACE_TAG_REACT_CXX_BRIDGE,
@@ -159,8 +179,12 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
       systraceCookie);
   #endif
 
-  runOnExecutorQueue([callbackId, arguments = std::move(arguments), systraceCookie]
+  runOnExecutorQueue([this, callbackId, arguments = std::move(arguments), systraceCookie]
     (JSExecutor* executor) {
+      if (m_applicationScriptHasFailure) {
+        LOG(ERROR) << "Attempting to call JS callback on a bad application bundle: " << callbackId;
+        throw std::runtime_error("Attempting to invoke JS callback on a bad application bundle.");
+      }
       #ifdef WITH_FBSYSTRACE
       FbSystraceAsyncFlow::end(
           TRACE_TAG_REACT_CXX_BRIDGE,

@@ -17,7 +17,7 @@
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
 #import <React/RCTSurfaceView.h>
-#import <React/RCTTouchHandler.h>
+#import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
@@ -39,7 +39,7 @@
 
   // The Main thread only
   RCTSurfaceView *_Nullable _view;
-  RCTTouchHandler *_Nullable _touchHandler;
+  RCTSurfaceTouchHandler *_Nullable _touchHandler;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -59,7 +59,6 @@
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties
 {
-
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
     _moduleName = moduleName;
@@ -71,7 +70,21 @@
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
+    _touchHandler = [RCTSurfaceTouchHandler new];
+
     [self _run];
+
+    // TODO: This will be moved to RCTSurfacePresenter.
+    RCTBridge *bridge = surfacePresenter.bridge_DO_NOT_USE;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleJavaScriptWillStartLoadingNotification:)
+                                                 name:RCTJavaScriptWillStartLoadingNotification
+                                               object:bridge];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleJavaScriptDidLoadNotification:)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:bridge];
   }
 
   return self;
@@ -79,6 +92,8 @@
 
 - (void)dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   [self _stop];
 }
 
@@ -102,6 +117,7 @@
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    [_touchHandler attachToView:_view];
   }
 
   return _view;
@@ -263,6 +279,43 @@
 {
   // TODO: Not supported yet.
   return NO;
+}
+
+#pragma mark - Bridge events
+
+- (void)handleJavaScriptWillStartLoadingNotification:(NSNotification *)notification
+{
+  // TODO: Move the bridge lifecycle handling up to the RCTSurfacePresenter.
+
+  RCTAssertMainQueue();
+
+  // Reset states because the bridge is reloading. This is similar to initialization phase.
+  _stage = RCTSurfaceStageSurfaceDidInitialize;
+  _view = nil;
+  _touchHandler = [RCTSurfaceTouchHandler new];
+  [self _setStage:RCTSurfaceStageBridgeDidLoad];
+}
+
+- (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
+{
+  // TODO: Move the bridge lifecycle handling up to the RCTSurfacePresenter.
+
+  // Note: this covers both JS reloads and initial load after the bridge starts.
+  // When it's not a reload, surface should already be running since we run it immediately in the initializer, so do
+  // nothing.
+  // When it's a reload, we rely on the `RCTJavaScriptWillStartLoadingNotification` notification to reset the stage,
+  // then we need to run the surface and update its size.
+  if (!RCTSurfaceStageIsRunning(_stage)) {
+    [self _setStage:RCTSurfaceStageModuleDidLoad];
+    [self _run];
+
+    // After a reload surfacePresenter needs to know the last min/max size for this surface, because the surface hosting
+    // view was already attached to the ViewController's view.
+    // TODO: Find a better automatic way.
+    [_surfacePresenter setMinimumSize:_minimumSize
+                          maximumSize:_maximumSize
+                              surface:self];
+  }
 }
 
 @end

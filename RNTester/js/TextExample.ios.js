@@ -255,25 +255,6 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
           {marker}
         </View>
 
-        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
-        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
-          {marker}
-          <Text selectable={true}>
-            Some text.
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'baseline',
-                backgroundColor: '#eee',
-              }}>
-              {marker}
-              <Text>Text inside View.</Text>
-              {marker}
-            </View>
-          </Text>
-          {marker}
-        </View>
-
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -324,12 +305,12 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <Text style={{fontFamily: Platform.isTVOS ? 'Times' : 'Cochin'}}>
+          <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
             Cochin
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Cochin',
+              fontFamily: Platform.isTV ? 'Times' : 'Cochin',
               fontWeight: 'bold',
             }}>
             Cochin bold
@@ -338,12 +319,12 @@ exports.examples = [
           <Text style={{fontFamily: 'Helvetica', fontWeight: 'bold'}}>
             Helvetica bold
           </Text>
-          <Text style={{fontFamily: Platform.isTVOS ? 'Courier' : 'Verdana'}}>
+          <Text style={{fontFamily: Platform.isTV ? 'Courier' : 'Verdana'}}>
             Verdana
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Courier' : 'Verdana',
+              fontFamily: Platform.isTV ? 'Courier' : 'Verdana',
               fontWeight: 'bold',
             }}>
             Verdana bold
@@ -751,26 +732,6 @@ exports.examples = [
     },
   },
   {
-    title: 'Inline views',
-    render: function() {
-      return (
-        <View>
-          <Text>
-            This text contains an inline blue view{' '}
-            <View
-              style={{width: 25, height: 25, backgroundColor: 'steelblue'}}
-            />{' '}
-            and an inline image{' '}
-            <Image
-              source={require('./flux.png')}
-              style={{width: 30, height: 11, resizeMode: 'cover'}}
-            />. Neat, huh?
-          </Text>
-        </View>
-      );
-    },
-  },
-  {
     title: 'Text shadow',
     render: function() {
       return (
@@ -817,14 +778,14 @@ exports.examples = [
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Hoefler Text',
+              fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['oldstyle-nums'],
             }}>
             Old Style nums 0123456789{'\n'}
           </Text>
           <Text
             style={{
-              fontFamily: Platform.isTVOS ? 'Times' : 'Hoefler Text',
+              fontFamily: Platform.isTV ? 'Times' : 'Hoefler Text',
               fontVariant: ['lining-nums'],
             }}>
             Lining nums 0123456789{'\n'}
@@ -840,31 +801,6 @@ exports.examples = [
             2222{'\n'}
           </Text>
         </View>
-      );
-    },
-  },
-  {
-    title: 'Nested content',
-    render: function() {
-      return (
-        <Text>
-          This text has a view
-          <View style={{borderColor: 'red', borderWidth: 1}}>
-            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
-            <Text style={{borderColor: 'green', borderWidth: 1}}>
-              another text inside.
-            </Text>
-            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
-              And moreover, it has another view
-              <View style={{borderColor: 'red', borderWidth: 1}}>
-                <Text style={{borderColor: 'blue', borderWidth: 1}}>
-                  with another text inside!
-                </Text>
-              </View>
-            </Text>
-          </View>
-          Because we need to go deeper.
-        </Text>
       );
     },
   },

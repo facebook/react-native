@@ -1,3 +1,4 @@
+load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(

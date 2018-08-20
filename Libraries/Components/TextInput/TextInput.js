@@ -33,30 +33,28 @@ const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
 import type {ColorValue} from 'StyleSheetTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
+if (Platform.OS === 'android') {
+  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+} else if (Platform.OS === 'ios') {
+  RCTMultilineTextInputView = requireNativeComponent(
+    'RCTMultilineTextInputView',
+  );
+  RCTSinglelineTextInputView = requireNativeComponent(
+    'RCTSinglelineTextInputView',
+  );
+}
+
 const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-if (Platform.OS === 'android') {
-  AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-} else if (Platform.OS === 'ios') {
-  RCTMultilineTextInputView = requireNativeComponent(
-    'RCTMultilineTextInputView',
-    null,
-  );
-  RCTSinglelineTextInputView = requireNativeComponent(
-    'RCTSinglelineTextInputView',
-    null,
-  );
-}
 
 type Event = Object;
 type Selection = {
@@ -88,12 +86,12 @@ export type KeyboardType =
   | 'numeric'
   | 'phone-pad'
   | 'number-pad'
+  | 'decimal-pad'
   // iOS-only
   | 'ascii-capable'
   | 'numbers-and-punctuation'
   | 'url'
   | 'name-phone-pad'
-  | 'decimal-pad'
   | 'twitter'
   | 'web-search'
   // Android-only
@@ -158,6 +156,7 @@ type IOSProps = $ReadOnly<{|
     | 'username'
     | 'password'
   ),
+  scrollEnabled?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -171,7 +170,7 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
-  ...ViewProps,
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
   autoCapitalize?: ?AutoCapitalize,
@@ -325,7 +324,13 @@ type Props = $ReadOnly<{|
 
 const TextInput = createReactClass({
   displayName: 'TextInput',
-
+  statics: {
+    State: {
+      currentlyFocusedField: TextInputState.currentlyFocusedField,
+      focusTextInput: TextInputState.focusTextInput,
+      blurTextInput: TextInputState.blurTextInput,
+    },
+  },
   propTypes: {
     ...ViewPropTypes,
     /**
@@ -374,6 +379,7 @@ const TextInput = createReactClass({
      * - `default`
      * - `numeric`
      * - `number-pad`
+     * - `decimal-pad`
      * - `email-address`
      * - `phone-pad`
      *
@@ -385,7 +391,6 @@ const TextInput = createReactClass({
      * - `numbers-and-punctuation`
      * - `url`
      * - `name-phone-pad`
-     * - `decimal-pad`
      * - `twitter`
      * - `web-search`
      *
@@ -577,6 +582,12 @@ const TextInput = createReactClass({
      * The text color of the placeholder string.
      */
     placeholderTextColor: ColorPropType,
+    /**
+     * If `false`, scrolling of the text view will be disabled.
+     * The default value is `true`. Does only work with 'multiline={true}'.
+     * @platform ios
+     */
+    scrollEnabled: PropTypes.bool,
     /**
      * If `true`, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
@@ -957,7 +968,8 @@ const TextInput = createReactClass({
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
-        accessibilityTraits={props.accessibilityTraits}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1008,7 +1020,8 @@ const TextInput = createReactClass({
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
-        accessibilityTraits={props.accessibilityTraits}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1068,7 +1081,8 @@ const TextInput = createReactClass({
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}

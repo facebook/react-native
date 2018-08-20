@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -15,7 +15,7 @@ const Platform = require('Platform');
 const normalizeColor = require('normalizeColor');
 
 /* eslint no-bitwise: 0 */
-function processColor(color?: string | number): ?number {
+function processColor(color?: ?(string | number)): ?number {
   if (color === undefined || color === null) {
     return color;
   }

@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_native_target")
+load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "viewpager",

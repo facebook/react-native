@@ -171,7 +171,7 @@ function createFromRemoteTemplate(
       // only for publishing the template to npm.
       // We want to ignore this dummy file, otherwise it would overwrite
       // our project's package.json file.
-      ignorePaths: ['package.json', 'dependencies.json'],
+      ignorePaths: ['package.json', 'dependencies.json','devDependencies.json'],
     });
     installTemplateDependencies(templatePath, yarnVersion);
     installTemplateDevDependencies(templatePath, yarnVersion);

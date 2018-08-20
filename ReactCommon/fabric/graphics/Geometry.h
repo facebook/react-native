@@ -1,28 +1,17 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <algorithm>
 #include <tuple>
 
-#include <CoreGraphics/CGBase.h>
+#include <fabric/graphics/Float.h>
 
 namespace facebook {
 namespace react {
-
-/*
- * Exact type of float numbers which ideally should match a type behing
- * platform- and chip-architecture-specific float type.
- */
-using Float = CGFloat;
-
-/*
- * Large positive number signifies that the `Float` values is `undefined`.
- */
-const Float kFloatUndefined = CGFLOAT_MAX;
-
-const Float kFloatMax = CGFLOAT_MAX;
-const Float kFloatMin = CGFLOAT_MIN;
 
 /*
  * Point
@@ -119,6 +108,38 @@ struct EdgeInsets {
 
   bool operator !=(const EdgeInsets& rhs) const {
     return !(*this == rhs);
+  }
+
+  bool isUniform() const {
+    return left == top &&
+      left == right &&
+      left == bottom;
+  }
+};
+
+/*
+ * CornerInsets
+ */
+struct CornerInsets {
+  Float topLeft {0};
+  Float topRight {0};
+  Float bottomLeft {0};
+  Float bottomRight {0};
+
+  bool operator ==(const CornerInsets& rhs) const {
+    return
+    std::tie(this->topLeft, this->topRight, this->bottomLeft, this->bottomRight) ==
+    std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
+  }
+
+  bool operator !=(const CornerInsets& rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool isUniform() const {
+    return topLeft == topRight &&
+      topLeft == bottomLeft &&
+      topLeft == bottomRight;
   }
 };
 

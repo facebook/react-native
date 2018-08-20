@@ -50,6 +50,12 @@ static NSString *RCTGenerateFormBoundary()
   const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char*)malloc(boundaryLength);
+  if (!bytes) {
+    // CWE - 391 : Unchecked error condition
+    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+    abort();
+  }
   size_t charCount = strlen(boundaryChars);
   for (int i = 0; i < boundaryLength; i++) {
     bytes[i] = boundaryChars[arc4random_uniform((u_int32_t)charCount)];
@@ -139,6 +145,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  for (NSNumber *requestID in _tasksByRequestID) {
+    [_tasksByRequestID[requestID] cancel];
+  }
+  [_tasksByRequestID removeAllObjects];
+  _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;
 }

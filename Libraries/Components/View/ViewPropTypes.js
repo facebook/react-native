@@ -20,15 +20,20 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 const {
   AccessibilityComponentTypes,
   AccessibilityTraits,
+  AccessibilityRoles,
+  AccessibilityStates,
 } = require('ViewAccessibility');
 
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
+  AccessibilityRole,
+  AccessibilityState,
 } from 'ViewAccessibility';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {ViewStyleProp} from 'StyleSheet';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -72,7 +77,7 @@ export type ViewProps = $ReadOnly<{|
   ...GestureResponderEventProps,
   ...TouchEventProps,
 
-  // There's no easy way to create a different type if (Platform.isTVOS):
+  // There's no easy way to create a different type if (Platform.isTV):
   // so we must include TVViewProps
   ...TVViewProps,
 
@@ -83,11 +88,15 @@ export type ViewProps = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: string,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
   importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
+  accessibilityIgnoresInvertColors?: boolean,
   accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityRole?: AccessibilityRole,
+  accessibilityStates?: Array<AccessibilityState>,
   accessibilityViewIsModal?: boolean,
   accessibilityElementsHidden?: boolean,
   children?: ?React.Node,
@@ -95,7 +104,7 @@ export type ViewProps = $ReadOnly<{|
   nativeID?: string,
   hitSlop?: ?EdgeInsetsProp,
   pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
-  style?: stylePropType,
+  style?: ?ViewStyleProp,
   removeClippedSubviews?: boolean,
   renderToHardwareTextureAndroid?: boolean,
   shouldRasterizeIOS?: boolean,
@@ -122,11 +131,28 @@ module.exports = {
   accessibilityLabel: PropTypes.node,
 
   /**
+   * An accessibility hint helps users understand what will happen when they perform
+   * an action on the accessibility element when that result is not obvious from the
+   * accessibility label.
+   *
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
+   */
+  accessibilityHint: PropTypes.string,
+
+  /**
    * Provides an array of custom actions available for accessibility.
    *
    * @platform ios
    */
   accessibilityActions: PropTypes.arrayOf(PropTypes.string),
+
+  /**
+   * Prevents view from being inverted if set to true and color inversion is turned on.
+   *
+   * @platform ios
+   */
+  accessibilityIgnoresInvertColors: PropTypes.bool,
 
   /**
    * Indicates to accessibility services to treat UI component like a
@@ -138,6 +164,15 @@ module.exports = {
    */
   accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
 
+  /**
+   * Indicates to accessibility services to treat UI component like a specific role.
+   */
+  accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+
+  /**
+   * Indicates to accessibility services that UI Component is in a specific State.
+   */
+  accessibilityStates: PropTypes.arrayOf(PropTypes.oneOf(AccessibilityStates)),
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.

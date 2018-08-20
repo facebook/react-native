@@ -7,6 +7,7 @@
  *
  * This function dismisses the currently-open keyboard, if any
  *
+ * @flow strict-local
  * @format
  */
 

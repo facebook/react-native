@@ -16,6 +16,7 @@ const ReactNative = require('ReactNative');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -238,7 +239,7 @@ const TouchableNativeFeedback = createReactClass({
   render: function() {
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       if (!Array.isArray(children)) {
         children = [children];
       }
@@ -269,8 +270,8 @@ const TouchableNativeFeedback = createReactClass({
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityTraits: this.props.accessibilityTraits,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,

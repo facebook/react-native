@@ -15,6 +15,7 @@
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <folly/Conv.h>
+#include <folly/Optional.h>
 
 namespace facebook {
 namespace react {
@@ -36,7 +37,7 @@ inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name,
 
 template <typename T>
 inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name, folly::Optional<T> value, T defaultValue = {}) {
-  if (!value.has_value()) {
+  if (!value.hasValue()) {
     return nullptr;
   }
 

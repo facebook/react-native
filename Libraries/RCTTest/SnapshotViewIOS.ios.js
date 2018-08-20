@@ -21,6 +21,13 @@ const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
+// Verify that RCTSnapshot is part of the UIManager since it is only loaded
+// if you have linked against RCTTest like in tests, otherwise we will have
+// a warning printed out
+const RCTSnapshot = UIManager.RCTSnapshot
+  ? requireNativeComponent('RCTSnapshot')
+  : View;
+
 class SnapshotViewIOS extends React.Component<{
   onSnapshotReady?: Function,
   testIdentifier?: string,
@@ -58,12 +65,5 @@ const style = StyleSheet.create({
     flex: 1,
   },
 });
-
-// Verify that RCTSnapshot is part of the UIManager since it is only loaded
-// if you have linked against RCTTest like in tests, otherwise we will have
-// a warning printed out
-const RCTSnapshot = UIManager.RCTSnapshot
-  ? requireNativeComponent('RCTSnapshot', SnapshotViewIOS)
-  : View;
 
 module.exports = SnapshotViewIOS;

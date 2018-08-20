@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -39,6 +39,25 @@ export type AccessibilityComponentType =
   | 'radiobutton_checked'
   | 'radiobutton_unchecked';
 
+export type AccessibilityRole =
+  | 'none'
+  | 'button'
+  | 'link'
+  | 'search'
+  | 'image'
+  | 'keyboardkey'
+  | 'text'
+  | 'adjustable'
+  | 'imagebutton'
+  | 'header'
+  | 'summary';
+
+export type AccessibilityState = 'selected' | 'disabled';
+
+export type AccessibilityStates =
+  | AccessibilityState
+  | $ReadOnlyArray<AccessibilityState>;
+
 module.exports = {
   AccessibilityTraits: [
     'none',
@@ -65,4 +84,18 @@ module.exports = {
     'radiobutton_checked',
     'radiobutton_unchecked',
   ],
+  AccessibilityRoles: [
+    'none',
+    'button',
+    'link',
+    'search',
+    'image',
+    'keyboardkey',
+    'text',
+    'adjustable',
+    'imagebutton',
+    'header',
+    'summary',
+  ],
+  AccessibilityStates: ['selected', 'disabled'],
 };

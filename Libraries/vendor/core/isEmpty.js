@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
  */
 
@@ -12,7 +13,7 @@
 /**
  * Mimics empty from PHP.
  */
-function isEmpty(obj) {
+function isEmpty(obj: mixed): boolean {
   if (Array.isArray(obj)) {
     return obj.length === 0;
   } else if (typeof obj === 'object') {

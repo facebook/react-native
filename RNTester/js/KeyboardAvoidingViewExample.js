@@ -27,7 +27,8 @@ const RNTesterPage = require('./RNTesterPage');
 
 class KeyboardAvoidingViewExample extends React.Component {
   static title = '<KeyboardAvoidingView>';
-  static description = 'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
+  static description =
+    'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
 
   state = {
     behavior: 'padding',

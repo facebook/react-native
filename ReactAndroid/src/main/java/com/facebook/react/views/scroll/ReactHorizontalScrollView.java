@@ -38,6 +38,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
+  private final Rect mRect = new Rect();
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
@@ -100,6 +101,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  @Override
+  protected void onDraw(Canvas canvas) {
+    getDrawingRect(mRect);
+    canvas.clipRect(mRect);
+    super.onDraw(canvas);
   }
 
   @Override

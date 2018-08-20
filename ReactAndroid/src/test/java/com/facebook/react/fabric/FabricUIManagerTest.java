@@ -1,12 +1,19 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 package com.facebook.react.fabric;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static com.facebook.react.bridge.InstanceHandleHelper.randomInstanceHandle;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
@@ -28,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+
 /** Tests {@link FabricUIManager} */
 @RunWith(RobolectricTestRunner.class)
 public class FabricUIManagerTest {
@@ -35,7 +43,6 @@ public class FabricUIManagerTest {
   private FabricUIManager mFabricUIManager;
   private ThemedReactContext mThemedReactContext;
   private int mNextReactTag;
-  private int mNextInstanceHandle;
 
   @Before
   public void setUp() throws Exception {
@@ -48,8 +55,9 @@ public class FabricUIManagerTest {
         Arrays.<ViewManager>asList(
             new ReactViewManager(), new ReactTextViewManager(), new ReactRawTextManager());
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
-
-    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry);
+    JavaScriptContextHolder jsContext = mock(JavaScriptContextHolder.class);
+    EventDispatcher eventDispatcher = mock(EventDispatcher.class);
+    mFabricUIManager = new FabricUIManager(reactContext, viewManagerRegistry, jsContext, eventDispatcher);
   }
 
   @Test
@@ -58,10 +66,9 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
     int reactTag = mNextReactTag++;
-    int instanceHandle = mNextInstanceHandle++;
     String viewClass = ReactViewManager.REACT_CLASS;
     ReactShadowNode node =
-        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, instanceHandle);
+        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, randomInstanceHandle());
 
     assertThat(reactTag).isEqualTo(node.getReactTag());
     assertThat(viewClass).isEqualTo(node.getViewClass());
@@ -79,10 +86,9 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
     int reactTag = mNextReactTag++;
-    int instanceHandle = mNextInstanceHandle++;
     String viewClass = ReactViewManager.REACT_CLASS;
     ReactShadowNode node =
-        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, instanceHandle);
+        mFabricUIManager.createNode(reactTag, viewClass, rootTag, null, randomInstanceHandle());
 
     List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
     mFabricUIManager.appendChildToSet(childSet, node);
@@ -124,7 +130,7 @@ public class FabricUIManagerTest {
     node.setText("test");
     assertThat(node.isVirtual()).isTrue();
 
-    ReactRawTextShadowNode clonedNode = (ReactRawTextShadowNode) node.mutableCopy();
+    ReactRawTextShadowNode clonedNode = (ReactRawTextShadowNode) node.mutableCopy(randomInstanceHandle());
 
     assertThat(clonedNode.getText()).isEqualTo("test");
     assertThat(clonedNode).isNotEqualTo(node);
@@ -134,7 +140,7 @@ public class FabricUIManagerTest {
   public void testLayoutProgressBarAfterClonning() {
     ProgressBarShadowNode node = new ProgressBarShadowNode();
     node.setThemedContext(mThemedReactContext);
-    ProgressBarShadowNode clone = (ProgressBarShadowNode) node.mutableCopy();
+    ProgressBarShadowNode clone = (ProgressBarShadowNode) node.mutableCopy(randomInstanceHandle());
     clone.calculateLayout();
   }
 
@@ -212,6 +218,24 @@ public class FabricUIManagerTest {
     mFabricUIManager.completeRoot(rootTag, children);
   }
 
+  @Test
+  public void testSealReactShadowNode() {
+    ReactRootView rootView =
+      new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
+    int rootTag = mFabricUIManager.addRootView(rootView);
+    String viewClass = ReactViewManager.REACT_CLASS;
+
+    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null, randomInstanceHandle());
+    List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
+    mFabricUIManager.appendChildToSet(childSet, container);
+
+    assertThat(container.isSealed()).isFalse();
+
+    mFabricUIManager.completeRoot(rootTag, childSet);
+
+    assertThat(container.isSealed()).isTrue();
+  }
+
   /**
    * Tests that cloned text nodes will not share measure functions
    */
@@ -221,10 +245,10 @@ public class FabricUIManagerTest {
         new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
     int rootTag = mFabricUIManager.addRootView(rootView);
     ReactShadowNode text =
-        mFabricUIManager.createNode(0, ReactTextViewManager.REACT_CLASS, rootTag, null, mNextInstanceHandle++);
+        mFabricUIManager.createNode(0, ReactTextViewManager.REACT_CLASS, rootTag, null, randomInstanceHandle());
     assertThat(text.isMeasureDefined()).isTrue();
 
-    ReactShadowNode textCopy = text.mutableCopy();
+    ReactShadowNode textCopy = text.mutableCopy(randomInstanceHandle());
     assertThat(textCopy.isMeasureDefined()).isTrue();
 
     textCopy.setStyleWidth(200);
@@ -247,13 +271,13 @@ public class FabricUIManagerTest {
     int rootTag = mFabricUIManager.addRootView(rootView);
     String viewClass = ReactViewManager.REACT_CLASS;
 
-    ReactShadowNode aa = mFabricUIManager.createNode(2, viewClass, rootTag, null, mNextInstanceHandle++);
-    ReactShadowNode a = mFabricUIManager.createNode(3, viewClass, rootTag, null, mNextInstanceHandle++);
+    ReactShadowNode aa = mFabricUIManager.createNode(2, viewClass, rootTag, null, randomInstanceHandle());
+    ReactShadowNode a = mFabricUIManager.createNode(3, viewClass, rootTag, null, randomInstanceHandle());
     mFabricUIManager.appendChild(a, aa);
-    ReactShadowNode bb = mFabricUIManager.createNode(4, viewClass, rootTag, null, mNextInstanceHandle++);
-    ReactShadowNode b = mFabricUIManager.createNode(5, viewClass, rootTag, null, mNextInstanceHandle++);
+    ReactShadowNode bb = mFabricUIManager.createNode(4, viewClass, rootTag, null, randomInstanceHandle());
+    ReactShadowNode b = mFabricUIManager.createNode(5, viewClass, rootTag, null, randomInstanceHandle());
     mFabricUIManager.appendChild(b, bb);
-    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null, mNextInstanceHandle++);
+    ReactShadowNode container = mFabricUIManager.createNode(6, viewClass, rootTag, null, randomInstanceHandle());
     mFabricUIManager.appendChild(container, a);
     mFabricUIManager.appendChild(container, b);
     List<ReactShadowNode> childSet = mFabricUIManager.createChildSet(rootTag);
