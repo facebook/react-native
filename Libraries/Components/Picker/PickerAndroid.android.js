@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PickerAndroid
+ * @format
  * @flow
  */
 
@@ -21,6 +21,9 @@ const ViewStylePropTypes = require('ViewStylePropTypes');
 const processColor = require('processColor');
 const requireNativeComponent = require('requireNativeComponent');
 
+const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
+const DialogPicker = requireNativeComponent('AndroidDialogPicker');
+
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
@@ -34,15 +37,20 @@ type Event = Object;
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
-class PickerAndroid extends React.Component<{
-  style?: $FlowFixMe,
-  selectedValue?: any,
-  enabled?: boolean,
-  mode?: 'dialog' | 'dropdown',
-  onValueChange?: Function,
-  prompt?: string,
-  testID?: string,
-}, *> {
+class PickerAndroid extends React.Component<
+  {
+    style?: $FlowFixMe,
+    selectedValue?: any,
+    enabled?: boolean,
+    mode?: 'dialog' | 'dropdown',
+    onValueChange?: Function,
+    prompt?: string,
+    testID?: string,
+  },
+  *,
+> {
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   static propTypes = {
     ...ViewPropTypes,
     style: pickerStyleType,
@@ -54,6 +62,8 @@ class PickerAndroid extends React.Component<{
     testID: ReactPropTypes.string,
   };
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   constructor(props, context) {
     super(props, context);
     const state = this._stateFromProps(props);
@@ -64,12 +74,14 @@ class PickerAndroid extends React.Component<{
     };
   }
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState(this._stateFromProps(nextProps));
   }
 
   // Translate prop and children into stuff that the native picker understands.
-  _stateFromProps = (props) => {
+  _stateFromProps = props => {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
@@ -80,6 +92,8 @@ class PickerAndroid extends React.Component<{
         label: child.props.label,
       };
       if (child.props.color) {
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         childProps.color = processColor(child.props.color);
       }
       return childProps;
@@ -88,7 +102,8 @@ class PickerAndroid extends React.Component<{
   };
 
   render() {
-    const Picker = this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+    const Picker =
+      this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
 
     const nativeProps = {
       enabled: this.props.enabled,
@@ -99,6 +114,8 @@ class PickerAndroid extends React.Component<{
       selected: this.state.initialSelectedIndex,
       testID: this.props.testID,
       style: [styles.pickerAndroid, this.props.style],
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       accessibilityLabel: this.props.accessibilityLabel,
     };
 
@@ -109,18 +126,26 @@ class PickerAndroid extends React.Component<{
     if (this.props.onValueChange) {
       const position = event.nativeEvent.position;
       if (position >= 0) {
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         const children = React.Children.toArray(this.props.children);
         const value = children[position].props.value;
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         this.props.onValueChange(value, position);
       } else {
         this.props.onValueChange(null, position);
       }
     }
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     this._lastNativePosition = event.nativeEvent.position;
     this.forceUpdate();
   };
 
   componentDidMount() {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     this._lastNativePosition = this.state.initialSelectedIndex;
   }
 
@@ -131,8 +156,17 @@ class PickerAndroid extends React.Component<{
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.refs[REF_PICKER] && this.state.selectedIndex !== this._lastNativePosition) {
-      this.refs[REF_PICKER].setNativeProps({selected: this.state.selectedIndex});
+    if (
+      this.refs[REF_PICKER] &&
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+      this.state.selectedIndex !== this._lastNativePosition
+    ) {
+      this.refs[REF_PICKER].setNativeProps({
+        selected: this.state.selectedIndex,
+      });
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       this._lastNativePosition = this.state.selectedIndex;
     }
   }
@@ -148,15 +182,5 @@ const styles = StyleSheet.create({
     height: 50,
   },
 });
-
-const cfg = {
-  nativeOnly: {
-    items: true,
-    selected: true,
-  }
-};
-
-const DropdownPicker = requireNativeComponent('AndroidDropdownPicker', PickerAndroid, cfg);
-const DialogPicker = requireNativeComponent('AndroidDialogPicker', PickerAndroid, cfg);
 
 module.exports = PickerAndroid;

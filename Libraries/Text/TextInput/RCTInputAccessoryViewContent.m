@@ -9,65 +9,54 @@
 
 #import <React/UIView+React.h>
 
-@interface RCTInputAccessoryViewContent()
-
-// Overriding `inputAccessoryView` to `readwrite`.
-@property (nonatomic, readwrite, retain) UIView *inputAccessoryView;
-
-@end
-
 @implementation RCTInputAccessoryViewContent
-
-- (BOOL)canBecomeFirstResponder
 {
-  return true;
+  UIView *_safeAreaContainer;
 }
 
-- (BOOL)becomeFirstResponder
+- (instancetype)init
 {
-  const BOOL becameFirstResponder = [super becomeFirstResponder];
+  if (self = [super init]) {
+    _safeAreaContainer = [UIView new];
+    [self addSubview:_safeAreaContainer];
+  }
+  return self;
+}
 
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  // Avoiding the home pill and notch (landscape mode) on iphoneX.
-  if (becameFirstResponder) {
-    if (@available(iOS 11.0, *)) {
-      [_contentView.bottomAnchor
-       constraintLessThanOrEqualToSystemSpacingBelowAnchor:_contentView.window.safeAreaLayoutGuide.bottomAnchor
-       multiplier:1.0f].active = YES;
-      [_contentView.leftAnchor
-       constraintLessThanOrEqualToSystemSpacingAfterAnchor:_contentView.window.safeAreaLayoutGuide.leftAnchor
-       multiplier:1.0f].active = YES;
-      [_contentView.rightAnchor
-       constraintLessThanOrEqualToSystemSpacingAfterAnchor:_contentView.window.safeAreaLayoutGuide.rightAnchor
+- (void)didMoveToSuperview
+{
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+  // Avoid the home pill (in portrait mode)
+  // TODO: Support rotation, anchor to left and right without breaking frame x coordinate (T27974328).
+  if (@available(iOS 11.0, *)) {
+    if (self.window) {
+      [_safeAreaContainer.bottomAnchor
+       constraintLessThanOrEqualToSystemSpacingBelowAnchor:self.window.safeAreaLayoutGuide.bottomAnchor
        multiplier:1.0f].active = YES;
     }
   }
-  #endif
+#endif
 
-  return becameFirstResponder;
 }
 
-- (UIView *)inputAccessoryView
+- (void)setFrame:(CGRect)frame
 {
-  if (!_inputAccessoryView) {
-    _inputAccessoryView = [UIView new];
-    _contentView = [UIView new];
-    [_inputAccessoryView addSubview:_contentView];
-  }
-  return _inputAccessoryView;
+  [super setFrame:frame];
+  [_safeAreaContainer setFrame:frame];
 }
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
 {
   [super insertReactSubview:subview atIndex:index];
-  [_contentView insertSubview:subview atIndex:index];
+  [_safeAreaContainer insertSubview:subview atIndex:index];
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
   [super removeReactSubview:subview];
   [subview removeFromSuperview];
-  if ([[_inputAccessoryView subviews] count] == 0 && [self isFirstResponder]) {
+  if ([[_safeAreaContainer subviews] count] == 0 && [self isFirstResponder]) {
     [self resignFirstResponder];
   }
 }

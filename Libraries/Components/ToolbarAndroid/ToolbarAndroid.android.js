@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ToolbarAndroid
+ * @format
  */
 
 'use strict';
@@ -13,7 +13,6 @@ const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const UIManager = require('UIManager');
 const ViewPropTypes = require('ViewPropTypes');
 const ColorPropType = require('ColorPropType');
@@ -83,12 +82,14 @@ const ToolbarAndroid = createReactClass({
      * `ifRoom` or `never`
      * * `showWithText`: boolean, whether to show text alongside the icon or not
      */
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      icon: optionalImageSource,
-      show: PropTypes.oneOf(['always', 'ifRoom', 'never']),
-      showWithText: PropTypes.bool
-    })),
+    actions: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        icon: optionalImageSource,
+        show: PropTypes.oneOf(['always', 'ifRoom', 'never']),
+        showWithText: PropTypes.bool,
+      }),
+    ),
     /**
      * Sets the toolbar logo.
      */
@@ -184,7 +185,8 @@ const ToolbarAndroid = createReactClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show = UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show =
+            UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
         nativeActions.push(action);
       }
@@ -204,10 +206,6 @@ const ToolbarAndroid = createReactClass({
   },
 });
 
-const NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
-  nativeOnly: {
-    nativeActions: true,
-  }
-});
+const NativeToolbar = requireNativeComponent('ToolbarAndroid');
 
 module.exports = ToolbarAndroid;

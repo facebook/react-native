@@ -10,6 +10,7 @@ package com.facebook.react.modules.systeminfo;
 import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.provider.Settings.Secure;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -72,6 +73,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
+    constants.put("androidID", Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID));
     return constants;
   }
 }

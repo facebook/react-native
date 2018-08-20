@@ -361,7 +361,22 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
-#endif
+
+#if WEBKIT_IOS_10_APIS_AVAILABLE
+RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
+ @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
+ @"link": @(WKDataDetectorTypeLink),
+ @"address": @(WKDataDetectorTypeAddress),
+ @"calendarEvent": @(WKDataDetectorTypeCalendarEvent),
+ @"trackingNumber": @(WKDataDetectorTypeTrackingNumber),
+ @"flightNumber": @(WKDataDetectorTypeFlightNumber),
+ @"lookupSuggestion": @(WKDataDetectorTypeLookupSuggestion),
+ @"none": @(WKDataDetectorTypeNone),
+ @"all": @(WKDataDetectorTypeAll),
+ }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
+ #endif // WEBKIT_IOS_10_APIS_AVAILABLE
+
+ #endif // !TARGET_OS_TV
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -685,7 +700,8 @@ RCT_ENUM_CONVERTER(YGPositionType, (@{
 
 RCT_ENUM_CONVERTER(YGWrap, (@{
   @"wrap": @(YGWrapWrap),
-  @"nowrap": @(YGWrapNoWrap)
+  @"nowrap": @(YGWrapNoWrap),
+  @"wrap-reverse": @(YGWrapWrapReverse)
 }), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{

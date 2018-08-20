@@ -213,7 +213,7 @@ RCT_EXTERN_C_END
 #endif
 
 #define RCT_RETAINED_ARG_BLOCK(_logic) \
-[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+[argumentBlocks addObject:^(__unused __weak RCTBridge *bridge, NSUInteger index, id json) { \
   _logic                                                                             \
   [invocation setArgument:&value atIndex:(index) + 2];                               \
   if (value) {                                                                       \
@@ -302,6 +302,12 @@ RCT_EXTERN_C_END
 
           [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
             void *returnValue = malloc(typeSignature.methodReturnLength);
+            if (!returnValue) {
+              // CWE - 391 : Unchecked error condition
+              // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+              // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+              abort();
+            }
             [typeInvocation setArgument:&json atIndex:2];
             [typeInvocation invoke];
             [typeInvocation getReturnValue:returnValue];

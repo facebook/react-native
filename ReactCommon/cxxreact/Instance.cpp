@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) 2004-present, Facebook, Inc.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "Instance.h"
 
@@ -170,11 +173,9 @@ const ModuleRegistry &Instance::getModuleRegistry() const {
 
 ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
 void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
-#endif
 
 } // namespace react
 } // namespace facebook

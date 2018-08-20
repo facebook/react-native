@@ -9,6 +9,7 @@
 
 #import "RCTConvert.h"
 #import "RCTI18nUtil.h"
+#import "RCTLayout.h"
 #import "RCTLog.h"
 #import "RCTShadowView+Layout.h"
 #import "RCTUtils.h"
@@ -284,6 +285,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     return;
   }
 
+  YGNodeSetHasNewLayout(yogaNode, false);
+
   RCTLayoutMetrics layoutMetrics = RCTLayoutMetricsFromYogaNode(yogaNode);
 
   layoutContext.absolutePosition.x += layoutMetrics.frame.origin.x;
@@ -321,6 +324,8 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
       continue;
     }
 
+    YGNodeSetHasNewLayout(childYogaNode, false);
+
     RCTLayoutMetrics childLayoutMetrics = RCTLayoutMetricsFromYogaNode(childYogaNode);
 
     layoutContext.absolutePosition.x += childLayoutMetrics.frame.origin.x;
@@ -336,10 +341,10 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  YGNodeRef clonnedYogaNode = YGNodeClone(self.yogaNode);
+  YGNodeRef clonedYogaNode = YGNodeClone(self.yogaNode);
   YGNodeRef constraintYogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
 
-  YGNodeInsertChild(constraintYogaNode, clonnedYogaNode, 0);
+  YGNodeInsertChild(constraintYogaNode, clonedYogaNode, 0);
 
   YGNodeStyleSetMinWidth(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.width));
   YGNodeStyleSetMinHeight(constraintYogaNode, RCTYogaFloatFromCoreGraphicsFloat(minimumSize.height));
@@ -350,7 +355,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     constraintYogaNode,
     YGUndefined,
     YGUndefined,
-    self.layoutMetrics.layoutDirection
+    RCTYogaLayoutDirectionFromUIKitLayoutDirection(self.layoutMetrics.layoutDirection)
   );
 
   CGSize measuredSize = (CGSize){
@@ -358,9 +363,9 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     RCTCoreGraphicsFloatFromYogaFloat(YGNodeLayoutGetHeight(constraintYogaNode)),
   };
 
-  YGNodeRemoveChild(constraintYogaNode, clonnedYogaNode);
+  YGNodeRemoveChild(constraintYogaNode, clonedYogaNode);
   YGNodeFree(constraintYogaNode);
-  YGNodeFree(clonnedYogaNode);
+  YGNodeFree(clonedYogaNode);
 
   return measuredSize;
 }

@@ -4,9 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
- * @providesModule SafeAreaViewExample
  */
 'use strict';
 
@@ -91,8 +90,8 @@ exports.examples = [
     title: 'isIPhoneX_deprecated Example',
     description:
       '`DeviceInfo.isIPhoneX_deprecated` returns true only on iPhone X. ' +
-      'Note: This prop is deprecated and will be removed right after June 01, 2018. ' +
-      'Please use this only for a quick and temporary solution. ' +
+      'Note: This prop is deprecated and will be removed in a future ' +
+      'release. Please use this only for a quick and temporary solution. ' +
       'Use <SafeAreaView> instead.',
     render: () => <IsIPhoneXExample />,
   },

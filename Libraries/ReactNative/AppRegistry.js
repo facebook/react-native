@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppRegistry
  * @flow
  * @format
  */
@@ -97,13 +96,15 @@ const AppRegistry = {
   ): string {
     runnables[appKey] = {
       componentProvider,
-      run: appParameters =>
+      run: appParameters => {
         renderApplication(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
-        ),
+          appParameters.fabric,
+        );
+      },
     };
     if (section) {
       sections[appKey] = runnables[appKey];

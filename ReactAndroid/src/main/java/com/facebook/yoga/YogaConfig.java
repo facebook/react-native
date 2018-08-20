@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 package com.facebook.yoga;
 
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -16,16 +16,12 @@ public class YogaConfig {
   public static int SPACING_TYPE = 1;
 
   static {
-    if (YogaConstants.shouldUseFastMath) {
-      SoLoader.loadLibrary("yogafastmath");
-    } else {
       SoLoader.loadLibrary("yoga");
-    }
   }
 
   long mNativePointer;
   private YogaLogger mLogger;
-  private YogaNodeClonedFunction mNodeClonedFunction;
+  private YogaNodeCloneFunction mYogaNodeCloneFunction;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {
@@ -74,6 +70,19 @@ public class YogaConfig {
     jni_YGConfigSetUseLegacyStretchBehaviour(mNativePointer, useLegacyStretchBehaviour);
   }
 
+  private native void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+      long nativePointer, boolean shouldDiffLayoutWithoutLegacyStretchBehaviour);
+  /**
+   * If this flag is set then yoga would diff the layout without legacy flag and would set a bool in
+   * YogaNode(mDoesLegacyStretchFlagAffectsLayout) with true if the layouts were different and false
+   * if not
+   */
+  public void setShouldDiffLayoutWithoutLegacyStretchBehaviour(
+      boolean shouldDiffLayoutWithoutLegacyStretchBehaviour) {
+    jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
+        mNativePointer, shouldDiffLayoutWithoutLegacyStretchBehaviour);
+  }
+
   private native void jni_YGConfigSetLogger(long nativePointer, Object logger);
   public void setLogger(YogaLogger logger) {
     mLogger = logger;
@@ -84,16 +93,15 @@ public class YogaConfig {
     return mLogger;
   }
 
-  private native void jni_YGConfigSetHasNodeClonedFunc(long nativePointer, boolean hasClonedFunc);
+  private native void jni_YGConfigSetHasCloneNodeFunc(long nativePointer, boolean hasClonedFunc);
 
-  public void setOnNodeCloned(YogaNodeClonedFunction nodeClonedFunction) {
-    mNodeClonedFunction = nodeClonedFunction;
-    jni_YGConfigSetHasNodeClonedFunc(mNativePointer, nodeClonedFunction != null);
+  public void setOnCloneNode(YogaNodeCloneFunction cloneYogaNodeFunction) {
+    mYogaNodeCloneFunction = cloneYogaNodeFunction;
+    jni_YGConfigSetHasCloneNodeFunc(mNativePointer, cloneYogaNodeFunction != null);
   }
 
   @DoNotStrip
-  public final void onNodeCloned(
-      YogaNode oldNode, YogaNode newNode, YogaNode parent, int childIndex) {
-    mNodeClonedFunction.onNodeCloned(oldNode, newNode, parent, childIndex);
+  private final YogaNode cloneNode(YogaNode oldNode, YogaNode parent, int childIndex) {
+    return mYogaNodeCloneFunction.cloneNode(oldNode, parent, childIndex);
   }
 }

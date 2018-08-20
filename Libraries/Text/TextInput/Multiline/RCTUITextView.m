@@ -108,12 +108,6 @@ static UIColor *defaultPlaceholderColor()
   _placeholderView.textAlignment = textAlignment;
 }
 
-- (void)setText:(NSString *)text
-{
-  [super setText:text];
-  [self textDidChange];
-}
-
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
   [super setAttributedText:attributedText];

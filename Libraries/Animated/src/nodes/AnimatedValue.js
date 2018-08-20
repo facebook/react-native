@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedValue
  * @flow
  * @format
  */
@@ -51,6 +50,9 @@ let _uniqueId = 1;
 function _flush(rootNode: AnimatedValue): void {
   const animatedStyles = new Set();
   function findAnimatedStyles(node) {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
     if (typeof node.update === 'function') {
       animatedStyles.add(node);
     } else {

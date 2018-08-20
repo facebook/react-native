@@ -4,43 +4,57 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ElementBox
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
-var BorderBox = require('BorderBox');
-var resolveBoxStyle = require('resolveBoxStyle');
+const BorderBox = require('BorderBox');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var flattenStyle = require('flattenStyle');
+const flattenStyle = require('flattenStyle');
+const resolveBoxStyle = require('resolveBoxStyle');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render() {
-    var style = flattenStyle(this.props.style) || {};
-    var margin = resolveBoxStyle('margin', style);
-    var padding = resolveBoxStyle('padding', style);
-    var frameStyle = this.props.frame;
-    if (margin) {
-      frameStyle = {
-        top: frameStyle.top - margin.top,
-        left: frameStyle.left - margin.left,
-        height: frameStyle.height + margin.top + margin.bottom,
-        width: frameStyle.width + margin.left + margin.right,
-      };
-    }
-    var contentStyle = {
+    const style = flattenStyle(this.props.style) || {};
+    const margin = resolveBoxStyle('margin', style);
+    const padding = resolveBoxStyle('padding', style);
+
+    const frameStyle = {...this.props.frame};
+    const contentStyle = {
       width: this.props.frame.width,
       height: this.props.frame.height,
     };
-    if (padding) {
-      contentStyle = {
-        width: contentStyle.width - padding.left - padding.right,
-        height: contentStyle.height - padding.top - padding.bottom,
-      };
+
+    if (margin != null) {
+      frameStyle.top -= margin.top;
+      frameStyle.left -= margin.left;
+      frameStyle.height += margin.top + margin.bottom;
+      frameStyle.width += margin.left + margin.right;
+
+      if (margin.top < 0) {
+        contentStyle.height += margin.top;
+      }
+      if (margin.bottom < 0) {
+        contentStyle.height += margin.bottom;
+      }
+      if (margin.left < 0) {
+        contentStyle.width += margin.left;
+      }
+      if (margin.right < 0) {
+        contentStyle.width += margin.right;
+      }
     }
+
+    if (padding != null) {
+      contentStyle.width -= padding.left + padding.right;
+      contentStyle.height -= padding.top + padding.bottom;
+    }
+
     return (
       <View style={[styles.frame, frameStyle]} pointerEvents="none">
         <BorderBox box={margin} style={styles.margin}>
@@ -53,20 +67,19 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   frame: {
     position: 'absolute',
   },
   content: {
-    backgroundColor: 'rgba(200, 230, 255, 0.8)',
+    backgroundColor: 'rgba(200, 230, 255, 0.8)', // blue
   },
   padding: {
-    borderColor: 'rgba(77, 255, 0, 0.3)',
+    borderColor: 'rgba(77, 255, 0, 0.3)', // green
   },
   margin: {
-    borderColor: 'rgba(255, 132, 0, 0.3)',
+    borderColor: 'rgba(255, 132, 0, 0.3)', // orange
   },
 });
 
 module.exports = ElementBox;
-

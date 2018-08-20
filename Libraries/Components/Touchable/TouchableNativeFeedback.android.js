@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableNativeFeedback
+ * @format
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -15,6 +16,7 @@ const ReactNative = require('ReactNative');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -113,7 +115,10 @@ const TouchableNativeFeedback = createReactClass({
      * Available on android API level 21+.
      */
     SelectableBackgroundBorderless: function() {
-      return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackgroundBorderless'};
+      return {
+        type: 'ThemeAttrAndroid',
+        attribute: 'selectableItemBackgroundBorderless',
+      };
     },
     /**
      * Creates an object that represents ripple drawable with specified color (as a
@@ -126,12 +131,16 @@ const TouchableNativeFeedback = createReactClass({
      * @param borderless If the ripple can render outside it's bounds
      */
     Ripple: function(color: string, borderless: boolean) {
-      return {type: 'RippleAndroid', color: processColor(color), borderless: borderless};
+      return {
+        type: 'RippleAndroid',
+        color: processColor(color),
+        borderless: borderless,
+      };
     },
 
     canUseNativeForeground: function() {
       return Platform.OS === 'android' && Platform.Version >= 23;
-    }
+    },
   },
 
   mixins: [Touchable.Mixin],
@@ -162,7 +171,10 @@ const TouchableNativeFeedback = createReactClass({
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
     if (this.pressInLocation) {
-      this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
+      this._dispatchHotspotUpdate(
+        this.pressInLocation.locationX,
+        this.pressInLocation.locationY,
+      );
     }
   },
 
@@ -202,14 +214,17 @@ const TouchableNativeFeedback = createReactClass({
 
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
-    this._dispatchHotspotUpdate(e.nativeEvent.locationX, e.nativeEvent.locationY);
+    this._dispatchHotspotUpdate(
+      e.nativeEvent.locationX,
+      e.nativeEvent.locationY,
+    );
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.hotspotUpdate,
-      [destX || 0, destY || 0]
+      [destX || 0, destY || 0],
     );
   },
 
@@ -217,27 +232,37 @@ const TouchableNativeFeedback = createReactClass({
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
       UIManager.RCTView.Commands.setPressed,
-      [pressed]
+      [pressed],
     );
   },
 
   render: function() {
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       if (!Array.isArray(children)) {
         children = [children];
       }
-      children.push(Touchable.renderDebugView({color: 'brown', hitSlop: this.props.hitSlop}));
+      children.push(
+        Touchable.renderDebugView({
+          color: 'brown',
+          hitSlop: this.props.hitSlop,
+        }),
+      );
     }
-    if (this.props.useForeground && !TouchableNativeFeedback.canUseNativeForeground()) {
+    if (
+      this.props.useForeground &&
+      !TouchableNativeFeedback.canUseNativeForeground()
+    ) {
       console.warn(
         'Requested foreground ripple, but it is not available on this version of Android. ' +
-        'Consider calling TouchableNativeFeedback.canUseNativeForeground() and using a different ' +
-        'Touchable if the result is false.');
+          'Consider calling TouchableNativeFeedback.canUseNativeForeground() and using a different ' +
+          'Touchable if the result is false.',
+      );
     }
     const drawableProp =
-      this.props.useForeground && TouchableNativeFeedback.canUseNativeForeground()
+      this.props.useForeground &&
+      TouchableNativeFeedback.canUseNativeForeground()
         ? 'nativeForegroundAndroid'
         : 'nativeBackgroundAndroid';
     const childProps = {
@@ -245,8 +270,8 @@ const TouchableNativeFeedback = createReactClass({
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityTraits: this.props.accessibilityTraits,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
@@ -254,7 +279,8 @@ const TouchableNativeFeedback = createReactClass({
       isTVSelectable: true,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
-      onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
+      onResponderTerminationRequest: this
+        .touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this._handleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
@@ -264,11 +290,8 @@ const TouchableNativeFeedback = createReactClass({
     // We need to clone the actual element so that the ripple background drawable
     // can be applied directly to the background of this element rather than to
     // a wrapper view as done in other Touchable*
-    return React.cloneElement(
-      child,
-      childProps
-    );
-  }
+    return React.cloneElement(child, childProps);
+  },
 });
 
 module.exports = TouchableNativeFeedback;

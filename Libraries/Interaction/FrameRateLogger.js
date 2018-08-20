@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule FrameRateLogger
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const NativeModules = require('NativeModules');
@@ -34,14 +35,28 @@ const FrameRateLogger = {
    * Enable `debug` to see local logs of what's going on. `reportStackTraces` will grab stack traces
    * during UI thread stalls and upload them if the native module supports it.
    */
-  setGlobalOptions: function(options: {debug?: boolean, reportStackTraces?: boolean}) {
+  setGlobalOptions: function(options: {
+    debug?: boolean,
+    reportStackTraces?: boolean,
+  }) {
     if (options.debug !== undefined) {
       invariant(
         NativeModules.FrameRateLogger,
         'Trying to debug FrameRateLogger without the native module!',
       );
     }
-    NativeModules.FrameRateLogger && NativeModules.FrameRateLogger.setGlobalOptions(options);
+    if (NativeModules.FrameRateLogger) {
+      // Freeze the object to avoid the prepack warning (PP0017) about leaking
+      // unfrozen objects.
+      // Needs to clone the object first to avoid modifying the argument.
+      const optionsClone = {
+        debug: !!options.debug,
+        reportStackTraces: !!options.reportStackTraces,
+      };
+      Object.freeze(optionsClone);
+      Object.seal(optionsClone);
+      NativeModules.FrameRateLogger.setGlobalOptions(optionsClone);
+    }
   },
 
   /**
@@ -49,7 +64,8 @@ const FrameRateLogger = {
    * in `AppRegistry`, but navigation is also a common place to hook in.
    */
   setContext: function(context: string) {
-    NativeModules.FrameRateLogger && NativeModules.FrameRateLogger.setContext(context);
+    NativeModules.FrameRateLogger &&
+      NativeModules.FrameRateLogger.setContext(context);
   },
 
   /**
@@ -57,7 +73,8 @@ const FrameRateLogger = {
    * automatically.
    */
   beginScroll() {
-    NativeModules.FrameRateLogger && NativeModules.FrameRateLogger.beginScroll();
+    NativeModules.FrameRateLogger &&
+      NativeModules.FrameRateLogger.beginScroll();
   },
 
   /**

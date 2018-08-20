@@ -73,6 +73,16 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 + (NSString *)moduleName { return @#js_name; } \
 + (void)load { RCTRegisterModule(self); }
 
+/**
+ * To improve startup performance users may want to generate their module lists
+ * at build time and hook the delegate to merge with the runtime list. This
+ * macro takes the place of the above for those cases by omitting the +load
+ * generation.
+ *
+ */
+#define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
++ (NSString *)moduleName { return @#js_name; }
+
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
 
@@ -83,6 +93,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * to bridge features, such as sending events or making JS calls. This
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
+ * If using Swift, add `@objc var bridge: RCTBridge!` to your module.
  */
 @property (nonatomic, weak, readonly) RCTBridge *bridge;
 
@@ -197,7 +208,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (returnType)method;
+  - (returnType)method RCT_DYNAMIC;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically

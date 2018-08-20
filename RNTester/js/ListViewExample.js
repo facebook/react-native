@@ -4,22 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
- * @providesModule ListViewExample
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {
-  Image,
-  ListView,
-  TouchableHighlight,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+var {Image, ListView, TouchableHighlight, StyleSheet, Text, View} = ReactNative;
 
 var RNTesterPage = require('./RNTesterPage');
 
@@ -27,7 +21,7 @@ var ListViewSimpleExample = createReactClass({
   displayName: 'ListViewSimpleExample',
   statics: {
     title: '<ListView>',
-    description: 'Performant, scrollable list of data.'
+    description: 'Performant, scrollable list of data.',
   },
 
   getInitialState: function() {
@@ -58,11 +52,17 @@ var ListViewSimpleExample = createReactClass({
     );
   },
 
-  _renderRow: function(rowData: string, sectionID: number, rowID: number, highlightRow: (sectionID: number, rowID: number) => void) {
+  _renderRow: function(
+    rowData: string,
+    sectionID: number,
+    rowID: number,
+    highlightRow: (sectionID: number, rowID: number) => void,
+  ) {
     var rowHash = Math.abs(hashCode(rowData));
     var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
-      <TouchableHighlight onPress={() => {
+      <TouchableHighlight
+        onPress={() => {
           this._pressRow(rowID);
           highlightRow(sectionID, rowID);
         }}>
@@ -70,7 +70,7 @@ var ListViewSimpleExample = createReactClass({
           <View style={styles.row}>
             <Image style={styles.thumb} source={imgSource} />
             <Text style={styles.text}>
-              {rowData + ' - ' + LOREM_IPSUM.substr(0, rowHash % 301 + 10)}
+              {rowData + ' - ' + LOREM_IPSUM.substr(0, (rowHash % 301) + 10)}
             </Text>
           </View>
         </View>
@@ -89,12 +89,18 @@ var ListViewSimpleExample = createReactClass({
 
   _pressRow: function(rowID: number) {
     this._pressData[rowID] = !this._pressData[rowID];
-    this.setState({dataSource: this.state.dataSource.cloneWithRows(
-      this._genRows(this._pressData)
-    )});
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(
+        this._genRows(this._pressData),
+      ),
+    });
   },
 
-  _renderSeparator: function(sectionID: number, rowID: number, adjacentRowHighlighted: bool) {
+  _renderSeparator: function(
+    sectionID: number,
+    rowID: number,
+    adjacentRowHighlighted: boolean,
+  ) {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -104,7 +110,7 @@ var ListViewSimpleExample = createReactClass({
         }}
       />
     );
-  }
+  },
 });
 
 var THUMB_URLS = [
@@ -120,14 +126,15 @@ var THUMB_URLS = [
   require('./Thumbnails/poke.png'),
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
-  ];
-var LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
+];
+var LOREM_IPSUM =
+  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
 
 /* eslint no-bitwise: 0 */
 var hashCode = function(str) {
   var hash = 15;
   for (var ii = str.length - 1; ii >= 0; ii--) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(ii);
+    hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };

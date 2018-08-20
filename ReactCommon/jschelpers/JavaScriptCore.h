@@ -134,6 +134,7 @@ jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSVal
 
 // JSClass
 #define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
+#define JSC_JSClassRetain(...) __jsc_bool_wrapper(JSClassRetain, __VA_ARGS__)
 #define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
 
 jsc_poison(JSClassCreate JSClassRelease JSClassRetain)

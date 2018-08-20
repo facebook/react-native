@@ -7,23 +7,12 @@
 
 package com.facebook.react.shell;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import com.facebook.react.LazyReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.flat.FlatARTSurfaceViewManager;
-import com.facebook.react.flat.RCTImageViewManager;
-import com.facebook.react.flat.RCTModalHostManager;
-import com.facebook.react.flat.RCTRawTextManager;
-import com.facebook.react.flat.RCTTextInlineImageManager;
-import com.facebook.react.flat.RCTTextInputManager;
-import com.facebook.react.flat.RCTTextManager;
-import com.facebook.react.flat.RCTViewManager;
-import com.facebook.react.flat.RCTViewPagerManager;
-import com.facebook.react.flat.RCTVirtualTextManager;
+import com.facebook.react.module.annotations.ReactModuleList;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
@@ -83,6 +72,35 @@ import javax.inject.Provider;
 /**
  * Package defining basic modules and view managers.
  */
+@ReactModuleList(nativeModules = {
+  AccessibilityInfoModule.class,
+  AppStateModule.class,
+  BlobModule.class,
+  FileReaderModule.class,
+  AsyncStorageModule.class,
+  CameraRollManager.class,
+  ClipboardModule.class,
+  DatePickerDialogModule.class,
+  DialogModule.class,
+  FrescoModule.class,
+  I18nManagerModule.class,
+  ImageEditingManager.class,
+  ImageLoaderModule.class,
+  ImageStoreManager.class,
+  IntentModule.class,
+  LocationModule.class,
+  NativeAnimatedModule.class,
+  NetworkingModule.class,
+  NetInfoModule.class,
+  PermissionsModule.class,
+  ShareModule.class,
+  StatusBarModule.class,
+  TimePickerDialogModule.class,
+  ToastModule.class,
+  VibrationModule.class,
+  WebSocketModule.class,
+
+})
 public class MainReactPackage extends LazyReactPackage {
 
   private MainPackageConfig mConfig;
@@ -332,33 +350,17 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactWebViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(reactContext);
-    boolean useFlatUi = preferences.getBoolean("flat_uiimplementation", false);
-    if (useFlatUi) {
-      // Flat managers
-      viewManagers.add(new FlatARTSurfaceViewManager());
-      viewManagers.add(new RCTTextInlineImageManager());
-      viewManagers.add(new RCTImageViewManager());
-      viewManagers.add(new RCTModalHostManager());
-      viewManagers.add(new RCTRawTextManager());
-      viewManagers.add(new RCTTextInputManager());
-      viewManagers.add(new RCTTextManager());
-      viewManagers.add(new RCTViewManager());
-      viewManagers.add(new RCTViewPagerManager());
-      viewManagers.add(new RCTVirtualTextManager());
-    } else {
-      // Native equivalents
-      viewManagers.add(new ARTSurfaceViewManager());
-      viewManagers.add(new FrescoBasedReactTextInlineImageViewManager());
-      viewManagers.add(new ReactImageManager());
-      viewManagers.add(new ReactModalHostManager());
-      viewManagers.add(new ReactRawTextManager());
-      viewManagers.add(new ReactTextInputManager());
-      viewManagers.add(new ReactTextViewManager());
-      viewManagers.add(new ReactViewManager());
-      viewManagers.add(new ReactViewPagerManager());
-      viewManagers.add(new ReactVirtualTextViewManager());
-    }
+    // Native equivalents
+    viewManagers.add(new ARTSurfaceViewManager());
+    viewManagers.add(new FrescoBasedReactTextInlineImageViewManager());
+    viewManagers.add(new ReactImageManager());
+    viewManagers.add(new ReactModalHostManager());
+    viewManagers.add(new ReactRawTextManager());
+    viewManagers.add(new ReactTextInputManager());
+    viewManagers.add(new ReactTextViewManager());
+    viewManagers.add(new ReactViewManager());
+    viewManagers.add(new ReactViewPagerManager());
+    viewManagers.add(new ReactVirtualTextViewManager());
 
     return viewManagers;
   }

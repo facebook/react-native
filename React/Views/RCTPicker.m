@@ -23,6 +23,7 @@
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
+    [self selectRow:0 inComponent:0 animated:YES]; // Workaround for missing selection indicator lines (see https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
   }
   return self;
 }

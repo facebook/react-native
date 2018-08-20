@@ -1,10 +1,9 @@
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
 
 import com.facebook.react.bridge.NativeModule;
@@ -24,16 +23,15 @@ import javax.annotation.Nullable;
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules
  * from several other packages.
  */
-public class CompositeReactPackage extends ReactInstancePackage
-    implements ViewManagerOnDemandReactPackage {
+public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, ReactPackage {
 
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();
 
   /**
-   * The order in which packages are passed matters. It may happen that a NativeModule or
-   * or a ViewManager exists in two or more ReactPackages. In that case the latter will win
-   * i.e. the latter will overwrite the former. This re-occurrence is detected by
-   * comparing a name of a module.
+   * The order in which packages are passed matters. It may happen that a NativeModule or or a
+   * ViewManager exists in two or more ReactPackages. In that case the latter will win i.e. the
+   * latter will overwrite the former. This re-occurrence is detected by comparing a name of a
+   * module.
    */
   public CompositeReactPackage(ReactPackage arg1, ReactPackage arg2, ReactPackage... args) {
     mChildReactPackages.add(arg1);
@@ -42,54 +40,25 @@ public class CompositeReactPackage extends ReactInstancePackage
     Collections.addAll(mChildReactPackages, args);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     // This is for backward compatibility.
     final Map<String, NativeModule> moduleMap = new HashMap<>();
-    for (ReactPackage reactPackage: mChildReactPackages) {
-      for (NativeModule nativeModule: reactPackage.createNativeModules(reactContext)) {
+    for (ReactPackage reactPackage : mChildReactPackages) {
+      for (NativeModule nativeModule : reactPackage.createNativeModules(reactContext)) {
         moduleMap.put(nativeModule.getName(), nativeModule);
       }
     }
     return new ArrayList<>(moduleMap.values());
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<NativeModule> createNativeModules(
-      ReactApplicationContext reactContext,
-      ReactInstanceManager reactInstanceManager) {
-    final Map<String, NativeModule> moduleMap = new HashMap<>();
-    for (ReactPackage reactPackage: mChildReactPackages) {
-      List<NativeModule> nativeModules;
-      if (reactPackage instanceof ReactInstancePackage) {
-        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
-        nativeModules = reactInstancePackage.createNativeModules(
-            reactContext,
-            reactInstanceManager);
-      } else {
-        nativeModules = reactPackage.createNativeModules(reactContext);
-      }
-      for (NativeModule nativeModule: nativeModules) {
-        moduleMap.put(nativeModule.getName(), nativeModule);
-      }
-    }
-    return new ArrayList<>(moduleMap.values());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     final Map<String, ViewManager> viewManagerMap = new HashMap<>();
-    for (ReactPackage reactPackage: mChildReactPackages) {
-      for (ViewManager viewManager: reactPackage.createViewManagers(reactContext)) {
+    for (ReactPackage reactPackage : mChildReactPackages) {
+      for (ViewManager viewManager : reactPackage.createViewManagers(reactContext)) {
         viewManagerMap.put(viewManager.getName(), viewManager);
       }
     }
@@ -98,14 +67,12 @@ public class CompositeReactPackage extends ReactInstancePackage
 
   /** {@inheritDoc} */
   @Override
-  public List<String> getViewManagerNames(
-      ReactApplicationContext reactContext, boolean loadClasses) {
+  public List<String> getViewManagerNames(ReactApplicationContext reactContext) {
     Set<String> uniqueNames = new HashSet<>();
     for (ReactPackage reactPackage : mChildReactPackages) {
       if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
         List<String> names =
-            ((ViewManagerOnDemandReactPackage) reactPackage)
-                .getViewManagerNames(reactContext, loadClasses);
+            ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(reactContext);
         if (names != null) {
           uniqueNames.addAll(names);
         }
@@ -117,14 +84,15 @@ public class CompositeReactPackage extends ReactInstancePackage
   /** {@inheritDoc} */
   @Override
   public @Nullable ViewManager createViewManager(
-      ReactApplicationContext reactContext, String viewManagerName, boolean loadClasses) {
-    ListIterator<ReactPackage> iterator = mChildReactPackages.listIterator(mChildReactPackages.size());
+      ReactApplicationContext reactContext, String viewManagerName) {
+    ListIterator<ReactPackage> iterator =
+        mChildReactPackages.listIterator(mChildReactPackages.size());
     while (iterator.hasPrevious()) {
       ReactPackage reactPackage = iterator.previous();
       if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
         ViewManager viewManager =
             ((ViewManagerOnDemandReactPackage) reactPackage)
-                .createViewManager(reactContext, viewManagerName, loadClasses);
+                .createViewManager(reactContext, viewManagerName);
         if (viewManager != null) {
           return viewManager;
         }

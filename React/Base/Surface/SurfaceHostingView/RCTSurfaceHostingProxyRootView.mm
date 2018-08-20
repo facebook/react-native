@@ -57,11 +57,17 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   RCTAssert(moduleName, @"A moduleName is required to create an RCTSurfaceHostingProxyRootView");
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTSurfaceHostingProxyRootView init]", nil);
+
+  _bridge = bridge;
+
   if (!bridge.isLoading) {
     [bridge.performanceLogger markStartForTag:RCTPLTTI];
   }
 
-  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties]) {
+  // `RCTRootViewSizeFlexibilityNone` is the RCTRootView's default.
+  RCTSurfaceSizeMeasureMode sizeMeasureMode = convertToSurfaceSizeMeasureMode(RCTRootViewSizeFlexibilityNone);
+
+  if (self = [super initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties sizeMeasureMode:sizeMeasureMode]) {
     self.backgroundColor = [UIColor whiteColor];
   }
 
@@ -90,11 +96,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (NSString *)moduleName
 {
   return super.surface.moduleName;
-}
-
-- (RCTBridge *)bridge
-{
-  return super.surface.bridge;
 }
 
 - (UIView *)contentView
@@ -127,11 +128,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super.surface setProperties:appProperties];
 }
 
-- (CGSize)intrinsicContentSize
-{
-  return super.surface.intrinsicSize;
-}
-
 - (UIView *)loadingView
 {
   return super.activityIndicatorViewFactory ? super.activityIndicatorViewFactory() : nil;
@@ -150,7 +146,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [super surface:surface didChangeStage:stage];
   if (RCTSurfaceStageIsRunning(stage)) {
-    [super.surface.bridge.performanceLogger markStopForTag:RCTPLTTI];
+    [_bridge.performanceLogger markStopForTag:RCTPLTTI];
     dispatch_async(dispatch_get_main_queue(), ^{
       [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
                                                           object:self];

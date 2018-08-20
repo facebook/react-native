@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SpringConfig
- * @flow
+ * @format
+ * @flow strict
  */
 
 'use strict';
@@ -42,7 +42,7 @@ function fromBouncinessAndSpeed(
   }
 
   function projectNormal(n, start, end) {
-    return start + (n * (end - start));
+    return start + n * (end - start);
   }
 
   function linearInterpolation(t, start, end) {
@@ -54,18 +54,20 @@ function fromBouncinessAndSpeed(
   }
 
   function b3Friction1(x) {
-    return (0.0007 * Math.pow(x, 3)) -
-      (0.031 * Math.pow(x, 2)) + 0.64 * x + 1.28;
+    return 0.0007 * Math.pow(x, 3) - 0.031 * Math.pow(x, 2) + 0.64 * x + 1.28;
   }
 
   function b3Friction2(x) {
-    return (0.000044 * Math.pow(x, 3)) -
-      (0.006 * Math.pow(x, 2)) + 0.36 * x + 2;
+    return 0.000044 * Math.pow(x, 3) - 0.006 * Math.pow(x, 2) + 0.36 * x + 2;
   }
 
   function b3Friction3(x) {
-    return (0.00000045 * Math.pow(x, 3)) -
-      (0.000332 * Math.pow(x, 2)) + 0.1078 * x + 5.84;
+    return (
+      0.00000045 * Math.pow(x, 3) -
+      0.000332 * Math.pow(x, 2) +
+      0.1078 * x +
+      5.84
+    );
   }
 
   function b3Nobounce(tension) {
@@ -78,14 +80,14 @@ function fromBouncinessAndSpeed(
     }
   }
 
-  var b = normalize(bounciness / 1.7, 0, 20);
+  let b = normalize(bounciness / 1.7, 0, 20);
   b = projectNormal(b, 0, 0.8);
-  var s = normalize(speed / 1.7, 0, 20);
-  var bouncyTension = projectNormal(s, 0.5, 200);
-  var bouncyFriction = quadraticOutInterpolation(
+  const s = normalize(speed / 1.7, 0, 20);
+  const bouncyTension = projectNormal(s, 0.5, 200);
+  const bouncyFriction = quadraticOutInterpolation(
     b,
     b3Nobounce(bouncyTension),
-    0.01
+    0.01,
   );
 
   return {

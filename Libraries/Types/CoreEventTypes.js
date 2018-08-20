@@ -4,8 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CoreEventTypes
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -79,5 +78,11 @@ export type ScrollEvent = SyntheticEvent<
       width: number,
     |}>,
     zoomScale: number,
+  |}>,
+>;
+
+export type SwitchChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    value: boolean,
   |}>,
 >;

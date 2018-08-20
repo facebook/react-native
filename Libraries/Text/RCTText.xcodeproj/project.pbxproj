@@ -103,6 +103,9 @@
 		5956B1A6200FF35C008D9D16 /* RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B103200FEBA9008D9D16 /* RCTUITextField.m */; };
 		5956B1A7200FF35C008D9D16 /* RCTVirtualTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B12E200FEBAA008D9D16 /* RCTVirtualTextShadowView.m */; };
 		5956B1A8200FF35C008D9D16 /* RCTVirtualTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B12B200FEBAA008D9D16 /* RCTVirtualTextViewManager.m */; };
+		5970936920845EFC00D163A7 /* RCTTextTransform.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5970936820845DDE00D163A7 /* RCTTextTransform.h */; };
+		5970936A20845F0600D163A7 /* RCTTextTransform.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5970936820845DDE00D163A7 /* RCTTextTransform.h */; };
+		5C245F39205E216A00D936E9 /* RCTInputAccessoryShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C245F37205E216A00D936E9 /* RCTInputAccessoryShadowView.m */; };
 		8F2807C7202D2B6B005D65E6 /* RCTInputAccessoryViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F2807C1202D2B6A005D65E6 /* RCTInputAccessoryViewManager.m */; };
 		8F2807C8202D2B6B005D65E6 /* RCTInputAccessoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F2807C3202D2B6A005D65E6 /* RCTInputAccessoryView.m */; };
 		8F2807C9202D2B6B005D65E6 /* RCTInputAccessoryViewContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F2807C5202D2B6B005D65E6 /* RCTInputAccessoryViewContent.m */; };
@@ -115,6 +118,7 @@
 			dstPath = include/RCTText;
 			dstSubfolderSpec = 16;
 			files = (
+				5970936920845EFC00D163A7 /* RCTTextTransform.h in Copy Headers */,
 				5956B160200FF324008D9D16 /* RCTBaseTextShadowView.h in Copy Headers */,
 				5956B161200FF324008D9D16 /* RCTBaseTextViewManager.h in Copy Headers */,
 				5956B162200FF324008D9D16 /* RCTRawTextShadowView.h in Copy Headers */,
@@ -150,6 +154,7 @@
 			dstPath = include/RCTText;
 			dstSubfolderSpec = 16;
 			files = (
+				5970936A20845F0600D163A7 /* RCTTextTransform.h in Copy Headers */,
 				5956B179200FF338008D9D16 /* RCTBaseTextShadowView.h in Copy Headers */,
 				5956B17A200FF338008D9D16 /* RCTBaseTextViewManager.h in Copy Headers */,
 				5956B17B200FF338008D9D16 /* RCTRawTextShadowView.h in Copy Headers */,
@@ -232,6 +237,9 @@
 		5956B12D200FEBAA008D9D16 /* RCTVirtualTextViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTVirtualTextViewManager.h; sourceTree = "<group>"; };
 		5956B12E200FEBAA008D9D16 /* RCTVirtualTextShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTVirtualTextShadowView.m; sourceTree = "<group>"; };
 		5956B12F200FEBAA008D9D16 /* RCTConvert+Text.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+Text.m"; sourceTree = "<group>"; };
+		5970936820845DDE00D163A7 /* RCTTextTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextTransform.h; sourceTree = "<group>"; };
+		5C245F37205E216A00D936E9 /* RCTInputAccessoryShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryShadowView.m; sourceTree = "<group>"; };
+		5C245F38205E216A00D936E9 /* RCTInputAccessoryShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryShadowView.h; sourceTree = "<group>"; };
 		8F2807C1202D2B6A005D65E6 /* RCTInputAccessoryViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryViewManager.m; sourceTree = "<group>"; };
 		8F2807C2202D2B6A005D65E6 /* RCTInputAccessoryViewContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTInputAccessoryViewContent.h; sourceTree = "<group>"; };
 		8F2807C3202D2B6A005D65E6 /* RCTInputAccessoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTInputAccessoryView.m; sourceTree = "<group>"; };
@@ -251,6 +259,7 @@
 				5956B12F200FEBAA008D9D16 /* RCTConvert+Text.m */,
 				5956B11A200FEBA9008D9D16 /* RCTTextAttributes.h */,
 				5956B120200FEBA9008D9D16 /* RCTTextAttributes.m */,
+				5970936820845DDE00D163A7 /* RCTTextTransform.h */,
 				5956B121200FEBAA008D9D16 /* Text */,
 				5956B0FF200FEBA9008D9D16 /* TextInput */,
 				5956B12A200FEBAA008D9D16 /* VirtualText */,
@@ -283,6 +292,8 @@
 		5956B0FF200FEBA9008D9D16 /* TextInput */ = {
 			isa = PBXGroup;
 			children = (
+				5C245F38205E216A00D936E9 /* RCTInputAccessoryShadowView.h */,
+				5C245F37205E216A00D936E9 /* RCTInputAccessoryShadowView.m */,
 				8F2807C4202D2B6A005D65E6 /* RCTInputAccessoryView.h */,
 				8F2807C3202D2B6A005D65E6 /* RCTInputAccessoryView.m */,
 				8F2807C2202D2B6A005D65E6 /* RCTInputAccessoryViewContent.h */,
@@ -411,7 +422,7 @@
 		58B511931A9E6C1200147676 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					2D2A287A1D9B048500D4039D = {
@@ -493,6 +504,7 @@
 				5956B142200FEBAA008D9D16 /* RCTTextViewManager.m in Sources */,
 				5956B135200FEBAA008D9D16 /* RCTBaseTextInputView.m in Sources */,
 				5956B144200FEBAA008D9D16 /* RCTVirtualTextViewManager.m in Sources */,
+				5C245F39205E216A00D936E9 /* RCTInputAccessoryShadowView.m in Sources */,
 				5956B13B200FEBAA008D9D16 /* RCTMultilineTextInputViewManager.m in Sources */,
 				5956B134200FEBAA008D9D16 /* RCTSinglelineTextInputViewManager.m in Sources */,
 				5956B139200FEBAA008D9D16 /* RCTBaseTextInputViewManager.m in Sources */,
@@ -550,20 +562,31 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -578,7 +601,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -598,20 +621,30 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
@@ -620,7 +653,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

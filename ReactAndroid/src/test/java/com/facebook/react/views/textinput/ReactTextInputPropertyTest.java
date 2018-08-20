@@ -231,6 +231,8 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
+    int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
+    int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     int numericTypeFlags =
         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
         InputType.TYPE_NUMBER_FLAG_SIGNED;
@@ -248,6 +250,12 @@ public class ReactTextInputPropertyTest {
 
     mManager.updateProperties(view, buildStyles("keyboardType", "text"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "numeric"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numericTypeFlags);

@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InputAccessoryView
  * @flow
  * @format
  */
@@ -90,6 +89,8 @@ type Props = {
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
+    console.warn('<InputAccessoryView> is not supported on Android yet.');
+
     if (React.Children.count(this.props.children) === 0) {
       return null;
     }

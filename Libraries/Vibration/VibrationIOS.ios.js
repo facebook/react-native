@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule VibrationIOS
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var RCTVibration = require('NativeModules').Vibration;
+const RCTVibration = require('NativeModules').Vibration;
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * NOTE: `VibrationIOS` is being deprecated. Use `Vibration` instead.
@@ -26,17 +27,14 @@ var invariant = require('fbjs/lib/invariant');
  * Vibration patterns are currently unsupported.
  */
 
-var VibrationIOS = {
+const VibrationIOS = {
   /**
    * @deprecated
    */
   vibrate: function() {
-    invariant(
-      arguments[0] === undefined,
-      'Vibration patterns not supported.'
-    );
+    invariant(arguments[0] === undefined, 'Vibration patterns not supported.');
     RCTVibration.vibrate();
-  }
+  },
 };
 
 module.exports = VibrationIOS;

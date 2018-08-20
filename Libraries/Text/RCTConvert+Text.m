@@ -25,4 +25,11 @@
     UITextSpellCheckingTypeNo;
 }
 
+RCT_ENUM_CONVERTER(RCTTextTransform, (@{
+  @"none": @(RCTTextTransformNone),
+  @"capitalize": @(RCTTextTransformCapitalize),
+  @"uppercase": @(RCTTextTransformUppercase),
+  @"lowercase": @(RCTTextTransformLowercase),
+}), RCTTextTransformUndefined, integerValue)
+
 @end

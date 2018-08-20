@@ -4,9 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Button
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
@@ -57,7 +58,6 @@ class Button extends React.Component<{
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
-  hasTVPreferredFocus?: ?boolean,
 }> {
   static propTypes = {
     /**
@@ -109,29 +109,33 @@ class Button extends React.Component<{
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityTraits = ['button'];
+    const accessibilityStates = [];
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityTraits.push('disabled');
+      accessibilityStates.push('disabled');
     }
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
-    const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+    const formattedTitle =
+      Platform.OS === 'android' ? title.toUpperCase() : title;
+    const Touchable =
+      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
-        accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={accessibilityTraits}
+        accessibilityRole="button"
+        accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>
+            {formattedTitle}
+          </Text>
         </View>
       </Touchable>
     );
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
     android: {
       elevation: 0,
       backgroundColor: '#dfdfdf',
-    }
+    },
   }),
   textDisabled: Platform.select({
     ios: {
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
     },
     android: {
       color: '#a1a1a1',
-    }
+    },
   }),
 });
 

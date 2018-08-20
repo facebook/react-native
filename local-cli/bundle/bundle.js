@@ -3,7 +3,10 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const buildBundle = require('./buildBundle');
@@ -13,11 +16,11 @@ const outputBundle = require('metro/src/shared/output/bundle');
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundleWithOutput(argv, config, args, output) {
+function bundleWithOutput(argv, configPromise, args, output) {
   if (!output) {
     output = outputBundle;
   }
-  return buildBundle(args, config, output);
+  return buildBundle(args, configPromise, output);
 }
 
 module.exports = {
