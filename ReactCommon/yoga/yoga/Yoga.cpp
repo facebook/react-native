@@ -2420,20 +2420,32 @@ static void YGJustifyMainAxis(
     const float& availableInnerWidth,
     const bool& performLayout) {
   const YGStyle& style = node->getStyle();
-
-  // If we are using "at most" rules in the main axis. Calculate the remaining
-  // space when constraint by the min size defined for the main axis.
+  const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
+      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
+  const float trailingPaddingAndBorderMain = YGUnwrapFloatOptional(
+      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth));
+  // If we are using "at most" rules in the main axis, make sure that
+  // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == YGMeasureModeAtMost &&
       collectedFlexItemsValues.remainingFreeSpace > 0) {
     if (style.minDimensions[dim[mainAxis]].unit != YGUnitUndefined &&
         !YGResolveValue(style.minDimensions[dim[mainAxis]], mainAxisownerSize)
              .isUndefined()) {
-      collectedFlexItemsValues.remainingFreeSpace = YGFloatMax(
-          0,
+      // This condition makes sure that if the size of main dimension(after
+      // considering child nodes main dim, leading and trailing padding etc)
+      // falls below min dimension, then the remainingFreeSpace is reassigned
+      // considering the min dimension
+
+      // `minAvailableMainDim` denotes minimum available space in which child
+      // can be laid out, it will exclude space consumed by padding and border.
+      const float minAvailableMainDim =
           YGUnwrapFloatOptional(YGResolveValue(
               style.minDimensions[dim[mainAxis]], mainAxisownerSize)) -
-              (availableInnerMainDim -
-               collectedFlexItemsValues.remainingFreeSpace));
+          leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
+      const float occupiedSpaceByChildNodes =
+          availableInnerMainDim - collectedFlexItemsValues.remainingFreeSpace;
+      collectedFlexItemsValues.remainingFreeSpace =
+          YGFloatMax(0, minAvailableMainDim - occupiedSpaceByChildNodes);
     } else {
       collectedFlexItemsValues.remainingFreeSpace = 0;
     }
@@ -2495,8 +2507,6 @@ static void YGJustifyMainAxis(
     }
   }
 
-  const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
-      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
   collectedFlexItemsValues.mainDim =
       leadingPaddingAndBorderMain + leadingMainDim;
   collectedFlexItemsValues.crossDim = 0;
@@ -2579,8 +2589,7 @@ static void YGJustifyMainAxis(
       }
     }
   }
-  collectedFlexItemsValues.mainDim += YGUnwrapFloatOptional(
-      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth));
+  collectedFlexItemsValues.mainDim += trailingPaddingAndBorderMain;
 }
 
 //
