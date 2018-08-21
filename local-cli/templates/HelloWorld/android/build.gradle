@@ -36,7 +36,7 @@ ext {
     minSdkVersion = 16
     compileSdkVersion = 26
     targetSdkVersion = 26
-    supportLibVersion = "26.1.0"
+    supportLibVersion = "27.1.1"
 }
 
 task wrapper(type: Wrapper) {
