@@ -433,6 +433,21 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
+  # Run JavaScript tests on Node 10
+  test_node10:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
+    environment:
+      - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    steps:
+      - checkout
+      - run: *setup-artifacts
+      - run: *yarn
+      - run: *run-js-tests
+      - store_test_results:
+          path: ~/react-native/reports/junit
+
   # Runs unit tests on iOS and Apple TV devices
   test_objc:
     <<: *macos_defaults
@@ -664,6 +679,10 @@ workflows:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
+
+      # Test JavaScript and Node 10 compatibility
+      - test_node10:
+          filters: *filter-ignore-gh-pages
 
       # Test Android
       - test_android:
