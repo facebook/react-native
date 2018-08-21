@@ -295,7 +295,7 @@ android {
 dependencies {
     compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.1'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
     compile "com.facebook.fresco:fresco:${FRESCO_VERSION}"
     compile "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
