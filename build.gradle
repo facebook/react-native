@@ -22,10 +22,7 @@ allprojects {
     repositories {
         jcenter()
         mavenLocal()
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
+        google()
 
         def androidSdk = System.getenv("ANDROID_SDK")
         maven {
