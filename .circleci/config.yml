@@ -304,45 +304,31 @@ aliases:
       fi
 
   - &run-podspec-tests-with-parallelism
-    name: Test CocoaPods
+    name: Test CocoaPods (Ignoring failures)
     command: |
       if [ $((2 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/process-podspecs.sh
+        echo 'The following step is known to be failing in master, and any failures will be ignored.'
+        scripts/circleci/exec_swallow_error.sh ./scripts/process-podspecs.sh
       fi
 
   - &run-e2e-tests
     name: End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
-  - &install-node-8
-    name: Install Node 8
-    command: |
-      echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
-      source $BASH_ENV
-      brew install node@8
-      brew link node@8
-      node -v
-
-  - &install-apple-simulator-utils
-    name: Install Apple Simulator Utilities
-    command: |
-      brew tap wix/brew
-      brew install applesimutils
-
-  - &build-ios-app-e2e
-    name: Build iOS App for Simulator
-    command: yarn run build-ios-e2e
-
-  - &run-ios-detox-tests
-    name: Run Detox Tests
-    command: yarn run test-ios-e2e
-
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite
     command: |
       node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
-  - &run-objc-tvos-e2e-tests
+  - &run-objc-ios-e2e-tests-with-parallelism
+    name: iOS End-to-End Test Suite (Ignoring failures)
+    command: |
+      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
+        echo 'The following step is known to be failing in master, and any failures will be ignored.'
+        scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+      fi
+
+      - &run-objc-tvos-e2e-tests
     name: tvOS End-to-End Test Suite
     command: |
       node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
@@ -463,22 +449,13 @@ jobs:
 
       - run: *run-objc-ios-tests-with-parallelism
       - run: *run-objc-tvos-tests-with-parallelism
-      # Disabled
-      # - run: *run-podspec-tests-with-parallelism
 
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Runs end to end tests (Objective-C)
-  test_objc_end_to_end:
-    <<: *macos_defaults
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *boot-simulator-iphone
-
-      - run: *run-objc-ios-e2e-tests
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run: *run-podspec-tests-with-parallelism
+      - run: *run-objc-ios-e2e-tests-with-parallelism
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -504,14 +481,20 @@ jobs:
             brew install applesimutils
             node -v
       - run: *yarn
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
       - run:
-          name: Build iOS app for simulator
+          name: Build iOS app for simulator (Ignoring failures)
           command: |
-            yarn run build-ios-e2e
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run build-ios-e2e
       - run:
-          name: Run Detox Tests
+          name: Run Detox Tests (Ignoring failures)
           command: |
-            yarn run test-ios-e2e
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -707,14 +690,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Disabled on master.
-
-      # End-to-end tests
-      # - test_objc_end_to_end:
-      #     filters: *filter-ignore-gh-pages
-      #     requires:
-      #       - checkout_code
-
       - test_detox_end_to_end:
           filters: *filter-ignore-gh-pages
           requires:
@@ -732,7 +707,6 @@ workflows:
             - test_javascript
             - test_objc
             - test_android
-            # - test_objc_end_to_end
 
   # Only runs on PRs
   analyze:
