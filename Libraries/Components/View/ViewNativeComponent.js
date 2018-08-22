@@ -10,16 +10,24 @@
 
 'use strict';
 
+const Platform = require('Platform');
 const ReactNative = require('ReactNative');
 
 const requireNativeComponent = require('requireNativeComponent');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 import type {ViewProps} from 'ViewPropTypes';
 
 type ViewNativeComponentType = Class<ReactNative.NativeComponent<ViewProps>>;
 
-const ViewNativeComponent = ((requireNativeComponent(
-  'RCTView',
-): any): ViewNativeComponentType);
+let NativeViewComponent;
 
-module.exports = ViewNativeComponent;
+if (Platform.OS === 'Android') {
+  NativeViewComponent = ReactNativeViewConfigRegistry.register('RCTView', () =>
+    require('ViewNativeComponentAndroidConfig'),
+  );
+} else {
+  NativeViewComponent = requireNativeComponent('RCTView');
+}
+
+module.exports = ((NativeViewComponent: any): ViewNativeComponentType);
