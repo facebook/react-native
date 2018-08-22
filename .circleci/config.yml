@@ -275,81 +275,45 @@ aliases:
     name: Boot iPhone Simulator
     command: xcrun simctl boot "iPhone 5s" || true
 
-  - &boot-simulator-iphone-with-parallelism
-    name: Boot iPhone Simulator
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        xcrun simctl boot "iPhone 5s" || true
-      fi
-
-  - &boot-simulator-appletv-with-parallelism
+  - &boot-simulator-appletv
     name: Boot Apple TV Simulator
-    command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        xcrun simctl boot "Apple TV" || true
-      fi
+    command: xcrun simctl boot "Apple TV" || true
 
-  - &run-objc-ios-tests-with-parallelism
+  - &run-objc-ios-tests
     name: iOS Test Suite
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/objc-test-ios.sh test
-      fi
+    command: ./scripts/objc-test-ios.sh test
 
-  - &run-objc-tvos-tests-with-parallelism
+  - &run-objc-tvos-tests
     name: tvOS Test Suite
-    command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/objc-test-tvos.sh test
-      fi
+    command: ./scripts/objc-test-tvos.sh test
 
-  - &run-podspec-tests-with-parallelism
-    name: Test CocoaPods
+  - &run-podspec-tests
+    name: Test CocoaPods (Ignoring failures)
     command: |
-      if [ $((2 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/process-podspecs.sh
-      fi
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh ./scripts/process-podspecs.sh
 
   - &run-e2e-tests
     name: End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
-  - &install-node-8
-    name: Install Node 8
-    command: |
-      echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
-      source $BASH_ENV
-      brew install node@8
-      brew link node@8
-      node -v
-
-  - &install-apple-simulator-utils
-    name: Install Apple Simulator Utilities
-    command: |
-      brew tap wix/brew
-      brew install applesimutils
-
-  - &build-ios-app-e2e
-    name: Build iOS App for Simulator
-    command: yarn run build-ios-e2e
-
-  - &run-ios-detox-tests
-    name: Run Detox Tests
-    command: yarn run test-ios-e2e
-
   - &run-objc-ios-e2e-tests
-    name: iOS End-to-End Test Suite
+    name: iOS End-to-End Test Suite (Ignoring failures)
     command: |
-      node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite
+    name: tvOS End-to-End Test Suite (Ignoring failures)
     command: |
-      node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
-    name: Android End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+    name: Android End-to-End Test Suite (Ignoring failures)
+    command:  |
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
   - &run-js-e2e-tests
     name: JavaScript End-to-End Test Suite
@@ -451,56 +415,63 @@ jobs:
   # Runs unit tests on iOS and Apple TV devices
   test_objc:
     <<: *macos_defaults
-    # Bump back to 3 whenever podspec tests are re-enabled
-    parallelism: 2
-    steps:
-      - attach_workspace:
-          at: ~/react-native
-
-      - run: *boot-simulator-iphone-with-parallelism
-      - run: *boot-simulator-appletv-with-parallelism
-      - run: *brew-install-watchman
-
-      - run: *run-objc-ios-tests-with-parallelism
-      - run: *run-objc-tvos-tests-with-parallelism
-      # Disabled
-      # - run: *run-podspec-tests-with-parallelism
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Runs end to end tests (Objective-C)
-  test_objc_end_to_end:
-    <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
+      - run: *boot-simulator-appletv
+      - run: *brew-install-watchman
 
+      - run: *run-objc-ios-tests
+      - run: *run-objc-tvos-tests
+
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run: *run-podspec-tests
       - run: *run-objc-ios-e2e-tests
+      - run: *run-objc-tvos-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
 
   # Runs end to end tests (Detox)
-  # Disabled.
   test_detox_end_to_end:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
-
-      - run: *boot-simulator-iphone
-
-      - run: *install-node-8
-      - run: *install-apple-simulator-utils
-      - run: *build-ios-app-e2e
-
-      - run: *run-ios-detox-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
+      - run: xcrun simctl boot "iPhone 5s" || true
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Install Node 8
+          command: |
+            brew install node@8
+            brew link node@8
+            brew tap wix/brew
+            brew install applesimutils
+            node -v
+      - run: *yarn
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run:
+          name: Build iOS app for simulator (Ignoring failures)
+          command: |
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run build-ios-e2e
+      - run:
+          name: Run Detox Tests (Ignoring failures)
+          command: |
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -565,8 +536,11 @@ jobs:
       - run: *build-android-rntester-app
 
       # Run Android end-to-end tests
-      # Disabled
-      # - run: *run-android-e2e-tests
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run: *run-android-e2e-tests
 
       # Collect Results
       - run: *collect-android-test-results
@@ -696,19 +670,10 @@ workflows:
           requires:
             - checkout_code
 
-      # Disabled on master.
-
-      # End-to-end tests
-      # - test_objc_end_to_end:
-      #     filters: *filter-ignore-gh-pages
-      #     requires:
-      #       - checkout_code
-
-      # - test_detox_end_to_end:
-      #     filters: *filter-ignore-gh-pages
-      #     requires:
-      #       - checkout_code
-
+      - test_detox_end_to_end:
+          filters: *filter-ignore-gh-pages
+          requires:
+            - checkout_code
 
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
@@ -722,7 +687,6 @@ workflows:
             - test_javascript
             - test_objc
             - test_android
-            # - test_objc_end_to_end
 
   # Only runs on PRs
   analyze:
