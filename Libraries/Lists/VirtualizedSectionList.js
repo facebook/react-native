@@ -20,34 +20,24 @@ import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
 type SectionItem = any;
+type Option = any;
 
-type SectionBase = {
-  // Must be provided directly on each section.
-  data: $ReadOnlyArray<SectionItem>,
-  key?: string,
-
-  // Optional props will override list-wide props just for this section.
-  renderItem?: ?({
-    item: SectionItem,
-    index: number,
-    section: SectionBase,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-    },
-  }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  keyExtractor?: (item: SectionItem, index: ?number) => string,
-
-  // TODO: support more optional/override props
-  // FooterComponent?: ?ReactClass<any>,
-  // HeaderComponent?: ?ReactClass<any>,
-  // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
-};
+type SectionBase = any;
 
 type RequiredProps<SectionT: SectionBase> = {
   sections: $ReadOnlyArray<SectionT>,
+  /**
+   * A generic accessor for extracting an item from any sort of data blob.
+   */
+  getItem: (data: any, index: number) => ?Item,
+  /**
+   * Determines how many items are in the data blob.
+   */
+  getItemCount: (data: any) => number,
+  /**
+   * A generic accessor for extracting a section option from any sort of data blob.
+   */
+  getItemParam: (section: any, name: string) => ?Option,
 };
 
 type OptionalProps<SectionT: SectionBase> = {
@@ -134,47 +124,32 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   Props<SectionT>,
   State,
 > {
+
   static defaultProps: DefaultProps = {
     ...VirtualizedList.defaultProps,
     data: [],
   };
-
-  scrollToLocation(params: {
-    animated?: ?boolean,
-    itemIndex: number,
-    sectionIndex: number,
-    viewPosition?: number,
-  }) {
-    let index = params.itemIndex + 1;
-    for (let ii = 0; ii < params.sectionIndex; ii++) {
-      index += this.props.sections[ii].data.length + 2;
-    }
-    const toIndexParams = {
-      ...params,
-      index,
-    };
-    this._listRef.scrollToIndex(toIndexParams);
-  }
-
-  getListRef(): VirtualizedList {
-    return this._listRef;
-  }
 
   constructor(props: Props<SectionT>, context: Object) {
     super(props, context);
     this.state = this._computeState(props);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
-    this.setState(this._computeState(nextProps));
+  static getDerivedStateFromProps(
+    nextProps: Props<SectionT>,
+    prevState: State,
+  ): ?State {
+    return this._computeState(nextProps);
   }
 
   _computeState(props: Props<SectionT>): State {
     const offset = props.ListHeaderComponent ? 1 : 0;
     const stickyHeaderIndices = [];
     const itemCount = props.sections.reduce((v, section) => {
+      const sectionData = props.getItemParam(section, 'data');
+
       stickyHeaderIndices.push(v + offset);
-      return v + section.data.length + 2; // Add two for the section header and footer.
+      return v + props.getItemCount(sectionData) + 2; // Add two for the section header and footer.
     }, 0);
 
     return {
@@ -184,7 +159,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
         ItemSeparatorComponent: undefined, // Rendered with renderItem
         data: props.sections,
         getItemCount: () => itemCount,
-        getItem,
+        getItem: (sections, index) => getItem(props, sections, index),
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged: props.onViewableItemsChanged
           ? this._onViewableItemsChanged
@@ -200,6 +175,30 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return (
       <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
     );
+  }
+
+  scrollToLocation(params: {
+    animated?: ?boolean,
+    itemIndex: number,
+    sectionIndex: number,
+    viewPosition?: number,
+  }) {
+    let index = params.itemIndex + 1;
+    for (let ii = 0; ii < params.sectionIndex; ii++) {
+      const section = this.props.getItem(this.props.sections, ii);
+      const sectionData = this.props.getItemParam(section, 'data');
+      const dataLength = this.props.getItemCount(sectionData);
+      index += dataLength + 2;
+    }
+    const toIndexParams = {
+      ...params,
+      index,
+    };
+    this._listRef.scrollToIndex(toIndexParams);
+  }
+
+  getListRef(): VirtualizedList {
+    return this._listRef;
   }
 
   _keyExtractor = (item: Item, index: number) => {
@@ -221,38 +220,40 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   } {
     let itemIndex = index;
     const defaultKeyExtractor = this.props.keyExtractor;
-    for (let ii = 0; ii < this.props.sections.length; ii++) {
-      const section = this.props.sections[ii];
-      const key = section.key || String(ii);
+    for (let ii = 0; ii < this.props.getItemCount(this.props.sections); ii++) {
+      const section = this.props.getItem(this.props.sections, ii);
+      const sectionData = this.props.getItemParam(section, 'data');
+      const key = this.props.getItemParam(section, 'key') || String(ii);
       itemIndex -= 1; // The section adds an item for the header
-      if (itemIndex >= section.data.length + 1) {
-        itemIndex -= section.data.length + 1; // The section adds an item for the footer.
+      if (itemIndex >= this.props.getItemCount(sectionData) + 1) {
+        itemIndex -= this.props.getItemCount(sectionData) + 1; // The section adds an item for the footer.
       } else if (itemIndex === -1) {
         return {
           section,
           key: key + ':header',
           index: null,
           header: true,
-          trailingSection: this.props.sections[ii + 1],
+          trailingSection: this.props.getItem(this.props.sections, ii + 1),
         };
-      } else if (itemIndex === section.data.length) {
+      } else if (itemIndex === this.props.getItemCount(sectionData)) {
         return {
           section,
           key: key + ':footer',
           index: null,
           header: false,
-          trailingSection: this.props.sections[ii + 1],
+          trailingSection: this.props.getItem(this.props.sections, ii + 1),
         };
       } else {
-        const keyExtractor = section.keyExtractor || defaultKeyExtractor;
+        const keyExtractor = this.props.getItemParam(section, 'keyExtractor') || defaultKeyExtractor;
+        const sectionData = this.props.getItemParam(section, 'data');
         return {
           section,
-          key: key + ':' + keyExtractor(section.data[itemIndex], itemIndex),
+          key: key + ':' + keyExtractor(this.props.getItem(sectionData, itemIndex), itemIndex),
           index: itemIndex,
-          leadingItem: section.data[itemIndex - 1],
-          leadingSection: this.props.sections[ii - 1],
-          trailingItem: section.data[itemIndex + 1],
-          trailingSection: this.props.sections[ii + 1],
+          leadingItem: this.props.getItem(sectionData, itemIndex - 1),
+          leadingSection: this.props.getItem(this.props.sections, ii - 1),
+          trailingItem: this.props.getItem(sectionData, itemIndex + 1),
+          trailingSection: this.props.getItem(this.props.sections, ii + 1),
         };
       }
     }
@@ -264,7 +265,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     if (!info) {
       return null;
     }
-    const keyExtractor = info.section.keyExtractor || this.props.keyExtractor;
+    const keyExtractor = this.props.getItemParam(info.section, 'keyExtractor') || this.props.keyExtractor;
     return {
       ...viewable,
       index: info.index,
@@ -309,7 +310,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
         return renderSectionFooter ? renderSectionFooter({section}) : null;
       }
     } else {
-      const renderItem = info.section.renderItem || this.props.renderItem;
+      const renderItem = this.props.getItemParam(info.section, 'renderItem') || this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
       invariant(renderItem, 'no renderItem!');
       return (
@@ -351,10 +352,11 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
       return null;
     }
     const ItemSeparatorComponent =
-      info.section.ItemSeparatorComponent || this.props.ItemSeparatorComponent;
+      this.props.getItemParam(info.section, 'ItemSeparatorComponent') || this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
-    const isLastItemInSection = info.index === info.section.data.length - 1;
+    const sectionData = this.props.getItemParam(info.section, 'data');
+    const isLastItemInSection = info.index === this.props.getItemCount(sectionData) - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
       return SectionSeparatorComponent;
     }
@@ -441,7 +443,7 @@ class ItemWithSeparator extends React.Component<
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {LeadingSeparatorComponent, cellKey, prevCellKey} = this.props;
-      if (select === 'leading' && LeadingSeparatorComponent != null) {
+      if (select === 'leading' && LeadingSeparatorComponent !== null) {
         this.setState(state => ({
           leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps},
         }));
@@ -516,22 +518,24 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-function getItem(sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
+function getItem(props: Props, sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   if (!sections) {
     return null;
   }
   let itemIdx = index - 1;
-  for (let ii = 0; ii < sections.length; ii++) {
-    if (itemIdx === -1 || itemIdx === sections[ii].data.length) {
+  for (let ii = 0; ii < props.getItemCount(sections); ii++) {
+    const section = props.getItem(props.sections, ii);
+    const sectionData = props.getItemParam(section, 'data');
+    if (itemIdx === -1 || itemIdx === props.getItemCount(sectionData)) {
       // We intend for there to be overflow by one on both ends of the list.
       // This will be for headers and footers. When returning a header or footer
       // item the section itself is the item.
-      return sections[ii];
-    } else if (itemIdx < sections[ii].data.length) {
+      return section;
+    } else if (itemIdx < props.getItemCount(sectionData)) {
       // If we are in the bounds of the list's data then return the item.
-      return sections[ii].data[itemIdx];
+      return props.getItem(sectionData, itemIdx);
     } else {
-      itemIdx -= sections[ii].data.length + 2; // Add two for the header and footer
+      itemIdx -= props.getItemCount(sectionData) + 2; // Add two for the header and footer
     }
   }
   return null;
