@@ -14,8 +14,6 @@ const path = require('path');
 
 const ROOTS = [
   path.resolve(__dirname, '..') + path.sep,
-  path.resolve(__dirname, '../../react-native-windows') + path.sep,
-  path.resolve(__dirname, '../../react-native-dom') + path.sep,
 ];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
