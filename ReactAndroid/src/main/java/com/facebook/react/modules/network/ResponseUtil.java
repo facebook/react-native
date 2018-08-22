@@ -85,7 +85,7 @@ public class ResponseUtil {
     RCTDeviceEventEmitter eventEmitter,
     int requestId,
     String error,
-    IOException e) {
+    Throwable e) {
     WritableArray args = Arguments.createArray();
     args.pushInt(requestId);
     args.pushString(error);
