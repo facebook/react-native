@@ -153,6 +153,9 @@ const ReactNative = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
+  get VirtualizedSectionList() {
+    return require('VirtualizedSectionList');
+  },
   get WebView() {
     return require('WebView');
   },
