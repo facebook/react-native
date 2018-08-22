@@ -293,7 +293,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
+    compile 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     compile 'javax.inject:javax.inject:1'
     compile 'com.android.support:appcompat-v7:27.1.1'
     compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
