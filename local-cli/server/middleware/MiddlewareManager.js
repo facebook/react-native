@@ -17,6 +17,7 @@ const WebSocketServer = require('ws').Server;
 
 const indexPageMiddleware = require('./indexPage');
 const copyToClipBoardMiddleware = require('./copyToClipBoardMiddleware');
+const getSecurityHeadersMiddleware =  require('./getSecurityHeadersMiddleware');
 const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
 const statusPageMiddleware = require('./statusPageMiddleware');
@@ -44,6 +45,7 @@ module.exports = class MiddlewareManager {
 
     this.options = options;
     this.app = connect()
+      .use(getSecurityHeadersMiddleware)
       .use(loadRawBodyMiddleware)
       .use(compression())
       .use('/debugger-ui', serveStatic(debuggerUIFolder))

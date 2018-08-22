@@ -6,7 +6,6 @@
 package com.facebook.react.module.processing;
 
 import com.facebook.react.bridge.CxxModuleWrapper;
-import com.facebook.react.bridge.OnBatchCompleteListener;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -160,7 +159,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
       TypeMirror cxxModuleWrapperTypeMirror = mElements.getTypeElement(CxxModuleWrapper.class.getName()).asType();
-      TypeMirror onBatchCompleteListenerTypeMirror = mElements.getTypeElement(OnBatchCompleteListener.class.getName()).asType();
 
       for (String nativeModule : nativeModules) {
         String keyString = nativeModule;
@@ -192,17 +190,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         }
 
         boolean isCxxModule = mTypes.isAssignable(typeElement.asType(), cxxModuleWrapperTypeMirror);
-       boolean hasOnBatchCompleteListener = false;
-       try {
-         hasOnBatchCompleteListener = mTypes.isAssignable(typeElement.asType(), onBatchCompleteListenerTypeMirror);
-       } catch (RuntimeException e) {
-         // This is SUPER ugly, but we need to do this, especially for AsyncStorageModule which implements ModuleDataCleaner
-         // In the case of that specific class, we get the exception
-         // com.sun.tools.javac.code.Symbol$CompletionFailure: class file for ModuleDataCleaner not found.
-         // The exception is caused because the class is not loaded the first time. However, catching it and
-         // running it again the second time loads the class and does what the following statement originally intended
-         hasOnBatchCompleteListener = mTypes.isAssignable(typeElement.asType(), onBatchCompleteListenerTypeMirror);
-       }
 
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
@@ -210,8 +197,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
           .append(hasConstants).append(", ")
-          .append(isCxxModule).append(", ")
-          .append(hasOnBatchCompleteListener)
+          .append(isCxxModule)
           .append(")")
           .toString();
 

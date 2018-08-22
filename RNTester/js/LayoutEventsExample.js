@@ -17,12 +17,12 @@ var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type State = {
-  containerStyle?: {width: number},
+  containerStyle?: {|width: number|},
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
-  viewStyle: {margin: number},
+  viewStyle: {|margin: number|},
 };
 
 class LayoutEventExample extends React.Component<{}, State> {

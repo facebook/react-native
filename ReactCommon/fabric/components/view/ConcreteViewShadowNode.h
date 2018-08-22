@@ -14,6 +14,7 @@
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/core/ShadowNode.h>
+#include <fabric/core/ShadowNodeFragment.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
@@ -24,9 +25,17 @@ namespace react {
  * as <View> and similar basic behaviour).
  * For example: <Paragraph>, <Image>, but not <Text>, <RawText>.
  */
-template <typename ViewPropsT = ViewProps, typename ViewEventEmitterT = ViewEventEmitter>
+template <
+  const char *concreteComponentName,
+  typename ViewPropsT = ViewProps,
+  typename ViewEventEmitterT = ViewEventEmitter
+>
 class ConcreteViewShadowNode:
-  public ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>,
+  public ConcreteShadowNode<
+    concreteComponentName,
+    ViewPropsT,
+    ViewEventEmitterT
+  >,
   public AccessibleShadowNode,
   public YogaLayoutableShadowNode {
 
@@ -35,64 +44,52 @@ class ConcreteViewShadowNode:
   static_assert(std::is_base_of<AccessibilityProps, ViewPropsT>::value, "ViewPropsT must be a descendant of AccessibilityProps");
 
 public:
-
+  using BaseShadowNode = ConcreteShadowNode<
+    concreteComponentName,
+    ViewPropsT,
+    ViewEventEmitterT
+  >;
   using ConcreteViewProps = ViewPropsT;
-  using SharedConcreteViewProps = std::shared_ptr<const ViewPropsT>;
-  using ConcreteViewEventEmitter = ViewEventEmitterT;
-  using SharedConcreteViewEventEmitter = std::shared_ptr<const ViewEventEmitterT>;
-  using SharedConcreteViewShadowNode = std::shared_ptr<const ConcreteViewShadowNode>;
 
   ConcreteViewShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
+    const ShadowNodeFragment &fragment,
     const ShadowNodeCloneFunction &cloneFunction
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
-      tag,
-      rootTag,
-      props,
-      eventEmitter,
-      children,
+    BaseShadowNode(
+      fragment,
       cloneFunction
     ),
     AccessibleShadowNode(
-      props
+      std::static_pointer_cast<const ConcreteViewProps>(fragment.props)
     ),
     YogaLayoutableShadowNode() {
 
-    YogaLayoutableShadowNode::setProps(*props);
-    YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+    YogaLayoutableShadowNode::setProps(*std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
+    YogaLayoutableShadowNode::setChildren(BaseShadowNode::template getChildrenSlice<YogaLayoutableShadowNode>());
   };
 
   ConcreteViewShadowNode(
-    const SharedConcreteViewShadowNode &shadowNode,
-    const SharedConcreteViewProps &props,
-    const SharedConcreteViewEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   ):
-    ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>(
-      shadowNode,
-      props,
-      eventEmitter,
-      children
+    BaseShadowNode(
+      sourceShadowNode,
+      fragment
     ),
     AccessibleShadowNode(
-      shadowNode,
-      props
+      static_cast<const ConcreteViewShadowNode &>(sourceShadowNode),
+      std::static_pointer_cast<const ConcreteViewProps>(fragment.props)
     ),
     YogaLayoutableShadowNode(
-      *shadowNode
+      static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)
     ) {
 
-    if (props) {
-      YogaLayoutableShadowNode::setProps(*props);
+    if (fragment.props) {
+      YogaLayoutableShadowNode::setProps(*std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
     }
 
-    if (children) {
-      YogaLayoutableShadowNode::setChildren(ConcreteShadowNode<ViewPropsT, ViewEventEmitterT>::template getChildrenSlice<YogaLayoutableShadowNode>());
+    if (fragment.children) {
+      YogaLayoutableShadowNode::setChildren(BaseShadowNode::template getChildrenSlice<YogaLayoutableShadowNode>());
     }
   };
 
@@ -111,7 +108,7 @@ public:
   LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) override {
     ensureUnsealed();
     auto childShadowNode = static_cast<const ConcreteViewShadowNode *>(child);
-    auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone());
+    auto clonedChildShadowNode = std::static_pointer_cast<ConcreteViewShadowNode>(childShadowNode->clone({}));
     ShadowNode::replaceChild(childShadowNode->shared_from_this(), clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }

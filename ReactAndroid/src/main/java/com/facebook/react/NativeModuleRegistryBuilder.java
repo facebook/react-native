@@ -30,19 +30,15 @@ public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final ReactInstanceManager mReactInstanceManager;
-  private final boolean mLazyNativeModulesEnabled;
 
   private final Map<String, ModuleHolder> mModules = new HashMap<>();
   private final Map<String,String> namesToType = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
-    ReactInstanceManager reactInstanceManager,
-    boolean lazyNativeModulesEnabled) {
+    ReactInstanceManager reactInstanceManager) {
     mReactApplicationContext = reactApplicationContext;
     mReactInstanceManager = reactInstanceManager;
-    // TODO T32034141 Remove mLazyNativeModulesEnabled
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
   public void processPackage(ReactPackage reactPackage) {
@@ -60,7 +56,7 @@ public class NativeModuleRegistryBuilder {
           NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getType().getName());
+            moduleSpec.getClassName());
           try {
             module = moduleSpec.getProvider().get();
           } finally {
@@ -126,14 +122,7 @@ public class NativeModuleRegistryBuilder {
   }
 
   public NativeModuleRegistry build() {
-    ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
-    for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
-      if (entry.getValue().hasOnBatchCompleteListener()) {
-        batchCompleteListenerModules.add(entry.getValue());
-      }
-    }
-
     return new NativeModuleRegistry(
-        mReactApplicationContext, mModules, batchCompleteListenerModules);
+        mReactApplicationContext, mModules);
   }
 }

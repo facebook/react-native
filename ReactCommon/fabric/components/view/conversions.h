@@ -15,21 +15,6 @@
 #include <yoga/Yoga.h>
 #include <yoga/YGNode.h>
 
-// Yoga does not have this as part of the library, so we have to implement it
-// here ouside of `facebook::react::` namespace.
-inline bool operator==(const YGValue &lhs, const YGValue &rhs) {
-  if (
-    (lhs.unit == YGUnitUndefined && rhs.unit == YGUnitUndefined) ||
-    (lhs.unit == YGUnitAuto && rhs.unit == YGUnitAuto)
-  ) {
-    return true;
-  }
-
-  return
-    lhs.unit == rhs.unit &&
-    ((isnan(lhs.value) && isnan(rhs.value)) || (lhs.value == rhs.value));
-}
-
 namespace facebook {
 namespace react {
 

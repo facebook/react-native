@@ -13,18 +13,16 @@
 namespace facebook {
 namespace react {
 
+extern const char ActivityIndicatorViewComponentName[];
+
 /*
  * `ShadowNode` for <ActivityIndicatorView> component.
  */
-class ActivityIndicatorViewShadowNode final:
-  public ConcreteViewShadowNode<ActivityIndicatorViewProps> {
-
-public:
-
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
-};
+using ActivityIndicatorViewShadowNode =
+  ConcreteViewShadowNode<
+    ActivityIndicatorViewComponentName,
+    ActivityIndicatorViewProps
+  >;
 
 } // namespace react
 } // namespace facebook

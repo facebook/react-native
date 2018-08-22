@@ -16,25 +16,25 @@ type ImageCropData = {
    * The top-left corner of the cropped image, specified in the original
    * image's coordinate space.
    */
-  offset: {
+  offset: {|
     x: number,
     y: number,
-  },
+  |},
   /**
    * The size (dimensions) of the cropped image, specified in the original
    * image's coordinate space.
    */
-  size: {
+  size: {|
     width: number,
     height: number,
-  },
+  |},
   /**
    * (Optional) size to scale the cropped image to.
    */
-  displaySize?: ?{
+  displaySize?: ?{|
     width: number,
     height: number,
-  },
+  |},
   /**
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.

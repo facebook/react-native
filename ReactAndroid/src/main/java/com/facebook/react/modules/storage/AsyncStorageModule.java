@@ -18,6 +18,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -45,10 +46,10 @@ public final class AsyncStorageModule
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
   private ExecutorService mExecutor;
-
+  
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
+    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);	    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
     mExecutor = Executors.newSingleThreadExecutor();
   }
 
@@ -93,9 +94,9 @@ public final class AsyncStorageModule
       return;
     }
 
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null), null);
           return;
@@ -151,7 +152,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -166,9 +167,9 @@ public final class AsyncStorageModule
       return;
     }
 
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null));
           return;
@@ -218,7 +219,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -231,9 +232,9 @@ public final class AsyncStorageModule
       return;
     }
 
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null));
           return;
@@ -269,7 +270,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -278,9 +279,9 @@ public final class AsyncStorageModule
    */
   @ReactMethod
   public void multiMerge(final ReadableArray keyValueArray, final Callback callback) {
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null));
           return;
@@ -332,7 +333,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -340,9 +341,9 @@ public final class AsyncStorageModule
    */
   @ReactMethod
   public void clear(final Callback callback) {
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!mReactDatabaseSupplier.ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null));
           return;
@@ -355,7 +356,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -363,9 +364,9 @@ public final class AsyncStorageModule
    */
   @ReactMethod
   public void getAllKeys(final Callback callback) {
-    execute(new Runnable() {
+    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
       @Override
-      public void run() {
+      protected void doInBackgroundGuarded(Void... params) {
         if (!ensureDatabase()) {
           callback.invoke(AsyncStorageErrorUtil.getDBError(null), null);
           return;
@@ -389,7 +390,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    });
+    }.executeOnExecutor(mExecutor);
   }
 
   /**
@@ -397,14 +398,5 @@ public final class AsyncStorageModule
    */
   private boolean ensureDatabase() {
     return !mShuttingDown && mReactDatabaseSupplier.ensureDatabase();
-  }
-
-  private void execute(Runnable r) {
-    Assertions.assertNotNull(mExecutor);
-    try {
-      mExecutor.execute(r);
-    } catch (RuntimeException e) {
-      getReactApplicationContext().handleException(e);
-    }
   }
 }

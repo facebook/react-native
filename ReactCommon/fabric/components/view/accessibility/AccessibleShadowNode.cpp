@@ -19,10 +19,9 @@ AccessibleShadowNode::AccessibleShadowNode(
 }
 
 AccessibleShadowNode::AccessibleShadowNode(
-  const SharedAccessibleShadowNode &shadowNode,
+  const AccessibleShadowNode &shadowNode,
   const SharedAccessibilityProps &props
 ) {
-  assert(shadowNode);
 }
 
 } // namespace react

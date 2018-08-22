@@ -16,17 +16,21 @@
 namespace facebook {
 namespace react {
 
+extern const char ImageComponentName[];
+
 /*
  * `ShadowNode` for <Image> component.
  */
 class ImageShadowNode final:
-  public ConcreteViewShadowNode<ImageProps, ImageEventEmitter> {
+  public ConcreteViewShadowNode<
+    ImageComponentName,
+    ImageProps,
+    ImageEventEmitter
+  > {
 
 public:
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
 
   /*
    * Associates a shared `ImageManager` with the node.

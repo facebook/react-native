@@ -18,13 +18,13 @@ namespace react {
 
 AttributedString BaseTextShadowNode::getAttributedString(
   const TextAttributes &textAttributes,
-  const SharedShadowNodeSharedList &childNodes
+  const SharedShadowNodeList &childNodes
 ) const {
   AttributedString attributedString;
 
-  for (const auto &childNode : *childNodes) {
+  for (const auto &childNode : childNodes) {
     // RawShadowNode
-    SharedRawTextShadowNode rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
+    auto rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {
       AttributedString::Fragment fragment;
       fragment.string = rawTextShadowNode->getProps()->text;
@@ -34,7 +34,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
     }
 
     // TextShadowNode
-    SharedTextShadowNode textShadowNode = std::dynamic_pointer_cast<const TextShadowNode>(childNode);
+    auto textShadowNode = std::dynamic_pointer_cast<const TextShadowNode>(childNode);
     if (textShadowNode) {
       TextAttributes localTextAttributes = textAttributes;
       localTextAttributes.apply(textShadowNode->getProps()->textAttributes);

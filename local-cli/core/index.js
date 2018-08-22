@@ -106,9 +106,7 @@ const defaultRNConfig = {
   getDependencyConfig(packageName: string) {
     const platforms = this.getPlatformConfig();
     const folder = path.join(process.cwd(), 'node_modules', packageName);
-    const rnpm = getRNPMConfig(
-      path.join(process.cwd(), 'node_modules', packageName),
-    );
+    const rnpm = getRNPMConfig(folder);
 
     let config = Object.assign({}, rnpm, {
       assets: findAssets(folder, rnpm.assets),
@@ -134,9 +132,9 @@ async function getCliConfig(): Promise<RNConfig> {
   );
 
   config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
-  config.resolver.hasteImplModulePath = defaultConfig.hasteImplModulePath;
-  config.resolver.platforms = defaultConfig.getPlatforms();
-  config.resolver.providesModuleNodeModules = defaultConfig.getProvidesModuleNodeModules();
+  config.resolver.hasteImplModulePath = config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = config.resolver.platforms || defaultConfig.getPlatforms();
+  config.resolver.providesModuleNodeModules = config.resolver.providesModuleNodeModules || defaultConfig.getProvidesModuleNodeModules();
 
   return {...defaultRNConfig, ...config};
 }

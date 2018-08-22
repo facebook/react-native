@@ -45,7 +45,6 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
-  private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
@@ -192,11 +191,6 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setLazyNativeModulesEnabled(boolean lazyNativeModulesEnabled) {
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setLazyViewManagersEnabled(boolean lazyViewManagersEnabled) {
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
     return this;
@@ -270,7 +264,6 @@ public class ReactInstanceManagerBuilder {
         Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
         mNativeModuleCallExceptionHandler,
         mRedBoxHandler,
-        mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
         mDevBundleDownloadListener,
         mMinNumShakes,

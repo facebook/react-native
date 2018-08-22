@@ -16,16 +16,11 @@
 namespace facebook {
 namespace react {
 
-class TextProps;
-
-using SharedTextProps = std::shared_ptr<const TextProps>;
-
 class TextProps:
   public Props,
   public BaseTextProps {
 
 public:
-
   TextProps() = default;
   TextProps(const TextProps &sourceProps, const RawProps &rawProps);
 

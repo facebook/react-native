@@ -18,6 +18,7 @@ const View = require('View');
 const ViewPropTypes = require('ViewPropTypes');
 
 import type {Context} from 'Incremental';
+import type {ViewStyleProp} from 'StyleSheet';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -36,7 +37,7 @@ type Props = {
   disabled?: boolean,
   onDone?: () => void,
   onLayout?: (event: Object) => void,
-  style?: mixed,
+  style?: ViewStyleProp,
   children?: any,
 };
 class IncrementalPresenter extends React.Component<Props> {

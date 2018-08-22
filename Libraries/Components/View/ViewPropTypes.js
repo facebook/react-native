@@ -33,6 +33,7 @@ import type {
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {TVViewProps} from 'TVViewPropTypes';
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {ViewStyleProp} from 'StyleSheet';
 
 const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -71,10 +72,27 @@ type GestureResponderEventProps = $ReadOnly<{|
   onStartShouldSetResponderCapture?: ?Function,
 |}>;
 
+type AndroidViewProps = $ReadOnly<{|
+  nativeBackgroundAndroid?: ?Object,
+  nativeForegroundAndroid?: ?Object,
+
+  /* Deprecated transform prop. Use the transform style prop instead */
+  rotation?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  scaleX?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  scaleY?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  translateX?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  translateY?: empty,
+|}>;
+
 export type ViewProps = $ReadOnly<{|
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...TouchEventProps,
+  ...AndroidViewProps,
 
   // There's no easy way to create a different type if (Platform.isTV):
   // so we must include TVViewProps
@@ -103,7 +121,7 @@ export type ViewProps = $ReadOnly<{|
   nativeID?: string,
   hitSlop?: ?EdgeInsetsProp,
   pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
-  style?: stylePropType,
+  style?: ?ViewStyleProp,
   removeClippedSubviews?: boolean,
   renderToHardwareTextureAndroid?: boolean,
   shouldRasterizeIOS?: boolean,
@@ -134,7 +152,6 @@ module.exports = {
    * an action on the accessibility element when that result is not obvious from the
    * accessibility label.
    *
-   * @platform ios
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityHint
    */
@@ -165,7 +182,7 @@ module.exports = {
   accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
 
   /**
-   * Indicates to accessibility services to treat UI component like a
+   * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
 

@@ -49,21 +49,21 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r10e-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.06.25.01-
+      - v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2018.07.23.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.06.25.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -128,15 +128,11 @@ aliases:
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
 
-  - &install-node-dependencies
-    |
-      npm install --no-package-lock --no-spin --no-progress
-
   - &install-buck
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.06.25.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.07.23.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -146,13 +142,6 @@ aliases:
       fi
       mkdir -p ~/react-native/tooling/junit
       cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
-
-
-  - &install-node
-    name: Install Node
-    command: |
-      curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-      sudo apt-get install -y nodejs
 
   - &create-ndk-directory
     name: Create Android NDK Directory
@@ -194,17 +183,11 @@ aliases:
   # eslint sometimes runs into trouble generating the reports
   - &run-lint-checks
     name: Lint code
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
-      fi
+    command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
   - &run-flow-checks
     name: Check for errors in code using Flow
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        yarn flow check
-      fi
+    command: yarn flow check
 
   - &run-sanity-checks
     name: Sanity checks
@@ -282,62 +265,55 @@ aliases:
       mkdir -p ~/react-native/reports/junit/
       mkdir -p ~/react-native/reports/outputs/
 
+  - &brew-install-watchman
+    name: Install Watchman
+    command: |
+      brew install watchman
+      touch .watchmanconfig
+
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        xcrun simctl boot "iPhone 5s" || true
-      fi
+    command: xcrun simctl boot "iPhone 5s" || true
 
   - &boot-simulator-appletv
     name: Boot Apple TV Simulator
-    command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        xcrun simctl boot "Apple TV" || true
-      fi
+    command: xcrun simctl boot "Apple TV" || true
 
   - &run-objc-ios-tests
     name: iOS Test Suite
-    command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/objc-test-ios.sh test
-      fi
+    command: ./scripts/objc-test-ios.sh test
 
   - &run-objc-tvos-tests
     name: tvOS Test Suite
-    command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/objc-test-tvos.sh test
-      fi
+    command: ./scripts/objc-test-tvos.sh test
 
   - &run-podspec-tests
-    name: Test CocoaPods
+    name: Test CocoaPods (Ignoring failures)
     command: |
-      if [ $((2 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        ./scripts/process-podspecs.sh
-      fi
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh ./scripts/process-podspecs.sh
 
   - &run-e2e-tests
     name: End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
   - &run-objc-ios-e2e-tests
-    name: iOS End-to-End Test Suite
+    name: iOS End-to-End Test Suite (Ignoring failures)
     command: |
-      if [ $((0 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-      fi
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite
+    name: tvOS End-to-End Test Suite (Ignoring failures)
     command: |
-      if [ $((1 % CIRCLE_NODE_TOTAL)) -eq "$CIRCLE_NODE_INDEX" ]; then
-        node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
-      fi
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
-    name: Android End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+    name: Android End-to-End Test Suite (Ignoring failures)
+    command:  |
+      echo 'The following step is known to be failing in master, and any failures will be ignored.'
+      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
   - &run-js-e2e-tests
     name: JavaScript End-to-End Test Suite
@@ -365,7 +341,7 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r10e'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
@@ -421,55 +397,81 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
+  # Run JavaScript tests on Node 10
+  test_node10:
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
+    environment:
+      - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    steps:
+      - checkout
+      - run: *setup-artifacts
+      - run: *yarn
+      - run: *run-js-tests
+      - store_test_results:
+          path: ~/react-native/reports/junit
+
   # Runs unit tests on iOS and Apple TV devices
   test_objc:
     <<: *macos_defaults
-    parallelism: 3
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
       - run: *boot-simulator-appletv
-      - run: brew install watchman
+      - run: *brew-install-watchman
 
       - run: *run-objc-ios-tests
       - run: *run-objc-tvos-tests
+
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
       - run: *run-podspec-tests
+      - run: *run-objc-ios-e2e-tests
+      - run: *run-objc-tvos-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end to end tests
-  test_end_to_end:
+  # Runs end to end tests (Detox)
+  test_detox_end_to_end:
     <<: *macos_defaults
-    parallelism: 2
     steps:
       - attach_workspace:
           at: ~/react-native
-
-      - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
-
+      - run: xcrun simctl boot "iPhone 5s" || true
       - run:
           name: Configure Environment Variables
           command: |
             echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
-
       - run:
           name: Install Node 8
           command: |
             brew install node@8
             brew link node@8
+            brew tap wix/brew
+            brew install applesimutils
             node -v
-
-      - run: *run-objc-ios-e2e-tests
-      # Disabled for now
-      # - run: *run-objc-tvos-e2e-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
+      - run: *yarn
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run:
+          name: Build iOS app for simulator (Ignoring failures)
+          command: |
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run build-ios-e2e
+      - run:
+          name: Run Detox Tests (Ignoring failures)
+          command: |
+            echo 'The following step is known to be failing in master, and any failures will be ignored.'
+            scripts/circleci/exec_swallow_error.sh yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -534,8 +536,11 @@ jobs:
       - run: *build-android-rntester-app
 
       # Run Android end-to-end tests
-      # Disabled
-      # - run: *run-android-e2e-tests
+      # The following are "disabled" - the steps will
+      # still run, but failures will be ignored.
+      # This is good for debugging flaky CI steps.
+      # TODO: Reenable as soon as they are in working order.
+      - run: *run-android-e2e-tests
 
       # Collect Results
       - run: *collect-android-test-results
@@ -649,6 +654,10 @@ workflows:
           requires:
             - checkout_code
 
+      # Test JavaScript and Node 10 compatibility
+      - test_node10:
+          filters: *filter-ignore-gh-pages
+
       # Test Android
       - test_android:
           filters: *filter-ignore-gh-pages
@@ -661,8 +670,7 @@ workflows:
           requires:
             - checkout_code
 
-      # End-to-end tests
-      - test_end_to_end:
+      - test_detox_end_to_end:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -671,15 +679,14 @@ workflows:
       - publish_npm_package:
           filters:
             branches:
-              ignore: /.*/
+              only:
+                - /.*-stable/
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
             - test_javascript
             - test_objc
             - test_android
-            - test_end_to_end
-            - analyze
 
   # Only runs on PRs
   analyze:

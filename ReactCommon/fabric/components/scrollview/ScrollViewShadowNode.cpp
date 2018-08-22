@@ -14,9 +14,7 @@
 namespace facebook {
 namespace react {
 
-ComponentName ScrollViewShadowNode::getComponentName() const {
-  return ComponentName("ScrollView");
-}
+const char ScrollViewComponentName[] = "ScrollView";
 
 void ScrollViewShadowNode::updateLocalData() {
   ensureUnsealed();

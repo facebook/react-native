@@ -7,14 +7,10 @@
 
 #include "TextShadowNode.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
-
 namespace facebook {
 namespace react {
 
-ComponentName TextShadowNode::getComponentName() const {
-  return ComponentName("Text");
-}
+extern const char TextComponentName[] = "Text";
 
 } // namespace react
 } // namespace facebook

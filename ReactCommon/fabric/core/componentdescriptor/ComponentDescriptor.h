@@ -45,20 +45,15 @@ public:
    * Creates a new `ShadowNode` of a particular type.
    */
   virtual SharedShadowNode createShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedEventEmitter &eventEmitter,
-    const SharedProps &props
+    const ShadowNodeFragment &fragment
   ) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
   virtual UnsharedShadowNode cloneShadowNode(
-    const SharedShadowNode &shadowNode,
-    const SharedProps &props = nullptr,
-    const SharedEventEmitter &eventEmitter = nullptr,
-    const SharedShadowNodeSharedList &children = nullptr
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment
   ) const = 0;
 
   /*

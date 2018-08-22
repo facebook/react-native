@@ -7,16 +7,12 @@
 
 #include "ParagraphShadowNode.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
-
-#import "ParagraphLocalData.h"
+#include "ParagraphLocalData.h"
 
 namespace facebook {
 namespace react {
 
-ComponentName ParagraphShadowNode::getComponentName() const {
-  return ComponentName("Paragraph");
-}
+const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
@@ -53,7 +49,7 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   updateLocalData();
-  ConcreteViewShadowNode<ParagraphProps>::layout(layoutContext);
+  ConcreteViewShadowNode::layout(layoutContext);
 }
 
 } // namespace react

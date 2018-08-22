@@ -158,7 +158,6 @@ public class ReactInstanceManager {
   private volatile Boolean mHasStartedDestroying = false;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private final boolean mLazyNativeModulesEnabled;
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private List<ViewManager> mViewManagers;
 
@@ -202,7 +201,6 @@ public class ReactInstanceManager {
     LifecycleState initialLifecycleState,
     NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
     @Nullable RedBoxHandler redBoxHandler,
-    boolean lazyNativeModulesEnabled,
     boolean lazyViewManagersEnabled,
     @Nullable DevBundleDownloadListener devBundleDownloadListener,
     int minNumShakes,
@@ -236,7 +234,6 @@ public class ReactInstanceManager {
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
@@ -353,9 +350,7 @@ public class ReactInstanceManager {
         .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: recreateReactContextInBackground");
     UiThreadUtil.assertOnUiThread();
 
-    if (mUseDeveloperSupport
-        && mJSMainModulePath != null
-        && !Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+    if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.
@@ -364,30 +359,35 @@ public class ReactInstanceManager {
         // If there is a up-to-date bundle downloaded from server,
         // with remote JS debugging disabled, always use that.
         onJSBundleLoadedFromServer(null);
-      } else if (mBundleLoader == null) {
-        mDevSupportManager.handleReloadJS();
-      } else {
-        mDevSupportManager.isPackagerRunning(
-            new PackagerStatusCallback() {
-              @Override
-              public void onPackagerStatusFetched(final boolean packagerIsRunning) {
-                UiThreadUtil.runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        if (packagerIsRunning) {
-                          mDevSupportManager.handleReloadJS();
-                        } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
-                          recreateReactContextInBackgroundFromBundleLoader();
-                        }
-                      }
-                    });
-              }
-            });
+        return;
       }
-      return;
+
+      if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+        if (mBundleLoader == null) {
+          mDevSupportManager.handleReloadJS();
+        } else {
+          mDevSupportManager.isPackagerRunning(
+              new PackagerStatusCallback() {
+                @Override
+                public void onPackagerStatusFetched(final boolean packagerIsRunning) {
+                  UiThreadUtil.runOnUiThread(
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          if (packagerIsRunning) {
+                            mDevSupportManager.handleReloadJS();
+                          } else {
+                            // If dev server is down, disable the remote JS debugging.
+                            devSettings.setRemoteJSDebugEnabled(false);
+                            recreateReactContextInBackgroundFromBundleLoader();
+                          }
+                        }
+                      });
+                }
+              });
+        }
+        return;
+      }
     }
 
     recreateReactContextInBackgroundFromBundleLoader();
@@ -840,6 +840,10 @@ public class ReactInstanceManager {
     return mLifecycleState;
   }
 
+  public String getJsExecutorName() {
+    return mJavaScriptExecutorFactory.toString();
+  }
+
   @ThreadConfined(UI)
   private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
@@ -1126,8 +1130,7 @@ public class ReactInstanceManager {
     boolean checkAndUpdatePackageMembership) {
     NativeModuleRegistryBuilder nativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
       reactContext,
-      this,
-      mLazyNativeModulesEnabled);
+      this);
 
     ReactMarker.logMarker(PROCESS_PACKAGES_START);
 

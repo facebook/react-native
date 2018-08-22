@@ -80,3 +80,9 @@ export type ScrollEvent = SyntheticEvent<
     zoomScale: number,
   |}>,
 >;
+
+export type SwitchChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    value: boolean,
+  |}>,
+>;

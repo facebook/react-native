@@ -10,9 +10,7 @@
 namespace facebook {
 namespace react {
 
-ComponentName ViewShadowNode::getComponentName() const {
-  return ComponentName("View");
-}
+const char ViewComponentName[] = "View";
 
 } // namespace react
 } // namespace facebook

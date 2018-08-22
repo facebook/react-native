@@ -18,10 +18,6 @@
 namespace facebook {
 namespace react {
 
-class ParagraphProps;
-
-using SharedParagraphProps = std::shared_ptr<const ParagraphProps>;
-
 /*
  * Props of <Paragraph> component.
  * Most of the props are directly stored in composed `ParagraphAttributes`

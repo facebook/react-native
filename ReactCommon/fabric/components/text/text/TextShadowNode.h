@@ -7,30 +7,25 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
 #include <fabric/components/text/BaseTextShadowNode.h>
 #include <fabric/components/text/TextProps.h>
-#include <fabric/components/text/TextShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-class TextShadowNode;
-
-using SharedTextShadowNode = std::shared_ptr<const TextShadowNode>;
+extern const char TextComponentName[];
 
 class TextShadowNode:
-  public ConcreteShadowNode<TextProps>,
+  public ConcreteShadowNode<
+    TextComponentName,
+    TextProps
+  >,
   public BaseTextShadowNode {
 
 public:
 
   using ConcreteShadowNode::ConcreteShadowNode;
-
-  ComponentName getComponentName() const override;
 };
 
 } // namespace react

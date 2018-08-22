@@ -19,9 +19,7 @@
 namespace facebook {
 namespace react {
 
-class ParagraphShadowNode;
-
-using SharedParagraphShadowNode = std::shared_ptr<const ParagraphShadowNode>;
+extern const char ParagraphComponentName[];
 
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
@@ -29,14 +27,15 @@ using SharedParagraphShadowNode = std::shared_ptr<const ParagraphShadowNode>;
  * and <RawText> components.
  */
 class ParagraphShadowNode:
-  public ConcreteViewShadowNode<ParagraphProps>,
+  public ConcreteViewShadowNode<
+    ParagraphComponentName,
+    ParagraphProps
+  >,
   public BaseTextShadowNode {
 
 public:
 
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
 
   /*
    * Returns a `AttributedString` which represents text content of the node.

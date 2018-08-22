@@ -100,6 +100,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
         }}
         onScroll={this._onScroll}
         renderItem={this._renderItem}
+        extraData={this.state}
       />
     );
   }

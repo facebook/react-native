@@ -14,7 +14,7 @@ const getPolyfills = require('../../rn-get-polyfills');
 const path = require('path');
 
 const {createBlacklist} = require('metro');
-const {loadConfig, mergeConfig} = require('metro-config');
+const {loadConfig} = require('metro-config');
 
 /**
  * Configuration file of the CLI.
@@ -85,11 +85,10 @@ const Config = {
   getProjectRoots,
 
   async load(configFile: ?string): Promise<ConfigT> {
-    const config: ConfigT = await loadConfig(
+    return await loadConfig(
       configFile ? {config: configFile} : {},
+      this.DEFAULT,
     );
-
-    return mergeConfig(config, this.DEFAULT);
   },
 };
 

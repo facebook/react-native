@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow
  * @format
  */
 
@@ -184,14 +184,11 @@ let Image = (
   props: ImagePropsType,
   forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'RKImage'>,
 ) => {
-  const source = resolveAssetSource(props.source);
+  let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
   );
-
-  // As opposed to the ios version, here we render `null` when there is no source, source.uri
-  // or source array.
 
   if (source && source.uri === '') {
     console.warn('source.uri should not be an empty string');
@@ -215,15 +212,19 @@ let Image = (
     );
   }
 
-  if (!source || (!source.uri && !Array.isArray(source))) {
-    return null;
+  if (source && !source.uri && !Array.isArray(source)) {
+    source = null;
   }
 
   let style;
   let sources;
-  if (source.uri) {
+  if (source?.uri != null) {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     sources = [{uri: source.uri}];
   } else {
     style = flattenStyle([styles.base, props.style]);
@@ -235,7 +236,9 @@ let Image = (
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
-    headers: source.headers,
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    headers: source?.headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
       ? loadingIndicatorSource.uri

@@ -14,9 +14,7 @@
 namespace facebook {
 namespace react {
 
-ComponentName ImageShadowNode::getComponentName() const {
-  return ComponentName("Image");
-}
+const char ImageComponentName[] = "Image";
 
 void ImageShadowNode::setImageManager(const SharedImageManager &imageManager) {
   ensureUnsealed();

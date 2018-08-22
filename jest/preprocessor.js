@@ -23,7 +23,7 @@ const babelRegisterOnly = require('metro-babel-register');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = RegExp(
+const nodeFiles = new RegExp(
   [
     '/local-cli/',
     '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
@@ -39,15 +39,12 @@ module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
       // node specific transforms only
-      return babelTransformSync(
-        src,
-        {
-          filename: file,
-          sourceType: 'script',
-          ...nodeOptions,
-          ast: false
-        },
-      ).code;
+      return babelTransformSync(src, {
+        filename: file,
+        sourceType: 'script',
+        ...nodeOptions,
+        ast: false,
+      }).code;
     }
 
     const {ast} = transformer.transform({

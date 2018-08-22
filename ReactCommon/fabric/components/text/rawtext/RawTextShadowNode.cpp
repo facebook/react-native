@@ -7,14 +7,10 @@
 
 #include "RawTextShadowNode.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
-
 namespace facebook {
 namespace react {
 
-ComponentName RawTextShadowNode::getComponentName() const {
-  return ComponentName("RawText");
-}
+extern const char RawTextComponentName[] = "RawText";
 
 } // namespace react
 } // namespace facebook

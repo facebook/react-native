@@ -28,16 +28,22 @@ TEST(ShadowNodeTest, handleProps) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeCreation) {
-  auto node = std::make_shared<TestShadowNode>(9, 1, std::make_shared<const TestProps>(), nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto node = std::make_shared<TestShadowNode>(
+    ShadowNodeFragment {
+      .tag = 9,
+      .rootTag = 1,
+      .props = std::make_shared<const TestProps>(),
+      .children = ShadowNode::emptySharedShadowNodeSharedList()
+    },
+    nullptr
+  );
 
   ASSERT_FALSE(node->getSealed());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getRootTag(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
-  TestShadowNode *nodePtr = node.get();
-  ASSERT_EQ(node->getComponentHandle(), typeid(*nodePtr).hash_code());
-  ASSERT_EQ(node->getChildren()->size(), 0);
+  ASSERT_EQ(node->getChildren().size(), 0);
 
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
 
@@ -47,8 +53,16 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
-  auto node = std::make_shared<TestShadowNode>(9, 1, std::make_shared<const TestProps>(), nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto node2 = std::make_shared<TestShadowNode>(node, nullptr, nullptr, nullptr);
+  auto node = std::make_shared<TestShadowNode>(
+    ShadowNodeFragment {
+      .tag = 9,
+      .rootTag = 1,
+      .props = std::make_shared<const TestProps>(),
+      .children = ShadowNode::emptySharedShadowNodeSharedList()
+    },
+    nullptr
+  );
+  auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment {});
 
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
@@ -58,23 +72,23 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
 
 TEST(ShadowNodeTest, handleShadowNodeMutation) {
   auto props = std::make_shared<const TestProps>();
-  auto node1 = std::make_shared<TestShadowNode>(1, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto node2 = std::make_shared<TestShadowNode>(2, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto node3 = std::make_shared<TestShadowNode>(3, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto node1 = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 1, .rootTag = 1, .props = std::make_shared<const TestProps>(), .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
+  auto node2 = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 2, .rootTag = 1, .props = std::make_shared<const TestProps>(), .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
+  auto node3 = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 3, .rootTag = 1, .props = std::make_shared<const TestProps>(), .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
 
   node1->appendChild(node2);
   node1->appendChild(node3);
-  SharedShadowNodeSharedList node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children->size(), 2);
-  ASSERT_EQ(node1Children->at(0), node2);
-  ASSERT_EQ(node1Children->at(1), node3);
+  auto node1Children = node1->getChildren();
+  ASSERT_EQ(node1Children.size(), 2);
+  ASSERT_EQ(node1Children.at(0), node2);
+  ASSERT_EQ(node1Children.at(1), node3);
 
-  auto node4 = std::make_shared<TestShadowNode>(node2, nullptr, nullptr, nullptr);
+  auto node4 = std::make_shared<TestShadowNode>(*node2, ShadowNodeFragment {});
   node1->replaceChild(node2, node4);
   node1Children = node1->getChildren();
-  ASSERT_EQ(node1Children->size(), 2);
-  ASSERT_EQ(node1Children->at(0), node4);
-  ASSERT_EQ(node1Children->at(1), node3);
+  ASSERT_EQ(node1Children.size(), 2);
+  ASSERT_EQ(node1Children.at(0), node4);
+  ASSERT_EQ(node1Children.at(1), node3);
 
   // Seal the entire tree.
   node1->sealRecursive();
@@ -85,34 +99,33 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   // No more mutation after sealing.
   EXPECT_THROW(node4->setLocalData(nullptr), std::runtime_error);
 
-  auto node5 = std::make_shared<TestShadowNode>(node4, nullptr, nullptr, nullptr);
+  auto node5 = std::make_shared<TestShadowNode>(*node4, ShadowNodeFragment {});
   node5->setLocalData(nullptr);
   ASSERT_EQ(node5->getLocalData(), nullptr);
 }
 
 TEST(ShadowNodeTest, handleCloneFunction) {
-  auto firstNode = std::make_shared<TestShadowNode>(9, 1, std::make_shared<const TestProps>(), nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto firstNode = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 9, .rootTag = 1, .props = std::make_shared<const TestProps>(), .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
 
   // The shadow node is not clonable if `cloneFunction` is not provided,
-  ASSERT_DEATH_IF_SUPPORTED(firstNode->clone(), "cloneFunction_");
+  ASSERT_DEATH_IF_SUPPORTED(firstNode->clone({}), "cloneFunction_");
 
   auto secondNode = std::make_shared<TestShadowNode>(
-    9,
-    1,
-    std::make_shared<const TestProps>(),
-    nullptr,
-    ShadowNode::emptySharedShadowNodeSharedList(),
-    [](const SharedShadowNode &shadowNode, const SharedProps &props, const SharedEventEmitter &eventEmitter, const SharedShadowNodeSharedList &children) {
+    ShadowNodeFragment {
+      .tag = 9,
+      .rootTag = 1,
+      .props = std::make_shared<const TestProps>(),
+      .children = ShadowNode::emptySharedShadowNodeSharedList()
+    },
+    [](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
       return std::make_shared<TestShadowNode>(
-        std::static_pointer_cast<const TestShadowNode>(shadowNode),
-        props,
-        nullptr,
-        children
+        shadowNode,
+        fragment
       );
     }
   );
 
-  auto secondNodeClone = secondNode->clone();
+  auto secondNodeClone = secondNode->clone({});
 
   // Those two nodes are *not* same.
   ASSERT_NE(secondNode, secondNodeClone);
@@ -136,9 +149,9 @@ TEST(ShadowNodeTest, handleLocalData) {
   auto localDataOver9000 = std::make_shared<TestLocalData>();
   localDataOver9000->setNumber(9001);
   auto props = std::make_shared<const TestProps>();
-  auto firstNode = std::make_shared<TestShadowNode>(9, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto secondNode = std::make_shared<TestShadowNode>(9, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
-  auto thirdNode = std::make_shared<TestShadowNode>(9, 1, props, nullptr, ShadowNode::emptySharedShadowNodeSharedList(), nullptr);
+  auto firstNode = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 9, .rootTag = 1, .props = props, .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
+  auto secondNode = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 9, .rootTag = 1, .props = props, .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
+  auto thirdNode = std::make_shared<TestShadowNode>(ShadowNodeFragment {.tag = 9, .rootTag = 1, .props = props, .children = ShadowNode::emptySharedShadowNodeSharedList()}, nullptr);
 
   firstNode->setLocalData(localData42);
   secondNode->setLocalData(localData42);

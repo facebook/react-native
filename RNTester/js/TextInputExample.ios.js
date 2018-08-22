@@ -173,6 +173,48 @@ class RewriteExampleInvalidCharacters extends React.Component<
   }
 }
 
+class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          onChangeText={text => {
+            this.setState({text: text.replace(/ひ/g, '日')});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
+class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View>
+        <TextInput
+          secureTextEntry={true}
+          style={styles.default}
+          defaultValue="abc"
+          onChangeText={text => this.setState({text})}
+          value={this.state.text}
+        />
+        <Text>Current text is: {this.state.text}</Text>
+      </View>
+    );
+  }
+}
+
 class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
   constructor(props) {
     super(props);
@@ -525,6 +567,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Live Re-Write (ひ -> 日)',
+    render: function() {
+      return <RewriteExampleKana />;
+    },
+  },
+  {
     title: 'Keyboard Accessory View',
     render: function() {
       return <TextInputAccessoryViewExample />;
@@ -677,17 +725,7 @@ exports.examples = [
   {
     title: 'Secure text entry',
     render: function() {
-      return (
-        <View>
-          <WithLabel label="true">
-            <TextInput
-              secureTextEntry={true}
-              style={styles.default}
-              defaultValue="abc"
-            />
-          </WithLabel>
-        </View>
-      );
+      return <SecureEntryExample />;
     },
   },
   {

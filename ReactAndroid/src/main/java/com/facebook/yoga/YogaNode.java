@@ -97,13 +97,23 @@ public class YogaNode implements Cloneable {
     }
   }
 
-  private native void jni_YGNodeFree(long nativePointer);
   @Override
   protected void finalize() throws Throwable {
     try {
-      jni_YGNodeFree(mNativePointer);
+      freeNatives();
     } finally {
       super.finalize();
+    }
+  }
+
+  private static native void jni_YGNodeFree(long nativePointer);
+
+  /* frees the native underlying YGNode. Useful for testing. */
+  public void freeNatives() {
+    if (mNativePointer > 0) {
+      long nativePointer = mNativePointer;
+      mNativePointer = 0;
+      jni_YGNodeFree(nativePointer);
     }
   }
 

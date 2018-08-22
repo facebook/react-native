@@ -11,8 +11,8 @@ namespace react {
 static void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
   SharedShadowNode parentNode,
-  SharedShadowNodeSharedList oldChildNodes,
-  SharedShadowNodeSharedList newChildNodes
+  const SharedShadowNodeList &oldChildNodes,
+  const SharedShadowNodeList &newChildNodes
 ) {
   // The current version of the algorithm is otimized for simplicity,
   // not for performance of optimal result.
@@ -26,7 +26,7 @@ static void calculateMutationInstructions(
     return;
   }
 
-  if (oldChildNodes->size() == 0 && newChildNodes->size() == 0) {
+  if (oldChildNodes.size() == 0 && newChildNodes.size() == 0) {
     return;
   }
 
@@ -42,9 +42,9 @@ static void calculateMutationInstructions(
   TreeMutationInstructionList destructionDownwardInstructions = {};
 
   // Stage 1: Collectings Updates
-  for (index = 0; index < oldChildNodes->size() && index < newChildNodes->size(); index++) {
-    const auto &oldChildNode = oldChildNodes->at(index);
-    const auto &newChildNode = newChildNodes->at(index);
+  for (index = 0; index < oldChildNodes.size() && index < newChildNodes.size(); index++) {
+    const auto &oldChildNode = oldChildNodes.at(index);
+    const auto &newChildNode = newChildNodes.at(index);
 
     if (oldChildNode->getTag() != newChildNode->getTag()) {
       // Totally different nodes, updating is impossible.
@@ -63,7 +63,7 @@ static void calculateMutationInstructions(
     }
 
     calculateMutationInstructions(
-      *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
+      *(newChildNode->getChildren().size() ? &downwardInstructions : &destructionDownwardInstructions),
       oldChildNode,
       oldChildNode->getChildren(),
       newChildNode->getChildren()
@@ -73,8 +73,8 @@ static void calculateMutationInstructions(
   int lastIndexAfterFirstStage = index;
 
   // Stage 2: Collectings Insertions
-  for (; index < newChildNodes->size(); index++) {
-    const auto &newChildNode = newChildNodes->at(index);
+  for (; index < newChildNodes.size(); index++) {
+    const auto &newChildNode = newChildNodes.at(index);
 
     insertInstructions.push_back(
       TreeMutationInstruction::Insert(
@@ -88,8 +88,8 @@ static void calculateMutationInstructions(
   }
 
   // Stage 3: Collectings Deletions and Removals
-  for (index = lastIndexAfterFirstStage; index < oldChildNodes->size(); index++) {
-    const auto &oldChildNode = oldChildNodes->at(index);
+  for (index = lastIndexAfterFirstStage; index < oldChildNodes.size(); index++) {
+    const auto &oldChildNode = oldChildNodes.at(index);
 
     // Even if the old node was (re)inserted, we have to generate `remove`
     // instruction.
@@ -119,7 +119,7 @@ static void calculateMutationInstructions(
         destructionDownwardInstructions,
         oldChildNode,
         oldChildNode->getChildren(),
-        ShadowNode::emptySharedShadowNodeSharedList()
+        {}
       );
     } else {
       // The old node *was* (re)inserted.
@@ -128,7 +128,7 @@ static void calculateMutationInstructions(
       const auto &newChildNode = it->second;
       if (newChildNode != oldChildNode) {
         calculateMutationInstructions(
-          *(newChildNode->getChildren()->size() ? &downwardInstructions : &destructionDownwardInstructions),
+          *(newChildNode->getChildren().size() ? &downwardInstructions : &destructionDownwardInstructions),
           newChildNode,
           oldChildNode->getChildren(),
           newChildNode->getChildren()
@@ -144,8 +144,8 @@ static void calculateMutationInstructions(
   }
 
   // Stage 4: Collectings Creations
-  for (index = lastIndexAfterFirstStage; index < newChildNodes->size(); index++) {
-    const auto &newChildNode = newChildNodes->at(index);
+  for (index = lastIndexAfterFirstStage; index < newChildNodes.size(); index++) {
+    const auto &newChildNode = newChildNodes.at(index);
 
     if (insertedNodes.find(newChildNode->getTag()) == insertedNodes.end()) {
       // The new node was (re)inserted, so there is no need to create it.
@@ -161,7 +161,7 @@ static void calculateMutationInstructions(
     calculateMutationInstructions(
       downwardInstructions,
       newChildNode,
-      ShadowNode::emptySharedShadowNodeSharedList(),
+      {},
       newChildNode->getChildren()
     );
   }
@@ -178,8 +178,8 @@ static void calculateMutationInstructions(
 
 void calculateMutationInstructions(
   TreeMutationInstructionList &instructions,
-  SharedShadowNode oldRootShadowNode,
-  SharedShadowNode newRootShadowNode
+  const SharedShadowNode &oldRootShadowNode,
+  const SharedShadowNode &newRootShadowNode
 ) {
   // Root shadow nodes must have same tag.
   assert(oldRootShadowNode->getTag() == newRootShadowNode->getTag());

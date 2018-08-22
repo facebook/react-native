@@ -19,16 +19,30 @@ namespace react {
  * `ConcreteShadowNode` is a default implementation of `ShadowNode` interface
  * with many handy features.
  */
-template <typename PropsT, typename EventEmitterT = EventEmitter>
+template <
+  const char *concreteComponentName,
+  typename PropsT,
+  typename EventEmitterT = EventEmitter
+>
 class ConcreteShadowNode: public ShadowNode {
   static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
 
 public:
+  using ShadowNode::ShadowNode;
+
   using ConcreteProps = PropsT;
   using SharedConcreteProps = std::shared_ptr<const PropsT>;
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
+
+  static ComponentName Name() {
+    return ComponentName(concreteComponentName);
+  }
+
+  static ComponentHandle Handle() {
+    return ComponentHandle(concreteComponentName);
+  }
 
   static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
     return std::make_shared<const PropsT>(baseProps ? *std::static_pointer_cast<const PropsT>(baseProps) : PropsT(), rawProps);
@@ -39,38 +53,12 @@ public:
     return defaultSharedProps;
   }
 
-  ConcreteShadowNode(
-    const Tag &tag,
-    const Tag &rootTag,
-    const SharedConcreteProps &props,
-    const SharedConcreteEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children,
-    const ShadowNodeCloneFunction &cloneFunction
-  ):
-    ShadowNode(
-      tag,
-      rootTag,
-      (SharedProps)props,
-      eventEmitter,
-      children,
-      cloneFunction
-    ) {};
+  ComponentName getComponentName() const override {
+    return ComponentName(concreteComponentName);
+  }
 
-  ConcreteShadowNode(
-    const SharedConcreteShadowNode &shadowNode,
-    const SharedProps &props,
-    const SharedEventEmitter &eventEmitter,
-    const SharedShadowNodeSharedList &children
-  ):
-    ShadowNode(
-      shadowNode,
-      (SharedProps)props,
-      eventEmitter,
-      children
-    ) {}
-
-  virtual ComponentHandle getComponentHandle() const {
-    return typeid(*this).hash_code();
+  ComponentHandle getComponentHandle() const override {
+    return reinterpret_cast<ComponentHandle>(concreteComponentName);
   }
 
   const SharedConcreteProps getProps() const {
@@ -84,7 +72,7 @@ public:
   template<typename SpecificShadowNodeT>
   std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
     std::vector<SpecificShadowNodeT *> children;
-    for (const auto &childShadowNode : *getChildren()) {
+    for (const auto &childShadowNode : getChildren()) {
       auto specificChildShadowNode = dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
       if (specificChildShadowNode) {
         children.push_back(const_cast<SpecificShadowNodeT *>(specificChildShadowNode));

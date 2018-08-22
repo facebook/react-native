@@ -323,7 +323,10 @@ jlong jni_YGNodeClone(
   return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
-void jni_YGNodeFree(alias_ref<jobject> thiz, jlong nativePointer) {
+void jni_YGNodeFree(alias_ref<jclass>, jlong nativePointer) {
+  if (nativePointer == 0) {
+    return;
+  }
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   delete YGNodeJobject(node);
   YGNodeFree(node);
