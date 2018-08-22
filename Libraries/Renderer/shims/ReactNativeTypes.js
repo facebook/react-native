@@ -51,7 +51,10 @@ type AttributeType =
       process: ?(arg1: any) => any,
     |}>;
 
-export type ReactNativeBaseComponentViewConfig = $ReadOnly<{|
+export type ReactNativeBaseComponentViewConfig<
+  TProps = string,
+  TStyleProps = string,
+> = $ReadOnly<{|
   baseModuleName?: string,
   bubblingEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|
@@ -74,14 +77,14 @@ export type ReactNativeBaseComponentViewConfig = $ReadOnly<{|
   }>,
   uiViewClassName: string,
   validAttributes: $ReadOnly<{
-    [propName: string]: AttributeType,
+    [propName: TProps]: AttributeType,
     style: $ReadOnly<{
-      [propName: string]: AttributeType,
+      [propName: TStyleProps]: AttributeType,
     }>,
   }>,
 |}>;
 
-export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig;
+export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
 
 /**
  * Class only exists for its Flow type.

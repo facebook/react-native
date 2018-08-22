@@ -14,9 +14,18 @@ const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 
 const processColor = require('processColor');
 
+import type {ViewProps} from 'ViewPropTypes';
+import type {____ViewStyle_Internal} from 'StyleSheetTypes';
+import type {ReactNativeBaseComponentViewConfig} from 'ReactNativeTypes';
+
 const colorHandler = {diff: null, process: processColor};
 
-const ViewNativeComponentAndroidConfig = {
+type Config = ReactNativeBaseComponentViewConfig<
+  $Keys<ViewProps> | $Keys<____ViewStyle_Internal>,
+  $Keys<____ViewStyle_Internal>,
+>;
+
+const ViewNativeComponentAndroidConfig: Config = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
