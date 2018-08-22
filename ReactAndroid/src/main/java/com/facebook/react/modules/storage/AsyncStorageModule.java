@@ -15,7 +15,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -48,13 +47,12 @@ public final class AsyncStorageModule
   private ExecutorService mExecutor;
   
   public AsyncStorageModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);	    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
-    mExecutor = Executors.newSingleThreadExecutor();
+    this(reactContext, Executors.newSingleThreadExecutor());
   }
 
   public AsyncStorageModule(ReactApplicationContext reactContext, ExecutorService executor) {
-    this(reactContext);
+    super(reactContext);
+    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
     mExecutor = executor;
   }
 
