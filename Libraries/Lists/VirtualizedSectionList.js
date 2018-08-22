@@ -135,11 +135,8 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     this.state = this._computeState(props);
   }
 
-  static getDerivedStateFromProps(
-    nextProps: Props<SectionT>,
-    prevState: State,
-  ): ?State {
-    return this._computeState(nextProps);
+  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
+    this.setState(this._computeState(nextProps));
   }
 
   _computeState(props: Props<SectionT>): State {
