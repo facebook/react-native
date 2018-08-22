@@ -44,13 +44,42 @@ type DirectEventType = {
   registrationName: string,
 };
 
-export type ReactNativeBaseComponentViewConfig = {
-  validAttributes: Object,
+type AttributeType =
+  | true
+  | $ReadOnly<{|
+      diff: ?<T>(arg1: T, arg2: T) => boolean,
+      process: ?(arg1: any) => any,
+    |}>;
+
+export type ReactNativeBaseComponentViewConfig = $ReadOnly<{|
+  baseModuleName?: string,
+  bubblingEventTypes?: $ReadOnly<{
+    [eventName: string]: $ReadOnly<{|
+      phasedRegistrationNames: $ReadOnly<{|
+        captured: string,
+        bubbled: string,
+      |}>,
+    |}>,
+  }>,
+  Commands?: $ReadOnly<{
+    [commandName: string]: number,
+  }>,
+  directEventTypes?: $ReadOnly<{
+    [eventName: string]: $ReadOnly<{|
+      registrationName: string,
+    |}>,
+  }>,
+  NativeProps?: $ReadOnly<{
+    [propName: string]: string,
+  }>,
   uiViewClassName: string,
-  bubblingEventTypes?: {[topLevelType: string]: BubblingEventType},
-  directEventTypes?: {[topLevelType: string]: DirectEventType},
-  propTypes?: Object,
-};
+  validAttributes: $ReadOnly<{
+    [propName: string]: AttributeType,
+    style: $ReadOnly<{
+      [propName: string]: AttributeType,
+    }>,
+  }>,
+|}>;
 
 export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig;
 
