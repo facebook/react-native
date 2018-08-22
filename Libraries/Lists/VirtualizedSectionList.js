@@ -515,7 +515,7 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-function getItem(props: Props, sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
+function getItem(props: Props<SectionBase>, sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
   if (!sections) {
     return null;
   }
