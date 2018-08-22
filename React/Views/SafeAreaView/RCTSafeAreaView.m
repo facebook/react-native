@@ -14,7 +14,6 @@
 
 @implementation RCTSafeAreaView {
   __weak RCTBridge *_bridge;
-  BOOL _safeAreaAvailable;
   UIEdgeInsets _currentSafeAreaInsets;
 }
 
@@ -22,7 +21,6 @@
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _bridge = bridge;
-    _safeAreaAvailable = [self respondsToSelector:@selector(safeAreaInsets)];
   }
 
   return self;
@@ -43,7 +41,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)safeAreaInsetsDidChange
 {
-  if (!_safeAreaAvailable) {
+  if (![self respondsToSelector:@selector(safeAreaInsets)]) {
     return;
   }
 
@@ -56,7 +54,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if (_safeAreaAvailable) {
+  if ([self respondsToSelector:@selector(safeAreaInsets)]) {
     return;
   }
   UIViewController* vc = self.reactViewController;
