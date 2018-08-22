@@ -779,6 +779,25 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                 completionBlock:completion];
 }
 
+- (NSDictionary *)getImageCacheStatus:(NSArray *)requests
+{
+  NSMutableDictionary *results = [NSMutableDictionary dictionary];
+  for (id request in requests) {
+    NSURLRequest *urlRequest = [RCTConvert NSURLRequest:request];
+    if (urlRequest) {
+      NSCachedURLResponse *cachedResponse = [NSURLCache.sharedURLCache cachedResponseForRequest:urlRequest];
+      if (cachedResponse) {
+        if (cachedResponse.storagePolicy == NSURLCacheStorageAllowedInMemoryOnly) {
+          [results setObject:@"memory" forKey:urlRequest.URL.absoluteString];
+        } else {
+          [results setObject:@"disk" forKey:urlRequest.URL.absoluteString];
+        }
+      }
+    }
+  }
+  return results;
+}
+
 #pragma mark - RCTURLRequestHandler
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request

@@ -10,6 +10,7 @@
 'use strict';
 
 require('babel-register')({
+  babelrc: false,
   presets: [
     require('babel-preset-es2015-node'),
     require('babel-preset-stage-3'),

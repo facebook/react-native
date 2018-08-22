@@ -10,6 +10,8 @@ package com.facebook.react.fabric.jsc;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.UIManager;
+import com.facebook.react.fabric.FabricBinder;
 import com.facebook.react.fabric.FabricBinding;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.bridge.NativeMap;
@@ -58,7 +60,7 @@ public class FabricJSCBinding implements FabricBinding {
   }
 
   @Override
-  public void installFabric(JavaScriptContextHolder jsContext, FabricUIManager fabricModule) {
+  public void installFabric(JavaScriptContextHolder jsContext, FabricBinder fabricModule) {
     fabricModule.setBinding(this);
     installFabric(jsContext.get(), fabricModule);
   }

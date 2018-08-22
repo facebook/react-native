@@ -72,10 +72,27 @@ type GestureResponderEventProps = $ReadOnly<{|
   onStartShouldSetResponderCapture?: ?Function,
 |}>;
 
+type AndroidViewProps = $ReadOnly<{|
+  nativeBackgroundAndroid?: ?Object,
+  nativeForegroundAndroid?: ?Object,
+
+  /* Deprecated transform prop. Use the transform style prop instead */
+  rotation?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  scaleX?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  scaleY?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  translateX?: empty,
+  /* Deprecated transform prop. Use the transform style prop instead */
+  translateY?: empty,
+|}>;
+
 export type ViewProps = $ReadOnly<{|
   ...DirectEventProps,
   ...GestureResponderEventProps,
   ...TouchEventProps,
+  ...AndroidViewProps,
 
   // There's no easy way to create a different type if (Platform.isTV):
   // so we must include TVViewProps
