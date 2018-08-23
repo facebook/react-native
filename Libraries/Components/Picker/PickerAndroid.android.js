@@ -11,11 +11,11 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
 const ReactPropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
-const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const processColor = require('processColor');
@@ -52,7 +52,7 @@ class PickerAndroid extends React.Component<
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
    * when making Flow check .android.js files. */
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     style: pickerStyleType,
     selectedValue: ReactPropTypes.any,
     enabled: ReactPropTypes.bool,

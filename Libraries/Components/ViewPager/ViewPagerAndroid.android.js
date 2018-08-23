@@ -10,11 +10,11 @@
 
 'use strict';
 
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
 const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
 
 const dismissKeyboard = require('dismissKeyboard');
 const requireNativeComponent = require('requireNativeComponent');
@@ -85,7 +85,7 @@ class ViewPagerAndroid extends React.Component<{
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
    * when making Flow check .android.js files. */
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
      * update the page, and `onPageSelected` to monitor page changes
