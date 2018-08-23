@@ -9,12 +9,12 @@
 
 'use strict';
 
-if (!process.env.CI_USER) {
-  console.error('Missing CI_USER. Example: facebook');
+if (!process.env.CIRCLE_PROJECT_USERNAME) {
+  console.error('Missing CIRCLE_PROJECT_USERNAME. Example: facebook');
   process.exit(1);
 }
-if (!process.env.CI_REPO) {
-  console.error('Missing CI_REPO. Example: react-native');
+if (!process.env.CIRCLE_PROJECT_REPONAME) {
+  console.error('Missing CIRCLE_PROJECT_REPONAME. Example: react-native');
   process.exit(1);
 }
 if (!process.env.GITHUB_TOKEN) {
@@ -23,20 +23,17 @@ if (!process.env.GITHUB_TOKEN) {
   );
   process.exit(1);
 }
-if (!process.env.PULL_REQUEST_NUMBER) {
-  console.error('Missing PULL_REQUEST_NUMBER. Example: 4687');
-  // for master branch don't throw and error
+if (!process.env.CIRCLE_PR_NUMBER) {
+  console.error('Missing CIRCLE_PR_NUMBER. Example: 4687');
+  // for master branch, don't throw an error
   process.exit(0);
 }
 
-var GitHubApi = require('github');
+const octokit = require('@octokit/rest')();
+
 var path = require('path');
 
-var github = new GitHubApi({
-  version: '3.0.0',
-});
-
-github.authenticate({
+octokit.authenticate({
   type: 'oauth',
   token: process.env.GITHUB_TOKEN,
 });
@@ -98,20 +95,21 @@ var converters = {
   },
 };
 
-function getShaFromPullRequest(user, repo, number, callback) {
-  github.pullRequests.get({user, repo, number}, (error, res) => {
+function getShaFromPullRequest(owner, repo, number, callback) {
+  octokit.pullRequests.get({owner, repo, number}, (error, res) => {
     if (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
-    callback(res.head.sha);
+
+    callback(res.data.head.sha);
   });
 }
 
-function getFilesFromCommit(user, repo, sha, callback) {
-  github.repos.getCommit({user, repo, sha}, (error, res) => {
+function getFilesFromCommit(owner, repo, sha, callback) {
+  octokit.repos.getCommit({owner, repo, sha}, (error, res) => {
     if (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
     // A merge commit should not have any new changes to report
@@ -119,7 +117,7 @@ function getFilesFromCommit(user, repo, sha, callback) {
       return;
     }
 
-    callback(res.files);
+    callback(res.data.files);
   });
 }
 
@@ -152,14 +150,14 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
-function sendComment(user, repo, number, sha, filename, lineMap, message) {
+function sendComment(owner, repo, number, sha, filename, lineMap, message) {
   if (!lineMap[message.line]) {
     // Do not send messages on lines that did not change
     return;
   }
 
   var opts = {
-    user,
+    owner,
     repo,
     number,
     sha,
@@ -168,23 +166,23 @@ function sendComment(user, repo, number, sha, filename, lineMap, message) {
     body: message.message,
     position: lineMap[message.line],
   };
-  github.pullRequests.createComment(opts, function(error, res) {
+  octokit.pullRequests.createComment(opts, function(error, res) {
     if (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
   });
   console.log('Sending comment', opts);
 }
 
-function main(messages, user, repo, number) {
+function main(messages, owner, repo, number) {
   // No message, we don't need to do anything :)
   if (Object.keys(messages).length === 0) {
     return;
   }
 
-  getShaFromPullRequest(user, repo, number, sha => {
-    getFilesFromCommit(user, repo, sha, files => {
+  getShaFromPullRequest(owner, repo, number, sha => {
+    getFilesFromCommit(owner, repo, sha, files => {
       files.filter(file => messages[file.filename]).forEach(file => {
         // github api sometimes does not return a patch on large commits
         if (!file.patch) {
@@ -192,7 +190,15 @@ function main(messages, user, repo, number) {
         }
         var lineMap = getLineMapFromPatch(file.patch);
         messages[file.filename].forEach(message => {
-          sendComment(user, repo, number, sha, file.filename, lineMap, message);
+          sendComment(
+            owner,
+            repo,
+            number,
+            sha,
+            file.filename,
+            lineMap,
+            message,
+          );
         });
       });
     });
@@ -247,10 +253,10 @@ process.stdin.on('end', function() {
     delete messages[absolutePath];
   }
 
-  var user = process.env.CI_USER;
-  var repo = process.env.CI_REPO;
-  var number = process.env.PULL_REQUEST_NUMBER;
+  var owner = process.env.CIRCLE_PROJECT_USERNAME;
+  var repo = process.env.CIRCLE_PROJECT_REPONAME;
+  var number = process.env.CIRCLE_PR_NUMBER;
 
   // intentional lint warning to make sure that the bot is working :)
-  main(messages, user, repo, number);
+  main(messages, owner, repo, number);
 });
