@@ -34,7 +34,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
-  // strip suffix that doesn't match platform suffix
+  // strip platform suffix
   [/^(.*)\.(android|ios|native)$/, '$1'],
 ];
 
