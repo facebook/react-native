@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# execute command
-"$@"
+# Execute command, and catch timeouts (CI has a 10 minute default timeout)
+timeout 570 "$@"
 
 # check status
 STATUS=$?
