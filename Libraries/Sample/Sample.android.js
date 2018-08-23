@@ -7,7 +7,7 @@
  * Stub of Sample for Android.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
 'use strict';

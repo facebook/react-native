@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
 'use strict';
@@ -23,6 +23,8 @@ const ToolbarAndroid = require('ToolbarAndroid');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
+/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
+ * making Flow check .android.js files. */
 const RNTesterList = require('./RNTesterList');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
 const UIManager = require('UIManager');
@@ -96,12 +98,18 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         drawerWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
         keyboardDismissMode="on-drag"
         onDrawerOpen={() => {
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           this._overrideBackPressForDrawerLayout = true;
         }}
         onDrawerClose={() => {
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           this._overrideBackPressForDrawerLayout = false;
         }}
         ref={drawer => {
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           this.drawer = drawer;
         }}
         renderNavigationView={this._renderDrawerContent}
@@ -114,6 +122,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _renderDrawerContent = () => {
     return (
       <View style={styles.drawerContentWrapper}>
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <RNTesterExampleList
           list={RNTesterList}
           displayTitleRow={true}
@@ -136,6 +146,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
               this._handleAction(RNTesterActions.Back());
             }}
             ref={example => {
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+               * was found when making Flow check .android.js files. */
               this._exampleRef = example;
             }}
           />
@@ -146,6 +158,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
             <ToolbarAndroid
               logo={HEADER_LOGO_ICON}
               navIcon={HEADER_NAV_ICON}
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+               * was found when making Flow check .android.js files. */
               onIconClicked={() => this.drawer.openDrawer()}
               style={styles.toolbar}
               title={ExampleModule.title}
@@ -153,6 +167,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
             <RNTesterExampleContainer
               module={ExampleModule}
               ref={example => {
+                /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+                 * was found when making Flow check .android.js files. */
                 this._exampleRef = example;
               }}
             />
@@ -166,10 +182,14 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         <ToolbarAndroid
           logo={HEADER_LOGO_ICON}
           navIcon={HEADER_NAV_ICON}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           onIconClicked={() => this.drawer.openDrawer()}
           style={styles.toolbar}
           title="RNTester"
         />
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <RNTesterExampleList
           onNavigate={this._handleAction}
           list={RNTesterList}
@@ -179,6 +199,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   }
 
   _handleAction = (action: Object): boolean => {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     this.drawer && this.drawer.closeDrawer();
     const newState = RNTesterNavigationReducer(this.state, action);
     if (this.state !== newState) {
@@ -191,16 +213,24 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   };
 
   _handleBackButtonPress = () => {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     if (this._overrideBackPressForDrawerLayout) {
       // This hack is necessary because drawer layout provides an imperative API
       // with open and close methods. This code would be cleaner if the drawer
       // layout provided an `isOpen` prop and allowed us to pass a `onDrawerClose` handler.
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       this.drawer && this.drawer.closeDrawer();
       return true;
     }
     if (
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       this._exampleRef &&
       this._exampleRef.handleBackAction &&
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       this._exampleRef.handleBackAction()
     ) {
       return true;

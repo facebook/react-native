@@ -10,16 +10,16 @@
 
 'use strict';
 
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
-const {TestModule} = require('NativeModules');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const ViewPropTypes = require('ViewPropTypes');
-
 const requireNativeComponent = require('requireNativeComponent');
+
+const {TestModule} = require('NativeModules');
 
 // Verify that RCTSnapshot is part of the UIManager since it is only loaded
 // if you have linked against RCTTest like in tests, otherwise we will have
@@ -34,7 +34,7 @@ class SnapshotViewIOS extends React.Component<{
 }> {
   // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     // A callback when the Snapshot view is ready to be compared
     onSnapshotReady: PropTypes.func,
     // A name to identify the individual instance to the SnapshotView

@@ -12,6 +12,7 @@
 
 const AppContainer = require('AppContainer');
 const React = require('React');
+const ReactFabricIndicator = require('ReactFabricIndicator');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -24,12 +25,16 @@ function renderApplication<Props: Object>(
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<*>,
   fabric?: boolean,
+  showFabricIndicator?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
     <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
+      {fabric === true && showFabricIndicator === true ? (
+        <ReactFabricIndicator />
+      ) : null}
     </AppContainer>
   );
 

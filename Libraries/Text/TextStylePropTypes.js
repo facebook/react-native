@@ -108,9 +108,6 @@ const TextStylePropTypes = {
    * @platform ios
    */
   textDecorationColor: ColorPropType,
-  /**
-   * @platform ios
-   */
   textTransform: ReactPropTypes.oneOf([
     'none' /*default*/,
     'capitalize',

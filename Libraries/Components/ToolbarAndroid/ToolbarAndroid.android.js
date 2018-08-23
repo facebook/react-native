@@ -9,13 +9,13 @@
 
 'use strict';
 
+const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
-const ColorPropType = require('ColorPropType');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
@@ -68,7 +68,7 @@ const ToolbarAndroid = createReactClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
      * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'

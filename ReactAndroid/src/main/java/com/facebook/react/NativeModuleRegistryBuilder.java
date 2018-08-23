@@ -122,14 +122,7 @@ public class NativeModuleRegistryBuilder {
   }
 
   public NativeModuleRegistry build() {
-    ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
-    for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
-      if (entry.getValue().hasOnBatchCompleteListener()) {
-        batchCompleteListenerModules.add(entry.getValue());
-      }
-    }
-
     return new NativeModuleRegistry(
-        mReactApplicationContext, mModules, batchCompleteListenerModules);
+        mReactApplicationContext, mModules);
   }
 }

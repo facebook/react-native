@@ -57,6 +57,7 @@ async function runServer(args: Args, config: ConfigT) {
   config.maxWorkers = args.maxWorkers;
   config.server.port = args.port;
   config.reporter = reporter;
+  config.resetCache = args.resetCache;
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 
@@ -65,6 +66,7 @@ async function runServer(args: Args, config: ConfigT) {
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,
+    hmrEnabled: true,
   });
 
   const wsProxy = webSocketProxy.attachToServer(

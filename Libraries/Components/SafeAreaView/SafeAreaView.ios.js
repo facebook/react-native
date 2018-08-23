@@ -8,8 +8,9 @@
  * @format
  */
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
-const ViewPropTypes = require('ViewPropTypes');
+
 const requireNativeComponent = require('requireNativeComponent');
 
 import PropTypes from 'prop-types';
@@ -31,7 +32,7 @@ type Props = $ReadOnly<{|
  */
 class SafeAreaView extends React.Component<Props> {
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Callback that is called when the safe area view insets changed.
      * This will be called with

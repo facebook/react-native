@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
 'use strict';
@@ -84,6 +84,8 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
     var remainder = limit - this.state.text.length;
     var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       <View style={styles.rewriteContainer}>
         <TextInput
           multiline={false}
@@ -92,9 +94,13 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
             text = text.replace(/ /g, '_');
             this.setState({text});
           }}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           style={styles.default}
           value={this.state.text}
         />
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <Text style={[styles.remainder, {color: remainderColor}]}>
           {remainder}
         </Text>
@@ -299,6 +305,8 @@ class SelectionExample extends React.Component<
           onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => (this._textInput = textInput)}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}
@@ -324,6 +332,8 @@ class AutogrowingTextInputExample extends React.Component<{}> {
   constructor(props) {
     super(props);
 
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     this.state = {
       width: 100,
       multiline: true,
@@ -336,12 +346,18 @@ class AutogrowingTextInputExample extends React.Component<{}> {
   }
 
   UNSAFE_componentWillReceiveProps(props) {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     this.setState({
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       multiline: props.multiline,
     });
   }
 
   render() {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     var {style, multiline, ...props} = this.props;
     return (
       <View>
@@ -351,25 +367,43 @@ class AutogrowingTextInputExample extends React.Component<{}> {
           minimumValue={0}
           maximumValue={100}
           step={10}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           onValueChange={value => this.setState({width: value})}
         />
         <Text>Multiline:</Text>
         <Switch
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           value={this.state.multiline}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           onValueChange={value => this.setState({multiline: value})}
         />
         <Text>TextInput:</Text>
         <TextInput
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           multiline={this.state.multiline}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           style={[style, {width: this.state.width + '%'}]}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           onChangeText={value => this.setState({text: value})}
           onContentSizeChange={event =>
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+             * found when making Flow check .android.js files. */
             this.setState({contentSize: event.nativeEvent.contentSize})
           }
           {...props}
         />
         <Text>Plain text value representation:</Text>
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <Text>{this.state.text}</Text>
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
       </View>
     );
@@ -407,6 +441,8 @@ exports.examples = [
         <TextInput
           autoFocus={true}
           multiline={true}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           style={styles.input}
           accessibilityLabel="I am the accessibility label for text input"
         />
@@ -801,6 +837,8 @@ exports.examples = [
       return (
         <View>
           <SelectionExample
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+             * found when making Flow check .android.js files. */
             style={styles.default}
             value="text selection can be changed"
           />

@@ -15,6 +15,7 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -225,28 +226,12 @@ const TouchableWithoutFeedback = ((createReactClass({
     // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    warning(
-      !child.type || child.type.displayName !== 'Text',
-      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
-        ((child._owner && child._owner.getName && child._owner.getName()) ||
-          '<unknown>'),
-    );
-    if (
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'View'
-    ) {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       children = React.Children.toArray(children);
       children.push(
         Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
       );
     }
-    const style =
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'Text'
-        ? [child.props.style, {color: 'red'}]
-        : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
@@ -266,7 +251,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      style,
       children,
     });
   },

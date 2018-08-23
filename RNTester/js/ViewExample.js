@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -104,21 +104,33 @@ exports.examples = [
             <TouchableWithoutFeedback onPress={this._handlePress}>
               <View>
                 <View
-                  style={{
-                    borderWidth: 1,
-                    borderStyle: this.state.showBorder ? 'dashed' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      borderWidth: 1,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dashed',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dashed border style</Text>
                 </View>
                 <View
-                  style={{
-                    marginTop: 5,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderStyle: this.state.showBorder ? 'dotted' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      marginTop: 5,
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dotted',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dotted border style</Text>
                 </View>
               </View>

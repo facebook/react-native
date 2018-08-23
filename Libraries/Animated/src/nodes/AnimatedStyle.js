@@ -95,13 +95,13 @@ class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __makeNative() {
-    super.__makeNative();
     for (const key in this._style) {
       const value = this._style[key];
       if (value instanceof AnimatedNode) {
         value.__makeNative();
       }
     }
+    super.__makeNative();
   }
 
   __getNativeConfig(): Object {
