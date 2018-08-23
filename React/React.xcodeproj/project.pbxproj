@@ -1940,18 +1940,18 @@
 		139D7E4A1E25C5A300323FB7 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion-1.1.5/src/utils.h"; sourceTree = "<group>"; };
 		139D7E881E25C6D100323FB7 /* libdouble-conversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdouble-conversion.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		139D7ECE1E25DB7D00323FB7 /* libthird-party.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libthird-party.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		139D7ED81E25DBDC00323FB7 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = "glog-0.3.4/src/config.h"; sourceTree = "<group>"; };
-		139D7ED91E25DBDC00323FB7 /* demangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = demangle.h; path = "glog-0.3.4/src/demangle.h"; sourceTree = "<group>"; };
-		139D7EDA1E25DBDC00323FB7 /* logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = logging.cc; path = "glog-0.3.4/src/logging.cc"; sourceTree = "<group>"; };
-		139D7EDB1E25DBDC00323FB7 /* raw_logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = raw_logging.cc; path = "glog-0.3.4/src/raw_logging.cc"; sourceTree = "<group>"; };
-		139D7EDC1E25DBDC00323FB7 /* signalhandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = signalhandler.cc; path = "glog-0.3.4/src/signalhandler.cc"; sourceTree = "<group>"; };
-		139D7EDD1E25DBDC00323FB7 /* stacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stacktrace.h; path = "glog-0.3.4/src/stacktrace.h"; sourceTree = "<group>"; };
-		139D7EDE1E25DBDC00323FB7 /* symbolize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = symbolize.cc; path = "glog-0.3.4/src/symbolize.cc"; sourceTree = "<group>"; };
-		139D7EDF1E25DBDC00323FB7 /* symbolize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symbolize.h; path = "glog-0.3.4/src/symbolize.h"; sourceTree = "<group>"; };
-		139D7EE01E25DBDC00323FB7 /* utilities.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utilities.cc; path = "glog-0.3.4/src/utilities.cc"; sourceTree = "<group>"; };
-		139D7EE11E25DBDC00323FB7 /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utilities.h; path = "glog-0.3.4/src/utilities.h"; sourceTree = "<group>"; };
-		139D7EE21E25DBDC00323FB7 /* vlog_is_on.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlog_is_on.cc; path = "glog-0.3.4/src/vlog_is_on.cc"; sourceTree = "<group>"; };
-		139D7F081E25DE3700323FB7 /* demangle.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = demangle.cc; path = "glog-0.3.4/src/demangle.cc"; sourceTree = "<group>"; };
+		139D7ED81E25DBDC00323FB7 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = "../third-party/glog-0.3.5/src/config.h"; sourceTree = "<group>"; };
+		139D7ED91E25DBDC00323FB7 /* demangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = demangle.h; path = "../third-party/glog-0.3.5/src/demangle.h"; sourceTree = "<group>"; };
+		139D7EDA1E25DBDC00323FB7 /* logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = logging.cc; path = "../third-party/glog-0.3.5/src/logging.cc"; sourceTree = "<group>"; };
+		139D7EDB1E25DBDC00323FB7 /* raw_logging.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = raw_logging.cc; path = "../third-party/glog-0.3.5/src/raw_logging.cc"; sourceTree = "<group>"; };
+		139D7EDC1E25DBDC00323FB7 /* signalhandler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = signalhandler.cc; path = "../third-party/glog-0.3.5/src/signalhandler.cc"; sourceTree = "<group>"; };
+		139D7EDD1E25DBDC00323FB7 /* stacktrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stacktrace.h; path = "../third-party/glog-0.3.5/src/stacktrace.h"; sourceTree = "<group>"; };
+		139D7EDE1E25DBDC00323FB7 /* symbolize.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = symbolize.cc; path = "../third-party/glog-0.3.5/src/symbolize.cc"; sourceTree = "<group>"; };
+		139D7EDF1E25DBDC00323FB7 /* symbolize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symbolize.h; path = "../third-party/glog-0.3.5/src/symbolize.h"; sourceTree = "<group>"; };
+		139D7EE01E25DBDC00323FB7 /* utilities.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utilities.cc; path = "../third-party/glog-0.3.5/src/utilities.cc"; sourceTree = "<group>"; };
+		139D7EE11E25DBDC00323FB7 /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utilities.h; path = "../third-party/glog-0.3.5/src/utilities.h"; sourceTree = "<group>"; };
+		139D7EE21E25DBDC00323FB7 /* vlog_is_on.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vlog_is_on.cc; path = "../third-party/glog-0.3.5/src/vlog_is_on.cc"; sourceTree = "<group>"; };
+		139D7F081E25DE3700323FB7 /* demangle.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = demangle.cc; path = "../third-party/glog-0.3.5/src/demangle.cc"; sourceTree = "<group>"; };
 		139D7F111E25DEC900323FB7 /* log_severity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_severity.h; sourceTree = "<group>"; };
 		139D7F121E25DEC900323FB7 /* logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logging.h; sourceTree = "<group>"; };
 		139D7F141E25DEC900323FB7 /* raw_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raw_logging.h; sourceTree = "<group>"; };
@@ -2485,7 +2485,7 @@
 				139D7F181E25DEC900323FB7 /* vlog_is_on.h */,
 			);
 			name = glog;
-			path = "glog-0.3.4/src/glog";
+			path = "../third-party/glog-0.3.5/src/glog";
 			sourceTree = "<group>";
 		};
 		139D849B1E2739EC00323FB7 /* folly */ = {
@@ -3989,10 +3989,6 @@
 					};
 					2D2A28121D9B038B00D4039D = {
 						CreatedOnToolsVersion = 8.0;
-					};
-					3D383D211EBD27B6005632C8 = {
-					};
-					3D383D3D1EBD27B9005632C8 = {
 					};
 					83CBBA2D1A601D0E00E9B192 = {
 						CreatedOnToolsVersion = 6.1.1;
