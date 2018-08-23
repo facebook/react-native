@@ -76,7 +76,8 @@ const defaultConfig = {
   },
 
   getProvidesModuleNodeModules(): Array<string> {
-    return ['react-native', ...plugins.platforms];
+    const platformNames = plugins.platforms.map(platform => platform.split(path.sep)[0]);
+    return ['react-native', ...platformNames];
   },
 };
 
