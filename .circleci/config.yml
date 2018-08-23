@@ -593,12 +593,25 @@ jobs:
   publish:
     <<: *android_defaults
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
 
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+
+      - run:
+          name: Authenticate with npm
+          command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
+
+      - run:
+          name: Authenticate git user
+          command: |
+            git config --global user.email "react-native-bot@users.noreply.github.com"
+            git config --global user.name "npm Deployment Script"
+            echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
 
       - run:
           name: Publish React Native Package
