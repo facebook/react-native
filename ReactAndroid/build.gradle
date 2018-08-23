@@ -245,8 +245,8 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16

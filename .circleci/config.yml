@@ -28,11 +28,11 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
+      - v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-api-26-alpha-{{ checksum "scripts/.tests.env" }}
+    key: v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
 
   - &restore-cache-gradle
     keys:
@@ -334,7 +334,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-26-node8-alpha
+    - image: circleci/android:api-27-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
