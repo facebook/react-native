@@ -88,10 +88,10 @@ export type ViewProps = $ReadOnly<{|
   accessibilityLabel?:
     | null
     | React$PropType$Primitive<any>
-    | string
+    | Stringish
     | Array<any>
     | any,
-  accessibilityHint?: string,
+  accessibilityHint?: Stringish,
   accessibilityActions?: Array<string>,
   accessibilityComponentType?: AccessibilityComponentType,
   accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
