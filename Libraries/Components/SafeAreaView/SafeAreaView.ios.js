@@ -8,8 +8,9 @@
  * @format
  */
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
-const ViewPropTypes = require('ViewPropTypes');
+
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -28,7 +29,7 @@ type Props = ViewProps & {
  */
 class SafeAreaView extends React.Component<Props> {
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
   };
 
   render() {

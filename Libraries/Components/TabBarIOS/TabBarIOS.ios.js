@@ -11,11 +11,11 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
-const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -41,8 +41,8 @@ class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
   static propTypes = {
-    ...ViewPropTypes,
-    style: ViewPropTypes.style,
+    ...DeprecatedViewPropTypes,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Color of text on unselected tabs
      */

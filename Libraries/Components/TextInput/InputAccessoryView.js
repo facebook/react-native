@@ -10,9 +10,9 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -83,7 +83,7 @@ type Props = {
    * specified TextInput(s).
    */
   nativeID?: string,
-  style?: ViewPropTypes.style,
+  style?: DeprecatedViewPropTypes.style,
   backgroundColor?: ColorPropType,
 };
 
