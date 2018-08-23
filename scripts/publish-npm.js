@@ -51,6 +51,7 @@
 require('shelljs/global');
 
 const buildBranch = process.env.CIRCLE_BRANCH;
+const otp = process.env.NPM_CONFIG_OTP;
 
 let branchVersion;
 if (buildBranch.indexOf('-stable') !== -1) {
@@ -79,7 +80,7 @@ const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
 
 if (tagsWithVersion.length === 0) {
   echo(
-    "Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit",
+    'Error: Cannot find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit',
   );
   exit(1);
 }
@@ -96,7 +97,7 @@ if (tagsWithVersion[0].indexOf('-rc') === -1) {
 
 // -------- Generating Android Artifacts with JavaDoc
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo("Couldn't generate artifacts");
+  echo('Could not generate artifacts');
   exit(1);
 }
 
@@ -121,15 +122,18 @@ artifacts.forEach(name => {
   }
 });
 
-if (releaseVersion.indexOf('-rc') === -1) {
-  // release, package will be installed by default
-  exec('npm publish');
+// if version contains -rc, tag as prerelease
+const tagFlag = releaseVersion.indexOf('-rc') === -1 ? '' : '--tag next';
+
+// use otp from envvars if available
+const otpFlag = otp ? `--otp ${otp}` : '';
+
+if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+  echo('Failed to publish package to npm');
+  exit(1);
 } else {
-  // RC release, package will be installed only if users specifically do it
-  exec('npm publish --tag next');
+  echo(`Published to npm ${releaseVersion}`);
+  exit(0);
 }
 
-echo(`Published to npm ${releaseVersion}`);
-
-exit(0);
 /*eslint-enable no-undef */
