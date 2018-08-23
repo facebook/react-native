@@ -36,18 +36,20 @@ RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
  * representable json values that require no conversion.
  */
 #if RCT_DEBUG
-#define RCT_JSON_CONVERTER(type)           \
-+ (type *)type:(id)json                    \
-{                                          \
-  if ([json isKindOfClass:[type class]]) { \
-    return json;                           \
-  } else if (json) {                       \
-    RCTLogConvertError(json, @#type);      \
-  }                                        \
-  return nil;                              \
+#define RCT_JSON_CONVERTER(type)                    \
++ (type *)type:(id)json                             \
+{                                                   \
+  if ([json isKindOfClass:[type class]]) {          \
+    return json;                                    \
+  } else if ([json isKindOfClass:[NSNull class]]) { \
+    return nil;                                     \
+  } else if (json) {                                \
+    RCTLogConvertError(json, @#type);               \
+  }                                                 \
+  return nil;                                       \
 }
 #else
-#define RCT_JSON_CONVERTER(type)           \
+#define RCT_JSON_CONVERTER(type)                    \
 + (type *)type:(id)json { return json; }
 #endif
 
