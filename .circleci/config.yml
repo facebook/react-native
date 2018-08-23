@@ -287,33 +287,32 @@ aliases:
     name: tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh test
 
-  - &run-podspec-tests
-    name: Test CocoaPods (Ignoring failures)
+  - &display-broken-tests-warning
+    name: Running broken tests (Ignore any failures past this point)
     command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh ./scripts/process-podspecs.sh
+      echo 'The following steps are known to be failing on master.'
+      echo 'They will no-op for most users.'
+      echo 'PRs that bring these back to green are appreciated.'
+
+  - &run-podspec-tests
+    name: Test CocoaPods (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh ./scripts/process-podspecs.sh
 
   - &run-e2e-tests
-    name: End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
+    name: End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
   - &run-objc-ios-e2e-tests
-    name: iOS End-to-End Test Suite (Ignoring failures)
-    command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+    name: iOS End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite (Ignoring failures)
-    command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+    name: tvOS End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
-    name: Android End-to-End Test Suite (Ignoring failures)
-    command:  |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+    name: Android End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
   - &run-js-e2e-tests
     name: JavaScript End-to-End Test Suite
@@ -426,10 +425,8 @@ jobs:
       - run: *run-objc-ios-tests
       - run: *run-objc-tvos-tests
 
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
       - run: *run-podspec-tests
       - run: *run-objc-ios-e2e-tests
       - run: *run-objc-tvos-e2e-tests
@@ -458,20 +455,15 @@ jobs:
             brew install applesimutils
             node -v
       - run: *yarn
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+
       - run:
-          name: Build iOS app for simulator (Ignoring failures)
-          command: |
-            echo 'The following step is known to be failing in master, and any failures will be ignored.'
-            scripts/circleci/exec_swallow_error.sh yarn run build-ios-e2e
+          name: Build iOS app for simulator
+          command: yarn run build-ios-e2e
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
       - run:
-          name: Run Detox Tests (Ignoring failures)
-          command: |
-            echo 'The following step is known to be failing in master, and any failures will be ignored.'
-            scripts/circleci/exec_swallow_error.sh yarn run test-ios-e2e
+          name: Run Detox Tests (Disabled)
+          command: ./scripts/circleci/exec_author_check.sh yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -536,10 +528,8 @@ jobs:
       - run: *build-android-rntester-app
 
       # Run Android end-to-end tests
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
       - run: *run-android-e2e-tests
 
       # Collect Results
