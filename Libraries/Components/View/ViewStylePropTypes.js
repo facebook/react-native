@@ -10,7 +10,6 @@
 
 'use strict';
 
-const AnimatedNode = require('AnimatedNode');
 const ColorPropType = require('ColorPropType');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
@@ -33,22 +32,22 @@ const ViewStylePropTypes = {
   borderLeftColor: ColorPropType,
   borderStartColor: ColorPropType,
   borderEndColor: ColorPropType,
-  borderRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderTopLeftRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderTopRightRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderTopStartRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderTopEndRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderBottomLeftRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderBottomRightRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderBottomStartRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderBottomEndRadius: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
+  borderRadius: ReactPropTypes.number,
+  borderTopLeftRadius: ReactPropTypes.number,
+  borderTopRightRadius: ReactPropTypes.number,
+  borderTopStartRadius: ReactPropTypes.number,
+  borderTopEndRadius: ReactPropTypes.number,
+  borderBottomLeftRadius: ReactPropTypes.number,
+  borderBottomRightRadius: ReactPropTypes.number,
+  borderBottomStartRadius: ReactPropTypes.number,
+  borderBottomEndRadius: ReactPropTypes.number,
   borderStyle: ReactPropTypes.oneOf(['solid', 'dotted', 'dashed']),
-  borderWidth: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderTopWidth: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderRightWidth: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderBottomWidth: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  borderLeftWidth: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
-  opacity: ReactPropTypes.oneOfType([ReactPropTypes.number, ReactPropTypes.instanceOf(AnimatedNode)]),
+  borderWidth: ReactPropTypes.number,
+  borderTopWidth: ReactPropTypes.number,
+  borderRightWidth: ReactPropTypes.number,
+  borderBottomWidth: ReactPropTypes.number,
+  borderLeftWidth: ReactPropTypes.number,
+  opacity: ReactPropTypes.number,
   /**
    * (Android-only) Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).
