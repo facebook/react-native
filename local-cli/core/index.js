@@ -70,11 +70,11 @@ const defaultConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getPlatforms(): Array<string> {
-    return ['ios', 'android', 'windows', 'web', 'dom'];
+    return ['ios', 'android', 'windows', 'web', 'dom', 'qwidgets'];
   },
 
   getProvidesModuleNodeModules(): Array<string> {
-    return ['react-native', 'react-native-windows', 'react-native-dom'];
+    return ['react-native', 'react-native-windows', 'react-native-dom', 'react-native-qwidgets'];
   },
 };
 
