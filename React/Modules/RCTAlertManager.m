@@ -64,7 +64,10 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                   callback:(RCTResponseSenderBlock)callback)
 {
   NSString *title = [RCTConvert NSString:args[@"title"]];
-  NSString *message = [RCTConvert NSString:args[@"message"]];
+  NSString *message = nil;
+  if (![args[@"message"] isKindOfClass:[NSNull class]]) {
+    message = [RCTConvert NSString:args[@"message"]];
+  }
   RCTAlertViewStyle type = [RCTConvert RCTAlertViewStyle:args[@"type"]];
   NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
   NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];

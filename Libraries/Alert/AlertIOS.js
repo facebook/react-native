@@ -96,10 +96,10 @@ class AlertIOS {
       console.warn(
         'AlertIOS.alert() with a 4th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.',
       );
-      this.prompt(title, message, callbackOrButtons, type);
+      this.prompt(title, message = '', callbackOrButtons, type);
       return;
     }
-    this.prompt(title, message, callbackOrButtons, 'default');
+    this.prompt(title, message = '', callbackOrButtons, 'default');
   }
 
   /**
