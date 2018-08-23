@@ -44,9 +44,9 @@ async function buildBundle(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  config.transformModulePath = args.transformer
+  config.transformerPath = args.transformer
     ? path.resolve(args.transformer)
-    : config.transformModulePath;
+    : config.transformerPath;
 
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
