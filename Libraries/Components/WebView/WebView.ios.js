@@ -11,6 +11,7 @@
 'use strict';
 
 const ActivityIndicator = require('ActivityIndicator');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Linking = require('Linking');
 const PropTypes = require('prop-types');
@@ -21,7 +22,6 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
@@ -114,7 +114,7 @@ class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -257,7 +257,7 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
 
     /**
      * Determines the types of data converted to clickable URLs in the web view's content.
