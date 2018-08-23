@@ -62,14 +62,14 @@ public class NativeAnimatedModuleTest {
     PowerMockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        mUIBlocks.add(invocation.getArgumentAt(0, UIBlock.class));
+        mUIBlocks.add((UIBlock)invocation.getArgument(0));
         return null;
       }
     }).when(mUIManager).addUIBlock(any(UIBlock.class));
     PowerMockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) throws Throwable {
-        mUIBlocks.add(0, invocation.getArgumentAt(0, UIBlock.class));
+        mUIBlocks.add(0, (UIBlock)invocation.getArgument(0));
         return null;
       }
     }).when(mUIManager).prependUIBlock(any(UIBlock.class));
