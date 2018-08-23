@@ -7,9 +7,9 @@
 
 # Add yourself here if you'd like to pass the whitelist.
 # Once N > 1 we should change this into an array check.
-if [ "$CIRCLE_PR_USERNAME" == "hramos" ]; then
+if [ "$CIRCLE_USERNAME" == "hramos" ]; then
   # execute command
   "$@"
 else
-  echo "Skipping " "$@" " as user is not whitelisted"
+  echo "Skipping" "$@" ", user is not whitelisted"
 fi
