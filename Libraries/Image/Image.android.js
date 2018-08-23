@@ -10,15 +10,15 @@
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeModules = require('NativeModules');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextAncestor = require('TextAncestor');
-const ViewPropTypes = require('ViewPropTypes');
 
 const flattenStyle = require('flattenStyle');
 const merge = require('merge');
@@ -38,7 +38,7 @@ function generateRequestId() {
 }
 
 const ImageProps = {
-  ...ViewPropTypes,
+  ...DeprecatedViewPropTypes,
   style: StyleSheetPropType(ImageStylePropTypes),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source

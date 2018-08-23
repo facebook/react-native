@@ -10,12 +10,11 @@
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const IncrementalGroup = require('IncrementalGroup');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const View = require('View');
-
-const ViewPropTypes = require('ViewPropTypes');
 
 import type {Context} from 'Incremental';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -49,7 +48,7 @@ class IncrementalPresenter extends React.Component<Props> {
     disabled: PropTypes.bool,
     onDone: PropTypes.func,
     onLayout: PropTypes.func,
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
   };
   static contextTypes = {
     incrementalGroup: PropTypes.object,

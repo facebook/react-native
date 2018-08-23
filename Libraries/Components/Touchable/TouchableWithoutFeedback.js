@@ -19,7 +19,6 @@ const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
@@ -48,7 +47,8 @@ export type Props = $ReadOnly<{|
     | string
     | Array<any>
     | any,
-  accessibilityHint?: string,
+  accessibilityHint?: ?Stringish,
+  accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStatesFlow,
   accessibilityTraits?: ?AccessibilityTraitsFlow,

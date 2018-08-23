@@ -9,15 +9,15 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ActivityIndicator = require('ActivityIndicator');
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
@@ -44,7 +44,7 @@ const defaultRenderLoading = () => (
  */
 class WebView extends React.Component {
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
     onLoad: PropTypes.func,
@@ -57,7 +57,7 @@ class WebView extends React.Component {
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
 
     html: deprecatedPropType(
       PropTypes.string,
