@@ -456,11 +456,11 @@ jobs:
             node -v
       - run: *yarn
 
+      - run:
+          name: Build iOS app for simulator
+          command: yarn run build-ios-e2e
       # TODO: Fix these failing tests.
       - run: *display-broken-tests-warning
-      - run:
-          name: Build iOS app for simulator (Disabled)
-          command: ./scripts/circleci/exec_author_check.sh yarn run build-ios-e2e
       - run:
           name: Run Detox Tests (Disabled)
           command: ./scripts/circleci/exec_author_check.sh yarn run test-ios-e2e
