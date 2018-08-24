@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.Locale;
@@ -131,14 +132,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityRole == null) {
       return;
     }
-    try {
-      AccessibilityDelegateUtil.AccessibilityRole.valueOf(accessibilityRole.toUpperCase(Locale.US));
-    } catch (NullPointerException e) {
-      throw new IllegalArgumentException("Invalid Role " + accessibilityRole + " Passed In");
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid Role " + accessibilityRole + " Passed In");
-    }
-    view.setTag(R.id.accessibility_role, accessibilityRole);
+
+    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
