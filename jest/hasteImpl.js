@@ -24,7 +24,7 @@ const pluginNameReducers /*: Array<[RegExp, string]> */ = plugins.haste.platform
 
 const ROOTS = [
   path.resolve(__dirname, '..') + path.sep,
-  ...pluginRoots
+  ...pluginRoots,
 ];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
@@ -48,7 +48,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // strip platform suffix
   [/^(.*)\.(android|ios|native)$/, '$1'],
   // strip plugin platform suffixes
-  ...pluginNameReducers
+  ...pluginNameReducers,
 ];
 
 const haste = {

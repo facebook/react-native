@@ -52,8 +52,8 @@ const getEmptyPluginConfig = () => ({
   platforms: [],
   haste: {
     platforms: [],
-    providesModuleNodeModules: []
-  }
+    providesModuleNodeModules: [],
+  },
 });
 
 const findHasteConfigInPackageAndConcat = (pjson, haste) => {
@@ -67,11 +67,10 @@ const findHasteConfigInPackageAndConcat = (pjson, haste) => {
   }
 
   if (pkgHaste.providesModuleNodeModules) {
-    haste.providesModuleNodeModules = 
+    haste.providesModuleNodeModules =
       haste.providesModuleNodeModules.concat(pkgHaste.providesModuleNodeModules);
   }
 };
-
 
 const findPluginInFolder = folder => {
   const pjson = readPackage(folder);
@@ -119,7 +118,7 @@ module.exports = function findPlugins(folders) {
     platforms: uniq(flatten(plugins.map(p => p.platforms))),
     haste: {
       platforms: uniq(flatten(plugins.map(p => p.haste.platforms))),
-      providesModuleNodeModules: uniq(flatten(plugins.map(p => p.haste.providesModuleNodeModules)))
-    }
+      providesModuleNodeModules: uniq(flatten(plugins.map(p => p.haste.providesModuleNodeModules))),
+    },
   };
 };
