@@ -52,11 +52,7 @@ export type AccessibilityRole =
   | 'header'
   | 'summary';
 
-export type AccessibilityState = 'selected' | 'disabled';
-
-export type AccessibilityStates =
-  | AccessibilityState
-  | $ReadOnlyArray<AccessibilityState>;
+export type AccessibilityStates = $ReadOnlyArray<'disabled' | 'selected'>;
 
 module.exports = {
   AccessibilityTraits: [
