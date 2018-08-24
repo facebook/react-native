@@ -325,7 +325,7 @@ const TextInput = createReactClass({
   displayName: 'TextInput',
   statics: {
     State: {
-      currentlyFocusedField: TextInputState.currentlyFocusedField,
+      currentlyFocusedField: TextInputState.currentlyFocusedField.bind(TextInputState),
       focusTextInput: (textFieldID: ?number) => {
         console.warn(
           '`focusTextInput` is deprecated, use the `focus` method of the `TextInput` ref instead.',
