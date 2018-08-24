@@ -304,6 +304,35 @@
       [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];
+
+
+  if (_onTextLayout) {
+    NSMutableArray *lineData = [NSMutableArray new];
+    [layoutManager
+     enumerateLineFragmentsForGlyphRange:glyphRange
+     usingBlock:^(CGRect overallRect, CGRect usedRect, NSTextContainer * _Nonnull usedTextContainer, NSRange lineGlyphRange, BOOL * _Nonnull stop) {
+       NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange actualGlyphRange:nil];
+       NSString *renderedString = [textStorage.string substringWithRange:range];
+       UIFont *font = [[textStorage attributedSubstringFromRange:range] attribute:NSFontAttributeName atIndex:0 effectiveRange:nil];
+       [lineData addObject:
+        @{
+          @"text": renderedString,
+          @"x": @(usedRect.origin.x),
+          @"y": @(usedRect.origin.y),
+          @"width": @(usedRect.size.width),
+          @"height": @(usedRect.size.height),
+          @"descender": @(-font.descender),
+          @"capHeight": @(font.capHeight),
+          @"ascender": @(font.ascender),
+          @"xHeight": @(font.xHeight),
+          }];
+     }];
+    NSDictionary *payload =
+    @{
+      @"lines": lineData,
+      };
+    _onTextLayout(payload);
+  }
 }
 
 - (CGFloat)lastBaselineForSize:(CGSize)size
