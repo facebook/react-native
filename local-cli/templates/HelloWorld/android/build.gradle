@@ -1,6 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext {
+        buildToolsVersion = "27.0.3"
+        minSdkVersion = 16
+        compileSdkVersion = 27
+        targetSdkVersion = 26
+        supportLibVersion = "27.1.1"
+    }
     repositories {
         jcenter()
         google()
@@ -25,13 +32,6 @@ allprojects {
     }
 }
 
-ext {
-    buildToolsVersion = "27.0.3"
-    minSdkVersion = 16
-    compileSdkVersion = 27
-    targetSdkVersion = 26
-    supportLibVersion = "27.1.1"
-}
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.4'
