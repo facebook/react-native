@@ -70,11 +70,14 @@ const defaultConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getPlatforms(): Array<string> {
-    return ['ios', 'android', 'windows', 'web', 'dom'];
+    // if this is less than three items, AndroidTest stops resolving:
+    // Error: Unable to resolve module `ProgressBarAndroid` from `/Users/mhargett/workspace/react-native/ReactAndroid/src/androidTest/js/ProgressBarTestModule.js`: Module `ProgressBarAndroid` does not exist in the Haste module map
+    return ['ios', 'android', 'native', ...Object.keys(pluginPlatforms)];
   },
 
   getProvidesModuleNodeModules(): Array<string> {
-    return ['react-native', 'react-native-windows', 'react-native-dom'];
+    const platformNames = plugins.platforms.map(platform => platform.split(path.sep)[0]);
+    return ['react-native', ...platformNames];
   },
 };
 
