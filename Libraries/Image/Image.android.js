@@ -28,7 +28,7 @@ const resolveAssetSource = require('resolveAssetSource');
 const {ImageLoader} = NativeModules;
 
 const RKImage = requireNativeComponent('RCTImageView');
-const RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage');
+const TextInlineImageNativeComponent = require('TextInlineImageNativeComponent');
 
 import type {ImageProps as ImagePropsType} from 'ImageProps';
 
@@ -250,7 +250,7 @@ let Image = (
     <TextAncestor.Consumer>
       {hasTextAncestor =>
         hasTextAncestor ? (
-          <RCTTextInlineImage {...nativeProps} />
+          <TextInlineImageNativeComponent {...nativeProps} />
         ) : (
           <RKImage {...nativeProps} />
         )
