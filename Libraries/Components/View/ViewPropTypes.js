@@ -10,27 +10,26 @@
 
 'use strict';
 
-const React = require('React');
-
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {TVViewProps} from 'TVViewPropTypes';
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
   AccessibilityRole,
-  AccessibilityState,
+  AccessibilityStates,
 } from 'ViewAccessibility';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
 type DirectEventProps = $ReadOnly<{|
-  onAccessibilityAction?: Function,
-  onAccessibilityTap?: Function,
+  onAccessibilityAction?: ?Function,
+  onAccessibilityTap?: ?Function,
   onLayout?: ?(event: LayoutEvent) => void,
-  onMagicTap?: Function,
+  onMagicTap?: ?Function,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -84,33 +83,37 @@ export type ViewProps = $ReadOnly<{|
   // so we must include TVViewProps
   ...TVViewProps,
 
-  accessible?: boolean,
-  accessibilityLabel?:
+  accessible?: ?boolean,
+  accessibilityLabel?: ?(
     | null
     | React$PropType$Primitive<any>
     | Stringish
-    | Array<any>
-    | any,
-  accessibilityHint?: Stringish,
-  accessibilityActions?: Array<string>,
-  accessibilityComponentType?: AccessibilityComponentType,
-  accessibilityLiveRegion?: 'none' | 'polite' | 'assertive',
-  importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
-  accessibilityIgnoresInvertColors?: boolean,
-  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
-  accessibilityRole?: AccessibilityRole,
-  accessibilityStates?: Array<AccessibilityState>,
-  accessibilityViewIsModal?: boolean,
-  accessibilityElementsHidden?: boolean,
+    | $ReadOnlyArray<any>
+    | any
+  ),
+  accessibilityHint?: ?Stringish,
+  accessibilityActions?: ?$ReadOnlyArray<string>,
+  accessibilityComponentType?: ?AccessibilityComponentType,
+  accessibilityLiveRegion?: ?('none' | 'polite' | 'assertive'),
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityTraits?: ?(
+    | AccessibilityTrait
+    | $ReadOnlyArray<AccessibilityTrait>
+  ),
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStates,
+  accessibilityViewIsModal?: ?boolean,
+  accessibilityElementsHidden?: ?boolean,
   children?: ?React.Node,
   testID?: ?string,
-  nativeID?: string,
+  nativeID?: ?string,
   hitSlop?: ?EdgeInsetsProp,
-  pointerEvents?: null | 'box-none' | 'none' | 'box-only' | 'auto',
+  pointerEvents?: ?('auto' | 'box-none' | 'box-only' | 'none'),
   style?: ?ViewStyleProp,
-  removeClippedSubviews?: boolean,
-  renderToHardwareTextureAndroid?: boolean,
-  shouldRasterizeIOS?: boolean,
-  collapsable?: boolean,
-  needsOffscreenAlphaCompositing?: boolean,
+  removeClippedSubviews?: ?boolean,
+  renderToHardwareTextureAndroid?: ?boolean,
+  shouldRasterizeIOS?: ?boolean,
+  collapsable?: ?boolean,
+  needsOffscreenAlphaCompositing?: ?boolean,
 |}>;
