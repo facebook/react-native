@@ -25,9 +25,9 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
   }
 
   config.cacheStores = [];
-  if (args.transformer) {
-    config.transformer.babelTransformerPath = path.resolve(args.transformer);
-  }
+  config.transformModulePath = args.transformer
+    ? path.resolve(args.transformer)
+    : config.transformModulePath;
 
   const relativePath = path.relative(
     config.projectRoot,
