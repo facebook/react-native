@@ -24,7 +24,6 @@
 @implementation RCTTextViewManager
 {
   NSHashTable<RCTTextShadowView *> *_shadowViews;
-  CGFloat _fontSizeMultiplier;
 }
 
 RCT_EXPORT_MODULE(RCTText)

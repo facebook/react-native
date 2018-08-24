@@ -58,6 +58,7 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    maxContentSizeMultiplier: true,
     disabled: true,
     selectable: true,
     selectionColor: true,
@@ -257,6 +258,7 @@ const RCTVirtualText =
         validAttributes: {
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,
+          maxContentSizeMultiplier: true,
         },
         uiViewClassName: 'RCTVirtualText',
       }));

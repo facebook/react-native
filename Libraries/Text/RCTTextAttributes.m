@@ -14,6 +14,9 @@
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
 
+// Setting the default to 0 indicates that there is no max.
+static CGFloat defaultMaxContentSizeMultiplier = 0.0;
+
 @implementation RCTTextAttributes
 
 - (instancetype)init
@@ -24,6 +27,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
+    _maxContentSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
     _textShadowRadius = NAN;
@@ -49,6 +53,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontFamily = textAttributes->_fontFamily ?: _fontFamily;
   _fontSize = !isnan(textAttributes->_fontSize) ? textAttributes->_fontSize : _fontSize;
   _fontSizeMultiplier = !isnan(textAttributes->_fontSizeMultiplier) ? textAttributes->_fontSizeMultiplier : _fontSizeMultiplier;
+  _maxContentSizeMultiplier = !isnan(textAttributes->_maxContentSizeMultiplier) ? textAttributes->_maxContentSizeMultiplier : _maxContentSizeMultiplier;
   _fontWeight = textAttributes->_fontWeight ?: _fontWeight;
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
@@ -191,7 +196,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (CGFloat)effectiveFontSizeMultiplier
 {
-  return !RCTHasFontHandlerSet() && _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+  bool fontScalingEnabled = !RCTHasFontHandlerSet() && _allowFontScaling;
+
+  if (fontScalingEnabled) {
+    CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+    CGFloat maxContentSizeMultiplier = !isnan(_maxContentSizeMultiplier) ? _maxContentSizeMultiplier : defaultMaxContentSizeMultiplier;
+    return maxContentSizeMultiplier >= 1.0 ? fminf(maxContentSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
+  } else {
+    return 1.0;
+  }
 }
 
 - (UIColor *)effectiveForegroundColor
@@ -260,6 +273,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareObjects(_fontFamily) &&
     RCTTextAttributesCompareFloats(_fontSize) &&
     RCTTextAttributesCompareFloats(_fontSizeMultiplier) &&
+    RCTTextAttributesCompareFloats(_maxContentSizeMultiplier) &&
     RCTTextAttributesCompareStrings(_fontWeight) &&
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&
