@@ -15,13 +15,14 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import PropTypes from 'prop-types';
 import type {ViewProps} from 'ViewPropTypes';
+import type {InsetsChangeEvent} from 'CoreEventTypes';
 
 const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
 
 type Props = $ReadOnly<{|
   ...ViewProps,
   children?: ?React.Node,
-  onInsetsChange?: ?Function,
+  onInsetsChange?: ?(event: InsetsChangeEvent) => Promise<void> | void,
 |}>;
 
 /**

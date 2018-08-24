@@ -26,7 +26,7 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   persist: () => void,
   target: ?number,
   timeStamp: number,
-  type: ?string,
+  type?: ?string,
 |}>;
 
 export type Layout = $ReadOnly<{|
@@ -84,5 +84,18 @@ export type ScrollEvent = SyntheticEvent<
 export type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     value: boolean,
+  |}>,
+>;
+
+export type Insets = $ReadOnly<{|
+  left: number,
+  top: number,
+  right: number,
+  bottom: number,
+|}>;
+
+export type InsetsChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    insets: Insets,
   |}>,
 >;

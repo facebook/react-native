@@ -18,19 +18,19 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const View = require('View');
 
+import type {Insets} from 'CoreEventTypes';
+
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<SafeAreaView>';
 exports.description =
   'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.';
 
-type Insets = {left: number, top: number, right: number, bottom: number} | void;
-
 class SafeAreaViewExample extends React.Component<
   {},
   {|
     modalVisible: boolean,
-    insets: Insets,
+    insets: ?Insets,
   |},
 > {
   state = {
