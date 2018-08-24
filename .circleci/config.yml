@@ -541,45 +541,44 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    <<: *js_defaults
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
+    environment:
+      - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
 
-      - restore-cache: *restore-cache-analysis
+      - restore-cache: *restore-yarn-cache
       - run: *yarn
-      - run:
-          name: Install Additional Dependencies
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              yarn add github@0.2.4
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-            else
-              echo "Skipping dependency installation."
-            fi
-      - save-cache: *save-cache-analysis
 
-      - run:
-          name: Analyze Pull Request
-          command: |
-            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots && DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
-          when: always
       - run:
           name: Analyze Code
           command: |
             # GITHUB_TOKEN=eslint-bot public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER scripts/circleci/analyze_code.sh
+              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" ./scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."
             fi
           when: always
+
+      - restore-cache: *restore-cache-analysis
+      - run:
+          name: Analyze Pull Request
+          command: |
+            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              cd bots
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
+              DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
+            else
+              echo "Skipping pull request analysis."
+            fi
+          when: always
+      - save-cache: *save-cache-analysis
 
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
@@ -686,15 +685,6 @@ workflows:
             - test_objc
             - test_android
 
-  # Only runs on PRs
-  analyze:
-    jobs:
-      # Checkout repo and run Yarn
-      - checkout_code:
-          filters: *filter-ignore-master-stable
-
       # Run code checks
       - analyze_pr:
           filters: *filter-ignore-master-stable
-          requires:
-            - checkout_code
