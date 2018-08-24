@@ -10,25 +10,8 @@
 
 'use strict';
 
-const AndroidConfig = require('ImageViewNativeComponentAndroidConfig');
-const Platform = require('Platform');
-
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 const requireNativeComponent = require('requireNativeComponent');
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
-let ImageViewNativeComponent;
-if (Platform.OS === 'android') {
-  if (__DEV__) {
-    verifyComponentAttributeEquivalence('RCTImageView', AndroidConfig);
-  }
-
-  ImageViewNativeComponent = ReactNativeViewConfigRegistry.register(
-    'RCTImageView',
-    () => AndroidConfig,
-  );
-} else {
-  ImageViewNativeComponent = requireNativeComponent('RCTImageView');
-}
+const ImageViewNativeComponent = requireNativeComponent('RCTImageView');
 
 module.exports = ImageViewNativeComponent;
