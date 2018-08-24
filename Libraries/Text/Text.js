@@ -64,6 +64,12 @@ const viewConfig = {
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
     textBreakStrategy: true,
+    onTextLayout: true,
+  },
+  directEventTypes: {
+    topTextLayout: {
+      registrationName: 'onTextLayout',
+    },
   },
   uiViewClassName: 'RCTText',
 };

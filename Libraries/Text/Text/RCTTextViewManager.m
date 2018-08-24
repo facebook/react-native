@@ -34,6 +34,8 @@ RCT_REMAP_SHADOW_PROPERTY(ellipsizeMode, lineBreakMode, NSLineBreakMode)
 RCT_REMAP_SHADOW_PROPERTY(adjustsFontSizeToFit, adjustsFontSizeToFit, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(minimumFontScale, minimumFontScale, CGFloat)
 
+RCT_EXPORT_SHADOW_PROPERTY(onTextLayout, RCTDirectEventBlock)
+
 RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 
 - (void)setBridge:(RCTBridge *)bridge
