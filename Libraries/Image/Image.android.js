@@ -18,16 +18,15 @@ const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
+const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const TextAncestor = require('TextAncestor');
 
 const flattenStyle = require('flattenStyle');
 const merge = require('merge');
-const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
 
-const RKImage = requireNativeComponent('RCTImageView');
 const TextInlineImageNativeComponent = require('TextInlineImageNativeComponent');
 
 import type {ImageProps as ImagePropsType} from 'ImageProps';
@@ -182,7 +181,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<
  */
 let Image = (
   props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'RKImage'>,
+  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'ImageViewNativeComponent'>,
 ) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
@@ -252,7 +251,7 @@ let Image = (
         hasTextAncestor ? (
           <TextInlineImageNativeComponent {...nativeProps} />
         ) : (
-          <RKImage {...nativeProps} />
+          <ImageViewNativeComponent {...nativeProps} />
         )
       }
     </TextAncestor.Consumer>
