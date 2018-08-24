@@ -47,11 +47,37 @@ const findPlatformsInPackage = pjson => {
   return path.join(pjson.name, pjson.rnpm.platform);
 };
 
+const getEmptyPluginConfig = () => ({
+  commands: [],
+  platforms: [],
+  haste: {
+    platforms: [],
+    providesModuleNodeModules: []
+  }
+});
+
+const findHasteConfigInPackageAndConcat = (pjson, haste) => {
+  if (!pjson.rnpm || !pjson.rnpm.haste) {
+    return;
+  }
+  let pkgHaste = pjson.rnpm.haste;
+
+  if (pkgHaste.platforms) {
+    haste.platforms = haste.platforms.concat(pkgHaste.platforms);
+  }
+
+  if (pkgHaste.providesModuleNodeModules) {
+    haste.providesModuleNodeModules = 
+      haste.providesModuleNodeModules.concat(pkgHaste.providesModuleNodeModules);
+  }
+};
+
+
 const findPluginInFolder = folder => {
   const pjson = readPackage(folder);
 
   if (!pjson) {
-    return {commands: [], platforms: []};
+    return getEmptyPluginConfig();
   }
 
   const deps = union(
@@ -63,6 +89,7 @@ const findPluginInFolder = folder => {
     (acc, pkg) => {
       let commands = acc.commands;
       let platforms = acc.platforms;
+      let haste = acc.haste;
       if (isRNPMPlugin(pkg)) {
         commands = commands.concat(pkg);
       }
@@ -71,11 +98,12 @@ const findPluginInFolder = folder => {
         if (pkgJson) {
           commands = commands.concat(findPluginsInReactNativePackage(pkgJson));
           platforms = platforms.concat(findPlatformsInPackage(pkgJson));
+          findHasteConfigInPackageAndConcat(pkgJson, haste);
         }
       }
-      return {commands: commands, platforms: platforms};
+      return {commands: commands, platforms: platforms, haste: haste};
     },
-    {commands: [], platforms: []},
+    getEmptyPluginConfig(),
   );
 };
 
@@ -89,5 +117,9 @@ module.exports = function findPlugins(folders) {
   return {
     commands: uniq(flatten(plugins.map(p => p.commands))),
     platforms: uniq(flatten(plugins.map(p => p.platforms))),
+    haste: {
+      platforms: uniq(flatten(plugins.map(p => p.haste.platforms))),
+      providesModuleNodeModules: uniq(flatten(plugins.map(p => p.haste.providesModuleNodeModules)))
+    }
   };
 };

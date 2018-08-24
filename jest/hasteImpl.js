@@ -11,11 +11,20 @@
 'use strict';
 
 const path = require('path');
+const findPlugins = require('../local-cli/core/findPlugins');
+
+const plugins = findPlugins([path.resolve(__dirname, '../../../')]);
+
+// Detect out-of-tree platforms and add them to the whitelists
+const pluginRoots /*: Array<string> */ = plugins.haste.providesModuleNodeModules.map(
+  name => path.resolve(__dirname, '../../', name) + path.sep);
+
+const pluginNameReducers /*: Array<[RegExp, string]> */ = plugins.haste.platforms.map(
+  name => [new RegExp(`^(.*)\.(${name})$`), '$1']);
 
 const ROOTS = [
   path.resolve(__dirname, '..') + path.sep,
-  path.resolve(__dirname, '../../react-native-windows') + path.sep,
-  path.resolve(__dirname, '../../react-native-dom') + path.sep,
+  ...pluginRoots
 ];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
@@ -36,8 +45,10 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
-  // strip .android/.ios/.native/.web suffix
-  [/^(.*)\.(android|ios|native|web|windows|dom)$/, '$1'],
+  // strip platform suffix
+  [/^(.*)\.(android|ios|native)$/, '$1'],
+  // strip plugin platform suffixes
+  ...pluginNameReducers
 ];
 
 const haste = {
