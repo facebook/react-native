@@ -107,6 +107,13 @@ aliases:
         - /.*-stable/
         - gh-pages
 
+  - &filter-only-tagged-releases
+    tags:
+      only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
+    branches:
+      only:
+        - /.*-stable/
+
   # Dependency Management
   - &install-ndk
     name: Install Android NDK
@@ -583,48 +590,15 @@ jobs:
 
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
-  publish_npm_package:
+  publish:
     <<: *android_defaults
     steps:
-      - checkout
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-
-      # Configure Android SDK and related dependencies
-      - run: *configure-android-path
-      - run: *install-android-build-dependencies
-
-      - restore-cache: *restore-cache-android-packages
-      - run: *install-android-packages
-
-      # Install Android NDK
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
-
-      # Fetch dependencies using Buck
-      - restore-cache: *restore-cache-downloads-buck
-      - run: *install-buck
-      - run: *download-dependencies-buck
-
-      # Fetch dependencies using Gradle
-      - restore-cache: *restore-cache-downloads-gradle
-      - run: *download-dependencies-gradle
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
+      - attach_workspace:
+          at: ~/react-native
 
       - run:
           name: Authenticate with npm
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
-
-      - run:
-          name: Authenticate git user
-          command: |
-            git config --global user.email "react-native-bot@users.noreply.github.com"
-            git config --global user.name "npm Deployment Script"
-            echo "machine github.com login react-native-bot password $GITHUB_TOKEN" > ~/.netrc
 
       - run:
           name: Publish React Native Package
@@ -673,19 +647,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Only runs on vX.X.X tags if all tests are green
-      - publish_npm_package:
-          filters:
-            branches:
-              only:
-                - /.*-stable/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-          requires:
-            - test_javascript
-            - test_objc
-            - test_android
-
   # Only runs on PRs
   analyze:
     jobs:
@@ -698,3 +659,27 @@ workflows:
           filters: *filter-ignore-master-stable
           requires:
             - checkout_code
+
+  test-and-deploy:
+    jobs:
+      - checkout_code:
+          # required since `publish` has tag filters
+          filters: *filter-only-tagged-releases
+      - test_javascript:
+          requires:
+            - checkout_code
+      - test_objc:
+          requires:
+            - checkout_code
+      - test_android:
+          requires:
+            - checkout_code
+
+      # Only runs on vX.X.X tags if all tests are green
+      - publish:
+          requires:
+            - test_javascript
+            - test_objc
+            - test_android
+          filters: *filter-only-tagged-releases
+
