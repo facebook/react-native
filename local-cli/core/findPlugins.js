@@ -67,8 +67,9 @@ const findHasteConfigInPackageAndConcat = (pjson, haste) => {
   }
 
   if (pkgHaste.providesModuleNodeModules) {
-    haste.providesModuleNodeModules =
-      haste.providesModuleNodeModules.concat(pkgHaste.providesModuleNodeModules);
+    haste.providesModuleNodeModules = haste.providesModuleNodeModules.concat(
+      pkgHaste.providesModuleNodeModules,
+    );
   }
 };
 
@@ -84,26 +85,23 @@ const findPluginInFolder = folder => {
     Object.keys(pjson.devDependencies || {}),
   );
 
-  return deps.reduce(
-    (acc, pkg) => {
-      let commands = acc.commands;
-      let platforms = acc.platforms;
-      let haste = acc.haste;
-      if (isRNPMPlugin(pkg)) {
-        commands = commands.concat(pkg);
+  return deps.reduce((acc, pkg) => {
+    let commands = acc.commands;
+    let platforms = acc.platforms;
+    let haste = acc.haste;
+    if (isRNPMPlugin(pkg)) {
+      commands = commands.concat(pkg);
+    }
+    if (isReactNativePlugin(pkg)) {
+      const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
+      if (pkgJson) {
+        commands = commands.concat(findPluginsInReactNativePackage(pkgJson));
+        platforms = platforms.concat(findPlatformsInPackage(pkgJson));
+        findHasteConfigInPackageAndConcat(pkgJson, haste);
       }
-      if (isReactNativePlugin(pkg)) {
-        const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
-        if (pkgJson) {
-          commands = commands.concat(findPluginsInReactNativePackage(pkgJson));
-          platforms = platforms.concat(findPlatformsInPackage(pkgJson));
-          findHasteConfigInPackageAndConcat(pkgJson, haste);
-        }
-      }
-      return {commands: commands, platforms: platforms, haste: haste};
-    },
-    getEmptyPluginConfig(),
-  );
+    }
+    return {commands: commands, platforms: platforms, haste: haste};
+  }, getEmptyPluginConfig());
 };
 
 /**
@@ -118,7 +116,9 @@ module.exports = function findPlugins(folders) {
     platforms: uniq(flatten(plugins.map(p => p.platforms))),
     haste: {
       platforms: uniq(flatten(plugins.map(p => p.haste.platforms))),
-      providesModuleNodeModules: uniq(flatten(plugins.map(p => p.haste.providesModuleNodeModules))),
+      providesModuleNodeModules: uniq(
+        flatten(plugins.map(p => p.haste.providesModuleNodeModules)),
+      ),
     },
   };
 };

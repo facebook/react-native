@@ -16,16 +16,20 @@ const findPlugins = require('../local-cli/core/findPlugins');
 const plugins = findPlugins([path.resolve(__dirname, '../../../')]);
 
 // Detect out-of-tree platforms and add them to the whitelists
-const pluginRoots /*: Array<string> */ = plugins.haste.providesModuleNodeModules.map(
-  name => path.resolve(__dirname, '../../', name) + path.sep);
+const pluginRoots /*: Array<
+  string,
+> */ = plugins.haste.providesModuleNodeModules.map(
+  name => path.resolve(__dirname, '../../', name) + path.sep,
+);
 
-const pluginNameReducers /*: Array<[RegExp, string]> */ = plugins.haste.platforms.map(
-  name => [new RegExp(`^(.*)\.(${name})$`), '$1']);
+const pluginNameReducers /*: Array<
+  [RegExp, string],
+> */ = plugins.haste.platforms.map(name => [
+  new RegExp(`^(.*)\.(${name})$`),
+  '$1',
+]);
 
-const ROOTS = [
-  path.resolve(__dirname, '..') + path.sep,
-  ...pluginRoots,
-];
+const ROOTS = [path.resolve(__dirname, '..') + path.sep, ...pluginRoots];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*[\\\/]__(mocks|tests)__[\\\/].*/,

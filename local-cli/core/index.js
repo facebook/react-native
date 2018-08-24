@@ -132,11 +132,17 @@ async function getCliConfig(): Promise<RNConfig> {
   );
 
   config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
-  config.resolver.hasteImplModulePath = config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
-  config.resolver.platforms = config.resolver.platforms ?
-    config.resolver.platforms.concat(defaultConfig.getPlatforms()) : defaultConfig.getPlatforms();
-  config.resolver.providesModuleNodeModules = config.resolver.providesModuleNodeModules ?
-    config.resolver.providesModuleNodeModules.concat(defaultConfig.getProvidesModuleNodeModules()) : defaultConfig.getProvidesModuleNodeModules();
+  config.resolver.hasteImplModulePath =
+    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = config.resolver.platforms
+    ? config.resolver.platforms.concat(defaultConfig.getPlatforms())
+    : defaultConfig.getPlatforms();
+  config.resolver.providesModuleNodeModules = config.resolver
+    .providesModuleNodeModules
+    ? config.resolver.providesModuleNodeModules.concat(
+        defaultConfig.getProvidesModuleNodeModules(),
+      )
+    : defaultConfig.getProvidesModuleNodeModules();
 
   return {...defaultRNConfig, ...config};
 }
