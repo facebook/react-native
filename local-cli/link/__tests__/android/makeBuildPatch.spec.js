@@ -26,12 +26,12 @@ describe('makeBuildPatch', () => {
 
   it('should make a correct patch', () => {
     const {patch} = makeBuildPatch(name);
-    expect(patch).toBe(`    compile project(':${name}')\n`);
+    expect(patch).toBe(`    implementation project(':${name}')\n`);
   });
 
   it('should make a correct install check pattern', () => {
     const {installPattern} = makeBuildPatch(name);
-    const match = `/\\s{4}(compile)(\\(|\\s)(project)\\(\\':${name}\\'\\)(\\)|\\s)/`;
+    const match = `/\\s{4}(implementation)(\\(|\\s)(project)\\(\\':${name}\\'\\)(\\)|\\s)/`;
     expect(installPattern.toString()).toBe(match);
   });
 });
@@ -39,12 +39,14 @@ describe('makeBuildPatch', () => {
 describe('makeBuildPatchWithScopedPackage', () => {
   it('should make a correct patch', () => {
     const {patch} = makeBuildPatch(scopedName);
-    expect(patch).toBe(`    compile project(':${normalizedScopedName}')\n`);
+    expect(patch).toBe(
+      `    implementation project(':${normalizedScopedName}')\n`,
+    );
   });
 
   it('should make a correct install check pattern', () => {
     const {installPattern} = makeBuildPatch(scopedName);
-    const match = `/\\s{4}(compile)(\\(|\\s)(project)\\(\\':${normalizedScopedName}\\'\\)(\\)|\\s)/`;
+    const match = `/\\s{4}(implementation)(\\(|\\s)(project)\\(\\':${normalizedScopedName}\\'\\)(\\)|\\s)/`;
     expect(installPattern.toString()).toBe(match);
   });
 });
