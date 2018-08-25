@@ -56,6 +56,7 @@ module.exports = {
         inlineRequires: true,
         minify: false,
         platform: '',
+        babelrc: false,
         projectRoot: '',
         retainLines: true,
         sourceType: 'unambiguous', // b7 required. detects module vs script mode

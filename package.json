@@ -202,12 +202,11 @@
     "yargs": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.55",
-    "@babel/runtime": "7.0.0-beta.55",
-    "@babel/generator": "7.0.0-beta.55",
-    "@babel/preset-env": "7.0.0-beta.55",
+    "@babel/core": "7.0.0-rc.3",
+    "@babel/runtime": "7.0.0-rc.3",
+    "@babel/generator": "7.0.0-rc.3",
     "babel-preset-react-native": "^5.0.2",
-    "@babel/plugin-transform-runtime": "7.0.0-beta.55",
+    "@babel/plugin-transform-runtime": "7.0.0-rc.3",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0-beta.2",
     "detox": "^8.0.0",

@@ -1,10 +1,5 @@
 module.exports = {
-  presets: [
-    [
-      '@babel/env',
-    ],
-    'react-native',
-  ],
+  presets: ['react-native'],
   plugins: [
     '@babel/transform-runtime',
   ],
