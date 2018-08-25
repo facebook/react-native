@@ -236,10 +236,10 @@ export <span class="hljs-keyword">default</span> <span class="hljs-class"><span 
 <p>Even without the RAM format, inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time.</p>
 <h3><a class="anchor" aria-hidden="true" id="enable-the-ram-format"></a><a href="#enable-the-ram-format" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enable the RAM format</h3>
 <p>On iOS using the RAM format will create a single indexed file that react native will load one module at a time. On Android, by default it will create a set of files for each module. You can force Android to create a single file, like iOS, but using multiple files can be more performant and requires less memory.</p>
-<p>Enable the RAM format in Xcode by editing the build phase &quot;Bundle React Native code and images&quot;. Before <code>../node_modules/react-native/packager/react-native-xcode.sh</code> add <code>export BUNDLE_COMMAND=&quot;ram-bundle&quot;</code>:</p>
+<p>Enable the RAM format in Xcode by editing the build phase &quot;Bundle React Native code and images&quot;. Before <code>../node_modules/react-native/scripts/react-native-xcode.sh</code> add <code>export BUNDLE_COMMAND=&quot;ram-bundle&quot;</code>:</p>
 <pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"ram-bundle"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">NODE_BINARY</span>=node
-<span class="hljs-built_in">..</span>/node_modules/react-native/packager/react-native-xcode.sh
+<span class="hljs-built_in">..</span>/node_modules/react-native/scripts/react-native-xcode.sh
 </code></pre>
 <p>On Android enable the RAM format by editing your <code>android/app/build.gradle</code> file. Before the line <code>apply from: &quot;../../node_modules/react-native/react.gradle&quot;</code> add or amend the <code>project.ext.react</code> block:</p>
 <pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
@@ -272,7 +272,7 @@ module.exports =<span class="hljs-built_in"> config;
 <pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"ram-bundle"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_CONFIG</span>=<span class="hljs-string">"packager/config.js"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">NODE_BINARY</span>=node
-<span class="hljs-built_in">..</span>/node_modules/react-native/packager/react-native-xcode.sh
+<span class="hljs-built_in">..</span>/node_modules/react-native/scripts/react-native-xcode.sh
 </code></pre>
 <p>Edit your android/app/build.gradle file to include <code>bundleConfig: &quot;packager/config.js&quot;,</code>.</p>
 <pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
