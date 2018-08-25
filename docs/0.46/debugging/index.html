@@ -169,12 +169,15 @@ YellowBox.ignoreWarnings([<span class="hljs-string">'Warning: ...'</span>]);
     }
 
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">addInterceptor</span><span class="hljs-params">()</span> </span>{
-      OkHttpClient client = OkHttpClientProvider.getOkHttpClient()
-             .newBuilder()
-             .addNetworkInterceptor(<span class="hljs-keyword">new</span> StethoInterceptor())
-             .build();
-
-      OkHttpClientProvider.replaceOkHttpClient(client);
+      <span class="hljs-keyword">final</span> OkHttpClient baseClient = OkHttpClientProvider.createClient();
+      OkHttpClientProvider.setOkHttpClientFactory(<span class="hljs-keyword">new</span> OkHttpClientFactory() {
+        <span class="hljs-meta">@Override</span>
+        <span class="hljs-function"><span class="hljs-keyword">public</span> OkHttpClient <span class="hljs-title">createNewNetworkModuleClient</span><span class="hljs-params">()</span> </span>{
+          <span class="hljs-keyword">return</span> baseClient.newBuilder()
+              .addNetworkInterceptor(<span class="hljs-keyword">new</span> StethoInterceptor())
+              .build();
+        }
+      });
     }
 }
 </code></pre></li>
