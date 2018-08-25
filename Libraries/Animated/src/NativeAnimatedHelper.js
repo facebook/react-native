@@ -153,6 +153,8 @@ const STYLES_WHITELIST = {
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
+  width: true,
+  height: true,
   elevation: true,
   /* ios styles */
   shadowOpacity: true,

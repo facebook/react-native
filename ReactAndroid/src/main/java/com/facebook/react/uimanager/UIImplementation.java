@@ -329,13 +329,35 @@ public class UIImplementation {
 
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
-   * view hierarchy. This method will directly update native views, which means that updates for
-   * layout-related propertied won't be handled properly.
+   * view hierarchy.
    * Make sure you know what you're doing before calling this method :)
    */
-  public void synchronouslyUpdateViewOnUIThread(int tag, ReactStylesDiffMap props) {
+  public void synchronouslyUpdateViewOnUIThread(final int tag, final ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
-    mOperationsQueue.getNativeViewHierarchyManager().updateProperties(tag, props);
+    mReactContext.runOnNativeModulesQueueThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
+            if (cssNode == null) {
+              throw new IllegalViewOperationException("Trying to update non-existent view with tag " + tag);
+            }
+            cssNode.updateProperties(props);
+            handleUpdateView(cssNode, cssNode.getViewClass(), props);
+          }
+        });
+  }
+
+  public void synchronouslyDispatchViewUpdatesOnUIThread() {
+    UiThreadUtil.assertOnUiThread();
+    mReactContext.runOnNativeModulesQueueThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            dispatchViewUpdates(-1);
+          }
+        });
+
   }
 
   protected void handleUpdateView(

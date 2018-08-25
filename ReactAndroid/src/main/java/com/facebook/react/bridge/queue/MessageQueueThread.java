@@ -25,6 +25,13 @@ public interface MessageQueueThread {
   void runOnQueue(Runnable runnable);
 
   /**
+   * Runs the given Runnable on this Thread synchronously. The calling thread will be blocked
+   * until the Runnable is finished executing.
+   */
+  @DoNotStrip
+  void runOnQueueSync(Runnable runnable);
+
+  /**
    * Runs the given Callable on this Thread. It will be submitted to the end of the event queue even
    * if it is being submitted from the same queue Thread.
    */

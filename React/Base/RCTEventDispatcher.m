@@ -45,7 +45,6 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   NSMutableArray<NSNumber *> *_eventQueue;
   BOOL _eventsDispatchScheduled;
   NSHashTable<id<RCTEventDispatcherObserver>> *_observers;
-  NSLock *_observersLock;
 }
 
 @synthesize bridge = _bridge;
@@ -60,7 +59,6 @@ RCT_EXPORT_MODULE()
   _eventQueueLock = [NSLock new];
   _eventsDispatchScheduled = NO;
   _observers = [NSHashTable weakObjectsHashTable];
-  _observersLock = [NSLock new];
 }
 
 - (void)sendAppEventWithName:(NSString *)name body:(id)body
@@ -142,13 +140,9 @@ RCT_EXPORT_MODULE()
 
 - (void)sendEvent:(id<RCTEvent>)event
 {
-  [_observersLock lock];
-
   for (id<RCTEventDispatcherObserver> observer in _observers) {
     [observer eventDispatcherWillDispatchEvent:event];
   }
-
-  [_observersLock unlock];
 
   [_eventQueueLock lock];
 
@@ -183,16 +177,12 @@ RCT_EXPORT_MODULE()
 
 - (void)addDispatchObserver:(id<RCTEventDispatcherObserver>)observer
 {
-  [_observersLock lock];
   [_observers addObject:observer];
-  [_observersLock unlock];
 }
 
 - (void)removeDispatchObserver:(id<RCTEventDispatcherObserver>)observer
 {
-  [_observersLock lock];
   [_observers removeObject:observer];
-  [_observersLock unlock];
 }
 
 - (void)dispatchEvent:(id<RCTEvent>)event

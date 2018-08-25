@@ -9,6 +9,7 @@ package com.facebook.react.bridge.queue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.os.Looper;
 import android.os.Process;
@@ -57,6 +58,60 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
               "... dropping Runnable.");
     }
     mHandler.post(runnable);
+  }
+
+  /**
+   * Runs the given Runnable on this Thread synchronously. The calling thread will be blocked
+   * until the Runnable is finished executing.
+   */
+  @DoNotStrip
+  @Override
+  public void runOnQueueSync(Runnable runnable) {
+    if (mIsFinished) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Tried to enqueue runnable on already finished thread: '" + getName() +
+              "... dropping Runnable.");
+    }
+
+    if (mLooper.getThread() == Thread.currentThread()) {
+      runnable.run();
+      return;
+    }
+
+    final AtomicBoolean finished = new AtomicBoolean(false);
+
+    mHandler.post(runnable);
+    // This will be executed right after the runnable is finished running
+    // and is used to notify the current thread to stop waiting.
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        synchronized (finished) {
+          finished.set(true);
+          finished.notify();
+        }
+      }
+    });
+
+    // Blocks until the runnable is finished.
+    boolean interrupted = false;
+    try {
+      synchronized (finished) {
+        while (!finished.get()) {
+          try {
+            finished.wait();
+          } catch (InterruptedException e) {
+            // Keep waiting before sending the interrupt signal again.
+            interrupted = true;
+          }
+        }
+      }
+    } finally {
+      if (interrupted) {
+        Thread.currentThread().interrupt();
+      }
+    }
   }
 
   @DoNotStrip

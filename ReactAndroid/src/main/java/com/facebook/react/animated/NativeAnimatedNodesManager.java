@@ -570,6 +570,12 @@ import javax.annotation.Nullable;
       }
     }
 
+    // Once all shadow nodes are updated we can do layout synchonously
+    // from the UI thread.
+    if (updatedNodesCount > 0) {
+      mUIImplementation.synchronouslyDispatchViewUpdatesOnUIThread();
+    }
+
     // Verify that we've visited *all* active nodes. Throw otherwise as this would mean there is a
     // cycle in animated node graph. We also take advantage of the fact that all active nodes are
     // visited in the step above so that all the nodes properties `mActiveIncomingNodes` are set to

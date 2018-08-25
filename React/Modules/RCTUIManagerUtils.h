@@ -78,6 +78,13 @@ RCT_EXTERN BOOL RCTIsUIManagerQueue(void);
 RCT_EXTERN BOOL RCTIsPseudoUIManagerQueue(void);
 
 /**
+ * Assert that we are currently on Pseudo UIManager queue.
+ * Please do not use this unless you really know what you're doing.
+ */
+#define RCTAssertPseudoUIManagerQueue() RCTAssert(RCTIsPseudoUIManagerQueue(), \
+@"This function must be called on the pseudo ui manager queue (using RCTUnsafeExecuteOnUIManagerQueueSync)")
+
+/**
  * *Asynchronously* executes the specified block on the UIManager queue.
  * Unlike `dispatch_async()` this will execute the block immediately
  * if we're already on the UIManager queue.

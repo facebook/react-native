@@ -8,6 +8,7 @@
 #import "RCTNativeAnimatedNodesManager.h"
 
 #import <React/RCTConvert.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import "RCTAdditionAnimatedNode.h"
 #import "RCTAnimatedNode.h"
@@ -432,11 +433,15 @@
 
 - (void)updateAnimations
 {
-  [_animationNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, RCTAnimatedNode *node, BOOL *stop) {
-    if (node.needsUpdate) {
-      [node updateNodeIfNecessary];
-    }
-  }];
+  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+    [self->_animationNodes enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, RCTAnimatedNode *node, BOOL *stop) {
+      if (node.needsUpdate) {
+        [node updateNodeIfNecessary];
+      }
+    }];
+
+    [self->_uiManager synchronouslyLayoutOnPseudoUIManagerThread];
+  });
 }
 
 @end

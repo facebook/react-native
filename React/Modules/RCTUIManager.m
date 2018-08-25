@@ -986,14 +986,33 @@ RCT_EXPORT_METHOD(updateView:(nonnull NSNumber *)reactTag
   [self _shadowView:shadowView didReceiveUpdatedProps:[props allKeys]];
 }
 
-- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag
-                                 viewName:(NSString *)viewName
-                                    props:(NSDictionary *)props
+- (void)synchronouslyUpdateViewOnPseudoUIManagerThread:(NSNumber *)reactTag
+                                              viewName:(NSString *)viewName
+                                                 props:(NSDictionary *)props
 {
-  RCTAssertMainQueue();
-  RCTComponentData *componentData = _componentDataByName[viewName];
-  UIView *view = _viewRegistry[reactTag];
+  RCTAssertPseudoUIManagerQueue();
+
+  RCTShadowView *shadowView = self->_shadowViewRegistry[reactTag];
+  RCTComponentData *componentData = self->_componentDataByName[shadowView.viewName ?: viewName];
+  [componentData setProps:props forShadowView:shadowView];
+  [shadowView didSetProps:[props allKeys]];
+
+  UIView *view = self->_viewRegistry[reactTag];
   [componentData setProps:props forView:view];
+  [view didSetProps:[props allKeys]];
+}
+
+- (void)synchronouslyLayoutOnPseudoUIManagerThread
+{
+  RCTAssertPseudoUIManagerQueue();
+
+  for (NSNumber *reactTag in self->_rootViewTags) {
+    RCTRootShadowView *rootView = (RCTRootShadowView *)self->_shadowViewRegistry[reactTag];
+    RCTViewManagerUIBlock block = [self uiBlockWithLayoutUpdateForRootView:rootView];
+    if (block != nil) {
+      block(self, self->_viewRegistry);
+    }
+  }
 }
 
 RCT_EXPORT_METHOD(focus:(nonnull NSNumber *)reactTag)
@@ -1174,7 +1193,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags addObject:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didUpdateReactSubviews];
@@ -1199,7 +1218,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags setObject:props forKey:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didSetProps:[tags objectForKey:tag]];

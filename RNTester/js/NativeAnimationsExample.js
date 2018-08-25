@@ -174,7 +174,7 @@ class InternalSettings extends React.Component<
             this._stallInterval = setInterval(() => {
               const start = Date.now();
               console.warn('burn CPU');
-              while (Date.now() - start < 100) {}
+              while (Date.now() - start < 200) {}
             }, 300);
           }}
           onDisable={() => {
@@ -220,23 +220,11 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    const opacity = this.state.scrollX.interpolate({
-      inputRange: [0, 200],
-      outputRange: [1, 0],
-    });
     return (
-      <View>
-        <Animated.View
-          style={[
-            styles.block,
-            {
-              opacity,
-            },
-          ]}
-        />
+      <View style={{height: 100, marginTop: 16}}>
         <Animated.ScrollView
           horizontal
-          style={{height: 100, marginTop: 16}}
+          style={{flex: 1}}
           scrollEventThrottle={16}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
@@ -248,9 +236,24 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
               backgroundColor: '#eee',
               justifyContent: 'center',
             }}>
-            <Text>Scroll me!</Text>
+            <Text style={{marginLeft: 100}}>Scroll me!</Text>
           </View>
         </Animated.ScrollView>
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 100,
+              transform: [
+                {translateX: Animated.multiply(this.state.scrollX, -1)},
+              ],
+              backgroundColor: 'blue',
+            },
+          ]}
+        />
       </View>
     );
   }
@@ -625,6 +628,32 @@ exports.examples = [
                       translateX: anim,
                     },
                   ],
+                },
+              ]}
+            />
+          )}
+        </Tester>
+      );
+    },
+  },
+  {
+    title: 'Layout props',
+    render: function() {
+      return (
+        <Tester type="spring" config={{bounciness: 0}}>
+          {anim => (
+            <Animated.View
+              style={[
+                styles.block,
+                {
+                  height: anim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 100],
+                  }),
+                  width: anim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [20, 50],
+                  }),
                 },
               ]}
             />

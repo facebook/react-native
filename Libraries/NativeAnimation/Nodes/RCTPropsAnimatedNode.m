@@ -9,6 +9,7 @@
 
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import "RCTAnimationUtils.h"
 #import "RCTStyleAnimatedNode.h"
@@ -55,9 +56,11 @@
   }
 
   if (_propsDictionary.count) {
-    [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                         viewName:_connectedViewName
-                                            props:_propsDictionary];
+    RCTUnsafeExecuteOnUIManagerQueueSync(^{
+      [self->_uiManager synchronouslyUpdateViewOnPseudoUIManagerThread:self->_connectedViewTag
+                                                              viewName:self->_connectedViewName
+                                                                 props:self->_propsDictionary];
+    });
   }
 }
 
@@ -83,12 +86,12 @@
   if (!_connectedViewTag) {
     return;
   }
-  
+
   for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
     RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
       [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-      
+
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
       CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
@@ -97,9 +100,9 @@
   }
 
   if (_propsDictionary.count) {
-    [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                         viewName:_connectedViewName
-                                            props:_propsDictionary];
+    [_uiManager synchronouslyUpdateViewOnPseudoUIManagerThread:_connectedViewTag
+                                                      viewName:_connectedViewName
+                                                         props:_propsDictionary];
   }
 }
 
