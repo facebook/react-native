@@ -60,6 +60,7 @@
 }
 </code></pre>
 <p>You can use this component to navigate back and forth in the web view's history and configure various properties for the web content.</p>
+<p>On iOS, the <code>useWebKit</code> prop can be used to opt into a WKWebView-backed implementation.</p>
 <blockquote>
 <p><strong>Security Warning:</strong> Currently, <code>onMessage</code> and <code>postMessage</code> do not allow specifying an origin. This can lead to cross-site scripting attacks if an unexpected document is loaded within a <code>WebView</code> instance. Please refer to the MDN documentation for <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"><code>Window.postMessage()</code></a> for more details on the security implications of this.</p>
 </blockquote>
@@ -100,6 +101,7 @@
 <li><a href="/react-native/docs/next/webview#scrollenabled"><code>scrollEnabled</code></a></li>
 <li><a href="/react-native/docs/next/webview#geolocationenabled"><code>geolocationEnabled</code></a></li>
 <li><a href="/react-native/docs/next/webview#allowUniversalAccessFromFileURLs"><code>allowUniversalAccessFromFileURLs</code></a></li>
+<li><a href="/react-native/docs/next/webview#usewebkit"><code>useWebKit</code></a></li>
 <li><a href="/react-native/docs/next/webview#url"><code>url</code></a></li>
 <li><a href="/react-native/docs/next/webview#html"><code>html</code></a></li>
 </ul>
@@ -115,13 +117,26 @@
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="props-1"></a><a href="#props-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="source"></a><a href="#source" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>source</code></h3>
-<p>Loads static html or a uri (with optional headers) in the WebView. Note that static html will require setting of <code>originWhitelist</code> for example to <code>[&quot;*&quot;]</code>.</p>
+<p>Loads static HTML or a URI (with optional headers) in the WebView. Note that static HTML will require setting <a href="/react-native/docs/next/webview#originwhitelist"><code>originWhitelist</code></a> to <code>[&quot;*&quot;]</code>.</p>
+<p>The object passed to <code>source</code> can have either of the following shapes:</p>
+<p><strong>Load uri</strong></p>
+<ul>
+<li><code>uri</code> (string) - The URI to load in the <code>WebView</code>. Can be a local or remote file.</li>
+<li><code>method</code> (string) - The HTTP Method to use. Defaults to GET if not specified. On Android, the only supported methods are GET and POST.</li>
+<li><code>headers</code> (object) - Additional HTTP headers to send with the request. On Android, this can only be used with GET requests.</li>
+<li><code>body</code> (string) - The HTTP body to send with the request. This must be a valid UTF-8 string, and will be sent exactly as specified, with no additional encoding (e.g. URL-escaping or base64) applied. On Android, this can only be used with POST requests.</li>
+</ul>
+<p><strong>Static HTML</strong></p>
+<ul>
+<li><code>html</code> (string) - A static HTML page to display in the WebView.</li>
+<li><code>baseUrl</code> (string) - The base URL to be used for any relative links in the HTML.</li>
+</ul>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>object: {uri: string,method: string,headers: object,body: string}, ,object: {html: string,baseUrl: string}, ,number</td><td>No</td></tr>
+<tr><td>object</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -171,12 +186,18 @@
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="nativeconfig"></a><a href="#nativeconfig" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>nativeConfig</code></h3>
 <p>Override the native component used to render the WebView. Enables a custom native WebView which uses the same JavaScript as the original WebView.</p>
+<p>The <code>nativeConfig</code> prop expects an object with the following keys:</p>
+<ul>
+<li><code>component</code> (any)</li>
+<li><code>props</code> (object)</li>
+<li><code>viewManager</code> (object)</li>
+</ul>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
 </thead>
 <tbody>
-<tr><td>object: {component: any,props: object,viewManager: object}</td><td>No</td></tr>
+<tr><td>object</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -282,6 +303,7 @@
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="scalespagetofit"></a><a href="#scalespagetofit" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scalesPageToFit</code></h3>
 <p>Boolean that controls whether the web content is scaled to fit the view and enables the user to change the scale. The default value is <code>true</code>.</p>
+<p>On iOS, when <a href="/react-native/docs/next/webview#usewebkit"><code>useWebKit=true</code></a>, this prop will not work.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -313,17 +335,6 @@
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="style"></a><a href="#style" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>style</code></h3>
-<p>The style to apply to the <code>WebView</code>.</p>
-<table>
-<thead>
-<tr><th>Type</th><th>Required</th></tr>
-</thead>
-<tbody>
-<tr><td>View.style</td><td>No</td></tr>
-</tbody>
-</table>
-<hr>
 <h3><a class="anchor" aria-hidden="true" id="decelerationrate"></a><a href="#decelerationrate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>decelerationRate</code></h3>
 <p>A floating-point number that determines how quickly the scroll view decelerates after the user lifts their finger. You may also use the string shortcuts <code>&quot;normal&quot;</code> and <code>&quot;fast&quot;</code> which match the underlying iOS settings for <code>UIScrollViewDecelerationRateNormal</code> and <code>UIScrollViewDecelerationRateFast</code> respectively:</p>
 <ul>
@@ -335,7 +346,7 @@
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
 </thead>
 <tbody>
-<tr><td>ScrollView.propTypes.decelerationRate</td><td>No</td><td>iOS</td></tr>
+<tr><td>number</td><td>No</td><td>iOS</td></tr>
 </tbody>
 </table>
 <hr>
@@ -365,16 +376,16 @@
 <p>Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.</p>
 <p>Possible values for <code>mixedContentMode</code> are:</p>
 <ul>
-<li><code>'never'</code> (default) - WebView will not allow a secure origin to load content from an insecure origin.</li>
-<li><code>'always'</code> - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.</li>
-<li><code>'compatibility'</code> - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.</li>
+<li><code>never</code> (default) - WebView will not allow a secure origin to load content from an insecure origin.</li>
+<li><code>always</code> - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.</li>
+<li><code>compatibility</code> - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.</li>
 </ul>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
 </thead>
 <tbody>
-<tr><td>enum('never', 'always', 'compatibility')</td><td>No</td><td>Android</td></tr>
+<tr><td>string</td><td>No</td><td>Android</td></tr>
 </tbody>
 </table>
 <hr>
@@ -402,7 +413,10 @@
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="allowsinlinemediaplayback"></a><a href="#allowsinlinemediaplayback" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>allowsInlineMediaPlayback</code></h3>
 <p>Boolean that determines whether HTML5 videos play inline or use the native full-screen controller. The default value is <code>false</code>.</p>
-<p><strong>NOTE</strong> : In order for video to play inline, not only does this property need to be set to <code>true</code>, but the video element in the HTML document must also include the <code>webkit-playsinline</code> attribute.</p>
+<blockquote>
+<p><strong>NOTE</strong></p>
+<p>In order for video to play inline, not only does this property need to be set to <code>true</code>, but the video element in the HTML document must also include the <code>webkit-playsinline</code> attribute.</p>
+</blockquote>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
@@ -439,19 +453,25 @@
 <p>You can provide one type or an array of many types.</p>
 <p>Possible values for <code>dataDetectorTypes</code> are:</p>
 <ul>
-<li><code>'phoneNumber'</code></li>
-<li><code>'link'</code></li>
-<li><code>'address'</code></li>
-<li><code>'calendarEvent'</code></li>
-<li><code>'none'</code></li>
-<li><code>'all'</code></li>
+<li><code>phoneNumber</code></li>
+<li><code>link</code></li>
+<li><code>address</code></li>
+<li><code>calendarEvent</code></li>
+<li><code>none</code></li>
+<li><code>all</code></li>
+</ul>
+<p>With the <a href="/react-native/docs/next/webview#usewebkit">new WebKit</a> implementation, we have three new values:</p>
+<ul>
+<li><code>trackingNumber</code></li>
+<li><code>flightNumber</code></li>
+<li><code>lookupSuggestion</code></li>
 </ul>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
 </thead>
 <tbody>
-<tr><td>enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all'), ,array of enum('phoneNumber', 'link', 'address', 'calendarEvent', 'none', 'all')</td><td>No</td><td>iOS</td></tr>
+<tr><td>string, or array</td><td>No</td><td>iOS</td></tr>
 </tbody>
 </table>
 <hr>
@@ -485,6 +505,17 @@
 </thead>
 <tbody>
 <tr><td>bool</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="usewebkit"></a><a href="#usewebkit" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>useWebKit</code></h3>
+<p>If true, use WKWebView instead of UIWebView.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td><td>iOS</td></tr>
 </tbody>
 </table>
 <hr>

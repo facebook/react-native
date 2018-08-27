@@ -2,11 +2,24 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2018-08-13T06:00:00Z</updated>
+    <updated>2018-08-27T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Introducing new iOS WebViews]]></title>
+        <id>https://facebook.github.io/react-native/blog/2018/08/27/wkwebview.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2018/08/27/wkwebview.html">
+        </link>
+        <updated>2018-08-27T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>For a long time now, Apple has discouraged using UIWebViews in favor of WKWebView. In iOS 12, which will be released in the upcoming months, <a href="https://developer.apple.com/videos/play/wwdc2018/234/?time=104">UIWebViews will be formally deprecated</a>. Rea</p>
+]]></summary>
+        <author>
+            <name>Ramanpreet Nara</name>
+            <uri>https://github.com/rsnara</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Accessibility API Updates]]></title>
         <id>https://facebook.github.io/react-native/blog/2018/08/13/react-native-accessibility-updates.html</id>
