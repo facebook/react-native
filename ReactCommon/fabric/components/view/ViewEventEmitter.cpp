@@ -72,19 +72,19 @@ static folly::dynamic touchEventPayload(const TouchEvent &event) {
 }
 
 void ViewEventEmitter::onTouchStart(const TouchEvent &event) const {
-  dispatchEvent("touchStart", touchEventPayload(event));
+  dispatchEvent("touchStart", touchEventPayload(event), EventPriority::SynchronousUnbatched);
 }
 
 void ViewEventEmitter::onTouchMove(const TouchEvent &event) const {
-  dispatchEvent("touchMove", touchEventPayload(event));
+  dispatchEvent("touchMove", touchEventPayload(event), EventPriority::SynchronousBatched);
 }
 
 void ViewEventEmitter::onTouchEnd(const TouchEvent &event) const {
-  dispatchEvent("touchEnd", touchEventPayload(event));
+  dispatchEvent("touchEnd", touchEventPayload(event), EventPriority::SynchronousBatched);
 }
 
 void ViewEventEmitter::onTouchCancel(const TouchEvent &event) const {
-  dispatchEvent("touchCancel", touchEventPayload(event));
+  dispatchEvent("touchCancel", touchEventPayload(event), EventPriority::SynchronousBatched);
 }
 
 } // namespace react
