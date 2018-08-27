@@ -10,7 +10,6 @@
 'use strict';
 
 const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 const InteractionManager = require('InteractionManager');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');

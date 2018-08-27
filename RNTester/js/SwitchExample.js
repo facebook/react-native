@@ -12,7 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var {Platform, Switch, Text, View} = ReactNative;
+var {Switch, Text, View} = ReactNative;
 
 class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {

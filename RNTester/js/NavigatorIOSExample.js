@@ -273,9 +273,6 @@ const styles = StyleSheet.create({
   group: {
     backgroundColor: 'white',
   },
-  groupSpace: {
-    height: 15,
-  },
   line: {
     backgroundColor: '#bbbbbb',
     height: StyleSheet.hairlineWidth,
@@ -290,9 +287,6 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#bbbbbb',
     marginLeft: 15,
-  },
-  rowNote: {
-    fontSize: 17,
   },
   rowText: {
     fontSize: 17,

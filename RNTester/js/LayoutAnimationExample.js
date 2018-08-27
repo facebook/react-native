@@ -156,9 +156,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
-  buttonText: {
-    fontSize: 16,
-  },
   viewContainer: {
     flex: 1,
     flexDirection: 'row',

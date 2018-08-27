@@ -30,12 +30,14 @@ class WKWebView extends React.Component<RCTWKWebViewProps> {
 
   showRedboxOnPropChanges(nextProps: RCTWKWebViewProps, propName: string) {
     if (this.props[propName] !== nextProps[propName]) {
-      console.error(`Changes to property ${propName} do nothing after the initial render.`);
+      console.error(
+        `Changes to property ${propName} do nothing after the initial render.`,
+      );
     }
   }
 
   render() {
-    return <RCTWKWebView {...this.props}/>;
+    return <RCTWKWebView {...this.props} />;
   }
 }
 

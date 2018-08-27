@@ -3,7 +3,6 @@
 import React, {Component} from 'react';
 import {Image, Platform, StyleSheet} from 'react-native';
 
-import ListItem from '../../components/ListItem';
 import WelcomeText from './WelcomeText';
 
 export default class WelcomeScreen extends Component {

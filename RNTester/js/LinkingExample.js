@@ -60,12 +60,6 @@ class IntentAndroidExample extends React.Component {
 }
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    padding: 10,
-    paddingTop: 30,
-  },
   button: {
     padding: 10,
     backgroundColor: '#3B5998',

@@ -80,16 +80,6 @@ var styles = StyleSheet.create({
   descriptionText: {
     fontSize: 14,
   },
-  disclosure: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    padding: 10,
-  },
-  disclosureIcon: {
-    width: 12,
-    height: 8,
-  },
   children: {
     margin: 10,
   },

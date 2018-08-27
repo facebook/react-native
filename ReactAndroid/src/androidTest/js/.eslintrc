@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "consistent-this": 0, // We use a pattern that triggers this rule in a lot of files
+    "react-native/no-inline-styles": 0,
+    "react-native/no-unused-styles": 0 // Has a lot of false positives because of a pattern we use
+  }
+}

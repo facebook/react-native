@@ -12,7 +12,7 @@
 const ImageProps = require('ImageProps');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 
 const flattenStyle = require('flattenStyle');
@@ -45,7 +45,9 @@ function prefetch(url: string) {
   return ImageViewManager.prefetchImage(url);
 }
 
-async function queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+async function queryCache(
+  urls: Array<string>,
+): Promise<Map<string, 'memory' | 'disk'>> {
   return await ImageViewManager.queryCache(urls);
 }
 

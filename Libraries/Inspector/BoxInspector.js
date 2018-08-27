@@ -87,12 +87,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     top: -3,
   },
-  buffer: {
-    fontSize: 10,
-    color: 'yellow',
-    flex: 1,
-    textAlign: 'center',
-  },
   innerText: {
     color: 'yellow',
     fontSize: 12,

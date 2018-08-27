@@ -13,9 +13,7 @@ const chalk = require('chalk');
 const copyProjectTemplateAndReplace = require('../generator/copyProjectTemplateAndReplace');
 const fs = require('fs');
 const path = require('path');
-const printRunInstructions = require('../generator/printRunInstructions');
 const semver = require('semver');
-const yarn = require('../util/yarn');
 
 /**
  * Migrate application to a new version of React Native.

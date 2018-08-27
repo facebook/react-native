@@ -69,10 +69,6 @@ class SlidingCompleteExample extends React.Component<
 }
 
 var styles = StyleSheet.create({
-  slider: {
-    height: 10,
-    margin: 10,
-  },
   text: {
     fontSize: 14,
     textAlign: 'center',

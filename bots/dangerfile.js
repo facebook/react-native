@@ -9,11 +9,9 @@
 
 'use strict';
 
-const fs = require('fs');
 const includes = require('lodash.includes');
-const minimatch = require('minimatch');
 
-const {danger, fail, markdown, message, warn} = require('danger');
+const {danger, fail, warn} = require('danger');
 
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {

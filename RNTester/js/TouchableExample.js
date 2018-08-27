@@ -399,10 +399,6 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  icon: {
-    width: 24,
-    height: 24,
-  },
   image: {
     width: 50,
     height: 50,

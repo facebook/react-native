@@ -14,15 +14,7 @@ const Platform = require('Platform');
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {
-  Image,
-  Text,
-  TextInput,
-  View,
-  LayoutAnimation,
-  Button,
-  Picker,
-} = ReactNative;
+var {Text, TextInput, View, LayoutAnimation, Button, Picker} = ReactNative;
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,

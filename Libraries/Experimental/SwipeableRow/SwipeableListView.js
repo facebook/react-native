@@ -16,11 +16,6 @@ const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
 
-type DefaultProps = {
-  bounceFirstRowOnMount: boolean,
-  renderQuickActions: Function,
-};
-
 type Props = {
   bounceFirstRowOnMount: boolean,
   dataSource: SwipeableListViewDataSource,

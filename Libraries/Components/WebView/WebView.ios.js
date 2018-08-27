@@ -17,7 +17,6 @@ const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');

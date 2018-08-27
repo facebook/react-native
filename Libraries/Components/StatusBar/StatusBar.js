@@ -55,10 +55,6 @@ export type StatusBarAnimation = $Enum<{
   slide: string,
 }>;
 
-type DefaultProps = {
-  animated: boolean,
-};
-
 /**
  * Merges the prop stack with the default values.
  */
@@ -109,6 +105,16 @@ function createStackEntry(props: any): any {
   };
 }
 
+type Props = {
+  hidden?: boolean,
+  animated?: boolean,
+  backgroundColor?: string,
+  translucent?: boolean,
+  barStyle?: 'default' | 'light-content' | 'dark-content',
+  networkActivityIndicatorVisible?: boolean,
+  showHideTransition?: 'fade' | 'slide',
+};
+
 /**
  * Component to control the app status bar.
  *
@@ -148,15 +154,7 @@ function createStackEntry(props: any): any {
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component<{
-  hidden?: boolean,
-  animated?: boolean,
-  backgroundColor?: string,
-  translucent?: boolean,
-  barStyle?: 'default' | 'light-content' | 'dark-content',
-  networkActivityIndicatorVisible?: boolean,
-  showHideTransition?: 'fade' | 'slide',
-}> {
+class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({

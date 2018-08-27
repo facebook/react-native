@@ -13,11 +13,9 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
-  Alert,
   CameraRoll,
   Image,
   ImageEditor,
-  Linking,
   Platform,
   StyleSheet,
   Text,
