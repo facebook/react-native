@@ -114,21 +114,22 @@ void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTa
   releaseEventTargetFunction_ = releaseEventTargetFunction;
 }
 
-void FabricUIManager::dispatchEventToEmptyTarget(const std::string &type, const folly::dynamic &payload) const {
-  dispatchEventToEmptyTargetFunction_(
-    eventHandler_,
-    const_cast<std::string &>(type),
-    const_cast<folly::dynamic &>(payload)
-  );
-}
-
 void FabricUIManager::dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const {
-  dispatchEventToTargetFunction_(
-    eventHandler_,
-    eventTarget,
-    const_cast<std::string &>(type),
-    const_cast<folly::dynamic &>(payload)
-  );
+  if (eventTarget != EmptyEventTarget) {
+    dispatchEventToTargetFunction_(
+      eventHandler_,
+      eventTarget,
+      const_cast<std::string &>(type),
+      const_cast<folly::dynamic &>(payload)
+    );
+  }
+  else {
+    dispatchEventToEmptyTargetFunction_(
+      eventHandler_,
+      const_cast<std::string &>(type),
+      const_cast<folly::dynamic &>(payload)
+    );
+  }
 }
 
 void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
