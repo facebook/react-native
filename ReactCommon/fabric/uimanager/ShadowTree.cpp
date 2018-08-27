@@ -86,7 +86,7 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
     newRootShadowNode
   );
 
-  if (commit(oldRootShadowNode, newRootShadowNode)) {
+  if (commit(oldRootShadowNode, newRootShadowNode, instructions)) {
     emitLayoutEvents(instructions);
 
     if (delegate_) {
@@ -95,7 +95,11 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
   }
 }
 
-bool ShadowTree::commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode) {
+bool ShadowTree::commit(
+  const SharedRootShadowNode &oldRootShadowNode,
+  const SharedRootShadowNode &newRootShadowNode,
+  const TreeMutationInstructionList &mutationInstructions
+) {
   std::lock_guard<std::mutex> lock(commitMutex_);
 
   if (oldRootShadowNode != rootShadowNode_) {
@@ -103,6 +107,8 @@ bool ShadowTree::commit(const SharedRootShadowNode &oldRootShadowNode, const Sha
   }
 
   rootShadowNode_ = newRootShadowNode;
+
+  toggleEventEmitters(mutationInstructions);
   return true;
 }
 
@@ -149,6 +155,22 @@ void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instruction
 
         viewEventEmitter->onLayout(newLayoutableShadowNode->getLayoutMetrics());
       }
+    }
+  }
+}
+
+void ShadowTree::toggleEventEmitters(const TreeMutationInstructionList &instructions) {
+  std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+
+  for (const auto &instruction : instructions) {
+    if (instruction.getType() == TreeMutationInstruction::Deletion) {
+      instruction.getOldChildNode()->getEventEmitter()->setEnabled(false);
+    }
+  }
+
+  for (const auto &instruction : instructions) {
+    if (instruction.getType() == TreeMutationInstruction::Creation) {
+      instruction.getNewChildNode()->getEventEmitter()->setEnabled(true);
     }
   }
 }

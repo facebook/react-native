@@ -77,7 +77,12 @@ private:
 
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
   void complete(UnsharedRootShadowNode newRootShadowNode);
-  bool commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode);
+  bool commit(
+    const SharedRootShadowNode &oldRootShadowNode,
+    const SharedRootShadowNode &newRootShadowNode,
+    const TreeMutationInstructionList &mutationInstructions
+  );
+  void toggleEventEmitters(const TreeMutationInstructionList &instructions);
   void emitLayoutEvents(const TreeMutationInstructionList &instructions);
 
   const Tag rootTag_;
