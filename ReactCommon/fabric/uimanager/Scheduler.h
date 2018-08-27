@@ -11,7 +11,6 @@
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/uimanager/ContextContainer.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/SchedulerEventDispatcher.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
