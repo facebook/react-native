@@ -11,14 +11,14 @@
 <p>On iOS, <code>AsyncStorage</code> is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, <code>AsyncStorage</code> will use either <a href="http://rocksdb.org/">RocksDB</a> or SQLite based on what is available.</p>
 <p>The <code>AsyncStorage</code> JavaScript code is a simple facade that provides a clear JavaScript API, real <code>Error</code> objects, and simple non-multi functions. Each method in the API returns a <code>Promise</code> object.</p>
 <p>Persisting data:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">try</span> {
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">await</span> AsyncStorage.setItem(<span class="hljs-string">'@MySuperStore:key'</span>, <span class="hljs-string">'I like to save it.'</span>);
 } <span class="hljs-keyword">catch</span> (error) {
   <span class="hljs-comment">// Error saving data</span>
 }
 </code></pre>
 <p>Fetching data:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">try</span> {
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">try</span> {
   <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> AsyncStorage.getItem(<span class="hljs-string">'@MySuperStore:key'</span>);
   <span class="hljs-keyword">if</span> (value !== <span class="hljs-literal">null</span>){
     <span class="hljs-comment">// We have data!!</span>
@@ -29,7 +29,7 @@
 }
 </code></pre>
 <p>Merging data:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">let</span> UID123_object = {
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> UID123_object = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
   <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
   <span class="hljs-attr">traits</span>: {<span class="hljs-attr">hair</span>: <span class="hljs-string">'brown'</span>, <span class="hljs-attr">eyes</span>: <span class="hljs-string">'brown'</span>},
@@ -53,7 +53,7 @@ AsyncStorage.setItem(<span class="hljs-string">'UID123'</span>, <span class="hlj
 <span class="hljs-comment">//    {'shoe_size':10,'hair':'brown','eyes':'blue'}}</span>
 </code></pre>
 <p>Multi merge example:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-comment">// first user, initial values</span>
+<pre><code class="hljs css language-javascript"><span class="hljs-comment">// first user, initial values</span>
 <span class="hljs-keyword">let</span> UID234_object = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
   <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
@@ -105,7 +105,7 @@ AsyncStorage.multiSet(multi_set_pairs, (err) =&gt; {
 <span class="hljs-comment">// =&gt; UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}</span>
 </code></pre>
 <p>Fetching multiple items:</p>
-<pre><code class="hljs css languages- javascript">AsyncStorage.getAllKeys(<span class="hljs-function">(<span class="hljs-params">err, keys</span>) =&gt;</span> {
+<pre><code class="hljs css language-javascript">AsyncStorage.getAllKeys(<span class="hljs-function">(<span class="hljs-params">err, keys</span>) =&gt;</span> {
   AsyncStorage.multiGet(keys, (err, stores) =&gt; {
     stores.map(<span class="hljs-function">(<span class="hljs-params">result, i, store</span>) =&gt;</span> {
       <span class="hljs-comment">// get at each store's key/value so you can work with it</span>
@@ -116,7 +116,7 @@ AsyncStorage.multiSet(multi_set_pairs, (err) =&gt; {
 });
 </code></pre>
 <p>Removing multiple items:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
 AsyncStorage.multiRemove(keys, (err) =&gt; {
   <span class="hljs-comment">// keys k1 &amp; k2 removed, if they existed</span>
   <span class="hljs-comment">// do most stuff after removal (if you want)</span>
@@ -144,7 +144,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods-1"></a><a href="#methods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="getitem"></a><a href="#getitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItem()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.getItem(key, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.getItem(key, [callback]);
 </code></pre>
 <p>Fetches an item for a <code>key</code> and invokes a callback upon completion. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -159,7 +159,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="setitem"></a><a href="#setitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setItem()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.setItem(key, value, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.setItem(key, value, [callback]);
 </code></pre>
 <p>Sets the value for a <code>key</code> and invokes a callback upon completion.</p>
 <p>Returns a <code>Promise</code> object.</p>
@@ -176,7 +176,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="removeitem"></a><a href="#removeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeItem()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.removeItem(key, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.removeItem(key, [callback]);
 </code></pre>
 <p>Removes an item for a <code>key</code> and invokes a callback upon completion. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -191,7 +191,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="mergeitem"></a><a href="#mergeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>mergeItem()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.mergeItem(key, value, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.mergeItem(key, value, [callback]);
 </code></pre>
 <p>Merges an existing <code>key</code> value with an input value, assuming both values are stringified JSON. Returns a <code>Promise</code> object.</p>
 <blockquote>
@@ -210,7 +210,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="clear"></a><a href="#clear" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>clear()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.clear([callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.clear([callback]);
 </code></pre>
 <p>Erases <em>all</em> <code>AsyncStorage</code> for all clients, libraries, etc. You probably don't want to call this; use <code>removeItem</code> or <code>multiRemove</code> to clear only your app's keys. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -224,7 +224,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getallkeys"></a><a href="#getallkeys" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAllKeys()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.getAllKeys([callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.getAllKeys([callback]);
 </code></pre>
 <p>Gets <em>all</em> keys known to your app; for all callers, libraries, etc. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -238,12 +238,12 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="flushgetrequests"></a><a href="#flushgetrequests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flushGetRequests()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.flushGetRequests();
+<pre><code class="hljs css language-javascript">AsyncStorage.flushGetRequests();
 </code></pre>
 <p>Flushes any pending requests using a single batch call to get the data.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiget"></a><a href="#multiget" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiGet()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.multiGet(keys, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.multiGet(keys, [callback]);
 </code></pre>
 <p>This allows you to batch the fetching of items given an array of <code>key</code> inputs. Your callback will be invoked with an array of corresponding key-value pairs found:</p>
 <pre><code class="hljs">multiGet([<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>], cb) -&gt; cb([[<span class="hljs-string">'k1'</span>, <span class="hljs-string">'val1'</span>], [<span class="hljs-string">'k2'</span>, <span class="hljs-string">'val2'</span>]])
@@ -261,7 +261,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiset"></a><a href="#multiset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiSet()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.multiSet(keyValuePairs, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.multiSet(keyValuePairs, [callback]);
 </code></pre>
 <p>Use this as a batch operation for storing multiple key-value pairs. When the operation completes you'll get a single callback with any errors:</p>
 <pre><code class="hljs">multiSet([[<span class="hljs-string">'k1'</span>, <span class="hljs-string">'val1'</span>], [<span class="hljs-string">'k2'</span>, <span class="hljs-string">'val2'</span>]], cb);
@@ -279,7 +279,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiremove"></a><a href="#multiremove" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiRemove()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.multiRemove(keys, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.multiRemove(keys, [callback]);
 </code></pre>
 <p>Call this to batch the deletion of all keys in the <code>keys</code> array. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -294,7 +294,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multimerge"></a><a href="#multimerge" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiMerge()</code></h3>
-<pre><code class="hljs css languages- javascript">AsyncStorage.multiMerge(keyValuePairs, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage.multiMerge(keyValuePairs, [callback]);
 </code></pre>
 <p>Batch operation to merge in existing and new values for a given set of keys. This assumes that the values are stringified JSON. Returns a <code>Promise</code> object.</p>
 <p><strong>NOTE</strong>: This is not supported by all native implementations.</p>

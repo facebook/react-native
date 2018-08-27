@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -47,7 +51,7 @@
 <p>JavaScript thread performance suffers greatly when running in dev mode. This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in <a href="/react-native/docs/0.48/running-on-device#building-your-app-for-production">release builds</a>.</p>
 <h3><a class="anchor" aria-hidden="true" id="using-consolelog-statements"></a><a href="#using-consolelog-statements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using <code>console.log</code> statements</h3>
 <p>When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as <a href="https://github.com/evgenyrodionov/redux-logger">redux-logger</a>, so make sure to remove them before bundling. You can also use this <a href="https://babeljs.io/docs/plugins/transform-remove-console/">babel plugin</a> that removes all the <code>console.*</code> calls. You need to install it first with <code>npm i babel-plugin-transform-remove-console --save-dev</code>, and then edit the <code>.babelrc</code> file under your project directory like this:</p>
-<pre><code class="hljs css languages- javascripton">{
+<pre><code class="hljs css language-javascripton">{
   <span class="hljs-attr">"env"</span>: {
     <span class="hljs-attr">"production"</span>: {
       <span class="hljs-attr">"plugins"</span>: [<span class="hljs-string">"transform-remove-console"</span>]
@@ -77,7 +81,7 @@
 <p>On iOS, each time you adjust the width or height of an Image component it is re-cropped and scaled from the original image. This can be very expensive, especially for large images. Instead, use the <code>transform: [{scale}]</code> style property to animate the size. An example of when you might do this is when you tap an image and zoom it in to full screen.</p>
 <h3><a class="anchor" aria-hidden="true" id="my-touchablex-view-isn-t-very-responsive"></a><a href="#my-touchablex-view-isn-t-very-responsive" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>My TouchableX view isn't very responsive</h3>
 <p>Sometimes, if we do an action in the same frame that we are adjusting the opacity or highlight of a component that is responding to a touch, we won't see that effect until after the <code>onPress</code> function has returned. If <code>onPress</code> does a <code>setState</code> that results in a lot of work and a few frames dropped, this may occur. A solution to this is to wrap any action inside of your <code>onPress</code> handler in <code>requestAnimationFrame</code>:</p>
-<pre><code class="hljs css languages- javascript">handleOnPress() {
+<pre><code class="hljs css language-javascript">handleOnPress() {
   <span class="hljs-comment">// Always use TimerMixin with requestAnimationFrame, setTimeout and</span>
   <span class="hljs-comment">// setInterval</span>
   <span class="hljs-keyword">this</span>.requestAnimationFrame(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {

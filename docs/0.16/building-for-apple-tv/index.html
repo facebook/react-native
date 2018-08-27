@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -109,7 +113,7 @@
 <li><p><em>react-native init</em>: New React Native projects created with <code>react-native init</code> will have Apple TV target automatically created in their XCode projects.</p></li>
 <li><p><em>JavaScript layer</em>: Support for Apple TV has been added to <code>Platform.ios.js</code>. You can check whether code is running on AppleTV by doing</p></li>
 </ul>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">var</span> Platform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'Platform'</span>);
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">var</span> Platform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'Platform'</span>);
 <span class="hljs-keyword">var</span> running_on_tv = Platform.isTV;
 
 <span class="hljs-comment">// If you want to be more specific and only detect devices running tvOS</span>
@@ -121,7 +125,7 @@
 <ul>
 <li><em>Native layer</em>: To run React Native project on Android TV make sure to make the following changes to <code>AndroidManifest.xml</code></li>
 </ul>
-<pre><code class="hljs css languages- xml">  <span class="hljs-comment">&lt;!-- Add custom banner image to display as Android TV launcher icon --&gt;</span>
+<pre><code class="hljs css language-xml">  <span class="hljs-comment">&lt;!-- Add custom banner image to display as Android TV launcher icon --&gt;</span>
  <span class="hljs-tag">&lt;<span class="hljs-name">application</span>
   <span class="hljs-attr">...</span>
   <span class="hljs-attr">android:banner</span>=<span class="hljs-string">"@drawable/tv_banner"</span>
@@ -138,7 +142,7 @@
 <ul>
 <li><em>JavaScript layer</em>: Support for Android TV has been added to <code>Platform.android.js</code>. You can check whether code is running on Android TV by doing</li>
 </ul>
-<pre><code class="hljs css languages- js"><span class="hljs-keyword">var</span> Platform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'Platform'</span>);
+<pre><code class="hljs css language-js"><span class="hljs-keyword">var</span> Platform = <span class="hljs-built_in">require</span>(<span class="hljs-string">'Platform'</span>);
 <span class="hljs-keyword">var</span> running_on_android_tv = Platform.isTV;
 </code></pre>
 <p><block class="ios android" /></p>
@@ -172,7 +176,7 @@
 <li><em>TV remote/keyboard input</em>: A new native class, <code>ReactAndroidTVRootViewHelper</code>, sets up key events handlers for TV remote events. When TV remote events occur, this class fires a JS event. This event will be picked up by instances of the <code>TVEventHandler</code> JavaScript object. Application code that needs to implement custom handling of TV remote events can create an instance of <code>TVEventHandler</code> and listen for these events, as in the following code:</li>
 </ul>
 <p><block class="ios android"></p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">var</span> TVEventHandler = <span class="hljs-built_in">require</span>(<span class="hljs-string">'TVEventHandler'</span>);
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">var</span> TVEventHandler = <span class="hljs-built_in">require</span>(<span class="hljs-string">'TVEventHandler'</span>);
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Game2048</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   _tvEventHandler: any;

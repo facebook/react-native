@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -42,7 +46,7 @@
 <li><p>Let's start by removing <code>READ_PHONE_STATE</code>, <code>WRITE_EXTERNAL_STORAGE</code>, and <code>READ_EXTERNAL_STORAGE</code> from both production and debug APKs, as it is not required in either. These storage permissions are still not needed if <code>AsyncStorage</code> module is in use, so it is safe to remove from both production and debug.</p></li>
 <li><p>Open your <code>android/app/src/main/AndroidManifest.xml</code> file.</p></li>
 <li><p>Even though these three permissions are not listed in the manifest they get added in. We add the three permissions with <code>tools:node=&quot;remove&quot;</code> attribute, to make sure it gets removed during build. Note that the package identifier will be different, for below it is &quot;com.myapp&quot; because the project was created with <code>react-native init myapp</code>.</p>
-<pre><code class="hljs css languages- diff">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<pre><code class="hljs css language-diff">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.myappid"
 <span class="hljs-addition">+   xmlns:tools="http://schemas.android.com/tools"</span>
     &gt;
@@ -78,7 +82,7 @@
 <li><p>Go to the <code>android/app/src/</code> directory. Create a new directory inside this directory, called <code>release</code>. (path: <code>android/app/src/release/</code>)</p></li>
 <li><p>Inside this <code>android/app/src/release/</code> directory create a <code>AndroidManifest.xml</code> file. (path: <code>android/app/src/release/AndroidManifest.xml</code>)</p></li>
 <li><p>Inside this file paste the following contents. Note, make sure to update your package identifier from &quot;com.myapp&quot; to what yours is.</p>
-<pre><code class="hljs css languages- diff">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<pre><code class="hljs css language-diff">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.myapp"
     xmlns:tools="http://schemas.android.com/tools"&gt;
 

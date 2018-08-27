@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -51,26 +55,26 @@
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods-1"></a><a href="#methods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="getitem"></a><a href="#getitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItem()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> getItem(key, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> getItem(key, callback?)
 </code></pre>
 <p>Fetches <code>key</code> and passes the result to <code>callback</code>, along with an <code>Error</code> if there is any. Returns a <code>Promise</code> object.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="setitem"></a><a href="#setitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setItem()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> setItem(key, value, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> setItem(key, value, callback?)
 </code></pre>
 <p>Sets <code>value</code> for <code>key</code> and calls <code>callback</code> on completion, along with an <code>Error</code> if there is any. Returns a <code>Promise</code> object.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="removeitem"></a><a href="#removeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeItem()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> removeItem(key, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> removeItem(key, callback?)
 </code></pre>
 <p>Returns a <code>Promise</code> object.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="mergeitem"></a><a href="#mergeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>mergeItem()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> mergeItem(key, value, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> mergeItem(key, value, callback?)
 </code></pre>
 <p>Merges existing value with input value, assuming they are stringified json. Returns a <code>Promise</code> object. Not supported by all native implementations.</p>
 <p>Example:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">let</span> UID123_object = {
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> UID123_object = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
   <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
   <span class="hljs-attr">traits</span>: {<span class="hljs-attr">hair</span>: <span class="hljs-string">'brown'</span>, <span class="hljs-attr">eyes</span>: <span class="hljs-string">'brown'</span>},
@@ -93,28 +97,28 @@ AsyncStorage.setItem(<span class="hljs-string">'UID123'</span>, <span class="hlj
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="clear"></a><a href="#clear" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>clear()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> clear(callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> clear(callback?)
 </code></pre>
 <p>Erases <em>all</em> AsyncStorage for all clients, libraries, etc. You probably don't want to call this - use removeItem or multiRemove to clear only your own keys instead. Returns a <code>Promise</code> object.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getallkeys"></a><a href="#getallkeys" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAllKeys()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> getAllKeys(callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> getAllKeys(callback?)
 </code></pre>
 <p>Gets <em>all</em> keys known to the app, for all callers, libraries, etc. Returns a <code>Promise</code> object.</p>
 <p>Example: see multiGet for example</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="flushgetrequests"></a><a href="#flushgetrequests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flushGetRequests()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> flushGetRequests()
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> flushGetRequests()
 </code></pre>
 <p>Flushes any pending requests using a single multiget</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiget"></a><a href="#multiget" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiGet()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> multiGet(keys, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> multiGet(keys, callback?)
 </code></pre>
 <p>multiGet invokes callback with an array of key-value pair arrays that matches the input format of multiSet. Returns a <code>Promise</code> object.</p>
 <p>multiGet(['k1', 'k2'], cb) -&gt; cb([['k1', 'val1'], ['k2', 'val2']])</p>
 <p>Example:</p>
-<pre><code class="hljs css languages- javascript">AsyncStorage.getAllKeys(<span class="hljs-function">(<span class="hljs-params">err, keys</span>) =&gt;</span> {
+<pre><code class="hljs css language-javascript">AsyncStorage.getAllKeys(<span class="hljs-function">(<span class="hljs-params">err, keys</span>) =&gt;</span> {
   AsyncStorage.multiGet(keys, (err, stores) =&gt; {
     stores.map(<span class="hljs-function">(<span class="hljs-params">result, i, store</span>) =&gt;</span> {
       <span class="hljs-comment">// get at each store's key/value so you can work with it</span>
@@ -126,18 +130,18 @@ AsyncStorage.setItem(<span class="hljs-string">'UID123'</span>, <span class="hlj
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiset"></a><a href="#multiset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiSet()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> multiSet(keyValuePairs, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> multiSet(keyValuePairs, callback?)
 </code></pre>
 <p>multiSet and multiMerge take arrays of key-value array pairs that match the output of multiGet, e.g. Returns a <code>Promise</code> object.</p>
 <p>multiSet([['k1', 'val1'], ['k2', 'val2']], cb);</p>
 <p>Example: see multiMerge for an example</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiremove"></a><a href="#multiremove" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiRemove()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> multiRemove(keys, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> multiRemove(keys, callback?)
 </code></pre>
 <p>Delete all the keys in the <code>keys</code> array. Returns a <code>Promise</code> object.</p>
 <p>Example:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
 AsyncStorage.multiRemove(keys, (err) =&gt; {
   <span class="hljs-comment">// keys k1 &amp; k2 removed, if they existed</span>
   <span class="hljs-comment">// do most stuff after removal (if you want)</span>
@@ -145,12 +149,12 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multimerge"></a><a href="#multimerge" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiMerge()</code></h3>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">static</span> multiMerge(keyValuePairs, callback?)
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">static</span> multiMerge(keyValuePairs, callback?)
 </code></pre>
 <p>Merges existing values with input values, assuming they are stringified json. Returns a <code>Promise</code> object.</p>
 <p>Not supported by all native implementations.</p>
 <p>Example:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-comment">// first user, initial values</span>
+<pre><code class="hljs css language-javascript"><span class="hljs-comment">// first user, initial values</span>
 <span class="hljs-keyword">let</span> UID234_object = {
   <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
   <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,

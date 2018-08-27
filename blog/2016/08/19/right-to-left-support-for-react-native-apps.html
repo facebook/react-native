@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -29,7 +33,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps">Right-to-Left Layout Support For React Native Apps</a></h1><p class="post-meta">August 19, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/MengjueW" target="_blank" rel="noreferrer noopener">Mengjue (Mandy) Wang</a>Software Engineer Intern at Facebook</p><div class="authorPhoto authorPhotoBig"><a href="https://github.com/MengjueW" target="_blank" rel="noreferrer noopener"><img src="https://avatars0.githubusercontent.com/u/13987140?v=3&amp;s=128"/></a></div></div></header><div><span><p>After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.</p>
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps">Right-to-Left Layout Support For React Native Apps</a></h1><p class="post-meta">August 19, 2016</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/MengjueW" target="_blank" rel="noreferrer noopener">Mengjue (Mandy) Wang</a>Software Engineer Intern at Facebook</p><div class="authorPhoto authorPhotoBig"><a href="https://github.com/MengjueW" target="_blank" rel="noreferrer noopener"><img src="https://avatars0.githubusercontent.com/u/13987140?v=3&amp;s=128" alt="Mengjue (Mandy) Wang"/></a></div></div></header><div><span><p>After launching an app to the app stores, internationalization is the next step to further your audience reach. Over 20 countries and numerous people around the world use Right-to-Left (RTL) languages. Thus, making your app support RTL for them is necessary.</p>
 <p>We're glad to announce that React Native has been improved to support RTL layouts. This is now available in the <a href="https://github.com/facebook/react-native">react-native</a> master branch today, and will be available in the next RC: <a href="https://github.com/facebook/react-native/releases"><code>v0.33.0-rc</code></a>.</p>
 <p>This involved changing <a href="https://github.com/facebook/css-layout">css-layout</a>, the core layout engine used by RN, and RN core implementation, as well as specific OSS JS components to support RTL.</p>
 <p>To battle test the RTL support in production, the latest version of the <strong>Facebook Ads Manager</strong> app (the first cross-platform 100% RN app) is now available in Arabic and Hebrew with RTL layouts for both <a href="https://itunes.apple.com/app/id964397083">iOS</a> and <a href="https://play.google.com/store/apps/details?id=com.facebook.adsmanager">Android</a>. Here is how it looks like in those RTL languages:</p>
@@ -60,11 +64,11 @@
 </ul></li>
 <li><p>Allow RTL layout for your app by calling the <code>allowRTL()</code> function at the beginning of native code. We provided this utility to only apply to an RTL layout when your app is ready. Here is an example:</p>
 <p>iOS:</p>
-<pre><code class="hljs css languages- objc"><span class="hljs-comment">// in AppDelegate.m</span>
+<pre><code class="hljs css language-objc"><span class="hljs-comment">// in AppDelegate.m</span>
      [[RCTI18nUtil sharedInstance] allowRTL:<span class="hljs-literal">YES</span>];
 </code></pre>
 <p>Android:</p>
-<pre><code class="hljs css languages- java"><span class="hljs-comment">// in MainActivity.java</span>
+<pre><code class="hljs css language-java"><span class="hljs-comment">// in MainActivity.java</span>
      I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
      sharedI18nUtilInstance.allowRTL(context, <span class="hljs-keyword">true</span>);
 </code></pre></li>
@@ -95,13 +99,13 @@
 <p>Here are two ways to flip the icon according to the direction:</p>
 <ul>
 <li><p>Adding a <code>transform</code> style to the image component:</p>
-<pre><code class="hljs css languages- javascript">&lt;Image
+<pre><code class="hljs css language-javascript">&lt;Image
   source={...}
   style={{<span class="hljs-attr">transform</span>: [{<span class="hljs-attr">scaleX</span>: I18nManager.isRTL ? <span class="hljs-number">-1</span> : <span class="hljs-number">1</span>}]}}
 /&gt;
 </code></pre></li>
 <li><p>Or, changing the image source according to the direction:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">let</span> imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./back.png'</span>);
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./back.png'</span>);
 <span class="hljs-keyword">if</span> (I18nManager.isRTL) {
   imageSource = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./forward.png'</span>);
 }
@@ -116,7 +120,7 @@
   <img src="/react-native/blog/assets/rtl-demo-swipe-rtl.png" width="280" style="margin:10px">
 </p>
 <h5><a class="anchor" aria-hidden="true" id="gestures-example"></a><a href="#gestures-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Gestures Example</h5>
-<pre><code class="hljs css languages- js"><span class="hljs-comment">// SwipeableRow.js</span>
+<pre><code class="hljs css language-js"><span class="hljs-comment">// SwipeableRow.js</span>
 _isSwipingExcessivelyRightFromClosedPosition(gestureState: <span class="hljs-built_in">Object</span>): boolean {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-keyword">const</span> gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
@@ -127,7 +131,7 @@ _isSwipingExcessivelyRightFromClosedPosition(gestureState: <span class="hljs-bui
 },
 </code></pre>
 <h5><a class="anchor" aria-hidden="true" id="animation-example"></a><a href="#animation-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Animation Example</h5>
-<pre><code class="hljs css languages- js"><span class="hljs-comment">// SwipeableRow.js</span>
+<pre><code class="hljs css language-js"><span class="hljs-comment">// SwipeableRow.js</span>
 _animateBounceBack(duration: number): <span class="hljs-keyword">void</span> {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-keyword">const</span> swipeBounceBackDistance = IS_RTL ?
@@ -145,7 +149,7 @@ _animateBounceBack(duration: number): <span class="hljs-keyword">void</span> {
 <p align="center">
   <img src="/react-native/blog/assets/rtl-demo-forcertl.png" width="300">
 </p>
-<pre><code class="hljs css languages- js">&lt;RNTesterBlock title={<span class="hljs-string">'Quickly Test RTL Layout'</span>}&gt;
+<pre><code class="hljs css language-js">&lt;RNTesterBlock title={<span class="hljs-string">'Quickly Test RTL Layout'</span>}&gt;
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.flexDirectionRow}</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.switchRowTextView}</span>&gt;</span>forceRTL<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.switchRowSwitchView}</span>&gt;</span>
@@ -188,7 +192,7 @@ _onDirectionChange = <span class="hljs-function"><span class="hljs-params">()</s
 <h2><a class="anchor" aria-hidden="true" id="try-it-out"></a><a href="#try-it-out" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Try it Out!</h2>
 <p>Check out the <a href="https://github.com/facebook/react-native/blob/master/RNTester/js/RTLExample.js"><code>RTLExample</code></a> in the <code>RNTester</code> to understand more about RTL support, and let us know how it works for you!</p>
 <p>Finally, thank you for reading! We hope that the RTL support for React Native helps you grow your apps for international audience!</p>
-</span></div></div><div class="blogSocialSection"><div class="blogSocialSectionItem"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Right-to-Left Layout Support For React Native Apps" data-url="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps" data-related="reactnative" data-show-count="false"></a></div><div class="blogSocialSectionItem"><div class="fb-like" data-href="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div></div></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></div><div class="blogSocialSection"><div class="blogSocialSectionItem"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Right-to-Left Layout Support For React Native Apps" data-url="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps" data-related="reactnative" data-show-count="false">Tweet</a></div><div class="blogSocialSectionItem"><div class="fb-like" data-href="https://facebook.github.io/react-native/blog/2016/08/19/right-to-left-support-for-react-native-apps" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div></div></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
               var search = docsearch({
                 

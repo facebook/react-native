@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -105,7 +109,7 @@ Because the entire configuration is declarative, we will be able to implement fu
 <p><code>Animated</code> provides several animation types, the most commonly used one being <a href="/react-native/docs/0.45/animated#timing"><code>Animated.timing()</code></a>. It supports animating a value over time using one of various predefined easing functions, or you can use your own. Easing functions are typically used in animation to convey gradual acceleration and deceleration of objects.</p>
 <p>By default, <code>timing</code> will use a easeInOut curve that conveys gradual acceleration to full speed and concludes by gradually decelerating to a stop. You can specify a different easing function by passing a <code>easing</code> parameter. Custom <code>duration</code> or even a <code>delay</code> before the animation starts is also supported.</p>
 <p>For example, if we want to create a 2-second long animation of an object that slightly backs up before moving to its final position:</p>
-<pre><code class="hljs css languages- javascript">Animated.timing(<span class="hljs-keyword">this</span>.state.xPosition, {
+<pre><code class="hljs css language-javascript">Animated.timing(<span class="hljs-keyword">this</span>.state.xPosition, {
   <span class="hljs-attr">toValue</span>: <span class="hljs-number">100</span>,
   <span class="hljs-attr">easing</span>: Easing.back(),
   <span class="hljs-attr">duration</span>: <span class="hljs-number">2000</span>,
@@ -115,7 +119,7 @@ Because the entire configuration is declarative, we will be able to implement fu
 <h3><a class="anchor" aria-hidden="true" id="composing-animations"></a><a href="#composing-animations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Composing animations</h3>
 <p>Animations can be combined and played in sequence or in parallel. Sequential animations can play immediately after the previous animation has finished, or they can start after a specified delay. The <code>Animated</code> API provides several methods, such as <code>sequence()</code> and <code>delay()</code>, each of which simply take an array of animations to execute and automatically calls <code>start()</code>/<code>stop()</code> as needed.</p>
 <p>For example, the following animation coasts to a stop, then it springs back while twirling in parallel:</p>
-<pre><code class="hljs css languages- javascript">Animated.sequence([
+<pre><code class="hljs css language-javascript">Animated.sequence([
   <span class="hljs-comment">// decay, then spring to start and twirl</span>
   Animated.decay(position, {
     <span class="hljs-comment">// coast to a stop</span>
@@ -139,7 +143,7 @@ Because the entire configuration is declarative, we will be able to implement fu
 <h3><a class="anchor" aria-hidden="true" id="combining-animated-values"></a><a href="#combining-animated-values" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Combining animated values</h3>
 <p>You can <a href="/react-native/docs/0.45/animated#combining-animated-values">combine two animated values</a> via addition, multiplication, division, or modulo to make a new animated value.</p>
 <p>There are some cases where an animated value needs to invert another animated value for calculation. An example is inverting a scale (2x --&gt; 0.5x):</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">const</span> a = <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">1</span>);
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">const</span> a = <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">1</span>);
 <span class="hljs-keyword">const</span> b = Animated.divide(<span class="hljs-number">1</span>, a);
 
 Animated.spring(a, {
@@ -149,13 +153,13 @@ Animated.spring(a, {
 <h3><a class="anchor" aria-hidden="true" id="interpolation"></a><a href="#interpolation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Interpolation</h3>
 <p>Each property can be run through an interpolation first. An interpolation maps input ranges to output ranges, typically using a linear interpolation but also supports easing functions. By default, it will extrapolate the curve beyond the ranges given, but you can also have it clamp the output value.</p>
 <p>A simple mapping to convert a 0-1 range to a 0-100 range would be:</p>
-<pre><code class="hljs css languages- javascript">value.interpolate({
+<pre><code class="hljs css language-javascript">value.interpolate({
   <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>],
   <span class="hljs-attr">outputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">100</span>],
 });
 </code></pre>
 <p>For example, you may want to think about your <code>Animated.Value</code> as going from 0 to 1, but animate the position from 150px to 0px and the opacity from 0 to 1. This can easily be done by modifying <code>style</code> from the example above like so:</p>
-<pre><code class="hljs css languages- javascript">  style={{
+<pre><code class="hljs css language-javascript">  style={{
     <span class="hljs-attr">opacity</span>: <span class="hljs-keyword">this</span>.state.fadeAnim, <span class="hljs-comment">// Binds directly</span>
     transform: [{
       <span class="hljs-attr">translateY</span>: <span class="hljs-keyword">this</span>.state.fadeAnim.interpolate({
@@ -166,7 +170,7 @@ Animated.spring(a, {
   }}
 </code></pre>
 <p><a href="/react-native/docs/0.45/animated#interpolate"><code>interpolate()</code></a> supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get an negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:</p>
-<pre><code class="hljs css languages- javascript">value.interpolate({
+<pre><code class="hljs css language-javascript">value.interpolate({
   <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">-300</span>, <span class="hljs-number">-100</span>, <span class="hljs-number">0</span>, <span class="hljs-number">100</span>, <span class="hljs-number">101</span>],
   <span class="hljs-attr">outputRange</span>: [<span class="hljs-number">300</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>],
 });
@@ -186,7 +190,7 @@ Animated.spring(a, {
    <span class="hljs-number">200</span>|      <span class="hljs-number">0</span>
 </code></pre>
 <p><code>interpolate()</code> also supports mapping to strings, allowing you to animate colors as well as values with units. For example, if you wanted to animate a rotation you could do:</p>
-<pre><code class="hljs css languages- javascript">value.interpolate({
+<pre><code class="hljs css language-javascript">value.interpolate({
   <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">360</span>],
   <span class="hljs-attr">outputRange</span>: [<span class="hljs-string">'0deg'</span>, <span class="hljs-string">'360deg'</span>],
 });
@@ -194,7 +198,7 @@ Animated.spring(a, {
 <p><code>interpolate()</code> also supports arbitrary easing functions, many of which are already implemented in the <a href="/react-native/docs/0.45/easing"><code>Easing</code></a> module. <code>interpolate()</code> also has configurable behavior for extrapolating the <code>outputRange</code>. You can set the extrapolation by setting the <code>extrapolate</code>, <code>extrapolateLeft</code>, or <code>extrapolateRight</code> options. The default value is <code>extend</code> but you can use <code>clamp</code> to prevent the output value from exceeding <code>outputRange</code>.</p>
 <h3><a class="anchor" aria-hidden="true" id="tracking-dynamic-values"></a><a href="#tracking-dynamic-values" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Tracking dynamic values</h3>
 <p>Animated values can also track other values. Just set the <code>toValue</code> of an animation to another animated value instead of a plain number. For example, a &quot;Chat Heads&quot; animation like the one used by Messenger on Android could be implemented with a <code>spring()</code> pinned on another animated value, or with <code>timing()</code> and a <code>duration</code> of 0 for rigid tracking. They can also be composed with interpolations:</p>
-<pre><code class="hljs css languages- javascript">Animated.spring(follower, {<span class="hljs-attr">toValue</span>: leader}).start();
+<pre><code class="hljs css language-javascript">Animated.spring(follower, {<span class="hljs-attr">toValue</span>: leader}).start();
 Animated.timing(opacity, {
   <span class="hljs-attr">toValue</span>: pan.x.interpolate({
     <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">300</span>],
@@ -206,7 +210,7 @@ Animated.timing(opacity, {
 <h3><a class="anchor" aria-hidden="true" id="tracking-gestures"></a><a href="#tracking-gestures" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Tracking gestures</h3>
 <p>Gestures, like panning or scrolling, and other events can map directly to animated values using <a href="/react-native/docs/0.45/animated#event"><code>Animated.event</code></a>. This is done with a structured map syntax so that values can be extracted from complex event objects. The first level is an array to allow mapping across multiple args, and that array contains nested objects.</p>
 <p>For example, when working with horizontal scrolling gestures, you would do the following in order to map <code>event.nativeEvent.contentOffset.x</code> to <code>scrollX</code> (an <code>Animated.Value</code>):</p>
-<pre><code class="hljs css languages- javascript"> onScroll={Animated.event(
+<pre><code class="hljs css language-javascript"> onScroll={Animated.event(
    <span class="hljs-comment">// scrollX = e.nativeEvent.contentOffset.x</span>
    [{ <span class="hljs-attr">nativeEvent</span>: {
         <span class="hljs-attr">contentOffset</span>: {
@@ -217,7 +221,7 @@ Animated.timing(opacity, {
  )}
 </code></pre>
 <p>When using <code>PanResponder</code>, you could use the following code to extract the x and y positions from <code>gestureState.dx</code> and <code>gestureState.dy</code>. We use a <code>null</code> in the first position of the array, as we are only interested in the second argument passed to the <code>PanResponder</code> handler, which is the <code>gestureState</code>.</p>
-<pre><code class="hljs css languages- javascript">onPanResponderMove={Animated.event(
+<pre><code class="hljs css language-javascript">onPanResponderMove={Animated.event(
   [<span class="hljs-literal">null</span>, <span class="hljs-comment">// ignore the native event</span>
   <span class="hljs-comment">// extract dx and dy from gestureState</span>
   <span class="hljs-comment">// like 'pan.x = gestureState.dx, pan.y = gestureState.dy'</span>
@@ -234,7 +238,7 @@ Animated.timing(opacity, {
 <h3><a class="anchor" aria-hidden="true" id="using-the-native-driver"></a><a href="#using-the-native-driver" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using the native driver</h3>
 <p>The <code>Animated</code> API is designed to be serializable. By using the <a href="http://facebook.github.io/react-native/blog/2017/02/14/using-native-driver-for-animated.html">native driver</a>, we send everything about the animation to native before starting the animation, allowing native code to perform the animation on the UI thread without having to go through the bridge on every frame. Once the animation has started, the JS thread can be blocked without affecting the animation.</p>
 <p>Using the native driver for normal animations is quite simple. Just add <code>useNativeDriver: true</code> to the animation config when starting it.</p>
-<pre><code class="hljs css languages- javascript">Animated.timing(<span class="hljs-keyword">this</span>.state.animatedValue, {
+<pre><code class="hljs css language-javascript">Animated.timing(<span class="hljs-keyword">this</span>.state.animatedValue, {
   <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
   <span class="hljs-attr">duration</span>: <span class="hljs-number">500</span>,
   <span class="hljs-attr">useNativeDriver</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// &lt;-- Add this</span>
@@ -242,7 +246,7 @@ Animated.timing(opacity, {
 </code></pre>
 <p>Animated values are only compatible with one driver so if you use native driver when starting an animation on a value, make sure every animation on that value also uses the native driver.</p>
 <p>The native driver also works with <code>Animated.event</code>. This is specially useful for animations that follow the scroll position as without the native driver, the animation will always run a frame behind the gesture due to the async nature of React Native.</p>
-<pre><code class="hljs css languages- javascript">&lt;Animated.ScrollView // &lt;-- Use the Animated ScrollView wrapper
+<pre><code class="hljs css language-javascript">&lt;Animated.ScrollView // &lt;-- Use the Animated ScrollView wrapper
   scrollEventThrottle={1} // &lt;-- Use 1 here to make sure no events are ever missed
   onScroll={Animated.event(
     [
@@ -263,7 +267,7 @@ Animated.timing(opacity, {
 <p>When an animation is running, it can prevent <code>VirtualizedList</code> components from rendering more rows. If you need to run a long or looping animation while the user is scrolling through a list, you can use <code>isInteraction: false</code> in your animation's config to prevent this issue.</p>
 <h3><a class="anchor" aria-hidden="true" id="bear-in-mind"></a><a href="#bear-in-mind" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Bear in mind</h3>
 <p>While using transform styles such as <code>rotateY</code>, <code>rotateX</code>, and others ensure the transform style <code>perspective</code> is in place. At this time some animations may not render on Android without it. Example below.</p>
-<pre><code class="hljs css languages- javascript">&lt;Animated.View
+<pre><code class="hljs css language-javascript">&lt;Animated.View
   style={{
     <span class="hljs-attr">transform</span>: [
       {<span class="hljs-attr">scale</span>: <span class="hljs-keyword">this</span>.state.scale},
@@ -283,7 +287,7 @@ Animated.timing(opacity, {
 <p><code>LayoutAnimation</code> allows you to globally configure <code>create</code> and <code>update</code> animations that will be used for all views in the next render/layout cycle. This is useful for doing flexbox layout updates without bothering to measure or calculate specific properties in order to animate them directly, and is especially useful when layout changes may affect ancestors, for example a &quot;see more&quot; expansion that also increases the size of the parent and pushes down the row below which would otherwise require explicit coordination between the components in order to animate them all in sync.</p>
 <p>Note that although <code>LayoutAnimation</code> is very powerful and can be quite useful, it provides much less control than <code>Animated</code> and other animation libraries, so you may need to use another approach if you can't get <code>LayoutAnimation</code> to do what you want.</p>
 <p>Note that in order to get this to work on <strong>Android</strong> you need to set the following flags via <code>UIManager</code>:</p>
-<pre><code class="hljs css languages- javascript">UIManager.setLayoutAnimationEnabledExperimental &amp;&amp;
+<pre><code class="hljs css language-javascript">UIManager.setLayoutAnimationEnabledExperimental &amp;&amp;
   UIManager.setLayoutAnimationEnabledExperimental(<span class="hljs-literal">true</span>);
 </code></pre>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;

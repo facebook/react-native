@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -68,12 +72,12 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 <h3><a class="anchor" aria-hidden="true" id="building-the-source"></a><a href="#building-the-source" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building the source</h3>
 <h4><a class="anchor" aria-hidden="true" id="1-installing-the-fork"></a><a href="#1-installing-the-fork" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Installing the fork</h4>
 <p>First, you need to install <code>react-native</code> from your fork. For example, to install the master branch from the official repo, run the following:</p>
-<pre><code class="hljs css languages- sh">npm install --save github:facebook/react-native<span class="hljs-comment">#master</span>
+<pre><code class="hljs css language-sh">npm install --save github:facebook/react-native<span class="hljs-comment">#master</span>
 </code></pre>
 <p>Alternatively, you can clone the repo to your <code>node_modules</code> directory and run <code>npm install</code> inside the cloned repo.</p>
 <h4><a class="anchor" aria-hidden="true" id="2-adding-gradle-dependencies"></a><a href="#2-adding-gradle-dependencies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Adding gradle dependencies</h4>
 <p>Add <code>gradle-download-task</code> as dependency in <code>android/build.gradle</code>:</p>
-<pre><code class="hljs css languages- gradle">...
+<pre><code class="hljs css language-gradle">...
     <span class="hljs-keyword">dependencies</span> {
         <span class="hljs-keyword">classpath</span> <span class="hljs-string">'com.android.tools.build:gradle:1.3.1'</span>
         <span class="hljs-keyword">classpath</span> <span class="hljs-string">'de.undercouch:gradle-download-task:3.1.2'</span>
@@ -85,7 +89,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="3-adding-the-reactandroid-project"></a><a href="#3-adding-the-reactandroid-project" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Adding the <code>:ReactAndroid</code> project</h4>
 <p>Add the <code>:ReactAndroid</code> project in <code>android/settings.gradle</code>:</p>
-<pre><code class="hljs css languages- gradle">...
+<pre><code class="hljs css language-gradle">...
 <span class="hljs-keyword">include</span> <span class="hljs-string">':ReactAndroid'</span>
 
 <span class="hljs-keyword">project</span>(<span class="hljs-string">':ReactAndroid'</span>).projectDir = <span class="hljs-keyword">new</span> <span class="hljs-keyword">File</span>(
@@ -93,7 +97,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 ...
 </code></pre>
 <p>Modify your <code>android/app/build.gradle</code> to use the <code>:ReactAndroid</code> project instead of the pre-compiled library, e.g. - replace <code>compile 'com.facebook.react:react-native:+'</code> with <code>compile project(':ReactAndroid')</code>:</p>
-<pre><code class="hljs css languages- gradle">...
+<pre><code class="hljs css language-gradle">...
 <span class="hljs-keyword">dependencies</span> {
     <span class="hljs-keyword">compile</span> <span class="hljs-keyword">fileTree</span>(dir: <span class="hljs-string">'libs'</span>, <span class="hljs-keyword">include</span>: [<span class="hljs-string">'*.jar'</span>])
     <span class="hljs-keyword">compile</span> <span class="hljs-string">'com.android.support:appcompat-v7:26.0.2'</span>
@@ -107,7 +111,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 <h4><a class="anchor" aria-hidden="true" id="4-making-3rd-party-modules-use-your-fork"></a><a href="#4-making-3rd-party-modules-use-your-fork" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4. Making 3rd-party modules use your fork</h4>
 <p>If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - <code>Error: more than one library with package name 'com.facebook.react'</code>.</p>
 <p>Modify your <code>android/app/build.gradle</code>, and add:</p>
-<pre><code class="hljs css languages- gradle"><span class="hljs-keyword">configurations</span>.all {
+<pre><code class="hljs css language-gradle"><span class="hljs-keyword">configurations</span>.all {
     <span class="hljs-keyword">exclude</span> <span class="hljs-keyword">group</span>: <span class="hljs-string">'com.facebook.react'</span>, module: <span class="hljs-string">'react-native'</span>
 }
 </code></pre>
@@ -116,7 +120,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 <p>You should be able to use the <em>Run</em> button to run your app on a device. Android Studio won't start the packager automatically, you'll need to start it by running <code>npm start</code> on the command line.</p>
 <h3><a class="anchor" aria-hidden="true" id="additional-notes"></a><a href="#additional-notes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Additional notes</h3>
 <p>Building from source can take a long time, especially for the first build, as it needs to download ~200 MB of artifacts and compile the native code. Every time you update the <code>react-native</code> version from your repo, the build directory may get deleted, and all the files are re-downloaded. To avoid this, you might want to change your build directory path by editing the <code>~/.gradle/init.gradle</code> file:</p>
-<pre><code class="hljs css languages- gradle">gradle.projectsLoaded {
+<pre><code class="hljs css language-gradle">gradle.projectsLoaded {
     rootProject.<span class="hljs-keyword">allprojects</span> {
         buildDir = <span class="hljs-string">"/path/to/build/directory/${rootProject.name}/${project.name}"</span>
     }

@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -45,7 +49,7 @@
 </ol>
 <h2><a class="anchor" aria-hidden="true" id="1-create-the-viewmanager-subclass"></a><a href="#1-create-the-viewmanager-subclass" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create the <code>ViewManager</code> subclass</h2>
 <p>In this example we create view manager class <code>ReactImageManager</code> that extends <code>SimpleViewManager</code> of type <code>ReactImageView</code>. <code>ReactImageView</code> is the type of object managed by the manager, this will be the custom native view. Name returned by <code>getName</code> is used to reference the native view type from JavaScript.</p>
-<pre><code class="hljs css languages- java">...
+<pre><code class="hljs css language-java">...
 
 <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactImageManager</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleViewManager</span>&lt;<span class="hljs-title">ReactImageView</span>&gt; </span>{
 
@@ -58,7 +62,7 @@
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="2-implement-method-createviewinstance"></a><a href="#2-implement-method-createviewinstance" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Implement method <code>createViewInstance</code></h2>
 <p>Views are created in the <code>createViewInstance</code> method, the view should initialize itself in its default state, any properties will be set via a follow up call to <code>updateView.</code></p>
-<pre><code class="hljs css languages- java">  <span class="hljs-meta">@Override</span>
+<pre><code class="hljs css language-java">  <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> ReactImageView <span class="hljs-title">createViewInstance</span><span class="hljs-params">(ThemedReactContext context)</span> </span>{
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ReactImageView(context, Fresco.newDraweeControllerBuilder(), mCallerContext);
   }
@@ -69,7 +73,7 @@
 <p>Except from <code>name</code>, <code>@ReactProp</code> annotation may take following optional arguments: <code>defaultBoolean</code>, <code>defaultInt</code>, <code>defaultFloat</code>. Those arguments should be of the corresponding primitive type (accordingly <code>boolean</code>, <code>int</code>, <code>float</code>) and the value provided will be passed to the setter method in case when the property that the setter is referencing has been removed from the component. Note that &quot;default&quot; values are only provided for primitive types, in case when setter is of some complex type, <code>null</code> will be provided as a default value in case when corresponding property gets removed.</p>
 <p>Setter declaration requirements for methods annotated with <code>@ReactPropGroup</code> are different than for <code>@ReactProp</code>, please refer to the <code>@ReactPropGroup</code> annotation class docs for more information about it.</p>
 <p><strong>IMPORTANT!</strong> in ReactJS updating the property value will result in setter method call. Note that one of the ways we can update component is by removing properties that have been set before. In that case setter method will be called as well to notify view manager that property has changed. In that case &quot;default&quot; value will be provided (for primitive types &quot;default&quot; can value can be specified using <code>defaultBoolean</code>, <code>defaultFloat</code>, etc. arguments of <code>@ReactProp</code> annotation, for complex types setter will be called with value set to <code>null</code>).</p>
-<pre><code class="hljs css languages- java">  <span class="hljs-meta">@ReactProp</span>(name = <span class="hljs-string">"src"</span>)
+<pre><code class="hljs css language-java">  <span class="hljs-meta">@ReactProp</span>(name = <span class="hljs-string">"src"</span>)
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setSrc</span><span class="hljs-params">(ReactImageView view, @Nullable ReadableArray sources)</span> </span>{
     view.setSource(sources);
   }
@@ -86,7 +90,7 @@
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="4-register-the-viewmanager"></a><a href="#4-register-the-viewmanager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>4. Register the <code>ViewManager</code></h2>
 <p>The final Java step is to register the ViewManager to the application, this happens in a similar way to <a href="/react-native/docs/0.6/native-modules-android">Native Modules</a>, via the applications package member function <code>createViewManagers.</code></p>
-<pre><code class="hljs css languages- java">  <span class="hljs-meta">@Override</span>
+<pre><code class="hljs css language-java">  <span class="hljs-meta">@Override</span>
   <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;ViewManager&gt; <span class="hljs-title">createViewManagers</span><span class="hljs-params">(
                             ReactApplicationContext reactContext)</span> </span>{
     <span class="hljs-keyword">return</span> Arrays.&lt;ViewManager&gt;asList(
@@ -96,7 +100,7 @@
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="5-implement-the-javascript-module"></a><a href="#5-implement-the-javascript-module" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>5. Implement the JavaScript module</h2>
 <p>The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the <code>propTypes</code>.</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-comment">// ImageView.js</span>
+<pre><code class="hljs css language-javascript"><span class="hljs-comment">// ImageView.js</span>
 
 <span class="hljs-keyword">import</span> PropTypes <span class="hljs-keyword">from</span> <span class="hljs-string">'prop-types'</span>;
 <span class="hljs-keyword">import</span> {requireNativeComponent, ViewPropTypes} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
@@ -116,7 +120,7 @@
 <p><code>requireNativeComponent</code> commonly takes two parameters, the first is the name of the native view and the second is an object that describes the component interface. The component interface should declare a friendly <code>name</code> for use in debug messages and must declare the <code>propTypes</code> reflected by the Native View. The <code>propTypes</code> are used for checking the validity of a user's use of the native view. Note that if you need your JavaScript component to do more than just specify a name and propTypes, like do custom event handling, you can wrap the native component in a normal react component. In that case, you want to pass in the wrapper component instead of <code>iface</code> to <code>requireNativeComponent</code>. This is illustrated in the <code>MyCustomView</code> example below.</p>
 <h1><a class="anchor" aria-hidden="true" id="events"></a><a href="#events" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h1>
 <p>So now we know how to expose native view components that we can control easily from JS, but how do we deal with events from the user, like pinch-zooms or panning? When a native event occurs the native code should issue an event to the JavaScript representation of the View, and the two views are linked with the value returned from the <code>getId()</code> method.</p>
-<pre><code class="hljs css languages- java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">View</span> </span>{
+<pre><code class="hljs css language-java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">View</span> </span>{
    ...
    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onReceiveNativeEvent</span><span class="hljs-params">()</span> </span>{
       WritableMap event = Arguments.createMap();
@@ -130,7 +134,7 @@
 }
 </code></pre>
 <p>To map the <code>topChange</code> event name to the <code>onChange</code> callback prop in JavaScript, register it by overriding the <code>getExportedCustomBubblingEventTypeConstants</code> method in your <code>ViewManager</code>:</p>
-<pre><code class="hljs css languages- java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactImageManager</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleViewManager</span>&lt;<span class="hljs-title">MyCustomView</span>&gt; </span>{
+<pre><code class="hljs css language-java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ReactImageManager</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">SimpleViewManager</span>&lt;<span class="hljs-title">MyCustomView</span>&gt; </span>{
     ...
     <span class="hljs-function"><span class="hljs-keyword">public</span> Map <span class="hljs-title">getExportedCustomBubblingEventTypeConstants</span><span class="hljs-params">()</span> </span>{
         <span class="hljs-keyword">return</span> MapBuilder.builder()
@@ -144,7 +148,7 @@
 }
 </code></pre>
 <p>This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-comment">// MyCustomView.js</span>
+<pre><code class="hljs css language-javascript"><span class="hljs-comment">// MyCustomView.js</span>
 
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
   <span class="hljs-keyword">constructor</span>(props) {

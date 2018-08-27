@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -36,7 +40,7 @@
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" id="setnativeprops-with-touchableopacity"></a><a href="#setnativeprops-with-touchableopacity" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>setNativeProps with TouchableOpacity</h2>
 <p><a href="https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/TouchableOpacity.js">TouchableOpacity</a> uses <code>setNativeProps</code> internally to update the opacity of its child component:</p>
-<pre><code class="hljs css languages- javascript">setOpacityTo(value) {
+<pre><code class="hljs css language-javascript">setOpacityTo(value) {
   <span class="hljs-comment">// Redacted: animation related code</span>
   <span class="hljs-keyword">this</span>.refs[CHILD_REF].setNativeProps({
     <span class="hljs-attr">opacity</span>: value
@@ -44,14 +48,14 @@
 },
 </code></pre>
 <p>This allows us to write the following code and know that the child will have its opacity updated in response to taps, without the child having any knowledge of that fact or requiring any changes to its implementation:</p>
-<pre><code class="hljs css languages- javascript">&lt;TouchableOpacity onPress={this._handlePress}&gt;
+<pre><code class="hljs css language-javascript">&lt;TouchableOpacity onPress={this._handlePress}&gt;
   &lt;View style={styles.button}&gt;
     &lt;Text&gt;Press me!&lt;/Text&gt;
   &lt;/View&gt;
 &lt;/TouchableOpacity&gt;
 </code></pre>
 <p>Let's imagine that <code>setNativeProps</code> was not available. One way that we might implement it with that constraint is to store the opacity value in the state, then update that value whenever <code>onPress</code> is fired:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">constructor</span>(props) {
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">constructor</span>(props) {
   <span class="hljs-keyword">super</span>(props);
   <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">myButtonOpacity</span>: <span class="hljs-number">1</span>, };
 }

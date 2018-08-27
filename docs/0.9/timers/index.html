@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -43,7 +47,7 @@
 <h2><a class="anchor" aria-hidden="true" id="interactionmanager"></a><a href="#interactionmanager" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>InteractionManager</h2>
 <p>One reason why well-built native apps feel so smooth is by avoiding expensive operations during interactions and animations. In React Native, we currently have a limitation that there is only a single JS execution thread, but you can use <code>InteractionManager</code> to make sure long-running work is scheduled to start after any interactions/animations have completed.</p>
 <p>Applications can schedule tasks to run after interactions with the following:</p>
-<pre><code class="hljs css languages- javascript">InteractionManager.runAfterInteractions(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+<pre><code class="hljs css language-javascript">InteractionManager.runAfterInteractions(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
   <span class="hljs-comment">// ...long-running synchronous task...</span>
 });
 </code></pre>
@@ -55,7 +59,7 @@
 </ul>
 <p>The touch handling system considers one or more active touches to be an 'interaction' and will delay <code>runAfterInteractions()</code> callbacks until all touches have ended or been cancelled.</p>
 <p>InteractionManager also allows applications to register animations by creating an interaction 'handle' on animation start, and clearing it upon completion:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">var</span> handle = InteractionManager.createInteractionHandle();
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">var</span> handle = InteractionManager.createInteractionHandle();
 <span class="hljs-comment">// run animation... (`runAfterInteractions` tasks are queued)</span>
 <span class="hljs-comment">// later, on animation completion:</span>
 InteractionManager.clearInteractionHandle(handle);
@@ -64,7 +68,7 @@ InteractionManager.clearInteractionHandle(handle);
 <h2><a class="anchor" aria-hidden="true" id="timermixin"></a><a href="#timermixin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TimerMixin</h2>
 <p>We found out that the primary cause of fatals in apps created with React Native was due to timers firing after a component was unmounted. To solve this recurring issue, we introduced <code>TimerMixin</code>. If you include <code>TimerMixin</code>, then you can replace your calls to <code>setTimeout(fn, 500)</code> with <code>this.setTimeout(fn, 500)</code> (just prepend <code>this.</code>) and everything will be properly cleaned up for you when the component unmounts.</p>
 <p>This library does not ship with React Native - in order to use it on your project, you will need to install it with <code>npm i react-timer-mixin --save</code> from your project directory.</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">import</span> TimerMixin <span class="hljs-keyword">from</span> <span class="hljs-string">'react-timer-mixin'</span>;
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> TimerMixin <span class="hljs-keyword">from</span> <span class="hljs-string">'react-timer-mixin'</span>;
 
 <span class="hljs-keyword">var</span> Component = createReactClass({
   <span class="hljs-attr">mixins</span>: [TimerMixin],

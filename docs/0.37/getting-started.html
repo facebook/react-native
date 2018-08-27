@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -194,7 +198,7 @@
 <p>We recommend installing Node and Python2 via <a href="https://chocolatey.org">Chocolatey</a>, a popular package manager for Windows.</p>
 <p>React Native also requires a recent version of the <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java SE Development Kit (JDK)</a>, as well as Python 2. Both can be installed using Chocolatey.</p>
 <p>Open an Administrator Command Prompt (right click Command Prompt and select &quot;Run as Administrator&quot;), then run the following command:</p>
-<pre><code class="hljs css languages- powershell">choco install -y nodejs.install python2 jdk8
+<pre><code class="hljs css language-powershell">choco install -y nodejs.install python2 jdk8
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 8.3 or newer. If you already have a JDK on your system, make sure it is version 8 or newer.</p>
 <blockquote>
@@ -213,7 +217,7 @@
 <h3><a class="anchor" aria-hidden="true" id="the-react-native-cli-1"></a><a href="#the-react-native-cli-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native CLI</h3>
 <p>Node comes with npm, which lets you install the React Native command line interface.</p>
 <p>Run the following command in a Command Prompt or shell:</p>
-<pre><code class="hljs css languages- powershell">npm install -g react-native-cli
+<pre><code class="hljs css language-powershell">npm install -g react-native-cli
 </code></pre>
 <blockquote>
 <p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
@@ -316,7 +320,7 @@
 <p>Open the System pane under <strong>System and Security</strong> in the Windows Control Panel, then click on <strong>Change settings...</strong>. Open the <strong>Advanced</strong> tab and click on <strong>Environment Variables...</strong>. Click on <strong>New...</strong> to create a new <code>ANDROID_HOME</code> user variable that points to the path to your Android SDK:</p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidEnvironmentVariableANDROID_HOME.png" alt="ANDROID_HOME Environment Variable"></p>
 <p>The SDK is installed, by default, at the following location:</p>
-<pre><code class="hljs css languages- powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
+<pre><code class="hljs css language-powershell">c:\Users\YOUR_USERNAME\AppData\Local\Android\Sdk
 </code></pre>
 <p>You can find the actual location of the SDK in the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 <p>Open a new Command Prompt window to ensure the new environment variable is loaded before proceeding to the next step.</p>

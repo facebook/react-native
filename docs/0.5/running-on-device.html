@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -145,7 +149,7 @@
 <p>Let's now set up an Android device to run our React Native projects. Go ahead and plug in your device via USB to your development machine.</p>
 <p><block class="linux android" /></p>
 <p>Next, check the manufacturer code by using <code>lsusb</code> (on mac, you must first <a href="https://github.com/jlhonora/lsusb">install lsusb</a>). <code>lsusb</code> should output something like this:</p>
-<pre><code class="hljs css languages- bash">$ lsusb
+<pre><code class="hljs css language-bash">$ lsusb
 Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 001 Device 003: ID 22b8:2e76 Motorola PCS
@@ -156,7 +160,7 @@ Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 </code></pre>
 <p>These lines represent the USB devices currently connected to your machine.</p>
 <p>You want the line that represents your phone. If you're in doubt, try unplugging your phone and running the command again:</p>
-<pre><code class="hljs css languages- bash">$ lsusb
+<pre><code class="hljs css language-bash">$ lsusb
 Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
 Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
@@ -170,7 +174,7 @@ Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 <p><code>22b8:2e76</code></p>
 <p>In this case, it's <code>22b8</code>. That's the identifier for Motorola.</p>
 <p>You'll need to input this into your udev rules in order to get up and running:</p>
-<pre><code class="hljs css languages- sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> | sudo tee /etc/udev/rules.d/51-android-usb.rules
+<pre><code class="hljs css language-sh"><span class="hljs-built_in">echo</span> <span class="hljs-string">'SUBSYSTEM=="usb", ATTR{idVendor}=="22b8", MODE="0666", GROUP="plugdev"'</span> | sudo tee /etc/udev/rules.d/51-android-usb.rules
 </code></pre>
 <p>Make sure that you replace <code>22b8</code> with the identifier you get in the above command.</p>
 <p><block class="mac windows linux android" /></p>
@@ -215,7 +219,7 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <h4><a class="anchor" aria-hidden="true" id="3-network-router-configuration"></a><a href="#3-network-router-configuration" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Network/router configuration</h4>
 <p>React Native uses the wildcard DNS service <strong>xip.io</strong> to address your device, as Apple ATS prohibits URLs with IP addresses instead of domain names, and developers' networks are often not set up to resolve local hostnames. Some routers have security features to prevent DNS Servers from resolving to anything in the local IP range.</p>
 <p>Now check if you are able to resolve the xip.io address, by running <code>nslookup</code>.</p>
-<pre><code class="hljs css languages- bash">$ nslookup 10.0.1.123.xip.io
+<pre><code class="hljs css language-bash">$ nslookup 10.0.1.123.xip.io
 </code></pre>
 <p>If it doesn't resolve your local IP address either the <strong>xip.io</strong> service is down or more likely your router prevents it.</p>
 <p>To still use xip.io behind your router:</p>
@@ -272,19 +276,19 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <h3><a class="anchor" aria-hidden="true" id="3-configure-app-to-use-static-bundle"></a><a href="#3-configure-app-to-use-static-bundle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure app to use static bundle</h3>
 <p>During the development process, React Native has loaded your JavaScript code dynamically at runtime. For a production build, you want to pre-package the JavaScript bundle and distribute it inside your application. Doing this requires a code change in your code so that it knows to load the static bundle.</p>
 <p>In <code>AppDelegate.m</code>, change the default <code>jsCodeLocation</code> to point to the static bundle that is built in Release.</p>
-<pre><code class="hljs css languages- objc">  jsCodeLocation = [[<span class="hljs-built_in">NSBundle</span> mainBundle] URLForResource:<span class="hljs-string">@"main"</span> withExtension:<span class="hljs-string">@"jsbundle"</span>];
+<pre><code class="hljs css language-objc">  jsCodeLocation = [[<span class="hljs-built_in">NSBundle</span> mainBundle] URLForResource:<span class="hljs-string">@"main"</span> withExtension:<span class="hljs-string">@"jsbundle"</span>];
 </code></pre>
 <p>This will now reference the <code>main.jsbundle</code> resource file that is created during the <code>Bundle React Native code and images</code> Build Phase in Xcode.</p>
 <blockquote>
 <p>Note: The static bundle is built every time you target a physical device, even in Debug. If you want to save time, turn off bundle generation in Debug by adding the following to your shell script in the Xcode Build Phase <code>Bundle React Native code and images</code>:</p>
 </blockquote>
-<pre><code class="hljs css languages- shell"> if [ "${CONFIGURATION}" == "Debug" ]; then
+<pre><code class="hljs css language-shell"> if [ "${CONFIGURATION}" == "Debug" ]; then
   export SKIP_BUNDLING=true
  fi
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="pro-tip"></a><a href="#pro-tip" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Pro Tip</h4>
 <p>As your App Bundle grows in size, you may start to see a white screen flash between your splash screen and the display of your root application view. If this is the case, you can add the following code to <code>AppDelegate.m</code> in order to keep your splash screen displayed during the transition.</p>
-<pre><code class="hljs css languages- objc">  <span class="hljs-comment">// Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"</span>
+<pre><code class="hljs css language-objc">  <span class="hljs-comment">// Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"</span>
   <span class="hljs-built_in">UIView</span>* launchScreenView = [[[<span class="hljs-built_in">NSBundle</span> mainBundle] loadNibNamed:<span class="hljs-string">@"LaunchScreen"</span> owner:<span class="hljs-keyword">self</span> options:<span class="hljs-literal">nil</span>] objectAtIndex:<span class="hljs-number">0</span>];
   launchScreenView.frame = <span class="hljs-keyword">self</span>.window.bounds;
   rootView.loadingView = launchScreenView;

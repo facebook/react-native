@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -37,14 +41,14 @@
 <h2><a class="anchor" aria-hidden="true" id="ios-calendar-module-example"></a><a href="#ios-calendar-module-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>iOS Calendar Module Example</h2>
 <p>This guide will use the <a href="https://developer.apple.com/library/mac/documentation/DataManagement/Conceptual/EventKitProgGuide/Introduction/Introduction.html">iOS Calendar API</a> example. Let's say we would like to be able to access the iOS calendar from JavaScript.</p>
 <p>A native module is just an Objective-C class that implements the <code>RCTBridgeModule</code> protocol. If you are wondering, RCT is an abbreviation of ReaCT.</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManager.h</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManager.h</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">CalendarManager</span> : <span class="hljs-title">NSObject</span> &lt;<span class="hljs-title">RCTBridgeModule</span>&gt;</span>
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>In addition to implementing the <code>RCTBridgeModule</code> protocol, your class must also include the <code>RCT_EXPORT_MODULE()</code> macro. This takes an optional argument that specifies the name that the module will be accessible as in your JavaScript code (more on this later). If you do not specify a name, the JavaScript module name will match the Objective-C class name. If the Objective-C class name begins with RCT, the JavaScript module name will exclude the RCT prefix.</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManager.m</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManager.m</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
@@ -58,7 +62,7 @@ RCT_EXPORT_MODULE();
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>React Native will not expose any methods of <code>CalendarManager</code> to JavaScript unless explicitly told to. This is done using the <code>RCT_EXPORT_METHOD()</code> macro:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTLog.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
@@ -71,7 +75,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 }
 </code></pre>
 <p>Now, from your JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">import</span> {NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> {NativeModules} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-keyword">var</span> CalendarManager = NativeModules.CalendarManager;
 CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <span class="hljs-string">'4 Privet Drive, Surrey'</span>);
 </code></pre>
@@ -92,32 +96,32 @@ CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <spa
 </ul>
 <p>But it also works with any type that is supported by the <code>RCTConvert</code> class (see <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h"><code>RCTConvert</code></a> for details). The <code>RCTConvert</code> helper functions all accept a JSON value as input and map it to a native Objective-C type or class.</p>
 <p>In our <code>CalendarManager</code> example, we need to pass the event date to the native method. We can't send JavaScript Date objects over the bridge, so we need to convert the date to a string or number. We could write our native function like this:</p>
-<pre><code class="hljs css languages- objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSNumber</span> *)secondsSinceUnixEpoch)
+<pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSNumber</span> *)secondsSinceUnixEpoch)
 {
   <span class="hljs-built_in">NSDate</span> *date = [RCTConvert <span class="hljs-built_in">NSDate</span>:secondsSinceUnixEpoch];
 }
 </code></pre>
 <p>or like this:</p>
-<pre><code class="hljs css languages- objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSString</span> *)ISO8601DateString)
+<pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSString</span> *)ISO8601DateString)
 {
   <span class="hljs-built_in">NSDate</span> *date = [RCTConvert <span class="hljs-built_in">NSDate</span>:ISO8601DateString];
 }
 </code></pre>
 <p>But by using the automatic type conversion feature, we can skip the manual conversion step completely, and just write:</p>
-<pre><code class="hljs css languages- objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSDate</span> *)date)
+<pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name location:(<span class="hljs-built_in">NSString</span> *)location date:(<span class="hljs-built_in">NSDate</span> *)date)
 {
   <span class="hljs-comment">// Date is ready to use!</span>
 }
 </code></pre>
 <p>You would then call this from JavaScript by using either:</p>
-<pre><code class="hljs css languages- javascript">CalendarManager.addEvent(
+<pre><code class="hljs css language-javascript">CalendarManager.addEvent(
   <span class="hljs-string">'Birthday Party'</span>,
   <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
   date.getTime()
 ); <span class="hljs-comment">// passing date as number of milliseconds since Unix epoch</span>
 </code></pre>
 <p>or</p>
-<pre><code class="hljs css languages- javascript">CalendarManager.addEvent(
+<pre><code class="hljs css language-javascript">CalendarManager.addEvent(
   <span class="hljs-string">'Birthday Party'</span>,
   <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
   date.toISOString()
@@ -125,7 +129,7 @@ CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <spa
 </code></pre>
 <p>And both values would get converted correctly to the native <code>NSDate</code>. A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>
 <p>As <code>CalendarManager.addEvent</code> method gets more and more complex, the number of arguments will grow. Some of them might be optional. In this case it's worth considering changing the API a little bit to accept a dictionary of event attributes, like this:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert.h&gt;</span></span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTConvert.h&gt;</span></span>
 
 RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name details:(<span class="hljs-built_in">NSDictionary</span> *)details)
 {
@@ -135,7 +139,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 }
 </code></pre>
 <p>and call it from JavaScript:</p>
-<pre><code class="hljs css languages- javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, {
+<pre><code class="hljs css language-javascript">CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, {
   <span class="hljs-attr">location</span>: <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
   <span class="hljs-attr">time</span>: date.getTime(),
   <span class="hljs-attr">description</span>: <span class="hljs-string">'...'</span>,
@@ -151,14 +155,14 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 <p>This section is more experimental than others because we don't have a solid set of best practices around callbacks yet.</p>
 </blockquote>
 <p>Native modules also supports a special kind of argument- a callback. In most cases it is used to provide the function call result to JavaScript.</p>
-<pre><code class="hljs css languages- objectivec">RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
+<pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(findEvents:(RCTResponseSenderBlock)callback)
 {
   <span class="hljs-built_in">NSArray</span> *events = ...
   callback(@[[<span class="hljs-built_in">NSNull</span> null], events]);
 }
 </code></pre>
 <p><code>RCTResponseSenderBlock</code> accepts only one argument - an array of parameters to pass to the JavaScript callback. In this case we use Node's convention to make the first parameter an error object (usually <code>null</code> when there is no error) and the rest are the results of the function.</p>
-<pre><code class="hljs css languages- javascript">CalendarManager.findEvents(<span class="hljs-function">(<span class="hljs-params">error, events</span>) =&gt;</span> {
+<pre><code class="hljs css language-javascript">CalendarManager.findEvents(<span class="hljs-function">(<span class="hljs-params">error, events</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (error) {
     <span class="hljs-built_in">console</span>.error(error);
   } <span class="hljs-keyword">else</span> {
@@ -171,7 +175,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 <h2><a class="anchor" aria-hidden="true" id="promises"></a><a href="#promises" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Promises</h2>
 <p>Native modules can also fulfill a promise, which can simplify your code, especially when using ES2016's <code>async/await</code> syntax. When the last parameters of a bridged native method are an <code>RCTPromiseResolveBlock</code> and <code>RCTPromiseRejectBlock</code>, its corresponding JS method will return a JS Promise object.</p>
 <p>Refactoring the above code to use a promise instead of callbacks looks like this:</p>
-<pre><code class="hljs css languages- objectivec">RCT_REMAP_METHOD(findEvents,
+<pre><code class="hljs css language-objectivec">RCT_REMAP_METHOD(findEvents,
                  findEventsWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -185,7 +189,7 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name d
 }
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEvents</span>(<span class="hljs-params"></span>) </span>{
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEvents</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">var</span> events = <span class="hljs-keyword">await</span> CalendarManager.findEvents();
 
@@ -199,19 +203,19 @@ updateEvents();
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="threading"></a><a href="#threading" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Threading</h2>
 <p>The native module should not have any assumptions about what thread it is being called on. React Native invokes native modules methods on a separate serial GCD queue, but this is an implementation detail and might change. The <code>- (dispatch_queue_t)methodQueue</code> method allows the native module to specify which queue its methods should be run on. For example, if it needs to use a main-thread-only iOS API, it should specify this via:</p>
-<pre><code class="hljs css languages- objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
 {
   <span class="hljs-keyword">return</span> dispatch_get_main_queue();
 }
 </code></pre>
 <p>Similarly, if an operation may take a long time to complete, the native module should not block and can specify it's own queue to run operations on. For example, the <code>RCTAsyncLocalStorage</code> module creates its own queue so the React queue isn't blocked waiting on potentially slow disk access:</p>
-<pre><code class="hljs css languages- objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">dispatch_queue_t</span>)methodQueue
 {
   <span class="hljs-keyword">return</span> dispatch_queue_create(<span class="hljs-string">"com.facebook.React.AsyncLocalStorageQueue"</span>, DISPATCH_QUEUE_SERIAL);
 }
 </code></pre>
 <p>The specified <code>methodQueue</code> will be shared by all of the methods in your module. If <em>just one</em> of your methods is long-running (or needs to be run on a different queue than the others for some reason), you can use <code>dispatch_async</code> inside the method to perform that particular method's code on another queue, without affecting the others:</p>
-<pre><code class="hljs css languages- objectivec">RCT_EXPORT_METHOD(doSomethingExpensive:(<span class="hljs-built_in">NSString</span> *)param callback:(RCTResponseSenderBlock)callback)
+<pre><code class="hljs css language-objectivec">RCT_EXPORT_METHOD(doSomethingExpensive:(<span class="hljs-built_in">NSString</span> *)param callback:(RCTResponseSenderBlock)callback)
 {
   <span class="hljs-built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="hljs-number">0</span>), ^{
     <span class="hljs-comment">// Call long-running code on background thread</span>
@@ -228,7 +232,7 @@ updateEvents();
 <h2><a class="anchor" aria-hidden="true" id="dependency-injection"></a><a href="#dependency-injection" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Dependency Injection</h2>
 <p>The bridge initializes any registered RCTBridgeModules automatically, however you may wish to instantiate your own module instances (so you may inject dependencies, for example).</p>
 <p>You can do this by creating a class that implements the RCTBridgeDelegate Protocol, initializing an RCTBridge with the delegate as an argument and initialising a RCTRootView with the initialized bridge.</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-keyword">id</span>&lt;RCTBridgeDelegate&gt; moduleInitialiser = [[classThatImplementsRCTBridgeDelegate alloc] init];
+<pre><code class="hljs css language-objectivec"><span class="hljs-keyword">id</span>&lt;RCTBridgeDelegate&gt; moduleInitialiser = [[classThatImplementsRCTBridgeDelegate alloc] init];
 
 RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:moduleInitialiser launchOptions:<span class="hljs-literal">nil</span>];
 
@@ -239,26 +243,26 @@ RCTRootView *rootView = [[RCTRootView alloc]
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="exporting-constants"></a><a href="#exporting-constants" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exporting Constants</h2>
 <p>A native module can export constants that are immediately available to JavaScript at runtime. This is useful for communicating static data that would otherwise require a round-trip through the bridge.</p>
-<pre><code class="hljs css languages- objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
 {
   <span class="hljs-keyword">return</span> @{ <span class="hljs-string">@"firstDayOfTheWeek"</span>: <span class="hljs-string">@"Monday"</span> };
 }
 </code></pre>
 <p>JavaScript can use this value right away, synchronously:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-built_in">console</span>.log(CalendarManager.firstDayOfTheWeek);
+<pre><code class="hljs css language-javascript"><span class="hljs-built_in">console</span>.log(CalendarManager.firstDayOfTheWeek);
 </code></pre>
 <p>Note that the constants are exported only at initialization time, so if you change <code>constantsToExport</code> values at runtime it won't affect the JavaScript environment.</p>
 <h3><a class="anchor" aria-hidden="true" id="enum-constants"></a><a href="#enum-constants" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enum Constants</h3>
 <p>Enums that are defined via <code>NS_ENUM</code> cannot be used as method arguments without first extending RCTConvert.</p>
 <p>In order to export the following <code>NS_ENUM</code> definition:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">NS_ENUM</span>(<span class="hljs-built_in">NSInteger</span>, <span class="hljs-built_in">UIStatusBarAnimation</span>) {
+<pre><code class="hljs css language-objectivec"><span class="hljs-keyword">typedef</span> <span class="hljs-built_in">NS_ENUM</span>(<span class="hljs-built_in">NSInteger</span>, <span class="hljs-built_in">UIStatusBarAnimation</span>) {
     <span class="hljs-built_in">UIStatusBarAnimationNone</span>,
     <span class="hljs-built_in">UIStatusBarAnimationFade</span>,
     <span class="hljs-built_in">UIStatusBarAnimationSlide</span>,
 };
 </code></pre>
 <p>You must create a class extension of RCTConvert like so:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTConvert</span> (<span class="hljs-title">StatusBarAnimation</span>)</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">RCTConvert</span> (<span class="hljs-title">StatusBarAnimation</span>)</span>
   RCT_ENUM_CONVERTER(<span class="hljs-built_in">UIStatusBarAnimation</span>, (@{ <span class="hljs-string">@"statusBarAnimationNone"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationNone</span>),
                                                <span class="hljs-string">@"statusBarAnimationFade"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationFade</span>),
                                                <span class="hljs-string">@"statusBarAnimationSlide"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationSlide</span>)}),
@@ -266,7 +270,7 @@ RCTRootView *rootView = [[RCTRootView alloc]
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>You can then define methods and export your enum constants like this:</p>
-<pre><code class="hljs css languages- objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">NSDictionary</span> *)constantsToExport
 {
   <span class="hljs-keyword">return</span> @{ <span class="hljs-string">@"statusBarAnimationNone"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationNone</span>),
             <span class="hljs-string">@"statusBarAnimationFade"</span> : @(<span class="hljs-built_in">UIStatusBarAnimationFade</span>),
@@ -279,7 +283,7 @@ RCT_EXPORT_METHOD(updateStatusBarAnimation:(<span class="hljs-built_in">UIStatus
 <p>Your enum will then be automatically unwrapped using the selector provided (<code>integerValue</code> in the above example) before being passed to your exported method.</p>
 <h2><a class="anchor" aria-hidden="true" id="sending-events-to-javascript"></a><a href="#sending-events-to-javascript" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sending Events to JavaScript</h2>
 <p>The native module can signal events to JavaScript without being invoked directly. The preferred way to do this is to subclass <code>RCTEventEmitter</code>, implement <code>supportedEvents</code> and call <code>self sendEventWithName</code>:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManager.h</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManager.h</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTEventEmitter.h&gt;</span></span>
 
@@ -287,7 +291,7 @@ RCT_EXPORT_METHOD(updateStatusBarAnimation:(<span class="hljs-built_in">UIStatus
 
 <span class="hljs-keyword">@end</span>
 </code></pre>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManager.m</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManager.m</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">"CalendarManager.h"</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
@@ -308,7 +312,7 @@ RCT_EXPORT_MODULE();
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>JavaScript code can subscribe to these events by creating a new <code>NativeEventEmitter</code> instance around your module.</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">import</span> { NativeEventEmitter, NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> { NativeEventEmitter, NativeModules } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 <span class="hljs-keyword">const</span> { CalendarManager } = NativeModules;
 
 <span class="hljs-keyword">const</span> calendarManagerEmitter = <span class="hljs-keyword">new</span> NativeEventEmitter(CalendarManager);
@@ -324,7 +328,7 @@ subscription.remove();
 <p>For more examples of sending events to JavaScript, see <a href="https://github.com/facebook/react-native/blob/master/Libraries/Geolocation/RCTLocationObserver.m"><code>RCTLocationObserver</code></a>.</p>
 <h3><a class="anchor" aria-hidden="true" id="optimizing-for-zero-listeners"></a><a href="#optimizing-for-zero-listeners" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Optimizing for zero listeners</h3>
 <p>You will receive a warning if you expend resources unnecessarily by emitting an event while there are no listeners. To avoid this, and to optimize your module's workload (e.g. by unsubscribing from upstream notifications or pausing background tasks), you can override <code>startObserving</code> and <code>stopObserving</code> in your <code>RCTEventEmitter</code> subclass.</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-class"><span class="hljs-keyword">@implementation</span> <span class="hljs-title">CalendarManager</span></span>
 {
   <span class="hljs-keyword">bool</span> hasListeners;
 }
@@ -352,7 +356,7 @@ subscription.remove();
 <h2><a class="anchor" aria-hidden="true" id="exporting-swift"></a><a href="#exporting-swift" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Exporting Swift</h2>
 <p>Swift doesn't have support for macros so exposing it to React Native requires a bit more setup but works relatively the same.</p>
 <p>Let's say we have the same <code>CalendarManager</code> but as a Swift class:</p>
-<pre><code class="hljs css languages- swift"><span class="hljs-comment">// CalendarManager.swift</span>
+<pre><code class="hljs css language-swift"><span class="hljs-comment">// CalendarManager.swift</span>
 
 <span class="hljs-meta">@objc</span>(<span class="hljs-type">CalendarManager</span>)
 <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CalendarManager</span>: <span class="hljs-title">NSObject</span> </span>{
@@ -373,7 +377,7 @@ subscription.remove();
 <p><strong>NOTE</strong>: It is important to use the @objc modifiers to ensure the class and functions are exported properly to the Objective-C runtime.</p>
 </blockquote>
 <p>Then create a private implementation file that will register the required information with the React Native bridge:</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManagerBridge.m</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManagerBridge.m</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
 
 <span class="hljs-class"><span class="hljs-keyword">@interface</span> <span class="hljs-title">RCT_EXTERN_MODULE</span>(<span class="hljs-title">CalendarManager</span>, <span class="hljs-title">NSObject</span>)</span>
@@ -383,7 +387,7 @@ RCT_EXTERN_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 <span class="hljs-keyword">@end</span>
 </code></pre>
 <p>For those of you new to Swift and Objective-C, whenever you <a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html">mix the two languages in an iOS project</a>, you will also need an additional bridging file, known as a bridging header, to expose the Objective-C files to Swift. Xcode will offer to create this header file for you if you add your Swift file to your app through the Xcode <code>File&gt;New File</code> menu option. You will need to import <code>RCTBridgeModule.h</code> in this header file.</p>
-<pre><code class="hljs css languages- objectivec"><span class="hljs-comment">// CalendarManager-Bridging-Header.h</span>
+<pre><code class="hljs css language-objectivec"><span class="hljs-comment">// CalendarManager-Bridging-Header.h</span>
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTBridgeModule.h&gt;</span></span>
 </code></pre>
 <p>You can also use <code>RCT_EXTERN_REMAP_MODULE</code> and <code>_RCT_EXTERN_REMAP_METHOD</code> to alter the JavaScript name of the module or methods you are exporting. For more information see <a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTBridgeModule.h"><code>RCTBridgeModule</code></a>.</p>

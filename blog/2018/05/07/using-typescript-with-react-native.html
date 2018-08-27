@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -29,14 +33,14 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/react-native/blog/2018/05/07/using-typescript-with-react-native">Using TypeScript with React Native</a></h1><p class="post-meta">May 7, 2018</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/ashfurrow" target="_blank" rel="noreferrer noopener">Ash Furrow</a>Software Engineer at Artsy</p><div class="authorPhoto authorPhotoBig"><a href="https://github.com/ashfurrow" target="_blank" rel="noreferrer noopener"><img src="https://avatars2.githubusercontent.com/u/498212?s=460&amp;v=4"/></a></div></div></header><div><span><p>JavaScript! We all love it. But some of us also love <a href="https://en.wikipedia.org/wiki/Data_type">types</a>. Luckily, options exist to add stronger types to JavaScript. My favourite is <a href="https://www.typescriptlang.org">TypeScript</a>, but React Native supports <a href="https://flow.org">Flow</a> out of the box. Which you prefer is a matter of preference, they each have their own approach on how to add the magic of types to JavaScript. Today, we're going to look at how to use TypeScript in React Native apps.</p>
+        </script></nav></div><div class="container mainContainer postContainer blogContainer"><div class="wrapper"><div class="lonePost"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle"><a href="/react-native/blog/2018/05/07/using-typescript-with-react-native">Using TypeScript with React Native</a></h1><p class="post-meta">May 7, 2018</p><div class="authorBlock"><p class="post-authorName"><a href="https://github.com/ashfurrow" target="_blank" rel="noreferrer noopener">Ash Furrow</a>Software Engineer at Artsy</p><div class="authorPhoto authorPhotoBig"><a href="https://github.com/ashfurrow" target="_blank" rel="noreferrer noopener"><img src="https://avatars2.githubusercontent.com/u/498212?s=460&amp;v=4" alt="Ash Furrow"/></a></div></div></header><div><span><p>JavaScript! We all love it. But some of us also love <a href="https://en.wikipedia.org/wiki/Data_type">types</a>. Luckily, options exist to add stronger types to JavaScript. My favourite is <a href="https://www.typescriptlang.org">TypeScript</a>, but React Native supports <a href="https://flow.org">Flow</a> out of the box. Which you prefer is a matter of preference, they each have their own approach on how to add the magic of types to JavaScript. Today, we're going to look at how to use TypeScript in React Native apps.</p>
 <p>We'll be using Microsoft's <a href="https://github.com/Microsoft/TypeScript-React-Native-Starter">TypeScript-React-Native-Starter</a> repo as a guide.</p>
 <h2><a class="anchor" aria-hidden="true" id="prerequisites"></a><a href="#prerequisites" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Prerequisites</h2>
 <p>Because you might be developing on one of several different platforms, targeting several different types of devices, basic setup can be involved. You should first ensure that you can run a plain React Native app without TypeScript. Follow <a href="https://facebook.github.io/react-native/docs/getting-started.html">the instructions on the React Native website to get started</a>. When you've managed to deploy to a device or emulator, you'll be ready to start a TypeScript React Native app.</p>
 <p>You will also need <a href="https://nodejs.org/en/">Node.js</a>, <a href="https://www.npmjs.com">npm</a>, and <a href="https://yarnpkg.com/lang/en">Yarn</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="initializing"></a><a href="#initializing" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Initializing</h2>
 <p>Once you've tried scaffolding out an ordinary React Native project, you'll be ready to start adding TypeScript. Let's go ahead and do that.</p>
-<pre><code class="hljs css languages- sh">react-native init MyAwesomeProject
+<pre><code class="hljs css language-sh">react-native init MyAwesomeProject
 <span class="hljs-built_in">cd</span> MyAwesomeProject
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="adding-typescript"></a><a href="#adding-typescript" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding TypeScript</h2>
@@ -49,20 +53,20 @@
 <li>adds <a href="https://github.com/DefinitelyTyped/DefinitelyTyped">typings</a> for React and React Native</li>
 </ul>
 <p>Okay, let's go ahead and run these.</p>
-<pre><code class="hljs css languages- sh">yarn add --dev typescript
+<pre><code class="hljs css language-sh">yarn add --dev typescript
 yarn add --dev react-native-typescript-transformer
 yarn tsc --init --pretty --jsx react
 touch rn-cli.config.js
 yarn add --dev @types/react @types/react-native
 </code></pre>
 <p>The <code>tsconfig.json</code> file contains all the settings for the TypeScript compiler. The defaults created by the command above are mostly fine, but open the file and uncomment the following line:</p>
-<pre><code class="hljs css languages- js">{
+<pre><code class="hljs css language-js">{
   <span class="hljs-comment">/* Search the config file for the following line and uncomment it. */</span>
   <span class="hljs-comment">// "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */</span>
 }
 </code></pre>
 <p>The <code>rn-cli.config.js</code> contains the settings for the React Native TypeScript Transformer. Open it and add the following:</p>
-<pre><code class="hljs css languages- js"><span class="hljs-built_in">module</span>.exports = {
+<pre><code class="hljs css language-js"><span class="hljs-built_in">module</span>.exports = {
   getTransformModulePath() {
     <span class="hljs-keyword">return</span> <span class="hljs-built_in">require</span>.resolve(<span class="hljs-string">'react-native-typescript-transformer'</span>);
   },
@@ -74,7 +78,7 @@ yarn add --dev @types/react @types/react-native
 <h2><a class="anchor" aria-hidden="true" id="migrating-to-typescript"></a><a href="#migrating-to-typescript" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Migrating to TypeScript</h2>
 <p>Rename the generated <code>App.js</code> and <code>__tests_/App.js</code> files to <code>App.tsx</code>. <code>index.js</code> needs to use the <code>.js</code> extension. All new files should use the <code>.tsx</code> extension (or <code>.ts</code> if the file doesn't contain any JSX).</p>
 <p>If you tried to run the app now, you'd get an error like <code>object prototype may only be an object or null</code>. This is caused by a failure to import the default export from React as well as a named export on the same line. Open <code>App.tsx</code> and modify the import at the top of the file:</p>
-<pre><code class="hljs css languages- diff"><span class="hljs-deletion">-import React, { Component } from 'react';</span>
+<pre><code class="hljs css language-diff"><span class="hljs-deletion">-import React, { Component } from 'react';</span>
 <span class="hljs-addition">+import React from 'react'</span>
 <span class="hljs-addition">+import { Component } from 'react';</span>
 </code></pre>
@@ -82,10 +86,10 @@ yarn add --dev @types/react @types/react-native
 <p>At this point, you should be able to run the React Native app.</p>
 <h2><a class="anchor" aria-hidden="true" id="adding-typescript-testing-infrastructure"></a><a href="#adding-typescript-testing-infrastructure" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding TypeScript Testing Infrastructure</h2>
 <p>React Native ships with <a href="https://github.com/facebook/jest">Jest</a>, so for testing a React Native app with TypeScript, we'll want to add <a href="https://www.npmjs.com/package/ts-jest">ts-jest</a> to our <code>devDependencies</code>.</p>
-<pre><code class="hljs css languages- sh">yarn add --dev ts-jest
+<pre><code class="hljs css language-sh">yarn add --dev ts-jest
 </code></pre>
 <p>Then, we'll open up our <code>package.json</code> and replace the <code>jest</code> field with the following:</p>
-<pre><code class="hljs css languages- js">{
+<pre><code class="hljs css language-js">{
   <span class="hljs-string">"jest"</span>: {
     <span class="hljs-string">"preset"</span>: <span class="hljs-string">"react-native"</span>,
     <span class="hljs-string">"moduleFileExtensions"</span>: [
@@ -110,18 +114,18 @@ yarn add --dev @types/react @types/react-native
 <h2><a class="anchor" aria-hidden="true" id="installing-dependency-type-declarations"></a><a href="#installing-dependency-type-declarations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing Dependency Type Declarations</h2>
 <p>To get the best experience in TypeScript, we want the type-checker to understand the shape and API of our dependencies. Some libraries will publish their packages with <code>.d.ts</code> files (type declaration/type definition files), which can describe the shape of the underlying JavaScript. For other libraries, we'll need to explicitly install the appropriate package in the <code>@types/</code> npm scope.</p>
 <p>For example, here we'll need types for Jest, React, and React Native, and React Test Renderer.</p>
-<pre><code class="hljs css languages- ts">yarn add --dev <span class="hljs-meta">@types</span>/jest <span class="hljs-meta">@types</span>/react <span class="hljs-meta">@types</span>/react-native <span class="hljs-meta">@types</span>/react-test-renderer
+<pre><code class="hljs css language-ts">yarn add --dev <span class="hljs-meta">@types</span>/jest <span class="hljs-meta">@types</span>/react <span class="hljs-meta">@types</span>/react-native <span class="hljs-meta">@types</span>/react-test-renderer
 </code></pre>
 <p>We saved these declaration file packages to our <em>dev</em> dependencies because this is a React Native <em>app</em> that only uses these dependencies during development and not during runtime. If we were publishing a library to NPM, we might have to add some of these type dependencies as regular dependencies.</p>
 <p>You can read more <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html">here about getting <code>.d.ts</code> files</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="ignoring-more-files"></a><a href="#ignoring-more-files" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Ignoring More Files</h2>
 <p>For your source control, you'll want to start ignoring the <code>.jest</code> folder. If you're using git, we can just add entries to our <code>.gitignore</code> file.</p>
-<pre><code class="hljs css languages- config"><span class="hljs-meta">#</span><span class="bash"> Jest</span>
+<pre><code class="hljs css language-config"><span class="hljs-meta">#</span><span class="bash"> Jest</span>
 <span class="hljs-meta">#</span><span class="bash"></span>
 .jest/
 </code></pre>
 <p>As a checkpoint, consider committing your files into version control.</p>
-<pre><code class="hljs css languages- sh">git init
+<pre><code class="hljs css language-sh">git init
 git add .gitignore <span class="hljs-comment"># import to do this first, to ignore our files</span>
 git add .
 git commit -am <span class="hljs-string">"Initial commit."</span>
@@ -129,7 +133,7 @@ git commit -am <span class="hljs-string">"Initial commit."</span>
 <h2><a class="anchor" aria-hidden="true" id="adding-a-component"></a><a href="#adding-a-component" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a Component</h2>
 <p>Let's add a component to our app. Let's go ahead and create a <code>Hello.tsx</code> component. It's a pedagogical component, not something that you'd actually write in an app, but something nontrivial that shows off how to use TypeScript in React Native.</p>
 <p>Create a <code>components</code> directory and add the following example.</p>
-<pre><code class="hljs css languages- ts">// components/Hello.tsx
+<pre><code class="hljs css language-ts">// components/Hello.tsx
 import React from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 
@@ -225,10 +229,10 @@ const styles = StyleSheet.create({
 <h2><a class="anchor" aria-hidden="true" id="adding-a-component-test"></a><a href="#adding-a-component-test" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a Component Test</h2>
 <p>Now that we've got a component, let's try testing it.</p>
 <p>We already have Jest installed as a test runner. We're going to write snapshot tests for our components, let's add the required add-on for snapshot tests:</p>
-<pre><code class="hljs css languages- sh">yarn add --dev react-addons-test-utils
+<pre><code class="hljs css language-sh">yarn add --dev react-addons-test-utils
 </code></pre>
 <p>Now let's create a <code>__tests__</code> folder in the <code>components</code> directory and add a test for <code>Hello.tsx</code>:</p>
-<pre><code class="hljs css languages- ts"><span class="hljs-comment">// components/__tests__/Hello.tsx</span>
+<pre><code class="hljs css language-ts"><span class="hljs-comment">// components/__tests__/Hello.tsx</span>
 <span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> renderer <span class="hljs-keyword">from</span> <span class="hljs-string">'react-test-renderer'</span>;
 
@@ -245,7 +249,7 @@ it(<span class="hljs-string">'renders correctly with defaults'</span>, <span cla
 <h2><a class="anchor" aria-hidden="true" id="next-steps"></a><a href="#next-steps" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Next Steps</h2>
 <p>Check out the official <a href="https://reactjs.org/tutorial/tutorial.html">React tutorial</a> and state-management library <a href="http://redux.js.org">Redux</a>. These resources can be helpful when writing React Native apps. Additionally, you may want to look at <a href="https://microsoft.github.io/reactxp/">ReactXP</a>, a component library written entirely in TypeScript that supports both React on the web as well as React Native.</p>
 <p>Have fun in a more type-safe React Native development environment!</p>
-</span></div></div><div class="blogSocialSection"><div class="blogSocialSectionItem"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Using TypeScript with React Native" data-url="https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native" data-related="reactnative" data-via="ashfurrow" data-show-count="false"></a></div><div class="blogSocialSectionItem"><div class="fb-like" data-href="https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div></div></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+</span></div></div><div class="blogSocialSection"><div class="blogSocialSectionItem"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Using TypeScript with React Native" data-url="https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native" data-related="reactnative" data-via="ashfurrow" data-show-count="false">Tweet</a></div><div class="blogSocialSectionItem"><div class="fb-like" data-href="https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native" data-layout="standard" data-share="true" data-width="225" data-show-faces="false"></div></div></div></div><div class="blog-recent"><a class="button" href="/react-native/blog">Recent Posts</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
               var search = docsearch({
                 

@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -37,7 +41,7 @@
 <h4><a class="anchor" aria-hidden="true" id="accessible-ios-android"></a><a href="#accessible-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessible (iOS, Android)</h4>
 <p>When <code>true</code>, indicates that the view is an accessibility element. When a view is an accessibility element, it groups its children into a single selectable component. By default, all touchable elements are accessible.</p>
 <p>On Android, <code>accessible={true}</code> property for a react-native View will be translated into native <code>focusable={true}</code>.</p>
-<pre><code class="hljs css languages- javascript">&lt;View accessible={true}&gt;
+<pre><code class="hljs css language-javascript">&lt;View accessible={true}&gt;
   &lt;Text&gt;text one&lt;/Text&gt;
   &lt;Text&gt;text two&lt;/Text&gt;
 &lt;/View&gt;
@@ -46,7 +50,7 @@
 <h4><a class="anchor" aria-hidden="true" id="accessibilitylabel-ios-android"></a><a href="#accessibilitylabel-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityLabel (iOS, Android)</h4>
 <p>When a view is marked as accessible, it is a good practice to set an accessibilityLabel on the view, so that people who use VoiceOver know what element they have selected. VoiceOver will read this string when a user selects the associated element.</p>
 <p>To use, set the <code>accessibilityLabel</code> property to a custom string on your View:</p>
-<pre><code class="hljs css languages- javascript">&lt;TouchableOpacity
+<pre><code class="hljs css language-javascript">&lt;TouchableOpacity
   accessible={true}
   accessibilityLabel={'Tap me!'}
   onPress={this._onPress}&gt;
@@ -90,7 +94,7 @@
 <p>Assign this property to a custom function which will be called when someone performs the &quot;magic tap&quot; gesture, which is a double-tap with two fingers. A magic tap function should perform the most relevant action a user could take on a component. In the Phone app on iPhone, a magic tap answers a phone call, or ends the current one. If the selected element does not have an <code>onMagicTap</code> function, the system will traverse up the view hierarchy until it finds a view that does.</p>
 <h4><a class="anchor" aria-hidden="true" id="accessibilitycomponenttype-android"></a><a href="#accessibilitycomponenttype-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityComponentType (Android)</h4>
 <p>In some cases, we also want to alert the end user of the type of selected component (i.e., that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. We support 'none', ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’.</p>
-<pre><code class="hljs css languages- javascript">&lt;TouchableWithoutFeedback accessibilityComponentType=”button”
+<pre><code class="hljs css language-javascript">&lt;TouchableWithoutFeedback accessibilityComponentType=”button”
   onPress={this._onPress}&gt;
   &lt;View style={styles.button}&gt;
     &lt;Text style={styles.buttonText}&gt;Press me!&lt;/Text&gt;
@@ -105,7 +109,7 @@
 <li><strong>polite</strong> Accessibility services should announce changes to this view.</li>
 <li><strong>assertive</strong> Accessibility services should interrupt ongoing speech to immediately announce changes to this view.</li>
 </ul>
-<pre><code class="hljs css languages- javascript">&lt;TouchableWithoutFeedback onPress={this._addOne}&gt;
+<pre><code class="hljs css language-javascript">&lt;TouchableWithoutFeedback onPress={this._addOne}&gt;
   &lt;View style={styles.embedded}&gt;
     &lt;Text&gt;Click me&lt;/Text&gt;
   &lt;/View&gt;
@@ -117,7 +121,7 @@
 <p>In the above example method _addOne changes the state.count variable. As soon as an end user clicks the TouchableWithoutFeedback, TalkBack reads text in the Text view because of its 'accessibilityLiveRegion=”polite”' property.</p>
 <h4><a class="anchor" aria-hidden="true" id="importantforaccessibility-android"></a><a href="#importantforaccessibility-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>importantForAccessibility (Android)</h4>
 <p>In the case of two overlapping UI components with the same parent, default accessibility focus can have unpredictable behavior. The ‘importantForAccessibility’ property will resolve this by controlling if a view fires accessibility events and if it is reported to accessibility services. It can be set to ‘auto’, ‘yes’, ‘no’ and ‘no-hide-descendants’ (the last value will force accessibility services to ignore the component and all of its children).</p>
-<pre><code class="hljs css languages- javascript">&lt;View style={styles.container}&gt;
+<pre><code class="hljs css language-javascript">&lt;View style={styles.container}&gt;
   &lt;View style={{position: 'absolute', left: 10, top: 10, right: 10, height: 100,
     backgroundColor: 'green'}} importantForAccessibility=”yes”&gt;
     &lt;Text&gt; First layout &lt;/Text&gt;
@@ -133,7 +137,7 @@
 <p>The <code>AccessibilityInfo</code> API allows you to determine whether or not a screen reader is currently active. See the <a href="/react-native/docs/0.9/accessibilityinfo">AccessibilityInfo documentation</a> for details.</p>
 <h3><a class="anchor" aria-hidden="true" id="sending-accessibility-events-android"></a><a href="#sending-accessibility-events-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sending Accessibility Events (Android)</h3>
 <p>Sometimes it is useful to trigger an accessibility event on a UI component (i.e. when a custom view appears on a screen or a custom radio button has been selected). Native UIManager module exposes a method ‘sendAccessibilityEvent’ for this purpose. It takes two arguments: view tag and a type of an event.</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-keyword">import</span> { UIManager, findNodeHandle } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> { UIManager, findNodeHandle } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 _onPress: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> radioButton = <span class="hljs-keyword">this</span>.state.radioButton === <span class="hljs-string">'radiobutton_checked'</span> ?

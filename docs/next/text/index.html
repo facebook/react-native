@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -95,7 +99,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>,
 </code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BoldAndBeautiful%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontWeight%3A%20'bold'%7D%7D%3E%0A%20%20%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7Bcolor%3A%20'red'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20and%20red%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BoldAndBeautiful)%3B%0A" frame-border="0"></iframe></div>
 
 <p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-string">"I am bold and red"</span>
+<pre><code class="hljs css language-javascript"><span class="hljs-string">"I am bold and red"</span>
 <span class="hljs-number">0</span><span class="hljs-number">-9</span>: bold
 <span class="hljs-number">9</span><span class="hljs-number">-17</span>: bold, red
 </code></pre>
@@ -125,7 +129,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" id="containers"></a><a href="#containers" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Containers</h2>
 <p>The <code>&lt;Text&gt;</code> element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a <code>&lt;Text&gt;</code> are no longer rectangles, but wrap when they see the end of the line.</p>
-<pre><code class="hljs css languages- javascript">&lt;Text&gt;
+<pre><code class="hljs css language-javascript">&lt;Text&gt;
   &lt;Text&gt;First part and &lt;/Text&gt;
   &lt;Text&gt;second part&lt;/Text&gt;
 &lt;/Text&gt;
@@ -145,7 +149,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="limited-style-inheritance"></a><a href="#limited-style-inheritance" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Limited Style Inheritance</h2>
 <p>On the web, the usual way to set a font family and size for the entire document is to take advantage of inherited CSS properties like so:</p>
-<pre><code class="hljs css languages- css"><span class="hljs-selector-tag">html</span> {
+<pre><code class="hljs css language-css"><span class="hljs-selector-tag">html</span> {
   <span class="hljs-attribute">font-family</span>: <span class="hljs-string">'lucida grande'</span>, tahoma, verdana, arial, sans-serif;
   <span class="hljs-attribute">font-size</span>: <span class="hljs-number">11px</span>;
   <span class="hljs-attribute">color</span>: <span class="hljs-number">#141823</span>;
@@ -153,7 +157,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 </code></pre>
 <p>All elements in the document will inherit this font unless they or one of their parents specifies a new rule.</p>
 <p>In React Native, we are more strict about it: <strong>you must wrap all the text nodes inside of a <code>&lt;Text&gt;</code> component</strong>. You cannot have a text node directly under a <code>&lt;View&gt;</code>.</p>
-<pre><code class="hljs css languages- javascript">// BAD: will raise exception, can't have a text node as child of a &lt;View&gt;
+<pre><code class="hljs css language-javascript">// BAD: will raise exception, can't have a text node as child of a &lt;View&gt;
 &lt;View&gt;
   Some text
 &lt;/View&gt;
@@ -166,7 +170,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 &lt;/View&gt;
 </code></pre>
 <p>You also lose the ability to set up a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component <code>MyAppText</code> that includes them and use this component across your app. You can also use this component to make more specific components like <code>MyAppHeaderText</code> for other kinds of text.</p>
-<pre><code class="hljs css languages- javascript">&lt;View&gt;
+<pre><code class="hljs css language-javascript">&lt;View&gt;
   &lt;MyAppText&gt;
     Text styled with the default font for the entire application
   &lt;/MyAppText&gt;
@@ -174,7 +178,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 &lt;/View&gt;
 </code></pre>
 <p>Assuming that <code>MyAppText</code> is a component that simply renders out its children into a <code>Text</code> component with styling, then <code>MyAppHeaderText</code> can be defined as follows:</p>
-<pre><code class="hljs css languages- javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyAppHeaderText</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+<pre><code class="hljs css language-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyAppHeaderText</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MyAppText</span>&gt;</span>
@@ -186,7 +190,7 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
 </code></pre>
 <p>Composing <code>MyAppText</code> in this way ensures that we get the styles from a top-level component, but leaves us the ability to add / override them in specific use cases.</p>
 <p>React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.</p>
-<pre><code class="hljs css languages- javascript">&lt;Text style={{fontWeight: 'bold'}}&gt;
+<pre><code class="hljs css language-javascript">&lt;Text style={{fontWeight: 'bold'}}&gt;
   I am bold
   &lt;Text style={{color: 'red'}}&gt;and red&lt;/Text&gt;
 &lt;/Text&gt;
