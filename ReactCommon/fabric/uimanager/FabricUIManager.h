@@ -51,7 +51,6 @@ public:
 
 #pragma mark - Native-facing Interface
 
-  void dispatchEventToEmptyTarget(const std::string &type, const folly::dynamic &payload) const;
   void dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
   void releaseEventTarget(const EventTarget &eventTarget) const;
 
