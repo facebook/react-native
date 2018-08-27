@@ -15,6 +15,8 @@ const React = require('React');
 const ScrollView = require('ScrollView');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
+const invariant = require('fbjs/lib/invariant');
+
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
@@ -322,6 +324,28 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     }
   }
 
+  constructor(props: Props<SectionT>) {
+    super(props);
+    this._checkProps(this.props);
+  }
+
+  componentDidUpdate(prevProps: Props<SectionT>) {
+    this._checkProps(this.props);
+  }
+
+  _checkProps(props: Props<SectionT>) {
+    const {
+      getItem,
+      getItemCount,
+      getItemParam,
+    } = props;
+    invariant(
+      !getItem && !getItemCount && !getItemParam,
+      'SectionList does not support custom data formats.',
+    );
+  }
+
+
   render() {
     const List = this.props.legacyImplementation
       ? MetroListView
@@ -329,13 +353,15 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.66 was deployed. To see the error delete this
      * comment and run Flow. */
-    return <List
-              {...this.props}
-              ref={this._captureRef}
-              getItemCount={ (items) => items.length }
-              getItem={ (items, index) => items[index] }
-              getItemParam={ (item, param) => item[param] }
-            />;
+    return (
+      <List
+        {...this.props}
+        ref={this._captureRef}
+        getItemCount={items => items.length}
+        getItem={(items, index) => items[index]}
+        getItemParam={(item, param) => item[param]}
+      />
+    );
   }
 
   _wrapperListRef: MetroListView | VirtualizedSectionList<any>;

@@ -27,14 +27,6 @@ type SectionBase = any;
 type RequiredProps<SectionT: SectionBase> = {
   sections: $ReadOnlyArray<SectionT>,
   /**
-   * A generic accessor for extracting an item from any sort of data blob.
-   */
-  getItem: (data: any, index: number) => ?Item,
-  /**
-   * Determines how many items are in the data blob.
-   */
-  getItemCount: (data: any) => number,
-  /**
    * A generic accessor for extracting a section option from any sort of data blob.
    */
   getItemParam: (section: any, name: string) => ?Option,
@@ -105,7 +97,8 @@ type OptionalProps<SectionT: SectionBase> = {
    */
   refreshing?: ?boolean,
 };
-
+/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
+ * comment to see the errors */
 export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedListProps;
@@ -124,7 +117,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   Props<SectionT>,
   State,
 > {
-
   static defaultProps: DefaultProps = {
     ...VirtualizedList.defaultProps,
     data: [],
@@ -142,12 +134,14 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   _computeState(props: Props<SectionT>): State {
     const offset = props.ListHeaderComponent ? 1 : 0;
     const stickyHeaderIndices = [];
-    const itemCount = props.sections.reduce((v, section) => {
-      const sectionData = props.getItemParam(section, 'data');
+    const itemCount = props.sections
+      ? props.sections.reduce((v, section) => {
+          const sectionData = props.getItemParam(section, 'data');
 
-      stickyHeaderIndices.push(v + offset);
-      return v + props.getItemCount(sectionData) + 2; // Add two for the section header and footer.
-    }, 0);
+          stickyHeaderIndices.push(v + offset);
+          return v + props.getItemCount(sectionData) + 2; // Add two for the section header and footer.
+        }, 0)
+      : 0;
 
     return {
       childProps: {
@@ -241,11 +235,16 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
           trailingSection: this.props.getItem(this.props.sections, ii + 1),
         };
       } else {
-        const keyExtractor = this.props.getItemParam(section, 'keyExtractor') || defaultKeyExtractor;
+        const keyExtractor =
+          this.props.getItemParam(section, 'keyExtractor') ||
+          defaultKeyExtractor;
         const sectionData = this.props.getItemParam(section, 'data');
         return {
           section,
-          key: key + ':' + keyExtractor(this.props.getItem(sectionData, itemIndex), itemIndex),
+          key:
+            key +
+            ':' +
+            keyExtractor(this.props.getItem(sectionData, itemIndex), itemIndex),
           index: itemIndex,
           leadingItem: this.props.getItem(sectionData, itemIndex - 1),
           leadingSection: this.props.getItem(this.props.sections, ii - 1),
@@ -262,7 +261,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     if (!info) {
       return null;
     }
-    const keyExtractor = this.props.getItemParam(info.section, 'keyExtractor') || this.props.keyExtractor;
+    const keyExtractor =
+      this.props.getItemParam(info.section, 'keyExtractor') ||
+      this.props.keyExtractor;
     return {
       ...viewable,
       index: info.index,
@@ -307,7 +308,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
         return renderSectionFooter ? renderSectionFooter({section}) : null;
       }
     } else {
-      const renderItem = this.props.getItemParam(info.section, 'renderItem') || this.props.renderItem;
+      const renderItem =
+        this.props.getItemParam(info.section, 'renderItem') ||
+        this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
       invariant(renderItem, 'no renderItem!');
       return (
@@ -349,11 +352,13 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
       return null;
     }
     const ItemSeparatorComponent =
-      this.props.getItemParam(info.section, 'ItemSeparatorComponent') || this.props.ItemSeparatorComponent;
+      this.props.getItemParam(info.section, 'ItemSeparatorComponent') ||
+      this.props.ItemSeparatorComponent;
     const {SectionSeparatorComponent} = this.props;
     const isLastItemInList = index === this.state.childProps.getItemCount() - 1;
     const sectionData = this.props.getItemParam(info.section, 'data');
-    const isLastItemInSection = info.index === this.props.getItemCount(sectionData) - 1;
+    const isLastItemInSection =
+      info.index === this.props.getItemCount(sectionData) - 1;
     if (SectionSeparatorComponent && isLastItemInSection) {
       return SectionSeparatorComponent;
     }
@@ -515,7 +520,11 @@ class ItemWithSeparator extends React.Component<
   }
 }
 
-function getItem(props: Props<SectionBase>, sections: ?$ReadOnlyArray<Item>, index: number): ?Item {
+function getItem(
+  props: Props<SectionBase>,
+  sections: ?$ReadOnlyArray<Item>,
+  index: number,
+): ?Item {
   if (!sections) {
     return null;
   }
