@@ -28,8 +28,9 @@ public:
 
 #pragma mark - Native-facing Interface
 
-  FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry);
   ~FabricUIManager();
+
+  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
 
   /*
    * Sets and gets the UIManager's delegate.

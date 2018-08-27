@@ -17,19 +17,31 @@ namespace react {
 
 Scheduler::Scheduler(const SharedContextContainer &contextContainer):
   contextContainer_(contextContainer) {
-  const auto &eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
-  const auto &componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
 
-  uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
+  uiManager_ = std::make_shared<FabricUIManager>();
+
+  auto eventDispatcher =
+    std::make_shared<EventDispatcher>(
+      std::bind(
+        &FabricUIManager::dispatchEventToTarget,
+        uiManager_.get(),
+        std::placeholders::_1,
+        std::placeholders::_2,
+        std::placeholders::_3
+      ),
+      contextContainer->getInstance<EventBeatFactory>("synchronous"),
+      contextContainer->getInstance<EventBeatFactory>("asynchronous")
+    );
+
+  uiManager_->setComponentDescriptorRegistry(
+    ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer)
+  );
+
   uiManager_->setDelegate(this);
-
-  eventDispatcher->setUIManager(uiManager_);
-  eventDispatcher_ = eventDispatcher;
 }
 
 Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
-  eventDispatcher_->setUIManager(nullptr);
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {

@@ -80,14 +80,14 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry) {
-  componentDescriptorRegistry_ = componentDescriptorRegistry;
-}
-
 FabricUIManager::~FabricUIManager() {
   if (eventHandler_) {
     releaseEventHandlerFunction_(eventHandler_);
   }
+}
+
+void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
+  componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
 void FabricUIManager::setDelegate(UIManagerDelegate *delegate) {
