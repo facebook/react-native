@@ -71,7 +71,7 @@ private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
-  SharedSchedulerEventDispatcher eventDispatcher_;
+  SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
 };
 
