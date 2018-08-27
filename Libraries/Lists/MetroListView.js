@@ -40,7 +40,7 @@ type NormalProps = {
   /**
    * Set this true while waiting for new data from a refresh.
    */
-  refreshing?: boolean,
+  refreshing?: ?boolean,
   /**
    * If true, renders items next to each other horizontally instead of stacked vertically.
    */
@@ -112,7 +112,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
                * for React. To see the error delete this comment and run Flow.
                */
               <RefreshControl
-                refreshing={props.refreshing}
+                refreshing={props.refreshing || false}
                 onRefresh={props.onRefresh}
               />
             }

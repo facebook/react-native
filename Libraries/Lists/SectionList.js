@@ -334,11 +334,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   _checkProps(props: Props<SectionT>) {
-    const {
-      getItem,
-      getItemCount,
-      getItemParam,
-    } = props;
+    const {getItem, getItemCount, getItemParam} = props;
     invariant(
       !getItem && !getItemCount && !getItemParam,
       'SectionList does not support custom data formats.',
