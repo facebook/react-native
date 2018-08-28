@@ -22,10 +22,10 @@ type Item = any;
 type SectionItem = any;
 type Option = any;
 
-type SectionBase = any;
+type SectionBase = Object;
 
 type RequiredProps<SectionT: SectionBase> = {
-  sections: $ReadOnlyArray<SectionT>,
+  sections: $ReadOnlyArray<SectionT> | $ReadOnly<SectionT>,
   /**
    * A generic accessor for extracting a section option from any sort of data blob.
    */
@@ -122,6 +122,30 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     data: [],
   };
 
+  scrollToLocation(params: {
+    animated?: ?boolean,
+    itemIndex: number,
+    sectionIndex: number,
+    viewPosition?: number,
+  }) {
+    let index = params.itemIndex + 1;
+    for (let ii = 0; ii < params.sectionIndex; ii++) {
+      const section = this.props.getItem(this.props.sections, ii);
+      const sectionData = this.props.getItemParam(section, 'data');
+      const dataLength = this.props.getItemCount(sectionData);
+      index += dataLength + 2;
+    }
+    const toIndexParams = {
+      ...params,
+      index,
+    };
+    this._listRef.scrollToIndex(toIndexParams);
+  }
+
+  getListRef(): VirtualizedList {
+    return this._listRef;
+  }
+
   constructor(props: Props<SectionT>, context: Object) {
     super(props, context);
     this.state = this._computeState(props);
@@ -166,30 +190,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return (
       <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
     );
-  }
-
-  scrollToLocation(params: {
-    animated?: ?boolean,
-    itemIndex: number,
-    sectionIndex: number,
-    viewPosition?: number,
-  }) {
-    let index = params.itemIndex + 1;
-    for (let ii = 0; ii < params.sectionIndex; ii++) {
-      const section = this.props.getItem(this.props.sections, ii);
-      const sectionData = this.props.getItemParam(section, 'data');
-      const dataLength = this.props.getItemCount(sectionData);
-      index += dataLength + 2;
-    }
-    const toIndexParams = {
-      ...params,
-      index,
-    };
-    this._listRef.scrollToIndex(toIndexParams);
-  }
-
-  getListRef(): VirtualizedList {
-    return this._listRef;
   }
 
   _keyExtractor = (item: Item, index: number) => {

@@ -15,8 +15,6 @@ const React = require('React');
 const ScrollView = require('ScrollView');
 const VirtualizedSectionList = require('VirtualizedSectionList');
 
-const invariant = require('fbjs/lib/invariant');
-
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
 
@@ -335,12 +333,13 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
 
   _checkProps(props: Props<SectionT>) {
     const {getItem, getItemCount, getItemParam} = props;
-    invariant(
-      !getItem && !getItemCount && !getItemParam,
-      'SectionList does not support custom data formats.',
-    );
-  }
 
+    if (__DEV__) {
+      if (getItem || getItemCount || getItemParam) {
+        console.warn('SectionList does not support custom data formats.');
+      }
+    }
+  }
 
   render() {
     const List = this.props.legacyImplementation
