@@ -491,6 +491,13 @@
   dependencies:
     regenerator-transform "^0.13.3"
 
+"@babel/plugin-transform-runtime@7.0.0-beta.56":
+  version "7.0.0-beta.56"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-runtime/-/plugin-transform-runtime-7.0.0-beta.56.tgz#2630211980979b582ffd2351b18c1737824b3ea9"
+  dependencies:
+    "@babel/helper-module-imports" "7.0.0-beta.56"
+    "@babel/helper-plugin-utils" "7.0.0-beta.56"
+
 "@babel/plugin-transform-shorthand-properties@7.0.0-beta.56":
   version "7.0.0-beta.56"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-shorthand-properties/-/plugin-transform-shorthand-properties-7.0.0-beta.56.tgz#bf78900f016774a28d56ec8e83d0cec4d662b7ff"
@@ -543,6 +550,12 @@
     mkdirp "^0.5.1"
     pirates "^4.0.0"
     source-map-support "^0.4.2"
+
+"@babel/runtime@7.0.0-beta.56":
+  version "7.0.0-beta.56"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.56.tgz#cda612dffd5b1719a7b8e91e3040bd6ae64de8b0"
+  dependencies:
+    regenerator-runtime "^0.12.0"
 
 "@babel/template@7.0.0-beta.52":
   version "7.0.0-beta.52"
@@ -3817,9 +3830,26 @@ merge@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
 
-metro-babel-register@0.43.6, metro-babel-register@^0.43.6:
+metro-babel-register@0.43.6:
   version "0.43.6"
   resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.43.6.tgz#c31a68b78e726dafcb7c8964f9170bb3989c52ab"
+  dependencies:
+    "@babel/core" "7.0.0-beta.56"
+    "@babel/plugin-proposal-class-properties" "7.0.0-beta.56"
+    "@babel/plugin-proposal-nullish-coalescing-operator" "7.0.0-beta.56"
+    "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.56"
+    "@babel/plugin-proposal-optional-catch-binding" "7.0.0-beta.56"
+    "@babel/plugin-proposal-optional-chaining" "7.0.0-beta.56"
+    "@babel/plugin-transform-async-to-generator" "7.0.0-beta.56"
+    "@babel/plugin-transform-flow-strip-types" "7.0.0-beta.56"
+    "@babel/plugin-transform-modules-commonjs" "7.0.0-beta.56"
+    "@babel/register" "7.0.0-beta.56"
+    core-js "^2.2.2"
+    escape-string-regexp "^1.0.5"
+
+metro-babel-register@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.44.0.tgz#162f5fce7f99891438206a6fdd272ae92f16f3fd"
   dependencies:
     "@babel/core" "7.0.0-beta.56"
     "@babel/plugin-proposal-class-properties" "7.0.0-beta.56"
@@ -3837,6 +3867,12 @@ metro-babel-register@0.43.6, metro-babel-register@^0.43.6:
 metro-babel7-plugin-react-transform@0.43.6:
   version "0.43.6"
   resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.43.6.tgz#62d8da965abe981066fb7db5e8eea022244c77ab"
+  dependencies:
+    "@babel/helper-module-imports" "7.0.0-beta.56"
+
+metro-babel7-plugin-react-transform@0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.44.0.tgz#c444524d853fb1d9ebe1e0dfc5099c67480cebf6"
   dependencies:
     "@babel/helper-module-imports" "7.0.0-beta.56"
 
@@ -3858,7 +3894,7 @@ metro-config@0.43.6:
     metro-cache "0.43.6"
     metro-core "0.43.6"
 
-metro-core@0.43.6, metro-core@^0.43.6:
+metro-core@0.43.6:
   version "0.43.6"
   resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.43.6.tgz#067471a3d2a992165c73ebc87b674c692566b347"
   dependencies:
@@ -3867,9 +3903,18 @@ metro-core@0.43.6, metro-core@^0.43.6:
     metro-resolver "0.43.6"
     wordwrap "^1.0.0"
 
-metro-memory-fs@^0.43.6:
-  version "0.43.6"
-  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.43.6.tgz#b16cfaa1a84a43b48ae9b94132076b88916c20b3"
+metro-core@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.44.0.tgz#a99d88019b57bbd3a86d69e754fde1f7a100bcaf"
+  dependencies:
+    jest-haste-map "23.5.0"
+    lodash.throttle "^4.1.1"
+    metro-resolver "0.44.0"
+    wordwrap "^1.0.0"
+
+metro-memory-fs@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.44.0.tgz#ae30da4e124e54f43cc25b8480367e26bd430597"
 
 metro-minify-uglify@0.43.6:
   version "0.43.6"
@@ -3912,9 +3957,50 @@ metro-react-native-babel-preset@0.43.6:
     "@babel/template" "7.0.0-beta.56"
     metro-babel7-plugin-react-transform "0.43.6"
 
+metro-react-native-babel-preset@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.44.0.tgz#84ac4482d2e14f7ea71d2b5e44e76b02ad12c5c3"
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "7.0.0-beta.56"
+    "@babel/plugin-proposal-nullish-coalescing-operator" "7.0.0-beta.56"
+    "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.56"
+    "@babel/plugin-proposal-optional-catch-binding" "7.0.0-beta.56"
+    "@babel/plugin-proposal-optional-chaining" "7.0.0-beta.56"
+    "@babel/plugin-transform-arrow-functions" "7.0.0-beta.56"
+    "@babel/plugin-transform-block-scoping" "7.0.0-beta.56"
+    "@babel/plugin-transform-classes" "7.0.0-beta.56"
+    "@babel/plugin-transform-computed-properties" "7.0.0-beta.56"
+    "@babel/plugin-transform-destructuring" "7.0.0-beta.56"
+    "@babel/plugin-transform-exponentiation-operator" "7.0.0-beta.56"
+    "@babel/plugin-transform-flow-strip-types" "7.0.0-beta.56"
+    "@babel/plugin-transform-for-of" "7.0.0-beta.56"
+    "@babel/plugin-transform-function-name" "7.0.0-beta.56"
+    "@babel/plugin-transform-literals" "7.0.0-beta.56"
+    "@babel/plugin-transform-modules-commonjs" "7.0.0-beta.56"
+    "@babel/plugin-transform-object-assign" "7.0.0-beta.56"
+    "@babel/plugin-transform-parameters" "7.0.0-beta.56"
+    "@babel/plugin-transform-react-display-name" "7.0.0-beta.56"
+    "@babel/plugin-transform-react-jsx" "7.0.0-beta.56"
+    "@babel/plugin-transform-react-jsx-source" "7.0.0-beta.56"
+    "@babel/plugin-transform-regenerator" "7.0.0-beta.56"
+    "@babel/plugin-transform-shorthand-properties" "7.0.0-beta.56"
+    "@babel/plugin-transform-spread" "7.0.0-beta.56"
+    "@babel/plugin-transform-sticky-regex" "7.0.0-beta.56"
+    "@babel/plugin-transform-template-literals" "7.0.0-beta.56"
+    "@babel/plugin-transform-typescript" "7.0.0-beta.56"
+    "@babel/plugin-transform-unicode-regex" "7.0.0-beta.56"
+    "@babel/template" "7.0.0-beta.56"
+    metro-babel7-plugin-react-transform "0.44.0"
+
 metro-resolver@0.43.6:
   version "0.43.6"
   resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.43.6.tgz#aaf8a3269a327473cd83070b30731ce6e70e2c78"
+  dependencies:
+    absolute-path "^0.0.0"
+
+metro-resolver@0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.44.0.tgz#1dbb3808f3588bbc3181603efa69d30d33a17ed7"
   dependencies:
     absolute-path "^0.0.0"
 
@@ -4851,6 +4937,10 @@ regenerate@^1.2.1, regenerate@^1.4.0:
 regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
+
+regenerator-runtime@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.12.1.tgz#fa1a71544764c036f8c49b13a08b2594c9f8a0de"
 
 regenerator-transform@^0.13.3:
   version "0.13.3"
