@@ -208,7 +208,7 @@
     "metro-react-native-babel-preset": "^0.44.0",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0-beta.2",
-    "detox": "^8.0.0",
+    "detox": "^8.2.3",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
