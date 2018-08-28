@@ -588,6 +588,15 @@ public class ReactEditText extends EditText {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    
+    // Bug workaround for losing text selection ability, see:
+    // https://code.google.com/p/android/issues/detail?id=208169
+    // This should allow users to copy and paste text from TextInput elements inside ViewPagerAndroid
+    if (isEnabled()) {
+      setEnabled(false);
+      setEnabled(true);
+    }
+
     if (mContainsImages) {
       Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
