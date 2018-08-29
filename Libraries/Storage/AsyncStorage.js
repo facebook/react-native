@@ -341,7 +341,7 @@ const AsyncStorage = {
 
   StorageLocationIOS: {
     documents: 'documents',
-    applicationSupport: 'applicationSupport'
+    applicationSupport: 'applicationSupport',
   }
 };
 
