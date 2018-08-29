@@ -16,9 +16,25 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+typedef NS_ENUM(NSInteger, RCTStorageLocation) {
+  Documents,
+  ApplicationSupport
+ };
+
+@implementation RCTConvert (RCTStorageLocation)
+
+RCT_ENUM_CONVERTER(RCTStorageLocation, (@{
+  @"documents": @(Documents),
+  @"applicationSupport": @(ApplicationSupport),
+}), Documents, integerValue)
+
+@end
+
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
 static const NSUInteger RCTInlineValueThreshold = 1024;
+static NSString *manifestFilePath = nil;
+static NSString *storageDirectory = nil;
 
 #pragma mark - Static helper functions
 
@@ -66,29 +82,30 @@ static NSString *RCTReadFile(NSString *filePath, NSString *key, NSDictionary **e
   return nil;
 }
 
-static NSString *RCTGetStorageDirectory()
+static NSString *RCTGetStorageDirectory(RCTStorageLocation storageLocation)
 {
-  static NSString *storageDirectory = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
+  if (storageDirectory != nil) {
+    return storageDirectory;
+  }
 #if TARGET_OS_TV
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  storageDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
 #else
-    storageDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+  NSSearchPathDirectory path = NSDocumentDirectory;
+  if (storageLocation == ApplicationSupport) {
+    path = NSApplicationSupportDirectory;
+  }
+  storageDirectory = NSSearchPathForDirectoriesInDomains(path, NSUserDomainMask, YES).firstObject;
 #endif
-    storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
-  });
+  storageDirectory = [storageDirectory stringByAppendingPathComponent:RCTStorageDirectory];
   return storageDirectory;
 }
 
-static NSString *RCTGetManifestFilePath()
+static NSString *RCTGetManifestFilePath(RCTStorageLocation storageLocation)
 {
-  static NSString *manifestFilePath = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
-  });
-  return manifestFilePath;
+  if (manifestFilePath != nil) {
+    return manifestFilePath;
+  }
+  return manifestFilePath = [RCTGetStorageDirectory(storageLocation) stringByAppendingPathComponent:RCTManifestFileName];;
 }
 
 // Only merges objects - all other types are just clobbered (including arrays)
@@ -148,12 +165,17 @@ static NSCache *RCTGetCache()
 }
 
 static BOOL RCTHasCreatedStorageDirectory = NO;
-static NSDictionary *RCTDeleteStorageDirectory()
+static NSDictionary *RCTDeleteStorageDirectory(RCTStorageLocation storageLocation)
 {
   NSError *error;
-  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory() error:&error];
+  [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory(storageLocation) error:&error];
   RCTHasCreatedStorageDirectory = NO;
   return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
+}
+
+static BOOL RCTStorageDirectoryExists(RCTStorageLocation storageLocation)
+{
+  return [[NSFileManager defaultManager] fileExistsAtPath:RCTGetStorageDirectory(storageLocation)];
 }
 
 #pragma mark - RCTAsyncLocalStorage
@@ -165,6 +187,7 @@ static NSDictionary *RCTDeleteStorageDirectory()
   // in separate files (as opposed to nil values which don't exist).  The manifest is read off disk at startup, and
   // written to disk after all mutations.
   NSMutableDictionary<NSString *, NSString *> *_manifest;
+  RCTStorageLocation storageLocation;
 }
 
 RCT_EXPORT_MODULE()
@@ -179,7 +202,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(RCTGetMethodQueue(), ^{
     [self->_manifest removeAllObjects];
     [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
+    RCTDeleteStorageDirectory(self->storageLocation);
   });
 }
 
@@ -187,7 +210,12 @@ RCT_EXPORT_MODULE()
 {
   dispatch_async(RCTGetMethodQueue(), ^{
     [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
+    if (RCTStorageDirectoryExists(Documents)) {
+      RCTDeleteStorageDirectory(Documents);
+    }
+    if (RCTStorageDirectoryExists(ApplicationSupport)) {
+      RCTDeleteStorageDirectory(ApplicationSupport);
+    }
   });
 }
 
@@ -195,9 +223,12 @@ RCT_EXPORT_MODULE()
 {
   if (_clearOnInvalidate) {
     [RCTGetCache() removeAllObjects];
-    RCTDeleteStorageDirectory();
+    RCTDeleteStorageDirectory(storageLocation);
   }
   _clearOnInvalidate = NO;
+  manifestFilePath = nil;
+  storageDirectory = nil;
+  RCTHasCreatedStorageDirectory = false;
   [_manifest removeAllObjects];
   _haveSetup = NO;
 }
@@ -215,7 +246,7 @@ RCT_EXPORT_MODULE()
 - (NSString *)_filePathForKey:(NSString *)key
 {
   NSString *safeFileName = RCTMD5Hash(key);
-  return [RCTGetStorageDirectory() stringByAppendingPathComponent:safeFileName];
+  return [RCTGetStorageDirectory(storageLocation) stringByAppendingPathComponent:safeFileName];
 }
 
 - (NSDictionary *)_ensureSetup
@@ -228,7 +259,7 @@ RCT_EXPORT_MODULE()
 
   NSError *error = nil;
   if (!RCTHasCreatedStorageDirectory) {
-    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory()
+    [[NSFileManager defaultManager] createDirectoryAtPath:RCTGetStorageDirectory(storageLocation)
                               withIntermediateDirectories:YES
                                                attributes:nil
                                                     error:&error];
@@ -239,7 +270,7 @@ RCT_EXPORT_MODULE()
   }
   if (!_haveSetup) {
     NSDictionary *errorOut;
-    NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), RCTManifestFileName, &errorOut);
+    NSString *serialized = RCTReadFile(RCTGetManifestFilePath(storageLocation), RCTManifestFileName, &errorOut);
     _manifest = serialized ? RCTJSONParseMutable(serialized, &error) : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
@@ -254,7 +285,7 @@ RCT_EXPORT_MODULE()
 {
   NSError *error;
   NSString *serialized = RCTJSONStringify(_manifest, &error);
-  [serialized writeToFile:RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
+  [serialized writeToFile:RCTGetManifestFilePath(storageLocation) atomically:YES encoding:NSUTF8StringEncoding error:&error];
   NSDictionary *errorOut;
   if (error) {
     errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
@@ -443,7 +474,7 @@ RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
   [_manifest removeAllObjects];
   [RCTGetCache() removeAllObjects];
-  NSDictionary *error = RCTDeleteStorageDirectory();
+  NSDictionary *error = RCTDeleteStorageDirectory(storageLocation);
   callback(@[RCTNullIfNil(error)]);
 }
 
@@ -455,6 +486,12 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
   } else {
     callback(@[(id)kCFNull, _manifest.allKeys]);
   }
+}
+
+RCT_EXPORT_METHOD(setStorageLocation:(RCTStorageLocation)location)
+{
+  storageLocation = location;
+  [self invalidate];
 }
 
 @end
