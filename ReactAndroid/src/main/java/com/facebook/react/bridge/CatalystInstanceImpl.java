@@ -23,6 +23,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
+import java.lang.annotation.Native;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -306,13 +307,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native void jniCallJSCallback(int callbackID, NativeArray arguments);
 
   @Override
-  public void invokeCallback(final int callbackID, final NativeArray arguments) {
+  public void invokeCallback(final int callbackID, final NativeArrayInterface arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
       return;
     }
 
-    jniCallJSCallback(callbackID, arguments);
+    jniCallJSCallback(callbackID, (NativeArray) arguments);
   }
 
   /**
