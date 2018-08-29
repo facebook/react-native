@@ -1,5 +1,5 @@
 load(
-    "//ReactNative:DEFS.bzl",
+    "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID_JSC_DEPS",
     "APPLE",
     "APPLE_JSC_DEPS",
