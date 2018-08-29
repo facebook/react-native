@@ -47,10 +47,10 @@ let RCTScrollContentView;
 if (Platform.OS === 'android') {
   AndroidScrollView = requireNativeComponent('RCTScrollView');
   AndroidHorizontalScrollView = requireNativeComponent(
-    'AndroidHorizontalScrollView',
+    'RCTAndroidHorizontalScrollView',
   );
   AndroidHorizontalScrollContentView = requireNativeComponent(
-    'AndroidHorizontalScrollContentView',
+    'RCTAndroidHorizontalScrollContentView',
   );
 } else if (Platform.OS === 'ios') {
   RCTScrollView = requireNativeComponent('RCTScrollView');
