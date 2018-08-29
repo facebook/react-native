@@ -1,0 +1,26 @@
+# BUILD FILE SYNTAX: SKYLARK
+load(
+    "@xplat//ReactNative:DEFS.bzl",
+    "react_native_dep",
+    "react_native_integration_tests_target",
+    "react_native_target",
+    "rn_android_library",
+)
+
+rn_android_library(
+  name = "core",
+  srcs = glob(["*.java"]),
+  deps = [
+    react_native_dep("java/com/facebook/fbreact/testing:testing"),
+    react_native_dep("third-party/java/espresso:espresso"),
+    react_native_dep("third-party/java/fest:fest"),
+    react_native_dep("third-party/java/junit:junit"),
+    react_native_dep("third-party/java/testing-support-lib:testing-support-lib"),
+    react_native_integration_tests_target("java/com/facebook/react/testing:testing"),
+    react_native_integration_tests_target("java/com/facebook/react/testing/rule:rule"),
+    react_native_target("java/com/facebook/react:react"),
+    react_native_target("java/com/facebook/react/bridge:bridge"),
+    react_native_target("java/com/facebook/react/shell:shell"),
+    react_native_target("java/com/facebook/react/uimanager:uimanager"),
+  ],
+)
