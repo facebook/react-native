@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 public class ReactHorizontalScrollContainerViewManager
     extends ViewGroupManager<ReactHorizontalScrollContainerView> {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalScrollContentView";
+  protected static final String REACT_CLASS = "RCTAndroidHorizontalScrollContentView";
 
   public ReactHorizontalScrollContainerViewManager() {}
 

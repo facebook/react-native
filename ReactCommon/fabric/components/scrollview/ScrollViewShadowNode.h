@@ -22,10 +22,10 @@ extern const char ScrollViewComponentName[];
  */
 class ScrollViewShadowNode final:
   public ConcreteViewShadowNode<
-    ScrollViewComponentName,
-    ScrollViewProps,
-    ScrollViewEventEmitter
-  > {
+      ScrollViewComponentName,
+      ScrollViewProps,
+      ScrollViewEventEmitter
+    > {
 
 public:
 

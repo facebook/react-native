@@ -37,7 +37,7 @@ public class ReactHorizontalScrollViewManager
     extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  protected static final String REACT_CLASS = "RCTAndroidHorizontalScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
