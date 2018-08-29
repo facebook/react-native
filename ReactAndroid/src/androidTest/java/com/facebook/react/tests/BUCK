@@ -2,7 +2,7 @@ load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_integration_tes
 
 rn_android_library(
     name = "tests",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(["*.java"]),
     visibility = [
         "PUBLIC",
     ],
