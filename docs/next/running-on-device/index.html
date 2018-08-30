@@ -275,8 +275,12 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <p><img src="/react-native/docs/assets/ConfigureReleaseScheme.png" alt=""></p>
 <h3><a class="anchor" aria-hidden="true" id="3-configure-app-to-use-static-bundle"></a><a href="#3-configure-app-to-use-static-bundle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure app to use static bundle</h3>
 <p>During the development process, React Native has loaded your JavaScript code dynamically at runtime. For a production build, you want to pre-package the JavaScript bundle and distribute it inside your application. Doing this requires a code change in your code so that it knows to load the static bundle.</p>
-<p>In <code>AppDelegate.m</code>, change the default <code>jsCodeLocation</code> to point to the static bundle that is built in Release.</p>
-<pre><code class="hljs css language-objc">  jsCodeLocation = [[<span class="hljs-built_in">NSBundle</span> mainBundle] URLForResource:<span class="hljs-string">@"main"</span> withExtension:<span class="hljs-string">@"jsbundle"</span>];
+<p>In <code>AppDelegate.m</code>, change <code>jsCodeLocation</code> to point to the static bundle if you're not in debug mode.</p>
+<pre><code class="hljs css language-objc"><span class="hljs-meta">#ifdef DEBUG</span>
+  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:<span class="hljs-string">@"index"</span> fallbackResource:<span class="hljs-literal">nil</span>];
+<span class="hljs-meta">#else</span>
+  jsCodeLocation = [[<span class="hljs-built_in">NSBundle</span> mainBundle] URLForResource:<span class="hljs-string">@"main"</span> withExtension:<span class="hljs-string">@"jsbundle"</span>];
+<span class="hljs-meta">#endif</span>
 </code></pre>
 <p>This will now reference the <code>main.jsbundle</code> resource file that is created during the <code>Bundle React Native code and images</code> Build Phase in Xcode.</p>
 <blockquote>
