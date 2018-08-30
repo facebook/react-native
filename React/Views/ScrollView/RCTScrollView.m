@@ -736,6 +736,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
     // Find which axis to snap
     BOOL isHorizontal = [self isHorizontal:scrollView];
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
+    CGFloat offsetAlongAxis = isHorizontal ? _scrollView.contentOffset.x : _scrollView.contentOffset.y;
 
     // Calculate maximum content offset
     CGSize viewportSize = [self _calculateViewportSize];
@@ -769,9 +771,26 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
       ? smallerOffset
       : largerOffset;
 
-    // Chose the correct snap offset based on velocity
-    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
-    if (velocityAlongAxis > 0.0) {
+    CGFloat firstOffset = [[self.snapToOffsets firstObject] floatValue];
+    CGFloat lastOffset = [[self.snapToOffsets lastObject] floatValue];
+
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    if (!self.snapToEnd && targetOffset >= lastOffset) {
+      if (offsetAlongAxis >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!self.snapToStart && targetOffset <= firstOffset) {
+      if (offsetAlongAxis <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityAlongAxis > 0.0) {
       targetOffset = largerOffset;
     } else if (velocityAlongAxis < 0.0) {
       targetOffset = smallerOffset;

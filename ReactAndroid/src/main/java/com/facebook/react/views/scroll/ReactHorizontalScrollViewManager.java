@@ -97,6 +97,16 @@ public class ReactHorizontalScrollViewManager
     view.setSnapOffsets(offsets);
   }
 
+  @ReactProp(name = "snapToStart")
+  public void setSnapToStart(ReactHorizontalScrollView view, boolean snapToStart) {
+    view.setSnapToStart(snapToStart);
+  }
+
+  @ReactProp(name = "snapToEnd")
+  public void setSnapToEnd(ReactHorizontalScrollView view, boolean snapToEnd) {
+    view.setSnapToEnd(snapToEnd);
+  }
+
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);

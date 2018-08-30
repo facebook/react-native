@@ -67,6 +67,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
+  private boolean mSnapToStart = true;
+  private boolean mSnapToEnd = true;
   private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -153,6 +155,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   public void setSnapOffsets(List<Integer> snapOffsets) {
     mSnapOffsets = snapOffsets;
+  }
+
+  public void setSnapToStart(boolean snapToStart) {
+    mSnapToStart = snapToStart;
+  }
+
+  public void setSnapToEnd(boolean snapToEnd) {
+    mSnapToEnd = snapToEnd;
   }
 
   public void flashScrollIndicators() {
@@ -441,6 +451,8 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     int targetOffset = 0;
     int smallerOffset = 0;
     int largerOffset = maximumOffset;
+    int firstOffset = 0;
+    int lastOffset = maximumOffset;
 
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
@@ -466,6 +478,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
+      firstOffset = mSnapOffsets.get(0);
+      lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
+
       for (int i = 0; i < mSnapOffsets.size(); i ++) {
         int offset = mSnapOffsets.get(i);
 
@@ -493,10 +508,31 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       ? smallerOffset
       : largerOffset;
 
-    // Chose the correct snap offset based on velocity
-    if (velocityY > 0) {
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    if (!mSnapToEnd && targetOffset >= lastOffset) {
+      if (getScrollY() >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!mSnapToStart && targetOffset <= firstOffset) {
+      if (getScrollY() <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityY > 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityY += (int) ((largerOffset - targetOffset) * 10.0);
+
       targetOffset = largerOffset;
     } else if (velocityY < 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityY -= (int) ((targetOffset - smallerOffset) * 10.0);
+
       targetOffset = smallerOffset;
     } else {
       targetOffset = nearestOffset;
