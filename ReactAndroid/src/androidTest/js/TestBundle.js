@@ -55,6 +55,10 @@ var apps = [
       require('ScrollViewTestModule').HorizontalScrollViewTestApp,
   },
   {
+    appKey: 'ImageOverlayColorTestApp',
+    component: () => require('ImageOverlayColorTestApp'),
+  },
+  {
     appKey: 'InitialPropsTestApp',
     component: () => require('InitialPropsTestApp'),
   },
