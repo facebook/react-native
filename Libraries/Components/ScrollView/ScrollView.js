@@ -475,6 +475,22 @@ export type Props = $ReadOnly<{|
    */
   snapToOffsets?: ?$ReadOnlyArray<number>,
   /**
+   * Use in conjuction with `snapToOffsets`. By default, the beginning
+   * of the list counts as a snap offset. Set `snapToStart` to false to disable
+   * this behavior and allow the list to scroll freely between its start and
+   * the first `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToStart?: ?boolean,
+  /**
+   * Use in conjuction with `snapToOffsets`. By default, the end
+   * of the list counts as a snap offset. Set `snapToEnd` to false to disable
+   * this behavior and allow the list to scroll freely between its end and
+   * the last `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToEnd?: ?boolean,
+  /**
    * Experimental: When true, offscreen child views (whose `overflow` value is
    * `hidden`) are removed from their native backing superview when offscreen.
    * This can improve scrolling performance on long lists. The default value is
@@ -921,6 +937,10 @@ const ScrollView = createReactClass({
           ? true
           : false,
       DEPRECATED_sendUpdatedChildFrames,
+      // default to true
+      snapToStart: this.props.snapToStart !== false,
+      // default to true
+      snapToEnd: this.props.snapToEnd !== false,
       // pagingEnabled is overridden by snapToInterval / snapToOffsets
       pagingEnabled: Platform.select({
         // on iOS, pagingEnabled must be set to false to have snapToInterval / snapToOffsets work
