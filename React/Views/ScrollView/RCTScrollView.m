@@ -727,12 +727,72 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  // snapToInterval
-  // An alternative to enablePaging which allows setting custom stopping intervals,
-  // smaller than a full page size. Often seen in apps which feature horizonally
-  // scrolling items. snapToInterval does not enforce scrolling one interval at a time
-  // but guarantees that the scroll will stop at an interval point.
-  if (self.snapToInterval) {
+  if (self.snapToOffsets) {
+    // An alternative to enablePaging and snapToInterval which allows setting custom
+    // stopping points that don't have to be the same distance apart. Often seen in
+    // apps which feature horizonally scrolling items. snapToInterval does not enforce
+    // scrolling one interval at a time but guarantees that the scroll will stop at
+    // a snap offset point.
+
+    // Find which axis to snap
+    BOOL isHorizontal = [self isHorizontal:scrollView];
+
+    // Calculate maximum content offset
+    CGSize viewportSize = [self _calculateViewportSize];
+    CGFloat maximumOffset = isHorizontal
+      ? MAX(0, _scrollView.contentSize.width - viewportSize.width)
+      : MAX(0, _scrollView.contentSize.height - viewportSize.height);
+
+    // Calculate the snap offsets adjacent to the initial offset target
+    CGFloat targetOffset = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    CGFloat smallerOffset = 0.0;
+    CGFloat largerOffset = maximumOffset;
+
+    for (int i = 0; i < self.snapToOffsets.count; i++) {
+      CGFloat offset = [[self.snapToOffsets objectAtIndex:i] floatValue];
+
+      if (offset <= targetOffset) {
+        if (targetOffset - offset < targetOffset - smallerOffset) {
+          smallerOffset = offset;
+        }
+      }
+
+      if (offset >= targetOffset) {
+        if (offset - targetOffset < largerOffset - targetOffset) {
+          largerOffset = offset;
+        }
+      }
+    }
+
+    // Calculate the nearest offset
+    CGFloat nearestOffset = targetOffset - smallerOffset < largerOffset - targetOffset
+      ? smallerOffset
+      : largerOffset;
+
+    // Chose the correct snap offset based on velocity
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
+    if (velocityAlongAxis > 0.0) {
+      targetOffset = largerOffset;
+    } else if (velocityAlongAxis < 0.0) {
+      targetOffset = smallerOffset;
+    } else {
+      targetOffset = nearestOffset;
+    }
+
+    // Make sure the new offset isn't out of bounds
+    targetOffset = MIN(MAX(0, targetOffset), maximumOffset);
+
+    // Set new targetContentOffset
+    if (isHorizontal) {
+      targetContentOffset->x = targetOffset;
+    } else {
+      targetContentOffset->y = targetOffset;
+    }
+  } else if (self.snapToInterval) {
+    // An alternative to enablePaging which allows setting custom stopping intervals,
+    // smaller than a full page size. Often seen in apps which feature horizonally
+    // scrolling items. snapToInterval does not enforce scrolling one interval at a time
+    // but guarantees that the scroll will stop at an interval point.
     CGFloat snapToIntervalF = (CGFloat)self.snapToInterval;
 
     // Find which axis to snap

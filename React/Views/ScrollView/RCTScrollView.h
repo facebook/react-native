@@ -45,6 +45,7 @@
 @property (nonatomic, assign) BOOL centerContent;
 @property (nonatomic, copy) NSDictionary *maintainVisibleContentPosition;
 @property (nonatomic, assign) int snapToInterval;
+@property (nonatomic, copy) NSArray<NSNumber *> *snapToOffsets;
 @property (nonatomic, copy) NSString *snapToAlignment;
 
 // NOTE: currently these event props are only declared so we can export the
