@@ -1,6 +1,6 @@
 # BUILD FILE SYNTAX: SKYLARK
 load(
-    "@fbsource//tools/build_defs/oss:rn_defs.bzl",
+    "//tools/build_defs/oss:rn_defs.bzl",
     "react_native_dep",
     "react_native_integration_tests_target",
     "react_native_target",
