@@ -14,7 +14,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * Base class for an array whose members are stored in native code (C++).
  */
 @DoNotStrip
-public abstract class NativeArray {
+public abstract class NativeArray implements NativeArrayInterface{
   static {
     ReactBridge.staticInit();
   }

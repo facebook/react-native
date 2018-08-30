@@ -39,8 +39,6 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -108,7 +106,6 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
-  private @Nullable List<View> mTransitioningViews;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
@@ -337,16 +334,16 @@ public class ReactViewGroup extends ViewGroup implements
 
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
-    int childIndexOffset = 0;
+    int clippedSoFar = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
-      updateSubviewClipStatus(clippingRect, i, childIndexOffset);
-      if (!isChildInViewGroup(mAllChildren[i])) {
-        childIndexOffset++;
+      updateSubviewClipStatus(clippingRect, i, clippedSoFar);
+      if (mAllChildren[i].getParent() == null) {
+        clippedSoFar++;
       }
     }
   }
 
-  private void updateSubviewClipStatus(Rect clippingRect, int idx, int childIndexOffset) {
+  private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects = clippingRect
@@ -363,10 +360,10 @@ public class ReactViewGroup extends ViewGroup implements
     if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
-      super.removeViewsInLayout(idx - childIndexOffset, 1);
+      super.removeViewsInLayout(idx - clippedSoFar, 1);
       needUpdateClippingRecursive = true;
     } else if (intersects && child.getParent() == null) {
-      super.addViewInLayout(child, idx - childIndexOffset, sDefaultLayoutParam, true);
+      super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -402,23 +399,17 @@ public class ReactViewGroup extends ViewGroup implements
     boolean oldIntersects = (subview.getParent() != null);
 
     if (intersects != oldIntersects) {
-      int childIndexOffset = 0;
+      int clippedSoFar = 0;
       for (int i = 0; i < mAllChildrenCount; i++) {
         if (mAllChildren[i] == subview) {
-          updateSubviewClipStatus(mClippingRect, i, childIndexOffset);
+          updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
           break;
         }
-        if (!isChildInViewGroup(mAllChildren[i])) {
-          childIndexOffset++;
+        if (mAllChildren[i].getParent() == null) {
+          clippedSoFar++;
         }
       }
     }
-  }
-
-  private boolean isChildInViewGroup(View view) {
-    // A child is in the group if it's not clipped and it's not transitioning.
-    return view.getParent() != null
-      && (mTransitioningViews == null || !mTransitioningViews.contains(view));
   }
 
   @Override
@@ -518,13 +509,13 @@ public class ReactViewGroup extends ViewGroup implements
     addInArray(child, index);
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
-    int childIndexOffset = 0;
+    int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (!isChildInViewGroup(mAllChildren[i])) {
-        childIndexOffset++;
+      if (mAllChildren[i].getParent() == null) {
+        clippedSoFar++;
       }
     }
-    updateSubviewClipStatus(mClippingRect, index, childIndexOffset);
+    updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
   }
 
@@ -534,14 +525,14 @@ public class ReactViewGroup extends ViewGroup implements
     Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (isChildInViewGroup(mAllChildren[index])) {
-      int childIndexOffset = 0;
+    if (mAllChildren[index].getParent() != null) {
+      int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (!isChildInViewGroup(mAllChildren[i])) {
-          childIndexOffset++;
+        if (mAllChildren[i].getParent() == null) {
+          clippedSoFar++;
         }
       }
-      super.removeViewsInLayout(index - childIndexOffset, 1);
+      super.removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
   }
@@ -554,26 +545,6 @@ public class ReactViewGroup extends ViewGroup implements
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
-  }
-
-  /*package*/ void startViewTransitionWithSubviewClippingEnabled(View view) {
-    // We're mirroring ViewGroup's mTransitioningViews since when a transitioning child is removed,
-    // its parent is not set to null unlike a regular child. Normally this wouldn't be an issue as
-    // ViewGroup pretends the transitioning child doesn't exist when calling any methods that expose
-    // child views, but we keep track of our children directly when subview clipping is enabled and
-    // need to be aware of these.
-    if (mTransitioningViews == null) {
-      mTransitioningViews = new ArrayList<>();
-    }
-    mTransitioningViews.add(view);
-    startViewTransition(view);
-  }
-
-  /*package*/ void endViewTransitionWithSubviewClippingEnabled(View view) {
-    if (mTransitioningViews != null) {
-      mTransitioningViews.remove(view);
-    }
-    endViewTransition(view);
   }
 
   private int indexOfChildInAllChildren(View child) {

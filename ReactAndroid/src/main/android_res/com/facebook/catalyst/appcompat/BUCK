@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_resource")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_resource")
 
 # used by ReactToolbarManager because of Gradle
 # TODO t10182713 will be replaced with appcompat-orig when we stop using Gradle

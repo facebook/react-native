@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 @property (nonatomic, assign) BOOL adjustsFontSizeToFit;
 @property (nonatomic, assign) CGFloat minimumFontScale;
+@property (nonatomic, copy) RCTDirectEventBlock onTextLayout;
 
 - (void)uiManagerWillPerformMounting;
 

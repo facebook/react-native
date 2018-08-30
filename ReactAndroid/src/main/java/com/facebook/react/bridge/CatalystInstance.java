@@ -38,7 +38,7 @@ public interface CatalystInstance
   @Override @DoNotStrip
   void invokeCallback(
       int callbackID,
-      NativeArray arguments);
+      NativeArrayInterface arguments);
   @DoNotStrip
   void callFunction(
       String module,

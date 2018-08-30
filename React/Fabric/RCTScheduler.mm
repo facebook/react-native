@@ -14,7 +14,15 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTBridge+Private.h>
 
+#import "MainRunLoopEventBeat.h"
+#import "MessageQueueEventBeat.h"
 #import "RCTConversions.h"
+
+@interface RCTBridge ()
+
+- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+
+@end
 
 using namespace facebook::react;
 
@@ -46,7 +54,23 @@ private:
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
 
+    RCTBridge *bridge = [RCTBridge currentBridge];
+
     SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
+
+    EventBeatFactory synchronousBeatFactory = []() {
+      return std::make_unique<MainRunLoopEventBeat>();
+    };
+
+    EventBeatFactory asynchronousBeatFactory = [bridge]() {
+      return std::make_unique<MessageQueueEventBeat>(bridge.jsMessageThread);
+    };
+
+    contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
+    contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+
+    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MainRunLoopEventBeat>(), "synchronous");
+    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MessageQueueEventBeat>(bridge.jsMessageThread), "asynchronous");
 
     void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
     contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
