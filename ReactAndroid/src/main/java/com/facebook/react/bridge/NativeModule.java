@@ -20,7 +20,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public interface NativeModule {
   interface NativeMethod {
-    void invoke(JSInstance jsInstance, ReadableNativeArray parameters);
+    void invoke(JSInstance jsInstance, ReadableArray parameters);
     String getType();
   }
 

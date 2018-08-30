@@ -512,16 +512,21 @@ public class FabricUIManager implements UIManager, JSHandler, FabricBinder {
 
   @Override
   @DoNotStrip
-  public synchronized void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootNode = getRootNode(rootViewTag);
-    if (rootNode == null) {
-      FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
-      return;
-    }
+  public synchronized void updateRootLayoutSpecs(final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+    mReactApplicationContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        ReactShadowNode rootNode = getRootNode(rootViewTag);
+        if (rootNode == null) {
+          FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+          return;
+        }
 
-    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
-    updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
-    mRootShadowNodeRegistry.replaceNode(newRootNode);
+        ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
+        updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
+        mRootShadowNodeRegistry.replaceNode(newRootNode);
+      }
+    });
   }
 
   /**

@@ -65,6 +65,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "Image";
   }
 
+  if (viewName == "AndroidHorizontalScrollView") {
+    return "ScrollView";
+  }
+
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components.
   if (
@@ -72,7 +76,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     viewName == "MultilineTextInputView" ||
     viewName == "RefreshControl" ||
     viewName == "SafeAreaView" ||
-    viewName == "ScrollContentView"
+    viewName == "ScrollContentView" ||
+    viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
   }
