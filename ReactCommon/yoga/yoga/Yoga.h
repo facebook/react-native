@@ -155,6 +155,7 @@ WIN_EXPORT void YGNodeCopyStyle(
 
 void* YGNodeGetContext(YGNodeRef node);
 void YGNodeSetContext(YGNodeRef node, void* context);
+void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
 void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
