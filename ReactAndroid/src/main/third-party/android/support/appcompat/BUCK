@@ -1,5 +1,16 @@
-android_prebuilt_aar(
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep")
+
+android_library(
     name = "appcompat",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":appcompat-aar",
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
+)
+
+android_prebuilt_aar(
+    name = "appcompat-aar",
     aar = ":appcompat-binary-aar",
     visibility = ["//ReactAndroid/..."],
 )

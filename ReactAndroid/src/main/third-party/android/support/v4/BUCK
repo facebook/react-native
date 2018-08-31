@@ -1,7 +1,10 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep")
+
 android_library(
     name = "lib-support-v4",
     visibility = ["PUBLIC"],
     exported_deps = [
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         ":android-lifecycle-common",
         ":android-lifecycle-core",
         ":android-lifecycle-runtime",

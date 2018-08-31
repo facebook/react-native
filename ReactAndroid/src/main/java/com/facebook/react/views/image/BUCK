@@ -7,13 +7,10 @@ IMAGE_EVENT_FILES = [
 rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
-    provided_deps = [
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-    ],
     required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
@@ -26,10 +23,6 @@ rn_android_library(
         ["*.java"],
         exclude = IMAGE_EVENT_FILES,
     ),
-    provided_deps = [
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -39,6 +32,7 @@ rn_android_library(
         react_native_dep("third-party/android/fresco:fresco-drawee"),
         react_native_dep("third-party/android/fresco:fresco-react-native"),
         react_native_dep("third-party/android/fresco:imagepipeline"),
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),

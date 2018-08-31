@@ -3,10 +3,6 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "toolbar",
     srcs = glob(["**/*.java"]),
-    provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support/appcompat:appcompat"),
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -16,6 +12,7 @@ rn_android_library(
         react_native_dep("third-party/android/fresco:fresco-drawee"),
         react_native_dep("third-party/android/fresco:fresco-react-native"),
         react_native_dep("third-party/android/fresco:imagepipeline"),
+        react_native_dep("third-party/android/support/appcompat:appcompat"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
