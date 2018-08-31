@@ -29,29 +29,14 @@ public interface Promise {
   void reject(String code, String message);
 
   /**
-   * Report an error which wasn't caused by an exception, with userInfo.
-   */
-  void reject(String code, String message, WritableMap userInfo);
-
-  /**
    * Report an exception.
    */
   void reject(String code, Throwable e);
 
   /**
-   * Report an exception, with userInfo.
-   */
-  void reject(String code, Throwable e, WritableMap userInfo);
-
-  /**
    * Report an exception with a custom error message.
    */
   void reject(String code, String message, Throwable e);
-
-  /**
-   * Report an exception with a custom error message, with userInfo.
-   */
-  void reject(String code, String message, Throwable e, WritableMap userInfo);
 
   /**
    * Report an error which wasn't caused by an exception.
@@ -66,10 +51,4 @@ public interface Promise {
    * Useful in catch-all scenarios where it's unclear why the error occurred.
    */
   void reject(Throwable reason);
-
-  /**
-   * Report an exception, with default error code, with userInfo.
-   * Useful in catch-all scenarios where it's unclear why the error occurred.
-   */
-  void reject(Throwable reason, WritableMap userInfo);
 }
