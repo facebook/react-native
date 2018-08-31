@@ -13,7 +13,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+        react_native_dep("third-party/android/soloader:soloader"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/buck-android-support:buck-android-support"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
