@@ -4,7 +4,7 @@ rn_android_library(
     name = "switchview",
     srcs = glob(["*.java"]),
     provided_deps = [
-        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+        react_native_dep("third-party/android/support/appcompat:appcompat"),
     ],
     visibility = [
         "PUBLIC",

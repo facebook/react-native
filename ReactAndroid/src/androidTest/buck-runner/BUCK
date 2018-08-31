@@ -12,7 +12,7 @@ rn_android_binary(
     keystore = KEYSTORE_TARGET,
     manifest = "AndroidManifest.xml",
     deps = [
-        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+        react_native_dep("third-party/android/support/appcompat:appcompat"),
         react_native_dep("third-party/android/soloader:soloader"),
         react_native_dep("third-party/java/testing-support-lib:exposed-instrumentation-api"),
         react_native_integration_tests_target("assets:assets"),
