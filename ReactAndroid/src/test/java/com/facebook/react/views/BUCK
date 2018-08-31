@@ -10,9 +10,9 @@ rn_robolectric_test(
     deps = [
         YOGA_TARGET,
         react_native_dep("third-party/java/powermock:powermock"),
-        react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
-        react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),
-        react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
+        react_native_dep("third-party/android/fresco:fresco-drawee"),
+        react_native_dep("third-party/android/fresco:fresco-react-native"),
+        react_native_dep("third-party/android/fresco:imagepipeline"),
         react_native_dep("third-party/android/soloader:soloader"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/fest:fest"),
