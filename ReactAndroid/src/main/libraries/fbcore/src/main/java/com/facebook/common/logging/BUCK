@@ -1,9 +1,0 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
-
-rn_android_library(
-    name = "logging",
-    visibility = ["//ReactAndroid/..."],
-    exported_deps = [
-        react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
-    ],
-)
