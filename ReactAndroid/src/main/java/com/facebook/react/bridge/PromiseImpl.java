@@ -33,27 +33,47 @@ public class PromiseImpl implements Promise {
 
   @Override
   public void reject(String code, String message) {
-    reject(code, message, /*Throwable*/null);
+    reject(code, message, /*Throwable*/null, /*WritableMap*/null);
+  }
+
+  @Override
+  public void reject(String code, String message, WritableMap userInfo) {
+    reject(code, message, /*Throwable*/null, userInfo);
   }
 
   @Override
   @Deprecated
   public void reject(String message) {
-    reject(DEFAULT_ERROR, message, /*Throwable*/null);
+    reject(DEFAULT_ERROR, message, /*Throwable*/null, /*WritableMap*/null);
   }
 
   @Override
   public void reject(String code, Throwable e) {
-    reject(code, e.getMessage(), e);
+    reject(code, e.getMessage(), e, /*WritableMap*/null);
+  }
+
+  @Override
+  public void reject(String code, Throwable e, WritableMap userInfo) {
+    reject(code, e.getMessage(), e, userInfo);
   }
 
   @Override
   public void reject(Throwable e) {
-    reject(DEFAULT_ERROR, e.getMessage(), e);
+    reject(DEFAULT_ERROR, e.getMessage(), e, /*WritableMap*/null);
   }
 
   @Override
-  public void reject(String code, String message, @Nullable Throwable e) {
+  public void reject(Throwable e, WritableMap userInfo) {
+    reject(DEFAULT_ERROR, e.getMessage(), e, userInfo);
+  }
+
+  @Override
+  public void reject(String code, String message, Throwable e) {
+    reject(code, message, e, /*WritableMap*/null);
+  }
+
+  @Override
+  public void reject(String code, String message, @Nullable Throwable e, @Nullable WritableMap userInfo) {
     if (mReject != null) {
       if (code == null) {
         code = DEFAULT_ERROR;
@@ -64,6 +84,13 @@ public class PromiseImpl implements Promise {
       WritableNativeMap errorInfo = new WritableNativeMap();
       errorInfo.putString("code", code);
       errorInfo.putString("message", message);
+
+      if (userInfo != null) {
+        errorInfo.putMap("userInfo", userInfo);
+      } else {
+        errorInfo.putNull("userInfo");
+      }
+
       // TODO(8850038): add the stack trace info in, need to figure out way to serialize that
       mReject.invoke(errorInfo);
     }
