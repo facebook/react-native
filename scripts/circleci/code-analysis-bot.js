@@ -29,6 +29,7 @@ if (!process.env.CIRCLE_PR_NUMBER) {
   process.exit(0);
 }
 
+// https://octokit.github.io/rest.js/
 const octokit = require('@octokit/rest')();
 
 var path = require('path');
@@ -150,6 +151,34 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
+function sendReview(owner, repo, number, commit_id, comments) {
+  if (comments.length === 0) {
+    // Do not leave an empty review.
+    return;
+  }
+
+  const body =
+    '`eslint` found some issues. You may run `yarn prettier` or `npm run prettier` to fix these.';
+  const event = 'REQUEST_CHANGES';
+
+  const opts = {
+    owner,
+    repo,
+    number,
+    commit_id,
+    body,
+    event,
+    comments,
+  };
+
+  octokit.pullRequests.createReview(opts, function(error, res) {
+    if (error) {
+      console.error(error);
+      return;
+    }
+  });
+}
+
 function sendComment(owner, repo, number, sha, filename, lineMap, message) {
   if (!lineMap[message.line]) {
     // Do not send messages on lines that did not change
@@ -161,10 +190,10 @@ function sendComment(owner, repo, number, sha, filename, lineMap, message) {
     repo,
     number,
     sha,
-    path: filename,
     commit_id: sha,
-    body: message.message,
+    path: filename,
     position: lineMap[message.line],
+    body: message.message,
   };
   octokit.pullRequests.createComment(opts, function(error, res) {
     if (error) {
@@ -183,6 +212,7 @@ function main(messages, owner, repo, number) {
 
   getShaFromPullRequest(owner, repo, number, sha => {
     getFilesFromCommit(owner, repo, sha, files => {
+      var comments = [];
       files.filter(file => messages[file.filename]).forEach(file => {
         // github api sometimes does not return a patch on large commits
         if (!file.patch) {
@@ -190,19 +220,21 @@ function main(messages, owner, repo, number) {
         }
         var lineMap = getLineMapFromPatch(file.patch);
         messages[file.filename].forEach(message => {
-          sendComment(
-            owner,
-            repo,
-            number,
-            sha,
-            file.filename,
-            lineMap,
-            message,
-          );
-        });
-      });
-    });
-  });
+          if (lineMap[message.line]) {
+            var comment = {
+              path: file.filename,
+              position: lineMap[message.line],
+              body: message.message,
+            };
+
+            comments.push(comment);
+          }
+        }); // forEach
+      }); // filter
+
+      sendReview(owner, repo, number, sha, comments);
+    }); // getFilesFromCommit
+  }); // getShaFromPullRequest
 }
 
 var content = '';

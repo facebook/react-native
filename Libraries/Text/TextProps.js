@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
+import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
 import type React from 'React';
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {
@@ -48,6 +48,7 @@ export type TextProps = $ReadOnly<{
   onResponderTerminate?: ?Function,
   onResponderTerminationRequest?: ?Function,
   onStartShouldSetResponder?: ?Function,
+  onTextLayout?: ?(event: TextLayoutEvent) => mixed,
   pressRetentionOffset?: ?PressRetentionOffset,
   selectable?: ?boolean,
   style?: ?DangerouslyImpreciseStyleProp,
