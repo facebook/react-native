@@ -1,11 +1,11 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_jar")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "powermock",
     visibility = ["//ReactAndroid/..."],
     exported_deps = [
+        react_native_dep("third-party/java/mockito:mockito-all"),
         ":javassist",
-        ":mockito-all",
         ":powermock-api-mockito",
         ":powermock-api-support",
         ":powermock-classloading-base",
@@ -125,18 +125,6 @@ remote_file(
     name = "download-javassist.jar",
     sha1 = "a9cbcdfb7e9f86fbc74d3afae65f2248bfbf82a0",
     url = "mvn:org.javassist:javassist:jar:3.20.0-GA",
-)
-
-rn_prebuilt_jar(
-    name = "mockito-all",
-    binary_jar = ":download-mockito-all.jar",
-    visibility = ["//ReactAndroid/..."],
-)
-
-remote_file(
-    name = "download-mockito-all.jar",
-    sha1 = "539df70269cc254a58cccc5d8e43286b4a73bf30",
-    url = "mvn:org.mockito:mockito-all:jar:1.10.19",
 )
 
 rn_prebuilt_jar(
