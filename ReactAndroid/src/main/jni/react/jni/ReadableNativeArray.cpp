@@ -113,7 +113,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
   jint size = array_.size();
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint i = 0; i < size; i++) {
-    jarray->setElement(i, ReadableNativeArray::getType(i).release());
+    jarray->setElement(i, ReadableNativeArray::getType(i).get());
   }
   return jarray;
 }

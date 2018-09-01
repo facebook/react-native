@@ -1,4 +1,4 @@
-load("@xplat//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
+load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
