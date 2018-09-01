@@ -810,7 +810,7 @@ static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
     default:
     {
 
-#ifdef RCT_DEBUG
+#if RCT_DEBUG
       //unsupported format
       RCTLogError(@"Unsupported color model: %i", model);
 #endif
