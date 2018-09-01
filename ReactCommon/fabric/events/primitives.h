@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
+
 namespace facebook {
 namespace react {
 
-enum class EventPriority {
+enum class EventPriority: int {
   SynchronousUnbatched,
   SynchronousBatched,
   AsynchronousUnbatched,
@@ -19,7 +21,7 @@ enum class EventPriority {
   Sync = SynchronousUnbatched,
   Work = SynchronousBatched,
   Interactive = AsynchronousUnbatched,
-  Deferred = AsynchronousBatched,
+  Deferred = AsynchronousBatched
 };
 
 /* `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
@@ -31,6 +33,14 @@ enum class EventPriority {
  */
 using EventTarget = struct EventTargetDummyStruct {} *;
 using EventHandler = struct EventHandlerDummyStruct {} *;
+
+/*
+ * EmptyEventTarget is used when some event cannot be dispatched to an original
+ * event target but still has to be dispatched to preserve consistency of event flow.
+ */
+static const EventTarget EmptyEventTarget = nullptr;
+
+using EventPipe = std::function<void(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload)>;
 
 } // namespace react
 } // namespace facebook

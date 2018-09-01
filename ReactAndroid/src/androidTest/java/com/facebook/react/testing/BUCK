@@ -1,9 +1,9 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "testing",
     srcs = glob(
-        ["**/*.java"],
+        ["*.java"],
         exclude = [
             "idledetection/**/*.java",
             "network/**/*.java",

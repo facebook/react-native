@@ -784,9 +784,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
    * parameters.
    */
-  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
-    mUIImplementation.dispatchViewUpdates(-1);
+  public void updateRootLayoutSpecs(final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    reactApplicationContext.runOnNativeModulesQueueThread(
+      new GuardedRunnable(reactApplicationContext) {
+        @Override
+        public void runGuarded() {
+          mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
+          mUIImplementation.dispatchViewUpdates(-1);
+        }});
   }
 
   /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */

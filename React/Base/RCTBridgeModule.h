@@ -290,6 +290,12 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 + (BOOL)requiresMainQueueSetup;
 
 /**
+ * Experimental.
+ * If YES, this module will be set up via JSI binding instead.
+ */
++ (BOOL)allowJSIBinding;
+
+/**
  * Injects methods into JS.  Entries in this array are used in addition to any
  * methods defined using the macros above.  This method is called only once,
  * before registration.

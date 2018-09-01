@@ -60,17 +60,6 @@ type GestureResponderEventProps = $ReadOnly<{|
 type AndroidViewProps = $ReadOnly<{|
   nativeBackgroundAndroid?: ?Object,
   nativeForegroundAndroid?: ?Object,
-
-  /* Deprecated transform prop. Use the transform style prop instead */
-  rotation?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  scaleX?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  scaleY?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  translateX?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  translateY?: empty,
 |}>;
 
 export type ViewProps = $ReadOnly<{|
@@ -84,13 +73,7 @@ export type ViewProps = $ReadOnly<{|
   ...TVViewProps,
 
   accessible?: ?boolean,
-  accessibilityLabel?: ?(
-    | null
-    | React$PropType$Primitive<any>
-    | Stringish
-    | $ReadOnlyArray<any>
-    | any
-  ),
+  accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   accessibilityActions?: ?$ReadOnlyArray<string>,
   accessibilityComponentType?: ?AccessibilityComponentType,

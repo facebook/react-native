@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "ANDROID", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "perftests",
