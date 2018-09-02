@@ -11,25 +11,66 @@
 
 const {AnimatedEvent} = require('../AnimatedEvent');
 const AnimatedNode = require('./AnimatedNode');
-const AnimatedStyle = require('./AnimatedStyle');
+const {createOrReuseStyleNode, AnimatedStyle} = require('./AnimatedStyle');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const ReactNative = require('ReactNative');
 
+const areEqual = require('fbjs/lib/areEqual');
 const invariant = require('fbjs/lib/invariant');
 
+function createNativeConfig(inputProps) {
+  const props = {};
+  for (const key in inputProps) {
+    const value = inputProps[key];
+    if (
+      value instanceof AnimatedNode &&
+      !(value instanceof AnimatedEvent) &&
+      value.__isNative
+    ) {
+      props[key] = value.__getNativeTag();
+    }
+  }
+  return props;
+}
+
+function createOrReusePropsNode(
+  props: Object,
+  callback: () => void,
+  oldNode: ?AnimatedProps,
+) {
+  if (props.style) {
+    props = {
+      ...props,
+      style: createOrReuseStyleNode(
+        props.style,
+        oldNode && oldNode._props.style,
+      ),
+    };
+  }
+
+  // When using the native driver try to reuse nodes to avoid extra bridge calls.
+  if (oldNode && oldNode.__isNative) {
+    const config = createNativeConfig(props);
+    if (areEqual(config, oldNode._nativeConfig)) {
+      return oldNode;
+    }
+  }
+  return new AnimatedProps(props, callback);
+}
+
+/**
+ * AnimatedProps should never be directly instantiated, use createOrReusePropsNode
+ * in order to make a new instance of this node.
+ */
 class AnimatedProps extends AnimatedNode {
   _props: Object;
+  _nativeConfig: ?Object;
   _animatedView: any;
   _callback: () => void;
 
   constructor(props: Object, callback: () => void) {
     super();
-    if (props.style) {
-      props = {
-        ...props,
-        style: new AnimatedStyle(props.style),
-      };
-    }
+
     this._props = props;
     this._callback = callback;
     this.__attach();
@@ -100,6 +141,7 @@ class AnimatedProps extends AnimatedNode {
           value.__makeNative();
         }
       }
+
       if (this._animatedView) {
         this.__connectAnimatedView();
       }
@@ -147,18 +189,15 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __getNativeConfig(): Object {
-    const propsConfig = {};
-    for (const propKey in this._props) {
-      const value = this._props[propKey];
-      if (value instanceof AnimatedNode) {
-        propsConfig[propKey] = value.__getNativeTag();
-      }
+    if (this._nativeConfig == null) {
+      this._nativeConfig = createNativeConfig(this._props);
     }
+
     return {
       type: 'props',
-      props: propsConfig,
+      props: this._nativeConfig,
     };
   }
 }
 
-module.exports = AnimatedProps;
+module.exports = {createOrReusePropsNode, AnimatedProps};

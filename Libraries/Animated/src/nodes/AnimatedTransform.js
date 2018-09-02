@@ -13,11 +13,52 @@ const AnimatedNode = require('./AnimatedNode');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
+const areEqual = require('fbjs/lib/areEqual');
+
+function createNativeConfig(inputTransform) {
+  const transConfigs = [];
+
+  inputTransform.forEach(transform => {
+    for (const key in transform) {
+      const value = transform[key];
+      if (value instanceof AnimatedNode && value.__isNative) {
+        transConfigs.push({
+          type: 'animated',
+          property: key,
+          nodeTag: value.__getNativeTag(),
+        });
+      } else {
+        transConfigs.push({
+          type: 'static',
+          property: key,
+          value,
+        });
+      }
+    }
+  });
+  return transConfigs;
+}
+
+function createOrReuseTransformNode(
+  transform: $ReadOnlyArray<Object>,
+  oldNode: ?AnimatedTransform,
+) {
+  if (oldNode && oldNode.__isNative) {
+    const config = createNativeConfig(transform);
+    if (areEqual(config, oldNode._nativeConfig)) {
+      return oldNode;
+    }
+  }
+  return new AnimatedTransform(transform);
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: $ReadOnlyArray<Object>;
+  _nativeConfig: $ReadOnlyArray<Object>;
 
   constructor(transforms: $ReadOnlyArray<Object>) {
     super();
+
     this._transforms = transforms;
   }
 
@@ -30,6 +71,7 @@ class AnimatedTransform extends AnimatedWithChildren {
         }
       }
     });
+
     super.__makeNative();
   }
 
@@ -88,33 +130,17 @@ class AnimatedTransform extends AnimatedWithChildren {
   }
 
   __getNativeConfig(): any {
-    const transConfigs = [];
+    if (this._nativeConfig == null) {
+      this._nativeConfig = createNativeConfig(this._transforms);
+    }
 
-    this._transforms.forEach(transform => {
-      for (const key in transform) {
-        const value = transform[key];
-        if (value instanceof AnimatedNode) {
-          transConfigs.push({
-            type: 'animated',
-            property: key,
-            nodeTag: value.__getNativeTag(),
-          });
-        } else {
-          transConfigs.push({
-            type: 'static',
-            property: key,
-            value,
-          });
-        }
-      }
-    });
+    NativeAnimatedHelper.validateTransform(this._nativeConfig);
 
-    NativeAnimatedHelper.validateTransform(transConfigs);
     return {
       type: 'transform',
-      transforms: transConfigs,
+      transforms: this._nativeConfig,
     };
   }
 }
 
-module.exports = AnimatedTransform;
+module.exports = {createOrReuseTransformNode, AnimatedTransform};

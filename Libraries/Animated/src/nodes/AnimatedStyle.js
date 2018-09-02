@@ -10,24 +10,60 @@
 'use strict';
 
 const AnimatedNode = require('./AnimatedNode');
-const AnimatedTransform = require('./AnimatedTransform');
+const {createOrReuseTransformNode} = require('./AnimatedTransform');
 const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
+const areEqual = require('fbjs/lib/areEqual');
 const flattenStyle = require('flattenStyle');
 
+function createNativeConfig(inputStyle) {
+  const styleConfig = {};
+  for (const styleKey in inputStyle) {
+    if (
+      inputStyle[styleKey] instanceof AnimatedNode &&
+      inputStyle[styleKey].__isNative
+    ) {
+      styleConfig[styleKey] = inputStyle[styleKey].__getNativeTag();
+    }
+    // Non-animated styles are set using `setNativeProps`, no need
+    // to pass those as a part of the node config
+  }
+  return styleConfig;
+}
+
+function createOrReuseStyleNode(style: any, oldNode: ?AnimatedStyle) {
+  style = flattenStyle(style) || {};
+  if (style.transform) {
+    style = {
+      ...style,
+      transform: createOrReuseTransformNode(
+        style.transform,
+        oldNode && oldNode._style.transform,
+      ),
+    };
+  }
+
+  if (oldNode && oldNode.__isNative) {
+    const config = createNativeConfig(style);
+    if (areEqual(config, oldNode._nativeConfig)) {
+      return oldNode;
+    }
+  }
+  return new AnimatedStyle(style);
+}
+
+/**
+ * AnimatedStyle should never be directly instantiated, use createOrReuseStyleNode
+ * in order to make a new instance of this node.
+ */
 class AnimatedStyle extends AnimatedWithChildren {
   _style: Object;
+  _nativeConfig: ?Object;
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || {};
-    if (style.transform) {
-      style = {
-        ...style,
-        transform: new AnimatedTransform(style.transform),
-      };
-    }
+
     this._style = style;
   }
 
@@ -101,24 +137,22 @@ class AnimatedStyle extends AnimatedWithChildren {
         value.__makeNative();
       }
     }
+
     super.__makeNative();
   }
 
   __getNativeConfig(): Object {
-    const styleConfig = {};
-    for (const styleKey in this._style) {
-      if (this._style[styleKey] instanceof AnimatedNode) {
-        styleConfig[styleKey] = this._style[styleKey].__getNativeTag();
-      }
-      // Non-animated styles are set using `setNativeProps`, no need
-      // to pass those as a part of the node config
+    if (this._nativeConfig == null) {
+      this._nativeConfig = createNativeConfig(this._style);
     }
-    NativeAnimatedHelper.validateStyles(styleConfig);
+
+    NativeAnimatedHelper.validateStyles(this._nativeConfig);
+
     return {
       type: 'style',
-      style: styleConfig,
+      style: this._nativeConfig,
     };
   }
 }
 
-module.exports = AnimatedStyle;
+module.exports = {createOrReuseStyleNode, AnimatedStyle};

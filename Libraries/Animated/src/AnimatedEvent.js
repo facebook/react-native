@@ -17,10 +17,10 @@ const invariant = require('fbjs/lib/invariant');
 const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 
 export type Mapping = {[key: string]: Mapping} | AnimatedValue;
-export type EventConfig = {
+export type EventConfig = $ReadOnly<{|
   listener?: ?Function,
   useNativeDriver?: boolean,
-};
+|}>;
 
 function attachNativeEvent(
   viewRef: any,
@@ -86,7 +86,10 @@ class AnimatedEvent {
   };
   __isNative: boolean;
 
-  constructor(argMapping: Array<?Mapping>, config?: EventConfig = {}) {
+  constructor(
+    argMapping: Array<?Mapping>,
+    config?: EventConfig = ({}: Object),
+  ) {
     this._argMapping = argMapping;
     if (config.listener) {
       this.__addListener(config.listener);

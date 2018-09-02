@@ -196,7 +196,7 @@ function addWhitelistedInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
-function validateTransform(configs: Array<Object>): void {
+function validateTransform(configs: $ReadOnlyArray<Object>): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
