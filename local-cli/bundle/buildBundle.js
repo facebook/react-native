@@ -17,6 +17,7 @@ const Server = require('metro/src/Server');
 /* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
+const chalk = require('chalk');
 const saveAssets = require('./saveAssets');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
@@ -38,6 +39,22 @@ async function buildBundle(
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
   const config = await configPromise;
+
+  if (config.resolver.platforms.indexOf(args.platform) === -1) {
+    console.log(
+      chalk.red(
+        'Invalid platform (' +
+          args.platform +
+          ') selected. \n' +
+          'Available platforms are: \n' +
+          '  ' +
+          config.resolver.platforms.join(', ') +
+          '\n' +
+          'If you are trying to bundle for an out-of-tree platform, it may not be installed.',
+      ),
+    );
+    throw new Error('Invalid platform selected.');
+  }
 
   let sourceMapUrl = args.sourcemapOutput;
   if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {

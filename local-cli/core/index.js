@@ -22,6 +22,7 @@ const {ASSET_REGISTRY_PATH} = require('./Constants');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const flatten = require('lodash').flatten;
+const uniq = require('lodash').uniq;
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -131,18 +132,20 @@ async function getCliConfig(): Promise<RNConfig> {
     cliArgs.config != null ? path.resolve(__dirname, cliArgs.config) : null,
   );
 
-  config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
-  config.resolver.hasteImplModulePath =
-    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
-  config.resolver.platforms = config.resolver.platforms
+  const platforms = config.resolver.platforms
     ? config.resolver.platforms.concat(defaultConfig.getPlatforms())
     : defaultConfig.getPlatforms();
-  config.resolver.providesModuleNodeModules = config.resolver
-    .providesModuleNodeModules
+  let providesModuleNodeModules = config.resolver.providesModuleNodeModules
     ? config.resolver.providesModuleNodeModules.concat(
         defaultConfig.getProvidesModuleNodeModules(),
       )
     : defaultConfig.getProvidesModuleNodeModules();
+
+  config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
+  config.resolver.hasteImplModulePath =
+    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = uniq(platforms);
+  config.resolver.providesModuleNodeModules = uniq(providesModuleNodeModules);
 
   return {...defaultRNConfig, ...config};
 }
