@@ -29,19 +29,20 @@ static std::array<YGValue, 2> convertRawProp(
 static std::array<YGValue, YGEdgeCount> convertRawProp(
   const RawProps &rawProps,
   const std::string &prefix,
+  const std::string &suffix,
   const std::array<YGValue, YGEdgeCount> &sourceValue,
   const std::array<YGValue, YGEdgeCount> &defaultValue
 ) {
   std::array<YGValue, YGEdgeCount> result = defaultValue;
-  result[YGEdgeLeft] = convertRawProp(rawProps, prefix + "Left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
-  result[YGEdgeTop] = convertRawProp(rawProps, prefix + "Top", sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
-  result[YGEdgeRight] = convertRawProp(rawProps, prefix + "Right", sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
-  result[YGEdgeBottom] = convertRawProp(rawProps, prefix + "Bottom", sourceValue[YGEdgeBottom], defaultValue[YGEdgeBottom]);
-  result[YGEdgeStart] = convertRawProp(rawProps, prefix + "Start", sourceValue[YGEdgeStart], defaultValue[YGEdgeStart]);
-  result[YGEdgeEnd] = convertRawProp(rawProps, prefix + "End", sourceValue[YGEdgeEnd], defaultValue[YGEdgeEnd]);
-  result[YGEdgeHorizontal] = convertRawProp(rawProps, prefix + "Horizontal", sourceValue[YGEdgeHorizontal], defaultValue[YGEdgeHorizontal]);
-  result[YGEdgeVertical] = convertRawProp(rawProps, prefix + "Vertical", sourceValue[YGEdgeVertical], defaultValue[YGEdgeVertical]);
-  result[YGEdgeAll] = convertRawProp(rawProps, prefix, sourceValue[YGEdgeAll], defaultValue[YGEdgeAll]);
+  result[YGEdgeLeft] = convertRawProp(rawProps, prefix + "Left" + suffix, sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
+  result[YGEdgeTop] = convertRawProp(rawProps, prefix + "Top" + suffix, sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
+  result[YGEdgeRight] = convertRawProp(rawProps, prefix + "Right" + suffix, sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
+  result[YGEdgeBottom] = convertRawProp(rawProps, prefix + "Bottom" + suffix, sourceValue[YGEdgeBottom], defaultValue[YGEdgeBottom]);
+  result[YGEdgeStart] = convertRawProp(rawProps, prefix + "Start" + suffix, sourceValue[YGEdgeStart], defaultValue[YGEdgeStart]);
+  result[YGEdgeEnd] = convertRawProp(rawProps, prefix + "End" + suffix, sourceValue[YGEdgeEnd], defaultValue[YGEdgeEnd]);
+  result[YGEdgeHorizontal] = convertRawProp(rawProps, prefix + "Horizontal" + suffix, sourceValue[YGEdgeHorizontal], defaultValue[YGEdgeHorizontal]);
+  result[YGEdgeVertical] = convertRawProp(rawProps, prefix + "Vertical" + suffix, sourceValue[YGEdgeVertical], defaultValue[YGEdgeVertical]);
+  result[YGEdgeAll] = convertRawProp(rawProps, prefix + suffix, sourceValue[YGEdgeAll], defaultValue[YGEdgeAll]);
   return result;
 }
 
@@ -76,10 +77,10 @@ static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceVal
   yogaStyle.flexGrow = convertRawProp(rawProps, "flexGrow", sourceValue.flexGrow, yogaStyle.flexGrow);
   yogaStyle.flexShrink = convertRawProp(rawProps, "flexShrink", sourceValue.flexShrink, yogaStyle.flexShrink);
   yogaStyle.flexBasis = convertRawProp(rawProps, "flexBasis", sourceValue.flexBasis, yogaStyle.flexBasis);
-  yogaStyle.margin = convertRawProp(rawProps, "margin", sourceValue.margin, yogaStyle.margin);
+  yogaStyle.margin = convertRawProp(rawProps, "margin", "", sourceValue.margin, yogaStyle.margin);
   yogaStyle.position = convertRawProp(rawProps, sourceValue.position, yogaStyle.position);
-  yogaStyle.padding = convertRawProp(rawProps, "padding", sourceValue.padding, yogaStyle.padding);
-  yogaStyle.border = convertRawProp(rawProps, "border", sourceValue.border, yogaStyle.border);
+  yogaStyle.padding = convertRawProp(rawProps, "padding", "", sourceValue.padding, yogaStyle.padding);
+  yogaStyle.border = convertRawProp(rawProps, "border", "Width", sourceValue.border, yogaStyle.border);
   yogaStyle.dimensions = convertRawProp(rawProps, "width", "height", sourceValue.dimensions, yogaStyle.dimensions);
   yogaStyle.minDimensions = convertRawProp(rawProps, "minWidth", "minHeight", sourceValue.minDimensions, yogaStyle.minDimensions);
   yogaStyle.maxDimensions = convertRawProp(rawProps, "maxWidth", "maxHeight", sourceValue.maxDimensions, yogaStyle.maxDimensions);
