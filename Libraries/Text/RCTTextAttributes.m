@@ -24,7 +24,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
-    _maxContentSizeMultiplier = NAN;
+    _maxFontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
     _textShadowRadius = NAN;
@@ -50,7 +50,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontFamily = textAttributes->_fontFamily ?: _fontFamily;
   _fontSize = !isnan(textAttributes->_fontSize) ? textAttributes->_fontSize : _fontSize;
   _fontSizeMultiplier = !isnan(textAttributes->_fontSizeMultiplier) ? textAttributes->_fontSizeMultiplier : _fontSizeMultiplier;
-  _maxContentSizeMultiplier = !isnan(textAttributes->_maxContentSizeMultiplier) ? textAttributes->_maxContentSizeMultiplier : _maxContentSizeMultiplier;
+  _maxFontSizeMultiplier = !isnan(textAttributes->_maxFontSizeMultiplier) ? textAttributes->_maxFontSizeMultiplier : _maxFontSizeMultiplier;
   _fontWeight = textAttributes->_fontWeight ?: _fontWeight;
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
@@ -197,8 +197,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
   if (fontScalingEnabled) {
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
-    CGFloat maxContentSizeMultiplier = !isnan(_maxContentSizeMultiplier) ? _maxContentSizeMultiplier : 0.0;
-    return maxContentSizeMultiplier >= 1.0 ? fminf(maxContentSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
+    CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
+    return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
     return 1.0;
   }
@@ -270,7 +270,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareObjects(_fontFamily) &&
     RCTTextAttributesCompareFloats(_fontSize) &&
     RCTTextAttributesCompareFloats(_fontSizeMultiplier) &&
-    RCTTextAttributesCompareFloats(_maxContentSizeMultiplier) &&
+    RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
     RCTTextAttributesCompareStrings(_fontWeight) &&
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&

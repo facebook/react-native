@@ -177,7 +177,7 @@ type Props = $ReadOnly<{|
   autoCorrect?: ?boolean,
   autoFocus?: ?boolean,
   allowFontScaling?: ?boolean,
-  maxContentSizeMultiplier?: ?boolean,
+  maxFontSizeMultiplier?: ?boolean,
   editable?: ?boolean,
   keyboardType?: ?KeyboardType,
   returnKeyType?: ?ReturnKeyType,
@@ -373,9 +373,9 @@ const TextInput = createReactClass({
      * Possible values:
      * `null/undefined` (default): inherit from the parent node or the global default (0)
      * `0`: no max, ignore parent/global default
-     * `>= 1`: sets the maxContentSizeMultiplier of this node to this value
+     * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
      */
-    maxContentSizeMultiplier: PropTypes.number,
+    maxFontSizeMultiplier: PropTypes.number,
     /**
      * If `false`, text is not editable. The default value is `true`.
      */
@@ -945,7 +945,7 @@ const TextInput = createReactClass({
           <Text
             style={props.style}
             allowFontScaling={props.allowFontScaling}
-            maxContentSizeMultiplier={props.maxContentSizeMultiplier}
+            maxFontSizeMultiplier={props.maxFontSizeMultiplier}
           >
             {children}
           </Text>
