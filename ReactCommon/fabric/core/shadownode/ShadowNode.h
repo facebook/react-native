@@ -106,7 +106,7 @@ public:
   /*
    * Equality operators.
    * Use this to compare `ShadowNode`s values for equality (and non-equality).
-   * Same values indicates that nodes must not produce mutation instructions
+   * Same values indicates that nodes must not produce mutations
    * during tree diffing process.
    * Child nodes are not considered as part of the value.
    */

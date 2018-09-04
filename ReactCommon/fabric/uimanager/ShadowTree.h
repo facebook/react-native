@@ -13,6 +13,7 @@
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
+#include <fabric/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -80,10 +81,10 @@ private:
   bool commit(
     const SharedRootShadowNode &oldRootShadowNode,
     const SharedRootShadowNode &newRootShadowNode,
-    const TreeMutationInstructionList &mutationInstructions
+    const ShadowViewMutationList &mutations
   );
-  void toggleEventEmitters(const TreeMutationInstructionList &instructions);
-  void emitLayoutEvents(const TreeMutationInstructionList &instructions);
+  void toggleEventEmitters(const ShadowViewMutationList &mutations);
+  void emitLayoutEvents(const ShadowViewMutationList &mutations);
 
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;
