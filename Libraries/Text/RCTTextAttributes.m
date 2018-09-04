@@ -14,9 +14,6 @@
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
 
-// Setting the default to 0 indicates that there is no max.
-static CGFloat defaultMaxContentSizeMultiplier = 0.0;
-
 @implementation RCTTextAttributes
 
 - (instancetype)init
@@ -200,7 +197,7 @@ static CGFloat defaultMaxContentSizeMultiplier = 0.0;
 
   if (fontScalingEnabled) {
     CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
-    CGFloat maxContentSizeMultiplier = !isnan(_maxContentSizeMultiplier) ? _maxContentSizeMultiplier : defaultMaxContentSizeMultiplier;
+    CGFloat maxContentSizeMultiplier = !isnan(_maxContentSizeMultiplier) ? _maxContentSizeMultiplier : 0.0;
     return maxContentSizeMultiplier >= 1.0 ? fminf(maxContentSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
     return 1.0;
