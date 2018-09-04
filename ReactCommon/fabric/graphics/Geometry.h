@@ -110,21 +110,23 @@ struct Rect {
 };
 
 /*
- * EdgeInsets
+ * Generic data structure describes some values associated with *edges*
+ * of a rectangle.
  */
-struct EdgeInsets {
-  Float left {0};
-  Float top {0};
-  Float right {0};
-  Float bottom {0};
+template <typename T>
+struct RectangleEdges {
+  T left {};
+  T top {};
+  T right {};
+  T bottom {};
 
-  bool operator==(const EdgeInsets &rhs) const {
+  bool operator==(const RectangleEdges<T> &rhs) const {
     return
       std::tie(this->left, this->top, this->right, this->bottom) ==
       std::tie(rhs.left, rhs.top, rhs.right, rhs.bottom);
   }
 
-  bool operator!=(const EdgeInsets &rhs) const {
+  bool operator!=(const RectangleEdges<T> &rhs) const {
     return !(*this == rhs);
   }
 
@@ -136,21 +138,23 @@ struct EdgeInsets {
 };
 
 /*
- * CornerInsets
+ * Generic data structure describes some values associated with *corners*
+ * of a rectangle.
  */
-struct CornerInsets {
-  Float topLeft {0};
-  Float topRight {0};
-  Float bottomLeft {0};
-  Float bottomRight {0};
+template <typename T>
+struct RectangleCorners {
+  T topLeft {};
+  T topRight {};
+  T bottomLeft {};
+  T bottomRight {};
 
-  bool operator==(const CornerInsets &rhs) const {
+  bool operator==(const RectangleCorners<T> &rhs) const {
     return
-    std::tie(this->topLeft, this->topRight, this->bottomLeft, this->bottomRight) ==
-    std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
+      std::tie(this->topLeft, this->topRight, this->bottomLeft, this->bottomRight) ==
+      std::tie(rhs.topLeft, rhs.topRight, rhs.bottomLeft, rhs.bottomRight);
   }
 
-  bool operator!=(const CornerInsets &rhs) const {
+  bool operator!=(const RectangleCorners<T> &rhs) const {
     return !(*this == rhs);
   }
 
@@ -160,6 +164,16 @@ struct CornerInsets {
       topLeft == bottomRight;
   }
 };
+
+/*
+ * EdgeInsets
+ */
+using EdgeInsets = RectangleEdges<Float>;
+
+/*
+ * CornerInsets
+ */
+using CornerInsets = RectangleCorners<Float>;
 
 } // namespace react
 } // namespace facebook
