@@ -42,4 +42,10 @@ public @interface ReactModule {
    *  correct annotation is not included
    */
   boolean hasConstants() default true;
+
+  /**
+   * Indicates if a module is a C++ module or a Java Module
+   * @return
+   */
+  boolean isCxxModule() default false;
 }
