@@ -13,62 +13,77 @@
 namespace facebook {
 namespace react {
 
-static std::array<YGValue, 2> convertRawProp(const RawProps &rawProps, const std::string &widthName, const std::string &heightName, const std::array<YGValue, 2> &defaultValue) {
-  std::array<YGValue, 2> dimentions;
-  dimentions[YGDimensionWidth] = convertRawProp(rawProps, widthName, defaultValue[YGDimensionWidth]);
-  dimentions[YGDimensionHeight] = convertRawProp(rawProps, heightName, defaultValue[YGDimensionHeight]);
+static std::array<YGValue, 2> convertRawProp(
+  const RawProps &rawProps,
+  const std::string &widthName,
+  const std::string &heightName,
+  const std::array<YGValue, 2> &sourceValue,
+  const std::array<YGValue, 2> &defaultValue
+) {
+  std::array<YGValue, 2> dimentions = defaultValue;
+  dimentions[YGDimensionWidth] = convertRawProp(rawProps, widthName, sourceValue[YGDimensionWidth], defaultValue[YGDimensionWidth]);
+  dimentions[YGDimensionHeight] = convertRawProp(rawProps, heightName, sourceValue[YGDimensionHeight], defaultValue[YGDimensionWidth]);
   return dimentions;
 }
 
-static std::array<YGValue, YGEdgeCount> convertRawProp(const RawProps &rawProps, const std::string &prefix, const std::array<YGValue, YGEdgeCount> &defaultValue) {
+static std::array<YGValue, YGEdgeCount> convertRawProp(
+  const RawProps &rawProps,
+  const std::string &prefix,
+  const std::array<YGValue, YGEdgeCount> &sourceValue,
+  const std::array<YGValue, YGEdgeCount> &defaultValue
+) {
   std::array<YGValue, YGEdgeCount> result = defaultValue;
-  result[YGEdgeLeft] = convertRawProp(rawProps, prefix + "Left", defaultValue[YGEdgeLeft]);
-  result[YGEdgeTop] = convertRawProp(rawProps, prefix + "Top", defaultValue[YGEdgeTop]);
-  result[YGEdgeRight] = convertRawProp(rawProps, prefix + "Right", defaultValue[YGEdgeRight]);
-  result[YGEdgeBottom] = convertRawProp(rawProps, prefix + "Bottom", defaultValue[YGEdgeBottom]);
-  result[YGEdgeStart] = convertRawProp(rawProps, prefix + "Start", defaultValue[YGEdgeStart]);
-  result[YGEdgeEnd] = convertRawProp(rawProps, prefix + "End", defaultValue[YGEdgeEnd]);
-  result[YGEdgeHorizontal] = convertRawProp(rawProps, prefix + "Horizontal", defaultValue[YGEdgeHorizontal]);
-  result[YGEdgeVertical] = convertRawProp(rawProps, prefix + "Vertical", defaultValue[YGEdgeVertical]);
-  result[YGEdgeAll] = convertRawProp(rawProps, prefix, defaultValue[YGEdgeAll]);
+  result[YGEdgeLeft] = convertRawProp(rawProps, prefix + "Left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
+  result[YGEdgeTop] = convertRawProp(rawProps, prefix + "Top", sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
+  result[YGEdgeRight] = convertRawProp(rawProps, prefix + "Right", sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
+  result[YGEdgeBottom] = convertRawProp(rawProps, prefix + "Bottom", sourceValue[YGEdgeBottom], defaultValue[YGEdgeBottom]);
+  result[YGEdgeStart] = convertRawProp(rawProps, prefix + "Start", sourceValue[YGEdgeStart], defaultValue[YGEdgeStart]);
+  result[YGEdgeEnd] = convertRawProp(rawProps, prefix + "End", sourceValue[YGEdgeEnd], defaultValue[YGEdgeEnd]);
+  result[YGEdgeHorizontal] = convertRawProp(rawProps, prefix + "Horizontal", sourceValue[YGEdgeHorizontal], defaultValue[YGEdgeHorizontal]);
+  result[YGEdgeVertical] = convertRawProp(rawProps, prefix + "Vertical", sourceValue[YGEdgeVertical], defaultValue[YGEdgeVertical]);
+  result[YGEdgeAll] = convertRawProp(rawProps, prefix, sourceValue[YGEdgeAll], defaultValue[YGEdgeAll]);
   return result;
 }
 
-static std::array<YGValue, YGEdgeCount> convertRawProp(const RawProps &rawProps, const std::array<YGValue, YGEdgeCount> &defaultValue) {
+static std::array<YGValue, YGEdgeCount> convertRawProp(
+  const RawProps &rawProps,
+  const std::array<YGValue, YGEdgeCount> &sourceValue,
+  const std::array<YGValue, YGEdgeCount> &defaultValue
+) {
   std::array<YGValue, YGEdgeCount> result = defaultValue;
-  result[YGEdgeLeft] = convertRawProp(rawProps, "left", defaultValue[YGEdgeLeft]);
-  result[YGEdgeTop] = convertRawProp(rawProps, "top", defaultValue[YGEdgeTop]);
-  result[YGEdgeRight] = convertRawProp(rawProps, "right", defaultValue[YGEdgeRight]);
-  result[YGEdgeBottom] = convertRawProp(rawProps, "bottom", defaultValue[YGEdgeBottom]);
-  result[YGEdgeStart] = convertRawProp(rawProps, "start", defaultValue[YGEdgeStart]);
-  result[YGEdgeEnd] = convertRawProp(rawProps, "end", defaultValue[YGEdgeEnd]);
+  result[YGEdgeLeft] = convertRawProp(rawProps, "left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
+  result[YGEdgeTop] = convertRawProp(rawProps, "top", sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
+  result[YGEdgeRight] = convertRawProp(rawProps, "right", sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
+  result[YGEdgeBottom] = convertRawProp(rawProps, "bottom", sourceValue[YGEdgeBottom], defaultValue[YGEdgeBottom]);
+  result[YGEdgeStart] = convertRawProp(rawProps, "start", sourceValue[YGEdgeStart], defaultValue[YGEdgeStart]);
+  result[YGEdgeEnd] = convertRawProp(rawProps, "end", sourceValue[YGEdgeEnd], defaultValue[YGEdgeEnd]);
   return result;
 }
 
-static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &defaultValue) {
+static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceValue) {
   YGStyle yogaStyle;
-  yogaStyle.direction = convertRawProp(rawProps, "direction", defaultValue.direction);
-  yogaStyle.flexDirection = convertRawProp(rawProps, "flexDirection", defaultValue.flexDirection);
-  yogaStyle.justifyContent = convertRawProp(rawProps, "justifyContent", defaultValue.justifyContent);
-  yogaStyle.alignContent = convertRawProp(rawProps, "alignContent", defaultValue.alignContent);
-  yogaStyle.alignItems = convertRawProp(rawProps, "alignItems", defaultValue.alignItems);
-  yogaStyle.alignSelf = convertRawProp(rawProps, "alignSelf", defaultValue.alignSelf);
-  yogaStyle.positionType = convertRawProp(rawProps, "position", defaultValue.positionType);
-  yogaStyle.flexWrap = convertRawProp(rawProps, "flexWrap", defaultValue.flexWrap);
-  yogaStyle.overflow = convertRawProp(rawProps, "overflow", defaultValue.overflow);
-  yogaStyle.display = convertRawProp(rawProps, "display", defaultValue.display);
-  yogaStyle.flex = convertRawProp(rawProps, "flex", defaultValue.flex);
-  yogaStyle.flexGrow = convertRawProp(rawProps, "flexGrow", defaultValue.flexGrow);
-  yogaStyle.flexShrink = convertRawProp(rawProps, "flexShrink", defaultValue.flexShrink);
-  yogaStyle.flexBasis = convertRawProp(rawProps, "flexBasis", defaultValue.flexBasis);
-  yogaStyle.margin = convertRawProp(rawProps, "margin", defaultValue.margin);
-  yogaStyle.position = convertRawProp(rawProps, defaultValue.position);
-  yogaStyle.padding = convertRawProp(rawProps, "padding", defaultValue.padding);
-  yogaStyle.border = convertRawProp(rawProps, "border", defaultValue.border);
-  yogaStyle.dimensions = convertRawProp(rawProps, "width", "height", defaultValue.dimensions);
-  yogaStyle.minDimensions = convertRawProp(rawProps, "minWidth", "minHeight", defaultValue.minDimensions);
-  yogaStyle.maxDimensions = convertRawProp(rawProps, "maxWidth", "maxHeight", defaultValue.maxDimensions);
-  yogaStyle.aspectRatio = convertRawProp(rawProps, "aspectRatio", defaultValue.aspectRatio);
+  yogaStyle.direction = convertRawProp(rawProps, "direction", sourceValue.direction, yogaStyle.direction);
+  yogaStyle.flexDirection = convertRawProp(rawProps, "flexDirection", sourceValue.flexDirection, yogaStyle.flexDirection);
+  yogaStyle.justifyContent = convertRawProp(rawProps, "justifyContent", sourceValue.justifyContent, yogaStyle.justifyContent);
+  yogaStyle.alignContent = convertRawProp(rawProps, "alignContent", sourceValue.alignContent, yogaStyle.alignContent);
+  yogaStyle.alignItems = convertRawProp(rawProps, "alignItems", sourceValue.alignItems, yogaStyle.alignItems);
+  yogaStyle.alignSelf = convertRawProp(rawProps, "alignSelf", sourceValue.alignSelf, yogaStyle.alignSelf);
+  yogaStyle.positionType = convertRawProp(rawProps, "position", sourceValue.positionType, yogaStyle.positionType);
+  yogaStyle.flexWrap = convertRawProp(rawProps, "flexWrap", sourceValue.flexWrap, yogaStyle.flexWrap);
+  yogaStyle.overflow = convertRawProp(rawProps, "overflow", sourceValue.overflow, yogaStyle.overflow);
+  yogaStyle.display = convertRawProp(rawProps, "display", sourceValue.display, yogaStyle.display);
+  yogaStyle.flex = convertRawProp(rawProps, "flex", sourceValue.flex, yogaStyle.flex);
+  yogaStyle.flexGrow = convertRawProp(rawProps, "flexGrow", sourceValue.flexGrow, yogaStyle.flexGrow);
+  yogaStyle.flexShrink = convertRawProp(rawProps, "flexShrink", sourceValue.flexShrink, yogaStyle.flexShrink);
+  yogaStyle.flexBasis = convertRawProp(rawProps, "flexBasis", sourceValue.flexBasis, yogaStyle.flexBasis);
+  yogaStyle.margin = convertRawProp(rawProps, "margin", sourceValue.margin, yogaStyle.margin);
+  yogaStyle.position = convertRawProp(rawProps, sourceValue.position, yogaStyle.position);
+  yogaStyle.padding = convertRawProp(rawProps, "padding", sourceValue.padding, yogaStyle.padding);
+  yogaStyle.border = convertRawProp(rawProps, "border", sourceValue.border, yogaStyle.border);
+  yogaStyle.dimensions = convertRawProp(rawProps, "width", "height", sourceValue.dimensions, yogaStyle.dimensions);
+  yogaStyle.minDimensions = convertRawProp(rawProps, "minWidth", "minHeight", sourceValue.minDimensions, yogaStyle.minDimensions);
+  yogaStyle.maxDimensions = convertRawProp(rawProps, "maxWidth", "maxHeight", sourceValue.maxDimensions, yogaStyle.maxDimensions);
+  yogaStyle.aspectRatio = convertRawProp(rawProps, "aspectRatio", sourceValue.aspectRatio, yogaStyle.aspectRatio);
   return yogaStyle;
 }
 
