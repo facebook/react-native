@@ -10,6 +10,6 @@ rn_android_library(
         react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
     exported_deps = [
-        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("third-party/android/fbcore:fbcore"),
     ],
 )

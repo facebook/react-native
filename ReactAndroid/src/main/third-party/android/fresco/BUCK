@@ -71,18 +71,6 @@ remote_file(
 )
 
 android_prebuilt_aar(
-    name = "fbcore",
-    aar = ":fbcore-aar",
-    visibility = ["//ReactAndroid/..."],
-)
-
-remote_file(
-    name = "fbcore-aar",
-    sha1 = "d79dbf5e47d6e528dd1f90170e0299c14d835ab8",
-    url = "mvn:com.facebook.fresco:fbcore:aar:1.10.0",
-)
-
-android_prebuilt_aar(
     name = "imagepipeline-okhttp3",
     aar = ":imagepipeline-okhttp3-binary-aar",
     visibility = ["//ReactAndroid/..."],
