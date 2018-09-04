@@ -45,9 +45,9 @@ Scheduler::~Scheduler() {
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
-  const auto &shadowTree = std::make_shared<ShadowTree>(rootTag);
+  auto shadowTree = std::make_unique<ShadowTree>(rootTag);
   shadowTree->setDelegate(this);
-  shadowTreeRegistry_.insert({rootTag, shadowTree});
+  shadowTreeRegistry_.emplace(rootTag, std::move(shadowTree));
 }
 
 void Scheduler::unregisterRootTag(Tag rootTag) {
@@ -82,9 +82,9 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 #pragma mark - ShadowTreeDelegate
 
-void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const ShadowViewMutationList &mutations) {
+void Scheduler::shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) {
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(shadowTree->getRootTag(), mutations);
+    delegate_->schedulerDidFinishTransaction(shadowTree.getRootTag(), mutations);
   }
 }
 

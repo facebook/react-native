@@ -18,15 +18,10 @@
 namespace facebook {
 namespace react {
 
-class ShadowTree;
-
-using SharedShadowTree = std::shared_ptr<ShadowTree>;
-
 /*
  * Represents the shadow tree and its lifecycle.
  */
-class ShadowTree final:
-  public std::enable_shared_from_this<ShadowTree> {
+class ShadowTree final {
 
 public:
 
