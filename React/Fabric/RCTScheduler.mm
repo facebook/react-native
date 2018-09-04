@@ -30,9 +30,9 @@ class SchedulerDelegateProxy: public SchedulerDelegate {
 public:
   SchedulerDelegateProxy(void *scheduler): scheduler_(scheduler) {}
 
-  void schedulerDidComputeMutationInstructions(Tag rootTag, const TreeMutationInstructionList &instructions) override {
+  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidComputeMutationInstructions:instructions rootTag:rootTag];
+    [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {

@@ -82,9 +82,9 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 #pragma mark - ShadowTreeDelegate
 
-void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) {
+void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const ShadowViewMutationList &mutations) {
   if (delegate_) {
-    delegate_->schedulerDidComputeMutationInstructions(shadowTree->getRootTag(), instructions);
+    delegate_->schedulerDidFinishTransaction(shadowTree->getRootTag(), mutations);
   }
 }
 

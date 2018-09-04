@@ -10,7 +10,7 @@
 
 #include "ShadowTreeDelegate.h"
 #include "Differentiator.h"
-#include "TreeMutationInstruction.h"
+#include "ShadowViewMutation.h"
 
 namespace facebook {
 namespace react {
@@ -78,19 +78,16 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
 
   newRootShadowNode->sealRecursive();
 
-  TreeMutationInstructionList instructions = TreeMutationInstructionList();
-
-  calculateMutationInstructions(
-    instructions,
-    oldRootShadowNode,
-    newRootShadowNode
+  auto mutations = calculateShadowViewMutations(
+    *oldRootShadowNode,
+    *newRootShadowNode
   );
 
-  if (commit(oldRootShadowNode, newRootShadowNode, instructions)) {
-    emitLayoutEvents(instructions);
+  if (commit(oldRootShadowNode, newRootShadowNode, mutations)) {
+    emitLayoutEvents(mutations);
 
     if (delegate_) {
-      delegate_->shadowTreeDidCommit(shared_from_this(), instructions);
+      delegate_->shadowTreeDidCommit(shared_from_this(), mutations);
     }
   }
 }
@@ -98,7 +95,7 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
 bool ShadowTree::commit(
   const SharedRootShadowNode &oldRootShadowNode,
   const SharedRootShadowNode &newRootShadowNode,
-  const TreeMutationInstructionList &mutationInstructions
+  const ShadowViewMutationList &mutations
 ) {
   std::lock_guard<std::mutex> lock(commitMutex_);
 
@@ -108,69 +105,57 @@ bool ShadowTree::commit(
 
   rootShadowNode_ = newRootShadowNode;
 
-  toggleEventEmitters(mutationInstructions);
+  toggleEventEmitters(mutations);
   return true;
 }
 
-void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instructions) {
-  for (const auto &instruction : instructions) {
-    const auto &type = instruction.getType();
-
-    // Only `Insertion` and `Replacement` instructions can affect layout metrics.
+void ShadowTree::emitLayoutEvents(const ShadowViewMutationList &mutations) {
+  for (const auto &mutation : mutations) {
+    // Only `Insert` and `Update` mutations can affect layout metrics.
     if (
-        type == TreeMutationInstruction::Insertion ||
-        type == TreeMutationInstruction::Replacement
+      mutation.type != ShadowViewMutation::Insert &&
+      mutation.type != ShadowViewMutation::Update
     ) {
-      const auto &newShadowNode = instruction.getNewChildNode();
-      const auto &eventEmitter = newShadowNode->getEventEmitter();
-      const auto &viewEventEmitter = std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter);
-
-      // Checking if particular shadow node supports `onLayout` event (part of `ViewEventEmitter`).
-      if (viewEventEmitter) {
-        // Now we know that both (old and new) shadow nodes must be `LayoutableShadowNode` subclasses.
-        assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode));
-
-        // Checking if the `onLayout` event was requested for the particular Shadow Node.
-        const auto &viewProps = std::dynamic_pointer_cast<const ViewProps>(newShadowNode->getProps());
-        if (viewProps && !viewProps->onLayout) {
-          continue;
-        }
-
-        // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
-        const auto &newLayoutableShadowNode =
-          std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
-
-        // In case if we have `oldShadowNode`, we have to check that layout metrics have changed.
-        if (type == TreeMutationInstruction::Replacement) {
-          const auto &oldShadowNode = instruction.getOldChildNode();
-          assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode));
-          // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
-          const auto &oldLayoutableShadowNode =
-            std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
-
-          if (oldLayoutableShadowNode->getLayoutMetrics() == newLayoutableShadowNode->getLayoutMetrics()) {
-            continue;
-          }
-        }
-
-        viewEventEmitter->onLayout(newLayoutableShadowNode->getLayoutMetrics());
-      }
+      continue;
     }
+
+    const auto viewEventEmitter = std::dynamic_pointer_cast<const ViewEventEmitter>(mutation.newChildShadowView.eventEmitter);
+
+    // Checking if particular shadow node supports `onLayout` event (part of `ViewEventEmitter`).
+    if (!viewEventEmitter) {
+      continue;
+    }
+
+    // Checking if the `onLayout` event was requested for the particular Shadow Node.
+    const auto viewProps = std::dynamic_pointer_cast<const ViewProps>(mutation.newChildShadowView.props);
+    if (viewProps && !viewProps->onLayout) {
+      continue;
+    }
+
+    // In case if we have `oldChildShadowView`, checking that layout metrics have changed.
+    if (
+      mutation.type != ShadowViewMutation::Update &&
+      mutation.oldChildShadowView.layoutMetrics == mutation.newChildShadowView.layoutMetrics
+    ) {
+      continue;
+    }
+
+    viewEventEmitter->onLayout(mutation.newChildShadowView.layoutMetrics);
   }
 }
 
-void ShadowTree::toggleEventEmitters(const TreeMutationInstructionList &instructions) {
+void ShadowTree::toggleEventEmitters(const ShadowViewMutationList &mutations) {
   std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
 
-  for (const auto &instruction : instructions) {
-    if (instruction.getType() == TreeMutationInstruction::Deletion) {
-      instruction.getOldChildNode()->getEventEmitter()->setEnabled(false);
+  for (const auto &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Delete) {
+      mutation.oldChildShadowView.eventEmitter->setEnabled(false);
     }
   }
 
-  for (const auto &instruction : instructions) {
-    if (instruction.getType() == TreeMutationInstruction::Creation) {
-      instruction.getNewChildNode()->getEventEmitter()->setEnabled(true);
+  for (const auto &mutation : mutations) {
+    if (mutation.type == ShadowViewMutation::Create) {
+      mutation.newChildShadowView.eventEmitter->setEnabled(true);
     }
   }
 }

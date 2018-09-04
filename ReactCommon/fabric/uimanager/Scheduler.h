@@ -57,7 +57,7 @@ public:
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) override;
+  void shadowTreeDidCommit(const SharedShadowTree &shadowTree, const ShadowViewMutationList &mutations) override;
 
 #pragma mark - Deprecated
 
@@ -67,7 +67,6 @@ public:
   std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
 
 private:
-
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
   std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
