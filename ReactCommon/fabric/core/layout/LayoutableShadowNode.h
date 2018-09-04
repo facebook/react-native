@@ -52,6 +52,13 @@ public:
    */
   virtual LayoutMetrics getLayoutMetrics() const;
 
+  /*
+   * Returns `true` if the node represents only information necessary for
+   * layout computation and can be safely removed from view hierarchy.
+   * Default implementation returns `false`.
+   */
+  virtual bool isLayoutOnly() const;
+
 protected:
 
   /*
