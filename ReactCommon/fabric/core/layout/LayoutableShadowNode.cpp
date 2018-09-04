@@ -31,6 +31,10 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
   return true;
 }
 
+bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
+  return false;
+}
+
 void LayoutableShadowNode::cleanLayout() {
   isLayoutClean_ = true;
 }

@@ -11,13 +11,27 @@
 namespace facebook {
 namespace react {
 
+static void sliceChildShadowNodeViewPairsRecursively(ShadowViewNodePairList &pairList, Point layoutOffset, const ShadowNode &shadowNode) {
+  for (const auto &childShadowNode : shadowNode.getChildren()) {
+    auto shadowView = ShadowView(*childShadowNode);
+
+    const auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode *>(childShadowNode.get());
+    if (layoutableShadowNode && layoutableShadowNode->isLayoutOnly()) {
+      sliceChildShadowNodeViewPairsRecursively(
+        pairList,
+        layoutOffset + shadowView.layoutMetrics.frame.origin,
+        *childShadowNode
+      );
+    } else {
+      shadowView.layoutMetrics.frame.origin += layoutOffset;
+      pairList.push_back({shadowView, *childShadowNode});
+    }
+  }
+}
+
 static ShadowViewNodePairList sliceChildShadowNodeViewPairs(const ShadowNode &shadowNode) {
   ShadowViewNodePairList pairList;
-
-  for (const auto &childShadowNode : shadowNode.getChildren()) {
-    pairList.push_back({ShadowView(*childShadowNode), *childShadowNode});
-  }
-
+  sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
   return pairList;
 }
 
