@@ -87,7 +87,7 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
     emitLayoutEvents(mutations);
 
     if (delegate_) {
-      delegate_->shadowTreeDidCommit(shared_from_this(), mutations);
+      delegate_->shadowTreeDidCommit(*this, mutations);
     }
   }
 }

@@ -21,7 +21,7 @@ public:
   /*
    * Called right after Shadow Tree commit a new state of the the tree.
    */
-  virtual void shadowTreeDidCommit(const std::shared_ptr<ShadowTree> &shadowTree, const ShadowViewMutationList &mutations) = 0;
+  virtual void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) = 0;
 };
 
 } // namespace react
