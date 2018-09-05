@@ -7,7 +7,9 @@
 
 package com.facebook.react.modules.timepicker;
 
+import com.facebook.thecount.api.CountEnum;
 
+@CountEnum
 public enum TimePickerMode {
   CLOCK,
   SPINNER,

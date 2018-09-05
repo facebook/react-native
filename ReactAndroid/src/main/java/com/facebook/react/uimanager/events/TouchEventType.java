@@ -7,9 +7,12 @@
 
 package com.facebook.react.uimanager.events;
 
+import com.facebook.thecount.api.CountEnum;
+
 /**
  * Touch event types that JS module RCTEventEmitter can understand
  */
+@CountEnum
 public enum TouchEventType {
   START("topTouchStart"),
   END("topTouchEnd"),

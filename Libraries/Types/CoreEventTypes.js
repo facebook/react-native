@@ -36,9 +36,24 @@ export type Layout = $ReadOnly<{|
   height: number,
 |}>;
 
+export type TextLayout = $ReadOnly<{|
+  ...Layout,
+  ascender: number,
+  capHeight: number,
+  descender: number,
+  text: string,
+  xHeight: number,
+|}>;
+
 export type LayoutEvent = SyntheticEvent<
   $ReadOnly<{|
     layout: Layout,
+  |}>,
+>;
+
+export type TextLayoutEvent = SyntheticEvent<
+  $ReadOnly<{|
+    lines: Array<TextLayout>,
   |}>,
 >;
 

@@ -5,7 +5,28 @@
 
 package com.facebook.react.module.processing;
 
-import com.facebook.react.bridge.CxxModuleWrapper;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -158,8 +179,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
-      TypeMirror cxxModuleWrapperTypeMirror = mElements.getTypeElement(CxxModuleWrapper.class.getName()).asType();
-
       for (String nativeModule : nativeModules) {
         String keyString = nativeModule;
 
@@ -189,15 +208,13 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                       name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
-        boolean isCxxModule = mTypes.isAssignable(typeElement.asType(), cxxModuleWrapperTypeMirror);
-
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
           .append(hasConstants).append(", ")
-          .append(isCxxModule)
+          .append(reactModule.isCxxModule())
           .append(")")
           .toString();
 

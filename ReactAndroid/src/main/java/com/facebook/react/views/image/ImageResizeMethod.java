@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.image;
 
+import com.facebook.thecount.api.CountEnum;
+
+@CountEnum
 public enum ImageResizeMethod {
   AUTO,
   RESIZE,
