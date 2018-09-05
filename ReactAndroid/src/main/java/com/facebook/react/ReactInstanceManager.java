@@ -905,6 +905,7 @@ public class ReactInstanceManager {
 
     mCreateReactContextThread =
         new Thread(
+            null,
             new Runnable() {
               @Override
               public void run() {
@@ -958,7 +959,8 @@ public class ReactInstanceManager {
                   mDevSupportManager.handleException(e);
                 }
               }
-            });
+            },
+            "create_react_context");
     ReactMarker.logMarker(REACT_CONTEXT_THREAD_START);
     mCreateReactContextThread.start();
   }
