@@ -18,6 +18,7 @@ rn_java_library(
     source = "7",
     target = "7",
     deps = [
+        react_native_dep("java/com/facebook/thecount:thecount"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/javapoet:javapoet"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),

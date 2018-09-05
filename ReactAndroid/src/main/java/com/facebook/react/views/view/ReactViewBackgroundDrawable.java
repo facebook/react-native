@@ -27,10 +27,12 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
+import com.facebook.thecount.api.CountEnum;
 import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 import java.util.Locale;
 import javax.annotation.Nullable;
+
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports drawing
@@ -111,6 +113,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private final Context mContext;
   private int mLayoutDirection;
 
+  @CountEnum
   public enum BorderRadiusLocation {
     TOP_LEFT,
     TOP_RIGHT,
