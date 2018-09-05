@@ -792,6 +792,7 @@ public class ReactInstanceManager {
   }
 
   public @Nullable List<String> getViewManagerNames() {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
     ReactApplicationContext context;
     synchronized(mReactContextLock) {
       context = (ReactApplicationContext) getCurrentReactContext();
@@ -803,15 +804,20 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mPackages) {
+        SystraceMessage.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+          .arg("Package", reactPackage.getClass().getSimpleName())
+          .flush();
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
           List<String> names =
-              ((ViewManagerOnDemandReactPackage) reactPackage)
-                  .getViewManagerNames(context);
+              ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
           if (names != null) {
             uniqueNames.addAll(names);
           }
         }
+        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       return new ArrayList<>(uniqueNames);
     }
   }

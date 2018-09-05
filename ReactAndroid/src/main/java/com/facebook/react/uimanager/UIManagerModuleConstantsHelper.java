@@ -99,7 +99,7 @@ import javax.annotation.Nullable;
           constants.put(viewManagerName, viewManagerConstants);
         }
       } finally {
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
