@@ -6,8 +6,11 @@
  */
 
 #import <Foundation/Foundation.h>
-
+#if __has_include(<RCTAnimation/RCTValueAnimatedNode.h>)
 #import <RCTAnimation/RCTValueAnimatedNode.h>
+#else
+#import "RCTValueAnimatedNode.h"
+#endif
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
