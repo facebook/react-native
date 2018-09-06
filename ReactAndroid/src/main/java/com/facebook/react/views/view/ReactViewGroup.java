@@ -110,6 +110,8 @@ public class ReactViewGroup extends ViewGroup implements
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -835,5 +837,37 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+
+    if (isBackfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = getRotationX();
+    float rotationY = getRotationY();
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }
