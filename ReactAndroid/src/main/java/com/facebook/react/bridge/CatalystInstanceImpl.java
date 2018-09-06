@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -103,6 +105,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
+
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -115,8 +119,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -125,6 +131,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mNativeModuleRegistry.getJavaModules(this),
       mNativeModuleRegistry.getCxxModules());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }

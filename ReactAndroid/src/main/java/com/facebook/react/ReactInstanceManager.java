@@ -1128,8 +1128,12 @@ public class ReactInstanceManager {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     catalystInstance.runJSBundle();
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
     reactContext.initializeWithInstance(catalystInstance);
+
 
     return reactContext;
   }
@@ -1190,6 +1194,6 @@ public class ReactInstanceManager {
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
-    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 }
