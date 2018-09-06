@@ -203,6 +203,22 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setOverflow(overflow);
   }
 
+  @ReactProp(name = "backfaceVisibility")
+  public void setBackfaceVisibility(ReactViewGroup view, String backfaceVisibility) {
+    view.setBackfaceVisibility(backfaceVisibility);
+  }
+
+  @Override
+  public void setOpacity(ReactViewGroup view, float opacity) {
+    view.setOpacityIfPossible(opacity);
+  }
+
+  @Override
+  public void setTransform(ReactViewGroup view, ReadableArray matrix) {
+    super.setTransform(view, matrix);
+    view.setBackfaceVisibilityDependantOpacity();
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
