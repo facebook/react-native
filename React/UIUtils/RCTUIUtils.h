@@ -20,6 +20,9 @@ typedef struct {
   struct {
     CGFloat width, height, scale, fontScale;
   } window, screen;
+  struct {
+    CGFloat left, top, right, bottom;
+  } safeAreaInsets;
 } RCTDimensions;
 extern __attribute__((visibility("default")))
 RCTDimensions RCTGetDimensions(CGFloat fontScale);

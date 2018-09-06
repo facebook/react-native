@@ -66,6 +66,7 @@ class Dimensions {
       eventEmitter.emit('change', {
         window: dimensions.window,
         screen: dimensions.screen,
+        safeAreaInsets: dimensions.safeAreaInsets,
       });
     } else {
       dimensionsInitialized = true;

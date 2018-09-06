@@ -21,6 +21,24 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale)
   result.window = dims;
   result.screen = dims;
 
+  if (@available(iOS 11.0, *)) {
+    UIEdgeInsets windowInsets = RCTKeyWindow().rootViewController.view.safeAreaInsets;
+    typeof (result.safeAreaInsets) safeAreaInsets = {
+      .left = windowInsets.left,
+      .top = windowInsets.top,
+      .right = windowInsets.right,
+      .bottom = windowInsets.bottom
+    };
+    result.safeAreaInsets = safeAreaInsets;
+  } else {
+    // Polyfill `safeAreaInsets` for iOS < 11. We only care about the status bar.
+    typeof (result.safeAreaInsets) safeAreaInsets = {
+      // TODO: Test this with in-call status bar.
+      .top = RCTSharedApplication().statusBarFrame.size.height
+    };
+    result.safeAreaInsets = safeAreaInsets;
+  }
+
   return result;
 }
 
