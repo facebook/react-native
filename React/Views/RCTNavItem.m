@@ -47,10 +47,11 @@
 {
   if (!_backButtonItem) {
     if (_backButtonIcon) {
-      _backButtonItem = [[UIBarButtonItem alloc] initWithImage:_backButtonIcon
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:nil
-                                                        action:nil];
+        _backButtonItem = [[UIBarButtonItem alloc] initWithImage:_backButtonIcon
+                                                           style:UIBarButtonItemStylePlain
+                                                          target:nil
+                                                          action:nil];
+
     } else if (_backButtonTitle.length) {
       _backButtonItem = [[UIBarButtonItem alloc] initWithTitle:_backButtonTitle
                                                          style:UIBarButtonItemStylePlain
@@ -85,16 +86,33 @@
 {
   if (!_leftButtonItem) {
     if (_leftButtonIcon) {
-      _leftButtonItem =
-      [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
-                                       style:UIBarButtonItemStylePlain
+      if (_leftButtonTitle.length) {
+        UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [leftButton setImage:_leftButtonIcon forState:UIControlStateNormal];
+        [leftButton setTitle:_leftButtonTitle forState:UIControlStateNormal];
+        [leftButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 5, 0, 0)];
+        [leftButton setTitleColor:_tintColor forState:UIControlStateNormal];
+        [leftButton.titleLabel setFont:[UIFont fontWithName:_titleTextFont size:_titleTextFontSize]];
+        [leftButton setFrame:CGRectMake(0,0, 120, 20)];
+        [leftButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+        leftButton.imageEdgeInsets = UIEdgeInsetsMake(0,0,0,0);
+        [leftButton addTarget:self
+                    action:@selector(handleLeftButtonPress)
+          forControlEvents:UIControlEventTouchUpInside];
+
+        _leftButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+        [_leftButtonItem setStyle:UIBarButtonItemStylePlain];
+      }else{
+        _leftButtonItem = [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
+                                      style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(handleLeftButtonPress)];
+      }
 
     } else if (_leftButtonTitle.length) {
       _leftButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
-                                       style:UIBarButtonItemStylePlain
+                                      style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(handleLeftButtonPress)];
 
@@ -139,12 +157,29 @@
 {
   if (!_rightButtonItem) {
     if (_rightButtonIcon) {
-      _rightButtonItem =
-      [[UIBarButtonItem alloc] initWithImage:_rightButtonIcon
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(handleRightButtonPress)];
-
+      if (_rightButtonTitle.length) {
+        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [rightButton setImage:_rightButtonIcon forState:UIControlStateNormal];
+        [rightButton setTitle:_rightButtonTitle forState:UIControlStateNormal];
+        [rightButton setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0, 0, 20)];
+        [rightButton setTitleColor:_tintColor forState:UIControlStateNormal];
+        [rightButton.titleLabel setFont:[UIFont fontWithName:_titleTextFont size:_titleTextFontSize]];
+        [rightButton setFrame:CGRectMake(0,0, 120, 20)];
+        [rightButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
+        rightButton.imageEdgeInsets = UIEdgeInsetsMake(0,105,0,0);
+        [rightButton addTarget:self
+                        action:@selector(handleRightButtonPress)
+              forControlEvents:UIControlEventTouchUpInside];
+        
+        _rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+        [_rightButtonItem setStyle:UIBarButtonItemStylePlain];
+      }else{
+        _rightButtonItem = [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
+                                                            style:UIBarButtonItemStylePlain
+                                                           target:self
+                                                           action:@selector(handleRightButtonPress)];
+      }
+      
     } else if (_rightButtonTitle.length) {
       _rightButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
