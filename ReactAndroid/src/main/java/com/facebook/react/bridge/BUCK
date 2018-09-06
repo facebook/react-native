@@ -41,6 +41,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/uimanager/common:common"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
     ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
     exported_deps = [
         react_native_dep("java/com/facebook/jni:jni"),

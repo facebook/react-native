@@ -49,14 +49,12 @@ public class JavaModuleWrapper {
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
-  private final String mClassName;
   private final ArrayList<NativeModule.NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
 
-  public JavaModuleWrapper(JSInstance jsInstance, String className, ModuleHolder moduleHolder) {
+  public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {
     mJSInstance = jsInstance;
     mModuleHolder = moduleHolder;
-    mClassName = className;
     mMethods = new ArrayList<>();
     mDescs = new ArrayList();
   }

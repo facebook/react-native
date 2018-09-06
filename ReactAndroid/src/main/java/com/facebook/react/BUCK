@@ -33,6 +33,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/systeminfo:systeminfo"),
         react_native_target("java/com/facebook/react/modules/toast:toast"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
     ],
     exported_deps = [
