@@ -151,6 +151,8 @@
 		14F484561AABFCE100FDF6B9 /* RCTSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F484551AABFCE100FDF6B9 /* RCTSliderManager.m */; };
 		14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */; };
 		14F7A0F01BDA714B003C6C10 /* RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */; };
+		1904A8A021D823680024F51F /* RCTSafeAreaUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1904A89E21D823680024F51F /* RCTSafeAreaUtils.h */; };
+		1904A8A121D823680024F51F /* RCTSafeAreaUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 1904A89F21D823680024F51F /* RCTSafeAreaUtils.m */; };
 		191E3EBE1C29D9AF00C180A6 /* RCTRefreshControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */; };
 		191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 191E3EC01C29DC3800C180A6 /* RCTRefreshControl.m */; };
 		199B8A6F1F44DB16005DEF67 /* RCTVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 199B8A6E1F44DB16005DEF67 /* RCTVersion.h */; };
@@ -1987,6 +1989,8 @@
 		14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerfMonitor.m; sourceTree = "<group>"; };
 		14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTFPSGraph.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTFPSGraph.m; sourceTree = "<group>"; };
+		1904A89E21D823680024F51F /* RCTSafeAreaUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSafeAreaUtils.h; sourceTree = "<group>"; };
+		1904A89F21D823680024F51F /* RCTSafeAreaUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSafeAreaUtils.m; sourceTree = "<group>"; };
 		191E3EBC1C29D9AF00C180A6 /* RCTRefreshControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControlManager.h; sourceTree = "<group>"; };
 		191E3EBD1C29D9AF00C180A6 /* RCTRefreshControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRefreshControlManager.m; sourceTree = "<group>"; };
 		191E3EBF1C29DC3800C180A6 /* RCTRefreshControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRefreshControl.h; sourceTree = "<group>"; };
@@ -2798,6 +2802,8 @@
 		59D031E41F8353D3008361F0 /* SafeAreaView */ = {
 			isa = PBXGroup;
 			children = (
+				1904A89E21D823680024F51F /* RCTSafeAreaUtils.h */,
+				1904A89F21D823680024F51F /* RCTSafeAreaUtils.m */,
 				59D031E51F8353D3008361F0 /* RCTSafeAreaShadowView.h */,
 				59D031E61F8353D3008361F0 /* RCTSafeAreaShadowView.m */,
 				59D031E71F8353D3008361F0 /* RCTSafeAreaView.h */,
@@ -3457,6 +3463,7 @@
 				3D80DA4C1DF820620028D040 /* RCTAppState.h in Headers */,
 				3D80DA4D1DF820620028D040 /* RCTAsyncLocalStorage.h in Headers */,
 				3D80DA4E1DF820620028D040 /* RCTClipboard.h in Headers */,
+				1904A8A021D823680024F51F /* RCTSafeAreaUtils.h in Headers */,
 				3D80DA4F1DF820620028D040 /* RCTDevLoadingView.h in Headers */,
 				3D80DA501DF820620028D040 /* RCTDevMenu.h in Headers */,
 				3D80DA511DF820620028D040 /* RCTEventEmitter.h in Headers */,
@@ -4484,6 +4491,7 @@
 				1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */,
 				13D9FEEB1CDCCECF00158BD7 /* RCTEventEmitter.m in Sources */,
 				599FAA3E1FB274980058CCF6 /* RCTSurfaceRootShadowView.m in Sources */,
+				1904A8A121D823680024F51F /* RCTSafeAreaUtils.m in Sources */,
 				AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */,
 				39C50FFB2046EE3500CEE534 /* RCTVersion.m in Sources */,
 				14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */,

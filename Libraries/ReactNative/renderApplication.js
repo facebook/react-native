@@ -16,8 +16,11 @@ import type {IPerformanceLogger} from 'createPerformanceLogger';
 import PerformanceLoggerContext from 'PerformanceLoggerContext';
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
+const RootViewLayout = require('RootViewLayout');
 
 const invariant = require('invariant');
+
+import type {LayoutContext} from 'RootViewLayout';
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
@@ -26,6 +29,7 @@ function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
+  initialLayoutContext: LayoutContext,
   WrapperComponent?: ?React.ComponentType<*>,
   fabric?: boolean,
   showFabricIndicator?: boolean,
@@ -36,12 +40,16 @@ function renderApplication<Props: Object>(
   let renderable = (
     <PerformanceLoggerContext.Provider
       value={scopedPerformanceLogger ?? GlobalPerformanceLogger}>
-      <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
-        <RootComponent {...initialProps} rootTag={rootTag} />
-        {fabric === true && showFabricIndicator === true ? (
-          <ReactFabricIndicator />
-        ) : null}
-      </AppContainer>
+      <RootViewLayout.Manager
+        initialLayoutContext={initialLayoutContext}
+        rootTag={rootTag}>
+        <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+          <RootComponent {...initialProps} rootTag={rootTag} />
+          {fabric === true && showFabricIndicator === true ? (
+            <ReactFabricIndicator />
+          ) : null}
+        </AppContainer>
+      </RootViewLayout.Manager>
     </PerformanceLoggerContext.Provider>
   );
 

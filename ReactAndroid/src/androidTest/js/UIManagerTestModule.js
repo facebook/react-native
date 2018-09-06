@@ -234,28 +234,54 @@ const UpdatePositionInListTestAppStyles = StyleSheet.create({
  */
 const emptyExactProps = Object.freeze({});
 
+const mockLayoutContext = {
+  layout: {x: 0, y: 0, width: 540, height: 720},
+  safeAreaInsets: {top: 20, right: 0, bottom: 0, left: 0},
+};
+
 const UIManagerTestModule = {
   renderFlexTestApplication(rootTag: number) {
-    renderApplication(FlexTestApp, emptyExactProps, rootTag);
+    renderApplication(FlexTestApp, emptyExactProps, rootTag, mockLayoutContext);
   },
   renderFlexWithTextApplication(rootTag: number) {
-    renderApplication(FlexWithText, emptyExactProps, rootTag);
+    renderApplication(
+      FlexWithText,
+      emptyExactProps,
+      rootTag,
+      mockLayoutContext,
+    );
   },
   renderAbsolutePositionBottomRightTestApplication(rootTag: number) {
     renderApplication(
       AbsolutePositionBottomRightTestApp,
       emptyExactProps,
       rootTag,
+      mockLayoutContext,
     );
   },
   renderAbsolutePositionTestApplication(rootTag: number) {
-    renderApplication(AbsolutePositionTestApp, emptyExactProps, rootTag);
+    renderApplication(
+      AbsolutePositionTestApp,
+      emptyExactProps,
+      rootTag,
+      mockLayoutContext,
+    );
   },
   renderCenteredTextViewTestApplication(rootTag: number, text: string) {
-    renderApplication(CenteredTextView, {text: text}, rootTag);
+    renderApplication(
+      CenteredTextView,
+      {text: text},
+      rootTag,
+      mockLayoutContext,
+    );
   },
   renderUpdatePositionInListTestApplication(rootTag: number) {
-    renderApplication(UpdatePositionInListTestApp, emptyExactProps, rootTag);
+    renderApplication(
+      UpdatePositionInListTestApp,
+      emptyExactProps,
+      rootTag,
+      mockLayoutContext,
+    );
   },
   flushUpdatePositionInList,
 };

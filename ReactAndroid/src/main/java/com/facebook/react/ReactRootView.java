@@ -24,6 +24,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import com.facebook.common.logging.FLog;
@@ -468,6 +469,87 @@ public class ReactRootView extends FrameLayout implements RootView {
     }
   }
 
+  private static class RootViewInsets {
+    float top;
+    float right;
+    float bottom;
+    float left;
+
+    RootViewInsets(float top, float right, float bottom, float left) {
+      this.top = top;
+      this.right = right;
+      this.bottom = bottom;
+      this.left = left;
+    }
+  }
+
+  private RootViewInsets getSafeAreaInsets() {
+    // Window insets are parts of the window that are covered by system views (status bar,
+    // navigation bar, notches). There are no apis the get these values for android < M so we
+    // do a best effort polyfill.
+    // TODO: Use the DisplayCutout api when we target sdk 28+
+    RootViewInsets windowInsets;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      WindowInsets insets = getRootWindowInsets();
+      windowInsets = new RootViewInsets(
+        insets.getSystemWindowInsetTop(),
+        insets.getSystemWindowInsetRight(),
+        insets.getSystemWindowInsetBottom(),
+        insets.getSystemWindowInsetLeft());
+    } else {
+      int rotation =
+        ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+          .getDefaultDisplay().getRotation();
+      int statusBarHeight = 0;
+      int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+      if (resourceId > 0) {
+        statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+      }
+      int navbarHeight = 0;
+      resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+      if (resourceId > 0) {
+        navbarHeight = getResources().getDimensionPixelSize(resourceId);
+      }
+
+      windowInsets = new RootViewInsets(
+        statusBarHeight,
+        rotation == Surface.ROTATION_90 ? navbarHeight : 0,
+        rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180 ? navbarHeight : 0,
+        rotation == Surface.ROTATION_270 ? navbarHeight : 0);
+    }
+
+    // Calculate the part of the root view that overlaps with window insets.
+    int[] windowLocation = new int[2];
+    getLocationInWindow(windowLocation);
+    DisplayMetrics screenMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    windowInsets.top = Math.max(windowInsets.top - windowLocation[1], 0);
+    windowInsets.left = Math.max(windowInsets.left - windowLocation[0], 0);
+    windowInsets.bottom = Math.max(windowLocation[1] + getHeight() + windowInsets.bottom - screenMetrics.heightPixels, 0);
+    windowInsets.right = Math.max(windowLocation[0] + getWidth() + windowInsets.right - screenMetrics.widthPixels, 0);
+    return windowInsets;
+
+  }
+
+  private WritableMap getLayoutContext() {
+    WritableNativeMap layout = new WritableNativeMap();
+    layout.putDouble("width", PixelUtil.toDIPFromPixel(getWidth()));
+    layout.putDouble("height", PixelUtil.toDIPFromPixel(getHeight()));
+    layout.putDouble("x", PixelUtil.toDIPFromPixel(getX()));
+    layout.putDouble("y", PixelUtil.toDIPFromPixel(getY()));
+
+    WritableNativeMap safeAreaInsetsMap = new WritableNativeMap();
+    RootViewInsets safeAreaInsets = getSafeAreaInsets();
+    safeAreaInsetsMap.putDouble("top", PixelUtil.toDIPFromPixel(safeAreaInsets.top));
+    safeAreaInsetsMap.putDouble("right", PixelUtil.toDIPFromPixel(safeAreaInsets.right));
+    safeAreaInsetsMap.putDouble("bottom", PixelUtil.toDIPFromPixel(safeAreaInsets.bottom));
+    safeAreaInsetsMap.putDouble("left", PixelUtil.toDIPFromPixel(safeAreaInsets.left));
+
+    WritableNativeMap layoutContext = new WritableNativeMap();
+    layoutContext.putMap("layout", layout);
+    layoutContext.putMap("safeAreaInsets", safeAreaInsetsMap);
+    return layoutContext;
+  }
+
   /**
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
@@ -497,6 +579,7 @@ public class ReactRootView extends FrameLayout implements RootView {
 
           WritableNativeMap appParams = new WritableNativeMap();
           appParams.putDouble("rootTag", getRootViewTag());
+          appParams.putMap("initialLayoutContext", getLayoutContext());
           @Nullable Bundle appProperties = getAppProperties();
           if (appProperties != null) {
             appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
@@ -606,6 +689,11 @@ public class ReactRootView extends FrameLayout implements RootView {
     private int mDeviceRotation = 0;
     private DisplayMetrics mWindowMetrics = new DisplayMetrics();
     private DisplayMetrics mScreenMetrics = new DisplayMetrics();
+    private int mWidth = 0;
+    private int mHeight = 0;
+    private float mX = 0;
+    private float mY = 0;
+    private @Nullable RootViewInsets mSafeAreaInsets;
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -622,6 +710,7 @@ public class ReactRootView extends FrameLayout implements RootView {
       checkForKeyboardEvents();
       checkForDeviceOrientationChanges();
       checkForDeviceDimensionsChanges();
+      checkForLayoutContextChanges();
     }
 
     private void checkForKeyboardEvents() {
@@ -669,6 +758,22 @@ public class ReactRootView extends FrameLayout implements RootView {
       }
     }
 
+    private void checkForLayoutContextChanges() {
+      RootViewInsets safeAreaInsets = getSafeAreaInsets();
+      if (mWidth != getWidth() ||
+        mHeight != getHeight() ||
+        mX != getX() ||
+        mY != getY() ||
+        !areInsetsEqual(mSafeAreaInsets, safeAreaInsets)) {
+        mSafeAreaInsets = safeAreaInsets;
+        mWidth = getWidth();
+        mHeight = getHeight();
+        mX = getX();
+        mY = getY();
+        emitLayoutContextEvent();
+      }
+    }
+
     private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return displayMetrics.equals(otherMetrics);
@@ -683,6 +788,15 @@ public class ReactRootView extends FrameLayout implements RootView {
           displayMetrics.xdpi == otherMetrics.xdpi &&
           displayMetrics.ydpi == otherMetrics.ydpi;
       }
+    }
+
+    private boolean areInsetsEqual(RootViewInsets insets, RootViewInsets otherInsets) {
+      return insets != null &&
+        otherInsets != null &&
+        insets.top == otherInsets.top &&
+        insets.right == otherInsets.right &&
+        insets.bottom == otherInsets.bottom &&
+        insets.left == otherInsets.left;
     }
 
     private void emitOrientationChanged(final int newRotation) {
@@ -725,6 +839,13 @@ public class ReactRootView extends FrameLayout implements RootView {
           .getCurrentReactContext()
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
+    }
+
+    private void emitLayoutContextEvent() {
+      WritableNativeMap event = new WritableNativeMap();
+      event.putMap("layoutContext", getLayoutContext());
+      event.putInt("rootTag", getRootViewTag());
+      sendEvent("didUpdateLayoutContext", event);
     }
   }
 }

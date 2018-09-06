@@ -71,6 +71,9 @@ module.exports = {
   get KeyboardAvoidingView() {
     return require('KeyboardAvoidingView');
   },
+  get LayoutContext() {
+    return require('RootViewLayout').Context.Consumer;
+  },
   get MaskedViewIOS() {
     warnOnce(
       'maskedviewios-moved',

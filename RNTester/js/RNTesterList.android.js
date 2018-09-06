@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'LayoutContextExample',
+    module: require('./LayoutContextExample'),
+  },
+  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },

@@ -21,6 +21,7 @@
 #import "RCTProfile.h"
 #import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
+#import "RCTSafeAreaUtils.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -33,6 +34,23 @@
 #endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
+
+static NSDictionary * RCTCreateLayoutContext(CGRect frame, UIEdgeInsets safeAreaInsets) {
+  return @{
+    @"safeAreaInsets": @{
+      @"top": @(safeAreaInsets.top),
+      @"right": @(safeAreaInsets.right),
+      @"bottom": @(safeAreaInsets.bottom),
+      @"left": @(safeAreaInsets.left),
+    },
+    @"layout": @{
+      @"x": @(frame.origin.x),
+      @"y": @(frame.origin.y),
+      @"width": @(frame.size.width),
+      @"height": @(frame.size.height),
+    },
+  };
+}
 
 @interface RCTUIManager (RCTRootView)
 
@@ -47,6 +65,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
+  CGRect _lastFrame;
+  UIEdgeInsets _lastSafeAreaInsets;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -71,6 +91,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+    _lastFrame = CGRectZero;
+    _lastSafeAreaInsets = UIEdgeInsetsZero;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -174,6 +196,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+
+  [self maybeUpdateLayoutContext];
 }
 
 - (UIViewController *)reactViewController
@@ -288,6 +312,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSDictionary *appParameters = @{
     @"rootTag": _contentView.reactTag,
     @"initialProps": _appProperties ?: @{},
+    @"initialLayoutContext": RCTCreateLayoutContext(self.frame, RCTSafeAreaInsetsForView(self, YES)),
   };
 
   RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
@@ -365,6 +390,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView = nil;
   [self showLoadingView];
 }
+
+- (void)maybeUpdateLayoutContext
+{
+  CGRect frame = self.frame;
+  UIEdgeInsets safeAreaInsets = RCTSafeAreaInsetsForView(self, YES);
+  if (
+    RCTUIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _lastSafeAreaInsets, RCTScreenScale()) &&
+    CGRectEqualToRect(frame, _lastFrame)
+  ) {
+    return;
+  }
+  NSDictionary *layoutContext = RCTCreateLayoutContext(frame, safeAreaInsets);
+  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateLayoutContext" body:@{
+    @"rootTag": _contentView.reactTag,
+    @"layoutContext": layoutContext,
+  }];
+
+  _lastFrame = frame;
+  _lastSafeAreaInsets = safeAreaInsets;
+}
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+
+- (void)safeAreaInsetsDidChange
+{
+  [self maybeUpdateLayoutContext];
+}
+
+#endif
 
 - (void)dealloc
 {

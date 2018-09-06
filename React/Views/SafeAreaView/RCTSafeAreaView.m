@@ -10,6 +10,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
 
+#import "RCTSafeAreaUtils.h"
 #import "RCTSafeAreaViewLocalData.h"
 
 @implementation RCTSafeAreaView {
@@ -35,51 +36,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   return [self respondsToSelector:@selector(safeAreaInsets)];
 }
 
-- (UIEdgeInsets)safeAreaInsetsIfSupportedAndEnabled
-{
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-  if (self.isSupportedByOS) {
-    if (@available(iOS 11.0, *)) {
-      return self.safeAreaInsets;
-    }
-  }
-#endif
-  return self.emulateUnlessSupported ? self.emulatedSafeAreaInsets : UIEdgeInsetsZero;
-}
-
-- (UIEdgeInsets)emulatedSafeAreaInsets
-{
-  UIViewController* vc = self.reactViewController;
-
-  if (!vc) {
-    return UIEdgeInsetsZero;
-  }
-
-  CGFloat topLayoutOffset = vc.topLayoutGuide.length;
-  CGFloat bottomLayoutOffset = vc.bottomLayoutGuide.length;
-  CGRect safeArea = vc.view.bounds;
-  safeArea.origin.y += topLayoutOffset;
-  safeArea.size.height -= topLayoutOffset + bottomLayoutOffset;
-  CGRect localSafeArea = [vc.view convertRect:safeArea toView:self];
-  UIEdgeInsets safeAreaInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-  if (CGRectGetMinY(localSafeArea) > CGRectGetMinY(self.bounds)) {
-    safeAreaInsets.top = CGRectGetMinY(localSafeArea) - CGRectGetMinY(self.bounds);
-  }
-  if (CGRectGetMaxY(localSafeArea) < CGRectGetMaxY(self.bounds)) {
-    safeAreaInsets.bottom = CGRectGetMaxY(self.bounds) - CGRectGetMaxY(localSafeArea);
-  }
-
-  return safeAreaInsets;
-}
-
-static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIEdgeInsets insets2, CGFloat threshold) {
-  return
-    ABS(insets1.left - insets2.left) <= threshold &&
-    ABS(insets1.right - insets2.right) <= threshold &&
-    ABS(insets1.top - insets2.top) <= threshold &&
-    ABS(insets1.bottom - insets2.bottom) <= threshold;
-}
-
 - (void)safeAreaInsetsDidChange
 {
   [self invalidateSafeAreaInsets];
@@ -87,7 +43,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)invalidateSafeAreaInsets
 {
-  [self setSafeAreaInsets:self.safeAreaInsetsIfSupportedAndEnabled];
+  [self setSafeAreaInsets:RCTSafeAreaInsetsForView(self, self.emulateUnlessSupported)];
 }
 
 - (void)layoutSubviews
@@ -101,7 +57,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
-  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+  if (RCTUIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
     return;
   }
 
