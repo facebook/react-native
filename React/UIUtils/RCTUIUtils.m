@@ -7,19 +7,31 @@
 
 #import "RCTUIUtils.h"
 
+#import "RCTUtils.h"
+
 RCTDimensions RCTGetDimensions(CGFloat fontScale)
 {
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
   RCTDimensions result;
-  typeof (result.window) dims = {
+  typeof (result.screen) screen = {
     .width = screenSize.width,
     .height = screenSize.height,
     .scale = mainScreen.scale,
     .fontScale = fontScale
   };
-  result.window = dims;
-  result.screen = dims;
+  result.screen = screen;
+
+  // Use bounds of the root view to take into consideration the size change
+  // when the in-call status bar is opened.
+  CGSize windowSize = RCTKeyWindow().rootViewController.view.bounds.size;
+  typeof (result.window) window = {
+    .width = windowSize.width,
+    .height = windowSize.height,
+    .scale = mainScreen.scale,
+    .fontScale = fontScale
+  };
+  result.window = window;
 
   return result;
 }
