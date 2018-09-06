@@ -78,7 +78,6 @@ public abstract class LazyReactPackage implements ReactPackage {
    */
   /* package */
   Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
-    final List<String> eagerNativeModules = getEagerNativeModules();
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);
@@ -96,7 +95,7 @@ public abstract class LazyReactPackage implements ReactPackage {
             String name = moduleSpec.getName();
             ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(name);
             ModuleHolder moduleHolder;
-            if (reactModuleInfo == null || eagerNativeModules.contains(name)) {
+            if (reactModuleInfo == null) {
               NativeModule module;
               ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_START, name);
               try {
@@ -130,11 +129,6 @@ public abstract class LazyReactPackage implements ReactPackage {
    * @return list of module specs that can create the native modules
    */
   protected abstract List<ModuleSpec> getNativeModules(ReactApplicationContext reactContext);
-
-  /** @return list of native modules which should be eagerly initialized. */
-  protected List<String> getEagerNativeModules() {
-    return Collections.emptyList();
-  }
 
   /**
    * This is only used when a LazyReactPackage is a part of {@link CompositeReactPackage} Once we

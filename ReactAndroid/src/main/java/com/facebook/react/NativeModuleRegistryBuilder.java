@@ -32,6 +32,9 @@ public class NativeModuleRegistryBuilder {
     if (reactPackage instanceof LazyReactPackage) {
       moduleHolders =
           ((LazyReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
+    } else if (reactPackage instanceof TurboReactPackage) {
+      moduleHolders =
+          ((TurboReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
     } else {
       moduleHolders =
           ReactPackageHelper.getNativeModuleIterator(
