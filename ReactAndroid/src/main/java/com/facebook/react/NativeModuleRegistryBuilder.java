@@ -5,23 +5,19 @@
 
 package com.facebook.react;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.ModuleHolder;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleRegistry;
-import com.facebook.react.bridge.OnBatchCompleteListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.model.ReactModuleInfo;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class to build NativeModuleRegistry.
@@ -32,7 +28,6 @@ public class NativeModuleRegistryBuilder {
   private final ReactInstanceManager mReactInstanceManager;
 
   private final Map<String, ModuleHolder> mModules = new HashMap<>();
-  private final Map<String,String> namesToType = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
     ReactApplicationContext reactApplicationContext,
@@ -50,14 +45,14 @@ public class NativeModuleRegistryBuilder {
           lazyReactPackage.getReactModuleInfoProvider().getReactModuleInfos();
 
       for (ModuleSpec moduleSpec : moduleSpecs) {
-        String className = moduleSpec.getClassName();
-        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(className);
+        String name = moduleSpec.getName();
+        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(name);
         ModuleHolder moduleHolder;
-        if (reactModuleInfo == null || eagerNativeModules.contains(className)) {
+        if (reactModuleInfo == null || eagerNativeModules.contains(name)) {
           NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getClassName());
+            name);
           try {
             module = moduleSpec.getProvider().get();
           } finally {
@@ -68,8 +63,7 @@ public class NativeModuleRegistryBuilder {
           moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());
         }
 
-        String name = moduleHolder.getName();
-        putModuleTypeAndHolderToModuleMaps(className, name, moduleHolder);
+        putModuleTypeAndHolderToModuleMaps(name, moduleHolder);
       }
     } else {
       FLog.d(
@@ -93,23 +87,21 @@ public class NativeModuleRegistryBuilder {
 
   public void addNativeModule(NativeModule nativeModule) {
     String name = nativeModule.getName();
-    Class<? extends NativeModule> type = nativeModule.getClass();
-    putModuleTypeAndHolderToModuleMaps(type.getName(), name, new ModuleHolder(nativeModule));
+    putModuleTypeAndHolderToModuleMaps(name, new ModuleHolder(nativeModule));
   }
 
   private void putModuleTypeAndHolderToModuleMaps(
-      String className, String underName, ModuleHolder moduleHolder)
+      String name, ModuleHolder moduleHolder)
       throws IllegalStateException {
-    if (namesToType.containsKey(underName)) {
-      String existingNativeModule = namesToType.get(underName);
+    if (mModules.containsKey(name)) {
+      ModuleHolder existingNativeModule = mModules.get(name);
       if (!moduleHolder.getCanOverrideExistingModule()) {
         throw new IllegalStateException(
             "Native module "
-                + className
+                + name
                 + " tried to override "
-                + existingNativeModule
+                + existingNativeModule.getClassName()
                 + " for module name "
-                + underName
                 + ". Check the getPackages() method in MainApplication.java, it might be "
                 + "that module is being created twice. "
                 + "If this was your intention, set canOverrideExistingModule=true");
@@ -118,8 +110,7 @@ public class NativeModuleRegistryBuilder {
       mModules.remove(existingNativeModule);
     }
 
-    namesToType.put(underName, className);
-    mModules.put(className, moduleHolder);
+    mModules.put(name, moduleHolder);
   }
 
   public NativeModuleRegistry build() {
