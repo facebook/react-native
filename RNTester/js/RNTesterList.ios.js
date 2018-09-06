@@ -93,21 +93,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'NavigatorIOSColorsExample',
-    module: require('./NavigatorIOSColorsExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'NavigatorIOSBarStyleExample',
-    module: require('./NavigatorIOSBarStyleExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'NavigatorIOSExample',
-    module: require('./NavigatorIOSExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'PickerExample',
     module: require('./PickerExample'),
     supportsTVOS: false,
