@@ -1,10 +1,14 @@
 #!/bin/bash
-
+# Copyright (c) 2015-present, Facebook, Inc.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that iOS is set up correctly for the
 # testing environment.
 #
 # In particular, it checks that the minimum required Xcode version is installed.
-# It also checks that the correct Node version is installed. Node 10 is not fully 
+# It also checks that the correct Node version is installed. Node 10 is not fully
 # supported at the time and Node 6 is no longer supported.
 
 # Function used to compare dot seperated version numbers
@@ -22,7 +26,7 @@ NODE_VERSION="$(command node --version | sed 's/[-/a-zA-Z]//g' |sed 's/.\{2\}$//
 
 if (( $(echo "${NODE_VERSION} <= 6.0" | bc -l) )); then
   echo "Node ${NODE_VERSION} detected. This version of Node is not supported."
-  echo "Note: Node 10 is not fully supported at the time and Node 6 is no longer supported."  
+  echo "Note: Node 10 is not fully supported at the time and Node 6 is no longer supported."
   echo "See https://nodejs.org/en/download/ for instructions."
   exit 1
 fi
