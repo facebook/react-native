@@ -41,7 +41,6 @@ const documentedCommands = [
   require('./runAndroid/runAndroid'),
   require('./library/library'),
   require('./bundle/bundle'),
-  require('./bundle/unbundle'),
   require('./bundle/ramBundle'),
   require('./eject/eject'),
   require('./link/link'),
