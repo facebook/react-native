@@ -132,7 +132,13 @@ function buildAndRun(args) {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    return runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath);
+    return runOnAllDevices(
+      args,
+      cmd,
+      packageNameWithSuffix,
+      packageName,
+      adbPath,
+    );
   }
 }
 
