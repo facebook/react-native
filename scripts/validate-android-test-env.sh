@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) 2015-present, Facebook, Inc.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that Android is set up correctly for the
 # testing environment.
 #
@@ -107,7 +111,7 @@ if [ -n "$(which csrutil)" ]; then
     exit 1
   fi
 fi
-  
+
 if [ -z "$JAVA_HOME" ]; then
   echo "Error: \$JAVA_HOME is not configured."
   echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."

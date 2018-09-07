@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) 2015-present, Facebook, Inc.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that iOS is set up correctly for the
 # testing environment.
 #
@@ -22,14 +26,14 @@ NODE_VERSION="$(command node --version | sed 's/[-/a-zA-Z]//g' |sed 's/.\{2\}$//
 
 if (( $(echo "${NODE_VERSION} <= 6.0" | bc -l) )); then
   echo "Node ${NODE_VERSION} detected. This version of Node is not supported."
-  echo "See https://nodejs.org/en/download/ for instructions."
+  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
   exit 1
 fi
 
 # Check that Xcode is installed.
 if [ -z "$(which xcodebuild)" ]; then
   echo "Could not find Xcode build tools. Please check your Xcode install."
-  echo "See http://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
   exit 1
 fi
 
@@ -39,6 +43,6 @@ XCODE_VERSION="$(command xcodebuild -version | sed '$ d' | sed 's/[-/a-zA-Z]//g'
 if (version_gt $MIN_XCODE_VERSION $XCODE_VERSION) && [ "$XCODE_VERSION" != "$MIN_XCODE_VERSION" ]; then
   echo "Xcode ${XCODE_VERSION} detected. React Native requires ${MIN_XCODE_VERSION} or newer."
   echo "Older versions of Xcode may cause cryptic build errors."
-  echo "See http://facebook.github.io/react-native/docs/getting-started.html for instructions."
+  echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
   exit 1
 fi
