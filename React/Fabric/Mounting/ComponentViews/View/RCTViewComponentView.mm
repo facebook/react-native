@@ -9,6 +9,8 @@
 
 #import <fabric/components/view/ViewProps.h>
 #import <fabric/components/view/ViewEventEmitter.h>
+#import <objc/runtime.h>
+#import <React/RCTBorderDrawing.h>
 
 #import "RCTConversions.h"
 
@@ -16,7 +18,7 @@ using namespace facebook::react;
 
 @implementation RCTViewComponentView
 {
-  BOOL _isCoreAnimationBorderRenderingEnabled;
+  UIColor *_backgroundColor;
 }
 
 - (void)setContentView:(UIView *)contentView
@@ -50,6 +52,16 @@ using namespace facebook::react;
   return CGRectContainsPoint(hitFrame, point);
 }
 
+- (UIColor *)backgroundColor
+{
+  return _backgroundColor;
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  _backgroundColor = backgroundColor;
+}
+
 - (void)updateProps:(SharedProps)props
            oldProps:(SharedProps)oldProps
 {
@@ -61,14 +73,18 @@ using namespace facebook::react;
   auto oldViewProps = *std::dynamic_pointer_cast<const ViewProps>(oldProps);
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(props);
 
+  BOOL needsInvalidateLayer = NO;
+
   // `opacity`
   if (oldViewProps.opacity != newViewProps.opacity) {
     self.layer.opacity = (CGFloat)newViewProps.opacity;
+    needsInvalidateLayer = YES;
   }
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    _backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    needsInvalidateLayer = YES;
   }
 
   // `foregroundColor`
@@ -81,21 +97,25 @@ using namespace facebook::react;
     CGColorRef shadowColor = RCTCGColorRefFromSharedColor(newViewProps.shadowColor);
     self.layer.shadowColor = shadowColor;
     CGColorRelease(shadowColor);
+    needsInvalidateLayer = YES;
   }
 
   // `shadowOffset`
   if (oldViewProps.shadowOffset != newViewProps.shadowOffset) {
     self.layer.shadowOffset = RCTCGSizeFromSize(newViewProps.shadowOffset);
+    needsInvalidateLayer = YES;
   }
 
   // `shadowOpacity`
   if (oldViewProps.shadowOpacity != newViewProps.shadowOpacity) {
     self.layer.shadowOpacity = (CGFloat)newViewProps.shadowOpacity;
+    needsInvalidateLayer = YES;
   }
 
   // `shadowRadius`
   if (oldViewProps.shadowRadius != newViewProps.shadowRadius) {
     self.layer.shadowRadius = (CGFloat)newViewProps.shadowRadius;
+    needsInvalidateLayer = YES;
   }
 
   // `backfaceVisibility`
@@ -128,6 +148,7 @@ using namespace facebook::react;
   // `overflow`
   if (oldViewProps.yogaStyle.overflow != newViewProps.yogaStyle.overflow) {
     self.clipsToBounds = newViewProps.yogaStyle.overflow != YGOverflowVisible;
+    needsInvalidateLayer = YES;
   }
 
   // `zIndex`
@@ -142,7 +163,7 @@ using namespace facebook::react;
     oldViewProps.borderRadii != newViewProps.borderRadii ||
     oldViewProps.borderColors != newViewProps.borderColors
   ) {
-    [self invalidateBorder];
+    needsInvalidateLayer = YES;
   }
 
   // `nativeId`
@@ -153,6 +174,10 @@ using namespace facebook::react;
   // `accessible`
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
+  }
+
+  if (needsInvalidateLayer) {
+    [self invalidateLayer];
   }
 }
 
@@ -168,39 +193,165 @@ using namespace facebook::react;
   _layoutMetrics = layoutMetrics;
 
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+
+  [self invalidateLayer];
 }
 
-- (void)invalidateBorder
+static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii) {
+  return RCTCornerRadii {
+    .topLeft = (CGFloat)borderRadii.topLeft,
+    .topRight = (CGFloat)borderRadii.topRight,
+    .bottomLeft = (CGFloat)borderRadii.bottomLeft,
+    .bottomRight = (CGFloat)borderRadii.bottomRight
+  };
+}
+
+static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors) {
+  return RCTBorderColors {
+    .left = RCTCGColorRefFromSharedColor(borderColors.left),
+    .top = RCTCGColorRefFromSharedColor(borderColors.top),
+    .bottom = RCTCGColorRefFromSharedColor(borderColors.bottom),
+    .right = RCTCGColorRefFromSharedColor(borderColors.right)
+  };
+}
+
+static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets) {
+  return UIEdgeInsets {
+    .left = (CGFloat)edgeInsets.left,
+    .top = (CGFloat)edgeInsets.top,
+    .bottom = (CGFloat)edgeInsets.bottom,
+    .right = (CGFloat)edgeInsets.right
+  };
+}
+
+static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
+  switch (borderStyle) {
+    case BorderStyle::Solid:
+      return RCTBorderStyleSolid;
+    case BorderStyle::Dotted:
+      return RCTBorderStyleDotted;
+    case BorderStyle::Dashed:
+      return RCTBorderStyleDashed;
+  }
+}
+
+- (void)invalidateLayer
 {
   const auto &props = *std::dynamic_pointer_cast<const ViewProps>(_props);
 
   const auto borderMetrics =
     props.resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
 
+  CALayer *layer = self.layer;
+
+  // Stage 1. Shadow Path
+  BOOL layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
+  if (layerHasShadow) {
+    if (CGColorGetAlpha(_backgroundColor.CGColor) > 0.999) {
+      // If view has a solid background color, calculate shadow path from border.
+      const RCTCornerInsets cornerInsets =
+        RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+      CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
+      layer.shadowPath = shadowPath;
+      CGPathRelease(shadowPath);
+    } else {
+      // Can't accurately calculate box shadow, so fall back to pixel-based shadow.
+      layer.shadowPath = nil;
+    }
+  } else {
+    layer.shadowPath = nil;
+  }
+
+  // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =
     borderMetrics.borderColors.isUniform() &&
     borderMetrics.borderWidths.isUniform() &&
     borderMetrics.borderStyles.isUniform() &&
     borderMetrics.borderRadii.isUniform() &&
-    borderMetrics.borderStyles.left == BorderStyle::Solid;
-
-  CALayer *layer = self.layer;
-  if (_isCoreAnimationBorderRenderingEnabled != useCoreAnimationBorderRendering) {
-    _isCoreAnimationBorderRenderingEnabled = useCoreAnimationBorderRendering;
-    if (!useCoreAnimationBorderRendering) {
-      layer.borderWidth = 0;
-      layer.borderColor = nil;
-      layer.cornerRadius = 0;
-    }
-  }
+    borderMetrics.borderStyles.left == BorderStyle::Solid &&
+    (
+      // iOS draws borders in front of the content whereas CSS draws them behind
+      // the content. For this reason, only use iOS border drawing when clipping
+      // or when the border is hidden.
+      borderMetrics.borderWidths.left == 0 ||
+      colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 ||
+      self.clipsToBounds
+    );
 
   if (useCoreAnimationBorderRendering) {
+    layer.contents = nil;
+    layer.needsDisplayOnBoundsChange = NO;
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     layer.borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    layer.backgroundColor = _backgroundColor.CGColor;
     _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    _contentView.layer.masksToBounds = YES;
   } else {
-    // Not supported yet.
+    layer.backgroundColor = nil;
+    layer.borderWidth = 0;
+    layer.borderColor = nil;
+    layer.cornerRadius = 0;
+    _contentView.layer.cornerRadius = 0;
+    _contentView.layer.masksToBounds = NO;
+
+    UIImage *image = RCTGetBorderImage(
+      RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
+      layer.bounds.size,
+      RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+      UIEdgeInsetsFromBorderInsets(borderMetrics.borderWidths),
+      RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
+      _backgroundColor.CGColor,
+      self.clipsToBounds
+    );
+
+    if (image == nil) {
+      layer.contents = nil;
+      layer.needsDisplayOnBoundsChange = NO;
+    } else {
+      CGSize imageSize = image.size;
+      UIEdgeInsets imageCapInsets = image.capInsets;
+      CGRect contentsCenter = CGRect {
+        CGPoint {imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
+        CGSize {(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}
+      };
+
+      layer.contents = (id)image.CGImage;
+      layer.contentsScale = image.scale;
+      layer.needsDisplayOnBoundsChange = YES;
+      layer.magnificationFilter = kCAFilterNearest;
+
+      const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+      if (isResizable) {
+        layer.contentsCenter = contentsCenter;
+      } else {
+        layer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
+      }
+    }
+
+    // Stage 2.5. Custom Clipping Mask
+    CAShapeLayer *maskLayer = nil;
+    CGFloat cornerRadius = 0;
+    if (self.clipsToBounds) {
+      if (borderMetrics.borderRadii.isUniform()) {
+        // In this case we can simply use `cornerRadius` exclusivly.
+        cornerRadius = borderMetrics.borderRadii.topLeft;
+      } else {
+        // In this case we have to generate masking layer manually.
+        CGPathRef path = RCTPathCreateWithRoundedRect(
+          self.bounds,
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
+          nil
+        );
+
+        maskLayer = [CAShapeLayer layer];
+        maskLayer.path = path;
+        CGPathRelease(path);
+      }
+    }
+
+    layer.cornerRadius = cornerRadius;
+    layer.mask = maskLayer;
   }
 }
 
