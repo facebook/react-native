@@ -602,7 +602,6 @@ jobs:
       - store_artifacts:
           path: ~/react-native/coverage/
 
-# Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
     <<: *android_defaults
