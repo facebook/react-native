@@ -11,7 +11,7 @@
 
 const bundleWithOutput = require('./bundle').withOutput;
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const outputUnbundle = require('metro/src/shared/output/unbundle');
+const outputUnbundle = require('metro/src/shared/output/RamBundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
