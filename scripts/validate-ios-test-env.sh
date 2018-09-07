@@ -4,7 +4,7 @@
 # testing environment.
 #
 # In particular, it checks that the minimum required Xcode version is installed.
-# It also checks that the correct Node version is installed. Node 10 is not fully 
+# It also checks that the correct Node version is installed. Node 10 is not fully
 # supported at the time and Node 6 is no longer supported.
 
 # Function used to compare dot seperated version numbers
@@ -22,14 +22,7 @@ NODE_VERSION="$(command node --version | sed 's/[-/a-zA-Z]//g' |sed 's/.\{2\}$//
 
 if (( $(echo "${NODE_VERSION} <= 6.0" | bc -l) )); then
   echo "Node ${NODE_VERSION} detected. This version of Node is not supported."
-  echo "Note: Node 10 is not fully supported at the time and Node 6 is no longer supported."  
   echo "See https://nodejs.org/en/download/ for instructions."
-  exit 1
-fi
-
-if (( $(echo "${NODE_VERSION} == 10.0" | bc -l) )); then
-  echo "Node ${NODE_VERSION} detected. This version of Node is not fully supported at this time."
-  echo "See https://github.com/facebook/react-native/issues/19229 for more information."
   exit 1
 fi
 
