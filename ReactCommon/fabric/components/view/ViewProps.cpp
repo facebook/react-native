@@ -25,7 +25,6 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
   foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
   backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
-  borderWidths(convertRawProp(rawProps, "border", "Width", sourceProps.borderWidths)),
   borderRadii(convertRawProp(rawProps, "border", "Radius", sourceProps.borderRadii)),
   borderColors(convertRawProp(rawProps, "border", "Color", sourceProps.borderColors)),
   borderStyles(convertRawProp(rawProps, "border", "Style", sourceProps.borderStyles)),
@@ -44,6 +43,18 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
 #pragma mark - Convenience Methods
 
 BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
+  auto borderWidths = CascadedBorderWidths {
+    .left = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeLeft]),
+    .top = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeTop]),
+    .right = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeRight]),
+    .bottom = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeBottom]),
+    .start = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeStart]),
+    .end = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeEnd]),
+    .horizontal = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeHorizontal]),
+    .vertical = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeVertical]),
+    .all = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeAll])
+  };
+
   return {
     .borderColors = borderColors.resolve(isRTL, {}),
     .borderWidths = borderWidths.resolve(isRTL, 0),

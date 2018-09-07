@@ -158,7 +158,6 @@ using namespace facebook::react;
 
   // `border`
   if (
-    oldViewProps.borderWidths != newViewProps.borderWidths ||
     oldViewProps.borderStyles != newViewProps.borderStyles ||
     oldViewProps.borderRadii != newViewProps.borderRadii ||
     oldViewProps.borderColors != newViewProps.borderColors
