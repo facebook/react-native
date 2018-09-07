@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.systrace.Systrace;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -132,9 +133,12 @@ public class NativeModuleRegistry {
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
-    String name = moduleInterface.getAnnotation(ReactModule.class).name();
+    ReactModule annotation = moduleInterface.getAnnotation(ReactModule.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException("Could not find @ReactModule annotation in class " + moduleInterface.getName());
+    }
     return (T) Assertions.assertNotNull(
-        mModules.get(name), moduleInterface.getSimpleName()).getModule();
+        mModules.get(annotation.name()), annotation.name() + " could not be found. Is it defined in " + moduleInterface.getName()).getModule();
   }
 
   public List<NativeModule> getAllModules() {
