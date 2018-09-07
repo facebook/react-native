@@ -212,11 +212,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+      .arg("Lazy", true)
+      .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -226,12 +229,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+      .arg("Lazy", false)
+      .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      SystraceMessage.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
     }
   }
@@ -784,9 +790,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
    * parameters.
    */
-  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
-    mUIImplementation.dispatchViewUpdates(-1);
+  public void updateRootLayoutSpecs(final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+    reactApplicationContext.runOnNativeModulesQueueThread(
+      new GuardedRunnable(reactApplicationContext) {
+        @Override
+        public void runGuarded() {
+          mUIImplementation.updateRootView(rootViewTag, widthMeasureSpec, heightMeasureSpec);
+          mUIImplementation.dispatchViewUpdates(-1);
+        }});
   }
 
   /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */

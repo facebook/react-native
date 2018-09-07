@@ -37,7 +37,7 @@ import okhttp3.OkHttpClient;
  *
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
-@ReactModule(name = "FrescoModule")
+@ReactModule(name = "FrescoModule", needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable, LifecycleEventListener {
 

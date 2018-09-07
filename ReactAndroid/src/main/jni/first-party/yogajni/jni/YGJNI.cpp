@@ -598,6 +598,14 @@ void jni_YGConfigSetUseWebDefaults(
   YGConfigSetUseWebDefaults(config, useWebDefaults);
 }
 
+void jni_YGConfigSetPrintTreeFlag(
+    alias_ref<jobject>,
+    jlong nativePointer,
+    jboolean enable) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPrintTreeFlag(config, enable);
+}
+
 void jni_YGConfigSetPointScaleFactor(
     alias_ref<jobject>,
     jlong nativePointer,
@@ -760,6 +768,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeNativeMethod(jni_YGConfigFree),
             YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
             YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+            YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),
             YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
             YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
             YGMakeNativeMethod(jni_YGConfigSetLogger),

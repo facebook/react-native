@@ -21,6 +21,8 @@ RCT_EXTERN __attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(
 RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 #endif
 
+RCT_EXTERN void RCTRegisterModule(Class);
+
 @interface RCTBridge ()
 
 // Private designated initializer

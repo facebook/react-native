@@ -10,12 +10,12 @@
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
 const React = require('React');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 
 import type {ImageSource} from 'ImageSource';
 
@@ -27,13 +27,13 @@ import type {ImageSource} from 'ImageSource';
 class SwipeableQuickActionButton extends React.Component<{
   accessibilityLabel?: string,
   imageSource?: ?(ImageSource | number),
-  imageStyle?: ?ViewPropTypes.style,
+  imageStyle?: ?DeprecatedViewPropTypes.style,
   mainView?: ?React.Node,
   onPress?: Function,
-  style?: ?ViewPropTypes.style,
+  style?: ?DeprecatedViewPropTypes.style,
   testID?: string,
   text?: ?(string | Object | Array<string | Object>),
-  textStyle?: ?ViewPropTypes.style,
+  textStyle?: ?DeprecatedViewPropTypes.style,
 }> {
   render(): React.Node {
     if (!this.props.imageSource && !this.props.text && !this.props.mainView) {

@@ -5,16 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
-const ViewPropTypes = require('ViewPropTypes');
 
 /**
  * A thin wrapper around standard quick action buttons that can, if the user
@@ -28,7 +27,7 @@ const ViewPropTypes = require('ViewPropTypes');
  */
 class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
   static propTypes = {
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
   };
 
   render(): React.Node {

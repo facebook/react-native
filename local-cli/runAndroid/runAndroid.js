@@ -60,7 +60,7 @@ function runAndroid(argv, config, args) {
     } else {
       // result == 'not_running'
       console.log(chalk.bold('Starting JS server...'));
-      startServerInNewWindow(args.port);
+      startServerInNewWindow(args.port, args.terminal);
     }
     return buildAndRun(args);
   });
@@ -348,7 +348,7 @@ function runOnAllDevices(
   }
 }
 
-function startServerInNewWindow(port) {
+function startServerInNewWindow(port, terminal = process.env.REACT_TERMINAL) {
   // set up OS-specific filenames and commands
   const isWindows = /^win/.test(process.platform);
   const scriptFile = isWindows
@@ -363,7 +363,6 @@ function startServerInNewWindow(port) {
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
-  const terminal = process.env.REACT_TERMINAL;
 
   // set up the .packager.(env|bat) file to ensure the packager starts on the right port
   const packagerEnvFile = path.join(
@@ -390,14 +389,16 @@ function startServerInNewWindow(port) {
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
   } else if (process.platform === 'linux') {
-    procConfig.detached = true;
     if (terminal) {
+      procConfig.detached = true;
       return child_process.spawn(
         terminal,
         ['-e', 'sh ' + launchPackagerScript],
         procConfig,
       );
     }
+    // By default, the child shell process will be attached to the parent
+    procConfig.detached = false;
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
   } else if (/^win/.test(process.platform)) {
     procConfig.detached = true;
@@ -473,6 +474,12 @@ module.exports = {
       command: '--port [number]',
       default: process.env.RCT_METRO_PORT || 8081,
       parse: (val: string) => Number(val),
+    },
+    {
+      command: '--terminal [string]',
+      description:
+        'Launches the Metro Bundler in a new window using the specified terminal path.',
+      default: '',
     },
   ],
 };

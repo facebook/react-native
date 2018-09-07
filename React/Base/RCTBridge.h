@@ -94,6 +94,13 @@ typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleListProvider)(void);
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
+ * Experimental.
+ * Check/set if JSI-bound NativeModule is enabled. By default it's off.
+ */
+RCT_EXTERN BOOL RCTJSINativeModuleEnabled(void);
+RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
+
+/**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>

@@ -22,7 +22,11 @@ const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const Sh
 }
 
 const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const ComponentName &componentName) const {
-  return _registryByName.at(componentName);
+  auto it = _registryByName.find(componentName);
+  if (it == _registryByName.end()) {
+     throw std::invalid_argument(("Unable to find componentDescriptor for " + componentName).c_str());
+   }
+   return it->second;
 }
 
 } // namespace react

@@ -28,8 +28,9 @@ public:
 
 #pragma mark - Native-facing Interface
 
-  FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry);
   ~FabricUIManager();
+
+  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
 
   /*
    * Sets and gets the UIManager's delegate.
@@ -51,7 +52,6 @@ public:
 
 #pragma mark - Native-facing Interface
 
-  void dispatchEventToEmptyTarget(const std::string &type, const folly::dynamic &payload) const;
   void dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
   void releaseEventTarget(const EventTarget &eventTarget) const;
 

@@ -313,7 +313,7 @@ const ReactNative = {
     return require('PointPropType');
   },
   get ViewPropTypes() {
-    return require('ViewPropTypes');
+    return require('DeprecatedViewPropTypes');
   },
 
   // Deprecated

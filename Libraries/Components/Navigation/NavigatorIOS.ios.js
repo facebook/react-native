@@ -20,7 +20,7 @@ const StaticContainer = require('StaticContainer.react');
 const StyleSheet = require('StyleSheet');
 const TVEventHandler = require('TVEventHandler');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const invariant = require('fbjs/lib/invariant');
@@ -405,7 +405,7 @@ const NavigatorIOS = createReactClass({
       /**
        * Styles for the navigation item containing the component.
        */
-      wrapperStyle: ViewPropTypes.style,
+      wrapperStyle: DeprecatedViewPropTypes.style,
 
       /**
        * Boolean value that indicates whether the navigation bar is hidden.
@@ -463,7 +463,7 @@ const NavigatorIOS = createReactClass({
      * The default wrapper style for components in the navigator.
      * A common use case is to set the `backgroundColor` for every scene.
      */
-    itemWrapperStyle: ViewPropTypes.style,
+    itemWrapperStyle: DeprecatedViewPropTypes.style,
 
     /**
      * The default color used for the buttons in the navigation bar.

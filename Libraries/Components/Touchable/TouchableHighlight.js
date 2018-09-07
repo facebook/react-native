@@ -10,24 +10,24 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('prop-types');
 const Platform = require('Platform');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheet = require('StyleSheet');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 
 import type {PressEvent} from 'CoreEventTypes';
-import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 
 const DEFAULT_PROPS = {
   activeOpacity: 0.85,
@@ -169,7 +169,7 @@ const TouchableHighlight = ((createReactClass({
      * Style to apply to the container/underlay. Most commonly used to make sure
      * rounded corners match the wrapped component.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Called immediately after the underlay is shown
      */

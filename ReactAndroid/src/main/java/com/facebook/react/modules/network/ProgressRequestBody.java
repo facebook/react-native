@@ -19,7 +19,6 @@ public class ProgressRequestBody extends RequestBody {
 
   private final RequestBody mRequestBody;
   private final ProgressListener mProgressListener;
-  private BufferedSink mBufferedSink;
   private long mContentLength = 0L;
 
   public ProgressRequestBody(RequestBody requestBody, ProgressListener progressListener) {
@@ -42,16 +41,17 @@ public class ProgressRequestBody extends RequestBody {
 
   @Override
   public void writeTo(BufferedSink sink) throws IOException {
-    if (mBufferedSink == null) {
-      mBufferedSink = Okio.buffer(outputStreamSink(sink));
-    }
+    // In 99% of cases, this method is called strictly once.
+    // The only case when it is called more than once is internal okhttp upload re-try.
+    // We need to re-create CountingOutputStream in this case as progress should be re-evaluated.
+    BufferedSink sinkWrapper = Okio.buffer(outputStreamSink(sink));
 
     // contentLength changes for input streams, since we're using inputStream.available(),
     // so get the length before writing to the sink
     contentLength();
 
-    mRequestBody.writeTo(mBufferedSink);
-    mBufferedSink.flush();
+    mRequestBody.writeTo(sinkWrapper);
+    sinkWrapper.flush();
   }
 
   private Sink outputStreamSink(BufferedSink sink) {

@@ -32,6 +32,9 @@ public:
   Props(const Props &sourceProps, const RawProps &rawProps);
 
   const std::string nativeId;
+  #ifdef ANDROID
+  const RawProps rawProps;
+  #endif
 };
 
 } // namespace react

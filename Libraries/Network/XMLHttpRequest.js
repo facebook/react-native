@@ -522,6 +522,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       this._url,
       this._headers,
       data,
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       nativeResponseType,
       incrementalEvents,
       this.timeout,

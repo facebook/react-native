@@ -53,6 +53,12 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
       break;
+    case ReactMarker::REGISTER_JS_SEGMENT_START:
+      JReactMarker::logMarker("REGISTER_JS_SEGMENT_START", tag);
+      break;
+    case ReactMarker::REGISTER_JS_SEGMENT_STOP:
+      JReactMarker::logMarker("REGISTER_JS_SEGMENT_STOP", tag);
+      break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
       // These are not used on Android.

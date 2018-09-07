@@ -73,6 +73,16 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 + (NSString *)moduleName { return @#js_name; } \
 + (void)load { RCTRegisterModule(self); }
 
+/**
+ * To improve startup performance users may want to generate their module lists
+ * at build time and hook the delegate to merge with the runtime list. This
+ * macro takes the place of the above for those cases by omitting the +load
+ * generation.
+ *
+ */
+#define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
++ (NSString *)moduleName { return @#js_name; }
+
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
 
@@ -278,6 +288,12 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * constants. In the future, we'll stop automatically inferring this and instead only rely on this method.
  */
 + (BOOL)requiresMainQueueSetup;
+
+/**
+ * Experimental.
+ * If YES, this module will be set up via JSI binding instead.
+ */
++ (BOOL)allowJSIBinding;
 
 /**
  * Injects methods into JS.  Entries in this array are used in addition to any

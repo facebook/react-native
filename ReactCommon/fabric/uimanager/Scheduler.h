@@ -11,7 +11,6 @@
 #include <fabric/core/LayoutConstraints.h>
 #include <fabric/uimanager/ContextContainer.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/SchedulerEventDispatcher.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
@@ -58,7 +57,7 @@ public:
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) override;
+  void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) override;
 
 #pragma mark - Deprecated
 
@@ -68,11 +67,10 @@ public:
   std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
 
 private:
-
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
-  std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
-  SharedSchedulerEventDispatcher eventDispatcher_;
+  std::unordered_map<Tag, std::unique_ptr<ShadowTree>> shadowTreeRegistry_;
+  SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
 };
 

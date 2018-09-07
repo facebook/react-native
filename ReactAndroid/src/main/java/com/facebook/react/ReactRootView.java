@@ -408,16 +408,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+
     if (reactApplicationContext != null) {
-      reactApplicationContext.runOnNativeModulesQueueThread(
-          new GuardedRunnable(reactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              UIManagerHelper
-                .getUIManager(reactApplicationContext, getUIManagerType())
-                .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
-            }
-          });
+      UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
+        .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
     }
   }
 

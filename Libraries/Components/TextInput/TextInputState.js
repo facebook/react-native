@@ -10,7 +10,7 @@
  * should be funneled through here
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';

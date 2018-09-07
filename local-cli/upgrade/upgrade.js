@@ -144,7 +144,7 @@ function validateAndUpgrade() {
  * Once all checks passed, upgrade the project files.
  */
 function upgradeProjectFiles(projectDir, projectName) {
-  // Just owerwrite
+  // Just overwrite
   copyProjectTemplateAndReplace(
     path.resolve(
       'node_modules',

@@ -9,8 +9,6 @@
  */
 'use strict';
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
-
 const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
 const React = require('react');
@@ -23,6 +21,8 @@ const {
   View,
   Image,
 } = ReactNative;
+
+import type {ViewStyleProp} from 'StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
@@ -79,7 +79,7 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        additionalStyles: typeof StyleSheet,
+        additionalStyles: ViewStyleProp,
       ) {
         let _scrollView: ?ScrollView;
         return (
@@ -121,14 +121,8 @@ exports.examples = [
 
       return (
         <View>
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('LTR layout', {direction: 'ltr'})}
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('RTL layout', {direction: 'rtl'})}
+          {renderScrollView('LTR layout', {direction: 'ltr'})}
+          {renderScrollView('RTL layout', {direction: 'rtl'})}
         </View>
       );
     },
@@ -261,7 +255,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: DangerouslyImpreciseStyleProp,
+  style?: ViewStyleProp,
 |}> {
   render() {
     const {source} = this.props;

@@ -45,6 +45,7 @@ public class NativeModuleRegistryBuilder {
     if (reactPackage instanceof LazyReactPackage) {
       LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
       List<ModuleSpec> moduleSpecs = lazyReactPackage.getNativeModules(mReactApplicationContext);
+      List<String> eagerNativeModules = lazyReactPackage.getEagerNativeModules();
       Map<String, ReactModuleInfo> reactModuleInfoMap =
           lazyReactPackage.getReactModuleInfoProvider().getReactModuleInfos();
 
@@ -52,7 +53,7 @@ public class NativeModuleRegistryBuilder {
         String className = moduleSpec.getClassName();
         ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(className);
         ModuleHolder moduleHolder;
-        if (reactModuleInfo == null) {
+        if (reactModuleInfo == null || eagerNativeModules.contains(className)) {
           NativeModule module;
           ReactMarker.logMarker(
             ReactMarkerConstants.CREATE_MODULE_START,

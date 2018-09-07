@@ -709,7 +709,7 @@ public class UIImplementation {
           }
 
           if (mLayoutUpdateListener != null) {
-            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
+            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
           }
         }
       }

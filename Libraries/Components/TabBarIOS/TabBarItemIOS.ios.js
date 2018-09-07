@@ -11,20 +11,19 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StaticContainer = require('StaticContainer.react');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
-const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
 class TabBarItemIOS extends React.Component {
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */
@@ -79,7 +78,7 @@ class TabBarItemIOS extends React.Component {
     /**
      * React style object.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Text that appears under the icon. It is ignored when a system icon
      * is defined.

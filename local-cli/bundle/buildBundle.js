@@ -44,10 +44,6 @@ async function buildBundle(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  config.transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.transformModulePath;
-
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl,
@@ -56,7 +52,7 @@ async function buildBundle(
     platform: args.platform,
   };
 
-  const server = new Server(config);
+  const server = new Server({...config, resetCache: args.resetCache});
 
   try {
     const bundle = await output.build(server, requestOpts);

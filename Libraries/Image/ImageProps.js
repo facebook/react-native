@@ -21,7 +21,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {ImageSource} from 'ImageSource';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ImageStyleProp} from 'StyleSheet';
+import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
 
 type OnLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -51,10 +51,10 @@ type AndroidImageProps = $ReadOnly<{|
 |}>;
 
 export type ImageProps = {|
-  ...ViewProps,
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSImageProps,
   ...AndroidImageProps,
-  blurRadius?: number,
+  blurRadius?: ?number,
   capInsets?: ?EdgeInsetsProp,
 
   onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
@@ -63,11 +63,11 @@ export type ImageProps = {|
   onLoadStart?: ?() => void,
   resizeMethod?: ?('auto' | 'resize' | 'scale'),
   source?: ?ImageSource,
-  style?: ImageStyleProp,
+  style?: ?ImageStyleProp,
 
   // Can be set via props or style, for now
-  height?: DimensionValue,
-  width?: DimensionValue,
+  height?: ?DimensionValue,
+  width?: ?DimensionValue,
   resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
 
   src?: empty,

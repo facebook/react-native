@@ -48,6 +48,8 @@ class ProgressBarAndroidExample extends React.Component<{}> {
     return (
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" />
         </RNTesterBlock>
 
@@ -56,6 +58,8 @@ class ProgressBarAndroidExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Horizontal Black Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" color="black" />
         </RNTesterBlock>
 

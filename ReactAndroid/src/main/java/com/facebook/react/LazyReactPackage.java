@@ -97,6 +97,14 @@ public abstract class LazyReactPackage implements ReactPackage {
   }
 
   /**
+   * @return list of native modules which should be eagerly initialized.
+   */
+  public List<String> getEagerNativeModules() {
+    return Collections.emptyList();
+  }
+
+
+  /**
    * @param reactContext react application context that can be used to create View Managers.
    * @return list of module specs that can create the View Managers.
    */
