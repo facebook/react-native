@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <memory>
+#include <memory>
 
 namespace facebook {
 namespace react {

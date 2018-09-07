@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <atomic>
+#include <atomic>
 
 namespace facebook {
 namespace react {
