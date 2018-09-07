@@ -39,7 +39,6 @@ public:
   const SharedColor backgroundColor {};
 
   // Borders
-  const CascadedBorderWidths borderWidths {};
   const CascadedBorderRadii borderRadii {};
   const CascadedBorderColors borderColors {};
   const CascadedBorderStyles borderStyles {};

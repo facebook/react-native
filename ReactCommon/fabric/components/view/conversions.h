@@ -58,6 +58,19 @@ inline YGValue yogaStyleValueFromFloat(const Float &value) {
   return {(float)value, YGUnitPoint};
 }
 
+inline folly::Optional<Float> optionalFloatFromYogaValue(const YGValue &value, folly::Optional<Float> base = {}) {
+  switch (value.unit) {
+    case YGUnitUndefined:
+      return {};
+    case YGUnitPoint:
+      return fabricFloatFromYogaFloat(value.value);
+    case YGUnitPercent:
+      return base.has_value() ? folly::Optional<Float>(base.value() * fabricFloatFromYogaFloat(value.value)) : folly::Optional<Float>();
+    case YGUnitAuto:
+      return {};
+  }
+}
+
 inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   LayoutMetrics layoutMetrics;
 
