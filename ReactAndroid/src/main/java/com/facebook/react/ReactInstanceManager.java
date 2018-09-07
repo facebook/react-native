@@ -804,8 +804,7 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mPackages) {
-        SystraceMessage.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+        SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
           .arg("Package", reactPackage.getClass().getSimpleName())
           .flush();
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
@@ -815,7 +814,7 @@ public class ReactInstanceManager {
             uniqueNames.addAll(names);
           }
         }
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
       }
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       return new ArrayList<>(uniqueNames);
@@ -1194,6 +1193,6 @@ public class ReactInstanceManager {
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
-    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
   }
 }
