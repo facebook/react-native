@@ -27,6 +27,11 @@ SharedColor colorFromComponents(ColorComponents components) {
 }
 
 ColorComponents colorComponentsFromColor(SharedColor color) {
+  if (!color) {
+    // Empty color object can be considered as `clear` (black, fully transparent) color.
+    return ColorComponents {0, 0, 0, 0};
+  }
+
   int numberOfComponents = CGColorGetNumberOfComponents(color.get());
   assert(numberOfComponents == 4);
   const CGFloat *components = CGColorGetComponents(color.get());

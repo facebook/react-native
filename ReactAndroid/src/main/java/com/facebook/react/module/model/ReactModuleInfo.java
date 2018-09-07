@@ -16,14 +16,17 @@ public class ReactModuleInfo {
   private final boolean mNeedsEagerInit;
   private final boolean mHasConstants;
   private final boolean mIsCxxModule;
+  private String mClassName;
 
   public ReactModuleInfo(
     String name,
+    String className,
     boolean canOverrideExistingModule,
     boolean needsEagerInit,
     boolean hasConstants,
     boolean isCxxModule) {
     mName = name;
+    mClassName = className;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mNeedsEagerInit = needsEagerInit;
     mHasConstants = hasConstants;
@@ -33,6 +36,8 @@ public class ReactModuleInfo {
   public String name() {
     return mName;
   }
+
+  public String className() {return mClassName;}
 
   public boolean canOverrideExistingModule() {
     return mCanOverrideExistingModule;

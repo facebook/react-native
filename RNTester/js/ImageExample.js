@@ -77,6 +77,18 @@ var NetworkImageCallbackExample = createReactClass({
                   this._loadEventFired(
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
+                  Image.queryCache([IMAGE_PREFETCH_URL]).then((map) => {
+                    var result = map.get(IMAGE_PREFETCH_URL);
+                    if (result) {
+                      this._loadEventFired(
+                        `✔ queryCache "${result}" (+${new Date() - mountTime}ms)`,
+                      );
+                    } else {
+                      this._loadEventFired(
+                        `✘ queryCache (+${new Date() - mountTime}ms)`,
+                      );
+                    }
+                  });
                 },
                 error => {
                   this._loadEventFired(

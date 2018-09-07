@@ -31,6 +31,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSString *fontFamily;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, assign) CGFloat fontSizeMultiplier;
+@property (nonatomic, assign) CGFloat maxFontSizeMultiplier;
 @property (nonatomic, copy, nullable) NSString *fontWeight;
 @property (nonatomic, copy, nullable) NSString *fontStyle;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
@@ -71,7 +72,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 - (UIFont *)effectiveFont;
 
 /**
- * Font size multiplier reflects `allowFontScaling` and `fontSizeMultiplier`.
+ * Font size multiplier reflects `allowFontScaling`, `fontSizeMultiplier`, and `maxFontSizeMultiplier`.
  */
 - (CGFloat)effectiveFontSizeMultiplier;
 

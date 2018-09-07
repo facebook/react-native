@@ -17,25 +17,37 @@ namespace react {
 
 Scheduler::Scheduler(const SharedContextContainer &contextContainer):
   contextContainer_(contextContainer) {
-  const auto &eventDispatcher = std::make_shared<SchedulerEventDispatcher>();
-  const auto &componentDescriptorRegistry = ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer);
 
-  uiManager_ = std::make_shared<FabricUIManager>(componentDescriptorRegistry);
+  uiManager_ = std::make_shared<FabricUIManager>();
+
+  auto eventDispatcher =
+    std::make_shared<EventDispatcher>(
+      std::bind(
+        &FabricUIManager::dispatchEventToTarget,
+        uiManager_.get(),
+        std::placeholders::_1,
+        std::placeholders::_2,
+        std::placeholders::_3
+      ),
+      contextContainer->getInstance<EventBeatFactory>("synchronous"),
+      contextContainer->getInstance<EventBeatFactory>("asynchronous")
+    );
+
+  uiManager_->setComponentDescriptorRegistry(
+    ComponentDescriptorFactory::buildRegistry(eventDispatcher, contextContainer)
+  );
+
   uiManager_->setDelegate(this);
-
-  eventDispatcher->setUIManager(uiManager_);
-  eventDispatcher_ = eventDispatcher;
 }
 
 Scheduler::~Scheduler() {
   uiManager_->setDelegate(nullptr);
-  eventDispatcher_->setUIManager(nullptr);
 }
 
 void Scheduler::registerRootTag(Tag rootTag) {
-  const auto &shadowTree = std::make_shared<ShadowTree>(rootTag);
+  auto shadowTree = std::make_unique<ShadowTree>(rootTag);
   shadowTree->setDelegate(this);
-  shadowTreeRegistry_.insert({rootTag, shadowTree});
+  shadowTreeRegistry_.emplace(rootTag, std::move(shadowTree));
 }
 
 void Scheduler::unregisterRootTag(Tag rootTag) {
@@ -70,9 +82,9 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 #pragma mark - ShadowTreeDelegate
 
-void Scheduler::shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) {
+void Scheduler::shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) {
   if (delegate_) {
-    delegate_->schedulerDidComputeMutationInstructions(shadowTree->getRootTag(), instructions);
+    delegate_->schedulerDidFinishTransaction(shadowTree.getRootTag(), mutations);
   }
 }
 

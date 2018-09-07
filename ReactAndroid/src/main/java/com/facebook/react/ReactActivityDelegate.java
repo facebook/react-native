@@ -205,14 +205,14 @@ public class ReactActivityDelegate {
     };
   }
 
-  private Context getContext() {
+  protected Context getContext() {
     if (mActivity != null) {
       return mActivity;
     }
     return Assertions.assertNotNull(mFragmentActivity);
   }
 
-  private Activity getPlainActivity() {
+  protected Activity getPlainActivity() {
     return ((Activity) getContext());
   }
 }

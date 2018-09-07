@@ -41,12 +41,16 @@
 
     // If nothing changed, avoid recreating a bundle blob by reusing the
     // previous one.
-    if (deltaPatcher.getLastNumModifiedFiles() === 0 && cachedBundle) {
+    if (
+      deltaPatcher.getLastNumModifiedFiles() === 0 &&
+      cachedBundle != null &&
+      cachedBundle !== ''
+    ) {
       return cachedBundle;
     }
 
     // Clean up the previous bundle URL to not leak memory.
-    if (cachedBundle) {
+    if (cachedBundle != null && cachedBundle !== '') {
       URL.revokeObjectURL(cachedBundle);
     }
 

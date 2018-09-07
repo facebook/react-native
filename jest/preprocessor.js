@@ -23,7 +23,7 @@ const babelRegisterOnly = require('metro-babel-register');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = RegExp(
+const nodeFiles = new RegExp(
   [
     '/local-cli/',
     '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
@@ -54,6 +54,7 @@ module.exports = {
         ast: true, // needed for open source (?) https://github.com/facebook/react-native/commit/f8d6b97140cffe8d18b2558f94570c8d1b410d5c#r28647044
         dev: true,
         inlineRequires: true,
+        minify: false,
         platform: '',
         projectRoot: '',
         retainLines: true,

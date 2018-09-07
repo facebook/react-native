@@ -655,8 +655,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     CGRectMake(
       insets.left / size.width,
       insets.top / size.height,
-      1.0 / size.width,
-      1.0 / size.height
+      (CGFloat)1.0 / size.width,
+      (CGFloat)1.0 / size.height
     );
   });
 

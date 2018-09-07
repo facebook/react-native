@@ -54,6 +54,11 @@ public class YogaConfig {
     jni_YGConfigSetUseWebDefaults(mNativePointer, useWebDefaults);
   }
 
+  private native void jni_YGConfigSetPrintTreeFlag(long nativePointer, boolean enable);
+  public void setPrintTreeFlag(boolean enable) {
+    jni_YGConfigSetPrintTreeFlag(mNativePointer, enable);
+  }
+
   private native void jni_YGConfigSetPointScaleFactor(long nativePointer, float pixelsInPoint);
   public void setPointScaleFactor(float pixelsInPoint) {
     jni_YGConfigSetPointScaleFactor(mNativePointer, pixelsInPoint);

@@ -1,4 +1,4 @@
-# [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![Build status](https://ci.appveyor.com/api/projects/status/github/facebook/react-native?branch=master&svg=true)](https://ci.appveyor.com/project/facebok/react-native/branch/master) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
+# [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![Build status](https://ci.appveyor.com/api/projects/status/github/facebook/react-native?branch=master&svg=true)](https://ci.appveyor.com/project/facebook/react-native/branch/master) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
 
 Learn once, write anywhere: Build mobile apps with React.
 
@@ -11,7 +11,7 @@ The focus of React Native is on developer efficiency across all the platforms yo
 
 See the official [React Native website](https://facebook.github.io/react-native/) for an introduction to React Native.
 
-Supported operating systems are >= Android 4.1 (API 16) and >= iOS 8.0.
+Supported operating systems are >= Android 4.1 (API 16) and >= iOS 9.0.
 
 - [Getting Started](#getting-started)
 - [Documentation](#documentation)

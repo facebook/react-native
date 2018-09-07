@@ -5,9 +5,12 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.thecount.api.CountEnum;
+
 /**
  * Constants used by ReactMarker.
  */
+@CountEnum
 public enum ReactMarkerConstants {
   CREATE_REACT_CONTEXT_START,
   CREATE_REACT_CONTEXT_END,

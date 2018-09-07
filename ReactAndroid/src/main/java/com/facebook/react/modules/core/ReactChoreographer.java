@@ -13,6 +13,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.thecount.api.CountEnum;
 
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks
@@ -21,6 +22,7 @@ import com.facebook.react.common.ReactConstants;
  */
 public class ReactChoreographer {
 
+  @CountEnum
   public enum CallbackType {
 
     /**

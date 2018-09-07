@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
 IMAGE_EVENT_FILES = [
     "ImageLoadEvent.java",
@@ -35,6 +35,7 @@ rn_android_library(
     ],
     deps = [
         YOGA_TARGET,
+        react_native_dep("java/com/facebook/thecount:thecount"),
         react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),

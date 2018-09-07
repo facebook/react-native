@@ -5,16 +5,12 @@
 
 package com.facebook.react.uimanager;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReadableArray;
 import java.util.Locale;
 import javax.annotation.Nullable;
 
@@ -58,11 +54,11 @@ public class AccessibilityDelegateUtil {
 
     public static AccessibilityRole fromValue(String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (role.getValue() != null && role.getValue().equals(value)) {
+        if (role.name().equalsIgnoreCase(value)) {
           return role;
         }
       }
-      return AccessibilityRole.NONE;
+      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
   }
 
@@ -82,7 +78,10 @@ public class AccessibilityDelegateUtil {
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
             String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-            AccessibilityRole accessibilityRole = getAccessibilityRole((String) view.getTag(R.id.accessibility_role));
+            AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
+            if (accessibilityRole == null) {
+              accessibilityRole = AccessibilityRole.NONE;
+            }
             setRole(info, accessibilityRole, view.getContext());
             if (!(accessibilityHint == null)) {
               String contentDescription=(String)info.getContentDescription();
@@ -126,15 +125,5 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setClickable(true);
     }
-  }
-
-  /**
-   * Method for setting accessibilityRole on view properties.
-   */
-  public static AccessibilityRole getAccessibilityRole(String role) {
-    if (role == null) {
-      return AccessibilityRole.NONE;
-    }
-    return AccessibilityRole.valueOf(role.toUpperCase());
   }
 }

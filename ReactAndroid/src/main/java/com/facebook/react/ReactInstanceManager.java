@@ -48,6 +48,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSIModuleRegistry;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -791,6 +792,7 @@ public class ReactInstanceManager {
   }
 
   public @Nullable List<String> getViewManagerNames() {
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
     ReactApplicationContext context;
     synchronized(mReactContextLock) {
       context = (ReactApplicationContext) getCurrentReactContext();
@@ -802,15 +804,19 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       Set<String> uniqueNames = new HashSet<>();
       for (ReactPackage reactPackage : mPackages) {
+        SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+          .arg("Package", reactPackage.getClass().getSimpleName())
+          .flush();
         if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
           List<String> names =
-              ((ViewManagerOnDemandReactPackage) reactPackage)
-                  .getViewManagerNames(context);
+              ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
           if (names != null) {
             uniqueNames.addAll(names);
           }
         }
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
       }
+      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       return new ArrayList<>(uniqueNames);
     }
   }
@@ -898,6 +904,7 @@ public class ReactInstanceManager {
 
     mCreateReactContextThread =
         new Thread(
+            null,
             new Runnable() {
               @Override
               public void run() {
@@ -951,7 +958,8 @@ public class ReactInstanceManager {
                   mDevSupportManager.handleException(e);
                 }
               }
-            });
+            },
+            "create_react_context");
     ReactMarker.logMarker(REACT_CONTEXT_THREAD_START);
     mCreateReactContextThread.start();
   }
@@ -1018,6 +1026,7 @@ public class ReactInstanceManager {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
+
     final int rootTag = uiManagerModule.addRootView(rootView);
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
@@ -1118,8 +1127,12 @@ public class ReactInstanceManager {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     catalystInstance.runJSBundle();
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
     reactContext.initializeWithInstance(catalystInstance);
+
 
     return reactContext;
   }

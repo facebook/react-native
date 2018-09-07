@@ -7,9 +7,12 @@
 
 package com.facebook.react.modules.datepicker;
 
+import com.facebook.thecount.api.CountEnum;
+
 /**
  * Date picker modes
  */
+@CountEnum
 public enum DatePickerMode {
   CALENDAR,
   SPINNER,

@@ -12,7 +12,7 @@
 #import <fabric/core/LayoutConstraints.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/uimanager/FabricUIManager.h>
-#import <fabric/uimanager/TreeMutationInstruction.h>
+#import <fabric/uimanager/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag;
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
+                              rootTag:(ReactTag)rootTag;
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName;
 

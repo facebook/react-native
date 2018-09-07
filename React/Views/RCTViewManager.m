@@ -151,12 +151,22 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-    view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  // This mask must be kept in sync with the AccessibilityRoles enum defined in ViewAccessibility.js
+  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement;
+
+  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
+  view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask) | maskedTraits;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, UIAccessibilityTraits, RCTView)
 {
-    view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  // This mask must be kept in sync with the AccessibilityStates enum defined in ViewAccessibility.js
+  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
+
+  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  UIAccessibilityTraits maskedTraits = newTraits & AccessibilityStatesMask;
+  view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask) | maskedTraits;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)

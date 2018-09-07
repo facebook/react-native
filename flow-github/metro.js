@@ -36,6 +36,10 @@ declare module 'metro/src/DeltaBundler' {
   declare module.exports: any;
 }
 
+declare module 'metro/src/DeltaBundler/types.flow.js' {
+  declare module.exports: any;
+}
+
 declare module 'metro/src/ModuleGraph/types.flow.js' {
   declare module.exports: any;
 }

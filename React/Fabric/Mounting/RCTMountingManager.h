@@ -7,7 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/uimanager/TreeMutationInstruction.h>
+#import <fabric/uimanager/ShadowView.h>
+#import <fabric/uimanager/ShadowViewMutation.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTMountingManagerDelegate.h>
 
@@ -28,8 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
  * The order of mutation tnstructions matters.
  * Can be called from any thread.
  */
-- (void)mutateComponentViewTreeWithMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
-                                                rootTag:(ReactTag)rootTag;
+- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations
+                                rootTag:(ReactTag)rootTag;
 
 /**
  * Suggests preliminary creation of a component view of given type.

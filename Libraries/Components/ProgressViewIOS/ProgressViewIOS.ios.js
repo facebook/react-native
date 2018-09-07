@@ -10,13 +10,13 @@
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
@@ -45,7 +45,7 @@ const ProgressViewIOS = createReactClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * The progress bar style.
      */

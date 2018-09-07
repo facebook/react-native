@@ -245,8 +245,8 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
@@ -293,30 +293,29 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
-    compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile "com.facebook.fresco:fresco:${FRESCO_VERSION}"
-    compile "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
-    compile 'com.facebook.soloader:soloader:0.5.1'
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
-    compile "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    compile 'com.squareup.okio:okio:1.14.0'
+    api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+    api 'javax.inject:javax.inject:1'
+    api 'com.android.support:appcompat-v7:27.1.1'
+    api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
+    api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
+    api 'com.facebook.soloader:soloader:0.5.1'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
+    api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
+    api 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 
-    testCompile "junit:junit:${JUNIT_VERSION}"
-    testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
-    testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
-    testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
-    testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
-    testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
-    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+    testImplementation "junit:junit:${JUNIT_VERSION}"
+    testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+    testImplementation "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+    testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    testImplementation "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+    testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
-    androidTestCompile fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestCompile 'com.android.support.test:runner:0.3'
-    androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
+    androidTestImplementation 'com.android.support.test:runner:0.3'
+    androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
 apply from: 'release.gradle'

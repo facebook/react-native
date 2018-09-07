@@ -44,15 +44,47 @@ type DirectEventType = {
   registrationName: string,
 };
 
-export type ReactNativeBaseComponentViewConfig = {
-  validAttributes: Object,
-  uiViewClassName: string,
-  bubblingEventTypes?: {[topLevelType: string]: BubblingEventType},
-  directEventTypes?: {[topLevelType: string]: DirectEventType},
-  propTypes?: Object,
-};
+type AttributeType =
+  | true
+  | $ReadOnly<{|
+      diff: ?<T>(arg1: T, arg2: T) => boolean,
+      process: ?(arg1: any) => any,
+    |}>;
 
-export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig;
+export type ReactNativeBaseComponentViewConfig<
+  TProps = string,
+  TStyleProps = string,
+> = $ReadOnly<{|
+  baseModuleName?: string,
+  bubblingEventTypes?: $ReadOnly<{
+    [eventName: string]: $ReadOnly<{|
+      phasedRegistrationNames: $ReadOnly<{|
+        captured: string,
+        bubbled: string,
+      |}>,
+    |}>,
+  }>,
+  Commands?: $ReadOnly<{
+    [commandName: string]: number,
+  }>,
+  directEventTypes?: $ReadOnly<{
+    [eventName: string]: $ReadOnly<{|
+      registrationName: string,
+    |}>,
+  }>,
+  NativeProps?: $ReadOnly<{
+    [propName: string]: string,
+  }>,
+  uiViewClassName: string,
+  validAttributes: $ReadOnly<{
+    [propName: TProps]: AttributeType,
+    style: $ReadOnly<{
+      [propName: TStyleProps]: AttributeType,
+    }>,
+  }>,
+|}>;
+
+export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
 
 /**
  * Class only exists for its Flow type.

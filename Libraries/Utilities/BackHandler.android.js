@@ -18,22 +18,16 @@ type BackPressEventName = $Enum<{
   backPress: string,
 }>;
 
-const _backPressSubscriptions = new Set();
+const _backPressSubscriptions = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
-  let invokeDefault = true;
-  const subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
-
-  for (let i = 0; i < subscriptions.length; ++i) {
-    if (subscriptions[i]()) {
-      invokeDefault = false;
-      break;
+  for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
+    if (_backPressSubscriptions[i]()) {
+      return;
     }
   }
 
-  if (invokeDefault) {
-    BackHandler.exitApp();
-  }
+  BackHandler.exitApp();
 });
 
 /**
@@ -81,7 +75,9 @@ const BackHandler = {
     eventName: BackPressEventName,
     handler: Function,
   ): {remove: () => void} {
-    _backPressSubscriptions.add(handler);
+    if (_backPressSubscriptions.indexOf(handler) === -1) {
+      _backPressSubscriptions.push(handler);
+    }
     return {
       remove: () => BackHandler.removeEventListener(eventName, handler),
     };
@@ -94,7 +90,12 @@ const BackHandler = {
     eventName: BackPressEventName,
     handler: Function,
   ): void {
-    _backPressSubscriptions.delete(handler);
+    if (_backPressSubscriptions.indexOf(handler) !== -1) {
+      _backPressSubscriptions.splice(
+        _backPressSubscriptions.indexOf(handler),
+        1,
+      );
+    }
   },
 };
 

@@ -32,7 +32,7 @@ it('returns the correct haste name for a RN library file', () => {
 });
 
 it('returns the correct haste name for a file with a platform suffix', () => {
-  for (const platform of ['android', 'ios', 'native', 'web', 'windows']) {
+  for (const platform of ['android', 'ios', 'native']) {
     expect(
       getHasteName(
         getPath(
