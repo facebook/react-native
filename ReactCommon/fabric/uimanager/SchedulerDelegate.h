@@ -18,10 +18,8 @@ namespace react {
  * Abstract class for Scheduler's delegate.
  */
 class SchedulerDelegate {
+
 public:
-
-  virtual ~SchedulerDelegate() = default;
-
   /*
    * Called right after Scheduler computed (and laid out) a new updated version
    * of the tree and calculated a set of mutations which are suffisient
@@ -33,6 +31,8 @@ public:
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) = 0;
+
+  virtual ~SchedulerDelegate() noexcept = default;
 };
 
 } // namespace react

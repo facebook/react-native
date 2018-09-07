@@ -17,8 +17,8 @@ namespace react {
  * Abstract class for UIManager's delegate.
  */
 class UIManagerDelegate {
-public:
 
+public:
   /*
    * Called right after the new/updated Shadow Node tree is constructed.
    * The tree is not layed out and not sealed at this time.
@@ -31,6 +31,8 @@ public:
    * instances.
    */
   virtual void uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) = 0;
+
+  virtual ~UIManagerDelegate() noexcept = default;
 };
 
 } // namespace react
