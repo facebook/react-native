@@ -137,10 +137,10 @@ using namespace facebook::react;
 
   // `border`
   if (
-    oldViewProps.borderWidth != newViewProps.borderWidth ||
-    oldViewProps.borderStyle != newViewProps.borderStyle ||
-    oldViewProps.borderRadius != newViewProps.borderRadius ||
-    oldViewProps.borderColor != newViewProps.borderColor
+    oldViewProps.borderWidths != newViewProps.borderWidths ||
+    oldViewProps.borderStyles != newViewProps.borderStyles ||
+    oldViewProps.borderRadii != newViewProps.borderRadii ||
+    oldViewProps.borderColors != newViewProps.borderColors
   ) {
     [self invalidateBorder];
   }
@@ -174,10 +174,15 @@ using namespace facebook::react;
 {
   const auto &props = *std::dynamic_pointer_cast<const ViewProps>(_props);
 
-  bool useCoreAnimationBorderRendering =
-    props.borderStyle == BorderStyle::Solid &&
-    props.borderWidth.isUniform() &&
-    props.borderRadius.isUniform();
+  const auto borderMetrics =
+    props.resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
+
+  const bool useCoreAnimationBorderRendering =
+    borderMetrics.borderColors.isUniform() &&
+    borderMetrics.borderWidths.isUniform() &&
+    borderMetrics.borderStyles.isUniform() &&
+    borderMetrics.borderRadii.isUniform() &&
+    borderMetrics.borderStyles.left == BorderStyle::Solid;
 
   CALayer *layer = self.layer;
   if (_isCoreAnimationBorderRenderingEnabled != useCoreAnimationBorderRendering) {
@@ -190,11 +195,10 @@ using namespace facebook::react;
   }
 
   if (useCoreAnimationBorderRendering) {
-    layer.borderWidth = (CGFloat)props.borderWidth.left;
-    layer.borderColor = RCTCGColorRefFromSharedColor(props.borderColor);
-    layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
-    _contentView.layer.cornerRadius = (CGFloat)props.borderRadius.topLeft;
-    _contentView.layer.masksToBounds = YES;
+    layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
+    layer.borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
+    layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
   } else {
     // Not supported yet.
   }

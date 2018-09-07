@@ -13,7 +13,7 @@
 namespace facebook {
 namespace react {
 
-static std::array<YGValue, 2> convertRawProp(
+static inline std::array<YGValue, 2> convertRawProp(
   const RawProps &rawProps,
   const std::string &widthName,
   const std::string &heightName,
@@ -26,7 +26,7 @@ static std::array<YGValue, 2> convertRawProp(
   return dimentions;
 }
 
-static std::array<YGValue, YGEdgeCount> convertRawProp(
+static inline std::array<YGValue, YGEdgeCount> convertRawProp(
   const RawProps &rawProps,
   const std::string &prefix,
   const std::string &suffix,
@@ -46,7 +46,7 @@ static std::array<YGValue, YGEdgeCount> convertRawProp(
   return result;
 }
 
-static std::array<YGValue, YGEdgeCount> convertRawProp(
+static inline std::array<YGValue, YGEdgeCount> convertRawProp(
   const RawProps &rawProps,
   const std::array<YGValue, YGEdgeCount> &sourceValue,
   const std::array<YGValue, YGEdgeCount> &defaultValue
@@ -61,7 +61,7 @@ static std::array<YGValue, YGEdgeCount> convertRawProp(
   return result;
 }
 
-static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceValue) {
+static inline YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceValue) {
   YGStyle yogaStyle;
   yogaStyle.direction = convertRawProp(rawProps, "direction", sourceValue.direction, yogaStyle.direction);
   yogaStyle.flexDirection = convertRawProp(rawProps, "flexDirection", sourceValue.flexDirection, yogaStyle.flexDirection);
@@ -86,6 +86,54 @@ static YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceVal
   yogaStyle.maxDimensions = convertRawProp(rawProps, "maxWidth", "maxHeight", sourceValue.maxDimensions, yogaStyle.maxDimensions);
   yogaStyle.aspectRatio = convertRawProp(rawProps, "aspectRatio", sourceValue.aspectRatio, yogaStyle.aspectRatio);
   return yogaStyle;
+}
+
+template <typename T>
+static inline CascadedRectangleCorners<T> convertRawProp(
+  const RawProps &rawProps,
+  const std::string &prefix,
+  const std::string &suffix,
+  const CascadedRectangleCorners<T> &sourceValue
+) {
+  CascadedRectangleCorners<T> result;
+
+  result.topLeft = convertRawProp(rawProps, prefix + "TopLeft" + suffix, sourceValue.topLeft);
+  result.topRight = convertRawProp(rawProps, prefix + "TopRight" + suffix, sourceValue.topRight);
+  result.bottomLeft = convertRawProp(rawProps, prefix + "BottomLeft" + suffix, sourceValue.bottomLeft);
+  result.bottomRight = convertRawProp(rawProps, prefix + "BottomRight" + suffix, sourceValue.bottomRight);
+
+  result.topStart = convertRawProp(rawProps, prefix + "TopStart" + suffix, sourceValue.topStart);
+  result.topEnd = convertRawProp(rawProps, prefix + "TopEnd" + suffix, sourceValue.topEnd);
+  result.bottomStart = convertRawProp(rawProps, prefix + "BottomStart" + suffix, sourceValue.bottomStart);
+  result.bottomEnd = convertRawProp(rawProps, prefix + "BottomEnd" + suffix, sourceValue.bottomEnd);
+
+  result.all = convertRawProp(rawProps, prefix + suffix, sourceValue.all);
+
+  return result;
+}
+
+template <typename T>
+static inline CascadedRectangleEdges<T> convertRawProp(
+  const RawProps &rawProps,
+  const std::string &prefix,
+  const std::string &suffix,
+  const CascadedRectangleEdges<T> &sourceValue
+) {
+  CascadedRectangleEdges<T> result;
+
+  result.left = convertRawProp(rawProps, prefix + "Left" + suffix, sourceValue.left);
+  result.right = convertRawProp(rawProps, prefix + "Right" + suffix, sourceValue.right);
+  result.top = convertRawProp(rawProps, prefix + "Top" + suffix, sourceValue.top);
+  result.bottom = convertRawProp(rawProps, prefix + "Bottom" + suffix, sourceValue.bottom);
+
+  result.start = convertRawProp(rawProps, prefix + "Start" + suffix, sourceValue.start);
+  result.end = convertRawProp(rawProps, prefix + "End" + suffix, sourceValue.end);
+  result.horizontal = convertRawProp(rawProps, prefix + "Horizontal" + suffix, sourceValue.horizontal);
+  result.vertical = convertRawProp(rawProps, prefix + "Vertical" + suffix, sourceValue.vertical);
+
+  result.all = convertRawProp(rawProps, prefix + suffix, sourceValue.all);
+
+  return result;
 }
 
 } // namespace react

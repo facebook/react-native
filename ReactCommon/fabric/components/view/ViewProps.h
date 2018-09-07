@@ -39,10 +39,10 @@ public:
   const SharedColor backgroundColor {};
 
   // Borders
-  const EdgeInsets borderWidth {};
-  const CornerInsets borderRadius {};
-  const SharedColor borderColor {};
-  const BorderStyle borderStyle {};
+  const CascadedBorderWidths borderWidths {};
+  const CascadedBorderRadii borderRadii {};
+  const CascadedBorderColors borderColors {};
+  const CascadedBorderStyles borderStyles {};
 
   // Shadow
   const SharedColor shadowColor {};
@@ -60,6 +60,10 @@ public:
   const PointerEventsMode pointerEvents {};
   const EdgeInsets hitSlop {};
   const bool onLayout {};
+
+#pragma mark - Convenience Methods
+
+  BorderMetrics resolveBorderMetrics(bool isRTL) const;
 
 #pragma mark - DebugStringConvertible
 
