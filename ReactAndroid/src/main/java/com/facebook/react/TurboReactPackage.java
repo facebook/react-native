@@ -26,17 +26,6 @@ public abstract class TurboReactPackage implements ReactPackage {
   }
 
   /**
-   * This is only a temporary method to test the impact of initializing some modules eagerly. This
-   * will deleted whenn
-   * qe_react_native_startup_module_optimization.eager_init_current_viewer_native_module is removed
-   *
-   * @return
-   */
-  protected List<String> getEagerNativeModules() {
-    return Collections.emptyList();
-  }
-
-  /**
    * The API needed for TurboModules. Given a module name, it returns an instance of {@link
    * NativeModule} for the name
    *
@@ -60,7 +49,6 @@ public abstract class TurboReactPackage implements ReactPackage {
     final Set<Map.Entry<String, ReactModuleInfo>> entrySet =
         getReactModuleInfoProvider().getReactModuleInfos().entrySet();
     final Iterator<Map.Entry<String, ReactModuleInfo>> entrySetIterator = entrySet.iterator();
-    final List<String> eagerNativeModules = getEagerNativeModules();
     return new Iterable<ModuleHolder>() {
       @NonNull
       @Override
@@ -77,12 +65,7 @@ public abstract class TurboReactPackage implements ReactPackage {
             Map.Entry<String, ReactModuleInfo> entry = entrySetIterator.next();
             String name = entry.getKey();
             ReactModuleInfo reactModuleInfo = entry.getValue();
-            if (eagerNativeModules.contains(name)) {
-              return new ModuleHolder(getModule(name, reactContext));
-            } else {
-              return new ModuleHolder(
-                  reactModuleInfo, new ModuleHolderProvider(name, reactContext));
-            }
+            return new ModuleHolder(reactModuleInfo, new ModuleHolderProvider(name, reactContext));
           }
 
           @Override
