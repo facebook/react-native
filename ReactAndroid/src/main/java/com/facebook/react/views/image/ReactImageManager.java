@@ -109,7 +109,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
-  @ReactProp(name = "overlayColor")
+  @ReactProp(name = "overlayColor", customType = "Color")
   public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
     if (overlayColor == null) {
       view.setOverlayColor(Color.TRANSPARENT);
