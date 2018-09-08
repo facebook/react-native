@@ -25,7 +25,6 @@ ShadowTree::ShadowTree(Tag rootTag):
       .rootTag = rootTag,
       .props = RootShadowNode::defaultSharedProps(),
       .eventEmitter = noopEventEmitter,
-      .children = ShadowNode::emptySharedShadowNodeSharedList(),
     },
     nullptr
   );
