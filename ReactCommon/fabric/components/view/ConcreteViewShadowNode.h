@@ -113,17 +113,6 @@ public:
     return clonedChildShadowNode.get();
   }
 
-#pragma mark - Equality
-
-  bool operator==(const ShadowNode& rhs) const override {
-    if (!ShadowNode::operator==(rhs)) {
-      return false;
-    }
-
-    const auto &other = static_cast<const ConcreteViewShadowNode&>(rhs);
-    return getLayoutMetrics() == other.getLayoutMetrics();
-  }
-
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override {

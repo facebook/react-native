@@ -158,10 +158,10 @@ TEST(ShadowNodeTest, handleLocalData) {
   thirdNode->setLocalData(localDataOver9000);
 
   // LocalData object are compared by pointer, not by value.
-  ASSERT_EQ(*firstNode, *secondNode);
-  ASSERT_NE(*firstNode, *thirdNode);
+  ASSERT_EQ(firstNode->getLocalData(), secondNode->getLocalData());
+  ASSERT_NE(firstNode->getLocalData(), thirdNode->getLocalData());
   secondNode->setLocalData(anotherLocalData42);
-  ASSERT_NE(*firstNode, *secondNode);
+  ASSERT_NE(firstNode->getLocalData(), secondNode->getLocalData());
 
   // LocalData cannot be changed for sealed shadow node.
   secondNode->sealRecursive();
