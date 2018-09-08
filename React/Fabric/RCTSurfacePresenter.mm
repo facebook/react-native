@@ -147,7 +147,7 @@ using namespace facebook::react;
 
 - (void)stopSurface:(RCTFabricSurface *)surface
 {
-  [_batchedBridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[@(surface.rootTag)] completion:NULL];
+  [_batchedBridge enqueueJSCall:@"ReactFabric" method:@"unmountComponentAtNode" args:@[@(surface.rootTag)] completion:NULL];
 }
 
 #pragma mark - RCTMountingManagerDelegate
