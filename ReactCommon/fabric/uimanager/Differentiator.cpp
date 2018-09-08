@@ -211,12 +211,15 @@ ShadowViewMutationList calculateShadowViewMutations(
 
   ShadowViewMutationList mutations;
 
-  if (oldRootShadowNode != newRootShadowNode) {
+  auto oldRootShadowView = ShadowView(oldRootShadowNode);
+  auto newRootShadowView = ShadowView(newRootShadowNode);
+
+  if (oldRootShadowView != newRootShadowView) {
     mutations.push_back(
       ShadowViewMutation::UpdateMutation(
         ShadowView(),
-        ShadowView(oldRootShadowNode),
-        ShadowView(newRootShadowNode),
+        oldRootShadowView,
+        newRootShadowView,
         -1
       )
     );
