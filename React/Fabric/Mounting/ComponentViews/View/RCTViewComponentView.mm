@@ -196,6 +196,22 @@ using namespace facebook::react;
   [self invalidateLayer];
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  auto viewProps = *std::static_pointer_cast<const ViewProps>(_props);
+  switch (viewProps.pointerEvents) {
+    case PointerEventsMode::Auto:
+      return [super hitTest:point withEvent:event];
+    case PointerEventsMode::None:
+      return nil;
+    case PointerEventsMode::BoxOnly:
+      return [self pointInside:point withEvent:event] ? self : nil;
+    case PointerEventsMode::BoxNone:
+      UIView *view = [super hitTest:point withEvent:event];
+      return view != self ? view : nil;
+  }
+}
+
 static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii) {
   return RCTCornerRadii {
     .topLeft = (CGFloat)borderRadii.topLeft,
