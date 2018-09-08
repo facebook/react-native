@@ -18,7 +18,7 @@
 namespace facebook {
 namespace react {
 
-inline Float fabricFloatFromYogaFloat(float value) {
+inline Float floatFromYogaFloat(float value) {
   if (value == YGUndefined) {
     return kFloatUndefined;
   }
@@ -26,7 +26,7 @@ inline Float fabricFloatFromYogaFloat(float value) {
   return (Float)value;
 }
 
-inline float yogaFloatFromFabricFloat(Float value) {
+inline float yogaFloatFromFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGUndefined;
   }
@@ -34,20 +34,20 @@ inline float yogaFloatFromFabricFloat(Float value) {
   return (float)value;
 }
 
-inline Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value) {
+inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
     return kFloatUndefined;
   }
 
-  return fabricFloatFromYogaFloat(value.getValue());
+  return floatFromYogaFloat(value.getValue());
 }
 
-inline YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
+inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGFloatOptional();
   }
 
-  return YGFloatOptional(yogaFloatFromFabricFloat(value));
+  return YGFloatOptional(yogaFloatFromFloat(value));
 }
 
 inline YGValue yogaStyleValueFromFloat(const Float &value) {
@@ -63,9 +63,9 @@ inline folly::Optional<Float> optionalFloatFromYogaValue(const YGValue &value, f
     case YGUnitUndefined:
       return {};
     case YGUnitPoint:
-      return fabricFloatFromYogaFloat(value.value);
+      return floatFromYogaFloat(value.value);
     case YGUnitPercent:
-      return base.has_value() ? folly::Optional<Float>(base.value() * fabricFloatFromYogaFloat(value.value)) : folly::Optional<Float>();
+      return base.has_value() ? folly::Optional<Float>(base.value() * floatFromYogaFloat(value.value)) : folly::Optional<Float>();
     case YGUnitAuto:
       return {};
   }
@@ -78,27 +78,27 @@ inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
 
   layoutMetrics.frame = Rect {
     Point {
-      fabricFloatFromYogaFloat(layout.position[YGEdgeLeft]),
-      fabricFloatFromYogaFloat(layout.position[YGEdgeTop])
+      floatFromYogaFloat(layout.position[YGEdgeLeft]),
+      floatFromYogaFloat(layout.position[YGEdgeTop])
     },
     Size {
-      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
-      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionHeight])
+      floatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
+      floatFromYogaFloat(layout.dimensions[YGDimensionHeight])
     }
   };
 
   layoutMetrics.borderWidth = EdgeInsets {
-    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeTop]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeRight]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom])
+    floatFromYogaFloat(layout.border[YGEdgeLeft]),
+    floatFromYogaFloat(layout.border[YGEdgeTop]),
+    floatFromYogaFloat(layout.border[YGEdgeRight]),
+    floatFromYogaFloat(layout.border[YGEdgeBottom])
   };
 
   layoutMetrics.contentInsets = EdgeInsets {
-    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
+    floatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
+    floatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
+    floatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
+    floatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
   };
 
   layoutMetrics.displayType =
@@ -393,7 +393,7 @@ inline std::string toString(const YGFloatOptional &value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(fabricFloatFromYogaFloat(value.getValue()));
+  return folly::to<std::string>(floatFromYogaFloat(value.getValue()));
 }
 
 inline std::string toString(const std::array<YGValue, YGDimensionCount> &value) {
