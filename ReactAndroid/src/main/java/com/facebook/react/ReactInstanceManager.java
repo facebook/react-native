@@ -17,6 +17,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INS
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.HERMES_INIT;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
@@ -923,6 +924,7 @@ public class ReactInstanceManager {
 
                 try {
                   Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
+                  ReactMarker.logMarker(HERMES_INIT);
                   final ReactApplicationContext reactApplicationContext =
                       createReactContext(
                           initParams.getJsExecutorFactory().create(),
