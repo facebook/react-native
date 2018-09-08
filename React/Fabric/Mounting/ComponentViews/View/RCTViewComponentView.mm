@@ -196,18 +196,52 @@ using namespace facebook::react;
   [self invalidateLayer];
 }
 
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
+  //   * It takes layers' `zIndex` property into an account;
+  //   * It does not stop algorithm if some touch is outside the view
+  //     which does not have `clipToBounds` enabled.
+
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+
+  if (self.clipsToBounds && !isPointInside) {
+    return nil;
+  }
+
+  NSArray<__kindof UIView *> *sortedSubviews =
+    [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+      // Ensure sorting is stable by treating equal `zIndex` as ascending so
+      // that original order is preserved.
+      return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
+    }];
+
+  for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+
+  return isPointInside ? self : nil;
+}
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   auto viewProps = *std::static_pointer_cast<const ViewProps>(_props);
   switch (viewProps.pointerEvents) {
     case PointerEventsMode::Auto:
-      return [super hitTest:point withEvent:event];
+      return [self betterHitTest:point withEvent:event];
     case PointerEventsMode::None:
       return nil;
     case PointerEventsMode::BoxOnly:
       return [self pointInside:point withEvent:event] ? self : nil;
     case PointerEventsMode::BoxNone:
-      UIView *view = [super hitTest:point withEvent:event];
+      UIView *view = [self betterHitTest:point withEvent:event];
       return view != self ? view : nil;
   }
 }
