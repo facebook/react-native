@@ -20,7 +20,7 @@
 {
   if (self = [super init]) {
     _registry = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsIntegerPersonality | NSPointerFunctionsOpaqueMemory
-                                      valueOptions:NSPointerFunctionsObjectPersonality];
+                                      valueOptions:NSPointerFunctionsObjectPersonality | NSPointerFunctionsWeakMemory];
   }
 
   return self;
