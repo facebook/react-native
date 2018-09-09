@@ -42,16 +42,12 @@ async function buildBundle(
 
   if (config.resolver.platforms.indexOf(args.platform) === -1) {
     console.log(
-      chalk.red(
-        'Invalid platform (' +
-          args.platform +
-          ') selected. \n' +
-          'Available platforms are: \n' +
-          '  ' +
-          config.resolver.platforms.join(', ') +
-          '\n' +
-          'If you are trying to bundle for an out-of-tree platform, it may not be installed.',
-      ),
+      chalk.red(`Invalid platform (${args.platform}) selected.
+
+Available platforms are:
+  ${config.resolver.platforms.join(', ')}
+
+If you are trying to bundle for an out-of-tree platform, it may not be installed.`),
     );
     throw new Error('Invalid platform selected.');
   }
