@@ -28,6 +28,7 @@ import type {
   ____LayoutStyle_Internal,
   ____ShadowStyle_Internal,
   ____TransformStyle_Internal,
+  ____DesktopStyle_Internal,
 } from 'StyleSheetTypes';
 
 /**
@@ -162,6 +163,7 @@ export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 export type LayoutStyle = ____LayoutStyle_Internal;
 export type ShadowStyle = ____ShadowStyle_Internal;
 export type TransformStyle = ____TransformStyle_Internal;
+export type DesktopStyle = ____DesktopStyle_Internal;
 
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
