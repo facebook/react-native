@@ -13,13 +13,14 @@
 #import <fabric/core/Props.h>
 #import <fabric/components/view/ViewEventEmitter.h>
 #import <fabric/events/EventEmitter.h>
+#import <React/RCTTouchableComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * UIView class for <View> component.
  */
-@interface RCTViewComponentView : UIView <RCTComponentViewProtocol> {
+@interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
 @protected
   facebook::react::LayoutMetrics _layoutMetrics;
   facebook::react::SharedProps _props;

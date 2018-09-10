@@ -8,11 +8,11 @@
 #import "RCTSurfaceTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <fabric/components/view/ViewEventEmitter.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 
 #import "RCTConversions.h"
+#import "RCTTouchableComponentViewProtocol.h"
 
 using namespace facebook::react;
 
@@ -46,10 +46,6 @@ private:
   int lastIndex;
 };
 
-@protocol RCTTouchableComponentViewProtocol <NSObject>
-  - (SharedViewEventEmitter)touchEventEmitter;
-@end
-
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeTouchStart,
   RCTTouchEventTypeTouchMove,
@@ -59,7 +55,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 struct ActiveTouch {
   Touch touch;
-  SharedViewEventEmitter eventEmitter;
+  SharedTouchEventEmitter eventEmitter;
 
   struct Hasher {
     size_t operator()(const ActiveTouch &activeTouch) const {
@@ -95,8 +91,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
 
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitter)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitter];
+  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 
@@ -217,7 +213,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedViewEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (UITouch *touch in touches) {
