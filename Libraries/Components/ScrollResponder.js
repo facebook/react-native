@@ -19,7 +19,7 @@ const TextInputState = require('TextInputState');
 const UIManager = require('UIManager');
 
 const invariant = require('fbjs/lib/invariant');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 

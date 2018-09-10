@@ -15,7 +15,7 @@ const React = require('React');
 const {NativeComponent} = require('ReactNative');
 
 const requireNativeComponent = require('requireNativeComponent');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';

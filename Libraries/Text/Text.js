@@ -18,7 +18,7 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
