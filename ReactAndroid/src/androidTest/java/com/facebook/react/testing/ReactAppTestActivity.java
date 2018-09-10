@@ -41,7 +41,9 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.Arrays;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +79,7 @@ public class ReactAppTestActivity extends FragmentActivity
     setContentView(rootView);
 
     mScreenshotingFrameLayout = new ScreenshotingFrameLayout(this);
-    mScreenshotingFrameLayout.setId(ROOT_VIEW_ID);
+    ReactFindViewUtil.setReactTag(mScreenshotingFrameLayout, ROOT_VIEW_ID);
     rootView.addView(mScreenshotingFrameLayout);
 
     mReactRootView = new ReactRootView(this);

@@ -35,6 +35,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -478,7 +479,8 @@ public class ReactEditText extends EditText {
     ReactContext reactContext = (ReactContext) getContext();
     UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
     final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
-    uiManager.setViewLocalData(getId(), localData);
+    int reactTag = ReactFindViewUtil.getReactTag(this);
+    uiManager.setViewLocalData(reactTag, localData);
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {

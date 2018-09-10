@@ -144,4 +144,13 @@ public class ReactFindViewUtil {
     Object tag = view.getTag(R.id.view_tag_native_id);
     return tag instanceof String ? (String) tag : null;
   }
+
+  public static Integer getReactTag(View view) {
+    Object tag = view.getTag(R.id.react_tag_id);
+    return tag instanceof Integer ? (Integer) tag : View.NO_ID;
+  }
+
+  public static void setReactTag(View view, int reactTag) {
+    view.setTag(R.id.react_tag_id, reactTag);
+  }
 }

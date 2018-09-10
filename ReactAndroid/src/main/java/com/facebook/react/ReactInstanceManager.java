@@ -84,6 +84,7 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
@@ -719,7 +720,7 @@ public class ReactInstanceManager {
 
     // Reset view content as it's going to be populated by the application content from JS.
     rootView.removeAllViews();
-    rootView.setId(View.NO_ID);
+    ReactFindViewUtil.setReactTag(rootView, View.NO_ID);
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
@@ -1077,7 +1078,7 @@ public class ReactInstanceManager {
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
         rootView.removeAllViews();
-        rootView.setId(View.NO_ID);
+        ReactFindViewUtil.setReactTag(rootView, View.NO_ID);
       }
     }
 

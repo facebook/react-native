@@ -14,6 +14,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import javax.annotation.Nullable;
 
 /**
@@ -155,7 +156,7 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     }
     mEventDispatcher.dispatchEvent(
         new ReactTextInputKeyPressEvent(
-            mEditText.getId(),
+            ReactFindViewUtil.getReactTag(mEditText),
             key));
   }
 }

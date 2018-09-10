@@ -14,6 +14,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
@@ -24,10 +25,11 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
       new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+          int viewId = ReactFindViewUtil.getReactTag(buttonView);
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext
               .getNativeModule(UIManagerModule.class).getEventDispatcher()
-              .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
+              .dispatchEvent(new ReactCheckBoxEvent(viewId, isChecked));
         }
       };
 

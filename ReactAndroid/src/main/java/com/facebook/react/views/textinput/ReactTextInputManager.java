@@ -41,6 +41,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
@@ -730,13 +731,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO: t7936714 merge these events
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
-              mEditText.getId(),
+              ReactFindViewUtil.getReactTag(mEditText),
               s.toString(),
               mEditText.incrementAndGetEventCounter()));
 
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
-              mEditText.getId(),
+              ReactFindViewUtil.getReactTag(mEditText),
               newText,
               oldText,
               start,
@@ -761,15 +762,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             if (hasFocus) {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
-                      editText.getId()));
+                      ReactFindViewUtil.getReactTag(editText)));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
-                      editText.getId()));
+                      ReactFindViewUtil.getReactTag(editText)));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
-                      editText.getId(),
+                      ReactFindViewUtil.getReactTag(editText),
                       editText.getText().toString()));
             }
           }
@@ -798,7 +799,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
-                      editText.getId(),
+                      ReactFindViewUtil.getReactTag(editText),
                       editText.getText().toString()));
 
               if (blurOnSubmit) {
@@ -845,7 +846,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         mEventDispatcher.dispatchEvent(
           new ReactContentSizeChangedEvent(
-            mEditText.getId(),
+            ReactFindViewUtil.getReactTag(mEditText),
             PixelUtil.toDIPFromPixel(contentWidth),
             PixelUtil.toDIPFromPixel(contentHeight)));
       }
@@ -873,7 +874,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
-                mReactEditText.getId(),
+                ReactFindViewUtil.getReactTag(mReactEditText),
                 start,
                 end
             ));
@@ -901,7 +902,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert) {
       if (mPreviousHoriz != horiz || mPreviousVert != vert) {
         ScrollEvent event = ScrollEvent.obtain(
-          mReactEditText.getId(),
+          ReactFindViewUtil.getReactTag(mReactEditText),
           ScrollEventType.SCROLL,
           horiz,
           vert,

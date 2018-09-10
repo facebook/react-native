@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -110,7 +111,7 @@ public class RootViewTest {
     int rootViewId = 7;
 
     ReactRootView rootView = new ReactRootView(mReactContext);
-    rootView.setId(rootViewId);
+    ReactFindViewUtil.setReactTag(rootView, rootViewId);
     rootView.startReactApplication(instanceManager, "");
     rootView.simulateAttachForTesting();
 
