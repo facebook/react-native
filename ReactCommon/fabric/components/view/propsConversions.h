@@ -20,7 +20,7 @@ static inline std::array<YGValue, 2> convertRawProp(
   const std::array<YGValue, 2> &sourceValue,
   const std::array<YGValue, 2> &defaultValue
 ) {
-  std::array<YGValue, 2> dimentions = defaultValue;
+  auto dimentions = defaultValue;
   dimentions[YGDimensionWidth] = convertRawProp(rawProps, widthName, sourceValue[YGDimensionWidth], defaultValue[YGDimensionWidth]);
   dimentions[YGDimensionHeight] = convertRawProp(rawProps, heightName, sourceValue[YGDimensionHeight], defaultValue[YGDimensionWidth]);
   return dimentions;
@@ -33,7 +33,7 @@ static inline std::array<YGValue, YGEdgeCount> convertRawProp(
   const std::array<YGValue, YGEdgeCount> &sourceValue,
   const std::array<YGValue, YGEdgeCount> &defaultValue
 ) {
-  std::array<YGValue, YGEdgeCount> result = defaultValue;
+  auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(rawProps, prefix + "Left" + suffix, sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
   result[YGEdgeTop] = convertRawProp(rawProps, prefix + "Top" + suffix, sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
   result[YGEdgeRight] = convertRawProp(rawProps, prefix + "Right" + suffix, sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
@@ -51,7 +51,7 @@ static inline std::array<YGValue, YGEdgeCount> convertRawProp(
   const std::array<YGValue, YGEdgeCount> &sourceValue,
   const std::array<YGValue, YGEdgeCount> &defaultValue
 ) {
-  std::array<YGValue, YGEdgeCount> result = defaultValue;
+  auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(rawProps, "left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
   result[YGEdgeTop] = convertRawProp(rawProps, "top", sourceValue[YGEdgeTop], defaultValue[YGEdgeTop]);
   result[YGEdgeRight] = convertRawProp(rawProps, "right", sourceValue[YGEdgeRight], defaultValue[YGEdgeRight]);
@@ -62,7 +62,7 @@ static inline std::array<YGValue, YGEdgeCount> convertRawProp(
 }
 
 static inline YGStyle convertRawProp(const RawProps &rawProps, const YGStyle &sourceValue) {
-  YGStyle yogaStyle;
+  auto yogaStyle = YGStyle {};
   yogaStyle.direction = convertRawProp(rawProps, "direction", sourceValue.direction, yogaStyle.direction);
   yogaStyle.flexDirection = convertRawProp(rawProps, "flexDirection", sourceValue.flexDirection, yogaStyle.flexDirection);
   yogaStyle.justifyContent = convertRawProp(rawProps, "justifyContent", sourceValue.justifyContent, yogaStyle.justifyContent);

@@ -154,7 +154,7 @@ std::string ShadowNode::getDebugValue() const {
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
-  SharedDebugStringConvertibleList debugChildren = {};
+  auto debugChildren = SharedDebugStringConvertibleList {};
 
   for (auto child : *children_) {
     auto debugChild = std::dynamic_pointer_cast<const DebugStringConvertible>(child);

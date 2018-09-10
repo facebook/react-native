@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 static YGStyle yogaStyleFromLayoutConstraints(const LayoutConstraints &layoutConstraints) {
-  YGStyle yogaStyle;
+  auto yogaStyle = YGStyle {};
   yogaStyle.minDimensions[YGDimensionWidth] =
     yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
   yogaStyle.minDimensions[YGDimensionHeight] =

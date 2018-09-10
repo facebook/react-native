@@ -20,7 +20,7 @@ namespace react {
  * (e.g. "layout" becames "topLayout").
  */
 static std::string normalizeEventType(const std::string &type) {
-  std::string prefixedType = type;
+  auto prefixedType = type;
   prefixedType[0] = toupper(prefixedType[0]);
   prefixedType.insert(0, "top");
   return prefixedType;
@@ -51,7 +51,7 @@ void EventEmitter::dispatchEvent(
   folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
   extendedPayload.merge_patch(payload);
 
-  std::weak_ptr<const EventEmitter> weakEventEmitter = shared_from_this();
+  auto weakEventEmitter = std::weak_ptr<const EventEmitter> {shared_from_this()};
 
   eventDispatcher->dispatchEvent(
     RawEvent(

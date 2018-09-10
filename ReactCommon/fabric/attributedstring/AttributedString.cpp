@@ -40,7 +40,7 @@ const std::vector<Fragment> &AttributedString::getFragments() const {
 }
 
 std::string AttributedString::getString() const {
-  std::string string;
+  auto string = std::string {};
   for (const auto &fragment : fragments_) {
     string += fragment.string;
   }
@@ -50,7 +50,7 @@ std::string AttributedString::getString() const {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
-  SharedDebugStringConvertibleList list = {};
+  auto list = SharedDebugStringConvertibleList {};
 
   for (auto &&fragment : fragments_) {
     auto propsList = fragment.textAttributes.DebugStringConvertible::getDebugProps();

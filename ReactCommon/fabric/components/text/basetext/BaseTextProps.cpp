@@ -16,7 +16,7 @@ namespace facebook {
 namespace react {
 
 static TextAttributes convertRawProp(const RawProps &rawProps, const TextAttributes defaultTextAttributes) {
-  TextAttributes textAttributes;
+  auto textAttributes = TextAttributes {};
 
   // Color
   textAttributes.foregroundColor = convertRawProp(rawProps, "color", defaultTextAttributes.foregroundColor);

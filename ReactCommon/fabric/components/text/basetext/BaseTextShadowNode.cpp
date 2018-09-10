@@ -20,13 +20,13 @@ AttributedString BaseTextShadowNode::getAttributedString(
   const TextAttributes &textAttributes,
   const SharedShadowNode &parentNode
 ) const {
-  AttributedString attributedString;
+  auto attributedString = AttributedString {};
 
   for (const auto &childNode : parentNode->getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {
-      AttributedString::Fragment fragment;
+      auto fragment = AttributedString::Fragment {};
       fragment.string = rawTextShadowNode->getProps()->text;
       fragment.textAttributes = textAttributes;
       fragment.parentShadowNode = parentNode;
@@ -37,14 +37,14 @@ AttributedString BaseTextShadowNode::getAttributedString(
     // TextShadowNode
     auto textShadowNode = std::dynamic_pointer_cast<const TextShadowNode>(childNode);
     if (textShadowNode) {
-      TextAttributes localTextAttributes = textAttributes;
+      auto localTextAttributes = textAttributes;
       localTextAttributes.apply(textShadowNode->getProps()->textAttributes);
       attributedString.appendAttributedString(textShadowNode->getAttributedString(localTextAttributes, textShadowNode));
       continue;
     }
 
     // Any other kind of ShadowNode
-    AttributedString::Fragment fragment;
+    auto fragment = AttributedString::Fragment {};
     fragment.shadowNode = childNode;
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);

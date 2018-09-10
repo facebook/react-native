@@ -19,7 +19,7 @@ const char ScrollViewComponentName[] = "ScrollView";
 void ScrollViewShadowNode::updateLocalData() {
   ensureUnsealed();
 
-  Rect contentBoundingRect;
+  auto contentBoundingRect = Rect {};
   for (const auto &childNode : getLayoutableChildNodes()) {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }

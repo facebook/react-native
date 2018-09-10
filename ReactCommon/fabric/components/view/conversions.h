@@ -72,9 +72,8 @@ inline folly::Optional<Float> optionalFloatFromYogaValue(const YGValue &value, f
 }
 
 inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
-  LayoutMetrics layoutMetrics;
-
-  YGLayout layout = yogaNode.getLayout();
+  auto layoutMetrics = LayoutMetrics {};
+  auto layout = yogaNode.getLayout();
 
   layoutMetrics.frame = Rect {
     Point {
@@ -227,7 +226,7 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
 
 inline void fromDynamic(const folly::dynamic &value, Transform &result) {
   assert(value.isArray());
-  Transform transformMatrix;
+  auto transformMatrix = Transform {};
   for (const auto &tranformConfiguration : value) {
     assert(tranformConfiguration.isObject());
     auto pair = *tranformConfiguration.items().begin();
@@ -237,7 +236,7 @@ inline void fromDynamic(const folly::dynamic &value, Transform &result) {
     if (operation == "matrix") {
       assert(parameters.isArray());
       assert(parameters.size() == transformMatrix.matrix.size());
-      int i = 0;
+      auto i = 0;
       for (auto item : parameters) {
         transformMatrix.matrix[i++] = (Float)item.asDouble();
       }
@@ -407,10 +406,10 @@ inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
     {"left", "top", "right", "bottom", "start", "end", "horizontal", "vertical", "all"}
   };
 
-  std::string result;
-  std::string separator = ", ";
+  auto result = std::string {};
+  auto separator = std::string {", "};
 
-  for (int i = 0; i < YGEdgeCount; i++) {
+  for (auto i = 0; i < YGEdgeCount; i++) {
     if (value[i].unit == YGUnitUndefined) {
       continue;
     }

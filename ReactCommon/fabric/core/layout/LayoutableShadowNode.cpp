@@ -78,12 +78,12 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     child->ensureUnsealed();
     child->setHasNewLayout(false);
 
-    const LayoutMetrics childLayoutMetrics = child->getLayoutMetrics();
+    const auto childLayoutMetrics = child->getLayoutMetrics();
     if (childLayoutMetrics.displayType == DisplayType::None) {
       continue;
     }
 
-    LayoutContext childLayoutContext = LayoutContext(layoutContext);
+    auto childLayoutContext = LayoutContext(layoutContext);
     childLayoutContext.absolutePosition += childLayoutMetrics.frame.origin;
 
     child->layout(layoutContext);
@@ -95,7 +95,7 @@ void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
 }
 
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
+  auto list = SharedDebugStringConvertibleList {};
 
   if (getHasNewLayout()) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
@@ -105,8 +105,8 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
   }
 
-  LayoutMetrics layoutMetrics = getLayoutMetrics();
-  LayoutMetrics defaultLayoutMetrics = LayoutMetrics();
+  auto layoutMetrics = getLayoutMetrics();
+  auto defaultLayoutMetrics = LayoutMetrics();
 
   list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", toString(layoutMetrics.frame)));
 
