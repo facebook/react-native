@@ -26,6 +26,10 @@ describe('android::isInstalled', () => {
     expect(isInstalled(projectConfig, 'test2')).toBeTruthy();
   });
 
+  it('should return true when project is already in build.gradle using compile', () => {
+    expect(isInstalled(projectConfig, 'testDeprecated')).toBeTruthy();
+  });
+
   it('should return false when project is not in build.gradle', () =>
     expect(isInstalled(projectConfig, 'test3')).toBeFalsy());
 });
