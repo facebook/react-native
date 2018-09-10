@@ -47,7 +47,7 @@ ScrollViewProps::ScrollViewProps(const ScrollViewProps &sourceProps, const RawPr
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
-  ScrollViewProps defaultScrollViewProps;
+  auto defaultScrollViewProps = ScrollViewProps {};
 
   return
     ViewProps::getDebugProps() +

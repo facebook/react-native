@@ -24,7 +24,7 @@ inline void fromDynamic(const folly::dynamic &value, SharedColor &result) {
 
   if (value.isNumber()) {
     auto argb = value.asInt();
-    float ratio = 256;
+    auto ratio = 256.f;
     alpha = ((argb >> 24) & 0xFF) / ratio;
     red = ((argb >> 16) & 0xFF) / ratio;
     green = ((argb >> 8) & 0xFF) / ratio;
@@ -45,7 +45,7 @@ inline void fromDynamic(const folly::dynamic &value, SharedColor &result) {
 
 inline std::string toString(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
-  const float ratio = 256;
+  auto ratio = 256.f;
   return "rgba(" +
     folly::to<std::string>(round(components.red * ratio)) + ", " +
     folly::to<std::string>(round(components.green * ratio)) + ", " +

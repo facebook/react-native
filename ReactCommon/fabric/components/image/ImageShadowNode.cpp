@@ -59,7 +59,7 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto targetImageArea = size.width * size.height * scale * scale;
   auto bestFit = kFloatMax;
 
-  ImageSource bestSource;
+  auto bestSource = ImageSource {};
 
   for (const auto &source : sources) {
     auto sourceSize = source.size;

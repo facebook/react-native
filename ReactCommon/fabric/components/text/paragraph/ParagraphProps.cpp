@@ -15,7 +15,7 @@ namespace facebook {
 namespace react {
 
 static ParagraphAttributes convertRawProp(const RawProps &rawProps, const ParagraphAttributes &defaultParagraphAttributes) {
-  ParagraphAttributes paragraphAttributes;
+  auto paragraphAttributes = ParagraphAttributes {};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(rawProps, "numberOfLines", defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);

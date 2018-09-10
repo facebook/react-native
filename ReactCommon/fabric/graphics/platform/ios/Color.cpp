@@ -18,7 +18,7 @@ SharedColor colorFromComponents(ColorComponents components) {
     components.alpha
   };
 
-  CGColorRef color = CGColorCreate(
+  auto color = CGColorCreate(
     CGColorSpaceCreateDeviceRGB(),
     componentsArray
   );
@@ -32,7 +32,7 @@ ColorComponents colorComponentsFromColor(SharedColor color) {
     return ColorComponents {0, 0, 0, 0};
   }
 
-  int numberOfComponents = CGColorGetNumberOfComponents(color.get());
+  auto numberOfComponents = CGColorGetNumberOfComponents(color.get());
   assert(numberOfComponents == 4);
   const CGFloat *components = CGColorGetComponents(color.get());
   return ColorComponents {

@@ -28,7 +28,7 @@ YogaStylableProps::YogaStylableProps(const YogaStylableProps &sourceProps, const
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  YGStyle defaultYogaStyle;
+  auto defaultYogaStyle = YGStyle {};
   return {
     debugStringConvertibleItem("direction", yogaStyle.direction, defaultYogaStyle.direction),
     debugStringConvertibleItem("flexDirection", yogaStyle.flexDirection, defaultYogaStyle.flexDirection),

@@ -100,10 +100,10 @@ struct Rect {
   Float getMinY() const { return size.height >= 0 ? origin.y : origin.y + size.height; }
 
   void unionInPlace(const Rect &rect) {
-    Float x1 = std::min(getMinX(), rect.getMinX());
-    Float y1 = std::min(getMinY(), rect.getMinY());
-    Float x2 = std::max(getMaxX(), rect.getMaxX());
-    Float y2 = std::max(getMaxY(), rect.getMaxY());
+    auto x1 = std::min(getMinX(), rect.getMinX());
+    auto y1 = std::min(getMinY(), rect.getMinY());
+    auto x2 = std::max(getMaxX(), rect.getMaxX());
+    auto y2 = std::max(getMaxY(), rect.getMaxY());
     origin = {x1, y1};
     size = {x2 - x1, y2 - y1};
   }

@@ -116,7 +116,7 @@ public:
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override {
-    SharedDebugStringConvertibleList list = {};
+    auto list = SharedDebugStringConvertibleList {};
 
     auto basePropsList = ShadowNode::getDebugProps();
     std::move(basePropsList.begin(), basePropsList.end(), std::back_inserter(list));
