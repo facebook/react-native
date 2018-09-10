@@ -84,4 +84,28 @@ using namespace facebook::react;
   return RCTNSStringFromString(_paragraphLocalData->getAttributedString().getString());
 }
 
-@end
+- (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
+{
+  if (!_paragraphLocalData) {
+    return _eventEmitter;
+  }
+
+  SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
+  RCTTextLayoutManager *nativeTextLayoutManager = (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+  CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+
+  SharedShadowNode textShadowNode = [nativeTextLayoutManager getParentShadowNodeWithAttributeString:_paragraphLocalData->getAttributedString()
+                                                                                paragraphAttributes:_paragraphAttributes
+                                                                                              frame:frame
+                                                                                            atPoint:point];
+
+  if (!textShadowNode) {
+    return _eventEmitter;
+  }
+
+  SharedEventEmitter eventEmitter = textShadowNode->getEventEmitter();
+  assert(std::dynamic_pointer_cast<const TouchEventEmitter>(eventEmitter));
+  return std::static_pointer_cast<const TouchEventEmitter>(eventEmitter);
+}
+
+ @end

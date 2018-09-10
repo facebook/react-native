@@ -27,6 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame;
 
+- (facebook::react::SharedShadowNode)getParentShadowNodeWithAttributeString:(facebook::react::AttributedString)attributedString
+                                                        paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                                                      frame:(CGRect)frame
+                                                                    atPoint:(CGPoint)point;
+
 @end
 
 NS_ASSUME_NONNULL_END
