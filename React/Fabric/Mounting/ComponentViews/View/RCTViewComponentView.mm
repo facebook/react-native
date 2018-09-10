@@ -449,7 +449,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
   return YES;
 }
 
-- (SharedEventEmitter)touchEventEmitter
+- (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
   return _eventEmitter;
 }
