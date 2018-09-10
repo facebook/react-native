@@ -25,6 +25,9 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ParagraphProps>();
+    _props = defaultProps;
+
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
@@ -36,8 +39,10 @@ using namespace facebook::react;
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
+  const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
+
   [super updateProps:props oldProps:oldProps];
-  auto paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
+
   assert(paragraphProps);
   _paragraphAttributes = paragraphProps->paragraphAttributes;
 }

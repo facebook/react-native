@@ -12,6 +12,7 @@
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
 #import <fabric/components/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewProps.h>
 #import <fabric/events/EventEmitter.h>
 #import <React/RCTTouchableComponentViewProtocol.h>
 
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
 @protected
   facebook::react::LayoutMetrics _layoutMetrics;
-  facebook::react::SharedProps _props;
+  facebook::react::SharedViewProps _props;
   facebook::react::SharedViewEventEmitter _eventEmitter;
 }
 

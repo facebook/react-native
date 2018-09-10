@@ -10,6 +10,7 @@
 #import <fabric/components/view/ViewProps.h>
 #import <fabric/components/view/ViewEventEmitter.h>
 #import <objc/runtime.h>
+#import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 
 #import "RCTConversions.h"
@@ -19,6 +20,16 @@ using namespace facebook::react;
 @implementation RCTViewComponentView
 {
   UIColor *_backgroundColor;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ViewProps>();
+    _props = defaultProps;
+  }
+
+  return self;
 }
 
 - (void)setContentView:(UIView *)contentView
@@ -65,13 +76,23 @@ using namespace facebook::react;
 - (void)updateProps:(SharedProps)props
            oldProps:(SharedProps)oldProps
 {
-  if (!oldProps) {
-    oldProps = _props ?: std::make_shared<ViewProps>();
-  }
-  _props = props;
+#ifndef NS_BLOCK_ASSERTIONS
+  auto propsRawPtr = _props.get();
+  RCTAssert(
+    propsRawPtr &&
+    (
+      [self class] == [RCTViewComponentView class] ||
+      typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()
+    ),
+    @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
+      " instance variable with a default value in the constructor.", NSStringFromClass([self class])
+  );
+#endif
 
-  auto oldViewProps = *std::dynamic_pointer_cast<const ViewProps>(oldProps);
-  auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(props);
+  const auto &oldViewProps = *std::static_pointer_cast<const ViewProps>(oldProps ?: _props);
+  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(props);
+
+  _props = std::static_pointer_cast<const ViewProps>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -232,8 +253,7 @@ using namespace facebook::react;
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-  auto viewProps = *std::static_pointer_cast<const ViewProps>(_props);
-  switch (viewProps.pointerEvents) {
+  switch (_props->pointerEvents) {
     case PointerEventsMode::Auto:
       return [self betterHitTest:point withEvent:event];
     case PointerEventsMode::None:
@@ -286,10 +306,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 
 - (void)invalidateLayer
 {
-  const auto &props = *std::dynamic_pointer_cast<const ViewProps>(_props);
-
   const auto borderMetrics =
-    props.resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
+    _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
 
   CALayer *layer = self.layer;
 
@@ -415,14 +433,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  const auto &accessibilityProps = *std::dynamic_pointer_cast<const AccessibilityProps>(_props);
+  const auto &accessibilityActions = _props->accessibilityActions;
 
-  if (accessibilityProps.accessibilityActions.size() == 0) {
+  if (accessibilityActions.size() == 0) {
     return nil;
   }
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
-  for (const auto &accessibilityAction : accessibilityProps.accessibilityActions) {
+  for (const auto &accessibilityAction : accessibilityActions) {
     [customActions addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
                                                                         target:self
                                                                       selector:@selector(didActivateAccessibilityCustomAction:)]];
