@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <fabric/components/view/ViewEventEmitter.h>
 #include <fabric/components/text/BaseTextShadowNode.h>
 #include <fabric/components/text/TextProps.h>
 #include <fabric/core/ConcreteShadowNode.h>
@@ -16,10 +17,13 @@ namespace react {
 
 extern const char TextComponentName[];
 
+using TextEventEmitter = TouchEventEmitter;
+
 class TextShadowNode:
   public ConcreteShadowNode<
     TextComponentName,
-    TextProps
+    TextProps,
+    TextEventEmitter
   >,
   public BaseTextShadowNode {
 

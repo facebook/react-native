@@ -21,6 +21,8 @@ namespace react {
 
 extern const char ParagraphComponentName[];
 
+using ParagraphEventEmitter = ViewEventEmitter;
+
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
  * containing and displaying text. Text content is represented as nested <Text>
@@ -29,7 +31,8 @@ extern const char ParagraphComponentName[];
 class ParagraphShadowNode:
   public ConcreteViewShadowNode<
     ParagraphComponentName,
-    ParagraphProps
+    ParagraphProps,
+    ParagraphEventEmitter
   >,
   public BaseTextShadowNode {
 
