@@ -7,7 +7,7 @@
 package com.facebook.react.views.checkbox;
 
 import android.widget.CompoundButton;
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContext;s
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -27,7 +27,6 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext
               .getNativeModule(UIManagerModule.class).getEventDispatcher()
-              .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
         }
       };
 
