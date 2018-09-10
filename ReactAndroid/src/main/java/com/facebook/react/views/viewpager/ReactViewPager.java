@@ -18,6 +18,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,15 +121,17 @@ public class ReactViewPager extends ViewPager {
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+      Integer reactTag = ReactFindViewUtil.getReactTag(ReactViewPager.this);
       mEventDispatcher.dispatchEvent(
-          new PageScrollEvent(getId(), position, positionOffset));
+          new PageScrollEvent(reactTag, position, positionOffset));
     }
 
     @Override
     public void onPageSelected(int position) {
       if (!mIsCurrentItemFromJs) {
+        Integer reactTag = ReactFindViewUtil.getReactTag(ReactViewPager.this);
         mEventDispatcher.dispatchEvent(
-            new PageSelectedEvent(getId(), position));
+            new PageSelectedEvent(reactTag, position));
       }
     }
 
@@ -148,8 +151,9 @@ public class ReactViewPager extends ViewPager {
         default:
           throw new IllegalStateException("Unsupported pageScrollState");
       }
+      Integer reactTag = ReactFindViewUtil.getReactTag(ReactViewPager.this);
       mEventDispatcher.dispatchEvent(
-        new PageScrollStateChangedEvent(getId(), pageScrollState));
+        new PageScrollStateChangedEvent(reactTag, pageScrollState));
     }
   }
 
