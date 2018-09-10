@@ -7,6 +7,20 @@
 
 #import "RCTRootComponentView.h"
 
+#import <fabric/components/root/RootProps.h>
+
+using namespace facebook::react;
+
 @implementation RCTRootComponentView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const RootProps>();
+    _props = defaultProps;
+  }
+
+  return self;
+}
 
 @end
