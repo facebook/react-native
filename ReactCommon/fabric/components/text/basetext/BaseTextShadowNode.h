@@ -25,7 +25,7 @@ public:
    */
   AttributedString getAttributedString(
     const TextAttributes &baseTextAttributes,
-    const SharedShadowNodeList &childNodes
+    const SharedShadowNode &parentNode
   ) const;
 };
 
