@@ -9,8 +9,12 @@
 
 const fs = require('fs');
 const makeBuildPatch = require('./patches/makeBuildPatch');
+const makeDeprecatedBuildPatch = require('./patches/makeDeprecatedBuildPatch');
 
 module.exports = function isInstalled(config, name) {
   const buildGradle = fs.readFileSync(config.buildGradlePath);
-  return makeBuildPatch(name).installPattern.test(buildGradle);
+  return (
+    makeBuildPatch(name).installPattern.test(buildGradle) ||
+    makeDeprecatedBuildPatch(name).installPattern.test(buildGradle)
+  );
 };

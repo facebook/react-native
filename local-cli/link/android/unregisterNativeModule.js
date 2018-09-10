@@ -13,6 +13,7 @@ const toCamelCase = require('lodash').camelCase;
 const revokePatch = require('./patches/revokePatch');
 const makeSettingsPatch = require('./patches/makeSettingsPatch');
 const makeBuildPatch = require('./patches/makeBuildPatch');
+const makeDeprecatedBuildPatch = require('./patches/makeDeprecatedBuildPatch');
 const makeStringsPatch = require('./patches/makeStringsPatch');
 const makeImportPatch = require('./patches/makeImportPatch');
 const makePackagePatch = require('./patches/makePackagePatch');
@@ -23,6 +24,7 @@ module.exports = function unregisterNativeAndroidModule(
   projectConfig,
 ) {
   const buildPatch = makeBuildPatch(name);
+  const deprecatedBuildPatch = makeDeprecatedBuildPatch(name);
   const strings = fs.readFileSync(projectConfig.stringsPath, 'utf8');
   var params = {};
 
@@ -39,6 +41,7 @@ module.exports = function unregisterNativeAndroidModule(
   );
 
   revokePatch(projectConfig.buildGradlePath, buildPatch);
+  revokePatch(projectConfig.buildGradlePath, deprecatedBuildPatch);
   revokePatch(projectConfig.stringsPath, makeStringsPatch(params, name));
 
   revokePatch(
