@@ -957,6 +957,10 @@
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
+		50E98FEA21460B0D00CD9289 /* RCTWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */; };
+		50E98FEB21460B0D00CD9289 /* RCTWKWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 50E98FE721460B0D00CD9289 /* RCTWKWebView.h */; };
+		50E98FEC21460B0D00CD9289 /* RCTWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE821460B0D00CD9289 /* RCTWKWebView.m */; };
+		50E98FED21460B0D00CD9289 /* RCTWKWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 50E98FE921460B0D00CD9289 /* RCTWKWebViewManager.h */; };
 		5335D5411FE81A4700883D58 /* RCTShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5335D5401FE81A4700883D58 /* RCTShadowView.m */; };
 		53438962203905BB008E0CB3 /* YGLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5343895E203905B6008E0CB3 /* YGLayout.cpp */; };
 		53438963203905BC008E0CB3 /* YGLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5343895E203905B6008E0CB3 /* YGLayout.cpp */; };
@@ -1957,21 +1961,21 @@
 		139D7F141E25DEC900323FB7 /* raw_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = raw_logging.h; sourceTree = "<group>"; };
 		139D7F161E25DEC900323FB7 /* stl_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stl_logging.h; sourceTree = "<group>"; };
 		139D7F181E25DEC900323FB7 /* vlog_is_on.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vlog_is_on.h; sourceTree = "<group>"; };
-		139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AtomicIntrusiveLinkedList.h; path = "folly/AtomicIntrusiveLinkedList.h"; sourceTree = "<group>"; };
-		139D849D1E273B5600323FB7 /* Bits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Bits.cpp; path = "folly/Bits.cpp"; sourceTree = "<group>"; };
-		139D849E1E273B5600323FB7 /* Bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bits.h; path = "folly/Bits.h"; sourceTree = "<group>"; };
-		139D849F1E273B5600323FB7 /* Conv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Conv.cpp; path = "folly/Conv.cpp"; sourceTree = "<group>"; };
-		139D84A01E273B5600323FB7 /* Conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Conv.h; path = "folly/Conv.h"; sourceTree = "<group>"; };
+		139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AtomicIntrusiveLinkedList.h; path = folly/AtomicIntrusiveLinkedList.h; sourceTree = "<group>"; };
+		139D849D1E273B5600323FB7 /* Bits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Bits.cpp; path = folly/Bits.cpp; sourceTree = "<group>"; };
+		139D849E1E273B5600323FB7 /* Bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bits.h; path = folly/Bits.h; sourceTree = "<group>"; };
+		139D849F1E273B5600323FB7 /* Conv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Conv.cpp; path = folly/Conv.cpp; sourceTree = "<group>"; };
+		139D84A01E273B5600323FB7 /* Conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Conv.h; path = folly/Conv.h; sourceTree = "<group>"; };
 		139D84A11E273B5600323FB7 /* dynamic-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "dynamic-inl.h"; path = "folly/dynamic-inl.h"; sourceTree = "<group>"; };
-		139D84A21E273B5600323FB7 /* dynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic.cpp; path = "folly/dynamic.cpp"; sourceTree = "<group>"; };
-		139D84A31E273B5600323FB7 /* dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic.h; path = "folly/dynamic.h"; sourceTree = "<group>"; };
-		139D84A41E273B5600323FB7 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = "folly/Exception.h"; sourceTree = "<group>"; };
-		139D84A71E273B5600323FB7 /* json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json.cpp; path = "folly/json.cpp"; sourceTree = "<group>"; };
-		139D84A81E273B5600323FB7 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = "folly/json.h"; sourceTree = "<group>"; };
-		139D84A91E273B5600323FB7 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = "folly/Memory.h"; sourceTree = "<group>"; };
-		139D84AA1E273B5600323FB7 /* MoveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MoveWrapper.h; path = "folly/MoveWrapper.h"; sourceTree = "<group>"; };
-		139D84AB1E273B5600323FB7 /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Optional.h; path = "folly/Optional.h"; sourceTree = "<group>"; };
-		139D84AC1E273B5600323FB7 /* ScopeGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopeGuard.h; path = "folly/ScopeGuard.h"; sourceTree = "<group>"; };
+		139D84A21E273B5600323FB7 /* dynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic.cpp; path = folly/dynamic.cpp; sourceTree = "<group>"; };
+		139D84A31E273B5600323FB7 /* dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic.h; path = folly/dynamic.h; sourceTree = "<group>"; };
+		139D84A41E273B5600323FB7 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = folly/Exception.h; sourceTree = "<group>"; };
+		139D84A71E273B5600323FB7 /* json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json.cpp; path = folly/json.cpp; sourceTree = "<group>"; };
+		139D84A81E273B5600323FB7 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = folly/json.h; sourceTree = "<group>"; };
+		139D84A91E273B5600323FB7 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = folly/Memory.h; sourceTree = "<group>"; };
+		139D84AA1E273B5600323FB7 /* MoveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MoveWrapper.h; path = folly/MoveWrapper.h; sourceTree = "<group>"; };
+		139D84AB1E273B5600323FB7 /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Optional.h; path = folly/Optional.h; sourceTree = "<group>"; };
+		139D84AC1E273B5600323FB7 /* ScopeGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopeGuard.h; path = folly/ScopeGuard.h; sourceTree = "<group>"; };
 		13A0C2851B74F71200B29F6F /* RCTDevLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevLoadingView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevLoadingView.m; sourceTree = "<group>"; };
 		13A0C2871B74F71200B29F6F /* RCTDevMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevMenu.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2037,11 +2041,11 @@
 		13E067541A70F44B002CDEE1 /* UIView+React.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+React.m"; sourceTree = "<group>"; };
 		13F17A831B8493E5007D4C75 /* RCTRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRedBox.h; sourceTree = "<group>"; };
 		13F17A841B8493E5007D4C75 /* RCTRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRedBox.m; sourceTree = "<group>"; };
-		13F887521E2971C500C3C7A1 /* Demangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Demangle.cpp; path = "folly/Demangle.cpp"; sourceTree = "<group>"; };
-		13F887531E2971C500C3C7A1 /* StringBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringBase.cpp; path = "folly/StringBase.cpp"; sourceTree = "<group>"; };
-		13F887541E2971C500C3C7A1 /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = "folly/Unicode.cpp"; sourceTree = "<group>"; };
-		13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitsFunctexcept.cpp; path = "folly/portability/BitsFunctexcept.cpp"; sourceTree = "<group>"; };
-		13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MallocImpl.cpp; path = "folly/detail/MallocImpl.cpp"; sourceTree = "<group>"; };
+		13F887521E2971C500C3C7A1 /* Demangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Demangle.cpp; path = folly/Demangle.cpp; sourceTree = "<group>"; };
+		13F887531E2971C500C3C7A1 /* StringBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringBase.cpp; path = folly/StringBase.cpp; sourceTree = "<group>"; };
+		13F887541E2971C500C3C7A1 /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = folly/Unicode.cpp; sourceTree = "<group>"; };
+		13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitsFunctexcept.cpp; path = folly/portability/BitsFunctexcept.cpp; sourceTree = "<group>"; };
+		13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MallocImpl.cpp; path = folly/detail/MallocImpl.cpp; sourceTree = "<group>"; };
 		14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		142014171B32094000CC17BA /* RCTPerformanceLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerformanceLogger.m; sourceTree = "<group>"; };
 		142014181B32094000CC17BA /* RCTPerformanceLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPerformanceLogger.h; sourceTree = "<group>"; };
@@ -2175,6 +2179,10 @@
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
+		50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebViewManager.m; sourceTree = "<group>"; };
+		50E98FE721460B0D00CD9289 /* RCTWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebView.h; sourceTree = "<group>"; };
+		50E98FE821460B0D00CD9289 /* RCTWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebView.m; sourceTree = "<group>"; };
+		50E98FE921460B0D00CD9289 /* RCTWKWebViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebViewManager.h; sourceTree = "<group>"; };
 		5335D5401FE81A4700883D58 /* RCTShadowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowView.m; sourceTree = "<group>"; };
 		5343895E203905B6008E0CB3 /* YGLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGLayout.cpp; sourceTree = "<group>"; };
 		5343895F203905B6008E0CB3 /* YGLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGLayout.h; sourceTree = "<group>"; };
@@ -2575,6 +2583,10 @@
 		13B07FF31A6947C200A75B9A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				50E98FE721460B0D00CD9289 /* RCTWKWebView.h */,
+				50E98FE821460B0D00CD9289 /* RCTWKWebView.m */,
+				50E98FE921460B0D00CD9289 /* RCTWKWebViewManager.h */,
+				50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */,
 				B95154301D1B34B200FE7B80 /* RCTActivityIndicatorView.h */,
 				B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */,
 				13B080181A69489C00A75B9A /* RCTActivityIndicatorViewManager.h */,
@@ -3501,6 +3513,7 @@
 				3D80DA2A1DF820620028D040 /* RCTErrorCustomizer.h in Headers */,
 				3D80DA2B1DF820620028D040 /* RCTErrorInfo.h in Headers */,
 				1384E2081E806D4E00545659 /* RCTNativeModule.h in Headers */,
+				50E98FED21460B0D00CD9289 /* RCTWKWebViewManager.h in Headers */,
 				3D7BFD2D1EA8E3FA008DFB7A /* RCTReconnectingWebSocket.h in Headers */,
 				3D80DA2C1DF820620028D040 /* RCTEventDispatcher.h in Headers */,
 				3D80DA2D1DF820620028D040 /* RCTFrameUpdate.h in Headers */,
@@ -3512,6 +3525,7 @@
 				9936F3381F5F2F480010BF04 /* PrivateDataBase.h in Headers */,
 				3D80DA301DF820620028D040 /* RCTJavaScriptExecutor.h in Headers */,
 				3DCE53281FEAB23100613583 /* RCTDatePicker.h in Headers */,
+				50E98FEB21460B0D00CD9289 /* RCTWKWebView.h in Headers */,
 				135A9BFF1E7B0EE600587AEB /* RCTJSCHelpers.h in Headers */,
 				3D80DA311DF820620028D040 /* RCTJavaScriptLoader.h in Headers */,
 				130E3D881E6A082100ACE484 /* RCTDevSettings.h in Headers */,
@@ -4478,6 +4492,7 @@
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
 				C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
 				3DCE53291FEAB23100613583 /* RCTDatePicker.m in Sources */,
+				50E98FEA21460B0D00CD9289 /* RCTWKWebViewManager.m in Sources */,
 				83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */,
 				59EB6DBD1EBD6FC90072A5E7 /* RCTUIManagerObserverCoordinator.mm in Sources */,
 				59E604A21FE9CCE300BD90C5 /* RCTScrollContentViewManager.m in Sources */,
@@ -4562,6 +4577,7 @@
 				3DCE532B1FEAB23100613583 /* RCTDatePickerManager.m in Sources */,
 				13C156051AB1A2840079392D /* RCTWebView.m in Sources */,
 				83CBBA601A601EAA00E9B192 /* RCTBridge.m in Sources */,
+				50E98FEC21460B0D00CD9289 /* RCTWKWebView.m in Sources */,
 				590D7BFF1EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */,
 				5335D5411FE81A4700883D58 /* RCTShadowView.m in Sources */,
 				66CD94B31F1045E700CB3C7C /* RCTMaskedView.m in Sources */,
