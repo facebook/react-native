@@ -29,6 +29,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
       AttributedString::Fragment fragment;
       fragment.string = rawTextShadowNode->getProps()->text;
       fragment.textAttributes = textAttributes;
+      fragment.parentShadowNode = parentNode;
       attributedString.appendFragment(fragment);
       continue;
     }

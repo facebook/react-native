@@ -12,6 +12,9 @@
 #include <fabric/textlayoutmanager/RCTFontUtils.h>
 #include <fabric/textlayoutmanager/RCTTextPrimitivesConversions.h>
 
+@implementation RCTSharedShadowNodeWrapper
+@end
+
 inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &textAttributes) {
   NSString *fontFamily = [NSString stringWithCString:textAttributes.fontFamily.c_str()
                                             encoding:NSUTF8StringEncoding];
@@ -209,12 +212,15 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
     NSMutableAttributedString *nsMutableAttributedStringFragment =
       [[NSMutableAttributedString alloc] initWithAttributedString:nsAttributedStringFragment];
 
-    if (fragment.shadowNode) {
+    if (fragment.parentShadowNode) {
+      RCTSharedShadowNodeWrapper *parentShadowNode = [RCTSharedShadowNodeWrapper new];
+      parentShadowNode.node = fragment.parentShadowNode;
+      
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes = @{
-        RCTAttributedStringReactTagAttributeName: @(fragment.shadowNode->getTag())
+        RCTAttributedStringParentShadowNode: parentShadowNode
       };
 
-      [nsMutableAttributedStringFragment setAttributes:additionalTextAttributes
+      [nsMutableAttributedStringFragment addAttributes:additionalTextAttributes
                                                  range:NSMakeRange(0, nsMutableAttributedStringFragment.length)];
     }
 

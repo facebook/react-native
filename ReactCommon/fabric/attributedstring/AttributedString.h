@@ -39,6 +39,7 @@ public:
     std::string string;
     TextAttributes textAttributes;
     SharedShadowNode shadowNode;
+    SharedShadowNode parentShadowNode;
   };
 
   using Fragments = std::vector<Fragment>;
