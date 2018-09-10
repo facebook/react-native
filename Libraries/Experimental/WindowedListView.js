@@ -24,7 +24,7 @@ const clamp = require('clamp');
 const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
 const invariant = require('fbjs/lib/invariant');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 

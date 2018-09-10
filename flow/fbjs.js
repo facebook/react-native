@@ -14,7 +14,3 @@ declare module 'fbjs/lib/invariant' {
     ...args: Array<any>
   ) => void;
 }
-
-declare module 'fbjs/lib/nullthrows' {
-  declare module.exports: <T>(value: ?T) => T;
-}
