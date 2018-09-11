@@ -46,6 +46,21 @@ it('returns the correct haste name for a file with a platform suffix', () => {
   }
 });
 
+it('returns the correct haste name for a file with an out-of-tree platform suffix', () => {
+  for (const platform of ['dummy']) {
+    expect(
+      getHasteName(
+        getPath(
+          'Libraries',
+          'Components',
+          'AccessibilityInfo',
+          `AccessibilityInfo.${platform}.js`,
+        ),
+      ),
+    ).toEqual('AccessibilityInfo');
+  }
+});
+
 it('returns the correct haste name for a file with a flow suffix', () => {
   expect(
     getHasteName(
