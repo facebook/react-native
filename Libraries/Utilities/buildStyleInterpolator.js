@@ -54,6 +54,9 @@ const computeNextValLinear = function(anim, from, to, value) {
   if (hasRoundRatio) {
     nextVal = Math.round(roundRatio * nextVal) / roundRatio;
   }
+  if (!isFinite(nextVal)) {
+    nextVal = null;
+  }
   return nextVal;
 };
 
