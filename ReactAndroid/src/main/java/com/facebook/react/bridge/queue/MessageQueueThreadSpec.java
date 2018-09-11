@@ -7,8 +7,6 @@
 
 package com.facebook.react.bridge.queue;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Spec for creating a MessageQueueThread.
  */
@@ -20,7 +18,6 @@ public class MessageQueueThreadSpec {
   // The Thread constructor interprets zero the same as not specifying a stack size
   public static final long DEFAULT_STACK_SIZE_BYTES = 0;
 
-  @CountEnum
   protected static enum ThreadType {
     MAIN_UI,
     NEW_BACKGROUND,

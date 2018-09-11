@@ -7,13 +7,10 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Possible values for pointer events that a view and its descendants should receive. See
  * https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events for more info.
  */
-@CountEnum
 public enum PointerEvents {
 
   /**

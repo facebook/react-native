@@ -7,12 +7,9 @@
 
 package com.facebook.react.views.scroll;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Scroll event types that JS module RCTEventEmitter can understand
  */
-@CountEnum
 public enum ScrollEventType {
   BEGIN_DRAG("topScrollBeginDrag"),
   END_DRAG("topScrollEndDrag"),

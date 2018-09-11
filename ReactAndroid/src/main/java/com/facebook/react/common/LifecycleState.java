@@ -7,8 +7,6 @@
 
 package com.facebook.react.common;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
  * basically the same so this enum is in terms of the forward lifecycle progression (onResume, etc).
@@ -20,7 +18,6 @@ import com.facebook.thecount.api.CountEnum;
  * STARTED,
  * RESUMED
  */
-@CountEnum
 public enum LifecycleState {
   BEFORE_CREATE,
   BEFORE_RESUME,

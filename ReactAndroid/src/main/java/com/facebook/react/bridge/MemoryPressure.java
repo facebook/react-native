@@ -5,9 +5,6 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.thecount.api.CountEnum;
-
-@CountEnum
 public enum MemoryPressure {
   UI_HIDDEN,
   MODERATE,
