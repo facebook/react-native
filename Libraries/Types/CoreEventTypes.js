@@ -92,6 +92,14 @@ export type ScrollEvent = SyntheticEvent<
       height: number,
       width: number,
     |}>,
+    targetContentOffset?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
+    velocity?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
     zoomScale: number,
   |}>,
 >;
