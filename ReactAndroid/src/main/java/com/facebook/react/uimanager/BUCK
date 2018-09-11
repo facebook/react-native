@@ -23,7 +23,6 @@ rn_android_library(
         YOGA_TARGET,
         ":DisplayMetrics",
         react_native_dep("java/com/facebook/systrace:systrace"),
-        react_native_dep("java/com/facebook/thecount:thecount"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_target("java/com/facebook/debug/tags:tags"),

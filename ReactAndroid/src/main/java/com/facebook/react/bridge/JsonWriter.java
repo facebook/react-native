@@ -13,8 +13,6 @@ import java.io.Writer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Simple Json generator that does no validation.
  */
@@ -209,7 +207,6 @@ public class JsonWriter implements Closeable {
     mScopes.push(scope);
   }
 
-  @CountEnum
   private enum Scope {
     EMPTY_OBJECT,
     OBJECT,

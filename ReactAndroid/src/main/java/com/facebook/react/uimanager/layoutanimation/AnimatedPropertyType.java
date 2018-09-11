@@ -5,13 +5,10 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Enum representing the different view properties that can be used when animating layout for
  * view creation.
  */
-@CountEnum
 /* package */ enum AnimatedPropertyType {
   OPACITY("opacity"),
   SCALE_X("scaleX"),

@@ -5,12 +5,9 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Enum representing the different animation type that can be specified in layout animation config.
  */
-@CountEnum
 /* package */ enum LayoutAnimationType {
   CREATE("create"),
   UPDATE("update"),
