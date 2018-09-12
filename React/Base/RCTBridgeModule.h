@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -72,6 +72,16 @@ RCT_EXTERN_C_END
 RCT_EXTERN void RCTRegisterModule(Class); \
 + (NSString *)moduleName { return @#js_name; } \
 + (void)load { RCTRegisterModule(self); }
+
+/**
+ * To improve startup performance users may want to generate their module lists
+ * at build time and hook the delegate to merge with the runtime list. This
+ * macro takes the place of the above for those cases by omitting the +load
+ * generation.
+ *
+ */
+#define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
++ (NSString *)moduleName { return @#js_name; }
 
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
@@ -309,5 +319,14 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * This occurs before -batchDidComplete, and more frequently.
  */
 - (void)partialBatchDidFlush;
+
+@end
+
+/**
+ * Experimental.
+ * A protocol to declare that a class supports JSI-bound NativeModule.
+ * This may be removed in the future.
+ */
+@protocol RCTJSINativeModule <NSObject>
 
 @end

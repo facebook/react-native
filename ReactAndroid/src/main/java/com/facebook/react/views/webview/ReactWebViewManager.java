@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -325,11 +326,25 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
+    protected void evaluateJavascriptWithFallback(String script) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        evaluateJavascript(script, null);
+        return;
+      }
+
+      try {
+        loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        // UTF-8 should always be supported
+        throw new RuntimeException(e);
+      }
+    }
+
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
           injectedJS != null &&
           !TextUtils.isEmpty(injectedJS)) {
-        loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
+        evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
       }
     }
 
@@ -348,7 +363,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           });
         }
 
-        loadUrl("javascript:(" +
+        evaluateJavascriptWithFallback("(" +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data) {" +
             BRIDGE_NAME + ".postMessage(String(data));" +
@@ -510,7 +525,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         }
         if (source.hasKey("method")) {
           String method = source.getString("method");
-          if (method.equals(HTTP_METHOD_POST)) {
+          if (method.equalsIgnoreCase(HTTP_METHOD_POST)) {
             byte[] postData = null;
             if (source.hasKey("body")) {
               String body = source.getString("body");
@@ -637,9 +652,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_POST_MESSAGE:
         try {
+          ReactWebView reactWebView = (ReactWebView) root;
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(function () {" +
+          reactWebView.evaluateJavascriptWithFallback("(function () {" +
             "var event;" +
             "var data = " + eventInitDict.toString() + ";" +
             "try {" +
@@ -655,7 +671,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         }
         break;
       case COMMAND_INJECT_JAVASCRIPT:
-        root.loadUrl("javascript:" + args.getString(0));
+        ReactWebView reactWebView = (ReactWebView) root;
+        reactWebView.evaluateJavascriptWithFallback(args.getString(0));
         break;
     }
   }

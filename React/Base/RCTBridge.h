@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,6 +92,13 @@ typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleListProvider)(void);
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+
+/**
+ * Experimental.
+ * Check/set if JSI-bound NativeModule is enabled. By default it's off.
+ */
+RCT_EXTERN BOOL RCTJSINativeModuleEnabled(void);
+RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
  */
 @SuppressWarnings("unused") // used from JNI
 @DoNotStrip
-public class FabricUIManager implements UIManager, JSHandler {
+public class FabricUIManager implements UIManager, JSHandler, FabricBinder {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
   private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
@@ -98,6 +98,7 @@ public class FabricUIManager implements UIManager, JSHandler {
     mJSContext = jsContext;
   }
 
+  @Override
   public void setBinding(FabricBinding binding) {
     mBinding = binding;
   }
@@ -511,16 +512,21 @@ public class FabricUIManager implements UIManager, JSHandler {
 
   @Override
   @DoNotStrip
-  public synchronized void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootNode = getRootNode(rootViewTag);
-    if (rootNode == null) {
-      FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
-      return;
-    }
+  public synchronized void updateRootLayoutSpecs(final int rootViewTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+    mReactApplicationContext.runOnNativeModulesQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        ReactShadowNode rootNode = getRootNode(rootViewTag);
+        if (rootNode == null) {
+          FLog.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+          return;
+        }
 
-    ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
-    updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
-    mRootShadowNodeRegistry.replaceNode(newRootNode);
+        ReactShadowNode newRootNode = rootNode.mutableCopy(rootNode.getInstanceHandle());
+        updateRootView(newRootNode, widthMeasureSpec, heightMeasureSpec);
+        mRootShadowNodeRegistry.replaceNode(newRootNode);
+      }
+    });
   }
 
   /**
@@ -546,6 +552,7 @@ public class FabricUIManager implements UIManager, JSHandler {
   }
 
   public void removeRootView(int rootTag) {
+    mUIViewOperationQueue.enqueueRemoveRootView(rootTag);
     mRootShadowNodeRegistry.removeNode(rootTag);
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,6 +65,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "Image";
   }
 
+  if (viewName == "AndroidHorizontalScrollView") {
+    return "ScrollView";
+  }
+
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components.
   if (
@@ -72,7 +76,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     viewName == "MultilineTextInputView" ||
     viewName == "RefreshControl" ||
     viewName == "SafeAreaView" ||
-    viewName == "ScrollContentView"
+    viewName == "ScrollContentView" ||
+    viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
   }
@@ -80,14 +85,14 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-FabricUIManager::FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry) {
-  componentDescriptorRegistry_ = componentDescriptorRegistry;
-}
-
 FabricUIManager::~FabricUIManager() {
   if (eventHandler_) {
     releaseEventHandlerFunction_(eventHandler_);
   }
+}
+
+void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
+  componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
 void FabricUIManager::setDelegate(UIManagerDelegate *delegate) {
@@ -114,21 +119,22 @@ void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTa
   releaseEventTargetFunction_ = releaseEventTargetFunction;
 }
 
-void FabricUIManager::dispatchEventToEmptyTarget(const std::string &type, const folly::dynamic &payload) const {
-  dispatchEventToEmptyTargetFunction_(
-    eventHandler_,
-    const_cast<std::string &>(type),
-    const_cast<folly::dynamic &>(payload)
-  );
-}
-
 void FabricUIManager::dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const {
-  dispatchEventToTargetFunction_(
-    eventHandler_,
-    eventTarget,
-    const_cast<std::string &>(type),
-    const_cast<folly::dynamic &>(payload)
-  );
+  if (eventTarget != EmptyEventTarget) {
+    dispatchEventToTargetFunction_(
+      eventHandler_,
+      eventTarget,
+      const_cast<std::string &>(type),
+      const_cast<folly::dynamic &>(payload)
+    );
+  }
+  else {
+    dispatchEventToEmptyTargetFunction_(
+      eventHandler_,
+      const_cast<std::string &>(type),
+      const_cast<folly::dynamic &>(payload)
+    );
+  }
 }
 
 void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {

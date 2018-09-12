@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that the Android environment is set up to run
 # tests on a device or emulator (as opposed to a plain Java environment).
 

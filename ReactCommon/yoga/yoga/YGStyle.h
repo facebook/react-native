@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -11,6 +11,8 @@
 #include "Yoga.h"
 
 struct YGStyle {
+  using Dimensions = std::array<YGValue, 2>;
+
   YGDirection direction;
   YGFlexDirection flexDirection;
   YGJustify justifyContent;
@@ -29,9 +31,9 @@ struct YGStyle {
   std::array<YGValue, YGEdgeCount> position;
   std::array<YGValue, YGEdgeCount> padding;
   std::array<YGValue, YGEdgeCount> border;
-  std::array<YGValue, 2> dimensions;
-  std::array<YGValue, 2> minDimensions;
-  std::array<YGValue, 2> maxDimensions;
+  Dimensions dimensions;
+  Dimensions minDimensions;
+  Dimensions maxDimensions;
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio;
 

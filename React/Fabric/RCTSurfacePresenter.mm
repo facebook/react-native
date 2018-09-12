@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -69,11 +69,11 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
                                         rootTag:(ReactTag)rootTag
 {
-  [_mountingManager mutateComponentViewTreeWithMutationInstructions:instructions
-                                                            rootTag:rootTag];
+  [_mountingManager performTransactionWithMutations:mutations
+                                            rootTag:rootTag];
 }
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName
@@ -89,7 +89,7 @@ using namespace facebook::react;
   [_scheduler registerRootTag:surface.rootTag];
   [self runSurface:surface];
 
-  // FIXME: Mutation instruction MUST produce instruction for root node.
+  // FIXME: mutation MUST produce instruction for root node.
   [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 }
 
@@ -147,7 +147,7 @@ using namespace facebook::react;
 
 - (void)stopSurface:(RCTFabricSurface *)surface
 {
-  [_batchedBridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[@(surface.rootTag)] completion:NULL];
+  [_batchedBridge enqueueJSCall:@"ReactFabric" method:@"unmountComponentAtNode" args:@[@(surface.rootTag)] completion:NULL];
 }
 
 #pragma mark - RCTMountingManagerDelegate

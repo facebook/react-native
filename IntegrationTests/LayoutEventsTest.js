@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,8 @@ const ReactNative = require('react-native');
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
+import type {ViewStyleProp} from 'StyleSheet';
+
 const deepDiffer = require('deepDiffer');
 
 function debug(...args) {
@@ -23,14 +25,6 @@ function debug(...args) {
 }
 
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
-type Style = {
-  margin?: number,
-  padding?: number,
-  borderColor?: string,
-  borderWidth?: number,
-  backgroundColor?: string,
-  width?: number,
-};
 
 type State = {
   didAnimation: boolean,
@@ -38,8 +32,8 @@ type State = {
   imageLayout?: Layout,
   textLayout?: Layout,
   viewLayout?: Layout,
-  viewStyle?: Style,
-  containerStyle?: Style,
+  viewStyle?: ViewStyleProp,
+  containerStyle?: ViewStyleProp,
 };
 
 const LayoutEventsTest = createReactClass({

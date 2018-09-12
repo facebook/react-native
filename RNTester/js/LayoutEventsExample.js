@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,12 +17,12 @@ var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
 type State = {
-  containerStyle?: {width: number},
+  containerStyle?: {|width: number|},
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
-  viewStyle: {margin: number},
+  viewStyle: {|margin: number|},
 };
 
 class LayoutEventExample extends React.Component<{}, State> {

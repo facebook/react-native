@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,25 +10,24 @@
 
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const NativeModules = require('NativeModules');
+const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const StyleSheetPropType = require('StyleSheetPropType');
+const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const TextAncestor = require('TextAncestor');
-const ViewPropTypes = require('ViewPropTypes');
 
 const flattenStyle = require('flattenStyle');
 const merge = require('merge');
-const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
 
-const RKImage = requireNativeComponent('RCTImageView');
-const RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage');
+const TextInlineImageNativeComponent = require('TextInlineImageNativeComponent');
 
 import type {ImageProps as ImagePropsType} from 'ImageProps';
 
@@ -38,7 +37,7 @@ function generateRequestId() {
 }
 
 const ImageProps = {
-  ...ViewPropTypes,
+  ...DeprecatedViewPropTypes,
   style: StyleSheetPropType(ImageStylePropTypes),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source
@@ -182,7 +181,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<
  */
 let Image = (
   props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'RKImage'>,
+  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'ImageViewNativeComponent'>,
 ) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
@@ -219,8 +218,12 @@ let Image = (
   let style;
   let sources;
   if (source?.uri != null) {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     const {width, height} = source;
     style = flattenStyle([{width, height}, styles.base, props.style]);
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     sources = [{uri: source.uri}];
   } else {
     style = flattenStyle([styles.base, props.style]);
@@ -232,6 +235,8 @@ let Image = (
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     headers: source?.headers,
     defaultSrc: defaultSource ? defaultSource.uri : null,
     loadingIndicatorSrc: loadingIndicatorSource
@@ -244,9 +249,9 @@ let Image = (
     <TextAncestor.Consumer>
       {hasTextAncestor =>
         hasTextAncestor ? (
-          <RCTTextInlineImage {...nativeProps} />
+          <TextInlineImageNativeComponent {...nativeProps} />
         ) : (
-          <RKImage {...nativeProps} />
+          <ImageViewNativeComponent {...nativeProps} />
         )
       }
     </TextAncestor.Consumer>

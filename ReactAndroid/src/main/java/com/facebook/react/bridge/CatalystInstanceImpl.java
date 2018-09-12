@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
+
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
@@ -23,6 +25,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
+import java.lang.annotation.Native;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -102,6 +105,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
+
     mHybridData = initHybrid();
 
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
@@ -114,8 +119,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
@@ -124,6 +131,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       mNativeModuleRegistry.getJavaModules(this),
       mNativeModuleRegistry.getCxxModules());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
@@ -306,13 +314,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private native void jniCallJSCallback(int callbackID, NativeArray arguments);
 
   @Override
-  public void invokeCallback(final int callbackID, final NativeArray arguments) {
+  public void invokeCallback(final int callbackID, final NativeArrayInterface arguments) {
     if (mDestroyed) {
       FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
       return;
     }
 
-    jniCallJSCallback(callbackID, arguments);
+    jniCallJSCallback(callbackID, (NativeArray) arguments);
   }
 
   /**
