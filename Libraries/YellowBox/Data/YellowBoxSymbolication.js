@@ -21,6 +21,10 @@ export type Stack = Array<StackFrame>;
 const cache: Map<CacheKey, Promise<Stack>> = new Map();
 
 const YellowBoxSymbolication = {
+  delete(stack: Stack): void {
+    cache.delete(getCacheKey(stack));
+  },
+
   symbolicate(stack: Stack): Promise<Stack> {
     const key = getCacheKey(stack);
 
