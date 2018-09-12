@@ -15,6 +15,7 @@ const Modal = require('Modal');
 const React = require('react');
 const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
+const Switch = require('Switch');
 const Text = require('Text');
 const View = require('View');
 
@@ -26,10 +27,14 @@ exports.description =
 
 class SafeAreaViewExample extends React.Component<
   {},
-  {|modalVisible: boolean|},
+  {|
+    modalVisible: boolean,
+    emulateUnlessSupported: boolean,
+  |},
 > {
   state = {
     modalVisible: false,
+    emulateUnlessSupported: true,
   };
 
   _setModalVisible = visible => {
@@ -45,11 +50,20 @@ class SafeAreaViewExample extends React.Component<
           animationType="slide"
           supportedOrientations={['portrait', 'landscape']}>
           <View style={styles.modal}>
-            <SafeAreaView style={styles.safeArea}>
+            <SafeAreaView
+              style={styles.safeArea}
+              emulateUnlessSupported={this.state.emulateUnlessSupported}>
               <View style={styles.safeAreaContent}>
                 <Button
                   onPress={this._setModalVisible.bind(this, false)}
                   title="Close"
+                />
+                <Text>emulateUnlessSupported:</Text>
+                <Switch
+                  onValueChange={value =>
+                    this.setState({emulateUnlessSupported: value})
+                  }
+                  value={this.state.emulateUnlessSupported}
                 />
               </View>
             </SafeAreaView>
@@ -58,6 +72,13 @@ class SafeAreaViewExample extends React.Component<
         <Button
           onPress={this._setModalVisible.bind(this, true)}
           title="Present Modal Screen with SafeAreaView"
+        />
+        <Text>emulateUnlessSupported:</Text>
+        <Switch
+          onValueChange={value =>
+            this.setState({emulateUnlessSupported: value})
+          }
+          value={this.state.emulateUnlessSupported}
         />
       </View>
     );
