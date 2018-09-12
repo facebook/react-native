@@ -22,18 +22,16 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     const parseErrorStack = require('parseErrorStack');
     const stack = parseErrorStack(e);
     const currentExceptionID = ++exceptionID;
+    const message =
+      e.jsEngine == null ? e.message : `${e.message}, js engine: ${e.jsEngine}`;
     if (isFatal) {
       ExceptionsManager.reportFatalException(
-        e.message,
+        message,
         stack,
         currentExceptionID,
       );
     } else {
-      ExceptionsManager.reportSoftException(
-        e.message,
-        stack,
-        currentExceptionID,
-      );
+      ExceptionsManager.reportSoftException(message, stack, currentExceptionID);
     }
     if (__DEV__) {
       const symbolicateStackTrace = require('symbolicateStackTrace');
