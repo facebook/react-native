@@ -63,6 +63,11 @@ class YellowBoxWarning {
       : this.stack;
   }
 
+  retrySymbolicate(callback: () => void): SymbolicationRequest {
+    YellowBoxSymbolication.delete(this.stack);
+    return this.symbolicate(callback);
+  }
+
   symbolicate(callback: () => void): SymbolicationRequest {
     let aborted = false;
 

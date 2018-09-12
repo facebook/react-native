@@ -77,6 +77,11 @@ class YellowBoxInspector extends React.Component<Props, State> {
             <View style={styles.bodyHeading}>
               <Text style={styles.bodyHeadingText}>Stack</Text>
               <YellowBoxInspectorSourceMapStatus
+                onPress={
+                  warning.symbolicated.status === 'FAILED'
+                    ? this._handleRetrySymbolication
+                    : null
+                }
                 status={warning.symbolicated.status}
               />
             </View>
@@ -120,6 +125,16 @@ class YellowBoxInspector extends React.Component<Props, State> {
   componentWillUnmount(): void {
     this._cancelSymbolication();
   }
+
+  _handleRetrySymbolication = () => {
+    this._cancelSymbolication();
+    this.forceUpdate(() => {
+      const warning = this.props.warnings[this.state.selectedIndex];
+      this._symbolication = warning.retrySymbolicate(() => {
+        this.forceUpdate();
+      });
+    });
+  };
 
   _handleSymbolication(): void {
     const warning = this.props.warnings[this.state.selectedIndex];
