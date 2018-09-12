@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -14,13 +15,19 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.TextView;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -43,6 +50,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
   private @Nullable Spannable mPreparedSpannableText;
+
+  private boolean mShouldNotifyOnTextLayout;
 
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
@@ -127,11 +136,18 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
-          if (mNumberOfLines != UNSET &&
-              mNumberOfLines < layout.getLineCount()) {
-            return YogaMeasureOutput.make(
-                layout.getWidth(),
-                layout.getLineBottom(mNumberOfLines - 1));
+          if (mShouldNotifyOnTextLayout) {
+            WritableArray lines =
+              FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, getThemedContext());
+            WritableMap event = Arguments.createMap();
+            event.putArray("lines", lines);
+            getThemedContext()
+                .getJSModule(RCTEventEmitter.class)
+                .receiveEvent(getReactTag(), "topTextLayout", event);
+          }
+
+          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
           } else {
             return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
@@ -222,5 +238,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
+  }
+
+  @ReactProp(name = "onTextLayout")
+  public void setShouldNotifyOnTextLayout(boolean shouldNotifyOnTextLayout) {
+    mShouldNotifyOnTextLayout = shouldNotifyOnTextLayout;
   }
 }
