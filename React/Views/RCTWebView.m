@@ -322,6 +322,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         "}"
 
         "window.postMessage = function(data) {"
+          "window.originalPostMessage.apply(window, arguments);"
           "messageQueue.push(String(data));"
           "processQueue();"
         "};"
