@@ -19,6 +19,7 @@ export type StackFrame = {
 
 export type ExtendedError = Error & {
   framesToPop?: number,
+  jsEngine?: string,
 };
 
 function parseErrorStack(e: ExtendedError): Array<StackFrame> {
