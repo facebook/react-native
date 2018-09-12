@@ -151,6 +151,12 @@ class WebView extends React.Component {
     scalesPageToFit: PropTypes.bool,
 
     /**
+     * Sets whether the webview allow access to file system.
+     * @platform android
+     */
+    allowFileAccess: PropTypes.bool,
+
+    /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
      * WebViewConfig. This prop will overwrite that config.
      */
@@ -317,6 +323,7 @@ class WebView extends React.Component {
         style={webViewStyles}
         source={resolveAssetSource(source)}
         scalesPageToFit={this.props.scalesPageToFit}
+        allowFileAccess={this.props.allowFileAccess}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
