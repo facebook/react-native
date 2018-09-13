@@ -155,6 +155,7 @@ type IOSProps = $ReadOnly<{|
     | 'telephoneNumber'
     | 'username'
     | 'password'
+    | 'oneTimeCode'
   ),
   scrollEnabled?: ?boolean,
 |}>;
@@ -787,6 +788,7 @@ const TextInput = createReactClass({
       'telephoneNumber',
       'username',
       'password',
+      'oneTimeCode',
     ]),
   },
   getDefaultProps(): Object {
