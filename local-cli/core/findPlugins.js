@@ -14,14 +14,23 @@ const union = require('lodash').union;
 const uniq = require('lodash').uniq;
 const flatten = require('lodash').flatten;
 
+const RNPM_PLUGIN_PATTERNS = [/^rnpm-plugin-/, /^@(.*)\/rnpm-plugin-/];
+
+const REACT_NATIVE_PLUGIN_PATTERNS = [
+  /^react-native-/,
+  /^@(.*)\/react-native-/,
+  /^@react-native(.*)\/(?!rnpm-plugin-)/,
+];
+
 /**
  * Filter dependencies by name pattern
  * @param  {String} dependency Name of the dependency
  * @return {Boolean}           If dependency is a rnpm plugin
  */
-const isRNPMPlugin = dependency => dependency.indexOf('rnpm-plugin-') === 0;
+const isRNPMPlugin = dependency =>
+  RNPM_PLUGIN_PATTERNS.some(pattern => pattern.test(dependency));
 const isReactNativePlugin = dependency =>
-  dependency.indexOf('react-native-') === 0;
+  REACT_NATIVE_PLUGIN_PATTERNS.some(pattern => pattern.test(dependency));
 
 const readPackage = folder => {
   try {
