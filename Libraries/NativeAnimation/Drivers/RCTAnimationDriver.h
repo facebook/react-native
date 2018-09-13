@@ -1,16 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
-#import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
+#import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
+
+static CGFloat RCTSingleFrameInterval = 1.0 / 60.0;
 
 @class RCTValueAnimatedNode;
 
@@ -29,9 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
                   callBack:(nullable RCTResponseSenderBlock)callback;
 
 - (void)startAnimation;
+- (void)stepAnimationWithTime:(NSTimeInterval)currentTime;
 - (void)stopAnimation;
-- (void)stepAnimation;
-- (void)removeAnimation;
+- (void)resetAnimationConfig:(NSDictionary *)config;
 
 NS_ASSUME_NONNULL_END
 

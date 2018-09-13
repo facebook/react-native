@@ -1,37 +1,44 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SnapshotViewIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var { TestModule } = require('NativeModules');
-var UIManager = require('UIManager');
-var View = require('View');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const PropTypes = require('prop-types');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-class SnapshotViewIOS extends React.Component {
-  props: {
-    onSnapshotReady?: Function,
-    testIdentifier?: string,
-  };
+const {TestModule} = require('NativeModules');
 
+// Verify that RCTSnapshot is part of the UIManager since it is only loaded
+// if you have linked against RCTTest like in tests, otherwise we will have
+// a warning printed out
+const RCTSnapshot = UIManager.RCTSnapshot
+  ? requireNativeComponent('RCTSnapshot')
+  : View;
+
+class SnapshotViewIOS extends React.Component<{
+  onSnapshotReady?: Function,
+  testIdentifier?: string,
+}> {
   // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
+    ...DeprecatedViewPropTypes,
     // A callback when the Snapshot view is ready to be compared
-    onSnapshotReady : React.PropTypes.func,
+    onSnapshotReady: PropTypes.func,
     // A name to identify the individual instance to the SnapshotView
-    testIdentifier : React.PropTypes.string,
+    testIdentifier: PropTypes.string,
   };
 
   onDefaultAction = (event: Object) => {
@@ -39,9 +46,10 @@ class SnapshotViewIOS extends React.Component {
   };
 
   render() {
-    var testIdentifier = this.props.testIdentifier || 'test';
-    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
+    const testIdentifier = this.props.testIdentifier || 'test';
+    const onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
+      // $FlowFixMe - Typing ReactNativeComponent revealed errors
       <RCTSnapshot
         style={style.snapshot}
         {...this.props}
@@ -52,17 +60,10 @@ class SnapshotViewIOS extends React.Component {
   }
 }
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   snapshot: {
     flex: 1,
   },
 });
-
-// Verify that RCTSnapshot is part of the UIManager since it is only loaded
-// if you have linked against RCTTest like in tests, otherwise we will have
-// a warning printed out
-var RCTSnapshot = UIManager.RCTSnapshot ?
-  requireNativeComponent('RCTSnapshot', SnapshotViewIOS) :
-  View;
 
 module.exports = SnapshotViewIOS;

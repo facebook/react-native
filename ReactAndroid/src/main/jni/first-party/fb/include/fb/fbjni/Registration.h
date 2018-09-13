@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -20,28 +18,14 @@ namespace detail {
 // This uses the real JNI function as a non-type template parameter to
 // cause a (static member) function to exist with the same signature,
 // but with try/catch exception translation.
-template<typename F, F func, typename C, typename... Args>
-NativeMethodWrapper* exceptionWrapJNIMethod(void (*func0)(JNIEnv*, jobject, Args... args));
-
-// Same as above, but for non-void return types.
 template<typename F, F func, typename C, typename R, typename... Args>
 NativeMethodWrapper* exceptionWrapJNIMethod(R (*func0)(JNIEnv*, jobject, Args... args));
 
 // Automatically wrap object argument, and don't take env explicitly.
-template<typename F, F func, typename C, typename... Args>
-NativeMethodWrapper* exceptionWrapJNIMethod(void (*func0)(alias_ref<C>, Args... args));
-
-// Automatically wrap object argument, and don't take env explicitly,
-// non-void return type.
 template<typename F, F func, typename C, typename R, typename... Args>
 NativeMethodWrapper* exceptionWrapJNIMethod(R (*func0)(alias_ref<C>, Args... args));
 
-// Extract C++ instance from object, and invoke given method on it.
-template<typename M, M method, typename C, typename... Args>
-NativeMethodWrapper* exceptionWrapJNIMethod(void (C::*method0)(Args... args));
-
 // Extract C++ instance from object, and invoke given method on it,
-// non-void return type
 template<typename M, M method, typename C, typename R, typename... Args>
 NativeMethodWrapper* exceptionWrapJNIMethod(R (C::*method0)(Args... args));
 

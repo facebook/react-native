@@ -29,7 +29,7 @@ def update():
   # prevent CircleCI from killing the process for inactivity
   while not done:
     time.sleep(5)
-    print "Running in background.  Waiting for 'adb' command reponse..."
+    print "Running in background.  Waiting for 'adb' command response..."
 
 t = threading.Thread(target=update)
 t.dameon = True

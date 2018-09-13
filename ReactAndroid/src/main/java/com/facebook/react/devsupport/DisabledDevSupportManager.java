@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport;
 
+import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import javax.annotation.Nullable;
 
 import java.io.File;
@@ -70,6 +69,16 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public void startInspector() {
+
+  }
+
+  @Override
+  public void stopInspector() {
+
+  }
+
+  @Override
   public boolean getDevSupportEnabled() {
     return false;
   }
@@ -106,11 +115,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public String getDownloadedJSBundleFile() {
-    return null;
-  }
-
-  @Override
-  public String getHeapCaptureUploadUrl() {
     return null;
   }
 
@@ -154,6 +158,11 @@ public class DisabledDevSupportManager implements DevSupportManager {
   @Override
   public @Nullable StackFrame[] getLastErrorStack() {
     return null;
+  }
+
+  @Override
+  public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {
+    
   }
 
   @Override

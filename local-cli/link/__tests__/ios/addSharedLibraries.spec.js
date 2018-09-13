@@ -1,6 +1,14 @@
-'use strict';
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @emails oncall+javascript_foundation
+ */
 
-jest.autoMockOff();
+'use strict';
 
 const xcode = require('xcode');
 const path = require('path');
@@ -8,11 +16,10 @@ const addSharedLibraries = require('../../ios/addSharedLibraries');
 const getGroup = require('../../ios/getGroup');
 
 const project = xcode.project(
-  path.join(__dirname, '../../__fixtures__/project.pbxproj')
+  path.join(__dirname, '../../__fixtures__/project.pbxproj'),
 );
 
 describe('ios::addSharedLibraries', () => {
-
   beforeEach(() => {
     project.parseSync();
   });
@@ -41,5 +48,4 @@ describe('ios::addSharedLibraries', () => {
     const frameworksGroup = getGroup(project, 'Frameworks');
     expect(frameworksGroup.children.length).toEqual(1);
   });
-
 });

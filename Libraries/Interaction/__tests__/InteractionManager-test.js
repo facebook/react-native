@@ -1,19 +1,16 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
+ * @emails oncall+react_native
  */
 
 'use strict';
 
-jest
-  .disableAutomock()
-  .mock('ErrorUtils')
-  .mock('BatchedBridge');
+jest.mock('ErrorUtils').mock('BatchedBridge');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
@@ -33,11 +30,11 @@ describe('InteractionManager', () => {
 
     InteractionManager.addListener(
       InteractionManager.Events.interactionStart,
-      interactionStart
+      interactionStart,
     );
     InteractionManager.addListener(
       InteractionManager.Events.interactionComplete,
-      interactionComplete
+      interactionComplete,
     );
   });
 
@@ -164,11 +161,11 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModules();
+    jest.useFakeTimers();
     InteractionManager = require('InteractionManager');
     BatchedBridge = require('BatchedBridge');
     sequenceId = 0;
   });
-
 
   it('should run a basic promise task', () => {
     const task1 = jest.fn(() => {
@@ -184,8 +181,10 @@ describe('promise tasks', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       return new Promise(resolve => {
-        InteractionManager.runAfterInteractions({gen: task2, name: 'gen2'})
-          .then(resolve);
+        InteractionManager.runAfterInteractions({
+          gen: task2,
+          name: 'gen2',
+        }).then(resolve);
       });
     });
     const task2 = jest.fn(() => {
@@ -256,15 +255,19 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  const bigAsyncTest = () => {
+  const bigAsyncTest = resolve => {
+    jest.useRealTimers();
+
     const task1 = createSequenceTask(1);
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
       return new Promise(resolve => {
         InteractionManager.runAfterInteractions(task3);
         setTimeout(() => {
-          InteractionManager.runAfterInteractions({gen: task4, name: 'gen4'})
-            .then(resolve);
+          InteractionManager.runAfterInteractions({
+            gen: task4,
+            name: 'gen4',
+          }).then(resolve);
         }, 1);
       });
     });
@@ -282,27 +285,25 @@ describe('promise tasks', () => {
     InteractionManager.runAfterInteractions({gen: task2, name: 'gen2'});
     InteractionManager.runAfterInteractions(task6);
 
-    jest.runAllTimers();
-    // runAllTimers doesn't actually run all timers with nested timer functions
-    // inside Promises, so we have to call it extra times.
-    jest.runAllTimers();
-    jest.runAllTimers();
+    setTimeout(() => {
+      expectToBeCalledOnce(task1);
+      expectToBeCalledOnce(task2);
+      expectToBeCalledOnce(task3);
+      expectToBeCalledOnce(task4);
+      expectToBeCalledOnce(task5);
+      expectToBeCalledOnce(task6);
 
-    expectToBeCalledOnce(task1);
-    expectToBeCalledOnce(task2);
-    expectToBeCalledOnce(task3);
-    expectToBeCalledOnce(task4);
-    expectToBeCalledOnce(task5);
-    expectToBeCalledOnce(task6);
+      resolve();
+    }, 100);
   };
 
   it('resolves async tasks recusively before other queued tasks', () => {
-    bigAsyncTest();
+    return new Promise(bigAsyncTest);
   });
 
   it('should also work with a deadline', () => {
     InteractionManager.setDeadline(100);
     BatchedBridge.getEventLoopRunningTime.mockReturnValue(200);
-    bigAsyncTest();
+    return new Promise(bigAsyncTest);
   });
 });

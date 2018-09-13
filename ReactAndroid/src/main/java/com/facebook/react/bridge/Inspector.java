@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.bridge;
 
@@ -18,16 +21,6 @@ public class Inspector {
   }
 
   private final HybridData mHybridData;
-
-  public static boolean isSupported() {
-    try {
-      // This isn't a very nice way to do this but it works :|
-      instance().getPagesNative();
-      return true;
-    } catch (UnsatisfiedLinkError e) {
-      return false;
-    }
-  }
 
   public static List<Page> getPages() {
     try {
@@ -61,6 +54,7 @@ public class Inspector {
   public static class Page {
     private final int mId;
     private final String mTitle;
+    private final String mVM;
 
     public int getId() {
       return mId;
@@ -68,6 +62,10 @@ public class Inspector {
 
     public String getTitle() {
       return mTitle;
+    }
+
+    public String getVM() {
+      return mVM;
     }
 
     @Override
@@ -78,15 +76,19 @@ public class Inspector {
           '}';
     }
 
-    private Page(int id, String title) {
+    @DoNotStrip
+    private Page(int id, String title, String vm) {
       mId = id;
       mTitle = title;
+      mVM = vm;
     }
   }
 
   @DoNotStrip
   public interface RemoteConnection {
+    @DoNotStrip
     void onMessage(String message);
+    @DoNotStrip
     void onDisconnect();
   }
 

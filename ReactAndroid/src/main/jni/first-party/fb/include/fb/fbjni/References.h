@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 
@@ -340,7 +338,7 @@ class weak_ref : public base_owned_ref<T, WeakGlobalReferenceAllocator> {
     : base_owned_ref<T, Allocator>{} {}
 
   /// Create a null reference
-  explicit weak_ref(std::nullptr_t) noexcept
+  /* implicit */ weak_ref(std::nullptr_t) noexcept
     : base_owned_ref<T, Allocator>{nullptr} {}
 
   /// Copy constructor (note creates a new reference)
@@ -409,7 +407,7 @@ class basic_strong_ref : public base_owned_ref<T, Alloc> {
     : base_owned_ref<T, Alloc>{} {}
 
   /// Create a null reference
-  explicit basic_strong_ref(std::nullptr_t) noexcept
+  /* implicit */ basic_strong_ref(std::nullptr_t) noexcept
     : base_owned_ref<T, Alloc>{nullptr} {}
 
   /// Copy constructor (note creates a new reference)
@@ -496,7 +494,7 @@ class alias_ref {
   alias_ref() noexcept;
 
   /// Create a null reference
-  alias_ref(std::nullptr_t) noexcept;
+  /* implicit */ alias_ref(std::nullptr_t) noexcept;
 
   /// Copy constructor
   alias_ref(const alias_ref& other) noexcept;

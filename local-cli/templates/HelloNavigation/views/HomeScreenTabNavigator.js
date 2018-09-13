@@ -1,6 +1,6 @@
-'use strict';
+/** @format */
 
-import { TabNavigator } from 'react-navigation';
+import {TabNavigator} from 'react-navigation';
 
 import ChatListScreen from './chat/ChatListScreen';
 import WelcomeScreen from './welcome/WelcomeScreen';

@@ -1,64 +1,42 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
+const android = require('./android');
 const Config = require('../util/Config');
+const findPlugins = require('./findPlugins');
+const findAssets = require('./findAssets');
+const ios = require('./ios');
+const wrapCommands = require('./wrapCommands');
+const {ASSET_REGISTRY_PATH} = require('./Constants');
 
-const defaultConfig = require('./default.config');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const flatten = require('lodash').flatten;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const minimist = require('minimist');
+const path = require('path');
 
-import type {GetTransformOptions} from '../../packager/src/Bundler';
-import type {HasteImpl} from '../../packager/src/node-haste/Module';
 import type {CommandT} from '../commands';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
-/**
- * Configuration file of the CLI.
- */
-export type ConfigT = {
-  extraNodeModules?: { [id: string]: string },
+export type RNConfig = {
+  ...ConfigT,
   /**
-   * Specify any additional asset extentions to be used by the packager.
-   * For example, if you want to include a .ttf file, you would return ['ttf']
-   * from here and use `require('./fonts/example.ttf')` inside your app.
+   * Returns an object with all platform configurations.
    */
-  getAssetExts?: () => Array<string>,
-  /**
-   * Specify any additional platforms to be used by the packager.
-   * For example, if you want to add a "custom" platform, and use modules
-   * ending in .custom.js, you would return ['custom'] here.
-   */
-  getPlatforms: () => Array<string>,
-  /**
-   * Specify any additional node modules that should be processed for
-   * providesModule declarations.
-   */
-  getProvidesModuleNodeModules?: () => Array<string>,
-  /**
-   * Returns the path to a custom transformer. This can also be overridden
-   * with the --transformer commandline argument.
-   */
-  getTransformModulePath?: () => string,
-  getTransformOptions?: GetTransformOptions,
-  transformVariants?: () => {[name: string]: Object},
-  /**
-   * Returns a regular expression for modules that should be ignored by the
-   * packager on a given platform.
-   */
-  getBlacklistRE(): RegExp,
-  getProjectRoots(): Array<string>,
-  getAssetExts(): Array<string>,
-  /**
-   * Returns an array of project commands used by the CLI to load
-   */
-  getProjectCommands(): Array<CommandT>,
+  getPlatformConfig(): Object,
   /**
    * Returns project config from the current working directory
    */
@@ -67,33 +45,129 @@ export type ConfigT = {
    * Returns dependency config from <node_modules>/packageName
    */
   getDependencyConfig(pkgName: string): Object,
+};
 
-  /**
-   * A module that exports:
-   * - a `getHasteName(filePath)` method that returns `hasteName` for module at
-   *  `filePath`, or undefined if `filePath` is not a haste module.
-   */
-  hasteImpl?: HasteImpl,
+const getRNPMConfig = folder =>
+  // $FlowFixMe non-literal require
+  require(path.join(folder, './package.json')).rnpm || {};
+
+const attachPackage = (command, pkg) =>
+  Array.isArray(command)
+    ? command.map(cmd => attachPackage(cmd, pkg))
+    : {...command, pkg};
+
+const appRoot = process.cwd();
+const plugins = findPlugins([appRoot]);
+const pluginPlatforms = plugins.platforms.reduce((acc, pathToPlatforms) => {
+  return Object.assign(
+    acc,
+    // $FlowFixMe non-literal require
+    require(path.join(appRoot, 'node_modules', pathToPlatforms)),
+  );
+}, {});
+
+const defaultConfig = {
+  hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
+
+  getPlatforms(): Array<string> {
+    return ['ios', 'android', 'native', ...plugins.haste.platforms];
+  },
+
+  getProvidesModuleNodeModules(): Array<string> {
+    return ['react-native', ...plugins.haste.providesModuleNodeModules];
+  },
+};
+
+const defaultRNConfig = {
+  getPlatformConfig(): Object {
+    return {
+      ios,
+      android,
+      ...pluginPlatforms,
+    };
+  },
+
+  getProjectConfig(): Object {
+    const platforms = this.getPlatformConfig();
+    const folder = process.cwd();
+    const rnpm = getRNPMConfig(folder);
+
+    let config = Object.assign({}, rnpm, {
+      assets: findAssets(folder, rnpm.assets),
+    });
+
+    Object.keys(platforms).forEach(key => {
+      config[key] = platforms[key].projectConfig(folder, rnpm[key] || {});
+    });
+
+    return config;
+  },
+
+  getDependencyConfig(packageName: string) {
+    const platforms = this.getPlatformConfig();
+    const folder = path.join(process.cwd(), 'node_modules', packageName);
+    const rnpm = getRNPMConfig(folder);
+
+    let config = Object.assign({}, rnpm, {
+      assets: findAssets(folder, rnpm.assets),
+      commands: wrapCommands(rnpm.commands),
+      params: rnpm.params || [],
+    });
+
+    Object.keys(platforms).forEach(key => {
+      config[key] = platforms[key].dependencyConfig(folder, rnpm[key] || {});
+    });
+
+    return config;
+  },
 };
 
 /**
  * Loads the CLI configuration
  */
-function getCliConfig(): ConfigT {
+async function getCliConfig(): Promise<RNConfig> {
   const cliArgs = minimist(process.argv.slice(2));
+  const config = await Config.load(
+    cliArgs.config != null ? path.resolve(__dirname, cliArgs.config) : null,
+  );
 
-  let cwd;
-  let configPath;
+  config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
+  config.resolver.hasteImplModulePath =
+    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = config.resolver.platforms
+    ? config.resolver.platforms.concat(defaultConfig.getPlatforms())
+    : defaultConfig.getPlatforms();
+  config.resolver.providesModuleNodeModules = config.resolver
+    .providesModuleNodeModules
+    ? config.resolver.providesModuleNodeModules.concat(
+        defaultConfig.getProvidesModuleNodeModules(),
+      )
+    : defaultConfig.getProvidesModuleNodeModules();
 
-  if (cliArgs.config != null) {
-    cwd = process.cwd();
-    configPath = cliArgs.config;
-  } else {
-    cwd = __dirname;
-    configPath = Config.findConfigPath(cwd);
-  }
-
-  return Config.get(cwd, defaultConfig, configPath);
+  return {...defaultRNConfig, ...config};
 }
 
-module.exports = getCliConfig();
+/**
+ * Returns an array of project commands used by the CLI to load
+ */
+function getProjectCommands(): Array<CommandT> {
+  const commands = plugins.commands.map(pathToCommands => {
+    const name =
+      pathToCommands[0] === '@'
+        ? pathToCommands
+            .split(path.sep)
+            .slice(0, 2)
+            .join(path.sep)
+        : pathToCommands.split(path.sep)[0];
+
+    return attachPackage(
+      require(path.join(appRoot, 'node_modules', pathToCommands)),
+      require(path.join(appRoot, 'node_modules', name, 'package.json')),
+    );
+  });
+
+  return flatten(commands);
+}
+
+module.exports.configPromise = getCliConfig();
+module.exports.getProjectCommands = getProjectCommands;

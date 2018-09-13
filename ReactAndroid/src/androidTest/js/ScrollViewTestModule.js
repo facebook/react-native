@@ -1,18 +1,17 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollViewTestModule
+ * @format
  */
 
 'use strict';
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
+var createReactClass = require('create-react-class');
 var View = require('View');
 var ScrollView = require('ScrollView');
 var Text = require('Text');
@@ -49,22 +48,32 @@ var getInitialState = function() {
 };
 
 var onScroll = function(e) {
-  ScrollListener.onScroll(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScroll(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
 };
 
 var onScrollBeginDrag = function(e) {
-  ScrollListener.onScrollBeginDrag(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScrollBeginDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
 };
 
 var onScrollEndDrag = function(e) {
-  ScrollListener.onScrollEndDrag(e.nativeEvent.contentOffset.x, e.nativeEvent.contentOffset.y);
+  ScrollListener.onScrollEndDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
 };
 
 var onItemPress = function(itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
-var ScrollViewTestApp = React.createClass({
+var ScrollViewTestApp = createReactClass({
+  displayName: 'ScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,
@@ -79,18 +88,25 @@ var ScrollViewTestApp = React.createClass({
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
-        key={index} text={item.text}
-        onPress={this.onItemPress.bind(this, index)} />
+        key={index}
+        text={item.text}
+        onPress={this.onItemPress.bind(this, index)}
+      />
     ));
     return (
-      <ScrollView onScroll={this.onScroll} onScrollBeginDrag={this.onScrollBeginDrag} onScrollEndDrag={this.onScrollEndDrag} ref="scrollView">
+      <ScrollView
+        onScroll={this.onScroll}
+        onScrollBeginDrag={this.onScrollBeginDrag}
+        onScrollEndDrag={this.onScrollEndDrag}
+        ref="scrollView">
         {children}
       </ScrollView>
     );
   },
 });
 
-var HorizontalScrollViewTestApp = React.createClass({
+var HorizontalScrollViewTestApp = createReactClass({
+  displayName: 'HorizontalScrollViewTestApp',
   getInitialState: getInitialState,
   onScroll: onScroll,
   onItemPress: onItemPress,
@@ -103,8 +119,10 @@ var HorizontalScrollViewTestApp = React.createClass({
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
-        key={index} text={item.text}
-        onPress={this.onItemPress.bind(this, index)} />
+        key={index}
+        text={item.text}
+        onPress={this.onItemPress.bind(this, index)}
+      />
     ));
     return (
       <ScrollView horizontal={true} onScroll={this.onScroll} ref="scrollView">
@@ -136,7 +154,7 @@ var ScrollViewTestModule = {
 
 BatchedBridge.registerCallableModule(
   'ScrollViewTestModule',
-  ScrollViewTestModule
+  ScrollViewTestModule,
 );
 
 module.exports = ScrollViewTestModule;

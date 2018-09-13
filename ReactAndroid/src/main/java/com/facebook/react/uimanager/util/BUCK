@@ -1,0 +1,13 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+
+rn_android_library(
+    name = "util",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("res:uimanager"),
+    ],
+)

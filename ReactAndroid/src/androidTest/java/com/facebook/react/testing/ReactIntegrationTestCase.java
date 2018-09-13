@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing;
 
+import com.facebook.react.modules.core.ReactChoreographer;
 import javax.annotation.Nullable;
 
 import java.util.concurrent.CountDownLatch;
@@ -28,10 +28,11 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.Timing;
+import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
+import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.soloader.SoLoader;
 
 import static org.mockito.Mockito.mock;
@@ -139,6 +140,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new Runnable() {
           @Override
           public void run() {
+            ReactChoreographer.initialize();
             Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
             simpleSettableFuture.set(timing);
           }
@@ -176,7 +178,6 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     SoLoader.init(getContext(), /* native exopackage */ false);
-    ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
   }
 
   @Override

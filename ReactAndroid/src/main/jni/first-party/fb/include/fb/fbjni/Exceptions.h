@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 /**
@@ -31,6 +29,11 @@
 #include "Common.h"
 #include "References.h"
 #include "CoreClasses.h"
+
+#if defined(__ANDROID__) && defined(__ARM_ARCH_5TE__) && !defined(FBJNI_NO_EXCEPTION_PTR)
+// ARMv5 NDK does not support exception_ptr so we cannot use that when building for it.
+#define FBJNI_NO_EXCEPTION_PTR
+#endif
 
 namespace facebook {
 namespace jni {
@@ -108,9 +111,16 @@ template<typename... Args>
 }
 
 // Identifies any pending C++ exception and throws it as a Java exception. If the exception can't
-// be thrown, it aborts the program. This is a noexcept function at C++ level.
-FBEXPORT void translatePendingCppExceptionToJavaException() noexcept;
+// be thrown, it aborts the program.
+FBEXPORT void translatePendingCppExceptionToJavaException();
 
+#ifndef FBJNI_NO_EXCEPTION_PTR
+FBEXPORT local_ref<JThrowable> getJavaExceptionForCppException(std::exception_ptr ptr);
+#endif
+
+FBEXPORT local_ref<JThrowable> getJavaExceptionForCppBackTrace();
+
+FBEXPORT local_ref<JThrowable> getJavaExceptionForCppBackTrace(const char* msg);
 // For convenience, some exception names in java.lang are available here.
 
 const char* const gJavaLangIllegalArgumentException = "java/lang/IllegalArgumentException";

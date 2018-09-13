@@ -1,9 +1,0 @@
-{
-  "rules": {
-    "extra-arrow-initializer": 0,
-    "no-console-disallow": 0
-  },
-  "env": {
-    "node": true
-  }
-}

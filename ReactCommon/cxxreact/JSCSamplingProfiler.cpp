@@ -1,19 +1,12 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSCSamplingProfiler.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <jschelpers/JSCHelpers.h>
-#include <jschelpers/Value.h>
 
-#ifndef __APPLE__
-#include <JavaScriptCore/API/JSProfilerPrivate.h>
-#endif
-
-namespace facebook {
-namespace react {
-namespace {
 static JSValueRef pokeSamplingProfiler(
     JSContextRef ctx,
     JSObjectRef function,
@@ -23,7 +16,9 @@ static JSValueRef pokeSamplingProfiler(
     JSValueRef* exception) {
   return JSC_JSPokeSamplingProfiler(ctx);
 }
-}
+
+namespace facebook {
+namespace react {
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
   JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
@@ -33,5 +28,4 @@ void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "pokeSamplingProfiler", pokeSamplingProfiler);
 }
 
-}
-}
+} }

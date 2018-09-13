@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.modules.accessibilityinfo;
 
@@ -43,8 +46,8 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     public AccessibilityInfoModule(ReactApplicationContext context) {
         super(context);
-        mAccessibilityManager = (AccessibilityManager) getReactApplicationContext()
-                .getSystemService(Context.ACCESSIBILITY_SERVICE);
+        Context appContext = context.getApplicationContext();
+        mAccessibilityManager = (AccessibilityManager) appContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
         mEnabled = mAccessibilityManager.isTouchExplorationEnabled();
         if (Build.VERSION.SDK_INT >= 19) {
             mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
@@ -90,6 +93,12 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
     public void initialize() {
         getReactApplicationContext().addLifecycleEventListener(this);
         updateAndSendChangeEvent(mAccessibilityManager.isTouchExplorationEnabled());
+    }
+
+    @Override
+    public void onCatalystInstanceDestroy() {
+        super.onCatalystInstanceDestroy();
+        getReactApplicationContext().removeLifecycleEventListener(this);
     }
 
     @Override

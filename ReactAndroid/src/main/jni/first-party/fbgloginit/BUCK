@@ -1,19 +1,21 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "GLOG_DEP", "cxx_library")
+
 cxx_library(
     name = "fbgloginit",
     srcs = [
         "glog_init.cpp",
     ],
+    header_namespace = "",
+    exported_headers = ["fb/glog_init.h"],
     compiler_flags = [
         "-fexceptions",
         "-fno-omit-frame-pointer",
     ],
-    exported_headers = ["fb/glog_init.h"],
     linker_flags = [
         "-llog",
     ],
     visibility = ["PUBLIC"],
-    xcode_public_headers_symlinks = True,
     deps = [
-        "//xplat/third-party/glog:glog",
+        GLOG_DEP,
     ],
 )

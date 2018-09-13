@@ -1,12 +1,20 @@
-'use strict';
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @emails oncall+javascript_foundation
+ */
 
-jest.autoMockOff();
+'use strict';
 
 const getDependencyConfig = require('../getDependencyConfig');
 const sinon = require('sinon');
 
 describe('getDependencyConfig', () => {
-  it('should return an array of dependencies\' rnpm config', () => {
+  it("should return an array of dependencies' rnpm config", () => {
     const config = {
       getDependencyConfig: sinon.stub(),
     };

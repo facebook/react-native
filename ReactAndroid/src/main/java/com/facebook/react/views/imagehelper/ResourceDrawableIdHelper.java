@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.imagehelper;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +20,13 @@ import android.net.Uri;
 /**
  * Helper class for obtaining information about local images.
  */
+@ThreadSafe
 public class ResourceDrawableIdHelper {
 
   private Map<String, Integer> mResourceDrawableIdMap;
 
   private static final String LOCAL_RESOURCE_SCHEME = "res";
-  private static ResourceDrawableIdHelper sResourceDrawableIdHelper;
+  private static volatile ResourceDrawableIdHelper sResourceDrawableIdHelper;
 
   private ResourceDrawableIdHelper() {
     mResourceDrawableIdMap = new HashMap<String, Integer>();
@@ -34,12 +34,16 @@ public class ResourceDrawableIdHelper {
 
   public static ResourceDrawableIdHelper getInstance() {
     if (sResourceDrawableIdHelper == null) {
-      sResourceDrawableIdHelper = new ResourceDrawableIdHelper();
+      synchronized (ResourceDrawableIdHelper.class) {
+        if (sResourceDrawableIdHelper == null) {
+          sResourceDrawableIdHelper = new ResourceDrawableIdHelper();
+        }
+      }
     }
     return sResourceDrawableIdHelper;
   }
 
-  public void clear() {
+  public synchronized void clear() {
     mResourceDrawableIdMap.clear();
   }
 
@@ -48,15 +52,25 @@ public class ResourceDrawableIdHelper {
       return 0;
     }
     name = name.toLowerCase().replace("-", "_");
-    if (mResourceDrawableIdMap.containsKey(name)) {
-      return mResourceDrawableIdMap.get(name);
+
+    // name could be a resource id.
+    try {
+      return Integer.parseInt(name);
+    } catch (NumberFormatException e) {
+      // Do nothing.
     }
-    int id = context.getResources().getIdentifier(
+
+    synchronized (this) {
+      if (mResourceDrawableIdMap.containsKey(name)) {
+        return mResourceDrawableIdMap.get(name);
+      }
+      int id = context.getResources().getIdentifier(
         name,
         "drawable",
         context.getPackageName());
-    mResourceDrawableIdMap.put(name, id);
-    return id;
+      mResourceDrawableIdMap.put(name, id);
+      return id;
+    }
   }
 
   public @Nullable Drawable getResourceDrawable(Context context, @Nullable String name) {

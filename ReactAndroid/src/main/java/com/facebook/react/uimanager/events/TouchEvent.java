@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager.events;
@@ -15,6 +13,7 @@ import android.support.v4.util.Pools;
 import android.view.MotionEvent;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.SoftAssertions;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single
@@ -31,10 +30,13 @@ public class TouchEvent extends Event<TouchEvent> {
   private static final Pools.SynchronizedPool<TouchEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
 
+  public static final long UNSET = Long.MIN_VALUE;
+
   public static TouchEvent obtain(
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
@@ -46,6 +48,7 @@ public class TouchEvent extends Event<TouchEvent> {
       viewTag,
       touchEventType,
       motionEventToCopy,
+      gestureStartTime,
       viewX,
       viewY,
       touchEventCoalescingKeyHelper);
@@ -67,30 +70,33 @@ public class TouchEvent extends Event<TouchEvent> {
       int viewTag,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
       float viewY,
       TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     super.init(viewTag);
 
+    SoftAssertions.assertCondition(gestureStartTime != UNSET,
+        "Gesture start time must be initialized");
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        touchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.addCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_UP:
-        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
       case MotionEvent.ACTION_POINTER_UP:
-        touchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.incrementCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_MOVE:
         coalescingKey =
-          touchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
+          touchEventCoalescingKeyHelper.getCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_CANCEL:
-        touchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       default:
         throw new RuntimeException("Unhandled MotionEvent action: " + action);

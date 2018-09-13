@@ -1,24 +1,23 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
-
-#import <React/RCTUIManager.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTUIManager.h>
 
-#import "RCTValueAnimatedNode.h"
+@protocol RCTValueAnimatedNodeObserver;
 
 @interface RCTNativeAnimatedNodesManager : NSObject
 
 - (nonnull instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager;
 
 - (void)updateAnimations;
+
+- (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
 
 // graph
 
@@ -34,6 +33,8 @@
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                           viewTag:(nonnull NSNumber *)viewTag
                          viewName:(nonnull NSString *)viewName;
+
+- (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag;
 
 - (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
                                viewTag:(nonnull NSNumber *)viewTag;
@@ -70,7 +71,8 @@
                   eventMapping:(NSDictionary<NSString *, id> *__nonnull)eventMapping;
 
 - (void)removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
-                          eventName:(nonnull NSString *)eventName;
+                          eventName:(nonnull NSString *)eventName
+                    animatedNodeTag:(nonnull NSNumber *)animatedNodeTag;
 
 - (void)handleAnimatedEvent:(nonnull id<RCTEvent>)event;
 
@@ -79,7 +81,6 @@
 - (void)startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
                             valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
 
-- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag
-                           valueObserver:(nonnull id<RCTValueAnimatedNodeObserver>)valueObserver;
+- (void)stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag;
 
 @end

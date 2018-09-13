@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 #include <string>
 #include <gtest/gtest.h>
 #include <folly/json.h>
@@ -36,7 +39,7 @@ TEST(Value, FromJSON) {
   prepare();
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   String s(ctx, "{\"a\": 4}");
-  Value v(Value::fromJSON(ctx, s));
+  Value v(Value::fromJSON(s));
   EXPECT_TRUE(v.isObject());
   JSC_JSGlobalContextRelease(ctx);
 }
@@ -45,14 +48,14 @@ TEST(Value, ToJSONString) {
   prepare();
   JSGlobalContextRef ctx = JSC_JSGlobalContextCreateInGroup(false, nullptr, nullptr);
   String s(ctx, "{\"a\": 4}");
-  Value v(Value::fromJSON(ctx, s));
+  Value v(Value::fromJSON(s));
   folly::dynamic dyn = folly::parseJson(v.toJSONString());
   ASSERT_NE(nullptr, dyn);
   EXPECT_TRUE(dyn.isObject());
   auto val = dyn.at("a");
   ASSERT_NE(nullptr, val);
-  ASSERT_TRUE(val.isInt());
-  EXPECT_EQ(4, val.getInt());
+  ASSERT_TRUE(val.isNumber());
+  EXPECT_EQ(4, val.asInt());
   EXPECT_EQ(4.0f, val.asDouble());
 
   JSC_JSGlobalContextRelease(ctx);

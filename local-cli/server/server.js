@@ -1,125 +1,136 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
  */
+
 'use strict';
 
-const chalk = require('chalk');
-const formatBanner = require('./formatBanner');
-const path = require('path');
 const runServer = require('./runServer');
+
+import type {RNConfig} from '../core';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
+import type {Args as RunServerArgs} from './runServer';
 
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv, config, args) {
-  args.projectRoots = args.projectRoots.concat(args.root);
-
-  console.log(formatBanner(
-    'Running packager on port ' + args.port + '.\n\n' +
-    'Keep this packager running while developing on any JS projects. ' +
-    'Feel free to close this tab and run your own packager instance if you ' +
-    'prefer.\n\n' +
-    'https://github.com/facebook/react-native', {
-      marginLeft: 1,
-      marginRight: 1,
-      paddingBottom: 1,
-    })
-  );
-
-  console.log(
-    'Looking for JS files in\n  ',
-    chalk.dim(args.projectRoots.join('\n   ')),
-    '\n'
-  );
-
-  process.on('uncaughtException', error => {
-    if (error.code === 'EADDRINUSE') {
-      console.log(
-        chalk.bgRed.bold(' ERROR '),
-        chalk.red('Packager can\'t listen on port', chalk.bold(args.port))
-      );
-      console.log('Most likely another process is already using this port');
-      console.log('Run the following command to find out which process:');
-      console.log('\n  ', chalk.bold('lsof -i :' + args.port), '\n');
-      console.log('Then, you can either shut down the other process:');
-      console.log('\n  ', chalk.bold('kill -9 <PID>'), '\n');
-      console.log('or run packager on different port.');
-    } else {
-      console.log(chalk.bgRed.bold(' ERROR '), chalk.red(error.message));
-      const errorAttributes = JSON.stringify(error);
-      if (errorAttributes !== '{}') {
-        console.error(chalk.red(errorAttributes));
-      }
-      console.error(chalk.red(error.stack));
-    }
-    console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
-    console.log('for common problems and solutions.');
-    process.exit(11);
-  });
-
-  runServer(args, config, () => console.log('\nReact packager ready.\n'));
+function server(argv: mixed, config: RNConfig, args: RunServerArgs) {
+  /* $FlowFixMe(site=react_native_fb) ConfigT shouldn't be extendable. */
+  const configT: ConfigT = config;
+  runServer(args, configT);
 }
 
 module.exports = {
   name: 'start',
   func: server,
   description: 'starts the webserver',
-  options: [{
-    command: '--port [number]',
-    default: 8081,
-    parse: (val) => Number(val),
-  }, {
-    command: '--host [string]',
-    default: '',
-  }, {
-    command: '--root [list]',
-    description: 'add another root(s) to be used by the packager in this project',
-    parse: (val) => val.split(',').map(root => path.resolve(root)),
-    default: [],
-  }, {
-    command: '--projectRoots [list]',
-    description: 'override the root(s) to be used by the packager',
-    parse: (val) => val.split(','),
-    default: (config) => config.getProjectRoots(),
-  }, {
-    command: '--assetExts [list]',
-    description: 'Specify any additional asset extentions to be used by the packager',
-    parse: (val) => val.split(','),
-    default: (config) => config.getAssetExts(),
-  }, {
-    command: '--platforms [list]',
-    description: 'Specify any additional platforms to be used by the packager',
-    parse: (val) => val.split(','),
-    default: (config) => config.getPlatforms(),
-  }, {
-    command: '--providesModuleNodeModules [list]',
-    description: 'Specify any npm packages that import dependencies with providesModule',
-    parse: (val) => val.split(','),
-    default: (config) => {
-      if (typeof config.getProvidesModuleNodeModules === 'function') {
-        return config.getProvidesModuleNodeModules();
-      }
-      return null;
+  options: [
+    {
+      command: '--port [number]',
+      default: process.env.RCT_METRO_PORT || 8081,
+      parse: (val: string) => Number(val),
     },
-  }, {
-    command: '--skipflow',
-    description: 'Disable flow checks'
-  }, {
-    command: '--nonPersistent',
-    description: 'Disable file watcher'
-  }, {
-    command: '--transformer [string]',
-    description: 'Specify a custom transformer to be used'
-  }, {
-    command: '--reset-cache, --resetCache',
-    description: 'Removes cached files',
-  }, {
-    command: '--verbose',
-    description: 'Enables logging',
-  }],
+    {
+      command: '--host [string]',
+      default: '',
+    },
+    {
+      command: '--projectRoot [string]',
+      description: 'Specify the main project root',
+      default: (config: ConfigT) => {
+        return config.projectRoot;
+      },
+    },
+    {
+      command: '--watchFolders [list]',
+      description:
+        'Specify any additional folders to be added to the watch list',
+      parse: (val: string) => val.split(','),
+      default: (config: ConfigT) => {
+        return config.watchFolders;
+      },
+    },
+    {
+      command: '--assetExts [list]',
+      description:
+        'Specify any additional asset extensions to be used by the packager',
+      parse: (val: string) => val.split(','),
+      default: (config: ConfigT) => config.resolver.assetExts,
+    },
+    {
+      command: '--sourceExts [list]',
+      description:
+        'Specify any additional source extensions to be used by the packager',
+      parse: (val: string) => val.split(','),
+      default: (config: ConfigT) => config.resolver.sourceExts,
+    },
+    {
+      command: '--platforms [list]',
+      description:
+        'Specify any additional platforms to be used by the packager',
+      parse: (val: string) => val.split(','),
+      default: (config: ConfigT) => config.resolver.platforms,
+    },
+    {
+      command: '--providesModuleNodeModules [list]',
+      description:
+        'Specify any npm packages that import dependencies with providesModule',
+      parse: (val: string) => val.split(','),
+      default: (config: RNConfig) => {
+        return config.resolver
+          ? config.resolver.providesModuleNodeModules
+          : undefined;
+      },
+    },
+    {
+      command: '--max-workers [number]',
+      description:
+        'Specifies the maximum number of workers the worker-pool ' +
+        'will spawn for transforming files. This defaults to the number of the ' +
+        'cores available on your machine.',
+      parse: (workers: string) => Number(workers),
+    },
+    {
+      command: '--skipflow',
+      description: 'Disable flow checks',
+    },
+    {
+      command: '--nonPersistent',
+      description: 'Disable file watcher',
+    },
+    {
+      command: '--transformer [string]',
+      description: 'Specify a custom transformer to be used',
+    },
+    {
+      command: '--reset-cache, --resetCache',
+      description: 'Removes cached files',
+    },
+    {
+      command: '--custom-log-reporter-path, --customLogReporterPath [string]',
+      description:
+        'Path to a JavaScript file that exports a log reporter as a replacement for TerminalReporter',
+    },
+    {
+      command: '--verbose',
+      description: 'Enables logging',
+    },
+    {
+      command: '--https',
+      description: 'Enables https connections to the server',
+    },
+    {
+      command: '--key [path]',
+      description: 'Path to custom SSL key',
+    },
+    {
+      command: '--cert [path]',
+      description: 'Path to custom SSL cert',
+    },
+  ],
 };

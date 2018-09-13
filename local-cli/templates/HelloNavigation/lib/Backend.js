@@ -1,3 +1,5 @@
+/** @format */
+
 'use strict';
 
 // This file just a dummy example of a HTTP API to talk to the backend.
@@ -23,7 +25,7 @@ const backendStateForLoggedInPerson = {
           text: 'I ❤️ React Native!',
         },
       ],
-    }
+    },
   ],
 };
 
@@ -33,7 +35,7 @@ const backendStateForLoggedInPerson = {
  * in real-world conditions.
  */
 function isNetworkFailure() {
-  const chanceOfFailure = 0;  // 0..1
+  const chanceOfFailure = 0; // 0..1
   return Math.random() < chanceOfFailure;
 }
 
@@ -45,8 +47,8 @@ function isNetworkFailure() {
  */
 function _makeSimulatedNetworkRequest(getValue) {
   const durationMs = 400;
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
       if (isNetworkFailure()) {
         reject(new Error('Network failure'));
       } else {
@@ -71,9 +73,7 @@ async function fetchChatList() {
 async function fetchChat(name) {
   return _makeSimulatedNetworkRequest((resolve, reject) => {
     resolve(
-      backendStateForLoggedInPerson.chats.find(
-        chat => chat.name === name
-      )
+      backendStateForLoggedInPerson.chats.find(chat => chat.name === name),
     );
   });
 }
@@ -84,7 +84,7 @@ async function fetchChat(name) {
 async function sendMessage({name, message}) {
   return _makeSimulatedNetworkRequest((resolve, reject) => {
     const chatForName = backendStateForLoggedInPerson.chats.find(
-      chat => chat.name === name
+      chat => chat.name === name,
     );
     if (chatForName) {
       chatForName.messages.push({

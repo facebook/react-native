@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTConvert+Transform.h"
@@ -63,6 +61,9 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
     RCTLogWarn(@"[RCTConvert CATransform3D:] has deprecated a matrix as input. Pass an array of configs (which can contain a matrix key) instead.");
     return [self CATransform3DFromMatrix:json];
   }
+
+  CGFloat zeroScaleThreshold = FLT_EPSILON;
+
   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
     if (transformConfig.count != 1) {
       RCTLogConvertError(json, @"a CATransform3D. You must specify exactly one property per transform object.");
@@ -91,14 +92,17 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
 
     } else if ([property isEqualToString:@"scale"]) {
       CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, scale, 1);
 
     } else if ([property isEqualToString:@"scaleX"]) {
       CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, scale, 1, 1);
 
     } else if ([property isEqualToString:@"scaleY"]) {
       CGFloat scale = [value floatValue];
+      scale = ABS(scale) < zeroScaleThreshold ? zeroScaleThreshold : scale;
       transform = CATransform3DScale(transform, 1, scale, 1);
 
     } else if ([property isEqualToString:@"translate"]) {

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTRootView.h"
@@ -19,13 +17,15 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTPerformanceLogger.h"
+#import "RCTProfile.h"
+#import "RCTRootContentView.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
+#import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTRootContentView.h"
 #import "UIView+React.h"
-#import "RCTProfile.h"
 
 #if TARGET_OS_TV
 #import "RCTTVRemoteHandler.h"
@@ -44,7 +44,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 {
   RCTBridge *_bridge;
   NSString *_moduleName;
-  NSDictionary *_launchOptions;
   RCTRootContentView *_contentView;
   BOOL _passThroughTouches;
   CGSize _intrinsicContentSize;
@@ -59,6 +58,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTRootView init]", nil);
+  if (!bridge.isLoading) {
+    [bridge.performanceLogger markStartForTag:RCTPLTTI];
+  }
 
   if (self = [super initWithFrame:CGRectZero]) {
     self.backgroundColor = [UIColor whiteColor];
@@ -69,7 +71,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -88,16 +89,16 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 #if TARGET_OS_TV
     self.tvRemoteHandler = [RCTTVRemoteHandler new];
-    for (UIGestureRecognizer *gr in self.tvRemoteHandler.tvRemoteGestureRecognizers) {
-      [self addGestureRecognizer:gr];
+    for (NSString *key in [self.tvRemoteHandler.tvRemoteGestureRecognizers allKeys]) {
+      [self addGestureRecognizer:self.tvRemoteHandler.tvRemoteGestureRecognizers[key]];
     }
 #endif
 
-    if (!_bridge.loading) {
-      [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
-    }
-
     [self showLoadingView];
+
+    // Immediately schedule the application to be started.
+    // (Sometimes actual `_bridge` is already batched bridge here.)
+    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -130,12 +131,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 }
 #endif
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  super.backgroundColor = backgroundColor;
-  _contentView.backgroundColor = backgroundColor;
-}
-
 #pragma mark - passThroughTouches
 
 - (BOOL)passThroughTouches
@@ -153,10 +148,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-  return CGSizeMake(
-    _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? MIN(_intrinsicContentSize.width, size.width) : size.width,
-    _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? MIN(_intrinsicContentSize.height, size.height) : size.height
-  );
+  CGSize fitSize = _intrinsicContentSize;
+  CGSize currentSize = self.bounds.size;
+
+  // Following the current `size` and current `sizeFlexibility` policy.
+  fitSize = CGSizeMake(
+      _sizeFlexibility & RCTRootViewSizeFlexibilityWidth ? fitSize.width : currentSize.width,
+      _sizeFlexibility & RCTRootViewSizeFlexibilityHeight ? fitSize.height : currentSize.height
+    );
+
+  // Following the given size constraints.
+  fitSize = CGSizeMake(
+      MIN(size.width, fitSize.width),
+      MIN(size.height, fitSize.height)
+    );
+
+  return fitSize;
 }
 
 - (void)layoutSubviews
@@ -229,7 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
      * NOTE: Since the bridge persists, the RootViews might be reused, so the
      * react tag must be re-assigned every time a new UIManager is created.
      */
-    self.reactTag = [_bridge.uiManager allocateRootTag];
+    self.reactTag = RCTAllocateRootViewTag();
   }
   return super.reactTag;
 }
@@ -248,11 +255,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  [self bundleFinishedLoading:bridge];
+  if (bridge != _contentView.bridge) {
+    [self bundleFinishedLoading:bridge];
+  }
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
+  RCTAssert(bridge != nil, @"Bridge cannot be nil");
   if (!bridge.valid) {
     return;
   }
@@ -264,7 +274,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                             sizeFlexiblity:_sizeFlexibility];
   [self runApplication:bridge];
 
-  _contentView.backgroundColor = self.backgroundColor;
   _contentView.passThroughTouches = _passThroughTouches;
   [self insertSubview:_contentView atIndex:0];
 
@@ -376,17 +385,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   RCTLogWarn(@"Calling deprecated `[-RCTRootView intrinsicSize]`.");
   return self.intrinsicContentSize;
-}
-
-@end
-
-@implementation RCTUIManager (RCTRootView)
-
-- (NSNumber *)allocateRootTag
-{
-  NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
-  objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  return rootTag;
 }
 
 @end

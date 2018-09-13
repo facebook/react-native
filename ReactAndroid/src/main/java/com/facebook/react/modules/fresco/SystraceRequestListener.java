@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.modules.fresco;
 
@@ -7,14 +10,14 @@ import java.util.Map;
 
 import android.util.Pair;
 
-import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.systrace.Systrace;
 
 /**
  * Logs requests to Systrace
  */
-public class SystraceRequestListener implements RequestListener {
+public class SystraceRequestListener extends BaseRequestListener {
 
   int mCurrentID = 0;
   Map<String, Pair<Integer,String>> mProducerID = new HashMap<>();

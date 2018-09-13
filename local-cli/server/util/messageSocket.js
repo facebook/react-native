@@ -1,16 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const url = require('url');
 const WebSocketServer = require('ws').Server;
 const PROTOCOL_VERSION = 2;
+const notifier = require('node-notifier');
 
 function parseMessage(data, binary) {
   if (binary) {
@@ -22,8 +24,9 @@ function parseMessage(data, binary) {
     if (message.version === PROTOCOL_VERSION) {
       return message;
     }
-    console.error('Received message had wrong protocol version: '
-                  + message.version);
+    console.error(
+      'Received message had wrong protocol version: ' + message.version,
+    );
   } catch (e) {
     console.error('Failed to parse the message as JSON:\n' + data);
   }
@@ -40,24 +43,23 @@ function isBroadcast(message) {
 
 function isRequest(message) {
   return (
-    typeof message.method === 'string' &&
-    typeof message.target === 'string');
+    typeof message.method === 'string' && typeof message.target === 'string'
+  );
 }
 
 function isResponse(message) {
   return (
     typeof message.id === 'object' &&
     typeof message.id.requestId !== undefined &&
-    typeof message.id.clientId === 'string' && (
-      message.result !== undefined ||
-      message.error !== undefined
-  ));
+    typeof message.id.clientId === 'string' &&
+    (message.result !== undefined || message.error !== undefined)
+  );
 }
 
 function attachToServer(server, path) {
   const wss = new WebSocketServer({
     server: server,
-    path: path
+    path: path,
   });
   const clients = new Map();
   let nextClientId = 0;
@@ -76,13 +78,24 @@ function attachToServer(server, path) {
       method: message.method,
       params: message.params,
     };
+    if (clients.size === 0) {
+      notifier.notify({
+        title: 'React Native: No apps connected',
+        message:
+          `Sending '${message.method}' to all React Native apps ` +
+          'failed. Make sure your app is running in the simulator ' +
+          'or on a phone connected via USB.',
+      });
+    }
     for (const [otherId, otherWs] of clients) {
       if (otherId !== broadcasterId) {
         try {
           otherWs.send(JSON.stringify(forwarded));
         } catch (e) {
-          console.error(`Failed to send broadcast to client: '${otherId}' ` +
-                        `due to:\n ${e.toString()}`);
+          console.error(
+            `Failed to send broadcast to client: '${otherId}' ` +
+              `due to:\n ${e.toString()}`,
+          );
         }
       }
     }
@@ -104,18 +117,23 @@ function attachToServer(server, path) {
       if (message.id === undefined) {
         console.error(
           `Handling message from ${clientId} failed with:\n${error}\n` +
-          `message:\n${JSON.stringify(errorMessage)}`);
+            `message:\n${JSON.stringify(errorMessage)}`,
+        );
       } else {
         try {
-          clientWs.send(JSON.stringify({
-            version: PROTOCOL_VERSION,
-            error: error,
-            id: message.id,
-          }));
+          clientWs.send(
+            JSON.stringify({
+              version: PROTOCOL_VERSION,
+              error: error,
+              id: message.id,
+            }),
+          );
         } catch (e) {
-          console.error(`Failed to reply to ${clientId} with error:\n${error}` +
-                        `\nmessage:\n${JSON.stringify(errorMessage)}` +
-                        `\ndue to error: ${e.toString()}`);
+          console.error(
+            `Failed to reply to ${clientId} with error:\n${error}` +
+              `\nmessage:\n${JSON.stringify(errorMessage)}` +
+              `\ndue to error: ${e.toString()}`,
+          );
         }
       }
     }
@@ -130,48 +148,54 @@ function attachToServer(server, path) {
           result = {};
           clients.forEach((otherWs, otherId) => {
             if (clientId !== otherId) {
-              result[otherId] = url.parse(otherWs.upgradeReq.url).query;
+              result[otherId] = url.parse(otherWs.upgradeReq.url, true).query;
             }
           });
           break;
         default:
-          throw `unkown method: ${message.method}`;
+          throw `unknown method: ${message.method}`;
       }
 
-      clientWs.send(JSON.stringify({
-        version: PROTOCOL_VERSION,
-        result: result,
-        id: message.id
-      }));
+      clientWs.send(
+        JSON.stringify({
+          version: PROTOCOL_VERSION,
+          result: result,
+          id: message.id,
+        }),
+      );
     }
 
     function forwardRequest(message) {
-      getClientWs(message.target).send(JSON.stringify({
-        version: PROTOCOL_VERSION,
-        method: message.method,
-        params: message.params,
-        id: (message.id === undefined
-          ? undefined
-          : {requestId: message.id, clientId: clientId}),
-      }));
+      getClientWs(message.target).send(
+        JSON.stringify({
+          version: PROTOCOL_VERSION,
+          method: message.method,
+          params: message.params,
+          id:
+            message.id === undefined
+              ? undefined
+              : {requestId: message.id, clientId: clientId},
+        }),
+      );
     }
 
     function forwardResponse(message) {
-      getClientWs(message.id.clientId).send(JSON.stringify({
-        version: PROTOCOL_VERSION,
-        result: message.result,
-        error: message.error,
-        id: message.id.requestId,
-      }));
+      getClientWs(message.id.clientId).send(
+        JSON.stringify({
+          version: PROTOCOL_VERSION,
+          result: message.result,
+          error: message.error,
+          id: message.id.requestId,
+        }),
+      );
     }
 
     clients.set(clientId, clientWs);
-    clientWs.onclose =
-    clientWs.onerror = () => {
+    clientWs.onclose = clientWs.onerror = () => {
       clientWs.onmessage = null;
       clients.delete(clientId);
     };
-    clientWs.onmessage = (event) => {
+    clientWs.onmessage = event => {
       const message = parseMessage(event.data, event.binary);
       if (message === undefined) {
         console.error('Received message not matching protocol');
@@ -201,7 +225,7 @@ function attachToServer(server, path) {
   return {
     broadcast: (method, params) => {
       handleSendBroadcast(null, {method: method, params: params});
-    }
+    },
   };
 }
 

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDefines.h"
@@ -20,11 +18,11 @@
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
-#import "RCTJSCExecutor.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
 #import "RCTBridge+Private.h"
+#import "RCTUtils.h"
 
 #if __has_include("RCTDevMenu.h")
 #import "RCTDevMenu.h"
@@ -64,17 +62,14 @@ static BOOL RCTJSCSetOption(const char *option)
 
 static vm_size_t RCTGetResidentMemorySize(void)
 {
-  struct task_basic_info info;
-  mach_msg_type_number_t size = sizeof(info);
-  kern_return_t kerr = task_info(mach_task_self(),
-                                 TASK_BASIC_INFO,
-                                 (task_info_t)&info,
-                                 &size);
-  if (kerr != KERN_SUCCESS) {
-    return 0;
-  }
-
-  return info.resident_size;
+    vm_size_t memoryUsageInByte = 0;
+    task_vm_info_data_t vmInfo;
+    mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+    kern_return_t kernelReturn = task_info(mach_task_self(), TASK_VM_INFO, (task_info_t) &vmInfo, &count);
+    if(kernelReturn == KERN_SUCCESS) {
+        memoryUsageInByte = (vm_size_t) vmInfo.phys_footprint;
+    } 
+    return memoryUsageInByte;
 }
 
 @interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
@@ -131,11 +126,9 @@ static vm_size_t RCTGetResidentMemorySize(void)
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
++ (BOOL)requiresMainQueueSetup
 {
-  // We're only overriding this to ensure the module gets created at startup
-  // TODO (t11106126): Remove once we have more declarative control over module setup.
-  return [super init];
+  return YES;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -322,7 +315,7 @@ RCT_EXPORT_MODULE()
 
   [self updateStats];
 
-  UIWindow *window = [UIApplication sharedApplication].delegate.window;
+  UIWindow *window = RCTSharedApplication().delegate.window;
   [window addSubview:self.container];
 
 
@@ -498,10 +491,12 @@ RCT_EXPORT_MODULE()
 
 - (void)tap
 {
+  [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
     _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
-    [self loadPerformanceLoggerData];
+  } else {
+    [_metrics reloadData];
   }
 
   [UIView animateWithDuration:.25 animations:^{

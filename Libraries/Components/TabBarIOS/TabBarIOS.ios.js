@@ -1,41 +1,48 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TabBarIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var TabBarItemIOS = require('TabBarItemIOS');
-var View = require('View');
+const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const PropTypes = require('prop-types');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const TabBarItemIOS = require('TabBarItemIOS');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-class TabBarIOS extends React.Component {
-  props: {
-    style?: $FlowFixMe,
-    unselectedTintColor?: $FlowFixMe,
-    tintColor?: $FlowFixMe,
-    unselectedItemTintColor?: $FlowFixMe,
-    barTintColor?: $FlowFixMe,
-    translucent?: boolean,
-    itemPositioning?: 'fill' | 'center' | 'auto',
-  };
+import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {ViewProps} from 'ViewPropTypes';
 
+const RCTTabBar = requireNativeComponent('RCTTabBar');
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  style?: DangerouslyImpreciseStyleProp,
+  unselectedTintColor?: string,
+  tintColor?: string,
+  unselectedItemTintColor?: string,
+  barTintColor?: string,
+  barStyle?: 'default' | 'black',
+  translucent?: boolean,
+  itemPositioning?: 'fill' | 'center' | 'auto',
+  children: React.Node,
+|}>;
+
+class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
-  // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...View.propTypes,
-    style: View.propTypes.style,
+    ...DeprecatedViewPropTypes,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Color of text on unselected tabs
      */
@@ -53,9 +60,15 @@ class TabBarIOS extends React.Component {
      */
     barTintColor: ColorPropType,
     /**
+     * The style of the tab bar. Supported values are 'default', 'black'.
+     * Use 'black' instead of setting `barTintColor` to black. This produces
+     * a tab bar with the native iOS style with higher translucency.
+     */
+    barStyle: PropTypes.oneOf(['default', 'black']),
+    /**
      * A Boolean value that indicates whether the tab bar is translucent
      */
-    translucent: React.PropTypes.bool,
+    translucent: PropTypes.bool,
     /**
      * Specifies tab bar item positioning. Available values are:
      * - fill - distributes items across the entire width of the tab bar
@@ -65,7 +78,7 @@ class TabBarIOS extends React.Component {
      * this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
      * it defaults to center.
      */
-    itemPositioning: React.PropTypes.oneOf(['fill', 'center', 'auto']),
+    itemPositioning: PropTypes.oneOf(['fill', 'center', 'auto']),
   };
 
   render() {
@@ -76,22 +89,19 @@ class TabBarIOS extends React.Component {
         unselectedItemTintColor={this.props.unselectedItemTintColor}
         tintColor={this.props.tintColor}
         barTintColor={this.props.barTintColor}
+        barStyle={this.props.barStyle}
         itemPositioning={this.props.itemPositioning}
         translucent={this.props.translucent !== false}>
-        {
-          // $FlowFixMe found when converting React.createClass to ES6
-          this.props.children}
+        {this.props.children}
       </RCTTabBar>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tabGroup: {
     flex: 1,
-  }
+  },
 });
-
-var RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

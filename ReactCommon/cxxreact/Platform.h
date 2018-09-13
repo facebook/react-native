@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -6,44 +9,31 @@
 #include <memory>
 #include <string>
 
-#include <cxxreact/Executor.h>
-#include <cxxreact/MessageQueueThread.h>
+#include <cxxreact/ReactMarker.h>
 #include <jschelpers/JavaScriptCore.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
 
-namespace ReactMarker {
-using LogMarker = std::function<void(const std::string&)>;
-extern LogMarker logMarker;
-};
+namespace JSCNativeHooks {
 
-namespace WebWorkerUtil {
-using WebWorkerQueueFactory = std::function<std::unique_ptr<MessageQueueThread>(int id, MessageQueueThread* ownerMessageQueue)>;
-extern WebWorkerQueueFactory createWebWorkerThread;
+using Hook = JSValueRef(*)(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef *exception);
+extern RN_EXPORT Hook loggingHook;
+extern RN_EXPORT Hook nowHook;
 
-using LoadScriptFromAssets = std::function<std::unique_ptr<const JSBigString>(const std::string& assetName)>;
-extern LoadScriptFromAssets loadScriptFromAssets;
+typedef void(*ConfigurationHook)(JSGlobalContextRef);
+extern RN_EXPORT ConfigurationHook installPerfHooks;
 
-using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;
-extern LoadScriptFromNetworkSync loadScriptFromNetworkSync;
-};
-
-namespace PerfLogging {
-using InstallNativeHooks = std::function<void(JSGlobalContextRef)>;
-extern InstallNativeHooks installNativeHooks;
-};
-
-namespace JSNativeHooks {
-  using Hook = JSValueRef (*) (
-      JSContextRef ctx,
-      JSObjectRef function,
-      JSObjectRef thisObject,
-      size_t argumentCount,
-      const JSValueRef arguments[],
-      JSValueRef *exception);
-  extern Hook loggingHook;
-  extern Hook nowHook;
 }
 
 } }

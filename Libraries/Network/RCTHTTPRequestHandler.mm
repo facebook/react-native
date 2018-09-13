@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTHTTPRequestHandler.h"
@@ -63,6 +61,9 @@ RCT_EXPORT_MODULE()
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    [configuration setHTTPShouldSetCookies:YES];
+    [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];

@@ -1,16 +1,11 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.tests;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
@@ -19,22 +14,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.modules.appstate.AppStateModule;
+import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.uimanager.UIImplementation;
-import com.facebook.react.uimanager.UIImplementationProvider;
+import com.facebook.react.testing.FakeWebSocketModule;
+import com.facebook.react.testing.ReactIntegrationTestCase;
+import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.testing.FakeWebSocketModule;
-import com.facebook.react.testing.ReactIntegrationTestCase;
-import com.facebook.react.testing.ReactTestHelper;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Test to verify that Progress bar renders as a view of the right size
@@ -70,11 +66,8 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager(),
         new ReactProgressBarViewManager());
-    mUIManager = new UIManagerModule(
-        getContext(),
-        viewManagers,
-        new UIImplementationProvider(),
-        false);
+    mUIManager =
+        new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -86,17 +79,17 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
 
     mInstance = ReactTestHelper.catalystInstanceBuilder(this)
         .addNativeModule(mUIManager)
-        .addNativeModule(new AndroidInfoModule())
+        .addNativeModule(new AndroidInfoModule(getContext()))
+        .addNativeModule(new DeviceInfoModule(getContext()))
         .addNativeModule(new AppStateModule(getContext()))
         .addNativeModule(new FakeWebSocketModule())
-        .addJSModule(ProgressBarTestModule.class)
         .build();
 
     mRootView = new ReactRootView(getContext());
     DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
     mRootView.setLayoutParams(
         new FrameLayout.LayoutParams(metrics.widthPixels, metrics.heightPixels));
-    int rootTag = mUIManager.addMeasuredRootView(mRootView);
+    int rootTag = mUIManager.addRootView(mRootView);
     mInstance.getJSModule(ProgressBarTestModule.class).renderProgressBarApplication(rootTag);
     waitForBridgeAndUIIdle();
   }

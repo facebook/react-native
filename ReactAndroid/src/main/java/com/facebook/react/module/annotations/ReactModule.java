@@ -1,26 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.module.annotations;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ExecutorToken;
-import com.facebook.react.bridge.ReactContext;
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
- * Annotation for use on {@link BaseJavaModule}s to describe properties for that module.
+ * Annotation for use on {@link com.facebook.react.bridge.BaseJavaModule}s to describe properties for that module.
  */
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -39,30 +33,19 @@ public @interface ReactModule {
   boolean canOverrideExistingModule() default false;
 
   /**
-   * In order to support web workers, a module must be aware that it can be invoked from multiple
-   * different JS VMs. Supporting web workers means recognizing things like:
-   *
-   * 1) ids (e.g. timer ids, request ids, etc.) may only unique on a per-VM basis
-   * 2) the module needs to make sure to enqueue callbacks and JS module calls to the correct VM
-   *
-   * In order to facilitate this, modules that support web workers will have all their @ReactMethod-
-   * annotated methods passed a {@link ExecutorToken} as the first parameter before any arguments
-   * from JS. This ExecutorToken internally maps to a specific JS VM and can be used by the
-   * framework to route calls appropriately. In order to make JS module calls correctly, start using
-   * the version of {@link ReactContext#getJSModule(ExecutorToken, Class)} that takes an
-   * ExecutorToken. It will ensure that any calls you dispatch to the returned object will go to
-   * the right VM. For Callbacks, you don't have to do anything special -- the framework
-   * automatically tags them with the correct ExecutorToken when the are created.
-   *
-   * Note: even though calls can come from multiple JS VMs on multiple threads, calls to this module
-   * will still only occur on a single thread.
-   *
-   * @return whether this module supports web workers.
-   */
-  boolean supportsWebWorkers() default false;
-
-  /**
    * Whether this module needs to be loaded immediately.
    */
   boolean needsEagerInit() default false;
+
+  /**
+   *  Whether this module has constants to add, defaults to true as that is safer for when a
+   *  correct annotation is not included
+   */
+  boolean hasConstants() default true;
+
+  /**
+   * Indicates if a module is a C++ module or a Java Module
+   * @return
+   */
+  boolean isCxxModule() default false;
 }

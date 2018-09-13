@@ -1,25 +1,27 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * @providesModule AssetRegistry
- * @flow
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
  */
 'use strict';
 
 export type PackagerAsset = {
-  __packager_asset: boolean,
-  fileSystemLocation: string,
-  httpServerLocation: string,
-  width: number,
-  height: number,
-  scales: Array<number>,
-  hash: string,
-  name: string,
-  type: string,
+  +__packager_asset: boolean,
+  +fileSystemLocation: string,
+  +httpServerLocation: string,
+  +width: ?number,
+  +height: ?number,
+  +scales: Array<number>,
+  +hash: string,
+  +name: string,
+  +type: string,
 };
 
-
-var assets: Array<PackagerAsset> = [];
+const assets: Array<PackagerAsset> = [];
 
 function registerAsset(asset: PackagerAsset): number {
   // `push` returns new array length, so the first asset will
@@ -31,4 +33,4 @@ function getAssetByID(assetId: number): PackagerAsset {
   return assets[assetId - 1];
 }
 
-module.exports = { registerAsset, getAssetByID };
+module.exports = {registerAsset, getAssetByID};

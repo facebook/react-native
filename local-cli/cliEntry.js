@@ -1,20 +1,26 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-const config = require('./core');
+const {configPromise} = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const chalk = require('chalk');
 const childProcess = require('child_process');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
 const commander = require('commander');
 const commands = require('./commands');
 const init = require('./init/init');
@@ -22,16 +28,20 @@ const path = require('path');
 const pkg = require('../package.json');
 
 import type {CommandT} from './commands';
-import type {ConfigT} from './core';
+import type {RNConfig} from './core';
 
 commander.version(pkg.version);
 
-const defaultOptParser = (val) => val;
+const defaultOptParser = val => val;
 
-const handleError = (err) => {
+const handleError = err => {
   console.error();
   console.error(err.message || err);
   console.error();
+  if (err.stack) {
+    console.error(err.stack);
+    console.error();
+  }
   process.exit(1);
 };
 
@@ -44,15 +54,12 @@ function printHelpInformation() {
   }
 
   const sourceInformation = this.pkg
-    ? [
-      `  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`,
-      '',
-    ]
+    ? [`  ${chalk.bold('Source:')} ${this.pkg.name}@${this.pkg.version}`, '']
     : [];
 
   let output = [
     '',
-    chalk.bold(chalk.cyan((`  react-native ${cmdName} ${this.usage()}`))),
+    chalk.bold(chalk.cyan(`  react-native ${cmdName} ${this.usage()}`)),
     `  ${this._description}`,
     '',
     ...sourceInformation,
@@ -63,9 +70,9 @@ function printHelpInformation() {
   ];
 
   if (this.examples && this.examples.length > 0) {
-    const formattedUsage = this.examples.map(
-      example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`,
-    ).join('\n\n');
+    const formattedUsage = this.examples
+      .map(example => `    ${example.desc}: \n    ${chalk.cyan(example.cmd)}`)
+      .join('\n\n');
 
     output = output.concat([
       chalk.bold('  Example usage:'),
@@ -74,24 +81,25 @@ function printHelpInformation() {
     ]);
   }
 
-  return output.concat([
-    '',
-    '',
-  ]).join('\n');
+  return output.concat(['', '']).join('\n');
 }
 
 function printUnknownCommand(cmdName) {
-  console.log([
-    '',
-    cmdName
-      ? chalk.red(`  Unrecognized command '${cmdName}'`)
-      : chalk.red('  You didn\'t pass any command'),
-    `  Run ${chalk.cyan('react-native --help')} to see list of all available commands`,
-    '',
-  ].join('\n'));
+  console.log(
+    [
+      '',
+      cmdName
+        ? chalk.red(`  Unrecognized command '${cmdName}'`)
+        : chalk.red("  You didn't pass any command"),
+      `  Run ${chalk.cyan(
+        'react-native --help',
+      )} to see list of all available commands`,
+      '',
+    ].join('\n'),
+  );
 }
 
-const addCommand = (command: CommandT, cfg: ConfigT) => {
+const addCommand = (command: CommandT, cfg: RNConfig) => {
   const options = command.options || [];
 
   const cmd = commander
@@ -111,24 +119,26 @@ const addCommand = (command: CommandT, cfg: ConfigT) => {
         .catch(handleError);
     });
 
-    cmd.helpInformation = printHelpInformation.bind(cmd);
-    cmd.examples = command.examples;
-    cmd.pkg = command.pkg;
+  cmd.helpInformation = printHelpInformation.bind(cmd);
+  cmd.examples = command.examples;
+  cmd.pkg = command.pkg;
 
-  options
-    .forEach(opt => cmd.option(
+  options.forEach(opt =>
+    cmd.option(
       opt.command,
       opt.description,
       opt.parse || defaultOptParser,
       typeof opt.default === 'function' ? opt.default(cfg) : opt.default,
-    ));
+    ),
+  );
 
   // Placeholder option for --config, which is parsed before any other option,
   // but needs to be here to avoid "unknown option" errors when specified
   cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
 
-function run() {
+async function run() {
+  const config = await configPromise;
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';
@@ -139,7 +149,9 @@ function run() {
 
   commander.parse(process.argv);
 
-  const isValidCommand = commands.find(cmd => cmd.name.split(' ')[0] === process.argv[2]);
+  const isValidCommand = commands.find(
+    cmd => cmd.name.split(' ')[0] === process.argv[2],
+  );
 
   if (!isValidCommand) {
     printUnknownCommand(process.argv[2]);

@@ -1,34 +1,35 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @emails oncall+javascript_foundation
+ * @format
  */
 
 'use strict';
 
-jest.autoMockOff();
-
 const getProjectDependencies = require('../getProjectDependencies');
 const path = require('path');
+
+const CWD = path.resolve(__dirname, '../../..');
 
 describe('getProjectDependencies', () => {
   beforeEach(() => {
     jest.resetModules();
   });
   it('should return an array of project dependencies', () => {
-    jest.setMock(
-      path.join(process.cwd(), './package.json'),
-      { dependencies: { lodash: '^6.0.0', 'react-native': '^16.0.0' }}
-    );
+    jest.setMock(path.join(CWD, './package.json'), {
+      dependencies: {lodash: '^6.0.0', 'react-native': '^16.0.0'},
+    });
 
-    expect(getProjectDependencies()).toEqual(['lodash']);
+    expect(getProjectDependencies(CWD)).toEqual(['lodash']);
   });
 
   it('should return an empty array when no dependencies set', () => {
-    jest.setMock(path.join(process.cwd(), './package.json'), {});
-    expect(getProjectDependencies()).toEqual([]);
+    jest.setMock(path.join(CWD, './package.json'), {});
+    expect(getProjectDependencies(CWD)).toEqual([]);
   });
 });

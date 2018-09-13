@@ -1,35 +1,51 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ProgressViewIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const Image = require('Image');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('prop-types');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
 
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
 
-var PropTypes = React.PropTypes;
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+const RCTProgressView = requireNativeComponent('RCTProgressView');
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  progressViewStyle?: ?('default' | 'bar'),
+  progress?: ?number,
+  progressTintColor?: ?ColorValue,
+  trackTintColor?: ?string,
+  progressImage?: ?ImageSource,
+  trackImage?: ?ImageSource,
+|}>;
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
-// $FlowFixMe(>=0.41.0)
-var ProgressViewIOS = React.createClass({
+const ProgressViewIOS = createReactClass({
+  displayName: 'ProgressViewIOS',
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...View.propTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * The progress bar style.
      */
@@ -68,18 +84,15 @@ var ProgressViewIOS = React.createClass({
         style={[styles.progressView, this.props.style]}
       />
     );
-  }
+  },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   progressView: {
     height: 2,
   },
 });
 
-var RCTProgressView = requireNativeComponent(
-  'RCTProgressView',
-  ProgressViewIOS
-);
-
-module.exports = ProgressViewIOS;
+module.exports = ((ProgressViewIOS: any): Class<
+  ReactNative.NativeComponent<Props>,
+>);

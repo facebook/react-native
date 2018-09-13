@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge.queue;
@@ -60,7 +58,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     }
     mHandler.post(runnable);
   }
-
 
   @DoNotStrip
   @Override
@@ -162,27 +159,16 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
 
     if (UiThreadUtil.isOnUiThread()) {
       Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-      MessageQueueThreadRegistry.register(mqt);
     } else {
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
               Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-              MessageQueueThreadRegistry.register(mqt);
             }
           });
     }
     return mqt;
-  }
-
-  public static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name,
-      QueueThreadExceptionHandler exceptionHandler) {
-    return startNewBackgroundThread(
-        name,
-        MessageQueueThreadSpec.DEFAULT_STACK_SIZE_BYTES,
-        exceptionHandler);
   }
 
   /**
@@ -190,30 +176,25 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * running on it. Give it a name for easier debugging and optionally a suggested stack size.
    * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
-  public static MessageQueueThreadImpl startNewBackgroundThread(
+  private static MessageQueueThreadImpl startNewBackgroundThread(
       final String name,
       long stackSize,
       QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
-    final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());
-            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow());
-
             Looper.loop();
           }
         }, "mqt_" + name, stackSize);
     bgThread.start();
 
     Looper myLooper = looperFuture.getOrThrow();
-    MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
-    mqtFuture.set(mqt);
-
-    return mqt;
+    return new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
   }
 }

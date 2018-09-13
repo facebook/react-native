@@ -23,10 +23,10 @@ project.xcworkspace
 
 # Gradle
 /build/
-/Examples/**/android/app/build/
-/Examples/**/android/app/gradle/
-/Examples/**/android/app/gradlew
-/Examples/**/android/app/gradlew.bat
+/RNTester/android/app/build/
+/RNTester/android/app/gradle/
+/RNTester/android/app/gradlew
+/RNTester/android/app/gradlew.bat
 /ReactAndroid/build/
 
 # Buck
@@ -35,6 +35,9 @@ buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
 /ReactAndroid/src/main/jni/prebuilt/lib/x86/
 /ReactAndroid/src/main/gen
+
+# Watchman
+.watchmanconfig
 
 # Android
 .idea
@@ -47,6 +50,8 @@ local.properties
 node_modules
 *.log
 .nvm
+/bots/node_modules/
+package-lock.json
 
 # OS X
 .DS_Store
@@ -55,4 +60,12 @@ node_modules
 /ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 *.js.meta
 
+/coverage
 /third-party
+
+# Root dir shouldn't have Xcode project
+/*.xcodeproj
+
+# ReactCommon subdir shouldn't have Xcode project
+/ReactCommon/**/*.xcodeproj
+RNTester/build

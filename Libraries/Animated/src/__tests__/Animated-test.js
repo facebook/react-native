@@ -1,41 +1,49 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @emails oncall+react_native
  */
+
 'use strict';
 
-jest.disableAutomock();
-
-var Animated = require('Animated');
+let Animated = require('Animated');
 describe('Animated tests', () => {
   beforeEach(() => {
     jest.resetModules();
   });
 
   describe('Animated', () => {
-
     it('works end to end', () => {
-      var anim = new Animated.Value(0);
+      const anim = new Animated.Value(0);
 
-      var callback = jest.fn();
+      const callback = jest.fn();
 
-      var node = new Animated.__PropsOnlyForTests({
-        style: {
-          backgroundColor: 'red',
-          opacity: anim,
-          transform: [
-            {translateX: anim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [100, 200],
-            })},
-            {scale: anim},
-          ]
-        }
-      }, callback);
+      const node = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            backgroundColor: 'red',
+            opacity: anim,
+            transform: [
+              {
+                translateX: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [100, 200],
+                }),
+              },
+              {scale: anim},
+            ],
+            shadowOffset: {
+              width: anim,
+              height: anim,
+            },
+          },
+        },
+        callback,
+      );
 
       expect(anim.__getChildren().length).toBe(3);
 
@@ -43,10 +51,11 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0,
-          transform: [
-            {translateX: 100},
-            {scale: 0},
-          ],
+          transform: [{translateX: 100}, {scale: 0}],
+          shadowOffset: {
+            width: 0,
+            height: 0,
+          },
         },
       });
 
@@ -58,10 +67,11 @@ describe('Animated tests', () => {
         style: {
           backgroundColor: 'red',
           opacity: 0.5,
-          transform: [
-            {translateX: 150},
-            {scale: 0.5},
-          ],
+          transform: [{translateX: 150}, {scale: 0.5}],
+          shadowOffset: {
+            width: 0.5,
+            height: 0.5,
+          },
         },
       });
 
@@ -73,20 +83,20 @@ describe('Animated tests', () => {
     });
 
     it('does not detach on updates', () => {
-      var anim = new Animated.Value(0);
+      const anim = new Animated.Value(0);
       anim.__detach = jest.fn();
 
-      var c = new Animated.View();
+      const c = new Animated.View();
       c.props = {
         style: {
           opacity: anim,
         },
       };
-      c.componentWillMount();
+      c.UNSAFE_componentWillMount();
 
       expect(anim.__detach).not.toBeCalled();
       c._component = {};
-      c.componentWillReceiveProps({
+      c.UNSAFE_componentWillReceiveProps({
         style: {
           opacity: anim,
         },
@@ -97,23 +107,17 @@ describe('Animated tests', () => {
       expect(anim.__detach).toBeCalled();
     });
 
-
     it('stops animation when detached', () => {
-      // jest environment doesn't have cancelAnimationFrame :(
-      if (!global.cancelAnimationFrame) {
-        global.cancelAnimationFrame = jest.fn();
-      }
+      const anim = new Animated.Value(0);
+      const callback = jest.fn();
 
-      var anim = new Animated.Value(0);
-      var callback = jest.fn();
-
-      var c = new Animated.View();
+      const c = new Animated.View();
       c.props = {
         style: {
           opacity: anim,
         },
       };
-      c.componentWillMount();
+      c.UNSAFE_componentWillMount();
 
       Animated.timing(anim, {toValue: 10, duration: 1000}).start(callback);
       c._component = {};
@@ -124,19 +128,37 @@ describe('Animated tests', () => {
     });
 
     it('triggers callback when spring is at rest', () => {
-      var anim = new Animated.Value(0);
-      var callback = jest.fn();
+      const anim = new Animated.Value(0);
+      const callback = jest.fn();
       Animated.spring(anim, {toValue: 0, velocity: 0}).start(callback);
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when a spring stops', () => {
-      var anim = new Animated.Value(0);
-      var listener = jest.fn();
+    it('send toValue when an underdamped spring stops', () => {
+      const anim = new Animated.Value(0);
+      const listener = jest.fn();
       anim.addListener(listener);
       Animated.spring(anim, {toValue: 15}).start();
       jest.runAllTimers();
-      var lastValue = listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      const lastValue =
+        listener.mock.calls[listener.mock.calls.length - 2][0].value;
+      expect(lastValue).not.toBe(15);
+      expect(lastValue).toBeCloseTo(15);
+      expect(anim.__getValue()).toBe(15);
+    });
+
+    it('send toValue when a critically damped spring stops', () => {
+      const anim = new Animated.Value(0);
+      const listener = jest.fn();
+      anim.addListener(listener);
+      Animated.spring(anim, {
+        stiffness: 8000,
+        damping: 2000,
+        toValue: 15,
+      }).start();
+      jest.runAllTimers();
+      const lastValue =
+        listener.mock.calls[listener.mock.calls.length - 2][0].value;
       expect(lastValue).not.toBe(15);
       expect(lastValue).toBeCloseTo(15);
       expect(anim.__getValue()).toBe(15);
@@ -147,21 +169,19 @@ describe('Animated tests', () => {
     });
   });
 
-
   describe('Animated Sequence', () => {
-
     it('works with an empty sequence', () => {
-      var cb = jest.fn();
+      const cb = jest.fn();
       Animated.sequence([]).start(cb);
       expect(cb).toBeCalledWith({finished: true});
     });
 
     it('sequences well', () => {
-      var anim1 = {start: jest.fn()};
-      var anim2 = {start: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn()};
+      const anim2 = {start: jest.fn()};
+      const cb = jest.fn();
 
-      var seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1, anim2]);
 
       expect(anim1.start).not.toBeCalled();
       expect(anim2.start).not.toBeCalled();
@@ -182,9 +202,9 @@ describe('Animated tests', () => {
     });
 
     it('supports interrupting sequence', () => {
-      var anim1 = {start: jest.fn()};
-      var anim2 = {start: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn()};
+      const anim2 = {start: jest.fn()};
+      const cb = jest.fn();
 
       Animated.sequence([anim1, anim2]).start(cb);
 
@@ -196,11 +216,11 @@ describe('Animated tests', () => {
     });
 
     it('supports stopping sequence', () => {
-      var anim1 = {start: jest.fn(), stop: jest.fn()};
-      var anim2 = {start: jest.fn(), stop: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn(), stop: jest.fn()};
+      const anim2 = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
 
-      var seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1, anim2]);
       seq.start(cb);
       seq.stop();
 
@@ -214,17 +234,225 @@ describe('Animated tests', () => {
     });
   });
 
-  describe('Animated Parallel', () => {
+  describe('Animated Loop', () => {
+    it('loops indefinitely if config not specified', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
 
+      const loop = Animated.loop(animation);
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops indefinitely if iterations is -1', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation, {iterations: -1});
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops indefinitely if iterations not specified', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation, {anotherKey: 'value'});
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(4);
+      expect(cb).not.toBeCalled();
+    });
+
+    it('loops three times if iterations is 3', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation, {iterations: 3});
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      expect(animation.reset).toHaveBeenCalledTimes(3);
+      expect(cb).toBeCalledWith({finished: true});
+    });
+
+    it('does not loop if iterations is 1', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation, {iterations: 1});
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).toBeCalled();
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(cb).toBeCalledWith({finished: true});
+    });
+
+    it('does not animate if iterations is 0', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation, {iterations: 0});
+
+      expect(animation.start).not.toBeCalled();
+
+      loop.start(cb);
+
+      expect(animation.start).not.toBeCalled();
+      expect(cb).toBeCalledWith({finished: true});
+    });
+
+    it('supports interrupting an indefinite loop', () => {
+      const animation = {
+        start: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      Animated.loop(animation).start(cb);
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).not.toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      expect(animation.reset).toHaveBeenCalledTimes(2);
+      expect(cb).toBeCalledWith({finished: false});
+    });
+
+    it('supports stopping loop', () => {
+      const animation = {
+        start: jest.fn(),
+        stop: jest.fn(),
+        reset: jest.fn(),
+        _isUsingNativeDriver: () => false,
+      };
+      const cb = jest.fn();
+
+      const loop = Animated.loop(animation);
+      loop.start(cb);
+      loop.stop();
+
+      expect(animation.start).toBeCalled();
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(animation.stop).toBeCalled();
+
+      animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      expect(animation.reset).toHaveBeenCalledTimes(1);
+      expect(cb).toBeCalledWith({finished: false});
+    });
+  });
+
+  describe('Animated Parallel', () => {
     it('works with an empty parallel', () => {
-      var cb = jest.fn();
+      const cb = jest.fn();
       Animated.parallel([]).start(cb);
       expect(cb).toBeCalledWith({finished: true});
     });
 
     it('works with an empty element in array', () => {
-      var anim1 = {start: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn()};
+      const cb = jest.fn();
       Animated.parallel([null, anim1]).start(cb);
 
       expect(anim1.start).toBeCalled();
@@ -234,11 +462,11 @@ describe('Animated tests', () => {
     });
 
     it('parellelizes well', () => {
-      var anim1 = {start: jest.fn()};
-      var anim2 = {start: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn()};
+      const anim2 = {start: jest.fn()};
+      const cb = jest.fn();
 
-      var par = Animated.parallel([anim1, anim2]);
+      const par = Animated.parallel([anim1, anim2]);
 
       expect(anim1.start).not.toBeCalled();
       expect(anim2.start).not.toBeCalled();
@@ -257,11 +485,11 @@ describe('Animated tests', () => {
     });
 
     it('supports stopping parallel', () => {
-      var anim1 = {start: jest.fn(), stop: jest.fn()};
-      var anim2 = {start: jest.fn(), stop: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn(), stop: jest.fn()};
+      const anim2 = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
 
-      var seq = Animated.parallel([anim1, anim2]);
+      const seq = Animated.parallel([anim1, anim2]);
       seq.start(cb);
       seq.stop();
 
@@ -276,14 +504,13 @@ describe('Animated tests', () => {
       expect(cb).toBeCalledWith({finished: false});
     });
 
-
     it('does not call stop more than once when stopping', () => {
-      var anim1 = {start: jest.fn(), stop: jest.fn()};
-      var anim2 = {start: jest.fn(), stop: jest.fn()};
-      var anim3 = {start: jest.fn(), stop: jest.fn()};
-      var cb = jest.fn();
+      const anim1 = {start: jest.fn(), stop: jest.fn()};
+      const anim2 = {start: jest.fn(), stop: jest.fn()};
+      const anim3 = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
 
-      var seq = Animated.parallel([anim1, anim2, anim3]);
+      const seq = Animated.parallel([anim1, anim2, anim3]);
       seq.start(cb);
 
       anim1.start.mock.calls[0][0]({finished: false});
@@ -308,12 +535,9 @@ describe('Animated tests', () => {
 
   describe('Animated delays', () => {
     it('should call anim after delay in sequence', () => {
-      var anim = {start: jest.fn(), stop: jest.fn()};
-      var cb = jest.fn();
-      Animated.sequence([
-        Animated.delay(1000),
-        anim,
-      ]).start(cb);
+      const anim = {start: jest.fn(), stop: jest.fn()};
+      const cb = jest.fn();
+      Animated.sequence([Animated.delay(1000), anim]).start(cb);
       jest.runAllTimers();
       expect(anim.start.mock.calls.length).toBe(1);
       expect(cb).not.toBeCalled();
@@ -321,7 +545,7 @@ describe('Animated tests', () => {
       expect(cb).toBeCalledWith({finished: true});
     });
     it('should run stagger to end', () => {
-      var cb = jest.fn();
+      const cb = jest.fn();
       Animated.stagger(1000, [
         Animated.delay(1000),
         Animated.delay(1000),
@@ -334,34 +558,26 @@ describe('Animated tests', () => {
 
   describe('Animated Events', () => {
     it('should map events', () => {
-      var value = new Animated.Value(0);
-      var handler = Animated.event(
-        [null, {state: {foo: value}}],
-      );
+      const value = new Animated.Value(0);
+      const handler = Animated.event([null, {state: {foo: value}}]);
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
     it('should call listeners', () => {
-      var value = new Animated.Value(0);
-      var listener = jest.fn();
-      var handler = Animated.event(
-        [{foo: value}],
-        {listener},
-      );
+      const value = new Animated.Value(0);
+      const listener = jest.fn();
+      const handler = Animated.event([{foo: value}], {listener});
       handler({foo: 42});
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
-    it('should call forked event listeners', () => {
-      var value = new Animated.Value(0);
-      var listener = jest.fn();
-      var handler = Animated.event(
-        [{foo: value}],
-        {listener},
-      );
-      var listener2 = jest.fn();
-      var forkedHandler = Animated.forkEvent(handler, listener2);
+    it('should call forked event listeners, with Animated.event() listener', () => {
+      const value = new Animated.Value(0);
+      const listener = jest.fn();
+      const handler = Animated.event([{foo: value}], {listener});
+      const listener2 = jest.fn();
+      const forkedHandler = Animated.forkEvent(handler, listener2);
       forkedHandler({foo: 42});
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
@@ -369,13 +585,31 @@ describe('Animated tests', () => {
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });
+    it('should call forked event listeners, with js listener', () => {
+      const listener = jest.fn();
+      const listener2 = jest.fn();
+      const forkedHandler = Animated.forkEvent(listener, listener2);
+      forkedHandler({foo: 42});
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
+    });
+    it('should call forked event listeners, with undefined listener', () => {
+      const listener = undefined;
+      const listener2 = jest.fn();
+      const forkedHandler = Animated.forkEvent(listener, listener2);
+      forkedHandler({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
+    });
   });
 
   describe('Animated Interactions', () => {
     /*eslint-disable no-shadow*/
-    var Animated;
+    let Animated;
     /*eslint-enable*/
-    var InteractionManager;
+    let InteractionManager;
 
     beforeEach(() => {
       jest.mock('InteractionManager');
@@ -383,15 +617,15 @@ describe('Animated tests', () => {
       InteractionManager = require('InteractionManager');
     });
 
-    afterEach(()=> {
+    afterEach(() => {
       jest.unmock('InteractionManager');
     });
 
     it('registers an interaction by default', () => {
       InteractionManager.createInteractionHandle.mockReturnValue(777);
 
-      var value = new Animated.Value(0);
-      var callback = jest.fn();
+      const value = new Animated.Value(0);
+      const callback = jest.fn();
       Animated.timing(value, {
         toValue: 100,
         duration: 100,
@@ -404,8 +638,8 @@ describe('Animated tests', () => {
     });
 
     it('does not register an interaction when specified', () => {
-      var value = new Animated.Value(0);
-      var callback = jest.fn();
+      const value = new Animated.Value(0);
+      const callback = jest.fn();
       Animated.timing(value, {
         toValue: 100,
         duration: 100,
@@ -421,8 +655,8 @@ describe('Animated tests', () => {
 
   describe('Animated Tracking', () => {
     it('should track values', () => {
-      var value1 = new Animated.Value(0);
-      var value2 = new Animated.Value(0);
+      const value1 = new Animated.Value(0);
+      const value2 = new Animated.Value(0);
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
@@ -434,12 +668,12 @@ describe('Animated tests', () => {
     });
 
     it('should track interpolated values', () => {
-      var value1 = new Animated.Value(0);
-      var value2 = new Animated.Value(0);
+      const value1 = new Animated.Value(0);
+      const value2 = new Animated.Value(0);
       Animated.timing(value2, {
         toValue: value1.interpolate({
           inputRange: [0, 2],
-          outputRange: [0, 1]
+          outputRange: [0, 1],
         }),
         duration: 0,
       }).start();
@@ -448,8 +682,8 @@ describe('Animated tests', () => {
     });
 
     it('should stop tracking when animated', () => {
-      var value1 = new Animated.Value(0);
-      var value2 = new Animated.Value(0);
+      const value1 = new Animated.Value(0);
+      const value2 = new Animated.Value(0);
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
@@ -467,28 +701,28 @@ describe('Animated tests', () => {
 
   describe('Animated Vectors', () => {
     it('should animate vectors', () => {
-      var vec = new Animated.ValueXY();
+      const vec = new Animated.ValueXY();
 
-      var callback = jest.fn();
+      const callback = jest.fn();
 
-      var node = new Animated.__PropsOnlyForTests({
-        style: {
-          opacity: vec.x.interpolate({
-            inputRange: [0, 42],
-            outputRange: [0.2, 0.8],
-          }),
-          transform: vec.getTranslateTransform(),
-          ...vec.getLayout(),
-        }
-      }, callback);
+      const node = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            opacity: vec.x.interpolate({
+              inputRange: [0, 42],
+              outputRange: [0.2, 0.8],
+            }),
+            transform: vec.getTranslateTransform(),
+            ...vec.getLayout(),
+          },
+        },
+        callback,
+      );
 
       expect(node.__getValue()).toEqual({
         style: {
           opacity: 0.2,
-          transform: [
-            {translateX: 0},
-            {translateY: 0},
-          ],
+          transform: [{translateX: 0}, {translateY: 0}],
           left: 0,
           top: 0,
         },
@@ -501,10 +735,7 @@ describe('Animated tests', () => {
       expect(node.__getValue()).toEqual({
         style: {
           opacity: 0.8,
-          transform: [
-            {translateX: 42},
-            {translateY: 1492},
-          ],
+          transform: [{translateX: 42}, {translateY: 1492}],
           left: 42,
           top: 1492,
         },
@@ -517,8 +748,8 @@ describe('Animated tests', () => {
     });
 
     it('should track vectors', () => {
-      var value1 = new Animated.ValueXY();
-      var value2 = new Animated.ValueXY();
+      const value1 = new Animated.ValueXY();
+      const value2 = new Animated.ValueXY();
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
@@ -533,8 +764,8 @@ describe('Animated tests', () => {
     });
 
     it('should track with springs', () => {
-      var value1 = new Animated.ValueXY();
-      var value2 = new Animated.ValueXY();
+      const value1 = new Animated.ValueXY();
+      const value2 = new Animated.ValueXY();
       Animated.spring(value2, {
         toValue: value1,
         tension: 3000, // faster spring for faster test
@@ -553,9 +784,9 @@ describe('Animated tests', () => {
 
   describe('Animated Listeners', () => {
     it('should get updates', () => {
-      var value1 = new Animated.Value(0);
-      var listener = jest.fn();
-      var id = value1.addListener(listener);
+      const value1 = new Animated.Value(0);
+      const listener = jest.fn();
+      const id = value1.addListener(listener);
       value1.setValue(42);
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({value: 42});
@@ -571,9 +802,9 @@ describe('Animated tests', () => {
     });
 
     it('should removeAll', () => {
-      var value1 = new Animated.Value(0);
-      var listener = jest.fn();
-      [1,2,3,4].forEach(() => value1.addListener(listener));
+      const value1 = new Animated.Value(0);
+      const listener = jest.fn();
+      [1, 2, 3, 4].forEach(() => value1.addListener(listener));
       value1.setValue(42);
       expect(listener.mock.calls.length).toBe(4);
       expect(listener).toBeCalledWith({value: 42});

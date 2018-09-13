@@ -1,5 +1,14 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID_JSC_DEPS",
+    "APPLE",
+    "APPLE_JSC_DEPS",
+    "fb_xplat_cxx_test",
+    "jni_instrumentation_test_lib",
+    "react_native_xplat_target",
+)
+
 TEST_SRCS = [
-    "CxxMessageQueueTest.cpp",
     "RecoverableErrorTest.cpp",
     "jsarg_helpers.cpp",
     "jsbigstring.cpp",
@@ -9,39 +18,41 @@ TEST_SRCS = [
     "value.cpp",
 ]
 
-if THIS_IS_FBANDROID:
-  include_defs('//ReactAndroid/DEFS')
-  include_defs('//ReactAndroid/TEST_DEFS')
-
-  jni_instrumentation_test_lib(
-    name = 'tests',
-    class_under_test = 'com/facebook/react/XplatBridgeTest',
-    soname = 'libxplat-bridge.so',
+jni_instrumentation_test_lib(
+    name = "tests",
     srcs = TEST_SRCS,
+    class_under_test = "com/facebook/react/XplatBridgeTest",
     compiler_flags = [
-      '-fexceptions',
-      '-std=c++1y',
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+    ],
+    soname = "libxplat-bridge.so",
+    visibility = [
+        "fbandroid//instrumentation_tests/...",
     ],
     deps = [
-      '//native/third-party/android-ndk:android',
-      'xplat//third-party/gmock:gtest',
-      react_native_xplat_target('cxxreact:bridge'),
-    ],
-    visibility = ['//instrumentation_tests/...'],
-  )
+        "xplat//third-party/linker_lib:android",
+        "xplat//third-party/gmock:gtest",
+        react_native_xplat_target("cxxreact:bridge"),
+    ] + ANDROID_JSC_DEPS,
+)
 
-if THIS_IS_FBOBJC:
-  fb_xplat_cxx_test(
-    name = 'tests',
+fb_xplat_cxx_test(
+    name = "tests",
     srcs = TEST_SRCS,
     compiler_flags = [
-      '-fexceptions',
+        "-fexceptions",
+        "-frtti",
+    ],
+    platforms = APPLE,
+    visibility = [
+        react_native_xplat_target("cxxreact/..."),
     ],
     deps = [
-      '//xplat/folly:molly',
-      'xplat//third-party/gmock:gtest',
-      react_native_xplat_target('cxxreact:bridge'),
-      react_native_xplat_target('jschelpers:jschelpers'),
-    ],
-    visibility = [react_native_xplat_target('cxxreact/...')],
-  )
+        "xplat//folly:molly",
+        "xplat//third-party/gmock:gtest",
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("jschelpers:jschelpers"),
+    ] + APPLE_JSC_DEPS,
+)

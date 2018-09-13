@@ -1,11 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <string>
 #include <vector>
 
-#include <cxxreact/ExecutorToken.h>
+#include <folly/Optional.h>
 #include <folly/dynamic.h>
 
 namespace facebook {
@@ -21,17 +24,16 @@ struct MethodDescriptor {
       , type(std::move(t)) {}
 };
 
+  using MethodCallResult = folly::Optional<folly::dynamic>;
+
 class NativeModule {
  public:
   virtual ~NativeModule() {}
   virtual std::string getName() = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;
   virtual folly::dynamic getConstants() = 0;
-  virtual bool supportsWebWorkers() = 0;
-  // TODO mhorowitz: do we need initialize()/onCatalystInstanceDestroy() in C++
-  // or only Java?
-  virtual void invoke(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& params) = 0;
-  virtual MethodCallResult callSerializableNativeHook(ExecutorToken token, unsigned int reactMethodId, folly::dynamic&& args) = 0;
+  virtual void invoke(unsigned int reactMethodId, folly::dynamic&& params, int callId) = 0;
+  virtual MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic&& args) = 0;
 };
 
 }

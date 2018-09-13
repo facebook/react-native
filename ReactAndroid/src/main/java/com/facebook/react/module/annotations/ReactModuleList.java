@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.module.annotations;
 
@@ -19,10 +22,10 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
 public @interface ReactModuleList {
 
   /**
-   * The Java modules in this list should be annotated with {@link ReactModule}.
-   * @return List of Java modules in the package.
+   * The Native modules in this list should be annotated with {@link ReactModule}.
+   * @return List of Native modules in the package.
    */
-  Class<? extends NativeModule>[] javaModules();
+  Class<? extends NativeModule>[] nativeModules();
 
   /**
    * The View Managers in this list should be annotated with {@link ReactModule}.

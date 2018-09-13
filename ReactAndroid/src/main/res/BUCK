@@ -1,6 +1,6 @@
-include_defs("//ReactAndroid/DEFS")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_resource")
 
-android_resource(
+rn_android_resource(
     name = "devsupport",
     package = "com.facebook.react",
     res = "devsupport",
@@ -9,7 +9,7 @@ android_resource(
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "shell",
     package = "com.facebook.react",
     res = "shell",
@@ -18,7 +18,7 @@ android_resource(
     ],
 )
 
-android_resource(
+rn_android_resource(
     name = "modal",
     package = "com.facebook.react",
     res = "views/modal",
@@ -26,3 +26,14 @@ android_resource(
         "PUBLIC",
     ],
 )
+
+rn_android_resource(
+    name = "uimanager",
+    package = "com.facebook.react",
+    res = "views/uimanager",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+# New resource directories must be added to react-native-github/ReactAndroid/build.gradle

@@ -1,23 +1,27 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 'use strict';
 
 /* @flow */
 
-import React, { PropTypes, Component } from 'react';
-import {
-  Platform,
-  View,
-  Keyboard,
-  LayoutAnimation,
-  UIManager,
-} from 'react-native';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {Platform, View, Keyboard, LayoutAnimation} from 'react-native';
 
 type Props = {
   offset?: number,
-}
+};
 
 type State = {
-  keyboardHeight: number
-}
+  keyboardHeight: number,
+};
 
 // Consider contributing this to the popular library:
 // https://github.com/Andr3wHur5t/react-native-keyboard-spacer
@@ -41,11 +45,10 @@ type State = {
  * The KeyboardAvoidingView doesn't work when used together with
  * a ScrollView/ListView.
  */
-const KeyboardSpacer = () => (
-  Platform.OS === 'ios' ? <KeyboardSpacerIOS /> : null
-);
+const KeyboardSpacer = () =>
+  Platform.OS === 'ios' ? <KeyboardSpacerIOS /> : null;
 
-class KeyboardSpacerIOS extends Component<Props, Props, State> {
+class KeyboardSpacerIOS extends Component<Props, State> {
   static propTypes = {
     offset: PropTypes.number,
   };
@@ -58,7 +61,7 @@ class KeyboardSpacerIOS extends Component<Props, Props, State> {
     keyboardHeight: 0,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this._registerEvents();
   }
 
@@ -66,17 +69,17 @@ class KeyboardSpacerIOS extends Component<Props, Props, State> {
     this._unRegisterEvents();
   }
 
-  _keyboardWillShowSubscription: { remove: Function };
-  _keyboardWillHideSubscription: { remove: Function };
+  _keyboardWillShowSubscription: {+remove: Function};
+  _keyboardWillHideSubscription: {+remove: Function};
 
   _registerEvents = () => {
     this._keyboardWillShowSubscription = Keyboard.addListener(
       'keyboardWillShow',
-      this._keyboardWillShow
+      this._keyboardWillShow,
     );
     this._keyboardWillHideSubscription = Keyboard.addListener(
       'keyboardWillHide',
-      this._keyboardWillHide
+      this._keyboardWillHide,
     );
   };
 
@@ -91,9 +94,9 @@ class KeyboardSpacerIOS extends Component<Props, Props, State> {
       duration: 100,
       update: {
         type: 'keyboard',
-      }
+      },
     });
-  }
+  };
 
   _keyboardWillShow = (e: any) => {
     this._configureLayoutAnimation();
@@ -110,7 +113,7 @@ class KeyboardSpacerIOS extends Component<Props, Props, State> {
   };
 
   render() {
-    return <View style={{ height: this.state.keyboardHeight }} />;
+    return <View style={{height: this.state.keyboardHeight}} />;
   }
 }
 

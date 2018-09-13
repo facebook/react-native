@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "SampleCxxModule.h"
 #include <cxxreact/JsArgumentHelpers.h>
@@ -133,9 +136,8 @@ void SampleCxxModule::load(folly::dynamic args, Callback cb) {
 
 }}}
 
-// By convention, the function name should be the same as the class
-// name.
-extern "C" facebook::xplat::module::CxxModule *SampleCxxModule() {
+// By convention, the function name should be the same as the class name.
+facebook::xplat::module::CxxModule *SampleCxxModule() {
   return new facebook::xplat::samples::SampleCxxModule(
     folly::make_unique<facebook::xplat::samples::Sample>());
 }

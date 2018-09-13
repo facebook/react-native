@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -21,7 +19,8 @@ namespace internal {
 
 // Statistics mostly provided for test (only updated if FBJNI_DEBUG_REFS is defined)
 struct ReferenceStats {
-  std::atomic_uint locals_deleted, globals_deleted, weaks_deleted;
+  std::atomic_uint locals_created, globals_created, weaks_created,
+                   locals_deleted, globals_deleted, weaks_deleted;
 
   void reset() noexcept;
 };
@@ -35,6 +34,9 @@ extern ReferenceStats g_reference_stats;
 
 inline jobject LocalReferenceAllocator::newReference(jobject original) const {
   internal::dbglog("Local new: %p", original);
+  #ifdef FBJNI_DEBUG_REFS
+    ++internal::g_reference_stats.locals_created;
+  #endif
   auto ref = internal::getEnv()->NewLocalRef(original);
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   return ref;
@@ -64,6 +66,9 @@ inline bool LocalReferenceAllocator::verifyReference(jobject reference) const no
 
 inline jobject GlobalReferenceAllocator::newReference(jobject original) const {
   internal::dbglog("Global new: %p", original);
+  #ifdef FBJNI_DEBUG_REFS
+    ++internal::g_reference_stats.globals_created;
+  #endif
   auto ref = internal::getEnv()->NewGlobalRef(original);
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   return ref;
@@ -93,6 +98,9 @@ inline bool GlobalReferenceAllocator::verifyReference(jobject reference) const n
 
 inline jobject WeakGlobalReferenceAllocator::newReference(jobject original) const {
   internal::dbglog("Weak global new: %p", original);
+  #ifdef FBJNI_DEBUG_REFS
+    ++internal::g_reference_stats.weaks_created;
+  #endif
   auto ref = internal::getEnv()->NewWeakGlobalRef(original);
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   return ref;

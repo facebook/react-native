@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTLog.h"
@@ -218,7 +216,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 #if RCT_DEBUG
 
     // Log to red box in debug mode.
-    if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
+    if (RCTSharedApplication() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];

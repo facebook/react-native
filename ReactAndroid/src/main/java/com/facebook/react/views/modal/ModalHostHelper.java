@@ -1,9 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.views.modal;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
@@ -38,12 +43,26 @@ import com.facebook.infer.annotation.Assertions;
     // getSize will return the dimensions of the screen in its current orientation
     display.getSize(SIZE_POINT);
 
+    int[] attrs = {android.R.attr.windowFullscreen};
+    Resources.Theme theme = context.getTheme();
+    TypedArray ta = theme.obtainStyledAttributes(attrs);
+    boolean windowFullscreen = ta.getBoolean(0, false);
+
+    // We need to add the status bar height to the height if we have a fullscreen window,
+    // because Display.getCurrentSizeRange doesn't include it.
+    Resources resources = context.getResources();
+    int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
+    int statusBarHeight = 0;
+    if (windowFullscreen && statusBarId > 0) {
+        statusBarHeight = (int) resources.getDimension(statusBarId);
+    }
+
     if (SIZE_POINT.x < SIZE_POINT.y) {
       // If we are vertical the width value comes from min width and height comes from max height
-      return new Point(MIN_POINT.x, MAX_POINT.y);
+      return new Point(MIN_POINT.x, MAX_POINT.y + statusBarHeight);
     } else {
       // If we are horizontal the width value comes from max width and height comes from min height
-      return new Point(MAX_POINT.x, MIN_POINT.y);
+      return new Point(MAX_POINT.x, MIN_POINT.y + statusBarHeight);
     }
   }
 }

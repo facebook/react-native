@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -15,9 +13,15 @@
 @protocol RCTBridgeModule;
 @class RCTBridge;
 
+typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
+
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge;
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
@@ -41,6 +45,11 @@
 @property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods;
 
 /**
+ * Returns the module's constants, if it exports any
+ */
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *exportedConstants;
+
+/**
  * Returns YES if module instance has already been initialized; NO otherwise.
  */
 @property (nonatomic, assign, readonly) BOOL hasInstance;
@@ -48,7 +57,7 @@
 /**
  * Returns YES if module instance must be created on the main thread.
  */
-@property (nonatomic, assign, readonly) BOOL requiresMainQueueSetup;
+@property (nonatomic, assign) BOOL requiresMainQueueSetup;
 
 /**
  * Returns YES if module has constants to export.
@@ -67,12 +76,6 @@
  * queue and the module itself if they have not already been created.
  */
 @property (nonatomic, strong, readonly) dispatch_queue_t methodQueue;
-
-/**
- * Returns the module config. Calls `gatherConstants` internally, so the same
- * usage caveats apply.
- */
-@property (nonatomic, copy, readonly) NSArray *config;
 
 /**
  * Whether the receiver has a valid `instance` which implements -batchDidComplete.

@@ -12,7 +12,6 @@ public class MatrixMathHelper {
 
   public static class MatrixDecompositionContext {
     double[] perspective = new double[4];
-    double[] quaternion = new double[4];
     double[] scale = new double[3];
     double[] skew = new double[3];
     double[] translation = new double[3];
@@ -65,7 +64,6 @@ public class MatrixMathHelper {
 
     // output values
     final double[] perspective = ctx.perspective;
-    final double[] quaternion = ctx.quaternion;
     final double[] scale = ctx.scale;
     final double[] skew = ctx.skew;
     final double[] translation = ctx.translation;
@@ -170,35 +168,11 @@ public class MatrixMathHelper {
     }
 
     // Now, get the rotations out
-    quaternion[0] =
-      0.5 * Math.sqrt(Math.max(1 + row[0][0] - row[1][1] - row[2][2], 0));
-    quaternion[1] =
-      0.5 * Math.sqrt(Math.max(1 - row[0][0] + row[1][1] - row[2][2], 0));
-    quaternion[2] =
-      0.5 * Math.sqrt(Math.max(1 - row[0][0] - row[1][1] + row[2][2], 0));
-    quaternion[3] =
-      0.5 * Math.sqrt(Math.max(1 + row[0][0] + row[1][1] + row[2][2], 0));
-
-    if (row[2][1] > row[1][2]) {
-      quaternion[0] = -quaternion[0];
-    }
-    if (row[0][2] > row[2][0]) {
-      quaternion[1] = -quaternion[1];
-    }
-    if (row[1][0] > row[0][1]) {
-      quaternion[2] = -quaternion[2];
-    }
-
-    // correct for occasional, weird Euler synonyms for 2d rotation
-
-    if (quaternion[0] < 0.001 && quaternion[0] >= 0 &&
-        quaternion[1] < 0.001 && quaternion[1] >= 0) {
-      // this is a 2d rotation on the z-axis
-      rotationDegrees[0] = rotationDegrees[1] = 0d;
-      rotationDegrees[2] = roundTo3Places(Math.atan2(row[0][1], row[0][0]) * 180 / Math.PI);
-    } else {
-      quaternionToDegreesXYZ(quaternion, rotationDegrees);
-    }
+    // Based on: http://nghiaho.com/?page_id=846
+    double conv = 180 / Math.PI;
+    rotationDegrees[0] = roundTo3Places(-Math.atan2(row[2][1], row[2][2]) * conv);
+    rotationDegrees[1] = roundTo3Places(-Math.atan2(-row[2][0], Math.sqrt(row[2][1] * row[2][1] + row[2][2] * row[2][2])) * conv);
+    rotationDegrees[2] = roundTo3Places(-Math.atan2(row[1][0], row[0][0]) * conv);
   }
 
   public static double determinant(double[] matrix) {
@@ -332,50 +306,6 @@ public class MatrixMathHelper {
       a[2] * b[0] - a[0] * b[2],
       a[0] * b[1] - a[1] * b[0]
     };
-  }
-
-  /**
-   * Based on:
-   * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
-   * and:
-   * http://quat.zachbennett.com/
-   *
-   * Note that this rounds degrees to the thousandth of a degree, due to
-   * floating point errors in the creation of the quaternion.
-   *
-   * Also note that this expects the qw value to be last, not first.
-   *
-   * Also, when researching this, remember that:
-   * yaw   === heading            === z-axis
-   * pitch === elevation/attitude === y-axis
-   * roll  === bank               === x-axis
-   */
-  public static void quaternionToDegreesXYZ(double[] q, double[] result) {
-    double qx = q[0], qy = q[1], qz = q[2], qw = q[3];
-    double qw2 = qw * qw;
-    double qx2 = qx * qx;
-    double qy2 = qy * qy;
-    double qz2 = qz * qz;
-    double test = qx * qy + qz * qw;
-    double unit = qw2 + qx2 + qy2 + qz2;
-    double conv = 180 / Math.PI;
-
-    if (test > 0.49999 * unit) {
-      result[0] = 0;
-      result[1] = 2 * Math.atan2(qx, qw) * conv;
-      result[2] = 90;
-      return;
-    }
-    if (test < -0.49999 * unit) {
-      result[0] = 0;
-      result[1] = -2 * Math.atan2(qx, qw) * conv;
-      result[2] = -90;
-      return;
-    }
-
-    result[0] = roundTo3Places(Math.atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx2 - 2 * qz2) * conv);
-    result[1] = roundTo3Places(Math.atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy2 - 2 * qz2) * conv);
-    result[2] = roundTo3Places(Math.asin(2 * qx * qy + 2 * qz * qw) * conv);
   }
 
   public static double roundTo3Places(double n) {

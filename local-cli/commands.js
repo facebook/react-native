@@ -1,29 +1,29 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-const { getProjectCommands } = require('./core');
+const {getProjectCommands} = require('./core');
 
-import type { ConfigT } from './core';
+import type {RNConfig} from './core';
 
 export type CommandT = {
   name: string,
   description?: string,
   usage?: string,
-  func: (argv: Array<string>, config: ConfigT, args: Object) => ?Promise<void>,
+  func: (argv: Array<string>, config: RNConfig, args: Object) => ?Promise<void>,
   options?: Array<{
     command: string,
     description?: string,
     parse?: (val: string) => any,
-    default?: (config: ConfigT) => any | any,
+    default?: ((config: RNConfig) => mixed) | mixed,
   }>,
   examples?: Array<{
     desc: string,
@@ -41,7 +41,7 @@ const documentedCommands = [
   require('./runAndroid/runAndroid'),
   require('./library/library'),
   require('./bundle/bundle'),
-  require('./bundle/unbundle'),
+  require('./bundle/ramBundle'),
   require('./eject/eject'),
   require('./link/link'),
   require('./link/unlink'),
@@ -51,6 +51,7 @@ const documentedCommands = [
   require('./logAndroid/logAndroid'),
   require('./logIOS/logIOS'),
   require('./dependencies/dependencies'),
+  require('./info/info'),
 ];
 
 // The user should never get here because projects are inited by
@@ -59,10 +60,12 @@ const undocumentedCommands = [
   {
     name: 'init',
     func: () => {
-      console.log([
-        'Looks like React Native project already exists in the current',
-        'folder. Run this command from a different folder or remove node_modules/react-native',
-      ].join('\n'));
+      console.log(
+        [
+          'Looks like React Native project already exists in the current',
+          'folder. Run this command from a different folder or remove node_modules/react-native',
+        ].join('\n'),
+      );
     },
   },
 ];

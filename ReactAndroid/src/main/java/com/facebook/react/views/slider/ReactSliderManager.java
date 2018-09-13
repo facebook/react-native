@@ -1,37 +1,32 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.slider;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-
-import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNodeAPI;
-
+import com.facebook.yoga.YogaNode;
 import java.util.Map;
 
 /**
@@ -53,12 +48,42 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     private boolean mMeasured;
 
     private ReactSliderShadowNode() {
+      initMeasureFunction();
+    }
+
+    private ReactSliderShadowNode(ReactSliderShadowNode node) {
+      super(node);
+      mWidth = node.mWidth;
+      mHeight = node.mHeight;
+      mMeasured = node.mMeasured;
+    }
+
+    private void initMeasureFunction() {
       setMeasureFunction(this);
     }
 
     @Override
+    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy(instanceHandle);
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
+      reactShadowNode.initMeasureFunction();
+      return reactShadowNode;
+    }
+
+    @Override
+    protected ReactSliderShadowNode copy() {
+      return new ReactSliderShadowNode(this);
+    }
+
+    @Override
     public long measure(
-        YogaNodeAPI node,
+        YogaNode node,
         float width,
         YogaMeasureMode widthMode,
         float height,
@@ -163,22 +188,22 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
   @ReactProp(name = "minimumTrackTintColor", customType = "Color")
   public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
+    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
     if (color == null) {
-      background.clearColorFilter();
+      progress.clearColorFilter();
     } else {
-      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 
   @ReactProp(name = "maximumTrackTintColor", customType = "Color")
   public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
-    Drawable progress = drawable.findDrawableByLayerId(android.R.id.progress);
+    Drawable background = drawable.findDrawableByLayerId(android.R.id.background);
     if (color == null) {
-      progress.clearColorFilter();
+      background.clearColorFilter();
     } else {
-      progress.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+      background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
 

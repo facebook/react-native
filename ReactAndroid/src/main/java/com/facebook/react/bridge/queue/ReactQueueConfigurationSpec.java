@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge.queue;
@@ -29,8 +27,8 @@ public class ReactQueueConfigurationSpec {
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
   private ReactQueueConfigurationSpec(
-      MessageQueueThreadSpec nativeModulesQueueThreadSpec,
-      MessageQueueThreadSpec jsQueueThreadSpec) {
+    MessageQueueThreadSpec nativeModulesQueueThreadSpec,
+    MessageQueueThreadSpec jsQueueThreadSpec) {
     mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
     mJSQueueThreadSpec = jsQueueThreadSpec;
   }
@@ -64,8 +62,8 @@ public class ReactQueueConfigurationSpec {
 
     public Builder setNativeModulesQueueThreadSpec(MessageQueueThreadSpec spec) {
       Assertions.assertCondition(
-          mNativeModulesQueueSpec == null,
-          "Setting native modules queue spec multiple times!");
+        mNativeModulesQueueSpec == null,
+        "Setting native modules queue spec multiple times!");
       mNativeModulesQueueSpec = spec;
       return this;
     }
@@ -78,8 +76,8 @@ public class ReactQueueConfigurationSpec {
 
     public ReactQueueConfigurationSpec build() {
       return new ReactQueueConfigurationSpec(
-          Assertions.assertNotNull(mNativeModulesQueueSpec),
-          Assertions.assertNotNull(mJSQueueSpec));
+        Assertions.assertNotNull(mNativeModulesQueueSpec),
+        Assertions.assertNotNull(mJSQueueSpec));
     }
   }
 }

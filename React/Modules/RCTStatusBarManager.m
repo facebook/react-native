@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTStatusBarManager.h"
@@ -99,7 +97,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 {
   callback(@[@{
-    @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
+    @"height": @(RCTSharedApplication().statusBarFrame.size.height),
   }]);
 }
 

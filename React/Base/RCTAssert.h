@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -26,8 +24,8 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
   if ((condition) == 0) { \
     _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
     if (RCT_NSASSERT) { \
-      [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
-        file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
+      [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull)@(__func__) \
+        file:(NSString * _Nonnull)@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
     } \
   } \
 } while (false)
@@ -85,19 +83,13 @@ typedef void (^RCTFatalHandler)(NSError *error);
  * Convenience macro for asserting that we're running on main queue.
  */
 #define RCTAssertMainQueue() RCTAssert(RCTIsMainQueue(), \
-  @"This function must be called on the main thread")
+  @"This function must be called on the main queue")
 
 /**
  * Convenience macro for asserting that we're running off the main queue.
  */
 #define RCTAssertNotMainQueue() RCTAssert(!RCTIsMainQueue(), \
-@"This function must not be called on the main thread")
-
-/**
- * Deprecated, do not use
- */
-#define RCTAssertMainThread() RCTAssertMainQueue()
-#define RCTAssertNotMainThread() RCTAssertNotMainQueue()
+@"This function must not be called on the main queue")
 
 /**
  * These methods get and set the current assert function called by the RCTAssert

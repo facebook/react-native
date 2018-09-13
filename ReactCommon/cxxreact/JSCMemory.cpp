@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSCMemory.h"
 
@@ -20,16 +23,15 @@ static JSValueRef nativeCaptureHeap(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (argumentCount < 1) {
-      if (exception) {
-          *exception = Value::makeError(
-            ctx,
-            "nativeCaptureHeap requires the path to save the capture");
-      }
-      return Value::makeUndefined(ctx);
+    if (exception) {
+      *exception = Value::makeError(
+        ctx,
+        "nativeCaptureHeap requires the path to save the capture");
+    }
+    return Value::makeUndefined(ctx);
   }
 
-  auto outputFilename = String::adopt(
-    ctx, JSValueToStringCopy(ctx, arguments[0], exception));
+  auto outputFilename = Value(ctx, arguments[0]).toString();
   JSCaptureHeap(ctx, outputFilename.str().c_str(), exception);
   return Value::makeUndefined(ctx);
 }
@@ -39,11 +41,10 @@ static JSValueRef nativeCaptureHeap(
 namespace facebook {
 namespace react {
 
-void addNativeMemoryHooks(JSGlobalContextRef ctx) {
+void addJSCMemoryHooks(JSGlobalContextRef ctx) {
 #ifdef WITH_FB_MEMORY_PROFILING
   installGlobalFunction(ctx, "nativeCaptureHeap", nativeCaptureHeap);
 #endif // WITH_FB_MEMORY_PROFILING
-
 }
 
 } }

@@ -1,16 +1,16 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
+ * @emails oncall+react_native
  */
 
 'use strict';
 
-jest.unmock('TaskQueue');
+const Promise = require('promise');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
@@ -40,7 +40,6 @@ describe('TaskQueue', () => {
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
   });
-
 
   it('should run a basic task', () => {
     const task1 = createSequenceTask(1);

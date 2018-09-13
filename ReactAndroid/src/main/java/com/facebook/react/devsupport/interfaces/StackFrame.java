@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.devsupport.interfaces;
+
+import org.json.JSONObject;
 
 /**
   * Represents a generic entry in a stack trace, be it originally from JS or Java.
@@ -43,4 +43,9 @@ public interface StackFrame {
     * name, not the full path. For Java traces there is no difference.
     */
   public String getFileName();
+
+  /**
+   * Convert the stack frame to a JSON representation.
+   */
+  public JSONObject toJSON();
 }

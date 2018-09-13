@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.core;
@@ -12,8 +10,8 @@ package com.facebook.react.modules.core;
 import java.util.ArrayDeque;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
 /**
@@ -65,11 +63,15 @@ public class ReactChoreographer {
 
   private static ReactChoreographer sInstance;
 
-  public static ReactChoreographer getInstance() {
-    UiThreadUtil.assertOnUiThread();
+  public static void initialize() {
     if (sInstance == null) {
+      UiThreadUtil.assertOnUiThread();
       sInstance = new ReactChoreographer();
     }
+  }
+
+  public static ReactChoreographer getInstance() {
+    Assertions.assertNotNull(sInstance, "ReactChoreographer needs to be initialized.");
     return sInstance;
   }
 
@@ -89,8 +91,9 @@ public class ReactChoreographer {
     }
   }
 
-  public void postFrameCallback(CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
-    UiThreadUtil.assertOnUiThread();
+  public synchronized void postFrameCallback(
+    CallbackType type,
+    ChoreographerCompat.FrameCallback frameCallback) {
     mCallbackQueues[type.getOrder()].addLast(frameCallback);
     mTotalCallbacks++;
     Assertions.assertCondition(mTotalCallbacks > 0);
@@ -100,8 +103,9 @@ public class ReactChoreographer {
     }
   }
 
-  public void removeFrameCallback(CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
-    UiThreadUtil.assertOnUiThread();
+  public synchronized void removeFrameCallback(
+    CallbackType type,
+    ChoreographerCompat.FrameCallback frameCallback) {
     if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
       mTotalCallbacks--;
       maybeRemoveFrameCallback();
@@ -122,15 +126,17 @@ public class ReactChoreographer {
 
     @Override
     public void doFrame(long frameTimeNanos) {
-      mHasPostedCallback = false;
-      for (int i = 0; i < mCallbackQueues.length; i++) {
-        int initialLength = mCallbackQueues[i].size();
-        for (int callback = 0; callback < initialLength; callback++) {
-          mCallbackQueues[i].removeFirst().doFrame(frameTimeNanos);
-          mTotalCallbacks--;
+      synchronized (ReactChoreographer.this) {
+        mHasPostedCallback = false;
+        for (int i = 0; i < mCallbackQueues.length; i++) {
+          int initialLength = mCallbackQueues[i].size();
+          for (int callback = 0; callback < initialLength; callback++) {
+            mCallbackQueues[i].removeFirst().doFrame(frameTimeNanos);
+            mTotalCallbacks--;
+          }
         }
+        maybeRemoveFrameCallback();
       }
-      maybeRemoveFrameCallback();
     }
   }
 }

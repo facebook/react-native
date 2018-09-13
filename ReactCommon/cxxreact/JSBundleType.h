@@ -1,9 +1,16 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <cstdint>
 #include <cstring>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -43,7 +50,7 @@ struct __attribute__((packed)) BundleHeader {
  * Takes the first 8 bytes of a bundle, and returns a tag describing the
  * bundle's format.
  */
-ScriptTag parseTypeFromHeader(const BundleHeader& header);
+RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader& header);
 
 /**
  * stringForScriptTag
@@ -51,7 +58,7 @@ ScriptTag parseTypeFromHeader(const BundleHeader& header);
  * Convert an `ScriptTag` enum into a string, useful for emitting in errors
  * and diagnostic messages.
  */
-const char* stringForScriptTag(const ScriptTag& tag);
+RN_EXPORT const char* stringForScriptTag(const ScriptTag& tag);
 
 }  // namespace react
 }  // namespace facebook

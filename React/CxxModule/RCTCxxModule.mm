@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTCxxModule.h"
@@ -23,37 +21,41 @@ using namespace facebook::react;
   std::unique_ptr<facebook::xplat::module::CxxModule> _module;
 }
 
-- (instancetype)init
-{
-  return nil;
-}
-
-- (instancetype)initWithCxxModule:(std::unique_ptr<facebook::xplat::module::CxxModule>)module
-{
-  RCTAssert([RCTBridgeModuleNameForClass([self class]) isEqualToString:@(module->getName().c_str())],
-            @"CxxModule class name %@ does not match runtime name %s",
-            RCTBridgeModuleNameForClass([self class]), module->getName().c_str());
-
-  if ((self = [super init])) {
-    _module = std::move(module);
-  }
-
-  return self;
-}
-
-- (std::unique_ptr<facebook::xplat::module::CxxModule>)move
-{
-  return std::move(_module);
-}
-
 + (NSString *)moduleName
 {
   return @"";
 }
 
-- (NSArray *)methodsToExport
++ (BOOL)requiresMainQueueSetup
 {
-  CHECK(_module) << "Can't call methodsToExport on moved module";
+  return NO;
+}
+
+- (void)lazyInit
+{
+  if (!_module) {
+    _module = [self createModule];
+
+    if (_module) {
+      RCTAssert([RCTBridgeModuleNameForClass([self class]) isEqualToString:@(_module->getName().c_str())],
+                @"CxxModule class name %@ does not match runtime name %s",
+                RCTBridgeModuleNameForClass([self class]), _module->getName().c_str());
+    }
+  }
+}
+
+- (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule
+{
+  RCTAssert(NO, @"Subclass %@ must override createModule", [self class]);
+  return nullptr;
+}
+
+- (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
+{
+  [self lazyInit];
+  if (!_module) {
+    return nil;
+  }
 
   NSMutableArray *moduleMethods = [NSMutableArray new];
   for (const auto &method : _module->getMethods()) {
@@ -62,9 +64,12 @@ using namespace facebook::react;
   return moduleMethods;
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport;
 {
-  CHECK(_module) << "Can't call constantsToExport on moved module";
+  [self lazyInit];
+  if (!_module) {
+    return nil;
+  }
 
   NSMutableDictionary *moduleConstants = [NSMutableDictionary new];
   for (const auto &c : _module->getConstants()) {

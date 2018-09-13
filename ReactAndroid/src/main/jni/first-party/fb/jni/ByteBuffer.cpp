@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2016-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include <fb/fbjni/ByteBuffer.h>
@@ -24,6 +22,11 @@ local_ref<JByteBuffer> createEmpty() {
 }
 }
 
+void JBuffer::rewind() const {
+  static auto meth = javaClassStatic()->getMethod<alias_ref<JBuffer>()>("rewind");
+  meth(self());
+}
+
 local_ref<JByteBuffer> JByteBuffer::wrapBytes(uint8_t* data, size_t size) {
   // env->NewDirectByteBuffer requires that size is positive. Android's
   // dalvik returns an invalid result and Android's art aborts if size == 0.
@@ -39,7 +42,7 @@ local_ref<JByteBuffer> JByteBuffer::wrapBytes(uint8_t* data, size_t size) {
   return res;
 }
 
-uint8_t* JByteBuffer::getDirectBytes() {
+uint8_t* JByteBuffer::getDirectBytes() const {
   if (!self()) {
     throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
@@ -54,7 +57,7 @@ uint8_t* JByteBuffer::getDirectBytes() {
   return static_cast<uint8_t*>(bytes);
 }
 
-size_t JByteBuffer::getDirectSize() {
+size_t JByteBuffer::getDirectSize() const {
   if (!self()) {
     throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
@@ -69,7 +72,7 @@ size_t JByteBuffer::getDirectSize() {
   return static_cast<size_t>(size);
 }
 
-bool JByteBuffer::isDirect() {
+bool JByteBuffer::isDirect() const {
   static auto meth = javaClassStatic()->getMethod<jboolean()>("isDirect");
   return meth(self());
 }

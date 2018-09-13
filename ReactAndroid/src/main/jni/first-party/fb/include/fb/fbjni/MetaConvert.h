@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -95,7 +98,21 @@ template <typename T>
 struct Convert<global_ref<T>> {
   typedef JniType<T> jniType;
   // No automatic synthesis of global_ref
-  static jniType toJniRet(global_ref<jniType> t) {
+  static jniType toJniRet(global_ref<jniType>&& t) {
+    // If this gets called, ownership the global_ref was passed in here.  (It's
+    // probably a copy of a persistent global_ref made when a function was
+    // declared to return a global_ref, but it could moved out or otherwise not
+    // referenced elsewhere.  Doesn't matter.)  Either way, the only safe way
+    // to return it is to make a local_ref, release it, and return the
+    // underlying local jobject.
+    auto ret = make_local(t);
+    return ret.release();
+  }
+  static jniType toJniRet(const global_ref<jniType>& t) {
+    // If this gets called, the function was declared to return const&.  We
+    // have a ref to a global_ref whose lifetime will exceed this call, so we
+    // can just get the underlying jobject and return it to java without
+    // needing to make a local_ref.
     return t.get();
   }
   static jniType toCall(global_ref<jniType> t) {

@@ -1,8 +1,14 @@
-include_defs("//ReactAndroid/DEFS")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
 
-android_library(
+rn_android_library(
     name = "testing",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(
+        ["*.java"],
+        exclude = [
+            "idledetection/**/*.java",
+            "network/**/*.java",
+        ],
+    ),
     visibility = [
         "PUBLIC",
     ],
@@ -15,15 +21,20 @@ android_library(
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/java/mockito:mockito"),
         react_native_dep("third-party/java/testing-support-lib:runner"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/network:network"),
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
-        react_native_target("java/com/facebook/react/cxxbridge:bridge"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
+        react_native_target("java/com/facebook/react/fabric:fabric"),
+        react_native_target("java/com/facebook/react/fabric/jsc:jsc"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:interfaces"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("res:uimanager"),
     ],
 )

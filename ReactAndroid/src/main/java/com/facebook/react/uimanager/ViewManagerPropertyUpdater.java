@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager;
 
@@ -29,6 +32,12 @@ public class ViewManagerPropertyUpdater {
   private static final Map<Class<?>, ViewManagerSetter<?, ?>> VIEW_MANAGER_SETTER_MAP =
       new HashMap<>();
   private static final Map<Class<?>, ShadowNodeSetter<?>> SHADOW_NODE_SETTER_MAP = new HashMap<>();
+
+  public static void clear() {
+    ViewManagersPropertyCache.clear();
+    VIEW_MANAGER_SETTER_MAP.clear();
+    SHADOW_NODE_SETTER_MAP.clear();
+  }
 
   public static <T extends ViewManager, V extends View> void updateProps(
       T manager,

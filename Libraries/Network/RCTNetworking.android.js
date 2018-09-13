@@ -1,19 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTNetworking
+ * @format
  * @flow
  */
+
 'use strict';
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
-const FormData = require('FormData');
+const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
 const convertRequestBody = require('convertRequestBody');
@@ -42,6 +41,7 @@ function generateRequestId(): number {
  * requestId to each network request that can be used to abort that request later on.
  */
 class RCTNetworking extends NativeEventEmitter {
+  isAvailable: boolean = true;
 
   constructor() {
     super(RCTNetworkingNative);
@@ -56,11 +56,12 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any
+    callback: (requestId: number) => any,
+    withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
     if (body && body.formData) {
-      body.formData = body.formData.map((part) => ({
+      body.formData = body.formData.map(part => ({
         ...part,
         headers: convertHeadersMapToArray(part.headers),
       }));
@@ -74,7 +75,8 @@ class RCTNetworking extends NativeEventEmitter {
       {...body, trackingName},
       responseType,
       incrementalUpdates,
-      timeout
+      timeout,
+      withCredentials,
     );
     callback(requestId);
   }
@@ -88,4 +90,31 @@ class RCTNetworking extends NativeEventEmitter {
   }
 }
 
-module.exports = new RCTNetworking();
+if (__DEV__ && !RCTNetworkingNative) {
+  class MissingNativeRCTNetworkingShim extends MissingNativeEventEmitterShim {
+    constructor() {
+      super('RCTNetworking', 'Networking');
+    }
+
+    sendRequest(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+
+    abortRequest(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+
+    clearCookies(...args: Array<any>) {
+      this.throwMissingNativeModule();
+    }
+  }
+
+  // This module depends on the native `RCTNetworkingNative` module. If you don't include it,
+  // `RCTNetworking.isAvailable` will return `false`, and any method calls will throw.
+  // We reassign the class variable to keep the autodoc generator happy.
+  RCTNetworking = new MissingNativeRCTNetworkingShim();
+} else {
+  RCTNetworking = new RCTNetworking();
+}
+
+module.exports = RCTNetworking;

@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.progressbar;
 
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import javax.annotation.Nullable;
 
 import java.util.HashSet;
@@ -21,7 +20,7 @@ import android.widget.ProgressBar;
 
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNodeAPI;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -35,12 +34,45 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
 
   private String mStyle = ReactProgressBarViewManager.DEFAULT_STYLE;
 
-  private final SparseIntArray mHeight = new SparseIntArray();
-  private final SparseIntArray mWidth = new SparseIntArray();
-  private final Set<Integer> mMeasured = new HashSet<>();
+  private final SparseIntArray mHeight;
+  private final SparseIntArray mWidth;
+  private final Set<Integer> mMeasured;
 
   public ProgressBarShadowNode() {
+    mHeight = new SparseIntArray();
+    mWidth = new SparseIntArray();
+    mMeasured = new HashSet<>();
+    initMeasureFunction();
+  }
+
+  public ProgressBarShadowNode(ProgressBarShadowNode node) {
+    super(node);
+    mWidth = node.mWidth.clone();
+    mHeight = node.mHeight.clone();
+    mMeasured = new HashSet<>(node.mMeasured);
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
+    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
+    node.initMeasureFunction();
+    return node;
+  }
+
+  private void initMeasureFunction() {
     setMeasureFunction(this);
+  }
+
+  @Override
+  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
+    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopy(instanceHandle);
+    node.initMeasureFunction();
+    return node;
+  }
+
+  @Override
+  public ProgressBarShadowNode copy() {
+    return new ProgressBarShadowNode(this);
   }
 
   public @Nullable String getStyle() {
@@ -54,7 +86,7 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
 
   @Override
   public long measure(
-      YogaNodeAPI node,
+      YogaNode node,
       float width,
       YogaMeasureMode widthMode,
       float height,

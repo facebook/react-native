@@ -1,30 +1,32 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Color;
-import android.view.View;
+import android.support.v4.view.ViewCompat;
+import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.Spacing;
-import com.facebook.react.uimanager.ViewProps;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
-import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -73,6 +75,38 @@ public class ReactHorizontalScrollViewManager
     view.setHorizontalScrollBarEnabled(value);
   }
 
+  @ReactProp(name = "decelerationRate")
+  public void setDecelerationRate(ReactHorizontalScrollView view, float decelerationRate) {
+    view.setDecelerationRate(decelerationRate);
+  }
+
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactHorizontalScrollView view, float snapToInterval) {
+    // snapToInterval needs to be exposed as a float because of the Javascript interface.
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
+  }
+
+  @ReactProp(name = "snapToOffsets")
+  public void setSnapToOffsets(ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    List<Integer> offsets = new ArrayList<Integer>();
+    for (int i = 0; i < snapToOffsets.size(); i++) {
+      offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
+    }
+    view.setSnapOffsets(offsets);
+  }
+
+  @ReactProp(name = "snapToStart")
+  public void setSnapToStart(ReactHorizontalScrollView view, boolean snapToStart) {
+    view.setSnapToStart(snapToStart);
+  }
+
+  @ReactProp(name = "snapToEnd")
+  public void setSnapToEnd(ReactHorizontalScrollView view, boolean snapToEnd) {
+    view.setSnapToEnd(snapToEnd);
+  }
+
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
@@ -116,6 +150,11 @@ public class ReactHorizontalScrollViewManager
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
+  @ReactProp(name = "nestedScrollEnabled")
+  public void setNestedScrollEnabled(ReactHorizontalScrollView view, boolean value) {
+    ViewCompat.setNestedScrollingEnabled(view, value);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
@@ -125,9 +164,13 @@ public class ReactHorizontalScrollViewManager
   }
 
   @Override
+  public void flashScrollIndicators(ReactHorizontalScrollView scrollView) {
+    scrollView.flashScrollIndicators();
+  }
+
+  @Override
   public void scrollTo(
-      ReactHorizontalScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+      ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.smoothScrollTo(data.mDestX, data.mDestY);
     } else {

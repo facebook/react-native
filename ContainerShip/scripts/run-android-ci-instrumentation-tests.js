@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -20,7 +18,6 @@
  * --package - com.facebook.react.tests
  * --retries [num] - how many times to retry possible flaky commands: npm install and running tests, default 1
  */
-/*eslint-disable no-undef */
 
 const argv = require('yargs').argv;
 const async = require('async');
@@ -31,11 +28,12 @@ const path = require('path');
 const colors = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
-    RESET: '\x1b[0m'
+    RESET: '\x1b[0m',
 };
 
 const test_opts = {
     FILTER: new RegExp(argv.filter || '.*', 'i'),
+    IGNORE: argv.ignore || null,
     PACKAGE: argv.package || 'com.facebook.react.tests',
     PATH: argv.path || './ReactAndroid/src/androidTest/java/com/facebook/react/tests',
     RETRIES: parseInt(argv.retries || 2, 10),
@@ -43,8 +41,8 @@ const test_opts = {
     TEST_TIMEOUT: parseInt(argv['test-timeout'] || 1000 * 60 * 10),
 
     OFFSET: argv.offset,
-    COUNT: argv.count
-}
+    COUNT: argv.count,
+};
 
 let max_test_class_length = Number.NEGATIVE_INFINITY;
 
@@ -53,11 +51,20 @@ let testClasses = fs.readdirSync(path.resolve(process.cwd(), test_opts.PATH))
         return file.endsWith('.java');
     }).map((clazz) => {
         return path.basename(clazz, '.java');
-    }).map((clazz) => {
-        return test_opts.PACKAGE + '.' + clazz;
-    }).filter((clazz) => {
-        return test_opts.FILTER.test(clazz);
     });
+
+if (test_opts.IGNORE) {
+    test_opts.IGNORE = new RegExp(test_opts.IGNORE, 'i');
+    testClasses = testClasses.filter(className => {
+        return !test_opts.IGNORE.test(className);
+    });
+}
+
+testClasses = testClasses.map((clazz) => {
+    return test_opts.PACKAGE + '.' + clazz;
+}).filter((clazz) => {
+    return test_opts.FILTER.test(clazz);
+});
 
 // only process subset of the tests at corresponding offset and count if args provided
 if (test_opts.COUNT != null && test_opts.OFFSET != null) {
@@ -75,14 +82,14 @@ if (test_opts.COUNT != null && test_opts.OFFSET != null) {
 }
 
 return async.mapSeries(testClasses, (clazz, callback) => {
-    if(clazz.length > max_test_class_length) {
+    if (clazz.length > max_test_class_length) {
         max_test_class_length = clazz.length;
     }
 
     return async.retry(test_opts.RETRIES, (retryCb) => {
         const test_process = child_process.spawn('./ContainerShip/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
-            stdio: 'inherit'
-        })
+            stdio: 'inherit',
+        });
 
         const timeout = setTimeout(() => {
             test_process.kill();
@@ -96,7 +103,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
         test_process.on('exit', (code) => {
             clearTimeout(timeout);
 
-            if(code !== 0) {
+            if (code !== 0) {
                 return retryCb(new Error(`Process exited with code: ${code}`));
             }
 
@@ -105,14 +112,14 @@ return async.mapSeries(testClasses, (clazz, callback) => {
     }, (err) => {
         return callback(null, {
             name: clazz,
-            status: err ? 'failure' : 'success'
+            status: err ? 'failure' : 'success',
         });
     });
 }, (err, results) => {
     print_test_suite_results(results);
 
     const failures = results.filter((test) => {
-        test.status === 'failure';
+        return test.status === 'failure';
     });
 
     return failures.length === 0 ? process.exit(0) : process.exit(1);
@@ -128,16 +135,16 @@ function print_test_suite_results(results) {
     function pad_output(num_chars) {
         let i = 0;
 
-        while(i < num_chars) {
+        while (i < num_chars) {
             process.stdout.write(' ');
             i++;
         }
     }
     results.forEach((test) => {
-        if(test.status === 'success') {
+        if (test.status === 'success') {
             color = colors.GREEN;
             passing_suites++;
-        } else if(test.status === 'failure') {
+        } else if (test.status === 'failure') {
             color = colors.RED;
             failing_suites++;
         }

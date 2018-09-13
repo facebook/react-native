@@ -1,10 +1,10 @@
-'use strict';
+/** @format */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   ActivityIndicator,
   Button,
-  ListView,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -14,17 +14,13 @@ import KeyboardSpacer from '../../components/KeyboardSpacer';
 import Backend from '../../lib/Backend';
 
 export default class ChatScreen extends Component {
-
-  static navigationOptions = {
-    title: (navigation) => `Chat with ${navigation.state.params.name}`,
-  }
-
+  static navigationOptions = ({navigation}) => ({
+    title: `Chat with ${navigation.state.params.name}`,
+  });
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       messages: [],
-      dataSource: ds,
       myMessage: '',
       isLoading: true,
     };
@@ -45,9 +41,8 @@ export default class ChatScreen extends Component {
       });
       return;
     }
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       messages: chat.messages,
-      dataSource: prevState.dataSource.cloneWithRows(chat.messages),
       isLoading: false,
     }));
   }
@@ -67,38 +62,38 @@ export default class ChatScreen extends Component {
       // Here we would handle the request failure, e.g. call setState
       // to display a visual hint showing the message could not be sent.
     }
-  }
+  };
 
   addMessageLocal = () => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       if (!prevState.myMessage) {
         return prevState;
       }
       const messages = [
-        ...prevState.messages, {
+        ...prevState.messages,
+        {
           name: 'Me',
           text: prevState.myMessage,
-        }
+        },
       ];
       return {
         messages: messages,
-        dataSource: prevState.dataSource.cloneWithRows(messages),
         myMessage: '',
-      }
+      };
     });
     this.textInput.clear();
-  }
+  };
 
-  onMyMessageChange = (event) => {
+  onMyMessageChange = event => {
     this.setState({myMessage: event.nativeEvent.text});
-  }
+  };
 
-  renderRow = (message) => (
+  renderItem = ({item}) => (
     <View style={styles.bubble}>
-      <Text style={styles.name}>{message.name}</Text>
-      <Text>{message.text}</Text>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text>{item.text}</Text>
     </View>
-  )
+  );
 
   render() {
     if (this.state.isLoading) {
@@ -110,15 +105,18 @@ export default class ChatScreen extends Component {
     }
     return (
       <View style={styles.container}>
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={this.renderRow}
+        <FlatList
+          data={this.state.messages}
+          renderItem={this.renderItem}
+          keyExtractor={(item, index) => index}
           style={styles.listView}
-          onLayout={this.scrollToBottom}
         />
+
         <View style={styles.composer}>
           <TextInput
-            ref={(textInput) => { this.textInput = textInput; }}
+            ref={textInput => {
+              this.textInput = textInput;
+            }}
             style={styles.textInput}
             placeholder="Type a message..."
             text={this.state.myMessage}
@@ -126,10 +124,7 @@ export default class ChatScreen extends Component {
             onChange={this.onMyMessageChange}
           />
           {this.state.myMessage !== '' && (
-            <Button
-              title="Send"
-              onPress={this.onAddMessage}
-            />
+            <Button title="Send" onPress={this.onAddMessage} />
           )}
         </View>
         <KeyboardSpacer />
@@ -171,5 +166,5 @@ const styles = StyleSheet.create({
     height: 30,
     fontSize: 13,
     marginRight: 8,
-  }
+  },
 });

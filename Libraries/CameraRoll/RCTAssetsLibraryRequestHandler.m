@@ -1,15 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAssetsLibraryRequestHandler.h"
 
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
+#import <dlfcn.h>
+#import <objc/runtime.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -25,10 +25,20 @@
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
+static Class _ALAssetsLibrary = nil;
+static void ensureAssetsLibLoaded(void)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    void * handle = dlopen("/System/Library/Frameworks/AssetsLibrary.framework/AssetsLibrary", RTLD_LAZY);
+#pragma unused(handle)
+    _ALAssetsLibrary = objc_getClass("ALAssetsLibrary");
+  });
+}
 - (ALAssetsLibrary *)assetsLibrary
 {
-  return _assetsLibrary ?: (_assetsLibrary = [ALAssetsLibrary new]);
+  ensureAssetsLibLoaded();
+  return _assetsLibrary ?: (_assetsLibrary = [_ALAssetsLibrary new]);
 }
 
 #pragma mark - RCTURLRequestHandler
@@ -41,13 +51,13 @@ RCT_EXPORT_MODULE()
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block volatile uint32_t cancelled = 0;
+  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   void (^cancellationBlock)(void) = ^{
-    OSAtomicOr32Barrier(1, &cancelled);
+    atomic_store(&cancelled, YES);
   };
 
   [[self assetsLibrary] assetForURL:request.URL resultBlock:^(ALAsset *asset) {
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
 
@@ -91,7 +101,7 @@ RCT_EXPORT_MODULE()
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
     }
   } failureBlock:^(NSError *loadError) {
-    if (cancelled) {
+    if (atomic_load(&cancelled)) {
       return;
     }
     [delegate URLRequest:cancellationBlock didCompleteWithError:loadError];

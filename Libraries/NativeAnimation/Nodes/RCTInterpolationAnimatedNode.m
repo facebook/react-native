@@ -1,13 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTInterpolationAnimatedNode.h"
+
 #import "RCTAnimationUtils.h"
 
 @implementation RCTInterpolationAnimatedNode
@@ -53,20 +52,6 @@
   }
 }
 
-- (NSUInteger)findIndexOfNearestValue:(CGFloat)value
-                              inRange:(NSArray<NSNumber *> *)range
-{
-  NSUInteger index;
-  NSUInteger rangeCount = range.count;
-  for (index = 1; index < rangeCount - 1; index++) {
-    NSNumber *inputValue = range[index];
-    if (inputValue.doubleValue >= value) {
-      break;
-    }
-  }
-  return index - 1;
-}
-
 - (void)performUpdate
 {
   [super performUpdate];
@@ -75,19 +60,12 @@
   }
 
   CGFloat inputValue = _parentNode.value;
-  NSUInteger rangeIndex = [self findIndexOfNearestValue:inputValue inRange:_inputRange];
-  NSNumber *inputMin = _inputRange[rangeIndex];
-  NSNumber *inputMax = _inputRange[rangeIndex + 1];
-  NSNumber *outputMin = _outputRange[rangeIndex];
-  NSNumber *outputMax = _outputRange[rangeIndex + 1];
 
-  self.value = RCTInterpolateValue(inputValue,
-                                   inputMin.doubleValue,
-                                   inputMax.doubleValue,
-                                   outputMin.doubleValue,
-                                   outputMax.doubleValue,
-                                   _extrapolateLeft,
-                                   _extrapolateRight);
+  self.value = RCTInterpolateValueInRange(inputValue,
+                                          _inputRange,
+                                          _outputRange,
+                                          _extrapolateLeft,
+                                          _extrapolateRight);
 }
 
 @end

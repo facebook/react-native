@@ -1,0 +1,10 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_java_library")
+
+rn_java_library(
+    name = "java",
+    srcs = glob(["**/*.java"]),
+    visibility = ["PUBLIC"],
+    deps = [
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+    ],
+)
