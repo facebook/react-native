@@ -152,7 +152,13 @@ async function getCliConfig(): Promise<RNConfig> {
  */
 function getProjectCommands(): Array<CommandT> {
   const commands = plugins.commands.map(pathToCommands => {
-    const name = pathToCommands.split(path.sep)[0];
+    const name =
+      pathToCommands[0] === '@'
+        ? pathToCommands
+            .split(path.sep)
+            .slice(0, 2)
+            .join(path.sep)
+        : pathToCommands.split(path.sep)[0];
 
     return attachPackage(
       require(path.join(appRoot, 'node_modules', pathToCommands)),
