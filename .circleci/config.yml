@@ -554,10 +554,10 @@ jobs:
       - run:
           name: Analyze Code
           command: |
-            # GITHUB_TOKEN=eslint-bot public_repo access token
+            # GITHUB_TOKEN=React-Linter public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" ./scripts/circleci/analyze_code.sh
+              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" ./scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."
             fi
