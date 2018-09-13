@@ -360,8 +360,9 @@ public class ReactEditText extends EditText {
     if (!sameText) {
       InputMethodManager imm = (InputMethodManager) getContext()
           .getSystemService(Context.INPUT_METHOD_SERVICE);
-      if (imm != null)
+      if (imm != null) {
         imm.restartInput(this);
+      }
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != reactTextUpdate.getTextBreakStrategy()) {
