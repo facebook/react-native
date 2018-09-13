@@ -22,6 +22,7 @@ rn_android_library(
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
     ],
     required_for_source_only_abi = True,
     visibility = [
