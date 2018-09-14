@@ -12,8 +12,8 @@
 namespace facebook {
 namespace react {
 
-EventQueue::EventQueue(const EventPipe &eventPipe, std::unique_ptr<EventBeat> eventBeat):
-  eventPipe_(eventPipe),
+EventQueue::EventQueue(EventPipe eventPipe, std::unique_ptr<EventBeat> eventBeat):
+  eventPipe_(std::move(eventPipe)),
   eventBeat_(std::move(eventBeat)) {
     eventBeat_->setBeatCallback(std::bind(&EventQueue::onBeat, this));
   }
@@ -40,8 +40,9 @@ void EventQueue::onBeat() const {
   {
     std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
     for (const auto &event : queue) {
+      auto eventTarget = event.eventTarget.lock();
       eventPipe_(
-        event.isDispachable() ? event.eventTarget : EmptyEventTarget,
+        eventTarget && event.isDispatchable() ? eventTarget.get() : nullptr,
         event.type,
         event.payload
       );

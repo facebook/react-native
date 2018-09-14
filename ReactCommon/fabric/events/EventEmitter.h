@@ -22,8 +22,16 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
 
 /*
  * Base class for all particular typed event handlers.
- * Stores `InstanceHandle` identifying a particular component and the pointer
- * to `EventDispatcher` which is responsible for delivering the event.
+ * Stores a pointer to `EventTarget` identifying a particular component and
+ * a weak pointer to `EventDispatcher` which is responsible for delivering the event.
+ *
+ * Note: Retaining an `EventTarget` does *not* guarantee that actual event target
+ * exists and/or valid in JavaScript realm. The `EventTarget` retains an `EventTargetWrapper`
+ * which wraps JavaScript object in `unsafe-unretained` manner. Retaining
+ * the `EventTarget` *does* indicate that we can use that to get an actual
+ * JavaScript object from that in the future *ensuring safety beforehand somehow*;
+ * JSI maintains `WeakObject` object as long as we retain the `EventTarget`.
+ * All `EventTarget` instances must be deallocated before stopping JavaScript machine.
  */
 class EventEmitter:
   public std::enable_shared_from_this<EventEmitter> {
@@ -37,7 +45,12 @@ class EventEmitter:
 public:
   static std::recursive_mutex &DispatchMutex();
 
-  EventEmitter(const EventTarget &eventTarget, const Tag &tag, const std::shared_ptr<const EventDispatcher> &eventDispatcher);
+  EventEmitter(
+    SharedEventTarget eventTarget,
+    Tag tag,
+    WeakEventDispatcher eventDispatcher
+  );
+
   virtual ~EventEmitter() = default;
 
   /*
@@ -59,9 +72,9 @@ protected:
   ) const;
 
 private:
-  EventTarget eventTarget_;
+  mutable SharedEventTarget eventTarget_;
   Tag tag_;
-  std::weak_ptr<const EventDispatcher> eventDispatcher_;
+  WeakEventDispatcher eventDispatcher_;
   mutable bool enabled_; // Protected by `DispatchMutex`.
 };
 

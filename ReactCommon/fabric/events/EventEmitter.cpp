@@ -31,10 +31,14 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
   return mutex;
 }
 
-EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const std::shared_ptr<const EventDispatcher> &eventDispatcher):
-  eventTarget_(eventTarget),
+EventEmitter::EventEmitter(
+  SharedEventTarget eventTarget,
+  Tag tag,
+  WeakEventDispatcher eventDispatcher
+):
+  eventTarget_(std::move(eventTarget)),
   tag_(tag),
-  eventDispatcher_(eventDispatcher) {}
+  eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
   const std::string &type,
@@ -73,6 +77,9 @@ void EventEmitter::dispatchEvent(
 
 void EventEmitter::setEnabled(bool enabled) const {
   enabled_ = enabled;
+  if (!enabled) {
+    eventTarget_ = nullptr;
+  }
 }
 
 bool EventEmitter::getEnabled() const {
