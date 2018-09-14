@@ -21,9 +21,8 @@ namespace react {
 class FabricUIManager;
 using UIManager = FabricUIManager;
 
-using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, std::string type, folly::dynamic payload);
-using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, std::string type, folly::dynamic payload);
-using ReleaseEventTargetFunction = void (EventTarget eventTarget);
+using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, const std::string &type, const folly::dynamic &payload);
+using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload);
 
 class FabricUIManager {
 public:
