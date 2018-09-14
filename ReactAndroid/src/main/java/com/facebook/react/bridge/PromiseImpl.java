@@ -208,7 +208,7 @@ public class PromiseImpl implements Promise {
 
       // Build an an Array of StackFrames to match JavaScript:
       // iOS: /Libraries/Core/Devtools/parseErrorStack.js -> StackFrame
-      for (int i = 0; i < ERROR_STACK_FRAME_LIMIT; i++) {
+      for (int i = 0; i < stackTrace.length && i < ERROR_STACK_FRAME_LIMIT; i++) {
         StackTraceElement frame = stackTrace[i];
         WritableMap frameMap = new WritableNativeMap();
         // NOTE: no column number exists StackTraceElement
