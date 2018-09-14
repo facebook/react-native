@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -83,8 +83,8 @@ inline void fromDynamic(const folly::dynamic &value, FontVariant &result) {
 }
 
 inline std::string toString(const FontVariant &fontVariant) {
-  std::string result;
-  std::string separator = ", ";
+  auto result = std::string {};
+  auto separator = std::string {", "};
   if ((int)fontVariant & (int)FontVariant::SmallCaps) { result += "small-caps" + separator; }
   if ((int)fontVariant & (int)FontVariant::OldstyleNums) { result += "oldstyle-nums" + separator; }
   if ((int)fontVariant & (int)FontVariant::LiningNums) { result += "lining-nums" + separator; }

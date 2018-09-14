@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -168,11 +168,11 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNo
     case YGMeasureModeUndefined:
       break;
     case YGMeasureModeExactly:
-      minimumSize.width = fabricFloatFromYogaFloat(width);
-      maximumSize.width = fabricFloatFromYogaFloat(width);
+      minimumSize.width = floatFromYogaFloat(width);
+      maximumSize.width = floatFromYogaFloat(width);
       break;
     case YGMeasureModeAtMost:
-      maximumSize.width = fabricFloatFromYogaFloat(width);
+      maximumSize.width = floatFromYogaFloat(width);
       break;
   }
 
@@ -180,19 +180,19 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(YGNode *yogaNo
     case YGMeasureModeUndefined:
       break;
     case YGMeasureModeExactly:
-      minimumSize.height = fabricFloatFromYogaFloat(height);
-      maximumSize.height = fabricFloatFromYogaFloat(height);
+      minimumSize.height = floatFromYogaFloat(height);
+      maximumSize.height = floatFromYogaFloat(height);
       break;
     case YGMeasureModeAtMost:
-      maximumSize.height = fabricFloatFromYogaFloat(height);
+      maximumSize.height = floatFromYogaFloat(height);
       break;
   }
 
   auto size = shadowNodeRawPtr->measure({minimumSize, maximumSize});
 
   return YGSize {
-    yogaFloatFromFabricFloat(size.width),
-    yogaFloatFromFabricFloat(size.height)
+    yogaFloatFromFloat(size.width),
+    yogaFloatFromFloat(size.height)
   };
 }
 

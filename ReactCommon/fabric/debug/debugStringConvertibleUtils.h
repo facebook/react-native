@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,7 +45,7 @@ inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name,
 }
 
 inline SharedDebugStringConvertibleList operator+(const SharedDebugStringConvertibleList &lhs, const SharedDebugStringConvertibleList &rhs) {
-  SharedDebugStringConvertibleList result = {};
+  auto result = SharedDebugStringConvertibleList {};
   std::move(lhs.begin(), lhs.end(), std::back_inserter(result));
   std::move(rhs.begin(), rhs.end(), std::back_inserter(result));
   return result;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -90,11 +90,16 @@ exports.get = function(name: string): ReactNativeBaseComponentViewConfig<> {
   let viewConfig;
   if (!viewConfigs.has(name)) {
     const callback = viewConfigCallbacks.get(name);
-    invariant(
-      typeof callback === 'function',
-      'View config not found for name %s',
-      name,
-    );
+    if (typeof callback !== 'function') {
+      invariant(
+        false,
+        'View config not found for name %s.%s',
+        name,
+        typeof name[0] === 'string' && /[a-z]/.test(name[0])
+          ? ' Make sure to start component names with a capital letter.'
+          : '',
+      );
+    }
     viewConfigCallbacks.set(name, null);
     viewConfig = callback();
     processEventTypes(viewConfig);

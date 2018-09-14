@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,11 +70,11 @@ const defaultConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getPlatforms(): Array<string> {
-    return ['ios', 'android', 'windows', 'web', 'dom'];
+    return ['ios', 'android', 'native', ...plugins.haste.platforms];
   },
 
   getProvidesModuleNodeModules(): Array<string> {
-    return ['react-native', 'react-native-windows', 'react-native-dom'];
+    return ['react-native', ...plugins.haste.providesModuleNodeModules];
   },
 };
 
@@ -132,9 +132,17 @@ async function getCliConfig(): Promise<RNConfig> {
   );
 
   config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
-  config.resolver.hasteImplModulePath = config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
-  config.resolver.platforms = config.resolver.platforms || defaultConfig.getPlatforms();
-  config.resolver.providesModuleNodeModules = config.resolver.providesModuleNodeModules || defaultConfig.getProvidesModuleNodeModules();
+  config.resolver.hasteImplModulePath =
+    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = config.resolver.platforms
+    ? config.resolver.platforms.concat(defaultConfig.getPlatforms())
+    : defaultConfig.getPlatforms();
+  config.resolver.providesModuleNodeModules = config.resolver
+    .providesModuleNodeModules
+    ? config.resolver.providesModuleNodeModules.concat(
+        defaultConfig.getProvidesModuleNodeModules(),
+      )
+    : defaultConfig.getProvidesModuleNodeModules();
 
   return {...defaultRNConfig, ...config};
 }
@@ -144,7 +152,13 @@ async function getCliConfig(): Promise<RNConfig> {
  */
 function getProjectCommands(): Array<CommandT> {
   const commands = plugins.commands.map(pathToCommands => {
-    const name = pathToCommands.split(path.sep)[0];
+    const name =
+      pathToCommands[0] === '@'
+        ? pathToCommands
+            .split(path.sep)
+            .slice(0, 2)
+            .join(path.sep)
+        : pathToCommands.split(path.sep)[0];
 
     return attachPackage(
       require(path.join(appRoot, 'node_modules', pathToCommands)),

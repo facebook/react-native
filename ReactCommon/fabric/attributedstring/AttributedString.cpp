@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,7 +40,7 @@ const std::vector<Fragment> &AttributedString::getFragments() const {
 }
 
 std::string AttributedString::getString() const {
-  std::string string;
+  auto string = std::string {};
   for (const auto &fragment : fragments_) {
     string += fragment.string;
   }
@@ -50,7 +50,7 @@ std::string AttributedString::getString() const {
 #pragma mark - DebugStringConvertible
 
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
-  SharedDebugStringConvertibleList list = {};
+  auto list = SharedDebugStringConvertibleList {};
 
   for (auto &&fragment : fragments_) {
     auto propsList = fragment.textAttributes.DebugStringConvertible::getDebugProps();

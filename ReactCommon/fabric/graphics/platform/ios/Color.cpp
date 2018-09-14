@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ SharedColor colorFromComponents(ColorComponents components) {
     components.alpha
   };
 
-  CGColorRef color = CGColorCreate(
+  auto color = CGColorCreate(
     CGColorSpaceCreateDeviceRGB(),
     componentsArray
   );
@@ -27,7 +27,12 @@ SharedColor colorFromComponents(ColorComponents components) {
 }
 
 ColorComponents colorComponentsFromColor(SharedColor color) {
-  int numberOfComponents = CGColorGetNumberOfComponents(color.get());
+  if (!color) {
+    // Empty color object can be considered as `clear` (black, fully transparent) color.
+    return ColorComponents {0, 0, 0, 0};
+  }
+
+  auto numberOfComponents = CGColorGetNumberOfComponents(color.get());
   assert(numberOfComponents == 4);
   const CGFloat *components = CGColorGetComponents(color.get());
   return ColorComponents {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,14 +91,6 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     for (int i = getChildCount(parent) - 1; i >= 0; i--) {
       removeViewAt(parent, i);
     }
-  }
-
-  public void startViewTransition(T parent, View view) {
-    parent.startViewTransition(view);
-  }
-
-  public void endViewTransition(T parent, View view) {
-    parent.endViewTransition(view);
   }
 
   /**

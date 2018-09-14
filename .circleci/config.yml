@@ -459,11 +459,9 @@ jobs:
       - run:
           name: Build iOS app for simulator
           command: yarn run build-ios-e2e
-      # TODO: Fix these failing tests.
-      - run: *display-broken-tests-warning
       - run:
-          name: Run Detox Tests (Disabled)
-          command: ./scripts/circleci/exec_author_check.sh yarn run test-ios-e2e
+          name: Run Detox Tests
+          command: yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -540,12 +538,18 @@ jobs:
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
+  # The public github tokens are publicly visible by design
   analyze_pr:
     <<: *defaults
     docker:
       - image: circleci/node:10
     environment:
       - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
+
     steps:
       - checkout
       - run: *setup-artifacts
@@ -556,10 +560,9 @@ jobs:
       - run:
           name: Analyze Code
           command: |
-            # GITHUB_TOKEN=eslint-bot public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" ./scripts/circleci/analyze_code.sh
+              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."
             fi
@@ -569,11 +572,10 @@ jobs:
       - run:
           name: Analyze Pull Request
           command: |
-            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               cd bots
               yarn install --non-interactive --cache-folder ~/.cache/yarn
-              DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
+              DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
             else
               echo "Skipping pull request analysis."
             fi

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,10 +43,6 @@ async function buildBundle(
   if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
     sourceMapUrl = path.basename(sourceMapUrl);
   }
-
-  config.transformerPath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.transformerPath;
 
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,

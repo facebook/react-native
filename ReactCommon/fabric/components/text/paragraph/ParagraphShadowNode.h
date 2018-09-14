@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,8 @@ namespace react {
 
 extern const char ParagraphComponentName[];
 
+using ParagraphEventEmitter = ViewEventEmitter;
+
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
  * containing and displaying text. Text content is represented as nested <Text>
@@ -29,7 +31,8 @@ extern const char ParagraphComponentName[];
 class ParagraphShadowNode:
   public ConcreteViewShadowNode<
     ParagraphComponentName,
-    ParagraphProps
+    ParagraphProps,
+    ParagraphEventEmitter
   >,
   public BaseTextShadowNode {
 

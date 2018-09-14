@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,9 +25,6 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
   }
 
   config.cacheStores = [];
-  if (args.transformer) {
-    config.transformer.babelTransformerPath = path.resolve(args.transformer);
-  }
 
   const relativePath = path.relative(
     config.projectRoot,
@@ -47,29 +44,26 @@ async function dependencies(argv, configPromise, args, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  return Promise.resolve(
-    (packagerInstance
-      ? packagerInstance.getOrderedDependencyPaths(options)
-      : Metro.getOrderedDependencyPaths(config, options)
-    ).then(deps => {
-      deps.forEach(modulePath => {
-        // Temporary hack to disable listing dependencies not under this directory.
-        // Long term, we need either
-        // (a) JS code to not depend on anything outside this directory, or
-        // (b) Come up with a way to declare this dependency in Buck.
-        const isInsideProjectRoots =
-          config.watchFolders.filter(root => modulePath.startsWith(root))
-            .length > 0;
+  const deps = packagerInstance
+    ? await packagerInstance.getOrderedDependencyPaths(options)
+    : await Metro.getOrderedDependencyPaths(config, options);
 
-        if (isInsideProjectRoots) {
-          outStream.write(modulePath + '\n');
-        }
-      });
-      return writeToFile
-        ? denodeify(outStream.end).bind(outStream)()
-        : Promise.resolve();
-    }),
-  );
+  deps.forEach(modulePath => {
+    // Temporary hack to disable listing dependencies not under this directory.
+    // Long term, we need either
+    // (a) JS code to not depend on anything outside this directory, or
+    // (b) Come up with a way to declare this dependency in Buck.
+    const isInsideProjectRoots =
+      config.watchFolders.filter(root => modulePath.startsWith(root)).length >
+      0;
+
+    if (isInsideProjectRoots) {
+      outStream.write(modulePath + '\n');
+    }
+  });
+  return writeToFile
+    ? denodeify(outStream.end).bind(outStream)()
+    : Promise.resolve();
 }
 
 module.exports = {

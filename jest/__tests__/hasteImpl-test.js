@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,7 @@ it('returns the correct haste name for a RN library file', () => {
 });
 
 it('returns the correct haste name for a file with a platform suffix', () => {
-  for (const platform of ['android', 'ios', 'native', 'web', 'windows']) {
+  for (const platform of ['android', 'ios', 'native']) {
     expect(
       getHasteName(
         getPath(
