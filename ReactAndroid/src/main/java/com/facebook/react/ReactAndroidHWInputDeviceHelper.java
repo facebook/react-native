@@ -12,8 +12,8 @@ import android.view.View;
 
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.common.MapBuilder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,20 +25,19 @@ public class ReactAndroidHWInputDeviceHelper {
    * Contains a mapping between handled KeyEvents and the corresponding navigation event
    * that should be fired when the KeyEvent is received.
    */
-  private static final Map<Integer, String> KEY_EVENTS_ACTIONS = MapBuilder.of(
-    KeyEvent.KEYCODE_DPAD_CENTER,
-    "select",
-    KeyEvent.KEYCODE_ENTER,
-    "select",
-    KeyEvent.KEYCODE_SPACE,
-    "select",
-    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
-    "playPause",
-    KeyEvent.KEYCODE_MEDIA_REWIND,
-    "rewind",
-    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
-    "fastForward"
-  );
+  private static final Map<Integer, String> KEY_EVENTS_ACTIONS = new HashMap<>();
+  static {
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_DPAD_CENTER, "select");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_ENTER, "select");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_SPACE, "select");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, "playPause");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_MEDIA_REWIND, "rewind");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, "fastForward");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_DPAD_UP, "up");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_DPAD_RIGHT, "right");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_DPAD_DOWN, "down");
+    KEY_EVENTS_ACTIONS.put(KeyEvent.KEYCODE_DPAD_LEFT, "left");
+  }
 
   /**
    * We keep a reference to the last focused view id
