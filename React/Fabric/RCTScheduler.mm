@@ -69,9 +69,6 @@ private:
     contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
     contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
 
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MainRunLoopEventBeat>(), "synchronous");
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MessageQueueEventBeat>(bridge.jsMessageThread), "asynchronous");
-
     void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
     contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
 
