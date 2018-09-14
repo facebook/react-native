@@ -7,6 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
+#include <cxxreact/MessageQueueThread.h>
 #include <fabric/events/EventBeat.h>
 
 namespace facebook {
@@ -20,12 +21,15 @@ class MainRunLoopEventBeat final:
   public EventBeat {
 
 public:
-  MainRunLoopEventBeat();
+  MainRunLoopEventBeat(std::shared_ptr<MessageQueueThread> messageQueueThread);
   ~MainRunLoopEventBeat();
 
   void induce() const override;
 
 private:
+  void blockMessageQueueAndThenBeat() const;
+
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
   CFRunLoopObserverRef mainRunLoopObserver_;
 };
 

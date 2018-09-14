@@ -58,8 +58,8 @@ private:
 
     SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
 
-    EventBeatFactory synchronousBeatFactory = []() {
-      return std::make_unique<MainRunLoopEventBeat>();
+    EventBeatFactory synchronousBeatFactory = [bridge]() {
+      return std::make_unique<MainRunLoopEventBeat>(bridge.jsMessageThread);
     };
 
     EventBeatFactory asynchronousBeatFactory = [bridge]() {
