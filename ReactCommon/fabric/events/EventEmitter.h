@@ -56,6 +56,8 @@ public:
   /*
    * Indicates that an event can be delivered to `eventTarget`.
    * Callsite must acquire `DispatchMutex` to access those methods.
+   * The `setEnabled` operation is not guaranteed: the `EventEmitter` cannot
+   * be re-enabled after disabling; in this case, the method does nothing.
    */
   void setEnabled(bool enabled) const;
   bool getEnabled() const;
@@ -75,7 +77,6 @@ private:
   mutable SharedEventTarget eventTarget_;
   Tag tag_;
   WeakEventDispatcher eventDispatcher_;
-  mutable bool enabled_; // Protected by `DispatchMutex`.
 };
 
 } // namespace react

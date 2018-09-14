@@ -76,14 +76,18 @@ void EventEmitter::dispatchEvent(
 }
 
 void EventEmitter::setEnabled(bool enabled) const {
-  enabled_ = enabled;
+  bool alreadyEnabled = eventTarget_ != nullptr;
+  if (enabled == alreadyEnabled) {
+    return;
+  }
+
   if (!enabled) {
-    eventTarget_ = nullptr;
+    eventTarget_.reset();
   }
 }
 
 bool EventEmitter::getEnabled() const {
-  return enabled_;
+  return eventTarget_ != nullptr;
 }
 
 } // namespace react
