@@ -122,7 +122,7 @@ void FabricUIManager::dispatchEventToTarget(const EventTarget *eventTarget, cons
   }
 }
 
-SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) {
+SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag: " << rootTag << ", props: " << props << ")";
 
   ComponentName componentName = componentNameByReactViewName(viewName);
@@ -146,7 +146,7 @@ SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int 
   return shadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) {
+SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::cloneNode(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
 
@@ -157,7 +157,7 @@ SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) 
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNode &shadowNode) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNode &shadowNode) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildren(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   // Assuming semantic: Cloning with same props but empty children.
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
@@ -174,7 +174,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNod
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &shadowNode, folly::dynamic props) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &shadowNode, folly::dynamic props) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::cloneNodeWithNewProps(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", props: " << props << ")";
   // Assuming semantic: Cloning with same children and specified props.
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
@@ -192,7 +192,7 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedShadowNode &shadowNode, folly::dynamic props) {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedShadowNode &shadowNode, folly::dynamic props) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::cloneNodeWithNewChildrenAndProps(shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", props: " << props << ")";
   // Assuming semantic: Cloning with empty children and specified props.
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
@@ -211,23 +211,23 @@ SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedS
   return clonedShadowNode;
 }
 
-void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, const SharedShadowNode &childShadowNode) {
+void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, const SharedShadowNode &childShadowNode) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::appendChild(parentShadowNode: " << parentShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ", childShadowNode: " << childShadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[parentShadowNode];
   componentDescriptor->appendChild(parentShadowNode, childShadowNode);
 }
 
-SharedShadowNodeUnsharedList FabricUIManager::createChildSet(int rootTag) {
+SharedShadowNodeUnsharedList FabricUIManager::createChildSet(int rootTag) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::createChildSet(rootTag: " << rootTag << ")";
   return std::make_shared<SharedShadowNodeList>(SharedShadowNodeList({}));
 }
 
-void FabricUIManager::appendChildToSet(const SharedShadowNodeUnsharedList &shadowNodeList, const SharedShadowNode &shadowNode) {
+void FabricUIManager::appendChildToSet(const SharedShadowNodeUnsharedList &shadowNodeList, const SharedShadowNode &shadowNode) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::appendChildToSet(shadowNodeList: " << shadowNodeList << ", shadowNode: " << shadowNode->getDebugDescription(DebugStringConvertibleOptions {.format = false}) << ")";
   shadowNodeList->push_back(shadowNode);
 }
 
-void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedList &children) {
+void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedList &children) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::completeRoot(rootTag: " << rootTag << ", shadowNodeList: " << children << ")";
 
   if (delegate_) {
@@ -235,8 +235,11 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
   }
 }
 
-void FabricUIManager::registerEventHandler(UniqueEventHandler eventHandler) {
+void FabricUIManager::registerEventHandler(UniqueEventHandler eventHandler) const {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler: " << eventHandler.get() << ")";
+
+  // Technically, it should be protected by a mutex but regularly it should
+  // be safe because it used only during initialization process.
   eventHandler_ = std::move(eventHandler);
 }
 

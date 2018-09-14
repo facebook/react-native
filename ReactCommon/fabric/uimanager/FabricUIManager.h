@@ -18,6 +18,9 @@
 namespace facebook {
 namespace react {
 
+class FabricUIManager;
+using UIManager = FabricUIManager;
+
 using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, std::string type, folly::dynamic payload);
 using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, std::string type, folly::dynamic payload);
 using ReleaseEventTargetFunction = void (EventTarget eventTarget);
@@ -51,22 +54,28 @@ public:
 
 #pragma mark - JavaScript/React-facing Interface
 
-  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, SharedEventTarget eventTarget);
-  SharedShadowNode cloneNode(const SharedShadowNode &node);
-  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node);
-  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props);
-  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps);
-  void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
-  SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
-  void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
-  void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
-  void registerEventHandler(UniqueEventHandler eventHandler);
+  /*
+   * All those JavaScript-facing methods call be called from any thread.
+   * `UIManager` guarantees its own thread-safety, but it does *not* guarantee
+   * thread-safety of `ShadowNode`s that it operates on. The caller should
+   * enforce logical correctness and thread-safety of the unsealed `ShadowNode`s.
+   */
+  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, SharedEventTarget eventTarget) const;
+  SharedShadowNode cloneNode(const SharedShadowNode &node) const;
+  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node) const;
+  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props) const;
+  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps) const;
+  void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode) const;
+  SharedShadowNodeUnsharedList createChildSet(Tag rootTag) const;
+  void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode) const;
+  void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet) const;
+  void registerEventHandler(UniqueEventHandler eventHandler) const;
 
 private:
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  UniqueEventHandler eventHandler_;
+  mutable UniqueEventHandler eventHandler_;
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
 };
