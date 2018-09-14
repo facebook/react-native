@@ -39,10 +39,10 @@ void EventQueue::onBeat() const {
 
   {
     std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+
     for (const auto &event : queue) {
-      auto eventTarget = event.eventTarget.lock();
       eventPipe_(
-        eventTarget && event.isDispatchable() ? eventTarget.get() : nullptr,
+        event.eventTarget.lock().get(),
         event.type,
         event.payload
       );

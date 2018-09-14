@@ -15,33 +15,20 @@ namespace facebook {
 namespace react {
 
 /*
- * Represents ready-to-dispatch event data.
+ * Represents ready-to-dispatch event object.
  */
 class RawEvent {
 
 public:
-  using RawEventDispatchable = std::function<bool()>;
-
   RawEvent(
     std::string type,
     folly::dynamic payload,
-    WeakEventTarget eventTarget,
-    RawEventDispatchable isDispatchable
+    WeakEventTarget eventTarget
   );
 
   const std::string type;
   const folly::dynamic payload;
   const WeakEventTarget eventTarget;
-
-  /*
-   * Returns `true` if event can be dispatched to `eventTarget`.
-   * Events that associated with unmounted or deallocated `ShadowNode`s
-   * must not be dispatched.
-   */
-  bool isDispatchable() const;
-
-private:
-  const RawEventDispatchable isDispatchable_;
 };
 
 } // namespace react

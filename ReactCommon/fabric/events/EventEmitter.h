@@ -33,8 +33,7 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  * JSI maintains `WeakObject` object as long as we retain the `EventTarget`.
  * All `EventTarget` instances must be deallocated before stopping JavaScript machine.
  */
-class EventEmitter:
-  public std::enable_shared_from_this<EventEmitter> {
+class EventEmitter {
 
   /*
    * We have to repeat `Tag` type definition here because `events` module does
