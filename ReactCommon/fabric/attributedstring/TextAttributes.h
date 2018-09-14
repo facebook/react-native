@@ -70,6 +70,11 @@ public:
 
   void apply(TextAttributes textAttributes);
 
+#pragma mark - Operators
+
+  bool operator==(const TextAttributes &rhs) const;
+  bool operator!=(const TextAttributes &rhs) const;
+
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override;

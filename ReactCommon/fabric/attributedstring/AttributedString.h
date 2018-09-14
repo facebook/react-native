@@ -35,11 +35,15 @@ class AttributedString:
 public:
 
   class Fragment {
+
   public:
     std::string string;
     TextAttributes textAttributes;
     SharedShadowNode shadowNode;
     SharedShadowNode parentShadowNode;
+
+    bool operator==(const Fragment &rhs) const;
+    bool operator!=(const Fragment &rhs) const;
   };
 
   using Fragments = std::vector<Fragment>;
@@ -66,6 +70,9 @@ public:
    * Returns a string constructed from all strings in all fragments.
    */
   std::string getString() const;
+
+  bool operator==(const AttributedString &rhs) const;
+  bool operator!=(const AttributedString &rhs) const;
 
 #pragma mark - DebugStringConvertible
 
