@@ -15,7 +15,7 @@ namespace facebook {
 namespace react {
 
 ImageManager::ImageManager(void *platformSpecificCounterpart) {
-  self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:(__bridge_transfer RCTImageLoader *)platformSpecificCounterpart];
+  self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:(__bridge RCTImageLoader *)platformSpecificCounterpart];
 }
 
 ImageManager::~ImageManager() {
