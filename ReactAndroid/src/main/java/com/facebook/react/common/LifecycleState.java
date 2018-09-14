@@ -1,13 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.common;
-
-import com.facebook.thecount.api.CountEnum;
 
 /**
  * Lifecycle state for an Activity. The state right after pause and right before resume are the
@@ -20,7 +18,6 @@ import com.facebook.thecount.api.CountEnum;
  * STARTED,
  * RESUMED
  */
-@CountEnum
 public enum LifecycleState {
   BEFORE_CREATE,
   BEFORE_RESUME,

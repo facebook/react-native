@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,11 +27,13 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ImageProps>();
+    _props = defaultProps;
+
     _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     _imageView.clipsToBounds = YES;
 
-    auto defaultProps = ImageProps();
-    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps.resizeMode);
+    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
 
     self.contentView = _imageView;
   }
@@ -43,15 +45,10 @@ using namespace facebook::react;
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
-  if (!oldProps) {
-    oldProps = _props ?: std::make_shared<const ImageProps>();
-  }
-  _props = props;
+  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(oldProps ?: _props);
+  const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
 
   [super updateProps:props oldProps:oldProps];
-
-  const auto &oldImageProps = *std::dynamic_pointer_cast<const ImageProps>(oldProps);
-  const auto &newImageProps = *std::dynamic_pointer_cast<const ImageProps>(props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {

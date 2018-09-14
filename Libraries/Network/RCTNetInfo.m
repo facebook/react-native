@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,12 +36,14 @@ static NSString *const RCTReachabilityStateCell = @"cell";
 
 @implementation RCTNetInfo
 {
+  SCNetworkReachabilityRef _firstTimeReachability;
   SCNetworkReachabilityRef _reachability;
   NSString *_connectionType;
   NSString *_effectiveConnectionType;
   NSString *_statusDeprecated;
   NSString *_host;
   BOOL _isObserving;
+  RCTPromiseResolveBlock _resolve;
 }
 
 RCT_EXPORT_MODULE()
@@ -49,7 +51,18 @@ RCT_EXPORT_MODULE()
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
   RCTNetInfo *self = (__bridge id)info;
-  if ([self setReachabilityStatus:flags] && self->_isObserving) {
+  BOOL didSetReachabilityFlags = [self setReachabilityStatus:flags];
+  if (self->_firstTimeReachability && self->_resolve) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    self->_resolve(@{@"connectionType": self->_connectionType ?: RCTConnectionTypeUnknown,
+                     @"effectiveConnectionType": self->_effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
+                     @"network_info": self->_statusDeprecated ?: RCTReachabilityStateUnknown});
+    self->_firstTimeReachability = nil;
+    self->_resolve = nil;
+  }
+
+  if (didSetReachabilityFlags && self->_isObserving) {
     [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": self->_connectionType,
                                                              @"effectiveConnectionType": self->_effectiveConnectionType,
                                                              @"network_info": self->_statusDeprecated}];
@@ -163,12 +176,8 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  SCNetworkReachabilityRef reachability = [self getReachabilityRef];
-  SCNetworkReachabilityUnscheduleFromRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-  CFRelease(reachability);
-  resolve(@{@"connectionType": _connectionType ?: RCTConnectionTypeUnknown,
-            @"effectiveConnectionType": _effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
-            @"network_info": _statusDeprecated ?: RCTReachabilityStateUnknown});
+  _firstTimeReachability = [self getReachabilityRef];
+  _resolve = resolve;
 }
 
 @end

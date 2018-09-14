@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -52,8 +52,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import com.facebook.thecount.api.CountEnum;
 
 /**
  * This annotation processor crawls subclasses of ReactShadowNode and ViewManager and finds their
@@ -551,7 +549,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     }
   }
 
-  @CountEnum
   private enum SettableType {
     VIEW_MANAGER,
     SHADOW_NODE

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,9 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.systrace.Systrace;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,10 +46,9 @@ public class NativeModuleRegistry {
       JSInstance jsInstance) {
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
-      String type = entry.getKey();
       if (!entry.getValue().isCxxModule()) {
       //if (!CxxModuleWrapperBase.class.isAssignableFrom(entry.getValue().getModule().getClass())) {
-        javaModules.add(new JavaModuleWrapper(jsInstance, type, entry.getValue()));
+        javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
       }
     }
     return javaModules;
@@ -120,19 +121,24 @@ public class NativeModuleRegistry {
     // iterating over all the modules for find this one instance, and then calling it, we short-circuit
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
-    ModuleHolder moduleHolder = mModules.get("com.facebook.react.uimanager.UIManagerModule");
+    ModuleHolder moduleHolder = mModules.get("UIManager");
     if (moduleHolder != null && moduleHolder.hasInstance()) {
       ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
     }
   }
 
   public <T extends NativeModule> boolean hasModule(Class<T> moduleInterface) {
-    return mModules.containsKey(moduleInterface.getName());
+    String name = moduleInterface.getAnnotation(ReactModule.class).name();
+    return mModules.containsKey(name);
   }
 
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
+    ReactModule annotation = moduleInterface.getAnnotation(ReactModule.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException("Could not find @ReactModule annotation in class " + moduleInterface.getName());
+    }
     return (T) Assertions.assertNotNull(
-        mModules.get(moduleInterface.getName()), moduleInterface.getSimpleName()).getModule();
+        mModules.get(annotation.name()), annotation.name() + " could not be found. Is it defined in " + moduleInterface.getName()).getModule();
   }
 
   public List<NativeModule> getAllModules() {

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -25,7 +25,6 @@ ShadowTree::ShadowTree(Tag rootTag):
       .rootTag = rootTag,
       .props = RootShadowNode::defaultSharedProps(),
       .eventEmitter = noopEventEmitter,
-      .children = ShadowNode::emptySharedShadowNodeSharedList(),
     },
     nullptr
   );

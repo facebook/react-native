@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "ViewProps.h"
 
 #include <fabric/components/view/conversions.h>
+#include <fabric/components/view/propsConversions.h>
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 #include <fabric/graphics/conversions.h>
@@ -24,10 +25,9 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   opacity(convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
   foregroundColor(convertRawProp(rawProps, "foregroundColor", sourceProps.foregroundColor)),
   backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor)),
-  borderWidth(convertRawProp(rawProps, "borderWidth", sourceProps.borderWidth)),
-  borderRadius(convertRawProp(rawProps, "borderRadius", sourceProps.borderRadius)),
-  borderColor(convertRawProp(rawProps, "borderColor", sourceProps.borderColor)),
-  borderStyle(convertRawProp(rawProps, "borderStyle", sourceProps.borderStyle)),
+  borderRadii(convertRawProp(rawProps, "border", "Radius", sourceProps.borderRadii)),
+  borderColors(convertRawProp(rawProps, "border", "Color", sourceProps.borderColors)),
+  borderStyles(convertRawProp(rawProps, "border", "Style", sourceProps.borderStyles)),
   shadowColor(convertRawProp(rawProps, "shadowColor", sourceProps.shadowColor)),
   shadowOffset(convertRawProp(rawProps, "shadowOffset", sourceProps.shadowOffset)),
   shadowOpacity(convertRawProp(rawProps, "shadowOpacity", sourceProps.shadowOpacity)),
@@ -39,6 +39,29 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps):
   pointerEvents(convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
   hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)),
   onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)) {};
+
+#pragma mark - Convenience Methods
+
+BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
+  auto borderWidths = CascadedBorderWidths {
+    .left = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeLeft]),
+    .top = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeTop]),
+    .right = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeRight]),
+    .bottom = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeBottom]),
+    .start = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeStart]),
+    .end = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeEnd]),
+    .horizontal = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeHorizontal]),
+    .vertical = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeVertical]),
+    .all = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeAll])
+  };
+
+  return {
+    .borderColors = borderColors.resolve(isRTL, {}),
+    .borderWidths = borderWidths.resolve(isRTL, 0),
+    .borderRadii = borderRadii.resolve(isRTL, 0),
+    .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid)
+  };
+}
 
 #pragma mark - DebugStringConvertible
 

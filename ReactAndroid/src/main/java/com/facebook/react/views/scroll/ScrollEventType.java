@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,9 @@
 
 package com.facebook.react.views.scroll;
 
-import com.facebook.thecount.api.CountEnum;
-
 /**
  * Scroll event types that JS module RCTEventEmitter can understand
  */
-@CountEnum
 public enum ScrollEventType {
   BEGIN_DRAG("topScrollBeginDrag"),
   END_DRAG("topScrollEndDrag"),
