@@ -436,6 +436,7 @@ exports.examples = [
             backgroundColor: BGWASH,
             height: 100,
           }}
+          allowFileAccess={true}
           originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
           source={require('./helloworld.html')}
           scalesPageToFit={true}
