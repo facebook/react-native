@@ -32,7 +32,12 @@ enum class EventPriority: int {
  * across different modules.
  */
 using EventTarget = struct EventTargetDummyStruct {} *;
-using EventHandler = struct EventHandlerDummyStruct {} *;
+
+/*
+ * We need this types only to ensure type-safety when we deal with them. Conceptually,
+ * they are opaque pointers to some types that derived from those classes.
+ */
+class EventHandler {};
 
 /*
  * EmptyEventTarget is used when some event cannot be dispatched to an original

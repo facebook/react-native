@@ -18,17 +18,14 @@
 namespace facebook {
 namespace react {
 
-using DispatchEventToEmptyTargetFunction = void (EventHandler eventHandler, std::string type, folly::dynamic payload);
-using DispatchEventToTargetFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
-using ReleaseEventHandlerFunction = void (EventHandler eventHandler);
+using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, std::string type, folly::dynamic payload);
+using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
 using ReleaseEventTargetFunction = void (EventTarget eventTarget);
 
 class FabricUIManager {
 public:
 
 #pragma mark - Native-facing Interface
-
-  ~FabricUIManager();
 
   void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
 
@@ -47,7 +44,6 @@ public:
    */
   void setDispatchEventToEmptyTargetFunction(std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction);
   void setDispatchEventToTargetFunction(std::function<DispatchEventToTargetFunction> dispatchEventFunction);
-  void setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction);
   void setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction);
 
 #pragma mark - Native-facing Interface
@@ -66,16 +62,15 @@ public:
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
   void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
-  void registerEventHandler(const EventHandler &eventHandler);
+  void registerEventHandler(std::shared_ptr<EventHandler> eventHandler);
 
 private:
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  EventHandler eventHandler_;
+  std::shared_ptr<EventHandler> eventHandler_;
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
-  std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction_;
   std::function<ReleaseEventTargetFunction> releaseEventTargetFunction_;
 };
 
