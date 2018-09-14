@@ -45,7 +45,7 @@ void EventEmitter::dispatchEvent(
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
+  auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
@@ -55,21 +55,11 @@ void EventEmitter::dispatchEvent(
   folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
   extendedPayload.merge_patch(payload);
 
-  auto weakEventEmitter = std::weak_ptr<const EventEmitter> {shared_from_this()};
-
   eventDispatcher->dispatchEvent(
     RawEvent(
       normalizeEventType(type),
       extendedPayload,
-      eventTarget_,
-      [weakEventEmitter]() {
-        auto eventEmitter = weakEventEmitter.lock();
-        if (!eventEmitter) {
-          return false;
-        }
-
-        return eventEmitter->getEnabled();
-      }
+      eventTarget_
     ),
     priority
   );
