@@ -105,20 +105,15 @@ void FabricUIManager::setDispatchEventToTargetFunction(std::function<DispatchEve
   dispatchEventToTargetFunction_ = dispatchEventFunction;
 }
 
-void FabricUIManager::setReleaseEventTargetFunction(std::function<ReleaseEventTargetFunction> releaseEventTargetFunction) {
-  releaseEventTargetFunction_ = releaseEventTargetFunction;
-}
-
-void FabricUIManager::dispatchEventToTarget(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const {
-  if (eventTarget != EmptyEventTarget) {
+void FabricUIManager::dispatchEventToTarget(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload) const {
+  if (eventTarget) {
     dispatchEventToTargetFunction_(
       *eventHandler_,
-      eventTarget,
+      *eventTarget,
       const_cast<std::string &>(type),
       const_cast<folly::dynamic &>(payload)
     );
-  }
-  else {
+  } else {
     dispatchEventToEmptyTargetFunction_(
       *eventHandler_,
       const_cast<std::string &>(type),
@@ -127,11 +122,7 @@ void FabricUIManager::dispatchEventToTarget(const EventTarget &eventTarget, cons
   }
 }
 
-void FabricUIManager::releaseEventTarget(const EventTarget &eventTarget) const {
-  releaseEventTargetFunction_(eventTarget);
-}
-
-SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, EventTarget eventTarget) {
+SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::createNode(tag: " << tag << ", name: " << viewName << ", rootTag: " << rootTag << ", props: " << props << ")";
 
   ComponentName componentName = componentNameByReactViewName(viewName);
@@ -142,7 +133,7 @@ SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int 
     componentDescriptor->createShadowNode({
       .tag = tag,
       .rootTag = rootTag,
-      .eventEmitter = componentDescriptor->createEventEmitter(eventTarget, tag),
+      .eventEmitter = componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
       .props = componentDescriptor->cloneProps(nullptr, rawProps)
     });
 
@@ -246,7 +237,7 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
 
 void FabricUIManager::registerEventHandler(std::shared_ptr<EventHandler> eventHandler) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler: " << eventHandler.get() << ")";
-  eventHandler_ = eventHandler;
+  eventHandler_ = std::move(eventHandler);
 }
 
 } // namespace react

@@ -18,6 +18,7 @@ namespace react {
 
 class EventDispatcher;
 using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
+using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
 
 /*
  * Represents event-delivery infrastructure.

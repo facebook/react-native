@@ -24,28 +24,17 @@ enum class EventPriority: int {
   Deferred = AsynchronousBatched
 };
 
-/* `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
- * raw pointers. We use `struct {} *` trick to differentiate them in compiler's
- * eyes to ensure type safety.
- * These structs must have names (and the names must be exported)
- * to allow consistent template (e.g. `std::function`) instantiating
- * across different modules.
- */
-using EventTarget = struct EventTargetDummyStruct {} *;
-
 /*
  * We need this types only to ensure type-safety when we deal with them. Conceptually,
  * they are opaque pointers to some types that derived from those classes.
  */
 class EventHandler {};
+class EventTarget {};
+using SharedEventHandler = std::shared_ptr<const EventHandler>;
+using SharedEventTarget = std::shared_ptr<const EventTarget>;
+using WeakEventTarget = std::weak_ptr<const EventTarget>;
 
-/*
- * EmptyEventTarget is used when some event cannot be dispatched to an original
- * event target but still has to be dispatched to preserve consistency of event flow.
- */
-static const EventTarget EmptyEventTarget = nullptr;
-
-using EventPipe = std::function<void(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload)>;
+using EventPipe = std::function<void(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload)>;
 
 } // namespace react
 } // namespace facebook

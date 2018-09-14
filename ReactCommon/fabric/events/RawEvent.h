@@ -23,25 +23,25 @@ public:
   using RawEventDispatchable = std::function<bool()>;
 
   RawEvent(
-    const std::string &type,
-    const folly::dynamic &payload,
-    const EventTarget &eventTarget,
-    const RawEventDispatchable &isDispachable
+    std::string type,
+    folly::dynamic payload,
+    WeakEventTarget eventTarget,
+    RawEventDispatchable isDispatchable
   );
 
   const std::string type;
   const folly::dynamic payload;
-  const EventTarget eventTarget;
+  const WeakEventTarget eventTarget;
 
   /*
    * Returns `true` if event can be dispatched to `eventTarget`.
    * Events that associated with unmounted or deallocated `ShadowNode`s
    * must not be dispatched.
    */
-  bool isDispachable() const;
+  bool isDispatchable() const;
 
 private:
-  const RawEventDispatchable isDispachable_;
+  const RawEventDispatchable isDispatchable_;
 };
 
 } // namespace react
