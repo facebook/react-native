@@ -235,7 +235,7 @@ void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedLi
   }
 }
 
-void FabricUIManager::registerEventHandler(std::shared_ptr<EventHandler> eventHandler) {
+void FabricUIManager::registerEventHandler(UniqueEventHandler eventHandler) {
   isLoggingEnabled && LOG(INFO) << "FabricUIManager::registerEventHandler(eventHandler: " << eventHandler.get() << ")";
   eventHandler_ = std::move(eventHandler);
 }

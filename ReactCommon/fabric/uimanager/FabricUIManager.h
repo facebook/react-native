@@ -60,13 +60,13 @@ public:
   SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
   void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
   void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
-  void registerEventHandler(std::shared_ptr<EventHandler> eventHandler);
+  void registerEventHandler(UniqueEventHandler eventHandler);
 
 private:
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  std::shared_ptr<EventHandler> eventHandler_;
+  UniqueEventHandler eventHandler_;
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
 };
