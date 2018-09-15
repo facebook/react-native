@@ -30,6 +30,6 @@ describe('makePackagePatch@0.20', () => {
     const {patch} = makePackagePatch(packageInstance, params, name);
     const processedInstance = applyParams(packageInstance, params, name);
 
-    expect(patch).toBe(',\n            ' + processedInstance);
+    expect(patch).toBe(',\n          ' + processedInstance);
   });
 });
