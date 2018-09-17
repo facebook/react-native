@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2015-present, Facebook, Inc.
-=======
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
->>>>>>> master
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,7 +44,7 @@ public final class AsyncStorageModule
 
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
-  private ExecutorService mExecutor;
+  private ExecutorService executor;
   
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     this(reactContext, Executors.newSingleThreadExecutor());
@@ -58,7 +53,7 @@ public final class AsyncStorageModule
   public AsyncStorageModule(ReactApplicationContext reactContext, ExecutorService executor) {
     super(reactContext);
     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
-    mExecutor = executor;
+    this.executor = executor;
   }
 
   @Override
@@ -74,7 +69,7 @@ public final class AsyncStorageModule
 
   @Override
   public void onCatalystInstanceDestroy() {
-    mExecutor.shutdown();
+    executor.shutdown();
     mShuttingDown = true;
   }
 
@@ -155,7 +150,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -222,7 +217,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -273,7 +268,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -336,7 +331,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -359,7 +354,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -393,7 +388,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    }.executeOnExecutor(mExecutor);
+    }.executeOnExecutor(executor);
   }
 
   /**
