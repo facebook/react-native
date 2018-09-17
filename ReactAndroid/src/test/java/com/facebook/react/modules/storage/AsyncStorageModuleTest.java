@@ -74,7 +74,10 @@ public class AsyncStorageModuleTest {
      });
 
     // don't use Robolectric before initializing mocks
-    mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest(), new RoboExecutorService());
+    mStorage = new AsyncStorageModule(
+      ReactTestHelper.createCatalystContextForTest(),
+      new RoboExecutorService()
+    );
     mEmptyArray = new JavaOnlyArray();
   }
 
