@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/attributedstring/primitives.h>
 #include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
@@ -186,6 +187,16 @@ inline std::string toString(const TextDecorationLinePattern &textDecorationLineP
     case TextDecorationLinePattern::DashDot: return "dash-dot";
     case TextDecorationLinePattern::DashDotDot: return "dash-dot-dot";
   }
+}
+
+inline folly::dynamic toDynamic(const ParagraphAttributes &paragraphAttributes) {
+  auto values = folly::dynamic::object();
+  values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
+  values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
+  values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
+  values("minimumFontSize", paragraphAttributes.minimumFontSize);
+  values("maximumFontSize", paragraphAttributes.maximumFontSize);
+  return values;
 }
 
 } // namespace react
