@@ -53,8 +53,6 @@ function createProjectFromTemplate(
   // This way we don't have to duplicate the native files in every template.
   // If we duplicated them we'd make RN larger and risk that people would
   // forget to maintain all the copies so they would go out of sync.
-  // template is e.g. 'ignite',
-  // use the template react-native-template-ignite from npm
   createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion);
 }
 
