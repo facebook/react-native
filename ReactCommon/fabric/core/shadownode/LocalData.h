@@ -29,7 +29,6 @@ class LocalData:
   public Sealable,
   public DebugStringConvertible {
 
-  // Nothing.
 };
 
 } // namespace react
