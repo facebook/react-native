@@ -43,6 +43,16 @@ inline void fromDynamic(const folly::dynamic &value, SharedColor &result) {
   result = colorFromComponents({red, green, blue, alpha});
 }
 
+inline folly::dynamic toDynamic(const SharedColor &color) {
+  ColorComponents components = colorComponentsFromColor(color);
+  auto ratio = 256.f;
+  return
+    (((int)(components.alpha * ratio) & 0xff) << 24 |
+    ((int)(components.red * ratio) & 0xff) << 16 |
+    ((int)(components.green * ratio) & 0xff) << 8 |
+    ((int)(components.blue * ratio) & 0xff));
+}
+
 inline std::string toString(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
   auto ratio = 256.f;
