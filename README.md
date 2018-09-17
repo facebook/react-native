@@ -8,7 +8,7 @@ See the official [React Native website](https://facebook.github.io/react-native/
 - [Getting Started](#getting-started)
 - [Documentation](#documentation)
 - [Upgrading](#upgrading)
-- [Contributing](#contributing)
+- [Contributing](./CONTRIBUTING.md)
 - [License](#license)
 
 ---
