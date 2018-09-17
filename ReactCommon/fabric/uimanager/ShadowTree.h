@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -13,19 +13,15 @@
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
+#include <fabric/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
 
-class ShadowTree;
-
-using SharedShadowTree = std::shared_ptr<ShadowTree>;
-
 /*
  * Represents the shadow tree and its lifecycle.
  */
-class ShadowTree final:
-  public std::enable_shared_from_this<ShadowTree> {
+class ShadowTree final {
 
 public:
 
@@ -33,6 +29,8 @@ public:
    * Creates a new shadow tree instance with given `rootTag`.
    */
   ShadowTree(Tag rootTag);
+
+  ~ShadowTree();
 
   /*
    * Returns the rootTag associated with the shadow tree (the tag of the
@@ -77,8 +75,13 @@ private:
 
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
   void complete(UnsharedRootShadowNode newRootShadowNode);
-  bool commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode);
-  void emitLayoutEvents(const TreeMutationInstructionList &instructions);
+  bool commit(
+    const SharedRootShadowNode &oldRootShadowNode,
+    const SharedRootShadowNode &newRootShadowNode,
+    const ShadowViewMutationList &mutations
+  );
+  void toggleEventEmitters(const ShadowViewMutationList &mutations);
+  void emitLayoutEvents(const ShadowViewMutationList &mutations);
 
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;

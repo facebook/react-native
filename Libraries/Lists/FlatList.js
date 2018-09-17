@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const deepDiffer = require('deepDiffer');
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
 const View = require('View');
@@ -472,7 +473,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       'Changing onViewableItemsChanged on the fly is not supported',
     );
     invariant(
-      prevProps.viewabilityConfig === this.props.viewabilityConfig,
+      !deepDiffer(prevProps.viewabilityConfig, this.props.viewabilityConfig),
       'Changing viewabilityConfig on the fly is not supported',
     );
     invariant(

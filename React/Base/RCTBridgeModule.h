@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -319,5 +319,14 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * This occurs before -batchDidComplete, and more frequently.
  */
 - (void)partialBatchDidFlush;
+
+@end
+
+/**
+ * Experimental.
+ * A protocol to declare that a class supports JSI-bound NativeModule.
+ * This may be removed in the future.
+ */
+@protocol RCTJSINativeModule <NSObject>
 
 @end

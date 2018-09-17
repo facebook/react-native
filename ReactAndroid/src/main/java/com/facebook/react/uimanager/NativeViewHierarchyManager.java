@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -409,12 +409,11 @@ public class NativeViewHierarchyManager {
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // Display the view in the parent after removal for the duration of the layout animation,
-          // but pretend that it doesn't exist when calling other ViewGroup methods.
-          viewManager.startViewTransition(viewToManage, viewToRemove);
+          // The view will be removed and dropped by the 'delete' layout animation
+          // instead, so do nothing
+        } else {
+          viewManager.removeViewAt(viewToManage, indexToRemove);
         }
-
-        viewManager.removeViewAt(viewToManage, indexToRemove);
 
         lastIndexToRemove = indexToRemove;
       }
@@ -460,9 +459,7 @@ public class NativeViewHierarchyManager {
           mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
             @Override
             public void onAnimationEnd() {
-              // Already removed from the ViewGroup, we can just end the transition here to
-              // release the child.
-              viewManager.endViewTransition(viewToManage, viewToDestroy);
+              viewManager.removeView(viewToManage, viewToDestroy);
               dropView(viewToDestroy);
             }
           });

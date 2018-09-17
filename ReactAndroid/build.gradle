@@ -1,12 +1,13 @@
-// Copyright (c) 2015-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-
-apply plugin: 'de.undercouch.download'
+plugins {
+    id("com.android.library")
+    id("maven")
+    id("de.undercouch.download")
+}
 
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -39,60 +40,60 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
+    src "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
+    dest new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
-    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
+    include 'Android.mk', "boost_${BOOST_VERSION}/boost/**/*.hpp", 'boost/boost/**/*.hpp'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
     doLast {
-        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_1_63_0")
+        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
     }
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/double-conversion/archive/v1.1.6.tar.gz'
+    src "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'double-conversion-1.1.6.tar.gz')
+    dest new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 }
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from dependenciesPath ?: tarTree(downloadDoubleConversion.dest)
     from 'src/main/jni/third-party/double-conversion/Android.mk'
-    include 'double-conversion-1.1.6/src/**/*', 'Android.mk'
+    include "double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", 'Android.mk'
     filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/double-conversion"
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2016.10.31.00.tar.gz'
+    src "https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2016.10.31.00.tar.gz');
+    dest new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz");
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-2016.10.31.00/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-2016.10.31.00/")}
+    include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/glog/archive/v0.3.5.tar.gz'
+    src "https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'glog-0.3.5.tar.gz')
+    dest new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 }
 
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
@@ -100,7 +101,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
     from dependenciesPath ?: tarTree(downloadGlog.dest)
     from 'src/main/jni/third-party/glog/'
-    include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h'
+    include "glog-${GLOG_VERSION}/src/**/*", 'Android.mk', 'config.h'
     includeEmptyDirs = false
     filesMatching('**/*.h.in') {
         filter(ReplaceTokens, tokens: [
@@ -250,7 +251,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 

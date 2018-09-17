@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -125,19 +125,6 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   centerContent?: ?boolean,
-  /**
-   * A floating-point number that determines how quickly the scroll view
-   * decelerates after the user lifts their finger. You may also use string
-   * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
-   * for `UIScrollViewDecelerationRateNormal` and
-   * `UIScrollViewDecelerationRateFast` respectively.
-   *
-   *   - `'normal'`: 0.998 (the default)
-   *   - `'fast'`: 0.99
-   *
-   * @platform ios
-   */
-  decelerationRate?: ?('fast' | 'normal' | number),
   /**
    * The style of the scroll indicators.
    *
@@ -354,6 +341,17 @@ export type Props = $ReadOnly<{|
    */
   contentContainerStyle?: ?ViewStyleProp,
   /**
+   * A floating-point number that determines how quickly the scroll view
+   * decelerates after the user lifts their finger. You may also use string
+   * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+   * for `UIScrollViewDecelerationRateNormal` and
+   * `UIScrollViewDecelerationRateFast` respectively.
+   *
+   *   - `'normal'`: 0.998 on iOS, 0.985 on Android (the default)
+   *   - `'fast'`: 0.99 on iOS, 0.9 on Android
+   */
+  decelerationRate?: ?('fast' | 'normal' | number),
+  /**
    * When true, the scroll view's children are arranged horizontally in a row
    * instead of vertically in a column. The default value is false.
    */
@@ -462,12 +460,36 @@ export type Props = $ReadOnly<{|
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children
    * that have lengths smaller than the scroll view. Typically used in
-   * combination with `snapToAlignment` and `decelerationRate="fast"` on ios.
-   * Overrides less configurable `pagingEnabled` prop.
+   * combination with `snapToAlignment` and `decelerationRate="fast"`.
    *
-   * Supported for horizontal scrollview on android.
+   * Overrides less configurable `pagingEnabled` prop.
    */
   snapToInterval?: ?number,
+  /**
+   * When set, causes the scroll view to stop at the defined offsets.
+   * This can be used for paginating through variously sized children
+   * that have lengths smaller than the scroll view. Typically used in
+   * combination with `decelerationRate="fast"`.
+   *
+   * Overrides less configurable `pagingEnabled` and `snapToInterval` props.
+   */
+  snapToOffsets?: ?$ReadOnlyArray<number>,
+  /**
+   * Use in conjuction with `snapToOffsets`. By default, the beginning
+   * of the list counts as a snap offset. Set `snapToStart` to false to disable
+   * this behavior and allow the list to scroll freely between its start and
+   * the first `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToStart?: ?boolean,
+  /**
+   * Use in conjuction with `snapToOffsets`. By default, the end
+   * of the list counts as a snap offset. Set `snapToEnd` to false to disable
+   * this behavior and allow the list to scroll freely between its end and
+   * the last `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToEnd?: ?boolean,
   /**
    * Experimental: When true, offscreen child views (whose `overflow` value is
    * `hidden`) are removed from their native backing superview when offscreen.
@@ -772,10 +794,6 @@ const ScrollView = createReactClass({
     } else {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
-      warning(
-        this.props.snapToInterval == null || !this.props.pagingEnabled,
-        'snapToInterval is currently ignored when pagingEnabled is true.',
-      );
     }
 
     invariant(
@@ -919,6 +937,23 @@ const ScrollView = createReactClass({
           ? true
           : false,
       DEPRECATED_sendUpdatedChildFrames,
+      // default to true
+      snapToStart: this.props.snapToStart !== false,
+      // default to true
+      snapToEnd: this.props.snapToEnd !== false,
+      // pagingEnabled is overridden by snapToInterval / snapToOffsets
+      pagingEnabled: Platform.select({
+        // on iOS, pagingEnabled must be set to false to have snapToInterval / snapToOffsets work
+        ios:
+          this.props.pagingEnabled &&
+          this.props.snapToInterval == null &&
+          this.props.snapToOffsets == null,
+        // on Android, pagingEnabled must be set to true to have snapToInterval / snapToOffsets work
+        android:
+          this.props.pagingEnabled ||
+          this.props.snapToInterval != null ||
+          this.props.snapToOffsets != null,
+      }),
     };
 
     const {decelerationRate} = this.props;

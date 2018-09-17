@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -598,6 +598,14 @@ void jni_YGConfigSetUseWebDefaults(
   YGConfigSetUseWebDefaults(config, useWebDefaults);
 }
 
+void jni_YGConfigSetPrintTreeFlag(
+    alias_ref<jobject>,
+    jlong nativePointer,
+    jboolean enable) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPrintTreeFlag(config, enable);
+}
+
 void jni_YGConfigSetPointScaleFactor(
     alias_ref<jobject>,
     jlong nativePointer,
@@ -760,6 +768,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeNativeMethod(jni_YGConfigFree),
             YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
             YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+            YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),
             YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
             YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
             YGMakeNativeMethod(jni_YGConfigSetLogger),

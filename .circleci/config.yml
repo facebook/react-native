@@ -287,33 +287,32 @@ aliases:
     name: tvOS Test Suite
     command: ./scripts/objc-test-tvos.sh test
 
-  - &run-podspec-tests
-    name: Test CocoaPods (Ignoring failures)
+  - &display-broken-tests-warning
+    name: Running broken tests (Ignore any failures past this point)
     command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh ./scripts/process-podspecs.sh
+      echo 'The following steps are known to be failing on master.'
+      echo 'They will no-op for most users.'
+      echo 'PRs that bring these back to green are appreciated.'
+
+  - &run-podspec-tests
+    name: Test CocoaPods (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh ./scripts/process-podspecs.sh
 
   - &run-e2e-tests
-    name: End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
+    name: End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
 
   - &run-objc-ios-e2e-tests
-    name: iOS End-to-End Test Suite (Ignoring failures)
-    command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+    name: iOS End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
   - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite (Ignoring failures)
-    command: |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
+    name: tvOS End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
-    name: Android End-to-End Test Suite (Ignoring failures)
-    command:  |
-      echo 'The following step is known to be failing in master, and any failures will be ignored.'
-      scripts/circleci/exec_swallow_error.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+    name: Android End-to-End Test Suite (Disabled)
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
   - &run-js-e2e-tests
     name: JavaScript End-to-End Test Suite
@@ -426,10 +425,8 @@ jobs:
       - run: *run-objc-ios-tests
       - run: *run-objc-tvos-tests
 
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
       - run: *run-podspec-tests
       - run: *run-objc-ios-e2e-tests
       - run: *run-objc-tvos-e2e-tests
@@ -458,20 +455,13 @@ jobs:
             brew install applesimutils
             node -v
       - run: *yarn
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+
       - run:
-          name: Build iOS app for simulator (Ignoring failures)
-          command: |
-            echo 'The following step is known to be failing in master, and any failures will be ignored.'
-            scripts/circleci/exec_swallow_error.sh yarn run build-ios-e2e
+          name: Build iOS app for simulator
+          command: yarn run build-ios-e2e
       - run:
-          name: Run Detox Tests (Ignoring failures)
-          command: |
-            echo 'The following step is known to be failing in master, and any failures will be ignored.'
-            scripts/circleci/exec_swallow_error.sh yarn run test-ios-e2e
+          name: Run Detox Tests
+          command: yarn run test-ios-e2e
 
   # Set up an Android environment for downstream jobs
   test_android:
@@ -536,10 +526,8 @@ jobs:
       - run: *build-android-rntester-app
 
       # Run Android end-to-end tests
-      # The following are "disabled" - the steps will
-      # still run, but failures will be ignored.
-      # This is good for debugging flaky CI steps.
-      # TODO: Reenable as soon as they are in working order.
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
       - run: *run-android-e2e-tests
 
       # Collect Results
@@ -550,46 +538,49 @@ jobs:
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
+  # The public github tokens are publicly visible by design
   analyze_pr:
-    <<: *js_defaults
+    <<: *defaults
+    docker:
+      - image: circleci/node:10
+    environment:
+      - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
+
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
 
-      - restore-cache: *restore-cache-analysis
+      - restore-cache: *restore-yarn-cache
       - run: *yarn
-      - run:
-          name: Install Additional Dependencies
-          command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              yarn add github@0.2.4
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-            else
-              echo "Skipping dependency installation."
-            fi
-      - save-cache: *save-cache-analysis
 
-      - run:
-          name: Analyze Pull Request
-          command: |
-            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots && DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
-          when: always
       - run:
           name: Analyze Code
           command: |
-            # GITHUB_TOKEN=eslint-bot public_repo access token
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER scripts/circleci/analyze_code.sh
+              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
             else
               echo "Skipping code analysis."
             fi
           when: always
+
+      - restore-cache: *restore-cache-analysis
+      - run:
+          name: Analyze Pull Request
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              cd bots
+              yarn install --non-interactive --cache-folder ~/.cache/yarn
+              DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
+            else
+              echo "Skipping pull request analysis."
+            fi
+          when: always
+      - save-cache: *save-cache-analysis
 
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
@@ -696,15 +687,6 @@ workflows:
             - test_objc
             - test_android
 
-  # Only runs on PRs
-  analyze:
-    jobs:
-      # Checkout repo and run Yarn
-      - checkout_code:
-          filters: *filter-ignore-master-stable
-
       # Run code checks
       - analyze_pr:
           filters: *filter-ignore-master-stable
-          requires:
-            - checkout_code

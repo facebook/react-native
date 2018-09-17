@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
+
 namespace facebook {
 namespace react {
 
-enum class EventPriority {
+enum class EventPriority: int {
   SynchronousUnbatched,
   SynchronousBatched,
   AsynchronousUnbatched,
@@ -19,18 +21,28 @@ enum class EventPriority {
   Sync = SynchronousUnbatched,
   Work = SynchronousBatched,
   Interactive = AsynchronousUnbatched,
-  Deferred = AsynchronousBatched,
+  Deferred = AsynchronousBatched
 };
 
-/* `InstanceHandler`, `EventTarget`, and `EventHandler` are all opaque
- * raw pointers. We use `struct {} *` trick to differentiate them in compiler's
- * eyes to ensure type safety.
- * These structs must have names (and the names must be exported)
- * to allow consistent template (e.g. `std::function`) instantiating
- * across different modules.
+/*
+ * We need this types only to ensure type-safety when we deal with them. Conceptually,
+ * they are opaque pointers to some types that derived from those classes.
+ *
+ * `EventHandler` is managed as a `unique_ptr`, so it must have a *virtual*
+ * destructor to allow proper deallocation having only a pointer
+ * to the base (`EventHandler`) class.
+ *
+ * `EventTarget` is managed as a `shared_ptr`, so it does not need to have a virtual
+ * destructor because `shared_ptr` stores a pointer to destructor inside.
  */
-using EventTarget = struct EventTargetDummyStruct {} *;
-using EventHandler = struct EventHandlerDummyStruct {} *;
+struct EventHandler { virtual ~EventHandler() = default; };
+using UniqueEventHandler = std::unique_ptr<const EventHandler>;
+
+struct EventTarget {};
+using SharedEventTarget = std::shared_ptr<const EventTarget>;
+using WeakEventTarget = std::weak_ptr<const EventTarget>;
+
+using EventPipe = std::function<void(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload)>;
 
 } // namespace react
 } // namespace facebook
