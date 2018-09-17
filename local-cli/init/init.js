@@ -10,7 +10,6 @@
 'use strict';
 
 const {
-  listTemplatesAndExit,
   createProjectFromTemplate,
 } = require('../generator/templates');
 const execSync = require('child_process').execSync;
@@ -44,14 +43,8 @@ function init(projectDir, argsOrName) {
   const newProjectName = args[0];
   const options = minimist(args);
 
-  if (listTemplatesAndExit(newProjectName, options)) {
-    // Just listing templates using 'react-native init --template'
-    // Not creating a new app.
-    return;
-  } else {
-    console.log('Setting up new React Native app in ' + projectDir);
-    generateProject(projectDir, newProjectName, options);
-  }
+  console.log('Setting up new React Native app in ' + projectDir);
+  generateProject(projectDir, newProjectName, options);
 }
 
 /**
