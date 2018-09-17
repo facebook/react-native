@@ -410,7 +410,7 @@ module.exports = {
     {
       command: '--simulator [string]',
       description: 'Explicitly set simulator to use',
-      default: 'iPhone 6',
+      default: 'iPhone X',
     },
     {
       command: '--configuration [string]',
