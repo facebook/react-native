@@ -81,7 +81,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = APPLE,
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

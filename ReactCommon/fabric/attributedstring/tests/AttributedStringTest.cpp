@@ -13,8 +13,7 @@
 #include <fabric/graphics/conversions.h>
 #include <gtest/gtest.h>
 #include <assert.h>
-#include <string>
-#include <iostream>
+
 namespace facebook {
 namespace react {
 
