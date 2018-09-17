@@ -8,9 +8,10 @@
 #pragma once
 
 #include <fabric/attributedstring/conversions.h>
+#include <fabric/attributedstring/primitives.h>
+#include <fabric/attributedstring/AttributedString.h>
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/attributedstring/primitives.h>
 #include <fabric/core/conversions.h>
 #include <fabric/graphics/conversions.h>
 #include <fabric/graphics/Geometry.h>
@@ -274,6 +275,20 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
     _textAttributes("layoutDirection", toString(*textAttributes.layoutDirection));
   }
   return _textAttributes;
+}
+
+inline folly::dynamic toDynamic(const AttributedString &attributedString) {
+  auto value = folly::dynamic::object();
+  auto fragments = folly::dynamic::array();
+  for (auto fragment : attributedString.getFragments()) {
+    folly::dynamic dynamicFragment = folly::dynamic::object();
+    dynamicFragment["string"] = fragment.string;
+    dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
+    fragments.push_back(dynamicFragment);
+  }
+  value("fragments", fragments);
+  value("string", attributedString.getString());
+  return value;
 }
 
 } // namespace react
