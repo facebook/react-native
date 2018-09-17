@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -533,7 +533,7 @@ const TouchableMixin = {
    * focused at a time, in which case there may have been a previously focused
    * element that was blurred just prior to this.
    */
-  touchableHandleFocus: function (e: Event) {
+  touchableHandleFocus: function(e: Event) {
     this.props.onFocus && this.props.onFocus(e);
   },
 
@@ -543,7 +543,7 @@ const TouchableMixin = {
    * no longer has focus. Most platforms only support a single element being
    * focused at a time, in which case the focus may have moved to another.
    */
-  touchableHandleBlur: function (e: Event) {
+  touchableHandleBlur: function(e: Event) {
     this.props.onBlur && this.props.onBlur(e);
   },
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,7 +134,7 @@ const YellowBoxCategory = {
       0,
     );
 
-    if (lastOffset < content.length - 1) {
+    if (lastOffset < content.length) {
       const lastPart = content.substr(lastOffset);
       elements.push(<Text key="-1">{lastPart}</Text>);
     }

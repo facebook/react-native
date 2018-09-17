@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,12 +70,10 @@ type Props = $ReadOnly<{|
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
 const ActivityIndicator = (
-  props: $ReadOnly<{|
-    ...Props,
-    forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
-  |}>,
+  props: Props,
+  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
 ) => {
-  const {onLayout, style, forwardedRef, ...restProps} = props;
+  const {onLayout, style, ...restProps} = props;
   let sizeStyle;
 
   switch (props.size) {
@@ -99,16 +97,21 @@ const ActivityIndicator = (
   };
 
   return (
-    <View onLayout={onLayout} style={[styles.container, style]}>
+    <View
+      onLayout={onLayout}
+      style={StyleSheet.compose(
+        styles.container,
+        style,
+      )}>
+      {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+        * found when making Flow check .android.js files. */}
       <RCTActivityIndicator {...nativeProps} />
     </View>
   );
 };
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const ActivityIndicatorWithRef = React.forwardRef((props: Props, ref) => {
-  return <ActivityIndicator {...props} forwardedRef={ref} />;
-});
+const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
@@ -116,7 +119,6 @@ ActivityIndicatorWithRef.defaultProps = {
   hidesWhenStopped: true,
   size: 'small',
 };
-ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 const styles = StyleSheet.create({
   container: {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns `tag` assosiated with given `componentView`.
  */
 - (ReactTag)tagByComponentView:(UIView<RCTComponentViewProtocol> *)componentView;
+
+/**
+ * Creates a component view with a given type and puts it to the recycle pool.
+ */
+- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName;
 
 @end
 

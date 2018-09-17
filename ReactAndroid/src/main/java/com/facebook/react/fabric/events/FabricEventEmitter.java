@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,7 +49,7 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
   @Override
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
     try {
-      long eventTarget = mFabricUIManager.createEventTarget(reactTag);
+      long eventTarget = mFabricUIManager.getEventTarget(reactTag);
       mScheduler.scheduleWork(new FabricUIManagerWork(eventTarget, eventName, params));
     } catch (IllegalViewOperationException e) {
       FLog.e(TAG, "Unable to emmit event for tag " + reactTag, e);
@@ -80,7 +80,10 @@ public class FabricEventEmitter implements RCTEventEmitter, Closeable {
         FLog.e(TAG, "Error sending event " + mEventName, t);
         //TODO: manage exception properly
       } finally{
-        mFabricUIManager.releaseEventTarget(mEventTarget);
+        // TODO(dvacca): We need to only release this after all shadow nodes
+        // have been released. The easiest way would be to adopt the event
+        // emitter approach from the C++ Fabric. For now, we'll just leak.
+        // mFabricUIManager.releaseEventTarget(mEventTarget);
       }
     }
   }

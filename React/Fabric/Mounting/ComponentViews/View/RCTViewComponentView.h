@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,20 +9,22 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <fabric/core/Props.h>
-#import <fabric/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewEventEmitter.h>
+#import <fabric/components/view/ViewProps.h>
+#import <fabric/events/EventEmitter.h>
+#import <React/RCTTouchableComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * UIView class for <View> component.
  */
-@interface RCTViewComponentView : UIView <RCTComponentViewProtocol> {
+@interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
 @protected
   facebook::react::LayoutMetrics _layoutMetrics;
-  facebook::react::SharedProps _props;
+  facebook::react::SharedViewProps _props;
   facebook::react::SharedViewEventEmitter _eventEmitter;
 }
 
@@ -50,6 +52,16 @@ NS_ASSUME_NONNULL_BEGIN
  * Must be used by subclasses only.
  */
 @property (nonatomic, strong, nullable) UIColor *foregroundColor;
+
+/**
+ * Returns the object - usually (sub)view - which represents this
+ * component view in terms of accessibility.
+ * All accessibility properties will be applied to this object.
+ * May be overridden in subclass which needs to be accessiblitywise
+ * transparent in favour of some subview.
+ * Defaults to `self`.
+ */
+@property (nonatomic, strong, nullable, readonly) NSObject *accessibilityElement;
 
 /**
  * Insets used when hit testing inside this view.

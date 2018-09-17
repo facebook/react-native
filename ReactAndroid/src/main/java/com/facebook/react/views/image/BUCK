@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
 IMAGE_EVENT_FILES = [
     "ImageLoadEvent.java",
@@ -24,7 +24,7 @@ rn_android_library(
     name = "image",
     srcs = glob(
         ["*.java"],
-        excludes = IMAGE_EVENT_FILES,
+        exclude = IMAGE_EVENT_FILES,
     ),
     provided_deps = [
         react_native_dep("third-party/android/support-annotations:android-support-annotations"),

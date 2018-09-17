@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,9 +8,12 @@
 package com.facebook.react.views.text;
 
 import android.text.Spannable;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
@@ -57,5 +60,10 @@ public class ReactTextViewManager
   protected void onAfterUpdateTransaction(ReactTextView view) {
     super.onAfterUpdateTransaction(view);
     view.updateView();
+  }
+
+  @Override
+  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
   }
 }

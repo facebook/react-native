@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,47 +10,19 @@
 
 'use strict';
 
-const path = require('path');
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from 'metro';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 import type {Args as RunServerArgs} from './runServer';
 
 /**
  * Starts the React Native Packager Server.
  */
-function server(argv: mixed, config: RNConfig, allArgs: Object) {
-  const {root, ...args} = allArgs;
-  args.projectRoots = args.projectRoots.concat(root);
-
-  const startedCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_started',
-      port: args.port,
-      projectRoots: args.projectRoots,
-    });
-
-    process.on('uncaughtException', error => {
-      logReporter.update({
-        type: 'initialize_failed',
-        port: args.port,
-        error,
-      });
-
-      process.exit(11);
-    });
-  };
-
-  const readyCallback = logReporter => {
-    logReporter.update({
-      type: 'initialize_done',
-    });
-  };
-  const runServerArgs: RunServerArgs = args;
+function server(argv: mixed, config: RNConfig, args: RunServerArgs) {
   /* $FlowFixMe(site=react_native_fb) ConfigT shouldn't be extendable. */
   const configT: ConfigT = config;
-  runServer(runServerArgs, configT, startedCallback, readyCallback);
+  runServer(args, configT);
 }
 
 module.exports = {
@@ -68,19 +40,19 @@ module.exports = {
       default: '',
     },
     {
-      command: '--root [list]',
-      description:
-        'add another root(s) to be used by the packager in this project',
-      parse: (val: string) => val.split(',').map(root => path.resolve(root)),
-      default: [],
+      command: '--projectRoot [string]',
+      description: 'Specify the main project root',
+      default: (config: ConfigT) => {
+        return config.projectRoot;
+      },
     },
     {
       command: '--watchFolders [list]',
       description:
-        'Sepcify any additional folders to be added to the watch list',
+        'Specify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
       default: (config: ConfigT) => {
-        return config.getProjectRoots ? config.getProjectRoots() : undefined;
+        return config.watchFolders;
       },
     },
     {
@@ -88,21 +60,21 @@ module.exports = {
       description:
         'Specify any additional asset extensions to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getAssetExts(),
+      default: (config: ConfigT) => config.resolver.assetExts,
     },
     {
       command: '--sourceExts [list]',
       description:
         'Specify any additional source extensions to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getSourceExts(),
+      default: (config: ConfigT) => config.resolver.sourceExts,
     },
     {
       command: '--platforms [list]',
       description:
         'Specify any additional platforms to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getPlatforms(),
+      default: (config: ConfigT) => config.resolver.platforms,
     },
     {
       command: '--providesModuleNodeModules [list]',
@@ -110,10 +82,9 @@ module.exports = {
         'Specify any npm packages that import dependencies with providesModule',
       parse: (val: string) => val.split(','),
       default: (config: RNConfig) => {
-        if (typeof config.getProvidesModuleNodeModules === 'function') {
-          return config.getProvidesModuleNodeModules();
-        }
-        return null;
+        return config.resolver
+          ? config.resolver.providesModuleNodeModules
+          : undefined;
       },
     },
     {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,17 +18,18 @@
 namespace facebook {
 namespace react {
 
-using CreateEventTargetFunction = EventTarget (InstanceHandle instanceHandle);
-using DispatchEventFunction = void (EventHandler eventHandler, EventTarget eventTarget, std::string type, folly::dynamic payload);
-using ReleaseEventHandlerFunction = void (EventHandler eventHandler);
+class FabricUIManager;
+using UIManager = FabricUIManager;
+
+using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, const std::string &type, const folly::dynamic &payload);
+using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload);
 
 class FabricUIManager {
 public:
 
 #pragma mark - Native-facing Interface
 
-  FabricUIManager(SharedComponentDescriptorRegistry componentDescriptorRegistry);
-  ~FabricUIManager();
+  void setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
 
   /*
    * Sets and gets the UIManager's delegate.
@@ -43,36 +44,39 @@ public:
   /*
    * Registers callback functions.
    */
-  void setCreateEventTargetFunction(std::function<CreateEventTargetFunction> createEventTargetFunction);
-  void setDispatchEventFunction(std::function<DispatchEventFunction> dispatchEventFunction);
-  void setReleaseEventHandlerFunction(std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction);
+  void setDispatchEventToEmptyTargetFunction(std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction);
+  void setDispatchEventToTargetFunction(std::function<DispatchEventToTargetFunction> dispatchEventFunction);
 
 #pragma mark - Native-facing Interface
 
-  EventTarget createEventTarget(const InstanceHandle &instanceHandle) const;
-  void dispatchEvent(const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload) const;
+  void dispatchEventToTarget(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload) const;
 
 #pragma mark - JavaScript/React-facing Interface
 
-  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNode(const SharedShadowNode &node, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props, InstanceHandle instanceHandle);
-  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps, InstanceHandle instanceHandle);
-  void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode);
-  SharedShadowNodeUnsharedList createChildSet(Tag rootTag);
-  void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode);
-  void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet);
-  void registerEventHandler(const EventHandler &eventHandler);
+  /*
+   * All those JavaScript-facing methods call be called from any thread.
+   * `UIManager` guarantees its own thread-safety, but it does *not* guarantee
+   * thread-safety of `ShadowNode`s that it operates on. The caller should
+   * enforce logical correctness and thread-safety of the unsealed `ShadowNode`s.
+   */
+  SharedShadowNode createNode(Tag reactTag, std::string viewName, Tag rootTag, folly::dynamic props, SharedEventTarget eventTarget) const;
+  SharedShadowNode cloneNode(const SharedShadowNode &node) const;
+  SharedShadowNode cloneNodeWithNewChildren(const SharedShadowNode &node) const;
+  SharedShadowNode cloneNodeWithNewProps(const SharedShadowNode &node, folly::dynamic props) const;
+  SharedShadowNode cloneNodeWithNewChildrenAndProps(const SharedShadowNode &node, folly::dynamic newProps) const;
+  void appendChild(const SharedShadowNode &parentNode, const SharedShadowNode &childNode) const;
+  SharedShadowNodeUnsharedList createChildSet(Tag rootTag) const;
+  void appendChildToSet(const SharedShadowNodeUnsharedList &childSet, const SharedShadowNode &childNode) const;
+  void completeRoot(Tag rootTag, const SharedShadowNodeUnsharedList &childSet) const;
+  void registerEventHandler(UniqueEventHandler eventHandler) const;
 
 private:
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
-  EventHandler eventHandler_;
-  std::function<CreateEventTargetFunction> createEventTargetFunction_;
-  std::function<DispatchEventFunction> dispatchEventFunction_;
-  std::function<ReleaseEventHandlerFunction> releaseEventHandlerFunction_;
+  mutable UniqueEventHandler eventHandler_;
+  std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
+  std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
 };
 
 } // namespace react

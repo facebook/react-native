@@ -1,8 +1,9 @@
 /*
- * Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
 
 package com.facebook.yoga;
@@ -96,13 +97,23 @@ public class YogaNode implements Cloneable {
     }
   }
 
-  private native void jni_YGNodeFree(long nativePointer);
   @Override
   protected void finalize() throws Throwable {
     try {
-      jni_YGNodeFree(mNativePointer);
+      freeNatives();
     } finally {
       super.finalize();
+    }
+  }
+
+  private static native void jni_YGNodeFree(long nativePointer);
+
+  /* frees the native underlying YGNode. Useful for testing. */
+  public void freeNatives() {
+    if (mNativePointer > 0) {
+      long nativePointer = mNativePointer;
+      mNativePointer = 0;
+      jni_YGNodeFree(nativePointer);
     }
   }
 
@@ -174,6 +185,8 @@ public class YogaNode implements Cloneable {
     jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
   }
 
+  private native void jni_YGNodeSetOwner(long nativePointer, long newOwnerNativePointer);
+
   private native long jni_YGNodeClone(long nativePointer, Object newNode);
 
   @Override
@@ -181,10 +194,23 @@ public class YogaNode implements Cloneable {
     try {
       YogaNode clonedYogaNode = (YogaNode) super.clone();
       long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+
+      if (mChildren != null) {
+        for (YogaNode child : mChildren) {
+          child.jni_YGNodeSetOwner(child.mNativePointer, 0);
+          child.mOwner = null;
+        }
+      }
+
       clonedYogaNode.mNativePointer = clonedNativePointer;
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mChildren =
           mChildren != null ? (List<YogaNode>) ((ArrayList) mChildren).clone() : null;
+      if (clonedYogaNode.mChildren != null) {
+        for (YogaNode child : clonedYogaNode.mChildren) {
+          child.mOwner = null;
+        }
+      }
       return clonedYogaNode;
     } catch (CloneNotSupportedException ex) {
       // This class implements Cloneable, this should not happen

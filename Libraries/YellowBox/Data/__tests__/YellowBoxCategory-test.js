@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -96,5 +96,90 @@ describe('YellowBoxCategory', () => {
         ],
       },
     });
+  });
+
+  it('renders content with no substitutions', () => {
+    expect(
+      YellowBoxCategory.render(
+        {content: 'A', substitutions: []},
+        {fontWeight: 'bold'},
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('renders a single substitution', () => {
+    expect(
+      YellowBoxCategory.render(
+        {
+          content: '"A"',
+          substitutions: [
+            {
+              length: 3,
+              offset: 0,
+            },
+          ],
+        },
+        {fontWeight: 'bold'},
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('renders multiple substitutions', () => {
+    expect(
+      YellowBoxCategory.render(
+        {
+          content: '"A" "B" "C"',
+          substitutions: [
+            {
+              length: 3,
+              offset: 0,
+            },
+            {
+              length: 3,
+              offset: 4,
+            },
+            {
+              length: 3,
+              offset: 8,
+            },
+          ],
+        },
+        {fontWeight: 'bold'},
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('renders substitutions with leading content', () => {
+    expect(
+      YellowBoxCategory.render(
+        {
+          content: '!"A"',
+          substitutions: [
+            {
+              length: 3,
+              offset: 1,
+            },
+          ],
+        },
+        {fontWeight: 'bold'},
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('renders substitutions with trailing content', () => {
+    expect(
+      YellowBoxCategory.render(
+        {
+          content: '"A"!',
+          substitutions: [
+            {
+              length: 3,
+              offset: 0,
+            },
+          ],
+        },
+        {fontWeight: 'bold'},
+      ),
+    ).toMatchSnapshot();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -377,4 +377,17 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   long getInstanceHandle();
 
   void setInstanceHandle(long instanceHandle);
+
+  /**
+   * Mark this {@link ReactShadowNode} as sealed. This means that the node was already committed
+   * and it should not be updated anymore.
+   */
+  void markAsSealed();
+
+  /**
+   * @return a {@link boolean} that represents if the {@link ReactShadowNode} is sealed.
+   */
+  boolean isSealed();
+
+  void updateScreenLayout(ReactShadowNode prevNode);
 }

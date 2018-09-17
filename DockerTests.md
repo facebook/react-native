@@ -35,7 +35,7 @@ There are two Dockerfiles for use with the Android codebase.
 
 The `Dockerfile.android-base` contains all the necessary prerequisites required to run the React Android tests. It is
 separated out into a separate Dockerfile because these are dependencies that rarely change and also because it is quite
-a beastly image since it contains all the Android depedencies for running android and the emulators (~9GB).
+a beastly image since it contains all the Android dependencies for running android and the emulators (~9GB).
 
 The good news is you should rarely have to build or pull down the base image! All iterative code updates happen as
 part of the `Dockerfile.android` image build.

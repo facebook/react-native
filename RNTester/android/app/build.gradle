@@ -62,7 +62,7 @@ project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
-    inputExcludes: ["android/**", "./**"]
+    inputExcludes: ["android/**", "./**", ".gradle/**"]
 ]
 
 apply from: "../../../react.gradle"
@@ -84,13 +84,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = true
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         ndk {
@@ -114,6 +114,9 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -137,9 +140,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     // Build React Native from source
-    compile project(':ReactAndroid')
+    implementation project(':ReactAndroid')
 }

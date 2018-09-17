@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,6 +37,7 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
 
@@ -109,9 +110,15 @@ public class ReactViewGroup extends ViewGroup implements
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
 
   public ReactViewGroup(Context context) {
     super(context);
+    // TODO: Remove this check after a couple public releases.
+    if (!ViewProps.sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -682,18 +689,20 @@ public class ReactViewGroup extends ViewGroup implements
   private void dispatchOverflowDraw(Canvas canvas) {
     if (mOverflow != null) {
       switch (mOverflow) {
-        case "visible":
+        case ViewProps.VISIBLE:
           if (mPath != null) {
             mPath.rewind();
           }
           break;
-        case "hidden":
-          if (mReactBackgroundDrawable != null) {
-            float left = 0f;
-            float top = 0f;
-            float right = getWidth();
-            float bottom = getHeight();
+        case ViewProps.HIDDEN:
+          float left = 0f;
+          float top = 0f;
+          float right = getWidth();
+          float bottom = getHeight();
 
+          boolean hasClipPath = false;
+
+          if (mReactBackgroundDrawable != null) {
             final RectF borderWidth = mReactBackgroundDrawable.getDirectionAwareBorderInsets();
 
             if (borderWidth.top > 0
@@ -816,14 +825,49 @@ public class ReactViewGroup extends ViewGroup implements
                 },
                 Path.Direction.CW);
               canvas.clipPath(mPath);
-            } else {
-              canvas.clipRect(new RectF(left, top, right, bottom));
+              hasClipPath = true;
             }
+          }
+
+          if (!hasClipPath) {
+            canvas.clipRect(new RectF(left, top, right, bottom));
           }
           break;
         default:
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+
+    if (isBackfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = getRotationX();
+    float rotationY = getRotationY();
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }

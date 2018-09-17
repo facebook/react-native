@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,8 @@
 #include <memory>
 
 #include <fabric/core/ComponentDescriptor.h>
-#include <fabric/core/EventDispatcher.h>
+#include <fabric/events/EventDispatcher.h>
+#include <fabric/uimanager/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"
 
@@ -25,7 +26,7 @@ namespace react {
 class ComponentDescriptorFactory {
 
 public:
-  static SharedComponentDescriptorRegistry buildRegistry(const SharedEventDispatcher &eventDispatcher);
+  static SharedComponentDescriptorRegistry buildRegistry(const SharedEventDispatcher &eventDispatcher, const SharedContextContainer &contextContainer);
 };
 
 } // namespace react

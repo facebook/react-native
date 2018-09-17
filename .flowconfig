@@ -40,6 +40,9 @@ flow-github/
 [options]
 emoji=true
 
+esproposal.optional_chaining=enable
+esproposal.nullish_coalescing=enable
+
 module.system=haste
 module.system.haste.use_name_reducers=true
 # keep the following in sync with server/haste/hasteImpl.js
@@ -53,7 +56,6 @@ module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
 module.system.haste.paths.blacklist=.*/__tests__/.*
 module.system.haste.paths.blacklist=.*/__mocks__/.*
-module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
@@ -68,10 +70,34 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native_oss|react_native_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
+[lints]
+all=warn
+unnecessary-optional-chain=off
+
+# There is an ESLint rule for this
+unclear-type=off
+
+sketchy-null=off
+sketchy-null-number=warn
+sketchy-null-mixed=warn
+
+# This is noisy for now. We *do* still want to warn on importing types
+# from untyped files, which is covered by untyped-type-import
+untyped-import=off
+
+[strict]
+deprecated-type
+nonstrict-import
+sketchy-null
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+
 [version]
-^0.74.0
+^0.80.0

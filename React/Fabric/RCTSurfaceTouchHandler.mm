@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,11 @@
 #import "RCTSurfaceTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <fabric/view/ViewEventEmitter.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 
 #import "RCTConversions.h"
+#import "RCTTouchableComponentViewProtocol.h"
 
 using namespace facebook::react;
 
@@ -46,10 +46,6 @@ private:
   int lastIndex;
 };
 
-@protocol RCTTouchableComponentViewProtocol <NSObject>
-  - (SharedViewEventEmitter)touchEventEmitter;
-@end
-
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeTouchStart,
   RCTTouchEventTypeTouchMove,
@@ -59,7 +55,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 struct ActiveTouch {
   Touch touch;
-  SharedViewEventEmitter eventEmitter;
+  SharedTouchEventEmitter eventEmitter;
 
   struct Hasher {
     size_t operator()(const ActiveTouch &activeTouch) const {
@@ -95,8 +91,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
 
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitter)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitter];
+  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 
@@ -191,7 +187,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_registerTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto &&activeTouch = CreateTouchWithUITouch(touch, _rootComponentView);
+    auto activeTouch = CreateTouchWithUITouch(touch, _rootComponentView);
     activeTouch.touch.identifier = _identifierPool.dequeue();
     _activeTouches.emplace(touch, activeTouch);
   }
@@ -207,7 +203,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    auto &&activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches[touch];
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
@@ -217,11 +213,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedViewEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (UITouch *touch in touches) {
-    auto &&activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches[touch];
 
     if (!activeTouch.eventEmitter) {
       continue;
@@ -232,7 +228,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     uniqueEventEmitter.insert(activeTouch.eventEmitter);
   }
 
-  for (auto &&pair : _activeTouches) {
+  for (const auto &pair : _activeTouches) {
     if (!pair.second.eventEmitter) {
       continue;
     }
@@ -247,10 +243,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     event.touches.insert(pair.second.touch);
   }
 
-  for (auto &&eventEmitter : uniqueEventEmitter) {
+  for (const auto &eventEmitter : uniqueEventEmitter) {
     event.targetTouches.clear();
 
-    for (auto &&pair : _activeTouches) {
+    for (const auto &pair : _activeTouches) {
       if (pair.second.eventEmitter == eventEmitter) {
         event.targetTouches.insert(pair.second.touch);
       }

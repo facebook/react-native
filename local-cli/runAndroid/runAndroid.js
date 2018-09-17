@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,7 @@ function runAndroid(argv, config, args) {
     } else {
       // result == 'not_running'
       console.log(chalk.bold('Starting JS server...'));
-      startServerInNewWindow(args.port);
+      startServerInNewWindow(args.port, args.terminal);
     }
     return buildAndRun(args);
   });
@@ -121,7 +121,7 @@ function buildAndRun(args) {
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-      runOnSpecificDevice(
+      return runOnSpecificDevice(
         args,
         cmd,
         packageNameWithSuffix,
@@ -132,7 +132,13 @@ function buildAndRun(args) {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath);
+    return runOnAllDevices(
+      args,
+      cmd,
+      packageNameWithSuffix,
+      packageName,
+      adbPath,
+    );
   }
 }
 
@@ -305,7 +311,7 @@ function runOnAllDevices(
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    return Promise.reject();
+    return Promise.reject(e);
   }
   const devices = adb.getDevices();
   if (devices && devices.length > 0) {
@@ -343,31 +349,41 @@ function runOnAllDevices(
       // stderr is automatically piped from the gradle process, so the user
       // should see the error already, there is no need to do
       // `console.log(e.stderr)`
-      return Promise.reject();
+      return Promise.reject(e);
     }
   }
 }
 
-function startServerInNewWindow(port) {
-  const scriptFile = /^win/.test(process.platform)
+function startServerInNewWindow(port, terminal = process.env.REACT_TERMINAL) {
+  // set up OS-specific filenames and commands
+  const isWindows = /^win/.test(process.platform);
+  const scriptFile = isWindows
     ? 'launchPackager.bat'
     : 'launchPackager.command';
+  const packagerEnvFilename = isWindows ? '.packager.bat' : '.packager.env';
+  const portExportContent = isWindows
+    ? `set RCT_METRO_PORT=${port}`
+    : `export RCT_METRO_PORT=${port}`;
+
+  // set up the launchpackager.(command|bat) file
   const scriptsDir = path.resolve(__dirname, '..', '..', 'scripts');
   const launchPackagerScript = path.resolve(scriptsDir, scriptFile);
   const procConfig = {cwd: scriptsDir};
-  const terminal = process.env.REACT_TERMINAL;
 
-  // setup the .packager.env file to ensure the packager starts on the right port
+  // set up the .packager.(env|bat) file to ensure the packager starts on the right port
   const packagerEnvFile = path.join(
     __dirname,
     '..',
     '..',
     'scripts',
-    '.packager.env',
+    packagerEnvFilename,
   );
-  const content = `export RCT_METRO_PORT=${port}`;
+
   // ensure we overwrite file by passing the 'w' flag
-  fs.writeFileSync(packagerEnvFile, content, {encoding: 'utf8', flag: 'w'});
+  fs.writeFileSync(packagerEnvFile, portExportContent, {
+    encoding: 'utf8',
+    flag: 'w',
+  });
 
   if (process.platform === 'darwin') {
     if (terminal) {
@@ -379,14 +395,16 @@ function startServerInNewWindow(port) {
     }
     return child_process.spawnSync('open', [launchPackagerScript], procConfig);
   } else if (process.platform === 'linux') {
-    procConfig.detached = true;
     if (terminal) {
+      procConfig.detached = true;
       return child_process.spawn(
         terminal,
         ['-e', 'sh ' + launchPackagerScript],
         procConfig,
       );
     }
+    // By default, the child shell process will be attached to the parent
+    procConfig.detached = false;
     return child_process.spawn('sh', [launchPackagerScript], procConfig);
   } else if (/^win/.test(process.platform)) {
     procConfig.detached = true;
@@ -462,6 +480,12 @@ module.exports = {
       command: '--port [number]',
       default: process.env.RCT_METRO_PORT || 8081,
       parse: (val: string) => Number(val),
+    },
+    {
+      command: '--terminal [string]',
+      description:
+        'Launches the Metro Bundler in a new window using the specified terminal path.',
+      default: '',
     },
   ],
 };

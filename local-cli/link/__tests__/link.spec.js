@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,6 +47,20 @@ describe('link', () => {
       ).toBeTruthy();
       done();
     });
+  });
+
+  it('should accept the name of a dependency with a scope / tag', async () => {
+    const config = {
+      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getProjectConfig: () => ({assets: []}),
+      getDependencyConfig: sinon.stub().returns({assets: [], commands: {}}),
+    };
+
+    const link = require('../link').func;
+    await link(['@scope/something@latest'], config);
+    expect(
+      config.getDependencyConfig.calledWith('@scope/something'),
+    ).toBeTruthy();
   });
 
   it('should register native module when android/ios projects are present', done => {

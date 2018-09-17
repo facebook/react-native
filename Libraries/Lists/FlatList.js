@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const deepDiffer = require('deepDiffer');
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
 const View = require('View');
@@ -18,7 +19,7 @@ const StyleSheet = require('StyleSheet');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -89,14 +90,22 @@ type OptionalProps<ItemT> = {
    */
   ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
+   * Styling for internal View for ListFooterComponent
+   */
+  ListFooterComponentStyle?: ViewStyleProp,
+  /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
   ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
+   * Styling for internal View for ListHeaderComponent
+   */
+  ListHeaderComponentStyle?: ViewStyleProp,
+  /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
+  columnWrapperStyle?: ViewStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -464,7 +473,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       'Changing onViewableItemsChanged on the fly is not supported',
     );
     invariant(
-      prevProps.viewabilityConfig === this.props.viewabilityConfig,
+      !deepDiffer(prevProps.viewabilityConfig, this.props.viewabilityConfig),
       'Changing viewabilityConfig on the fly is not supported',
     );
     invariant(

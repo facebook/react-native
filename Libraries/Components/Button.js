@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -109,11 +109,11 @@ class Button extends React.Component<{
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityTraits = ['button'];
+    const accessibilityStates = [];
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityTraits.push('disabled');
+      accessibilityStates.push('disabled');
     }
     invariant(
       typeof title === 'string',
@@ -125,9 +125,9 @@ class Button extends React.Component<{
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
-        accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={accessibilityTraits}
+        accessibilityRole="button"
+        accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
         testID={testID}
         disabled={disabled}

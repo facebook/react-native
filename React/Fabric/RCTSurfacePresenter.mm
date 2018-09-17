@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,6 +17,7 @@
 #import <React/RCTSurfaceRegistry.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
+#import <React/RCTUtils.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
 
@@ -61,15 +62,23 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag
+- (void)dealloc
 {
-  [_mountingManager mutateComponentViewTreeWithMutationInstructions:instructions
-                                                            rootTag:rootTag];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - RCTSchedulerDelegate
+
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
+                                        rootTag:(ReactTag)rootTag
+{
+  [_mountingManager performTransactionWithMutations:mutations
+                                            rootTag:rootTag];
 }
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName
 {
-  // TODO: To be implemeted.
+  [_mountingManager preliminaryCreateComponentViewWithName:componentName];
 }
 
 #pragma mark - Internal Surface-dedicated Interface
@@ -77,17 +86,17 @@ using namespace facebook::react;
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
-  [_scheduler registerRootTag:surface.rootViewTag.integerValue];
+  [_scheduler registerRootTag:surface.rootTag];
   [self runSurface:surface];
 
-  // FIXME: Mutation instruction MUST produce instruction for root node.
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootViewTag.integerValue];
+  // FIXME: mutation MUST produce instruction for root node.
+  [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 }
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
   [self stopSurface:surface];
-  [_scheduler unregisterRootTag:surface.rootViewTag.integerValue];
+  [_scheduler unregisterRootTag:surface.rootTag];
   [_surfaceRegistry unregisterSurface:surface];
 }
 
@@ -101,6 +110,7 @@ using namespace facebook::react;
                           surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
@@ -115,6 +125,7 @@ using namespace facebook::react;
                surface:(RCTFabricSurface *)surface
 {
   LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
   LayoutConstraints layoutConstraints = {};
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
@@ -127,7 +138,7 @@ using namespace facebook::react;
 - (void)runSurface:(RCTFabricSurface *)surface
 {
   NSDictionary *applicationParameters = @{
-    @"rootTag": surface.rootViewTag,
+    @"rootTag": @(surface.rootTag),
     @"initialProps": surface.properties,
   };
 
@@ -136,7 +147,7 @@ using namespace facebook::react;
 
 - (void)stopSurface:(RCTFabricSurface *)surface
 {
-  [_batchedBridge enqueueJSCall:@"AppRegistry" method:@"unmountApplicationComponentAtRootTag" args:@[surface.rootViewTag] completion:NULL];
+  [_batchedBridge enqueueJSCall:@"ReactFabric" method:@"unmountComponentAtNode" args:@[@(surface.rootTag)] completion:NULL];
 }
 
 #pragma mark - RCTMountingManagerDelegate
@@ -188,6 +199,11 @@ using namespace facebook::react;
 - (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
   return _scheduler.uiManager_DO_NOT_USE;
+}
+
+- (RCTBridge *)bridge_DO_NOT_USE
+{
+  return _bridge;
 }
 
 @end

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -218,6 +218,59 @@ exports.examples = [
               <Text>{text}</Text>
             </Animated.View>
           ))}
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Rotating Images',
+    description: 'Simple Animated.Image rotation.',
+    render: function() {
+      this.anim = this.anim || new Animated.Value(0);
+      return (
+        <View>
+          <RNTesterButton
+            onPress={() => {
+              Animated.spring(this.anim, {
+                toValue: 0, // Returns to the start
+                velocity: 3, // Velocity makes it move
+                tension: -10, // Slow
+                friction: 1, // Oscillate a lot
+              }).start();
+            }}>
+            Press to Spin it!
+          </RNTesterButton>
+          <Animated.Image
+            source={require('./bunny.png')}
+            style={[
+              {width: 70, height: 70},
+              {
+                transform: [
+                  {
+                    scale: this.anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 10],
+                    }),
+                  },
+                  {
+                    translateX: this.anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 100],
+                    }),
+                  },
+                  {
+                    rotate: this.anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [
+                        '0deg',
+                        '360deg', // 'deg' or 'rad'
+                      ],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
         </View>
       );
     },

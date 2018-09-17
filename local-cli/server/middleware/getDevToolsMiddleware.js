@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,8 +27,8 @@ function launchDevTools({host, watchFolders}, isChromeConnected) {
   // Explicit config always wins
   var customDebugger = process.env.REACT_DEBUGGER;
   if (customDebugger) {
-    var projects = watchFolders.map(escapePath).join(' ');
-    var command = customDebugger + ' ' + projects;
+    var folders = watchFolders.map(escapePath).join(' ');
+    var command = customDebugger + ' ' + folders;
     console.log('Starting custom debugger by executing: ' + command);
     exec(command, function(error, stdout, stderr) {
       if (error !== null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/EventEmitter.h>
 #import <fabric/core/LocalData.h>
 #import <fabric/core/Props.h>
 #import <fabric/core/LayoutMetrics.h>
+#import <fabric/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN

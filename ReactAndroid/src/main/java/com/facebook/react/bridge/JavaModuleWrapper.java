@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,14 +49,12 @@ public class JavaModuleWrapper {
 
   private final JSInstance mJSInstance;
   private final ModuleHolder mModuleHolder;
-  private final Class<? extends NativeModule> mModuleClass;
   private final ArrayList<NativeModule.NativeMethod> mMethods;
   private final ArrayList<MethodDescriptor> mDescs;
 
-  public JavaModuleWrapper(JSInstance jsInstance, Class<? extends NativeModule> moduleClass, ModuleHolder moduleHolder) {
+  public JavaModuleWrapper(JSInstance jsInstance, ModuleHolder moduleHolder) {
     mJSInstance = jsInstance;
     mModuleHolder = moduleHolder;
-    mModuleClass = moduleClass;
     mMethods = new ArrayList<>();
     mDescs = new ArrayList();
   }
@@ -76,9 +74,9 @@ public class JavaModuleWrapper {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
     Set<String> methodNames = new HashSet<>();
 
-    Class<? extends NativeModule> classForMethods = mModuleClass;
+    Class<? extends NativeModule> classForMethods = mModuleHolder.getModule().getClass();
     Class<? extends NativeModule> superClass =
-        (Class<? extends NativeModule>) mModuleClass.getSuperclass();
+        (Class<? extends NativeModule>) classForMethods.getSuperclass();
     if (ReactModuleWithSpec.class.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java

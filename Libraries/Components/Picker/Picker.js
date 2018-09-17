@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,15 +11,15 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const PickerIOS = require('PickerIOS');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const PickerAndroid = require('PickerAndroid');
+const PickerIOS = require('PickerIOS');
 const Platform = require('Platform');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const UnimplementedView = require('UnimplementedView');
-const ViewPropTypes = require('ViewPropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const itemStylePropType = StyleSheetPropType(TextStylePropTypes);
@@ -106,7 +106,7 @@ class Picker extends React.Component<{
 
   // $FlowFixMe(>=0.41.0)
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     style: pickerStyleType,
     /**
      * Value matching value of one of the items. Can be a string or an integer.

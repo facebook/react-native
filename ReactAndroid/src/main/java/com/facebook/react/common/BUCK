@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_build_config", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_build_config", "rn_android_library")
 
 SUB_PROJECTS = [
     "network/**/*",
@@ -8,7 +8,7 @@ rn_android_library(
     name = "common",
     srcs = glob(
         ["**/*.java"],
-        excludes = SUB_PROJECTS,
+        exclude = SUB_PROJECTS,
     ),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),

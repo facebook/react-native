@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,20 +8,8 @@
 package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import com.facebook.react.uimanager.UIManagerModule;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
@@ -52,6 +40,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
@@ -61,10 +50,14 @@ import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,10 +132,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       mLastLoadFailed = false;
 
       dispatchEvent(
-          webView,
-          new TopLoadingStartEvent(
-              webView.getId(),
-              createWebViewEvent(webView, url)));
+        webView,
+        new TopLoadingStartEvent(
+          webView.getId(),
+          createWebViewEvent(webView, url)));
     }
 
     @Override
@@ -152,7 +145,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       // url blacklisting
       if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
         ArrayList<Object> urlPrefixesForDefaultIntent =
-            mUrlPrefixesForDefaultIntent.toArrayList();
+          mUrlPrefixesForDefaultIntent.toArrayList();
         for (Object urlPrefix : urlPrefixesForDefaultIntent) {
           if (url.startsWith((String) urlPrefix)) {
             launchIntent(view.getContext(), url);
@@ -195,10 +188,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public void onReceivedError(
-        WebView webView,
-        int errorCode,
-        String description,
-        String failingUrl) {
+      WebView webView,
+      int errorCode,
+      String description,
+      String failingUrl) {
       super.onReceivedError(webView, errorCode, description, failingUrl);
       mLastLoadFailed = true;
 
@@ -211,16 +204,16 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       eventData.putString("description", description);
 
       dispatchEvent(
-          webView,
-          new TopLoadingErrorEvent(webView.getId(), eventData));
+        webView,
+        new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
     protected void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
-          webView,
-          new TopLoadingFinishEvent(
-              webView.getId(),
-              createWebViewEvent(webView, url)));
+        webView,
+        new TopLoadingFinishEvent(
+          webView.getId(),
+          createWebViewEvent(webView, url)));
     }
 
     protected WritableMap createWebViewEvent(WebView webView, String url) {
@@ -325,11 +318,25 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       }
     }
 
+    protected void evaluateJavascriptWithFallback(String script) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        evaluateJavascript(script, null);
+        return;
+      }
+
+      try {
+        loadUrl("javascript:" + URLEncoder.encode(script, "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        // UTF-8 should always be supported
+        throw new RuntimeException(e);
+      }
+    }
+
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
-          injectedJS != null &&
-          !TextUtils.isEmpty(injectedJS)) {
-        loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
+        injectedJS != null &&
+        !TextUtils.isEmpty(injectedJS)) {
+        evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
       }
     }
 
@@ -348,12 +355,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           });
         }
 
-        loadUrl("javascript:(" +
+        evaluateJavascriptWithFallback("(" +
           "window.originalPostMessage = window.postMessage," +
           "window.postMessage = function(data) {" +
-            BRIDGE_NAME + ".postMessage(String(data));" +
+          BRIDGE_NAME + ".postMessage(String(data));" +
           "}" +
-        ")");
+          ")");
       }
     }
 
@@ -423,8 +430,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
     webView.setLayoutParams(
-            new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT));
+      new LayoutParams(LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT));
 
     setGeolocationEnabled(webView, false);
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -496,7 +503,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         String html = source.getString("html");
         if (source.hasKey("baseUrl")) {
           view.loadDataWithBaseURL(
-              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
+            source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
         } else {
           view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
         }
@@ -510,7 +517,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         }
         if (source.hasKey("method")) {
           String method = source.getString("method");
-          if (method.equals(HTTP_METHOD_POST)) {
+          if (method.equalsIgnoreCase(HTTP_METHOD_POST)) {
             byte[] postData = null;
             if (source.hasKey("body")) {
               String body = source.getString("body");
@@ -573,12 +580,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "urlPrefixesForDefaultIntent")
   public void setUrlPrefixesForDefaultIntent(
-      WebView view,
-      @Nullable ReadableArray urlPrefixesForDefaultIntent) {
+    WebView view,
+    @Nullable ReadableArray urlPrefixesForDefaultIntent) {
     ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
     if (client != null && urlPrefixesForDefaultIntent != null) {
       client.setUrlPrefixesForDefaultIntent(urlPrefixesForDefaultIntent);
     }
+  }
+
+  @ReactProp(name = "allowFileAccess")
+  public void setAllowFileAccess(
+    WebView view,
+    @Nullable Boolean allowFileAccess) {
+    view.getSettings().setAllowFileAccess(allowFileAccess != null && allowFileAccess);
   }
 
   @ReactProp(name = "geolocationEnabled")
@@ -611,13 +625,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
-        "goBack", COMMAND_GO_BACK,
-        "goForward", COMMAND_GO_FORWARD,
-        "reload", COMMAND_RELOAD,
-        "stopLoading", COMMAND_STOP_LOADING,
-        "postMessage", COMMAND_POST_MESSAGE,
-        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
-      );
+      "goBack", COMMAND_GO_BACK,
+      "goForward", COMMAND_GO_FORWARD,
+      "reload", COMMAND_RELOAD,
+      "stopLoading", COMMAND_STOP_LOADING,
+      "postMessage", COMMAND_POST_MESSAGE,
+      "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
+    );
   }
 
   @Override
@@ -637,25 +651,27 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         break;
       case COMMAND_POST_MESSAGE:
         try {
+          ReactWebView reactWebView = (ReactWebView) root;
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          root.loadUrl("javascript:(function () {" +
+          reactWebView.evaluateJavascriptWithFallback("(function () {" +
             "var event;" +
             "var data = " + eventInitDict.toString() + ";" +
             "try {" +
-              "event = new MessageEvent('message', data);" +
+            "event = new MessageEvent('message', data);" +
             "} catch (e) {" +
-              "event = document.createEvent('MessageEvent');" +
-              "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
+            "event = document.createEvent('MessageEvent');" +
+            "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
             "}" +
             "document.dispatchEvent(event);" +
-          "})();");
+            "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
         break;
       case COMMAND_INJECT_JAVASCRIPT:
-        root.loadUrl("javascript:" + args.getString(0));
+        ReactWebView reactWebView = (ReactWebView) root;
+        reactWebView.evaluateJavascriptWithFallback(args.getString(0));
         break;
     }
   }
