@@ -10,6 +10,7 @@
 
 'use strict';
 
+jest.mock('path');
 jest.mock('fs');
 
 const getProjectConfig = require('../../ios').projectConfig;
