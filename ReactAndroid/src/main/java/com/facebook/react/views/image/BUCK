@@ -10,7 +10,7 @@ rn_android_library(
     required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v4:support-v4"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
@@ -28,7 +28,7 @@ rn_android_library(
     ],
     deps = [
         YOGA_TARGET,
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v4:support-v4"),
         react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),

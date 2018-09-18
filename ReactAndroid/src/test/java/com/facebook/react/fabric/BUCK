@@ -25,7 +25,7 @@ rn_robolectric_test(
         react_native_dep("third-party/java/robolectric3/robolectric:robolectric"),
         react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v4:support-v4"),
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
