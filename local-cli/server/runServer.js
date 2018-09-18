@@ -58,6 +58,8 @@ async function runServer(args: Args, config: ConfigT) {
   config.server.port = args.port;
   config.reporter = reporter;
   config.resetCache = args.resetCache;
+  config.projectRoot = args.projectRoot;
+  config.watchFolders = args.watchFolders.slice(0);
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 
