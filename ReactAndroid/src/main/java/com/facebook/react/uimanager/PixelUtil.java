@@ -32,6 +32,13 @@ public class PixelUtil {
   }
 
   /**
+   * Convert from PX to SP
+   */
+  public static float toSPFromPixel(float value) {
+    return value / DisplayMetricsHolder.getScreenDisplayMetrics().scaledDensity;
+  }
+
+  /**
    * Convert from SP to PX
    */
   public static float toPixelFromSP(float value) {
