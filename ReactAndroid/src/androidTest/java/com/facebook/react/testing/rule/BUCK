@@ -18,7 +18,7 @@ rn_android_library(
         react_native_dep("third-party/java/espresso:espresso"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
-        react_native_dep("third-party/java/testing-support-lib:testing-support-lib"),
+        react_native_dep("third-party/android/support/test:testing-support-lib"),
         react_native_dep("third-party/android/support/appcompat-v7:appcompat-v7"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_integration_tests_target("java/com/facebook/react/testing:testing"),
