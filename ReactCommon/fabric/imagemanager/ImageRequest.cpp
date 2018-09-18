@@ -17,6 +17,8 @@ public:
     std::logic_error("Image no longer needed.") {}
 };
 
+ImageRequest::ImageRequest() {}
+
 ImageRequest::ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture):
   imageSource_(imageSource),
   responseFutureSplitter_(folly::splitFuture(std::move(responseFuture))) {}
