@@ -10,7 +10,7 @@
 
 'use strict';
 
-jest.enableAutomock().unmock('WebSocket');
+jest.mock('NativeEventEmitter');
 jest.setMock('NativeModules', {
   WebSocketModule: {
     connect: () => {},
