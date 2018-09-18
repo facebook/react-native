@@ -31,17 +31,21 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
   return mutex;
 }
 
-EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const std::shared_ptr<const EventDispatcher> &eventDispatcher):
-  eventTarget_(eventTarget),
+EventEmitter::EventEmitter(
+  SharedEventTarget eventTarget,
+  Tag tag,
+  WeakEventDispatcher eventDispatcher
+):
+  eventTarget_(std::move(eventTarget)),
   tag_(tag),
-  eventDispatcher_(eventDispatcher) {}
+  eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
   const std::string &type,
   const folly::dynamic &payload,
   const EventPriority &priority
 ) const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
+  auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
@@ -51,32 +55,29 @@ void EventEmitter::dispatchEvent(
   folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
   extendedPayload.merge_patch(payload);
 
-  auto weakEventEmitter = std::weak_ptr<const EventEmitter> {shared_from_this()};
-
   eventDispatcher->dispatchEvent(
     RawEvent(
       normalizeEventType(type),
       extendedPayload,
-      eventTarget_,
-      [weakEventEmitter]() {
-        auto eventEmitter = weakEventEmitter.lock();
-        if (!eventEmitter) {
-          return false;
-        }
-
-        return eventEmitter->getEnabled();
-      }
+      eventTarget_
     ),
     priority
   );
 }
 
 void EventEmitter::setEnabled(bool enabled) const {
-  enabled_ = enabled;
+  bool alreadyEnabled = eventTarget_ != nullptr;
+  if (enabled == alreadyEnabled) {
+    return;
+  }
+
+  if (!enabled) {
+    eventTarget_.reset();
+  }
 }
 
 bool EventEmitter::getEnabled() const {
-  return enabled_;
+  return eventTarget_ != nullptr;
 }
 
 } // namespace react

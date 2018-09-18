@@ -41,6 +41,8 @@ public:
    */
   ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture);
 
+  ImageRequest();
+
   /*
    * The move constructor.
    */

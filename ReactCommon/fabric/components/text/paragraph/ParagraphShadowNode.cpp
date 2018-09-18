@@ -41,6 +41,7 @@ void ParagraphShadowNode::updateLocalData() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
+    getTag(),
     getAttributedString(),
     getProps()->paragraphAttributes,
     layoutConstraints

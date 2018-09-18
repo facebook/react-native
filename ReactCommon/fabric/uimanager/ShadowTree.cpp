@@ -18,7 +18,7 @@ namespace react {
 ShadowTree::ShadowTree(Tag rootTag):
   rootTag_(rootTag) {
 
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, nullptr);
+  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, std::shared_ptr<const EventDispatcher>());
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     ShadowNodeFragment {
       .tag = rootTag,
@@ -28,6 +28,10 @@ ShadowTree::ShadowTree(Tag rootTag):
     },
     nullptr
   );
+}
+
+ShadowTree::~ShadowTree() {
+  complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {}));
 }
 
 Tag ShadowTree::getRootTag() const {

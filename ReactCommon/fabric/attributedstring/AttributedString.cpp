@@ -15,6 +15,30 @@ namespace react {
 using Fragment = AttributedString::Fragment;
 using Fragments = AttributedString::Fragments;
 
+#pragma mark - Fragment
+
+bool Fragment::operator==(const Fragment &rhs) const {
+  return
+    std::tie(
+      string,
+      textAttributes,
+      shadowNode,
+      parentShadowNode
+    ) ==
+    std::tie(
+      rhs.string,
+      rhs.textAttributes,
+      rhs.shadowNode,
+      rhs.parentShadowNode
+    );
+}
+
+bool Fragment::operator!=(const Fragment &rhs) const {
+  return !(*this == rhs);
+}
+
+#pragma mark - AttributedString
+
 void AttributedString::appendFragment(const Fragment &fragment) {
   ensureUnsealed();
   fragments_.push_back(fragment);
@@ -45,6 +69,14 @@ std::string AttributedString::getString() const {
     string += fragment.string;
   }
   return string;
+}
+
+bool AttributedString::operator==(const AttributedString &rhs) const {
+  return fragments_ != rhs.fragments_;
+}
+
+bool AttributedString::operator!=(const AttributedString &rhs) const {
+  return !(*this == rhs);
 }
 
 #pragma mark - DebugStringConvertible

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <tuple>
 
 #include <fabric/graphics/Float.h>
@@ -177,3 +178,55 @@ using CornerInsets = RectangleCorners<Float>;
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+  template <>
+  struct hash<facebook::react::Point> {
+    size_t operator()(const facebook::react::Point &point) const {
+      return
+        hash<decltype(point.x)>{}(point.x) +
+        hash<decltype(point.y)>{}(point.y);
+    }
+  };
+
+  template <>
+  struct hash<facebook::react::Size> {
+    size_t operator()(const facebook::react::Size &size) const {
+      return
+        hash<decltype(size.width)>{}(size.width) +
+        hash<decltype(size.height)>{}(size.height);
+    }
+  };
+
+  template <>
+  struct hash<facebook::react::Rect> {
+    size_t operator()(const facebook::react::Rect &rect) const {
+      return
+        hash<decltype(rect.origin)>{}(rect.origin) +
+        hash<decltype(rect.size)>{}(rect.size);
+    }
+  };
+
+  template <typename T>
+  struct hash<facebook::react::RectangleEdges<T>> {
+    size_t operator()(const facebook::react::RectangleEdges<T> &edges) const {
+      return
+        hash<decltype(edges.left)>{}(edges.left) +
+        hash<decltype(edges.right)>{}(edges.right) +
+        hash<decltype(edges.top)>{}(edges.top) +
+        hash<decltype(edges.bottom)>{}(edges.bottom);
+    }
+  };
+
+  template <typename T>
+  struct hash<facebook::react::RectangleCorners<T>> {
+    size_t operator()(const facebook::react::RectangleCorners<T> &corners) const {
+      return
+        hash<decltype(corners.topLeft)>{}(corners.topLeft) +
+        hash<decltype(corners.bottomLeft)>{}(corners.bottomLeft) +
+        hash<decltype(corners.topRight)>{}(corners.topRight) +
+        hash<decltype(corners.bottomRight)>{}(corners.bottomRight);
+    }
+  };
+
+} // namespace std

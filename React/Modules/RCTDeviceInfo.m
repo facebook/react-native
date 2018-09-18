@@ -58,10 +58,15 @@ static BOOL RCTIsIPhoneX() {
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
 
-    isIPhoneX = CGSizeEqualToSize(
-      [UIScreen mainScreen].nativeBounds.size,
-      CGSizeMake(1125, 2436)
-    );
+    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
+    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
+    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
+    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
+
+    isIPhoneX =
+      CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
   });
 
   return isIPhoneX;

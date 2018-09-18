@@ -9,18 +9,21 @@
 
 'use strict';
 
-const fs = new (require('metro-memory-fs'))({cwd: process.cwd});
+const path = require('path');
+const MemoryFS = require('metro-memory-fs');
+let fs;
 
-function setMockFilesystem(object) {
-  fs.reset();
-  const root = process.platform === 'win32' ? 'c:\\' : '/';
+function setMockFilesystem(object, platform) {
+  reset(platform);
+  const root = platform === 'win32' ? 'c:\\' : '/';
   mockDir(root, {...object});
+  return root;
 }
 
 function mockDir(dirPath, desc) {
   for (const entName in desc) {
     const ent = desc[entName];
-    const entPath = require('path').join(dirPath, entName);
+    const entPath = path.join(dirPath, entName);
     if (typeof ent === 'string' || ent instanceof Buffer) {
       fs.writeFileSync(entPath, ent);
       continue;
@@ -37,7 +40,22 @@ function mockDir(dirPath, desc) {
   }
 }
 
-fs.__setMockFilesystem = setMockFilesystem;
-fs.mock = {clear: () => fs.reset()};
+function reset(platform) {
+  if (path.mock == null) {
+    throw new Error(
+      'to use this "fs" module mock, you must also mock the "path" module',
+    );
+  }
+  path.mock.reset(platform);
+  const cwd = () => (platform === 'win32' ? 'c:\\' : '/');
+  fs = new MemoryFS({platform, cwd});
+  Object.assign(mockFs, fs);
+}
 
-module.exports = fs;
+const mockFs = {};
+mockFs.__setMockFilesystem = setMockFilesystem;
+mockFs.mock = {clear: reset};
+
+reset('posix');
+
+module.exports = mockFs;
