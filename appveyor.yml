@@ -1,7 +1,7 @@
 environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
     ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17b"
-    ANDROID_BUILD_VERSION: 27
+    ANDROID_BUILD_VERSION: 26
     ANDROID_TOOLS_VERSION: 27.0.3
 
     GRADLE_OPTS: -Dorg.gradle.daemon=false
