@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <functional>
 #include <limits>
 
 #include <fabric/graphics/ColorComponents.h>
@@ -58,3 +59,15 @@ ColorComponents colorComponentsFromColor(SharedColor color);
 
 } // namespace react
 } // namespace facebook
+
+namespace std
+{
+	template <>
+	struct hash<facebook::react::SharedColor>
+	{
+		size_t operator()(const facebook::react::SharedColor& sharedColor) const
+		{
+			return hash<decltype(*sharedColor)>{}(*sharedColor);
+		}
+	};
+}
