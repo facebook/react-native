@@ -205,6 +205,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
+  /**
+   *
+   */
+  public @Nullable Object updateLocalData(T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+    return null;
+  }
+
   public float[] measure(
       ReactContext context,
       T view,

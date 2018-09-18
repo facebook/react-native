@@ -7,6 +7,7 @@
 
 #include "TextLayoutManager.h"
 
+#include <fabric/attributedstring/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
 using namespace facebook::jni;
@@ -37,7 +38,7 @@ Size TextLayoutManager::measure(
   int width = (int) layoutConstraints.maximumSize.width;
   int height = (int) layoutConstraints.maximumSize.height;
   local_ref<JString> componentName = make_jstring("RCTText");
-  auto values = measure(fabricUIManager, reactTag, componentName.get(), ReadableNativeMap::newObjectCxxArgs(attributedString.toDynamic()).get(), ReadableNativeMap::newObjectCxxArgs(paragraphAttributes.toDynamic()).get(), width, height);
+  auto values = measure(fabricUIManager, reactTag, componentName.get(), ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString)).get(), ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes)).get(), width, height);
 
   std::vector<float> indices;
   indices.resize(values->size());

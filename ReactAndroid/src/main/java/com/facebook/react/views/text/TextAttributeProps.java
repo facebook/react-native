@@ -241,10 +241,10 @@ public class TextAttributeProps {
   public void setBackgroundColor(Integer color) {
     //TODO: Don't apply background color to anchor TextView since it will be applied on the View directly
     //if (!isVirtualAnchor()) {
-    mIsBackgroundColorSet = (color != null);
-    if (mIsBackgroundColorSet) {
-      mBackgroundColor = color;
-    }
+      mIsBackgroundColorSet = (color != null);
+      if (mIsBackgroundColorSet) {
+        mBackgroundColor = color;
+      }
     //}
   }
 
