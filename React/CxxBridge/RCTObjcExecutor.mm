@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,8 +39,8 @@ public:
                   std::shared_ptr<ExecutorDelegate> delegate)
     : m_jse(jse)
     , m_errorBlock(errorBlock)
-    , m_jsThread(std::move(jsThread))
     , m_delegate(std::move(delegate))
+    , m_jsThread(std::move(jsThread))
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {

@@ -1,15 +1,15 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
 
 rn_android_library(
     name = "holder",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        react_native_dep("java/com/facebook/debug/debugoverlay/model:model"),
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         react_native_dep("third-party/java/jsr-305:jsr-305"),
+    ],
+    exported_deps = [
+        react_native_dep("java/com/facebook/debug/debugoverlay/model:model"),
     ],
 )

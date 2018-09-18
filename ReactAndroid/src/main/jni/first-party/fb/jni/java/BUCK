@@ -1,6 +1,6 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_java_library")
 
-java_library(
+rn_java_library(
     name = "java",
     srcs = glob(["**/*.java"]),
     visibility = ["PUBLIC"],

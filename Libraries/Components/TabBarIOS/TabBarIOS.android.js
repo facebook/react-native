@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TabBarIOS
+ * @format
  * @flow
  */
 
@@ -30,7 +30,7 @@ class DummyTabBarIOS extends React.Component<$FlowFixMeProps> {
 const styles = StyleSheet.create({
   tabGroup: {
     flex: 1,
-  }
+  },
 });
 
 module.exports = DummyTabBarIOS;

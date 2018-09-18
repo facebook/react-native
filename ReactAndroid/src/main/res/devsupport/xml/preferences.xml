@@ -26,6 +26,13 @@
       android:defaultValue="true"
       />
     <CheckBoxPreference
+      android:key="js_bundle_deltas_cpp"
+      android:title="Native Delta Handling"
+      android:summary="Handles delta bundles in native code without writing code to disk (Experimental)."
+      android:defaultValue="false"
+      android:dependency="js_bundle_deltas"
+      />
+    <CheckBoxPreference
         android:key="animations_debug"
         android:title="Animations FPS Summaries"
         android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."

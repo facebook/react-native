@@ -1,7 +1,5 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,6 +31,7 @@
 #import <cxxreact/JSBundleType.h>
 #import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
+#import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/Platform.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <jschelpers/Value.h>
@@ -122,6 +121,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       case ReactMarker::NATIVE_MODULE_SETUP_START:
       case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+      case ReactMarker::REGISTER_JS_SEGMENT_START:
+      case ReactMarker::REGISTER_JS_SEGMENT_STOP:
         // These are not used on iOS.
         break;
     }
@@ -187,6 +188,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 - (JSGlobalContextRef)jsContextRef
 {
   return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
+}
+
+- (std::shared_ptr<MessageQueueThread>)jsMessageThread
+{
+  return _jsMessageThread;
 }
 
 - (BOOL)isInspectable
@@ -305,7 +311,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   [self registerExtraModules];
   // Initialize all native modules that cannot be loaded lazily
-  [self _initModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
+  (void)[self _initializeModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
 
@@ -337,7 +343,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   #if RCT_PROFILE
         ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
   #endif
-         , nullptr
       ));
     }
   } else {
@@ -400,7 +405,11 @@ struct RCTInstanceCallback : public InstanceCallback {
     [performanceLogger markStopForTag:RCTPLScriptDownload];
     [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
 
-    NSDictionary *userInfo = source ? @{ RCTBridgeDidDownloadScriptNotificationSourceKey: source } : nil;
+    NSDictionary *userInfo = @{
+      RCTBridgeDidDownloadScriptNotificationSourceKey: source ?: [NSNull null],
+      RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey: self->_bridgeDescription ?: [NSNull null],
+    };
+
     [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
     _onSourceLoad(error, source);
@@ -537,8 +546,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                           @"-[RCTCxxBridge initModulesWithDispatchGroup:] autoexported moduleData", nil);
 
-  NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClasses.count];
-  for (Class moduleClass in moduleClasses) {
+  NSArray *moduleClassesCopy = [moduleClasses copy];
+  NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
+  for (Class moduleClass in moduleClassesCopy) {
+    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      continue;
+    }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
 
     // Check for module name collisions
@@ -631,17 +644,17 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 }
 
-- (void)_initModules:(NSArray<id<RCTBridgeModule>> *)modules
-   withDispatchGroup:(dispatch_group_t)dispatchGroup
-    lazilyDiscovered:(BOOL)lazilyDiscovered
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
 {
   RCTAssert(!(RCTIsMainQueue() && lazilyDiscovered), @"Lazy discovery can only happen off the Main Queue");
 
   // Set up moduleData for automatically-exported modules
   NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
 
-#ifdef RCT_DEBUG
   if (lazilyDiscovered) {
+#ifdef RCT_DEBUG
     // Lazily discovered modules do not require instantiation here,
     // as they are not allowed to have pre-instantiated instance
     // and must not require the main queue.
@@ -649,10 +662,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       RCTAssert(!(moduleData.requiresMainQueueSetup || moduleData.hasInstance),
         @"Module \'%@\' requires initialization on the Main Queue or has pre-instantiated, which is not supported for the lazily discovered modules.", moduleData.name);
     }
-  }
-  else
 #endif
-  {
+  } else {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                             @"-[RCTCxxBridge initModulesWithDispatchGroup:] moduleData.hasInstance", nil);
     // Dispatch module init onto main thread for those modules that require it
@@ -684,11 +695,15 @@ struct RCTInstanceCallback : public InstanceCallback {
     RCTProfileHookModules(self);
   }
 #endif
+  return moduleDataById;
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
 {
-  [self _initModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+  NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+  if (_reactInstance) {
+    _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
+  }
 }
 
 - (void)_prepareModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
@@ -865,6 +880,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)reload
 {
+  if (!_valid) {
+    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
   [_parentBridge reload];
 }
 

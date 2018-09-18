@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
@@ -25,8 +26,7 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           ReactContext reactContext = (ReactContext) buttonView.getContext();
           reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
+              .getNativeModule(UIManagerModule.class).getEventDispatcher()
               .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
         }
       };

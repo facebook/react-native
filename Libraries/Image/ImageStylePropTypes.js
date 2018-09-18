@@ -1,23 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageStylePropTypes
  * @flow
  * @format
  */
 'use strict';
 
-var ColorPropType = require('ColorPropType');
-var ImageResizeMode = require('ImageResizeMode');
-var LayoutPropTypes = require('LayoutPropTypes');
-var ReactPropTypes = require('prop-types');
-var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
-var TransformPropTypes = require('TransformPropTypes');
+const ColorPropType = require('ColorPropType');
+const ImageResizeMode = require('ImageResizeMode');
+const LayoutPropTypes = require('LayoutPropTypes');
+const ReactPropTypes = require('prop-types');
+const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
+const TransformPropTypes = require('TransformPropTypes');
 
-var ImageStylePropTypes = {
+const ImageStylePropTypes = {
   ...LayoutPropTypes,
   ...ShadowPropTypesIOS,
   ...TransformPropTypes,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -70,9 +71,13 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   /**
    * @return a mutable copy of the {@link ReactShadowNode}
    */
-  T mutableCopy();
+  T mutableCopy(long instanceHandle);
 
-  T mutableCopyWithNewChildren();
+  T mutableCopyWithNewProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
+
+  T mutableCopyWithNewChildren(long instanceHandle);
+
+  T mutableCopyWithNewChildrenAndProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -99,6 +104,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
+
+  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
@@ -132,9 +139,9 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void setReactTag(int reactTag);
 
-  T getRootNode();
+  int getRootTag();
 
-  void setRootNode(T rootNode);
+  void setRootTag(int rootTag);
 
   void setViewClassName(String viewClassName);
 
@@ -352,4 +359,35 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  /**
+   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
+   * {@link ReactShadowNode}.
+   */
+  List<ReactShadowNode> getChildrenList();
+
+  /**
+   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
+   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
+   */
+  @Nullable ReactShadowNode getOriginalReactShadowNode();
+
+  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
+
+  long getInstanceHandle();
+
+  void setInstanceHandle(long instanceHandle);
+
+  /**
+   * Mark this {@link ReactShadowNode} as sealed. This means that the node was already committed
+   * and it should not be updated anymore.
+   */
+  void markAsSealed();
+
+  /**
+   * @return a {@link boolean} that represents if the {@link ReactShadowNode} is sealed.
+   */
+  boolean isSealed();
+
+  void updateScreenLayout(ReactShadowNode prevNode);
 }

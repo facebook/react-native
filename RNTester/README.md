@@ -19,6 +19,14 @@ Mac OS and Xcode are required.
 
 See [Running on device](https://facebook.github.io/react-native/docs/running-on-device.html) if you want to use a physical device.
 
+### Running on iOS with CocoaPods
+
+Similar to above, you can build the app via Xcode with help of CocoaPods.
+
+- Install [CocoaPods](http://facebook.github.io/react-native/docs/integration-with-existing-apps.html#3-install-cocoapods)
+- Run `cd RNTester; pod install`
+- Open the generated `RNTesterPods.xcworkspace` (this is not checked in). Do not open `RNTesterPods.xcodeproj` directly.
+
 ### Running on Android
 
 You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.

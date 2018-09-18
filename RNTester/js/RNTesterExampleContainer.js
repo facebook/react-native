@@ -1,17 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RNTesterExampleContainer
+ * @format
  */
+
 'use strict';
 
 const React = require('react');
-const {
-  Platform,
-} = require('react-native');
+const {Platform} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
@@ -26,10 +25,7 @@ class RNTesterExampleContainer extends React.Component {
       title += ' (' + platform + ' only)';
     }
     return (
-      <RNTesterBlock
-        key={i}
-        title={title}
-        description={description}>
+      <RNTesterBlock key={i} title={title} description={description}>
         {example.render()}
       </RNTesterBlock>
     );

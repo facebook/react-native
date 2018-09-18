@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PickerAndroidTestModule
+ * @format
  */
 
 'use strict';
@@ -63,7 +63,7 @@ class PickerAndroidTestApp extends React.Component {
     );
   }
 
-  onValueChange = (value) => {
+  onValueChange = value => {
     this.setState({selected: value});
     RecordingModule.recordSelection(value);
   };
@@ -84,7 +84,7 @@ var PickerAndroidTestModule = {
 
 BatchedBridge.registerCallableModule(
   'PickerAndroidTestModule',
-  PickerAndroidTestModule
+  PickerAndroidTestModule,
 );
 
 module.exports = PickerAndroidTestModule;

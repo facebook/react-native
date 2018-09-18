@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -201,6 +201,22 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @ReactProp(name = ViewProps.OVERFLOW)
   public void setOverflow(ReactViewGroup view, String overflow) {
     view.setOverflow(overflow);
+  }
+
+  @ReactProp(name = "backfaceVisibility")
+  public void setBackfaceVisibility(ReactViewGroup view, String backfaceVisibility) {
+    view.setBackfaceVisibility(backfaceVisibility);
+  }
+
+  @Override
+  public void setOpacity(ReactViewGroup view, float opacity) {
+    view.setOpacityIfPossible(opacity);
+  }
+
+  @Override
+  public void setTransform(ReactViewGroup view, ReadableArray matrix) {
+    super.setTransform(view, matrix);
+    view.setBackfaceVisibilityDependantOpacity();
   }
 
   @Override

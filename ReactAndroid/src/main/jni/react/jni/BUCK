@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "FBJNI_TARGET", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "ANDROID", "IS_OSS_BUILD")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "AndroidJSCFactory.h",
@@ -7,13 +7,14 @@ EXPORTED_HEADERS = [
     "CxxSharedModuleWrapper.h",
     "JavaModuleWrapper.h",
     "JavaScriptExecutorHolder.h",
+    "JReactMarker.h",
     "JSLoader.h",
+    "JSLogging.h",
     "MethodInvoker.h",
     "ModuleRegistryBuilder.h",
     "NativeArray.h",
     "NativeCommon.h",
     "NativeMap.h",
-    "ReactMarker.h",
     "ReadableNativeArray.h",
     "ReadableNativeMap.h",
     "WritableNativeArray.h",
@@ -25,7 +26,7 @@ rn_xplat_cxx_library(
     srcs = glob(["*.cpp"]),
     headers = glob(
         ["*.h"],
-        excludes = EXPORTED_HEADERS,
+        exclude = EXPORTED_HEADERS,
     ),
     header_namespace = "react/jni",
     exported_headers = EXPORTED_HEADERS,
@@ -46,7 +47,6 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
         "-DWITH_INSPECTOR=1",
-        "-DWITH_JSC_MEMORY_PRESSURE=1",
     ],
     soname = "libreactnativejni.$(ext)",
     visibility = [

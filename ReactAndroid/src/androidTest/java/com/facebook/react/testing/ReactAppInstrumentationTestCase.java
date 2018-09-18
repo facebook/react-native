@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,19 +7,17 @@
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * Base class for instrumentation tests that runs React based react application in UI mode
@@ -35,22 +33,14 @@ public abstract class ReactAppInstrumentationTestCase extends
   protected void setUp() throws Exception {
     super.setUp();
 
+    Intent intent = new Intent();
+    intent.putExtra(ReactAppTestActivity.EXTRA_IS_FABRIC_TEST, isFabricTest());
+    setActivityIntent(intent);
     final ReactAppTestActivity activity = getActivity();
-    try {
-      runTestOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          activity.loadApp(
-              getReactApplicationKeyUnderTest(),
-              createReactInstanceSpecForTest(),
-              getEnableDevSupport());
-        }
-      });
-    } catch (Throwable t) {
-      throw new Exception("Unable to load react app", t);
-    }
-    waitForBridgeAndUIIdle();
-    assertTrue("Layout never occurred!", activity.waitForLayout(5000));
+    activity.loadApp(
+        getReactApplicationKeyUnderTest(),
+        createReactInstanceSpecForTest(),
+        getEnableDevSupport());
     waitForBridgeAndUIIdle();
   }
 
@@ -141,6 +131,10 @@ public abstract class ReactAppInstrumentationTestCase extends
   protected abstract String getReactApplicationKeyUnderTest();
 
   protected boolean getEnableDevSupport() {
+    return false;
+  }
+
+  protected boolean isFabricTest() {
     return false;
   }
 

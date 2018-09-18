@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -93,6 +93,8 @@ import javax.annotation.Nullable;
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
+    } else if ("subtraction".equals(type)) {
+      node = new SubtractionAnimatedNode(config, this);
     } else if ("division".equals(type)) {
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {

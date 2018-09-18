@@ -1,12 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule DatePickerAndroid
+ * @format
  * @flow
  */
+
 'use strict';
 
 const DatePickerModule = require('NativeModules').DatePickerAndroid;
@@ -77,11 +78,15 @@ class DatePickerAndroid {
   /**
    * A date has been selected.
    */
-  static get dateSetAction() { return 'dateSetAction'; }
+  static get dateSetAction() {
+    return 'dateSetAction';
+  }
   /**
    * The dialog has been dismissed.
    */
-  static get dismissedAction() { return 'dismissedAction'; }
+  static get dismissedAction() {
+    return 'dismissedAction';
+  }
 }
 
 module.exports = DatePickerAndroid;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 #import "RCTInputAccessoryViewManager.h"
 
+#import "RCTInputAccessoryShadowView.h"
 #import "RCTInputAccessoryView.h"
 
 @implementation RCTInputAccessoryViewManager
@@ -23,6 +24,11 @@ RCT_EXPORT_MODULE()
   return [[RCTInputAccessoryView alloc] initWithBridge:self.bridge];
 }
 
-RCT_REMAP_VIEW_PROPERTY(backgroundColor, content.inputAccessoryView.backgroundColor, UIColor)
+- (RCTShadowView *)shadowView
+{
+  return [RCTInputAccessoryShadowView new];
+}
+
+RCT_REMAP_VIEW_PROPERTY(backgroundColor, inputAccessoryView.backgroundColor, UIColor)
 
 @end

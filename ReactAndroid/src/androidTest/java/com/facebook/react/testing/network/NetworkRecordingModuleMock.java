@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     mCompleteRequest = completeRequest;
   }
 
-  public static interface RequestListener {
+  public interface RequestListener {
     public void onRequest(String method, String url, ReadableArray header, ReadableMap data);
   }
 

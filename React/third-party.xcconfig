@@ -6,5 +6,5 @@
 //  Copyright © 2017 Facebook. All rights reserved.
 //
 
-HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_63_0 $(SRCROOT)/../third-party/folly-2016.09.26.00 $(SRCROOT)/../third-party/glog-0.3.4/src
+HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_63_0 $(SRCROOT)/../third-party/folly-2016.10.31.00 $(SRCROOT)/../third-party/glog-0.3.5/src
 OTHER_CFLAGS = -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1

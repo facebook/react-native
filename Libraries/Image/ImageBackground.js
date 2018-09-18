@@ -1,10 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageBackground
  * @flow
  * @format
  */
@@ -16,8 +15,6 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 const ensureComponentIsNative = require('ensureComponentIsNative');
-
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -53,7 +50,7 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     }
   }
 
-  _viewRef: ?NativeMethodsMixinType = null;
+  _viewRef: ?React.ElementRef<typeof View> = null;
 
   _captureRef = ref => {
     this._viewRef = ref;
@@ -63,7 +60,10 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style} ref={this._captureRef}>
+      <View
+        accessibilityIgnoresInvertColors={true}
+        style={style}
+        ref={this._captureRef}>
         <Image
           {...props}
           style={[

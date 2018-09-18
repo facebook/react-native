@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ typedef UIFont *(^RCTFontHandler)(CGFloat fontSize, NSString *fontWeightDescript
  * "semibold", "extrabold", "bold", "heavy", or "black".
  */
 RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
-RCT_EXTERN BOOL RCTHasFontHandlerSet();
+RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
 
 @interface RCTFont : NSObject
 

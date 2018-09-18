@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,6 +50,12 @@ static NSString *RCTGenerateFormBoundary()
   const char *boundaryChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.";
 
   char *bytes = (char*)malloc(boundaryLength);
+  if (!bytes) {
+    // CWE - 391 : Unchecked error condition
+    // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+    // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+    abort();
+  }
   size_t charCount = strlen(boundaryChars);
   for (int i = 0; i < boundaryLength; i++) {
     bytes[i] = boundaryChars[arc4random_uniform((u_int32_t)charCount)];
@@ -139,6 +145,11 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  for (NSNumber *requestID in _tasksByRequestID) {
+    [_tasksByRequestID[requestID] cancel];
+  }
+  [_tasksByRequestID removeAllObjects];
+  _handlers = nil;
   _requestHandlers = nil;
   _responseHandlers = nil;
 }
@@ -439,10 +450,6 @@ RCT_EXPORT_MODULE()
 {
   RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
 
-  if (data.length == 0) {
-    return;
-  }
-
   id responseData = nil;
   for (id<RCTNetworkingResponseHandler> handler in _responseHandlers) {
     if ([handler canHandleNetworkingResponse:responseType]) {
@@ -452,6 +459,10 @@ RCT_EXPORT_MODULE()
   }
 
   if (!responseData) {
+    if (data.length == 0) {
+      return;
+    }
+
     if ([responseType isEqualToString:@"text"]) {
       // No carry storage is required here because the entire data has been loaded.
       responseData = [RCTNetworking decodeTextData:data fromResponse:task.response withCarryData:nil];

@@ -1,21 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * Stub of VibrationIOS for Android.
  *
- * @providesModule VibrationIOS
+ * @format
  */
+
 'use strict';
 
-var warning = require('fbjs/lib/warning');
+const warning = require('fbjs/lib/warning');
 
-var VibrationIOS = {
+const VibrationIOS = {
   vibrate: function() {
     warning('VibrationIOS is not supported on this platform!');
-  }
+  },
 };
 
 module.exports = VibrationIOS;

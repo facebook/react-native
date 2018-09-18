@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,11 +31,17 @@ NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotificat
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
+NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
+static dispatch_queue_t RCTModuleClassesSyncQueue;
 NSArray<Class> *RCTGetModuleClasses(void)
 {
-  return RCTModuleClasses;
+  __block NSArray<Class> *result;
+  dispatch_sync(RCTModuleClassesSyncQueue, ^{
+    result = [RCTModuleClasses copy];
+  });
+  return result;
 }
 
 void RCTFBQuickPerformanceLoggerConfigureHooks(__unused JSGlobalContextRef ctx) { }
@@ -50,6 +56,7 @@ void RCTRegisterModule(Class moduleClass)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
+    RCTModuleClassesSyncQueue = dispatch_queue_create("com.facebook.react.ModuleClassesSyncQueue", DISPATCH_QUEUE_CONCURRENT);
   });
 
   RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
@@ -57,7 +64,9 @@ void RCTRegisterModule(Class moduleClass)
             moduleClass);
 
   // Register module
-  [RCTModuleClasses addObject:moduleClass];
+  dispatch_barrier_async(RCTModuleClassesSyncQueue, ^{
+    [RCTModuleClasses addObject:moduleClass];
+  });
 }
 
 /**
@@ -84,6 +93,16 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return name;
 }
 
+static BOOL jsiNativeModuleEnabled = NO;
+BOOL RCTJSINativeModuleEnabled(void)
+{
+  return jsiNativeModuleEnabled;
+}
+
+void RCTEnableJSINativeModule(BOOL enabled) {
+  jsiNativeModuleEnabled = enabled;
+}
+
 #if RCT_DEBUG
 void RCTVerifyAllModulesExported(NSArray *extraModules)
 {
@@ -97,6 +116,9 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 
   for (unsigned int i = 0; i < classCount; i++) {
     Class cls = classes[i];
+    if (strncmp(class_getName(cls), "RCTCxxModule", strlen("RCTCxxModule")) == 0) {
+      continue;
+    }
     Class superclass = cls;
     while (superclass) {
       if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
@@ -234,7 +256,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
 {
   NSMutableArray *modules = [NSMutableArray new];
-  for (Class moduleClass in self.moduleClasses) {
+  for (Class moduleClass in [self.moduleClasses copy]) {
     if ([moduleClass conformsToProtocol:protocol]) {
       id module = [self moduleForClass:moduleClass];
       if (module) {

@@ -1,33 +1,63 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Image
  * @flow
  * @format
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const ImageResizeMode = require('ImageResizeMode');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const ImageProps = require('ImageProps');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
 
-const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
+
+const RCTImageView = requireNativeComponent('RCTImageView');
+
+import type {ImageStyleProp} from 'StyleSheet';
+import type {ImageProps as ImagePropsType} from 'ImageProps';
+
+function getSize(
+  uri: string,
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  ImageViewManager.getSize(
+    uri,
+    success,
+    failure ||
+      function() {
+        console.warn('Failed to get size for image: ' + uri);
+      },
+  );
+}
+
+function prefetch(url: string) {
+  return ImageViewManager.prefetchImage(url);
+}
+
+async function queryCache(urls: Array<string>): Promise<Map<string, 'memory' | 'disk'>> {
+  return await ImageViewManager.queryCache(urls);
+}
+
+declare class ImageComponentType extends ReactNative.NativeComponent<
+  ImagePropsType,
+> {
+  static getSize: typeof getSize;
+  static prefetch: typeof prefetch;
+  static queryCache: typeof queryCache;
+  static resolveAssetSource: typeof resolveAssetSource;
+  static propTypes: typeof ImageProps;
+}
 
 /**
  * A React component for displaying different types of images,
@@ -36,224 +66,93 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-const Image = createReactClass({
-  displayName: 'Image',
-  propTypes: {
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#style
-     */
-    style: StyleSheetPropType(ImageStylePropTypes),
-    /**
-     * The image source (either a remote URL or a local file resource).
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#source
-     */
-    source: ImageSourcePropType,
-    /**
-     * A static image to display while loading the image source.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#defaultsource
-     */
-    defaultSource: PropTypes.oneOfType([
-      PropTypes.shape({
-        uri: PropTypes.string,
-        width: PropTypes.number,
-        height: PropTypes.number,
-        scale: PropTypes.number,
-      }),
-      PropTypes.number,
-    ]),
-    /**
-     * When true, indicates the image is an accessibility element.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#accessible
-     */
-    accessible: PropTypes.bool,
-    /**
-     * The text that's read by the screen reader when the user interacts with
-     * the image.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#accessibilitylabel
-     */
-    accessibilityLabel: PropTypes.node,
-    /**
-     * blurRadius: the blur radius of the blur filter added to the image
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#blurradius
-     */
-    blurRadius: PropTypes.number,
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#capinsets
-     */
-    capInsets: EdgeInsetsPropType,
-    /**
-     * See https://facebook.github.io/react-native/docs/image.html#resizemethod
-     */
-    resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
-    /**
-     * Determines how to resize the image when the frame doesn't match the raw
-     * image dimensions.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resizemode
-     */
-    resizeMode: PropTypes.oneOf([
-      'cover',
-      'contain',
-      'stretch',
-      'repeat',
-      'center',
-    ]),
-    /**
-     * A unique identifier for this element to be used in UI Automation
-     * testing scripts.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#testid
-     */
-    testID: PropTypes.string,
-    /**
-     * Invoked on mount and layout changes with
-     * `{nativeEvent: {layout: {x, y, width, height}}}`.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onlayout
-     */
-    onLayout: PropTypes.func,
-    /**
-     * Invoked on load start.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onloadstart
-     */
-    onLoadStart: PropTypes.func,
-    /**
-     * Invoked on download progress with `{nativeEvent: {loaded, total}}`.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onprogress
-     */
-    onProgress: PropTypes.func,
-    /**
-     * Invoked on load error with `{nativeEvent: {error}}`.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onerror
-     */
-    onError: PropTypes.func,
-    /**
-     * Invoked when a partial load of the image is complete.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onpartialload
-     */
-    onPartialLoad: PropTypes.func,
-    /**
-     * Invoked when load completes successfully.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onload
-     */
-    onLoad: PropTypes.func,
-    /**
-     * Invoked when load either succeeds or fails.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#onloadend
-     */
-    onLoadEnd: PropTypes.func,
-  },
+let Image = (
+  props: ImagePropsType,
+  forwardedRef: ?React.Ref<'RCTImageView'>,
+) => {
+  const source = resolveAssetSource(props.source) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
 
-  statics: {
-    resizeMode: ImageResizeMode,
-    /**
-     * Retrieve the width and height (in pixels) of an image prior to displaying it.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#getsize
-     */
-    getSize: function(
-      uri: string,
-      success: (width: number, height: number) => void,
-      failure?: (error: any) => void,
-    ) {
-      ImageViewManager.getSize(
-        uri,
-        success,
-        failure ||
-          function() {
-            console.warn('Failed to get size for image: ' + uri);
-          },
-      );
-    },
-    /**
-     * Prefetches a remote image for later use by downloading it to the disk
-     * cache.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#prefetch
-     */
-    prefetch(url: string) {
-      return ImageViewManager.prefetchImage(url);
-    },
-    /**
-     * Resolves an asset reference into an object.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
-     */
-    resolveAssetSource: resolveAssetSource,
-  },
+  let sources;
+  let style: ImageStyleProp;
+  if (Array.isArray(source)) {
+    // $FlowFixMe flattenStyle is not strong enough
+    style = flattenStyle([styles.base, props.style]) || {};
+    sources = source;
+  } else {
+    const {width, height, uri} = source;
+    // $FlowFixMe flattenStyle is not strong enough
+    style = flattenStyle([{width, height}, styles.base, props.style]) || {};
+    sources = [source];
 
-  mixins: [NativeMethodsMixin],
-
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  viewConfig: {
-    uiViewClassName: 'UIView',
-    validAttributes: ReactNativeViewAttributes.UIView,
-  },
-
-  render: function() {
-    const source = resolveAssetSource(this.props.source) || {
-      uri: undefined,
-      width: undefined,
-      height: undefined,
-    };
-
-    let sources;
-    let style;
-    if (Array.isArray(source)) {
-      style = flattenStyle([styles.base, this.props.style]) || {};
-      sources = source;
-    } else {
-      const {width, height, uri} = source;
-      style =
-        flattenStyle([{width, height}, styles.base, this.props.style]) || {};
-      sources = [source];
-
-      if (uri === '') {
-        console.warn('source.uri should not be an empty string');
-      }
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
+  }
 
-    const resizeMode =
-      this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+  const tintColor = style.tintColor;
 
-    if (this.props.src) {
-      console.warn(
-        'The <Image> component requires a `source` property rather than `src`.',
-      );
-    }
-
-    if (this.props.children) {
-      throw new Error(
-        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
-      );
-    }
-
-    return (
-      <RCTImageView
-        {...this.props}
-        style={style}
-        resizeMode={resizeMode}
-        tintColor={tintColor}
-        source={sources}
-      />
+  if (props.src != null) {
+    console.warn(
+      'The <Image> component requires a `source` property rather than `src`.',
     );
-  },
-});
+  }
+
+  if (props.children != null) {
+    throw new Error(
+      'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+    );
+  }
+
+  return (
+    <RCTImageView
+      {...props}
+      ref={forwardedRef}
+      style={style}
+      resizeMode={resizeMode}
+      tintColor={tintColor}
+      source={sources}
+    />
+  );
+};
+
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+Image = React.forwardRef(Image);
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
+ */
+Image.getSize = getSize;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ */
+Image.prefetch = prefetch;
+
+/**
+ * Performs cache interrogation.
+ *
+ *  See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+Image.queryCache = queryCache;
+
+/**
+ * Resolves an asset reference into an object.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
+ */
+Image.resolveAssetSource = resolveAssetSource;
+
+Image.propTypes = ImageProps;
 
 const styles = StyleSheet.create({
   base: {
@@ -261,6 +160,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTImageView = requireNativeComponent('RCTImageView', Image);
-
-module.exports = Image;
+module.exports = (Image: Class<ImageComponentType>);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,9 +35,17 @@ public class PositionError {
   public static WritableMap buildError(int code, String message) {
     WritableMap error = Arguments.createMap();
     error.putInt("code", code);
+
     if (message != null) {
       error.putString("message", message);
     }
+    
+    /**
+    * Provide error types in error message. Feature parity with iOS
+    */
+    error.putInt("PERMISSION_DENIED", PERMISSION_DENIED);
+    error.putInt("POSITION_UNAVAILABLE", POSITION_UNAVAILABLE);
+    error.putInt("TIMEOUT", TIMEOUT);
     return error;
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -54,7 +54,10 @@ public class OkHttpClientProvider {
     if (sFactory != null) {
       return sFactory.createNewNetworkModuleClient();
     }
+    return createClientBuilder().build();
+  }
 
+  public static OkHttpClient.Builder createClientBuilder() {
     // No timeouts by default
     OkHttpClient.Builder client = new OkHttpClient.Builder()
       .connectTimeout(0, TimeUnit.MILLISECONDS)
@@ -62,7 +65,7 @@ public class OkHttpClientProvider {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
 
-    return enableTls12OnPreLollipop(client).build();
+    return enableTls12OnPreLollipop(client);
   }
 
   /*

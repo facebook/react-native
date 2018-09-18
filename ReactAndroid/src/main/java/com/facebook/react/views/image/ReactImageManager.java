@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -88,6 +88,12 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setBlurRadius(blurRadius);
   }
 
+  // In JS this is Image.props.defaultSource
+  @ReactProp(name = "defaultSrc")
+  public void setDefaultSource(ReactImageView view, @Nullable String source) {
+    view.setDefaultSource(source);
+  }
+
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
@@ -103,7 +109,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
-  @ReactProp(name = "overlayColor")
+  @ReactProp(name = "overlayColor", customType = "Color")
   public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
     if (overlayColor == null) {
       view.setOverlayColor(Color.TRANSPARENT);
@@ -139,6 +145,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = ViewProps.RESIZE_MODE)
   public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
     view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+    view.setTileMode(ImageResizeMode.toTileMode(resizeMode));
   }
 
   @ReactProp(name = ViewProps.RESIZE_METHOD)

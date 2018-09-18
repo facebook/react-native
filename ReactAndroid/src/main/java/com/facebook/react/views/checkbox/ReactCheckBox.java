@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,10 @@
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
-import android.widget.CheckBox;
+import android.support.v7.widget.AppCompatCheckBox;
 
 /** CheckBox that has its value controlled by JS. */
-/*package*/ class ReactCheckBox extends CheckBox {
+/*package*/ class ReactCheckBox extends AppCompatCheckBox {
 
   private boolean mAllowChange;
 

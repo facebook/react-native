@@ -58,10 +58,11 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
+    cliPath: "$rootDir/local-cli/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
-    root: "../../../../",
-    inputExcludes: ["android/**", "./**"]
+    root: "$rootDir",
+    inputExcludes: ["android/**", "./**", ".gradle/**"]
 ]
 
 apply from: "../../../react.gradle"
@@ -80,16 +81,16 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 26
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -113,12 +114,16 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
     }
+
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -135,9 +140,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.0.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     // Build React Native from source
-    compile project(':ReactAndroid')
+    implementation project(':ReactAndroid')
 }

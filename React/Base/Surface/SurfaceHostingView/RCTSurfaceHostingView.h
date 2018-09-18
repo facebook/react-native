@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Instanciates a view with given Surface object.
  * Note: The view retains the surface object.
  */
-- (instancetype)initWithSurface:(RCTSurface *)surface NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSurface:(RCTSurface *)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode NS_DESIGNATED_INITIALIZER;
 
 /**
  * Convenience initializer.
@@ -40,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
+             initialProperties:(NSDictionary *)initialProperties
+               sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode;
 
 /**
  * Create an instance of RCTSurface to be hosted.

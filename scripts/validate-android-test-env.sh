@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that Android is set up correctly for the
 # testing environment.
 #
@@ -10,7 +14,7 @@
 # Check that Buck is working.
 if [ -z "$(which buck)" ]; then
   echo "You need to install Buck."
-  echo "See https://buckbuild.com/setup/install.html for instructions."
+  echo "See https://buckbuild.com/setup/getting_started.html for instructions."
   exit 1
 fi
 
@@ -18,14 +22,14 @@ if [ -z "$(buck --version)" ]; then
   echo "Your Buck install is broken."
 
   if [ -d "/opt/facebook" ]; then
-    SUGGESTED="b9b76a3a5a086eb440a26d1db9b0731875975099"
+    BUCK_SUGGESTED_COMMIT_FB="b9b76a3a5a086eb440a26d1db9b0731875975099"
     echo "FB laptops ship with a Buck config that is not compatible with open "
     echo "source. FB Buck requires the environment to set a buck version, but "
     echo "the open source version of Buck forbids that."
     echo
     echo "You can try setting:"
     echo
-    echo "export BUCKVERSION=${SUGGESTED}"
+    echo "export BUCKVERSION=${BUCK_SUGGESTED_COMMIT_FB}"
     echo
     echo "in your .bashrc or .bash_profile to fix this."
     echo
@@ -33,12 +37,19 @@ if [ -z "$(buck --version)" ]; then
     echo "your machine, you can just scope it to a single script, for example"
     echo "by running something like:"
     echo
-    echo "BUCKVERSION=${SUGGESTED} $0"
+    echo "BUCKVERSION=${BUCK_SUGGESTED_COMMIT_FB} $0"
     echo
   else
     echo "I don't know what's wrong, but calling 'buck --version' should work."
   fi
   exit 1
+else
+  BUCK_EXPECTED_VERSION="buck version d743d2d0229852ce7c029ec257532d8916f6b2b7"
+  if [ "$(buck --version)" != "$BUCK_EXPECTED_VERSION" ]; then
+    if [ ! -d "/opt/facebook" ]; then
+      echo "Warning: The test suite expects ${BUCK_EXPECTED_VERSION} to be installed"
+    fi
+  fi
 fi
 
 # BUILD_TOOLS_VERSION is in a format like "23.0.1"
@@ -100,7 +111,7 @@ if [ -n "$(which csrutil)" ]; then
     exit 1
   fi
 fi
-  
+
 if [ -z "$JAVA_HOME" ]; then
   echo "Error: \$JAVA_HOME is not configured."
   echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."

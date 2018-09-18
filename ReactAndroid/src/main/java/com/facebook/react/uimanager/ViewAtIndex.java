@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,5 +27,19 @@ public class ViewAtIndex {
   public ViewAtIndex(int tag, int index) {
     mTag = tag;
     mIndex = index;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || obj.getClass() != getClass()) {
+      return false;
+    }
+    ViewAtIndex other = (ViewAtIndex) obj;
+    return mIndex == other.mIndex && mTag == other.mTag;
+  }
+
+  @Override
+  public String toString() {
+    return "[" + mTag + ", " + mIndex + "]";
   }
 }

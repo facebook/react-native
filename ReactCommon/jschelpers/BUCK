@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library", "react_native_xplat_target", "ANDROID_JSC_INTERNAL_DEPS", "APPLE_JSC_INTERNAL_DEPS")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "ANDROID_JSC_INTERNAL_DEPS", "APPLE", "APPLE_JSC_INTERNAL_DEPS", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "JavaScriptCore.h",
@@ -13,11 +13,11 @@ rn_xplat_cxx_library(
     name = "jscinternalhelpers",
     srcs = glob(
         ["*.cpp"],
-        excludes = ["systemJSCWrapper.cpp"],
+        exclude = ["systemJSCWrapper.cpp"],
     ),
     headers = glob(
         ["*.h"],
-        excludes = EXPORTED_HEADERS,
+        exclude = EXPORTED_HEADERS,
     ),
     header_namespace = "",
     exported_headers = dict([
@@ -34,18 +34,19 @@ rn_xplat_cxx_library(
         "-fvisibility=hidden",
         "-std=c++1y",
     ],
-    exported_deps = [
-        react_native_xplat_target("privatedata:privatedata"),
-    ],
     fbandroid_deps = ANDROID_JSC_INTERNAL_DEPS,
     fbobjc_deps = APPLE_JSC_INTERNAL_DEPS,
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
+        react_native_xplat_target("privatedata:privatedata"),
+    ],
+    exported_deps = [
         react_native_xplat_target("privatedata:privatedata"),
     ],
 )
@@ -64,6 +65,7 @@ rn_xplat_cxx_library(
     ],
     fbobjc_srcs = ["systemJSCWrapper.cpp"],
     force_static = True,
+    platforms = (ANDROID, APPLE),
     visibility = [
         "PUBLIC",
     ],

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,9 +15,16 @@
 namespace facebook {
 namespace jni {
 
+class JBuffer : public JavaClass<JBuffer> {
+public:
+  static constexpr const char* kJavaDescriptor = "Ljava/nio/Buffer;";
+
+  void rewind() const;
+};
+
 // JNI's NIO support has some awkward preconditions and error reporting. This
 // class provides much more user-friendly access.
-class FBEXPORT JByteBuffer : public JavaClass<JByteBuffer> {
+class FBEXPORT JByteBuffer : public JavaClass<JByteBuffer, JBuffer> {
  public:
   static constexpr const char* kJavaDescriptor = "Ljava/nio/ByteBuffer;";
 

@@ -1,19 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableQuickActions
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
-const ViewPropTypes = require('ViewPropTypes');
 
 /**
  * A thin wrapper around standard quick action buttons that can, if the user
@@ -27,7 +27,7 @@ const ViewPropTypes = require('ViewPropTypes');
  */
 class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
   static propTypes = {
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
   };
 
   render(): React.Node {
@@ -41,19 +41,17 @@ class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
         buttons.push(children[i]);
 
         // $FlowFixMe found when converting React.createClass to ES6
-        if (i < this.props.children.length - 1) { // Not last button
+        if (i < this.props.children.length - 1) {
+          // Not last button
           buttons.push(<View key={i} style={styles.divider} />);
         }
       }
-    } else { // 1 child
+    } else {
+      // 1 child
       buttons = children;
     }
 
-    return (
-      <View style={[styles.background, this.props.style]}>
-        {buttons}
-      </View>
-    );
+    return <View style={[styles.background, this.props.style]}>{buttons}</View>;
   }
 }
 

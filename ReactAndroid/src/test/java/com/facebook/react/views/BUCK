@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_robolectric_test", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
 
 rn_robolectric_test(
     name = "views",
@@ -13,6 +13,8 @@ rn_robolectric_test(
         react_native_dep("libraries/fresco/fresco-react-native:fresco-drawee"),
         react_native_dep("libraries/fresco/fresco-react-native:fresco-react-native"),
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),

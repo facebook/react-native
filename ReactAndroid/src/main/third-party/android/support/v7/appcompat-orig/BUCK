@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
@@ -11,14 +11,15 @@ load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_resource", "rn_
 
 rn_android_library(
     name = "appcompat",
-    exported_deps = [
-        ":classes-for-react-native",
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         ":res-for-appcompat",
+    ],
+    exported_deps = [
+        ":classes-for-react-native",
+        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
     ],
 )
 
@@ -56,6 +57,6 @@ python_binary(
 
 remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "7d659f671541394a8bc2b9f909950aa2a5ec87ff",
-    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1",
+    sha1 = "22b1ef4ff9ef1a3513c18eb132d597eac6ef1a86",
+    url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
 )

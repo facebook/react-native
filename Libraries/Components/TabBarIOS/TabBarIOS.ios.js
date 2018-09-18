@@ -1,27 +1,31 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TabBarIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const PropTypes = require('prop-types');
+const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
-const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
 
-class TabBarIOS extends React.Component<ViewProps & {
+const RCTTabBar = requireNativeComponent('RCTTabBar');
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
   style?: DangerouslyImpreciseStyleProp,
   unselectedTintColor?: string,
   tintColor?: string,
@@ -31,12 +35,14 @@ class TabBarIOS extends React.Component<ViewProps & {
   translucent?: boolean,
   itemPositioning?: 'fill' | 'center' | 'auto',
   children: React.Node,
-}> {
+|}>;
+
+class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
   static propTypes = {
-    ...ViewPropTypes,
-    style: ViewPropTypes.style,
+    ...DeprecatedViewPropTypes,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Color of text on unselected tabs
      */
@@ -95,9 +101,7 @@ class TabBarIOS extends React.Component<ViewProps & {
 const styles = StyleSheet.create({
   tabGroup: {
     flex: 1,
-  }
+  },
 });
-
-const RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

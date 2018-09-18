@@ -1,9 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -48,6 +51,7 @@
 require('shelljs/global');
 
 const buildBranch = process.env.CIRCLE_BRANCH;
+const otp = process.env.NPM_CONFIG_OTP;
 
 let branchVersion;
 if (buildBranch.indexOf('-stable') !== -1) {
@@ -60,17 +64,24 @@ if (buildBranch.indexOf('-stable') !== -1) {
 // 34c034298dc9cad5a4553964a5a324450fda0385
 const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
-const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {silent: true})
+const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
+  silent: true,
+})
   .stdout.split(/\s/)
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2', 'refs/tags/v0.34.0']
-  .filter(version => !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0)
+  .filter(
+    version =>
+      !!version && version.indexOf(`refs/tags/v${branchVersion}`) === 0,
+  )
   // ['refs/tags/v0.33.0', 'refs/tags/v0.33.0-rc', 'refs/tags/v0.33.0-rc1', 'refs/tags/v0.33.0-rc2']
   .filter(version => version.indexOf(branchVersion) !== -1)
   // ['v0.33.0', 'v0.33.0-rc', 'v0.33.0-rc1', 'v0.33.0-rc2']
   .map(version => version.slice('refs/tags/'.length));
 
 if (tagsWithVersion.length === 0) {
-  echo('Error: Can\'t find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit');
+  echo(
+    'Error: Cannot find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit',
+  );
   exit(1);
 }
 let releaseVersion;
@@ -86,7 +97,7 @@ if (tagsWithVersion[0].indexOf('-rc') === -1) {
 
 // -------- Generating Android Artifacts with JavaDoc
 if (exec('./gradlew :ReactAndroid:installArchives').code) {
-  echo('Couldn\'t generate artifacts');
+  echo('Could not generate artifacts');
   exit(1);
 }
 
@@ -95,26 +106,34 @@ exec('git checkout ReactAndroid/gradle.properties');
 
 echo('Generated artifacts for Maven');
 
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
+let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map(suffix => {
   return `react-native-${releaseVersion}${suffix}`;
 });
 
-artifacts.forEach((name) => {
-  if (!test('-e', `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
+artifacts.forEach(name => {
+  if (
+    !test(
+      '-e',
+      `./android/com/facebook/react/react-native/${releaseVersion}/${name}`,
+    )
+  ) {
     echo(`file ${name} was not generated`);
     exit(1);
   }
 });
 
-if (releaseVersion.indexOf('-rc') === -1) {
-  // release, package will be installed by default
-  exec('npm publish');
+// if version contains -rc, tag as prerelease
+const tagFlag = releaseVersion.indexOf('-rc') === -1 ? '' : '--tag next';
+
+// use otp from envvars if available
+const otpFlag = otp ? `--otp ${otp}` : '';
+
+if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+  echo('Failed to publish package to npm');
+  exit(1);
 } else {
-  // RC release, package will be installed only if users specifically do it
-  exec('npm publish --tag next');
+  echo(`Published to npm ${releaseVersion}`);
+  exit(0);
 }
 
-echo(`Published to npm ${releaseVersion}`);
-
-exit(0);
 /*eslint-enable no-undef */
