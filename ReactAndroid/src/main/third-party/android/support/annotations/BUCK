@@ -1,5 +1,5 @@
 prebuilt_jar(
-    name = "android-support-annotations",
+    name = "support-annotations",
     binary_jar = ":support-annotations-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
