@@ -240,7 +240,7 @@ describe('VirtualizedList', () => {
         getItemCount={data => data.length}
       />,
     );
-    const cell = virtualList._cellRefs['i4'];
+    const cell = virtualList._cellRefs.i4;
     const event = {
       nativeEvent: {layout: {x: 0, y: 0, width: 50, height: 50}},
     };
