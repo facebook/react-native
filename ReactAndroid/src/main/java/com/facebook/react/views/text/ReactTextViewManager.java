@@ -7,12 +7,16 @@
 
 package com.facebook.react.views.text;
 
+import android.text.Layout;
 import android.text.Spannable;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -63,6 +67,35 @@ public class ReactTextViewManager
   protected void onAfterUpdateTransaction(ReactTextView view) {
     super.onAfterUpdateTransaction(view);
     view.updateView();
+  }
+
+  @Override
+  public Object updateLocalData(ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+    ReadableMap attributedString = localData.getMap("attributedString");
+    ReadableArray fragments = attributedString.getArray("fragments");
+    String string = attributedString.getString("string");
+
+    Spannable spanned = TextLayoutManager.spannedFromTextFragments(view.getContext(),
+      fragments, string);
+    view.setSpanned(spanned);
+
+    TextAttributeProps textViewProps = new TextAttributeProps(props);
+
+    // TODO add textBreakStrategy prop into local Data
+    int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+
+    return
+      new ReactTextUpdate(
+        spanned,
+        -1,             // TODO add this into local Data?
+        false,          // TODO add this into local Data
+        textViewProps.getStartPadding(),
+        textViewProps.getTopPadding(),
+        textViewProps.getEndPadding(),
+        textViewProps.getBottomPadding(),
+        textViewProps.getTextAlign(),
+        textBreakStrategy
+      );
   }
 
   @Override

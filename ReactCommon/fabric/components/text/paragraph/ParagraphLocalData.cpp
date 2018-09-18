@@ -7,6 +7,7 @@
 
 #include "ParagraphLocalData.h"
 
+#include <fabric/components/text/conversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
@@ -28,6 +29,10 @@ SharedTextLayoutManager ParagraphLocalData::getTextLayoutManager() const {
 void ParagraphLocalData::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
+}
+
+folly::dynamic ParagraphLocalData::getDynamic() const {
+  return toDynamic(*this);
 }
 
 #pragma mark - DebugStringConvertible

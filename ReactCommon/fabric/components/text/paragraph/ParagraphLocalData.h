@@ -41,6 +41,8 @@ public:
   SharedTextLayoutManager getTextLayoutManager() const;
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
+  folly::dynamic getDynamic() const override;
+
 #pragma mark - DebugStringConvertible
 
   std::string getDebugName() const override;

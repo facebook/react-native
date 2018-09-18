@@ -9,6 +9,7 @@
 
 #include <fabric/core/Sealable.h>
 #include <fabric/debug/DebugStringConvertible.h>
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -29,6 +30,10 @@ class LocalData:
   public Sealable,
   public DebugStringConvertible {
 
+  public:
+     virtual folly::dynamic getDynamic() const {
+       return folly::dynamic::object();
+     };
 };
 
 } // namespace react
