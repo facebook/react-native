@@ -10,7 +10,9 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -201,5 +203,17 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   public Map<String, String> getNativeProps() {
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
+  }
+
+  public float[] measure(
+      ReactContext context,
+      T view,
+      ReadableNativeMap localData,
+      ReadableNativeMap props,
+      float width,
+      int widthMode,
+      float height,
+      int heightMode) {
+    return null;
   }
 }
