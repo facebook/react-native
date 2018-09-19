@@ -17,12 +17,4 @@ public class ReactVirtualTextShadowNode extends ReactBaseTextShadowNode {
 
   public ReactVirtualTextShadowNode() { }
 
-  private ReactVirtualTextShadowNode(ReactVirtualTextShadowNode node) {
-    super(node);
-  }
-
-  @Override
-  protected ReactVirtualTextShadowNode copy() {
-    return new ReactVirtualTextShadowNode(this);
-  }
 }

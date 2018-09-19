@@ -23,8 +23,4 @@ public abstract class ReactTextInlineImageShadowNode extends LayoutShadowNode {
 
   public ReactTextInlineImageShadowNode() {}
 
-  protected ReactTextInlineImageShadowNode(ReactTextInlineImageShadowNode node) {
-    super(node);
-  }
-
 }

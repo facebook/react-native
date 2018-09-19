@@ -10,12 +10,12 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import com.facebook.fbreact.fabricxx.jsi.Binding;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -29,8 +29,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsc.FabricJSCBinding;
+import com.facebook.react.fabric.FabricBinder;
+import com.facebook.react.fabric.FabricBinding;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -239,7 +239,7 @@ public class ReactAppTestActivity extends FragmentActivity
                       public JSIModuleProvider getJSIModuleProvider() {
                         return new JSIModuleProvider() {
                           @Override
-                          public FabricUIManager get() {
+                          public UIManager get() {
                             List<ViewManager> viewManagers =
                                 mReactInstanceManager.getOrCreateViewManagers(
                                     reactApplicationContext);
@@ -247,14 +247,18 @@ public class ReactAppTestActivity extends FragmentActivity
                                 reactApplicationContext
                                     .getNativeModule(UIManagerModule.class)
                                     .getEventDispatcher();
-                            FabricUIManager fabricUIManager =
-                                new FabricUIManager(
-                                    reactApplicationContext,
-                                    new ViewManagerRegistry(viewManagers),
-                                    jsContext,
-                                    eventDispatcher);
-                            new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
-                            return fabricUIManager;
+
+                            ViewManagerRegistry viewManagerRegistry =
+                              new ViewManagerRegistry(
+                                mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
+
+                            UIManager uiManager =
+                              new com.facebook.fbreact.fabricxx.UIManager(
+                                reactApplicationContext, viewManagerRegistry, jsContext);
+
+                            FabricBinding binding = new Binding();
+                            binding.installFabric(jsContext, (FabricBinder) uiManager);
+                            return uiManager;
                           }
                         };
                       }

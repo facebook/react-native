@@ -51,34 +51,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
       initMeasureFunction();
     }
 
-    private ReactSliderShadowNode(ReactSliderShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    protected ReactSliderShadowNode copy() {
-      return new ReactSliderShadowNode(this);
     }
 
     @Override
