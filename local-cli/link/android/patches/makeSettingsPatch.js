@@ -10,8 +10,6 @@
 const path = require('path');
 const normalizeProjectName = require('./normalizeProjectName');
 
-const isWin = process.platform === 'win32';
-
 module.exports = function makeSettingsPatch(
   name,
   androidConfig,
