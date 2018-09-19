@@ -208,6 +208,9 @@ public class ReactAppTestActivity extends FragmentActivity
             .getReactInstanceManagerBuilder()
             .setApplication(getApplication())
             .setBundleAssetName(bundleName);
+    if (spec.getJavaScriptExecutorFactory() != null) {
+      builder.setJavaScriptExecutorFactory(spec.getJavaScriptExecutorFactory());
+    }
     if (!spec.getAlternativeReactPackagesForTest().isEmpty()) {
       builder.addPackages(spec.getAlternativeReactPackagesForTest());
     } else {

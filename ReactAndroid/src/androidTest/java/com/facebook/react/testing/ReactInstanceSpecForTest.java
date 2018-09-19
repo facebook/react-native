@@ -9,12 +9,14 @@ package com.facebook.react.testing;
 
 import android.annotation.SuppressLint;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A spec that allows a test to add additional NativeModules/JS modules to the ReactInstance. This
@@ -29,9 +31,15 @@ public class ReactInstanceSpecForTest {
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
   private final List<ViewManager> mViewManagers = new ArrayList<>();
   private final ArrayList<ReactPackage> mReactPackages = new ArrayList<>();
+  @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
 
   public ReactInstanceSpecForTest addNativeModule(NativeModule module) {
     mNativeModules.add(module);
+    return this;
+  }
+
+  public ReactInstanceSpecForTest setJavaScriptExecutorFactory(JavaScriptExecutorFactory javaScriptExecutorFactory) {
+    mJavaScriptExecutorFactory = javaScriptExecutorFactory;
     return this;
   }
 
@@ -64,6 +72,11 @@ public class ReactInstanceSpecForTest {
           "Multiple packages were added - use getAlternativeReactPackagesForTest instead.");
     }
     return mReactPackages.get(0);
+  }
+
+  @Nullable
+  public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+    return mJavaScriptExecutorFactory;
   }
 
   public List<ReactPackage> getAlternativeReactPackagesForTest() {
