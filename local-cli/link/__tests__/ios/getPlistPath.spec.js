@@ -25,6 +25,6 @@ describe('ios::getPlistPath', () => {
 
   it('should return path without Xcode $(SRCROOT)', () => {
     const plistPath = getPlistPath(project, '/');
-    expect(plistPath).toBe('/Basic/Info.plist');
+    expect(plistPath).toBe(path.normalize('/Basic/Info.plist'));
   });
 });
