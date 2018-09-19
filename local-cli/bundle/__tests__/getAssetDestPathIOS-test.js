@@ -13,7 +13,7 @@
 jest.dontMock('../getAssetDestPathIOS');
 
 const getAssetDestPathIOS = require('../getAssetDestPathIOS');
-import path from 'path';
+const path = require('path');
 
 describe('getAssetDestPathIOS', () => {
   it('should build correct path', () => {
