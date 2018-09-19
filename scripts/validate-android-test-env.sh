@@ -56,7 +56,7 @@ fi
 BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
 
 # MAJOR is something like "23"
-MAJOR=`echo $BUILD_TOOLS_VERSION | sed 's/\..*//'`
+MAJOR=`grep compileSdkVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/[^[:digit:]]//g'`
 
 # Check that we have the right major version of the Android SDK.
 PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR"
