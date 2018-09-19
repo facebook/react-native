@@ -11,9 +11,11 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
+import javax.annotation.Nullable;
 
 /**
  * Base class for instrumentation tests that runs React based application.
@@ -26,6 +28,9 @@ public abstract class ReactInstrumentationTest extends
     ActivityInstrumentationTestCase2<ReactAppTestActivity> implements IdleWaiter {
 
   protected StringRecordingModule mRecordingModule;
+
+  @Nullable
+  protected JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
 
   public ReactInstrumentationTest() {
     super(ReactAppTestActivity.class);
@@ -49,7 +54,7 @@ public abstract class ReactInstrumentationTest extends
   /**
    * Renders this component within this test's activity
    */
-  public void renderComponent(final String componentName) throws Exception {
+  public void renderComponent(final String componentName) {
     getActivity().renderComponent(componentName, null);
     waitForBridgeAndUIIdle();
   }
@@ -98,7 +103,12 @@ public abstract class ReactInstrumentationTest extends
    * Override this method to provide extra native modules to be loaded before the app starts
    */
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
-    return new ReactInstanceSpecForTest().addNativeModule(mRecordingModule);
+    ReactInstanceSpecForTest reactInstanceSpecForTest =
+      new ReactInstanceSpecForTest().addNativeModule(mRecordingModule);
+    if (mJavaScriptExecutorFactory != null) {
+      reactInstanceSpecForTest.setJavaScriptExecutorFactory(mJavaScriptExecutorFactory);
+    }
+    return reactInstanceSpecForTest;
   }
 
   /**
