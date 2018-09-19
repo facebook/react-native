@@ -42,7 +42,7 @@
 
 - (void)reactSetFrame:(CGRect)frame
 {
-  [_inputAccessoryView setFrame:frame];
+  [_inputAccessoryView reactSetFrame:frame];
 
   if (_shouldBecomeFirstResponder) {
     _shouldBecomeFirstResponder = NO;
