@@ -648,6 +648,7 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
