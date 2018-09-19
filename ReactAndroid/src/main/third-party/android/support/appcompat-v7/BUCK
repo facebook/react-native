@@ -10,7 +10,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_libra
 # All this mumbo jumbo will go away after t10182713
 
 rn_android_library(
-    name = "appcompat",
+    name = "appcompat-v7",
     visibility = [
         "PUBLIC",
     ],
@@ -19,7 +19,7 @@ rn_android_library(
     ],
     exported_deps = [
         ":classes-for-react-native",
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
+        react_native_dep("third-party/android/support/v4:support-v4"),
     ],
 )
 

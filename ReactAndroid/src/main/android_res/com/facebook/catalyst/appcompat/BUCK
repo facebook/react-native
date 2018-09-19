@@ -5,6 +5,6 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_resou
 rn_android_resource(
     name = "appcompat",
     package = "com.facebook.react",
-    res = react_native_dep("third-party/android/support/v7/appcompat-orig:res-unpacker-cmd"),
+    res = react_native_dep("third-party/android/support/appcompat-v7:res-unpacker-cmd"),
     visibility = ["//ReactAndroid/..."],
 )

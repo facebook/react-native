@@ -14,8 +14,7 @@ rn_android_library(
     srcs = glob(["src/main/java/**/*.java"]),
     deps = [
         ":res",
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+        react_native_dep("third-party/android/support/appcompat-v7:appcompat-v7"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/modules/core:core"),

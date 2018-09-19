@@ -11,10 +11,6 @@ rn_android_library(
         ],
         exclude = ["DisplayMetricsHolder.java"],
     ),
-    provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
-    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
@@ -24,6 +20,7 @@ rn_android_library(
         ":DisplayMetrics",
         react_native_dep("java/com/facebook/systrace:systrace"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("third-party/android/support/v4:support-v4"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_target("java/com/facebook/debug/tags:tags"),
         react_native_target("java/com/facebook/debug/holder:holder"),
