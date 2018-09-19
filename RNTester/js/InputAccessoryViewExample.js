@@ -58,6 +58,8 @@ class TextInputBar extends React.PureComponent<*, *> {
   }
 }
 
+const BAR_HEIGHT = 44;
+
 class InputAccessoryViewExample extends React.Component<*> {
   static title = '<InputAccessoryView>';
   static description =
@@ -65,8 +67,8 @@ class InputAccessoryViewExample extends React.Component<*> {
 
   render() {
     return (
-      <View>
-        <ScrollView keyboardDismissMode="interactive">
+      <>
+        <ScrollView style={styles.fill} keyboardDismissMode="interactive">
           {Array(15)
             .fill()
             .map((_, i) => <Message key={i} />)}
@@ -74,14 +76,21 @@ class InputAccessoryViewExample extends React.Component<*> {
         <InputAccessoryView backgroundColor="#fffffff7">
           <TextInputBar />
         </InputAccessoryView>
-      </View>
+      </>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   textInputContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    height: BAR_HEIGHT,
   },
   textInput: {
     flex: 1,
