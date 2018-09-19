@@ -69,6 +69,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "ScrollView";
   }
 
+  if (viewName == "AndroidProgressBar") {
+    return "ActivityIndicatorView";
+  }
+
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components.
   if (
