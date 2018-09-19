@@ -24,16 +24,6 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   public ReactRawTextShadowNode() { }
 
-  private ReactRawTextShadowNode(ReactRawTextShadowNode node) {
-    super(node);
-    this.mText = node.mText;
-  }
-
-  @Override
-  protected ReactShadowNodeImpl copy() {
-    return new ReactRawTextShadowNode(this);
-  }
-
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;

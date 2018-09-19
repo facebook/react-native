@@ -68,17 +68,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   boolean isYogaLeafNode();
 
-  /**
-   * @return a mutable copy of the {@link ReactShadowNode}
-   */
-  T mutableCopy(long instanceHandle);
-
-  T mutableCopyWithNewProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
-
-  T mutableCopyWithNewChildren(long instanceHandle);
-
-  T mutableCopyWithNewChildrenAndProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
-
   String getViewClass();
 
   boolean hasUpdates();
@@ -365,29 +354,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * {@link ReactShadowNode}.
    */
   List<ReactShadowNode> getChildrenList();
-
-  /**
-   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
-   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
-   */
-  @Nullable ReactShadowNode getOriginalReactShadowNode();
-
-  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
-
-  long getInstanceHandle();
-
-  void setInstanceHandle(long instanceHandle);
-
-  /**
-   * Mark this {@link ReactShadowNode} as sealed. This means that the node was already committed
-   * and it should not be updated anymore.
-   */
-  void markAsSealed();
-
-  /**
-   * @return a {@link boolean} that represents if the {@link ReactShadowNode} is sealed.
-   */
-  boolean isSealed();
 
   void updateScreenLayout(ReactShadowNode prevNode);
 }
