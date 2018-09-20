@@ -23,8 +23,11 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Native;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -422,13 +425,25 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    return mNativeModuleRegistry.hasModule(nativeModuleInterface);
+    return mNativeModuleRegistry.hasModule(getNameFromAnnotation(nativeModuleInterface));
   }
 
-  // This is only ever called with UIManagerModule or CurrentViewerModule.
   @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    return mNativeModuleRegistry.getModule(nativeModuleInterface);
+    return (T) mNativeModuleRegistry.getModule(getNameFromAnnotation(nativeModuleInterface));
+  }
+
+  @Override
+  public NativeModule getNativeModule(String moduleName) {
+    return mNativeModuleRegistry.getModule(moduleName);
+  }
+
+  private <T extends NativeModule> String getNameFromAnnotation(Class<T> nativeModuleInterface){
+    ReactModule annotation = nativeModuleInterface.getAnnotation(ReactModule.class);
+    if (annotation == null) {
+      throw new IllegalArgumentException("Could not find @ReactModule annotation in " + nativeModuleInterface.getCanonicalName());
+    }
+    return annotation.name();
   }
 
   // This is only used by com.facebook.react.modules.common.ModuleDataCleaner
