@@ -30,3 +30,9 @@ RCT_EXTERN CGFloat RCTInterpolateValue(CGFloat value,
 
 RCT_EXTERN CGFloat RCTRadiansToDegrees(CGFloat radians);
 RCT_EXTERN CGFloat RCTDegreesToRadians(CGFloat degrees);
+
+/**
+ * Coefficient to slow down animations, respects the ios
+ * simulator `Slow Animations (⌘T)` option.
+ */
+RCT_EXTERN CGFloat RCTAnimationDragCoefficient(void);
