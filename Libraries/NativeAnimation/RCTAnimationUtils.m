@@ -93,3 +93,17 @@ CGFloat RCTDegreesToRadians(CGFloat degrees)
 {
   return degrees / 180.0 * M_PI;
 }
+
+#if TARGET_IPHONE_SIMULATOR
+// Based on https://stackoverflow.com/a/13307674
+float UIAnimationDragCoefficient(void);
+#endif
+
+CGFloat RCTAnimationDragCoefficient()
+{
+#if TARGET_IPHONE_SIMULATOR
+  return (CGFloat)UIAnimationDragCoefficient();
+#else
+  return 1.0;
+#endif
+}
