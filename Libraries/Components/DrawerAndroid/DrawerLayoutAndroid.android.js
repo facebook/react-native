@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,16 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
 const StatusBar = require('StatusBar');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 
 const DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
@@ -70,7 +70,7 @@ const DrawerLayoutAndroid = createReactClass({
   },
 
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.

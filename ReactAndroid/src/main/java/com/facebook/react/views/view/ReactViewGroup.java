@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,11 +48,6 @@ import javax.annotation.Nullable;
 public class ReactViewGroup extends ViewGroup implements
     ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView,
     ReactZIndexedViewGroup {
-
-  /**
-   * Kill switch to make overflow hidden by default. This flag will eventually be removed.
-   */
-  public static boolean sDefaultOverflowHidden;
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -115,11 +110,13 @@ public class ReactViewGroup extends ViewGroup implements
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
 
   public ReactViewGroup(Context context) {
     super(context);
     // TODO: Remove this check after a couple public releases.
-    if (!sDefaultOverflowHidden) {
+    if (!ViewProps.sDefaultOverflowHidden) {
       setClipChildren(false);
     }
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
@@ -840,5 +837,37 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+
+    if (isBackfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = getRotationX();
+    float rotationY = getRotationY();
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }

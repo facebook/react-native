@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,14 @@
 
 'use strict';
 
-import type {AccessibilityTrait} from 'ViewAccessibility';
-
-import type {Node} from 'react';
-
-import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
+import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
+import type React from 'React';
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {
+  AccessibilityRole,
+  AccessibilityStates,
+  AccessibilityTrait,
+} from 'ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -29,11 +31,13 @@ export type PressRetentionOffset = $ReadOnly<{|
  */
 export type TextProps = $ReadOnly<{
   accessible?: ?boolean,
-  accessibilityTraits?: AccessibilityTrait | Array<AccessibilityTrait>,
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStates,
+  accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
   allowFontScaling?: ?boolean,
-  children?: Node,
-  ellipsizeMode?: 'clip' | 'head' | 'middle' | 'tail',
-  nativeID?: string,
+  children?: ?React.Node,
+  ellipsizeMode?: ?('clip' | 'head' | 'middle' | 'tail'),
+  nativeID?: ?string,
   numberOfLines?: ?number,
   onLayout?: ?(event: LayoutEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
@@ -44,15 +48,16 @@ export type TextProps = $ReadOnly<{
   onResponderTerminate?: ?Function,
   onResponderTerminationRequest?: ?Function,
   onStartShouldSetResponder?: ?Function,
+  onTextLayout?: ?(event: TextLayoutEvent) => mixed,
   pressRetentionOffset?: ?PressRetentionOffset,
   selectable?: ?boolean,
   style?: ?DangerouslyImpreciseStyleProp,
-  testID?: string,
+  testID?: ?string,
 
   // Android Only
   disabled?: ?boolean,
   selectionColor?: ?string,
-  textBreakStrategy?: 'balanced' | 'highQuality' | 'simple',
+  textBreakStrategy?: ?('balanced' | 'highQuality' | 'simple'),
 
   // iOS Only
   adjustsFontSizeToFit?: ?boolean,

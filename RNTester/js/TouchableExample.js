@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -195,8 +195,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
             accessibilityLabel="touchable feedback events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
+            accessibilityRole="button"
             onPress={() => this._appendEvent('press')}
             onPressIn={() => this._appendEvent('pressIn')}
             onPressOut={() => this._appendEvent('pressOut')}

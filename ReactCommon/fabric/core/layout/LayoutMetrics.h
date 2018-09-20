@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,6 +41,11 @@ struct LayoutMetrics {
     return !(*this == rhs);
   }
 };
+
+/*
+ * Represents some undefined, not-yet-computed or meaningless value of `LayoutMetrics` type.
+ */
+static const LayoutMetrics EmptyLayoutMetrics = {.frame = { .size = {-1, -1}}};
 
 } // namespace react
 } // namespace facebook

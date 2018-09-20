@@ -1,10 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #pragma once
 #include <stdio.h>
 #include "YGConfig.h"
@@ -14,48 +14,33 @@
 
 struct YGNode {
  private:
-  void* context_;
-  YGPrintFunc print_;
-  bool hasNewLayout_;
-  YGNodeType nodeType_;
-  YGMeasureFunc measure_;
-  YGBaselineFunc baseline_;
-  YGDirtiedFunc dirtied_;
-  YGStyle style_;
-  YGLayout layout_;
-  uint32_t lineIndex_;
-  YGNodeRef owner_;
-  YGVector children_;
-  YGConfigRef config_;
-  bool isDirty_;
-  std::array<YGValue, 2> resolvedDimensions_;
+  void* context_ = nullptr;
+  YGPrintFunc print_ = nullptr;
+  bool hasNewLayout_ = true;
+  YGNodeType nodeType_ = YGNodeTypeDefault;
+  YGMeasureFunc measure_ = nullptr;
+  YGBaselineFunc baseline_ = nullptr;
+  YGDirtiedFunc dirtied_ = nullptr;
+  YGStyle style_ = {};
+  YGLayout layout_ = {};
+  uint32_t lineIndex_ = 0;
+  YGNodeRef owner_ = nullptr;
+  YGVector children_ = {};
+  YGConfigRef config_ = nullptr;
+  bool isDirty_ = false;
+  std::array<YGValue, 2> resolvedDimensions_ = {
+      {YGValueUndefined, YGValueUndefined}};
 
   YGFloatOptional relativePosition(
       const YGFlexDirection& axis,
       const float& axisSize) const;
 
  public:
-  YGNode();
-  ~YGNode();
-  explicit YGNode(const YGConfigRef newConfig);
-  YGNode(const YGNode& node);
+  YGNode() = default;
+  ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
+  explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
+  YGNode(const YGNode& node) = default;
   YGNode& operator=(const YGNode& node);
-  YGNode(
-      void* context,
-      YGPrintFunc print,
-      bool hasNewLayout,
-      YGNodeType nodeType,
-      YGMeasureFunc measure,
-      YGBaselineFunc baseline,
-      YGDirtiedFunc dirtied,
-      YGStyle style,
-      const YGLayout& layout,
-      uint32_t lineIndex,
-      YGNodeRef owner,
-      const YGVector& children,
-      YGConfigRef config,
-      bool isDirty,
-      std::array<YGValue, 2> resolvedDimensions);
 
   // Getters
   void* getContext() const {
@@ -69,23 +54,23 @@ struct YGNode {
   bool getHasNewLayout() const {
     return hasNewLayout_;
   }
-  
+
   YGNodeType getNodeType() const {
     return nodeType_;
   }
-  
+
   YGMeasureFunc getMeasure() const {
     return measure_;
   }
-  
+
   YGBaselineFunc getBaseline() const {
     return baseline_;
   }
-  
+
   YGDirtiedFunc getDirtied() const {
     return dirtied_;
   }
-  
+
   // For Performance reasons passing as reference.
   YGStyle& getStyle() {
     return style_;
@@ -103,11 +88,11 @@ struct YGNode {
   const YGLayout& getLayout() const {
     return layout_;
   }
-  
+
   uint32_t getLineIndex() const {
     return lineIndex_;
   }
-  
+
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
   // the YogaTree that a YGNode belongs to.
   // This method will return the parent of the YGNode when a YGNode only belongs
@@ -116,16 +101,16 @@ struct YGNode {
   YGNodeRef getOwner() const {
     return owner_;
   }
-  
+
   // Deprecated, use getOwner() instead.
   YGNodeRef getParent() const {
     return getOwner();
   }
-  
+
   const YGVector& getChildren() const {
     return children_;
   }
-  
+
   YGNodeRef getChild(uint32_t index) const {
     return children_.at(index);
   }
@@ -133,21 +118,22 @@ struct YGNode {
   YGConfigRef getConfig() const {
     return config_;
   }
-  
+
   bool isDirty() const {
     return isDirty_;
   }
-  
+
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
   }
-  
+
   YGValue getResolvedDimension(int index) const {
     return resolvedDimensions_[index];
   }
 
   // Methods related to positions, margin, padding and border
-  YGFloatOptional getLeadingPosition(const YGFlexDirection& axis,
+  YGFloatOptional getLeadingPosition(
+      const YGFlexDirection& axis,
       const float& axisSize) const;
   bool isLeadingPositionDefined(const YGFlexDirection& axis) const;
   bool isTrailingPosDefined(const YGFlexDirection& axis) const;
@@ -190,7 +176,7 @@ struct YGNode {
   void setHasNewLayout(bool hasNewLayout) {
     hasNewLayout_ = hasNewLayout;
   }
-  
+
   void setNodeType(YGNodeType nodeType) {
     nodeType_ = nodeType;
   }
@@ -216,15 +202,15 @@ struct YGNode {
   void setStyle(const YGStyle& style) {
     style_ = style;
   }
-  
+
   void setLayout(const YGLayout& layout) {
     layout_ = layout;
   }
-  
+
   void setLineIndex(uint32_t lineIndex) {
     lineIndex_ = lineIndex;
   }
-  
+
   void setOwner(YGNodeRef owner) {
     owner_ = owner;
   }
@@ -234,7 +220,7 @@ struct YGNode {
   }
 
   // TODO: rvalue override for setChildren
-  
+
   void setConfig(YGConfigRef config) {
     config_ = config;
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -51,6 +51,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
   public static final String PROP_SHADOW_RADIUS = "textShadowRadius";
   public static final String PROP_SHADOW_COLOR = "textShadowColor";
+
+  public static final String PROP_TEXT_TRANSFORM = "textTransform";
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
@@ -164,6 +166,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
       }
+      if (textShadowNode.mTextTransform != TextTransform.UNSET) {
+        ops.add(
+          new SetSpanOperation(
+            start,
+            end,
+            new CustomTextTransformSpan(textShadowNode.mTextTransform)));
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
@@ -251,6 +260,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -291,37 +301,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
   public ReactBaseTextShadowNode() {}
-
-  public ReactBaseTextShadowNode(ReactBaseTextShadowNode node) {
-    super(node);
-    mLineHeight = node.mLineHeight;
-    mIsColorSet = node.mIsColorSet;
-    mAllowFontScaling = node.mAllowFontScaling;
-    mColor = node.mColor;
-    mIsBackgroundColorSet = node.mIsBackgroundColorSet;
-    mBackgroundColor = node.mBackgroundColor;
-
-    mNumberOfLines = node.mNumberOfLines;
-    mFontSize = node.mFontSize;
-    mFontSizeInput = node.mFontSizeInput;
-    mLineHeightInput = node.mLineHeightInput;
-    mTextAlign = node.mTextAlign;
-    mTextBreakStrategy = node.mTextBreakStrategy;
-
-    mTextShadowOffsetDx = node.mTextShadowOffsetDx;
-    mTextShadowOffsetDy = node.mTextShadowOffsetDy;
-    mTextShadowRadius = node.mTextShadowRadius;
-    mTextShadowColor = node.mTextShadowColor;
-
-    mIsUnderlineTextDecorationSet = node.mIsUnderlineTextDecorationSet;
-    mIsLineThroughTextDecorationSet = node.mIsLineThroughTextDecorationSet;
-    mIncludeFontPadding = node.mIncludeFontPadding;
-    mFontStyle = node.mFontStyle;
-    mFontWeight = node.mFontWeight;
-    mFontFamily = node.mFontFamily;
-    mContainsImages = node.mContainsImages;
-    mHeightOfTallestInlineImage = node.mHeightOfTallestInlineImage;
-  }
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
@@ -560,5 +539,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       mTextShadowColor = textShadowColor;
       markUpdated();
     }
+  }
+
+  @ReactProp(name = PROP_TEXT_TRANSFORM)
+  public void setTextTransform(@Nullable String textTransform) {
+    if (textTransform == null || "none".equals(textTransform)) {
+      mTextTransform = TextTransform.NONE;
+    } else if ("uppercase".equals(textTransform)) {
+      mTextTransform = TextTransform.UPPERCASE;
+    } else if ("lowercase".equals(textTransform)) {
+      mTextTransform = TextTransform.LOWERCASE;
+    } else if ("capitalize".equals(textTransform)) {
+      mTextTransform = TextTransform.CAPITALIZE;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+    }
+    markUpdated();
   }
 }

@@ -1,6 +1,6 @@
 
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,6 +70,9 @@ import javax.annotation.Nullable;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
+
+  public static final String REMOTE_TRANSPARENT_BITMAP_URI =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
@@ -339,7 +342,10 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setSource(@Nullable ReadableArray sources) {
     mSources.clear();
-    if (sources != null && sources.size() != 0) {
+    if (sources == null || sources.size() == 0) {
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      mSources.add(imageSource);
+    } else {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
         ReadableMap source = sources.getMap(0);
@@ -573,9 +579,9 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      return;
-    }
-    if (hasMultipleSources()) {
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      mSources.add(imageSource);
+    } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
         MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
       mImageSource = multiSource.getBestResult();

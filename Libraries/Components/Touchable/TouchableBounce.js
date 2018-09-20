@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,18 +10,19 @@
 'use strict';
 
 const Animated = require('Animated');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
-const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
+const React = require('React');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const ViewPropTypes = require('ViewPropTypes');
+
+const createReactClass = require('create-react-class');
 
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 
 type Event = Object;
 
@@ -76,7 +77,7 @@ const TouchableBounce = ((createReactClass({
      * Style to apply to the container/underlay. Most commonly used to make sure
      * rounded corners match the wrapped component.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
   },
 
   getDefaultProps: function() {
@@ -160,8 +161,9 @@ const TouchableBounce = ((createReactClass({
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}

@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -77,6 +77,18 @@ var NetworkImageCallbackExample = createReactClass({
                   this._loadEventFired(
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
+                  Image.queryCache([IMAGE_PREFETCH_URL]).then((map) => {
+                    var result = map.get(IMAGE_PREFETCH_URL);
+                    if (result) {
+                      this._loadEventFired(
+                        `✔ queryCache "${result}" (+${new Date() - mountTime}ms)`,
+                      );
+                    } else {
+                      this._loadEventFired(
+                        `✘ queryCache (+${new Date() - mountTime}ms)`,
+                      );
+                    }
+                  });
                 },
                 error => {
                   this._loadEventFired(
@@ -441,6 +453,30 @@ exports.examples = [
           <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
           <Image
             style={[styles.base, styles.leftMargin, {borderRadius: 19}]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin, {borderTopLeftRadius: 20}]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin, {
+              borderWidth: 10,
+              borderTopLeftRadius: 10,
+              borderBottomRightRadius: 20,
+              borderColor: 'green',
+            }]}
+            source={fullImage}
+          />
+          <Image
+            style={[styles.base, styles.leftMargin, {
+              borderWidth: 5,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 20,
+              borderBottomRightRadius: 30,
+              borderBottomLeftRadius: 40,
+              borderColor: 'red',
+            }]}
             source={fullImage}
           />
         </View>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 
-const config = require('./core');
+const {configPromise} = require('./core');
 
 const assertRequiredOptions = require('./util/assertRequiredOptions');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
@@ -137,7 +137,8 @@ const addCommand = (command: CommandT, cfg: RNConfig) => {
   cmd.option('--config [string]', 'Path to the CLI configuration file');
 };
 
-function run() {
+async function run() {
+  const config = await configPromise;
   const setupEnvScript = /^win/.test(process.platform)
     ? 'setup_env.bat'
     : 'setup_env.sh';

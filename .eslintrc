@@ -52,7 +52,8 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false
+    "pit": false,
+    "jasmine": true
   },
 
   "rules": {

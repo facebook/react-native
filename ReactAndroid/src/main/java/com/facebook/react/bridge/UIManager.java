@@ -13,6 +13,11 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView);
 
   /**
+   * Unregisters a new root view.
+   */
+  void removeRootView(int reactRootTag);
+
+  /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
    * parameters.
    */

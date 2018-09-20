@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,6 +48,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -97,14 +98,23 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
   public ReactRootView(Context context) {
     super(context);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    init();
+  }
+
+  private void init() {
+    if (!ViewProps.sDefaultOverflowHidden) {
+      setClipChildren(false);
+    }
   }
 
   @Override
@@ -398,16 +408,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+
     if (reactApplicationContext != null) {
-      reactApplicationContext.runOnNativeModulesQueueThread(
-          new GuardedRunnable(reactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              UIManagerHelper
-                .getUIManager(reactApplicationContext, getUIManagerType())
-                .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
-            }
-          });
+      UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
+        .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
     }
   }
 

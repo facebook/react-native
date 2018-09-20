@@ -1,12 +1,13 @@
-// Copyright (c) 2015-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-
-apply plugin: 'de.undercouch.download'
+plugins {
+    id("com.android.library")
+    id("maven")
+    id("de.undercouch.download")
+}
 
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -39,60 +40,60 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
+    src "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
+    dest new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
     from boostPath ?: tarTree(resources.gzip(downloadBoost.dest))
     from 'src/main/jni/third-party/boost/Android.mk'
-    include 'Android.mk', 'boost_1_63_0/boost/**/*.hpp', 'boost/boost/**/*.hpp'
+    include 'Android.mk', "boost_${BOOST_VERSION}/boost/**/*.hpp", 'boost/boost/**/*.hpp'
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/boost"
     doLast {
-        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_1_63_0")
+        file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
     }
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/double-conversion/archive/v1.1.6.tar.gz'
+    src "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'double-conversion-1.1.6.tar.gz')
+    dest new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 }
 
 task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleConversion], type: Copy) {
     from dependenciesPath ?: tarTree(downloadDoubleConversion.dest)
     from 'src/main/jni/third-party/double-conversion/Android.mk'
-    include 'double-conversion-1.1.6/src/**/*', 'Android.mk'
+    include "double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", 'Android.mk'
     filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/double-conversion"
 }
 
 task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/facebook/folly/archive/v2016.10.31.00.tar.gz'
+    src "https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'folly-2016.10.31.00.tar.gz');
+    dest new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz");
 }
 
 task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy) {
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
-    include 'folly-2016.10.31.00/folly/**/*', 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-2016.10.31.00/")}
+    include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
+    eachFile {fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/")}
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/folly"
 }
 
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/google/glog/archive/v0.3.5.tar.gz'
+    src "https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'glog-0.3.5.tar.gz')
+    dest new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 }
 
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
@@ -100,7 +101,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
 task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) {
     from dependenciesPath ?: tarTree(downloadGlog.dest)
     from 'src/main/jni/third-party/glog/'
-    include 'glog-0.3.5/src/**/*', 'Android.mk', 'config.h'
+    include "glog-${GLOG_VERSION}/src/**/*", 'Android.mk', 'config.h'
     includeEmptyDirs = false
     filesMatching('**/*.h.in') {
         filter(ReplaceTokens, tokens: [
@@ -245,12 +246,12 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -293,30 +294,29 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
-    compile 'javax.inject:javax.inject:1'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
-    compile 'com.facebook.fresco:fresco:1.9.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:1.9.0'
-    compile 'com.facebook.soloader:soloader:0.3.0'
-    compile 'com.google.code.findbugs:jsr305:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-    compile 'com.squareup.okio:okio:1.14.0'
+    api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+    api 'javax.inject:javax.inject:1'
+    api 'com.android.support:appcompat-v7:27.1.1'
+    api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
+    api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
+    api 'com.facebook.soloader:soloader:0.5.1'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
+    api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
+    api 'com.squareup.okio:okio:1.14.0'
     compile 'org.webkit:android-jsc:r174650'
 
-    testCompile "junit:junit:${JUNIT_VERSION}"
-    testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
-    testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
-    testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
-    testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
-    testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
-    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+    testImplementation "junit:junit:${JUNIT_VERSION}"
+    testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+    testImplementation "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+    testImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    testImplementation "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+    testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
-    androidTestCompile fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestCompile 'com.android.support.test:runner:0.3'
-    androidTestCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
+    androidTestImplementation 'com.android.support.test:runner:0.3'
+    androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
 apply from: 'release.gradle'

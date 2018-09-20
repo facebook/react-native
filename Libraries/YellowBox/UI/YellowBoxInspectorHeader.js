@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,14 @@
 
 'use strict';
 
+const Image = require('Image');
 const Platform = require('Platform');
 const React = require('React');
 const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
-const UTFSequence = require('UTFSequence');
 const View = require('View');
+const YellowBoxImageSource = require('YellowBoxImageSource');
 const YellowBoxPressable = require('YellowBoxPressable');
 const YellowBoxStyle = require('YellowBoxStyle');
 
@@ -42,7 +43,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
       <View style={styles.header}>
         <YellowBoxInspectorHeaderButton
           disabled={props.warnings[prevIndex] == null}
-          label={UTFSequence.TRIANGLE_LEFT}
+          image={YellowBoxImageSource.chevronLeft}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.headerTitle}>
@@ -50,7 +51,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
         </View>
         <YellowBoxInspectorHeaderButton
           disabled={props.warnings[nextIndex] == null}
-          label={UTFSequence.TRIANGLE_RIGHT}
+          image={YellowBoxImageSource.chevronRight}
           onPress={() => props.onSelectIndex(nextIndex)}
         />
       </View>
@@ -61,7 +62,7 @@ const YellowBoxInspectorHeader = (props: Props): React.Node => {
 const YellowBoxInspectorHeaderButton = (
   props: $ReadOnly<{|
     disabled: boolean,
-    label: React.Node,
+    image: string,
     onPress?: ?() => void,
   |}>,
 ): React.Node => (
@@ -73,7 +74,10 @@ const YellowBoxInspectorHeaderButton = (
     onPress={props.disabled ? null : props.onPress}
     style={styles.headerButton}>
     {props.disabled ? null : (
-      <Text style={styles.headerButtonText}>{props.label}</Text>
+      <Image
+        source={{height: 16, uri: props.image, width: 16}}
+        style={styles.headerButtonImage}
+      />
     )}
   </YellowBoxPressable>
 );
@@ -94,11 +98,8 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     justifyContent: 'center',
   },
-  headerButtonText: {
-    color: YellowBoxStyle.getTextColor(1),
-    fontSize: 16,
-    includeFontPadding: false,
-    lineHeight: 20,
+  headerButtonImage: {
+    tintColor: YellowBoxStyle.getTextColor(1),
   },
   headerTitle: {
     alignItems: 'center',

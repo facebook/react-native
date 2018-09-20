@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -177,7 +177,8 @@ static JSValueRef nativeQPLMarkerEnd(
   if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
-    int16_t actionId = (int16_t) targets[2];
+    // NOTE: avoid undefined behavior when the value does not find in int16_t.
+    int16_t actionId = (int16_t) (int32_t) targets[2];
     int64_t timestamp = (int64_t) targets[3];
     JQuickPerformanceLoggerProvider::get()->markerEnd(markerId, instanceKey, actionId, timestamp);
   }
@@ -230,7 +231,8 @@ static JSValueRef nativeQPLMarkerNote(
   if (isReady() && grabDoubles(4, targets, ctx, argumentCount, arguments, exception)) {
     int32_t markerId = (int32_t) targets[0];
     int32_t instanceKey = (int32_t) targets[1];
-    int16_t actionId = (int16_t) targets[2];
+    // NOTE: avoid undefined behavior when the value does not find in int16_t.
+    int16_t actionId = (int16_t) (int32_t) targets[2];
     int64_t timestamp = (int64_t) targets[3];
     JQuickPerformanceLoggerProvider::get()->markerNote(markerId, instanceKey, actionId, timestamp);
   }

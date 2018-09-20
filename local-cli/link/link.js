@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -143,9 +143,9 @@ function link(args: Array<string>, config: RNConfig) {
   }
 
   let packageName = args[0];
-  // Check if install package by specific version (eg. package@latest)
+  // Trim the version / tag out of the package name (eg. package@latest)
   if (packageName !== undefined) {
-    packageName = packageName.split('@')[0];
+    packageName = packageName.replace(/^(.+?)(@.+?)$/gi, '$1');
   }
 
   const dependencies = getDependencyConfig(

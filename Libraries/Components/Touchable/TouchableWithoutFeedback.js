@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,13 +15,15 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const warning = require('fbjs/lib/warning');
 
 const {
   AccessibilityComponentTypes,
+  AccessibilityRoles,
+  AccessibilityStates,
   AccessibilityTraits,
 } = require('ViewAccessibility');
 
@@ -29,6 +31,8 @@ import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
+  AccessibilityRole,
+  AccessibilityStates as AccessibilityStatesFlow,
   AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
@@ -43,6 +47,10 @@ export type Props = $ReadOnly<{|
     | string
     | Array<any>
     | any,
+  accessibilityHint?: ?Stringish,
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStatesFlow,
   accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
@@ -75,7 +83,12 @@ const TouchableWithoutFeedback = ((createReactClass({
   propTypes: {
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
+    accessibilityHint: PropTypes.string,
     accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+    accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+    accessibilityStates: PropTypes.arrayOf(
+      PropTypes.oneOf(AccessibilityStates),
+    ),
     accessibilityTraits: PropTypes.oneOfType([
       PropTypes.oneOf(AccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
@@ -213,32 +226,19 @@ const TouchableWithoutFeedback = ((createReactClass({
     // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    warning(
-      !child.type || child.type.displayName !== 'Text',
-      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
-        ((child._owner && child._owner.getName && child._owner.getName()) ||
-          '<unknown>'),
-    );
-    if (
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'View'
-    ) {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       children = React.Children.toArray(children);
       children.push(
         Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
       );
     }
-    const style =
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'Text'
-        ? [child.props.style, {color: 'red'}]
-        : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
       testID: this.props.testID,
@@ -251,7 +251,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      style,
       children,
     });
   },

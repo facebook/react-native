@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,12 @@ export type AccessibilityRole =
   | 'image'
   | 'keyboardkey'
   | 'text'
-  | 'adjustable';
+  | 'adjustable'
+  | 'imagebutton'
+  | 'header'
+  | 'summary';
+
+export type AccessibilityStates = $ReadOnlyArray<'disabled' | 'selected'>;
 
 module.exports = {
   AccessibilityTraits: [
@@ -75,6 +80,7 @@ module.exports = {
     'radiobutton_checked',
     'radiobutton_unchecked',
   ],
+  // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
   AccessibilityRoles: [
     'none',
     'button',
@@ -84,5 +90,10 @@ module.exports = {
     'keyboardkey',
     'text',
     'adjustable',
+    'imagebutton',
+    'header',
+    'summary',
   ],
+  // This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
+  AccessibilityStates: ['selected', 'disabled'],
 };

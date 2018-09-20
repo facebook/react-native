@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ const findPlugins = require('./findPlugins');
 const findAssets = require('./findAssets');
 const ios = require('./ios');
 const wrapCommands = require('./wrapCommands');
+const {ASSET_REGISTRY_PATH} = require('./Constants');
 
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
@@ -28,7 +29,7 @@ const minimist = require('minimist');
 const path = require('path');
 
 import type {CommandT} from '../commands';
-import type {ConfigT} from 'metro';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 export type RNConfig = {
   ...ConfigT,
@@ -36,10 +37,6 @@ export type RNConfig = {
    * Returns an object with all platform configurations.
    */
   getPlatformConfig(): Object,
-  /**
-   * Returns an array of project commands used by the CLI to load
-   */
-  getProjectCommands(): Array<CommandT>,
   /**
    * Returns project config from the current working directory
    */
@@ -69,30 +66,19 @@ const pluginPlatforms = plugins.platforms.reduce((acc, pathToPlatforms) => {
   );
 }, {});
 
-const defaultRNConfig = {
+const defaultConfig = {
   hasteImplModulePath: require.resolve('../../jest/hasteImpl'),
 
   getPlatforms(): Array<string> {
-    return ['ios', 'android', 'windows', 'web'];
+    return ['ios', 'android', 'native', ...plugins.haste.platforms];
   },
 
   getProvidesModuleNodeModules(): Array<string> {
-    return ['react-native', 'react-native-windows'];
+    return ['react-native', ...plugins.haste.providesModuleNodeModules];
   },
+};
 
-  getProjectCommands(): Array<CommandT> {
-    const commands = plugins.commands.map(pathToCommands => {
-      const name = pathToCommands.split(path.sep)[0];
-
-      return attachPackage(
-        require(path.join(appRoot, 'node_modules', pathToCommands)),
-        require(path.join(appRoot, 'node_modules', name, 'package.json')),
-      );
-    });
-
-    return flatten(commands);
-  },
-
+const defaultRNConfig = {
   getPlatformConfig(): Object {
     return {
       ios,
@@ -120,9 +106,7 @@ const defaultRNConfig = {
   getDependencyConfig(packageName: string) {
     const platforms = this.getPlatformConfig();
     const folder = path.join(process.cwd(), 'node_modules', packageName);
-    const rnpm = getRNPMConfig(
-      path.join(process.cwd(), 'node_modules', packageName),
-    );
+    const rnpm = getRNPMConfig(folder);
 
     let config = Object.assign({}, rnpm, {
       assets: findAssets(folder, rnpm.assets),
@@ -141,14 +125,49 @@ const defaultRNConfig = {
 /**
  * Loads the CLI configuration
  */
-function getCliConfig(): RNConfig {
+async function getCliConfig(): Promise<RNConfig> {
   const cliArgs = minimist(process.argv.slice(2));
-  const config =
-    cliArgs.config != null
-      ? Config.load(path.resolve(__dirname, cliArgs.config))
-      : Config.findOptional(__dirname);
+  const config = await Config.load(
+    cliArgs.config != null ? path.resolve(__dirname, cliArgs.config) : null,
+  );
+
+  config.transformer.assetRegistryPath = ASSET_REGISTRY_PATH;
+  config.resolver.hasteImplModulePath =
+    config.resolver.hasteImplModulePath || defaultConfig.hasteImplModulePath;
+  config.resolver.platforms = config.resolver.platforms
+    ? config.resolver.platforms.concat(defaultConfig.getPlatforms())
+    : defaultConfig.getPlatforms();
+  config.resolver.providesModuleNodeModules = config.resolver
+    .providesModuleNodeModules
+    ? config.resolver.providesModuleNodeModules.concat(
+        defaultConfig.getProvidesModuleNodeModules(),
+      )
+    : defaultConfig.getProvidesModuleNodeModules();
 
   return {...defaultRNConfig, ...config};
 }
 
-module.exports = getCliConfig();
+/**
+ * Returns an array of project commands used by the CLI to load
+ */
+function getProjectCommands(): Array<CommandT> {
+  const commands = plugins.commands.map(pathToCommands => {
+    const name =
+      pathToCommands[0] === '@'
+        ? pathToCommands
+            .split(path.sep)
+            .slice(0, 2)
+            .join(path.sep)
+        : pathToCommands.split(path.sep)[0];
+
+    return attachPackage(
+      require(path.join(appRoot, 'node_modules', pathToCommands)),
+      require(path.join(appRoot, 'node_modules', name, 'package.json')),
+    );
+  });
+
+  return flatten(commands);
+}
+
+module.exports.configPromise = getCliConfig();
+module.exports.getProjectCommands = getProjectCommands;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
-import type {ConfigT} from 'metro';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 import type {Args as RunServerArgs} from './runServer';
 
 /**
@@ -32,8 +32,8 @@ module.exports = {
   options: [
     {
       command: '--port [number]',
-      default: process.env.RCT_METRO_PORT || 8081,
       parse: (val: string) => Number(val),
+      default: (config: ConfigT) => config.server.port,
     },
     {
       command: '--host [string]',
@@ -42,51 +42,42 @@ module.exports = {
     {
       command: '--projectRoot [string]',
       description: 'Specify the main project root',
-      default: (config: ConfigT) => {
-        return config.getProjectRoot();
-      },
+      default: (config: ConfigT) => config.projectRoot,
     },
     {
       command: '--watchFolders [list]',
       description:
         'Specify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => {
-        return config.getWatchFolders();
-      },
+      default: (config: ConfigT) => config.watchFolders,
     },
     {
       command: '--assetExts [list]',
       description:
         'Specify any additional asset extensions to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getAssetExts(),
+      default: (config: ConfigT) => config.resolver.assetExts,
     },
     {
       command: '--sourceExts [list]',
       description:
         'Specify any additional source extensions to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getSourceExts(),
+      default: (config: ConfigT) => config.resolver.sourceExts,
     },
     {
       command: '--platforms [list]',
       description:
         'Specify any additional platforms to be used by the packager',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.getPlatforms(),
+      default: (config: ConfigT) => config.resolver.platforms,
     },
     {
       command: '--providesModuleNodeModules [list]',
       description:
         'Specify any npm packages that import dependencies with providesModule',
       parse: (val: string) => val.split(','),
-      default: (config: RNConfig) => {
-        if (typeof config.getProvidesModuleNodeModules === 'function') {
-          return config.getProvidesModuleNodeModules();
-        }
-        return null;
-      },
+      default: (config: ConfigT) => config.resolver.providesModuleNodeModules,
     },
     {
       command: '--max-workers [number]',
@@ -94,6 +85,7 @@ module.exports = {
         'Specifies the maximum number of workers the worker-pool ' +
         'will spawn for transforming files. This defaults to the number of the ' +
         'cores available on your machine.',
+      default: (config: ConfigT) => config.maxWorkers,
       parse: (workers: string) => Number(workers),
     },
     {

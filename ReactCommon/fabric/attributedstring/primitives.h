@@ -1,11 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+
+#include <functional>
+#include <limits>
 
 namespace facebook {
 namespace react {
@@ -81,6 +85,7 @@ enum class TextDecorationLineStyle {
   Double
 };
 
+
 enum class TextDecorationLinePattern {
   Solid,
   Dot,
@@ -89,6 +94,90 @@ enum class TextDecorationLinePattern {
   DashDotDot,
 };
 
+
 } // namespace react
 } // namespace facebook
 
+namespace std
+{
+	template <>
+	struct hash<facebook::react::FontVariant>
+	{
+		size_t operator()(const facebook::react::FontVariant& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::TextAlignment>
+	{
+		size_t operator()(const facebook::react::TextAlignment& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::FontStyle>
+	{
+		size_t operator()(const facebook::react::FontStyle& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::TextDecorationLineType>
+	{
+		size_t operator()(const facebook::react::TextDecorationLineType& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::WritingDirection>
+	{
+		size_t operator()(const facebook::react::WritingDirection& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::TextDecorationLinePattern>
+	{
+		size_t operator()(const facebook::react::TextDecorationLinePattern& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::TextDecorationLineStyle>
+	{
+		size_t operator()(const facebook::react::TextDecorationLineStyle& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::FontWeight>
+	{
+		size_t operator()(const facebook::react::FontWeight& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+
+	template <>
+	struct hash<facebook::react::EllipsizeMode>
+	{
+		size_t operator()(const facebook::react::EllipsizeMode& v) const
+		{
+			return hash<int>()(static_cast<int>(v));
+		}
+	};
+}

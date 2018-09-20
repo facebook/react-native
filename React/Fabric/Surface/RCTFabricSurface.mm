@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,14 +74,17 @@
 
     [self _run];
 
+    // TODO: This will be moved to RCTSurfacePresenter.
+    RCTBridge *bridge = surfacePresenter.bridge_DO_NOT_USE;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleJavaScriptWillStartLoadingNotification:)
                                                  name:RCTJavaScriptWillStartLoadingNotification
-                                               object:_bridge];
+                                               object:bridge];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleJavaScriptDidLoadNotification:)
                                                  name:RCTJavaScriptDidLoadNotification
-                                               object:_bridge];
+                                               object:bridge];
   }
 
   return self;

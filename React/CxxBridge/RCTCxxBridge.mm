@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -121,6 +121,8 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       case ReactMarker::NATIVE_MODULE_SETUP_START:
       case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+      case ReactMarker::REGISTER_JS_SEGMENT_START:
+      case ReactMarker::REGISTER_JS_SEGMENT_STOP:
         // These are not used on iOS.
         break;
     }
@@ -544,8 +546,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                           @"-[RCTCxxBridge initModulesWithDispatchGroup:] autoexported moduleData", nil);
 
-  NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClasses.count];
-  for (Class moduleClass in moduleClasses) {
+  NSArray *moduleClassesCopy = [moduleClasses copy];
+  NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
+  for (Class moduleClass in moduleClassesCopy) {
+    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      continue;
+    }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
 
     // Check for module name collisions
@@ -647,8 +653,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   // Set up moduleData for automatically-exported modules
   NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
 
-#ifdef RCT_DEBUG
   if (lazilyDiscovered) {
+#ifdef RCT_DEBUG
     // Lazily discovered modules do not require instantiation here,
     // as they are not allowed to have pre-instantiated instance
     // and must not require the main queue.
@@ -656,10 +662,8 @@ struct RCTInstanceCallback : public InstanceCallback {
       RCTAssert(!(moduleData.requiresMainQueueSetup || moduleData.hasInstance),
         @"Module \'%@\' requires initialization on the Main Queue or has pre-instantiated, which is not supported for the lazily discovered modules.", moduleData.name);
     }
-  }
-  else
 #endif
-  {
+  } else {
     RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                             @"-[RCTCxxBridge initModulesWithDispatchGroup:] moduleData.hasInstance", nil);
     // Dispatch module init onto main thread for those modules that require it
