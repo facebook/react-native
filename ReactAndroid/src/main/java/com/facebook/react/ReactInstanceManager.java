@@ -459,7 +459,6 @@ public class ReactInstanceManager {
           currentContext.getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
       }
-
       currentContext.onNewIntent(mCurrentActivity, intent);
     }
   }
