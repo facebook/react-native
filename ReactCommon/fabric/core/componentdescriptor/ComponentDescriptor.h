@@ -80,7 +80,7 @@ public:
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    const EventTarget &eventTarget,
+    SharedEventTarget eventTarget,
     const Tag &tag
   ) const = 0;
 };

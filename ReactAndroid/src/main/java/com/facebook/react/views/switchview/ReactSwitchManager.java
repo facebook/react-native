@@ -44,34 +44,8 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
       initMeasureFunction();
     }
 
-    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    protected ReactSwitchShadowNode copy() {
-      return new ReactSwitchShadowNode(this);
     }
 
     @Override

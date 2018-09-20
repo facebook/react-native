@@ -30,6 +30,8 @@ public:
    */
   ShadowTree(Tag rootTag);
 
+  ~ShadowTree();
+
   /*
    * Returns the rootTag associated with the shadow tree (the tag of the
    * root shadow node).

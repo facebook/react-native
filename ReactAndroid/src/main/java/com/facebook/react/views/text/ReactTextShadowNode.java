@@ -158,34 +158,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     initMeasureFunction();
   }
 
-  private ReactTextShadowNode(ReactTextShadowNode node) {
-    super(node);
-    this.mPreparedSpannableText = node.mPreparedSpannableText;
-  }
-
   private void initMeasureFunction() {
     if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
     }
-  }
-
-  @Override
-  protected LayoutShadowNode copy() {
-    return new ReactTextShadowNode(this);
-  }
-
-  @Override
-  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopy(instanceHandle);
-    copy.initMeasureFunction();
-    return copy;
-  }
-
-  @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-    ReactTextShadowNode copy = (ReactTextShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-    copy.initMeasureFunction();
-    return copy;
   }
 
   // Return text alignment according to LTR or RTL style

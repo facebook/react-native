@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -36,6 +37,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
+  private Spannable mSpanned;
 
   public ReactTextView(Context context) {
     super(context);
@@ -254,5 +256,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  public void setSpanned(Spannable spanned) {
+    mSpanned = spanned;
+  }
+
+  public Spannable getSpanned() {
+    return mSpanned;
   }
 }

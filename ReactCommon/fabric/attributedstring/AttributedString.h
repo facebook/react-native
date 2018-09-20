@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include <fabric/attributedstring/TextAttributes.h>
@@ -35,11 +36,15 @@ class AttributedString:
 public:
 
   class Fragment {
+
   public:
     std::string string;
     TextAttributes textAttributes;
     SharedShadowNode shadowNode;
     SharedShadowNode parentShadowNode;
+
+    bool operator==(const Fragment &rhs) const;
+    bool operator!=(const Fragment &rhs) const;
   };
 
   using Fragments = std::vector<Fragment>;
@@ -67,6 +72,9 @@ public:
    */
   std::string getString() const;
 
+  bool operator==(const AttributedString &rhs) const;
+  bool operator!=(const AttributedString &rhs) const;
+
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugChildren() const override;
@@ -78,3 +86,29 @@ private:
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+  template <>
+  struct hash<facebook::react::AttributedString::Fragment> {
+    size_t operator()(const facebook::react::AttributedString::Fragment &fragment) const {
+      return
+        std::hash<decltype(fragment.string)>{}(fragment.string) +
+        std::hash<decltype(fragment.textAttributes)>{}(fragment.textAttributes) +
+        std::hash<decltype(fragment.shadowNode)>{}(fragment.shadowNode) +
+        std::hash<decltype(fragment.parentShadowNode)>{}(fragment.parentShadowNode);
+    }
+  };
+
+  template <>
+  struct hash<facebook::react::AttributedString> {
+    size_t operator()(const facebook::react::AttributedString &attributedString) const {
+      auto result = size_t {0};
+
+      for (const auto &fragment : attributedString.getFragments()) {
+        result += std::hash<facebook::react::AttributedString::Fragment>{}(fragment);
+      }
+
+      return result;
+    }
+  };
+} // namespace std

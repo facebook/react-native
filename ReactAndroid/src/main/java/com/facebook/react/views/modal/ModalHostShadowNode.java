@@ -23,15 +23,6 @@ class ModalHostShadowNode extends LayoutShadowNode {
 
   public ModalHostShadowNode() {}
 
-  private ModalHostShadowNode(ModalHostShadowNode node) {
-    super(node);
-  }
-
-  @Override
-  protected ModalHostShadowNode copy() {
-    return new ModalHostShadowNode(this);
-  }
-
   /**
    * We need to set the styleWidth and styleHeight of the one child (represented by the <View/>
    * within the <RCTModalHostView/> in Modal.js. This needs to fill the entire window.

@@ -10,6 +10,7 @@
 #include <fabric/components/text/ParagraphShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
+#include <fabric/uimanager/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -22,11 +23,11 @@ class ParagraphComponentDescriptor final:
 
 public:
 
-  ParagraphComponentDescriptor(SharedEventDispatcher eventDispatcher):
+  ParagraphComponentDescriptor(SharedEventDispatcher eventDispatcher, const SharedContextContainer &contextContainer):
     ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
-    textLayoutManager_ = std::make_shared<TextLayoutManager>();
+    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer);
   }
 
   void adopt(UnsharedShadowNode shadowNode) const override {

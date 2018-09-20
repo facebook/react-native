@@ -25,7 +25,7 @@ namespace react {
 class EventQueue {
 
 public:
-  EventQueue(const EventPipe &eventPipe, std::unique_ptr<EventBeat> eventBeat);
+  EventQueue(EventPipe eventPipe, std::unique_ptr<EventBeat> eventBeat);
   virtual ~EventQueue() = default;
 
   /*

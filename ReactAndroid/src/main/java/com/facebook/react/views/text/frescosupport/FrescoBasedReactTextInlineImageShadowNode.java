@@ -50,22 +50,6 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mCallerContext = callerContext;
   }
 
-  private FrescoBasedReactTextInlineImageShadowNode(FrescoBasedReactTextInlineImageShadowNode node) {
-    super(node);
-    mHeaders = node.mHeaders; // mHeaders is immutable
-    mWidth = node.mWidth;
-    mHeight = node.mHeight;
-    mTintColor = node.mTintColor;
-    mDraweeControllerBuilder = node.mDraweeControllerBuilder;
-    mCallerContext = node.mCallerContext;
-    mUri = node.mUri;
-  }
-
-  @Override
-  protected FrescoBasedReactTextInlineImageShadowNode copy() {
-    return new FrescoBasedReactTextInlineImageShadowNode(this);
-  }
-
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
     final String source =

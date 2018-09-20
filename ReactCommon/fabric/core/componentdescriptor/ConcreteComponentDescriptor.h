@@ -92,10 +92,10 @@ public:
   };
 
   virtual SharedEventEmitter createEventEmitter(
-    const EventTarget &eventTarget,
+    SharedEventTarget eventTarget,
     const Tag &tag
   ) const override {
-    return std::make_shared<ConcreteEventEmitter>(eventTarget, tag, eventDispatcher_);
+    return std::make_shared<ConcreteEventEmitter>(std::move(eventTarget), tag, eventDispatcher_);
   }
 
 protected:

@@ -7,6 +7,7 @@ load(
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "react_native_xplat_target",
+    "react_native_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
 )
@@ -38,6 +39,9 @@ rn_xplat_cxx_library(
         "-frtti",
         "-std=c++14",
         "-Wall",
+    ],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
     ],
     fbandroid_exported_headers = subdir_glob(
         [
@@ -107,6 +111,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/graphics:graphics"),
+        react_native_xplat_target("fabric/uimanager:uimanager"),
     ],
 )
 

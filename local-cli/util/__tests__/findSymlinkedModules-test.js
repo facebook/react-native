@@ -8,6 +8,7 @@
  * @emails oncall+javascript_foundation
  */
 
+jest.mock('path');
 jest.mock('fs');
 
 const fs = require('fs');

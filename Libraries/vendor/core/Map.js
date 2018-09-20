@@ -553,7 +553,7 @@ module.exports = (function(global, undefined) {
 
   const getHash = (function() {
     const propIsEnumerable = Object.prototype.propertyIsEnumerable;
-    const hashProperty = guid();
+    const hashProperty = '__MAP_POLYFILL_INTERNAL_HASH__';
     let hashCounter = 0;
 
     /**

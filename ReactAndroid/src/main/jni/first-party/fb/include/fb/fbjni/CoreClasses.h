@@ -235,11 +235,18 @@ class FBEXPORT JClass : public JavaClass<JClass, JObject, jclass> {
   ///     makeNativeMethod("nativeMethodWithExplicitDescriptor",
   ///                      "(Lcom/facebook/example/MyClass;)V",
   ///                      methodWithExplicitDescriptor),
+  ///     makeCriticalNativeMethod("criticalNativeMethodWithAutomaticDescriptor",
+  ///                              criticalNativeMethodWithAutomaticDescriptor),
+  ///     makeCriticalNativeMethod("criticalNativeMethodWithExplicitDescriptor",
+  ///                              "(IIF)Z",
+  ///                              criticalNativeMethodWithExplicitDescriptor),
   ///  });
   ///
   /// By default, C++ exceptions raised will be converted to Java exceptions.
   /// To avoid this and get the "standard" JNI behavior of a crash when a C++
   /// exception is crashing out of the JNI method, declare the method noexcept.
+  /// This does NOT apply to critical native methods, where exceptions causes
+  /// a crash.
   void registerNatives(std::initializer_list<NativeMethod> methods);
 
   /// Check to see if the class is assignable from another class
