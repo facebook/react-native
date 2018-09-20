@@ -18,7 +18,7 @@ LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default build arguments
 ARG SDK_VERSION=sdk-tools-linux-3859397.zip
-ARG ANDROID_BUILD_VERSION=26
+ARG ANDROID_BUILD_VERSION=27
 ARG ANDROID_TOOLS_VERSION=27.0.3
 ARG BUCK_VERSION=v2018.07.23.01
 ARG NDK_VERSION=17b
