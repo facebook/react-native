@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -87,4 +87,5 @@ public enum ReactMarkerConstants {
   CREATE_MC_MODULE_GET_METADATA_END,
   REGISTER_JS_SEGMENT_START,
   REGISTER_JS_SEGMENT_STOP,
+  VM_INIT,
 }

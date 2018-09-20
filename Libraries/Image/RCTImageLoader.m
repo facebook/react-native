@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -777,6 +777,25 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                   progressBlock:NULL
                                partialLoadBlock:NULL
                                 completionBlock:completion];
+}
+
+- (NSDictionary *)getImageCacheStatus:(NSArray *)requests
+{
+  NSMutableDictionary *results = [NSMutableDictionary dictionary];
+  for (id request in requests) {
+    NSURLRequest *urlRequest = [RCTConvert NSURLRequest:request];
+    if (urlRequest) {
+      NSCachedURLResponse *cachedResponse = [NSURLCache.sharedURLCache cachedResponseForRequest:urlRequest];
+      if (cachedResponse) {
+        if (cachedResponse.storagePolicy == NSURLCacheStorageAllowedInMemoryOnly) {
+          [results setObject:@"memory" forKey:urlRequest.URL.absoluteString];
+        } else {
+          [results setObject:@"disk" forKey:urlRequest.URL.absoluteString];
+        }
+      }
+    }
+  }
+  return results;
 }
 
 #pragma mark - RCTURLRequestHandler

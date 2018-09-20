@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,13 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const React = require('React');
-const createReactClass = require('create-react-class');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -25,15 +25,15 @@ const TextInputState = require('TextInputState');
 const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
 
+const createReactClass = require('create-react-class');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
-import type {ColorValue} from 'StyleSheetTypes';
 import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
 let AndroidTextInput;
@@ -155,6 +155,8 @@ type IOSProps = $ReadOnly<{|
     | 'telephoneNumber'
     | 'username'
     | 'password'
+    | 'newPassword'
+    | 'oneTimeCode'
   ),
   scrollEnabled?: ?boolean,
 |}>;
@@ -177,6 +179,7 @@ type Props = $ReadOnly<{|
   autoCorrect?: ?boolean,
   autoFocus?: ?boolean,
   allowFontScaling?: ?boolean,
+  maxFontSizeMultiplier?: ?boolean,
   editable?: ?boolean,
   keyboardType?: ?KeyboardType,
   returnKeyType?: ?ReturnKeyType,
@@ -332,7 +335,7 @@ const TextInput = createReactClass({
     },
   },
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Can tell `TextInput` to automatically capitalize certain characters.
      *
@@ -367,6 +370,14 @@ const TextInput = createReactClass({
      * default is `true`.
      */
     allowFontScaling: PropTypes.bool,
+    /**
+     * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
+     * Possible values:
+     * `null/undefined` (default): inherit from the parent node or the global default (0)
+     * `0`: no max, ignore parent/global default
+     * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
+     */
+    maxFontSizeMultiplier: PropTypes.number,
     /**
      * If `false`, text is not editable. The default value is `true`.
      */
@@ -778,6 +789,8 @@ const TextInput = createReactClass({
       'telephoneNumber',
       'username',
       'password',
+      'newPassword',
+      'oneTimeCode',
     ]),
   },
   getDefaultProps(): Object {
@@ -933,7 +946,11 @@ const TextInput = createReactClass({
       );
       if (childCount >= 1) {
         children = (
-          <Text style={props.style} allowFontScaling={props.allowFontScaling}>
+          <Text
+            style={props.style}
+            allowFontScaling={props.allowFontScaling}
+            maxFontSizeMultiplier={props.maxFontSizeMultiplier}
+          >
             {children}
           </Text>
         );

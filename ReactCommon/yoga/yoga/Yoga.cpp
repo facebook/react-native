@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -196,6 +196,10 @@ void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
 
 bool YGNodeGetHasNewLayout(YGNodeRef node) {
   return node->getHasNewLayout();
+}
+
+void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
+  config->printTree = enabled;
 }
 
 void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
@@ -2420,20 +2424,32 @@ static void YGJustifyMainAxis(
     const float& availableInnerWidth,
     const bool& performLayout) {
   const YGStyle& style = node->getStyle();
-
-  // If we are using "at most" rules in the main axis. Calculate the remaining
-  // space when constraint by the min size defined for the main axis.
+  const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
+      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
+  const float trailingPaddingAndBorderMain = YGUnwrapFloatOptional(
+      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth));
+  // If we are using "at most" rules in the main axis, make sure that
+  // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == YGMeasureModeAtMost &&
       collectedFlexItemsValues.remainingFreeSpace > 0) {
     if (style.minDimensions[dim[mainAxis]].unit != YGUnitUndefined &&
         !YGResolveValue(style.minDimensions[dim[mainAxis]], mainAxisownerSize)
              .isUndefined()) {
-      collectedFlexItemsValues.remainingFreeSpace = YGFloatMax(
-          0,
+      // This condition makes sure that if the size of main dimension(after
+      // considering child nodes main dim, leading and trailing padding etc)
+      // falls below min dimension, then the remainingFreeSpace is reassigned
+      // considering the min dimension
+
+      // `minAvailableMainDim` denotes minimum available space in which child
+      // can be laid out, it will exclude space consumed by padding and border.
+      const float minAvailableMainDim =
           YGUnwrapFloatOptional(YGResolveValue(
               style.minDimensions[dim[mainAxis]], mainAxisownerSize)) -
-              (availableInnerMainDim -
-               collectedFlexItemsValues.remainingFreeSpace));
+          leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
+      const float occupiedSpaceByChildNodes =
+          availableInnerMainDim - collectedFlexItemsValues.remainingFreeSpace;
+      collectedFlexItemsValues.remainingFreeSpace =
+          YGFloatMax(0, minAvailableMainDim - occupiedSpaceByChildNodes);
     } else {
       collectedFlexItemsValues.remainingFreeSpace = 0;
     }
@@ -2495,12 +2511,13 @@ static void YGJustifyMainAxis(
     }
   }
 
-  const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
-      node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
   collectedFlexItemsValues.mainDim =
       leadingPaddingAndBorderMain + leadingMainDim;
   collectedFlexItemsValues.crossDim = 0;
 
+  float maxAscentForCurrentLine = 0;
+  float maxDescentForCurrentLine = 0;
+  bool isNodeBaselineLayout = YGIsBaselineLayout(node);
   for (uint32_t i = startOfLineIndex;
        i < collectedFlexItemsValues.endOfLineIndex;
        i++) {
@@ -2565,11 +2582,30 @@ static void YGJustifyMainAxis(
           collectedFlexItemsValues.mainDim += betweenMainDim +
               YGNodeDimWithMargin(child, mainAxis, availableInnerWidth);
 
-          // The cross dimension is the max of the elements dimension since
-          // there can only be one element in that cross dimension.
-          collectedFlexItemsValues.crossDim = YGFloatMax(
-              collectedFlexItemsValues.crossDim,
-              YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
+          if (isNodeBaselineLayout) {
+            // If the child is baseline aligned then the cross dimension is
+            // calculated by adding maxAscent and maxDescent from the baseline.
+            const float ascent = YGBaseline(child) +
+                YGUnwrapFloatOptional(child->getLeadingMargin(
+                    YGFlexDirectionColumn, availableInnerWidth));
+            const float descent =
+                child->getLayout().measuredDimensions[YGDimensionHeight] +
+                YGUnwrapFloatOptional(child->getMarginForAxis(
+                    YGFlexDirectionColumn, availableInnerWidth)) -
+                ascent;
+
+            maxAscentForCurrentLine =
+                YGFloatMax(maxAscentForCurrentLine, ascent);
+            maxDescentForCurrentLine =
+                YGFloatMax(maxDescentForCurrentLine, descent);
+          } else {
+            // The cross dimension is the max of the elements dimension since
+            // there can only be one element in that cross dimension in the case
+            // when the items are not baseline aligned
+            collectedFlexItemsValues.crossDim = YGFloatMax(
+                collectedFlexItemsValues.crossDim,
+                YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
+          }
         }
       } else if (performLayout) {
         child->setLayoutPosition(
@@ -2579,8 +2615,12 @@ static void YGJustifyMainAxis(
       }
     }
   }
-  collectedFlexItemsValues.mainDim += YGUnwrapFloatOptional(
-      node->getTrailingPaddingAndBorder(mainAxis, ownerWidth));
+  collectedFlexItemsValues.mainDim += trailingPaddingAndBorderMain;
+
+  if (isNodeBaselineLayout) {
+    collectedFlexItemsValues.crossDim =
+        maxAscentForCurrentLine + maxDescentForCurrentLine;
+  }
 }
 
 //
@@ -3178,9 +3218,9 @@ static void YGNodelayoutImpl(
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
   // currentLead stores the size of the cross dim
-  float currentLead = leadingPaddingAndBorderCross;
   if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node))) {
     float crossDimLead = 0;
+    float currentLead = leadingPaddingAndBorderCross;
     if (!YGFloatIsUndefined(availableInnerCrossDim)) {
       const float remainingAlignContentDim =
           availableInnerCrossDim - totalLineCrossDim;
@@ -3363,7 +3403,6 @@ static void YGNodelayoutImpl(
           }
         }
       }
-
       currentLead += lineHeight;
     }
   }
@@ -3443,18 +3482,6 @@ static void YGNodelayoutImpl(
         dim[crossAxis]);
   }
 
-  if (performLayout &&
-      node->getStyle().dimensions[dim[crossAxis]].unit == YGUnitAuto &&
-      node->getStyle().alignItems == YGAlignBaseline) {
-    node->setLayoutMeasuredDimension(
-        YGNodeBoundAxis(
-            node,
-            crossAxis,
-            currentLead + paddingAndBorderAxisRow,
-            crossAxisownerSize,
-            ownerWidth),
-        dim[crossAxis]);
-  }
   // As we only wrapped in normal direction yet, we need to reverse the
   // positions on wrap-reverse.
   if (performLayout && node->getStyle().flexWrap == YGWrapWrapReverse) {
@@ -3512,7 +3539,6 @@ static void YGNodelayoutImpl(
 }
 
 uint32_t gDepth = 0;
-bool gPrintTree = false;
 bool gPrintChanges = false;
 bool gPrintSkips = false;
 
@@ -4088,7 +4114,7 @@ void YGNodeCalculateLayout(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
 
-    if (gPrintTree) {
+    if (node->getConfig()->printTree) {
       YGNodePrint(
           node,
           (YGPrintOptions)(
@@ -4140,7 +4166,7 @@ void YGNodeCalculateLayout(
       node->setLayoutDoesLegacyFlagAffectsLayout(
           !originalNode->isLayoutTreeEqualToNode(*node));
 
-      if (gPrintTree) {
+      if (originalNode->getConfig()->printTree) {
         YGNodePrint(
             originalNode,
             (YGPrintOptions)(

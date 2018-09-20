@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,6 +44,18 @@ std::string makeDescriptor(R (*func)(alias_ref<C>, Args... args));
 template<typename R, typename C, typename... Args>
 std::string makeDescriptor(R (C::*method0)(Args... args));
 
+template<typename F>
+struct CriticalMethod;
+
+template<typename R, typename ...Args>
+struct CriticalMethod<R(*)(Args...)> {
+  template<R(*func)(Args...)>
+  static R call(alias_ref<jclass>, Args... args);
+
+  template<R(*func)(Args...)>
+  inline static std::string desc();
+};
+
 }
 
 // We have to use macros here, because the func needs to be used
@@ -65,6 +77,35 @@ std::string makeDescriptor(R (C::*method0)(Args... args));
 // arguments. Usage instructions are in CoreClasses.h.
 #define makeNativeMethodN(a, b, c, count, ...) makeNativeMethod ## count
 #define makeNativeMethod(...) makeNativeMethodN(__VA_ARGS__, 3, 2)(__VA_ARGS__)
+
+
+// FAST CALLS / CRITICAL CALLS
+// Android up to and including v7 supports "fast calls" by prefixing the method
+// signature with an exclamation mark.
+// Android v8+ supports fast calls by annotating methods:
+// https://source.android.com/devices/tech/dalvik/improvements#faster-native-methods
+
+// prefixes a JNI method signature as android "fast call".
+#if defined(__ANDROID__) && defined(FBJNI_WITH_FAST_CALLS)
+#define FBJNI_PREFIX_FAST_CALL(desc) (std::string{"!"} + desc)
+#else
+#define FBJNI_PREFIX_FAST_CALL(desc) (desc)
+#endif
+
+#define makeCriticalNativeMethod3(name, desc, func) \
+  makeNativeMethod3(                                \
+    name,                                           \
+    FBJNI_PREFIX_FAST_CALL(desc),                   \
+    ::facebook::jni::detail::CriticalMethod<decltype(&func)>::call<&func>)
+
+#define makeCriticalNativeMethod2(name, func)                                \
+  makeCriticalNativeMethod3(                                                 \
+    name,                                                                    \
+    ::facebook::jni::detail::CriticalMethod<decltype(&func)>::desc<&func>(), \
+    func)
+
+#define makeCriticalNativeMethodN(a, b, c, count, ...) makeCriticalNativeMethod ## count
+#define makeCriticalNativeMethod(...) makeCriticalNativeMethodN(__VA_ARGS__, 3, 2)(__VA_ARGS__)
 
 }}
 

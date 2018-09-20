@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@
 namespace facebook {
 namespace react {
 
-inline Float fabricFloatFromYogaFloat(float value) {
+inline Float floatFromYogaFloat(float value) {
   if (value == YGUndefined) {
     return kFloatUndefined;
   }
@@ -26,7 +26,7 @@ inline Float fabricFloatFromYogaFloat(float value) {
   return (Float)value;
 }
 
-inline float yogaFloatFromFabricFloat(Float value) {
+inline float yogaFloatFromFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGUndefined;
   }
@@ -34,20 +34,20 @@ inline float yogaFloatFromFabricFloat(Float value) {
   return (float)value;
 }
 
-inline Float fabricFloatFromYogaOptionalFloat(YGFloatOptional value) {
+inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
     return kFloatUndefined;
   }
 
-  return fabricFloatFromYogaFloat(value.getValue());
+  return floatFromYogaFloat(value.getValue());
 }
 
-inline YGFloatOptional yogaOptionalFloatFromFabricFloat(Float value) {
+inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
   if (value == kFloatUndefined) {
     return YGFloatOptional();
   }
 
-  return YGFloatOptional(yogaFloatFromFabricFloat(value));
+  return YGFloatOptional(yogaFloatFromFloat(value));
 }
 
 inline YGValue yogaStyleValueFromFloat(const Float &value) {
@@ -58,34 +58,46 @@ inline YGValue yogaStyleValueFromFloat(const Float &value) {
   return {(float)value, YGUnitPoint};
 }
 
-inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
-  LayoutMetrics layoutMetrics;
+inline folly::Optional<Float> optionalFloatFromYogaValue(const YGValue &value, folly::Optional<Float> base = {}) {
+  switch (value.unit) {
+    case YGUnitUndefined:
+      return {};
+    case YGUnitPoint:
+      return floatFromYogaFloat(value.value);
+    case YGUnitPercent:
+      return base.has_value() ? folly::Optional<Float>(base.value() * floatFromYogaFloat(value.value)) : folly::Optional<Float>();
+    case YGUnitAuto:
+      return {};
+  }
+}
 
-  YGLayout layout = yogaNode.getLayout();
+inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
+  auto layoutMetrics = LayoutMetrics {};
+  auto layout = yogaNode.getLayout();
 
   layoutMetrics.frame = Rect {
     Point {
-      fabricFloatFromYogaFloat(layout.position[YGEdgeLeft]),
-      fabricFloatFromYogaFloat(layout.position[YGEdgeTop])
+      floatFromYogaFloat(layout.position[YGEdgeLeft]),
+      floatFromYogaFloat(layout.position[YGEdgeTop])
     },
     Size {
-      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
-      fabricFloatFromYogaFloat(layout.dimensions[YGDimensionHeight])
+      floatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
+      floatFromYogaFloat(layout.dimensions[YGDimensionHeight])
     }
   };
 
   layoutMetrics.borderWidth = EdgeInsets {
-    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeTop]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeRight]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom])
+    floatFromYogaFloat(layout.border[YGEdgeLeft]),
+    floatFromYogaFloat(layout.border[YGEdgeTop]),
+    floatFromYogaFloat(layout.border[YGEdgeRight]),
+    floatFromYogaFloat(layout.border[YGEdgeBottom])
   };
 
   layoutMetrics.contentInsets = EdgeInsets {
-    fabricFloatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
-    fabricFloatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
+    floatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
+    floatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
+    floatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
+    floatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
   };
 
   layoutMetrics.displayType =
@@ -214,7 +226,7 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
 
 inline void fromDynamic(const folly::dynamic &value, Transform &result) {
   assert(value.isArray());
-  Transform transformMatrix;
+  auto transformMatrix = Transform {};
   for (const auto &tranformConfiguration : value) {
     assert(tranformConfiguration.isObject());
     auto pair = *tranformConfiguration.items().begin();
@@ -224,7 +236,7 @@ inline void fromDynamic(const folly::dynamic &value, Transform &result) {
     if (operation == "matrix") {
       assert(parameters.isArray());
       assert(parameters.size() == transformMatrix.matrix.size());
-      int i = 0;
+      auto i = 0;
       for (auto item : parameters) {
         transformMatrix.matrix[i++] = (Float)item.asDouble();
       }
@@ -380,7 +392,7 @@ inline std::string toString(const YGFloatOptional &value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(fabricFloatFromYogaFloat(value.getValue()));
+  return folly::to<std::string>(floatFromYogaFloat(value.getValue()));
 }
 
 inline std::string toString(const std::array<YGValue, YGDimensionCount> &value) {
@@ -394,10 +406,10 @@ inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
     {"left", "top", "right", "bottom", "start", "end", "horizontal", "vertical", "all"}
   };
 
-  std::string result;
-  std::string separator = ", ";
+  auto result = std::string {};
+  auto separator = std::string {", "};
 
-  for (int i = 0; i < YGEdgeCount; i++) {
+  for (auto i = 0; i < YGEdgeCount; i++) {
     if (value[i].unit == YGUnitUndefined) {
       continue;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,9 +36,24 @@ export type Layout = $ReadOnly<{|
   height: number,
 |}>;
 
+export type TextLayout = $ReadOnly<{|
+  ...Layout,
+  ascender: number,
+  capHeight: number,
+  descender: number,
+  text: string,
+  xHeight: number,
+|}>;
+
 export type LayoutEvent = SyntheticEvent<
   $ReadOnly<{|
     layout: Layout,
+  |}>,
+>;
+
+export type TextLayoutEvent = SyntheticEvent<
+  $ReadOnly<{|
+    lines: Array<TextLayout>,
   |}>,
 >;
 
@@ -76,6 +91,14 @@ export type ScrollEvent = SyntheticEvent<
     layoutMeasurement: $ReadOnly<{|
       height: number,
       width: number,
+    |}>,
+    targetContentOffset?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
+    velocity?: $ReadOnly<{|
+      y: number,
+      x: number,
     |}>,
     zoomScale: number,
   |}>,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,45 +13,6 @@ const copyProjectTemplateAndReplace = require('./copyProjectTemplateAndReplace')
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
-
-/**
- * Templates released as part of react-native in local-cli/templates.
- */
-const builtInTemplates = {
-  navigation: 'HelloNavigation',
-};
-
-function listTemplatesAndExit(newProjectName, options) {
-  if (options.template === true) {
-    // Just listing templates using 'react-native init --template'.
-    // Not creating a new app.
-    // Print available templates and exit.
-    const templateKeys = Object.keys(builtInTemplates);
-    if (templateKeys.length === 0) {
-      // Just a guard, should never happen as long builtInTemplates
-      // above is defined correctly :)
-      console.log(
-        'There are no templates available besides ' +
-          'the default "Hello World" one.',
-      );
-    } else {
-      console.log(
-        'The available templates are:\n' +
-          templateKeys.join('\n') +
-          '\nYou can use these to create an app based on a template, for example: ' +
-          'you could run: ' +
-          'react-native init ' +
-          newProjectName +
-          ' --template ' +
-          templateKeys[0],
-      );
-    }
-    // Exit 'react-native init'
-    return true;
-  }
-  // Continue 'react-native init'
-  return false;
-}
 
 /**
  * @param destPath Create the new project at this path.
@@ -92,41 +53,7 @@ function createProjectFromTemplate(
   // This way we don't have to duplicate the native files in every template.
   // If we duplicated them we'd make RN larger and risk that people would
   // forget to maintain all the copies so they would go out of sync.
-  const builtInTemplateName = builtInTemplates[template];
-  if (builtInTemplateName) {
-    // template is e.g. 'navigation',
-    // use the built-in local-cli/templates/HelloNavigation folder
-    createFromBuiltInTemplate(
-      builtInTemplateName,
-      destPath,
-      newProjectName,
-      yarnVersion,
-    );
-  } else {
-    // template is e.g. 'ignite',
-    // use the template react-native-template-ignite from npm
-    createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion);
-  }
-}
-
-// (We might want to get rid of built-in templates in the future -
-// publish them to npm and install from there.)
-function createFromBuiltInTemplate(
-  templateName,
-  destPath,
-  newProjectName,
-  yarnVersion,
-) {
-  const templatePath = path.resolve(
-    'node_modules',
-    'react-native',
-    'local-cli',
-    'templates',
-    templateName,
-  );
-  copyProjectTemplateAndReplace(templatePath, destPath, newProjectName);
-  installTemplateDependencies(templatePath, yarnVersion);
-  installTemplateDevDependencies(templatePath, yarnVersion);
+  createFromRemoteTemplate(template, destPath, newProjectName, yarnVersion);
 }
 
 /**
@@ -264,6 +191,5 @@ function installTemplateDevDependencies(templatePath, yarnVersion) {
 }
 
 module.exports = {
-  listTemplatesAndExit,
   createProjectFromTemplate,
 };

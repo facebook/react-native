@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,6 +24,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -73,11 +75,36 @@ public class ReactHorizontalScrollViewManager
     view.setHorizontalScrollBarEnabled(value);
   }
 
+  @ReactProp(name = "decelerationRate")
+  public void setDecelerationRate(ReactHorizontalScrollView view, float decelerationRate) {
+    view.setDecelerationRate(decelerationRate);
+  }
+
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactHorizontalScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
+  }
+
+  @ReactProp(name = "snapToOffsets")
+  public void setSnapToOffsets(ReactHorizontalScrollView view, @Nullable ReadableArray snapToOffsets) {
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
+    List<Integer> offsets = new ArrayList<Integer>();
+    for (int i = 0; i < snapToOffsets.size(); i++) {
+      offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
+    }
+    view.setSnapOffsets(offsets);
+  }
+
+  @ReactProp(name = "snapToStart")
+  public void setSnapToStart(ReactHorizontalScrollView view, boolean snapToStart) {
+    view.setSnapToStart(snapToStart);
+  }
+
+  @ReactProp(name = "snapToEnd")
+  public void setSnapToEnd(ReactHorizontalScrollView view, boolean snapToEnd) {
+    view.setSnapToEnd(snapToEnd);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

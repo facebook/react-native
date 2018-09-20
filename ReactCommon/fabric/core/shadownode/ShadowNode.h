@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -100,18 +100,6 @@ public:
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);
-
-#pragma mark - Equality
-
-  /*
-   * Equality operators.
-   * Use this to compare `ShadowNode`s values for equality (and non-equality).
-   * Same values indicates that nodes must not produce mutation instructions
-   * during tree diffing process.
-   * Child nodes are not considered as part of the value.
-   */
-  virtual bool operator==(const ShadowNode& rhs) const;
-  virtual bool operator!=(const ShadowNode& rhs) const;
 
 #pragma mark - DebugStringConvertible
 

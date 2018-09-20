@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ const char ScrollViewComponentName[] = "ScrollView";
 void ScrollViewShadowNode::updateLocalData() {
   ensureUnsealed();
 
-  Rect contentBoundingRect;
+  auto contentBoundingRect = Rect {};
   for (const auto &childNode : getLayoutableChildNodes()) {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -213,10 +213,12 @@ class MessageQueue {
           t === 'undefined' ||
           t === 'null' ||
           t === 'boolean' ||
-          t === 'number' ||
           t === 'string'
         ) {
           return true;
+        }
+        if (t === 'number') {
+          return isFinite(val);
         }
         if (t === 'function' || t !== 'object') {
           return false;
@@ -232,10 +234,25 @@ class MessageQueue {
         return true;
       };
 
+      // Replacement allows normally non-JSON-convertible values to be
+      // seen.  There is ambiguity with string values, but in context,
+      // it should at least be a strong hint.
+      const replacer = (key, val) => {
+        const t = typeof val;
+        if (t === 'function') {
+          return '<<Function ' + val.name + '>>';
+        } else if (t === 'number' && !isFinite(val)) {
+          return '<<' + val.toString() + '>>';
+        } else {
+          return val;
+        }
+      };
+
+      // Note that JSON.stringify
       invariant(
         isValidArgument(params),
         '%s is not usable as a native method argument',
-        params,
+        JSON.stringify(params, replacer),
       );
 
       // The params object should not be mutated after being queued
