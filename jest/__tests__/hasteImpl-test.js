@@ -11,8 +11,22 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 
 const {getHasteName} = require('../hasteImpl');
+
+// RNPM currently does not support plugins when using Yarn Plug 'n Play
+const testIfNotPnP = fs.existsSync(
+  path.join(
+    __dirname,
+    '../..',
+    'node_modules',
+    'react-native-dummy',
+    'package.json',
+  ),
+)
+  ? test
+  : test.skip;
 
 function getPath(...parts) {
   return path.join(__dirname, '..', '..', ...parts);
@@ -46,20 +60,23 @@ it('returns the correct haste name for a file with a platform suffix', () => {
   }
 });
 
-it('returns the correct haste name for a file with an out-of-tree platform suffix', () => {
-  for (const platform of ['dummy']) {
-    expect(
-      getHasteName(
-        getPath(
-          'Libraries',
-          'Components',
-          'AccessibilityInfo',
-          `AccessibilityInfo.${platform}.js`,
+testIfNotPnP(
+  'returns the correct haste name for a file with an out-of-tree platform suffix',
+  () => {
+    for (const platform of ['dummy']) {
+      expect(
+        getHasteName(
+          getPath(
+            'Libraries',
+            'Components',
+            'AccessibilityInfo',
+            `AccessibilityInfo.${platform}.js`,
+          ),
         ),
-      ),
-    ).toEqual('AccessibilityInfo');
-  }
-});
+      ).toEqual('AccessibilityInfo');
+    }
+  },
+);
 
 it('returns the correct haste name for a file with a flow suffix', () => {
   expect(
