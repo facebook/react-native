@@ -654,7 +654,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
 
   if (lazilyDiscovered) {
-#ifdef RCT_DEBUG
+#if RCT_DEBUG
     // Lazily discovered modules do not require instantiation here,
     // as they are not allowed to have pre-instantiated instance
     // and must not require the main queue.
