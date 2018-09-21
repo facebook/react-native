@@ -188,7 +188,7 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "3.3.4",
+    "react-devtools-core": "^3.4.0",
     "react-timer-mixin": "^0.13.2",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
