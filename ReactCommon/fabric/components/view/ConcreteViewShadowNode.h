@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -113,21 +113,10 @@ public:
     return clonedChildShadowNode.get();
   }
 
-#pragma mark - Equality
-
-  bool operator==(const ShadowNode& rhs) const override {
-    if (!ShadowNode::operator==(rhs)) {
-      return false;
-    }
-
-    const auto &other = static_cast<const ConcreteViewShadowNode&>(rhs);
-    return getLayoutMetrics() == other.getLayoutMetrics();
-  }
-
 #pragma mark - DebugStringConvertible
 
   SharedDebugStringConvertibleList getDebugProps() const override {
-    SharedDebugStringConvertibleList list = {};
+    auto list = SharedDebugStringConvertibleList {};
 
     auto basePropsList = ShadowNode::getDebugProps();
     std::move(basePropsList.begin(), basePropsList.end(), std::back_inserter(list));

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -6,6 +6,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <tuple>
 
 #include <fabric/graphics/Float.h>
@@ -100,10 +101,10 @@ struct Rect {
   Float getMinY() const { return size.height >= 0 ? origin.y : origin.y + size.height; }
 
   void unionInPlace(const Rect &rect) {
-    Float x1 = std::min(getMinX(), rect.getMinX());
-    Float y1 = std::min(getMinY(), rect.getMinY());
-    Float x2 = std::max(getMaxX(), rect.getMaxX());
-    Float y2 = std::max(getMaxY(), rect.getMaxY());
+    auto x1 = std::min(getMinX(), rect.getMinX());
+    auto y1 = std::min(getMinY(), rect.getMinY());
+    auto x2 = std::max(getMaxX(), rect.getMaxX());
+    auto y2 = std::max(getMaxY(), rect.getMaxY());
     origin = {x1, y1};
     size = {x2 - x1, y2 - y1};
   }
@@ -177,3 +178,55 @@ using CornerInsets = RectangleCorners<Float>;
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+  template <>
+  struct hash<facebook::react::Point> {
+    size_t operator()(const facebook::react::Point &point) const {
+      return
+        hash<decltype(point.x)>{}(point.x) +
+        hash<decltype(point.y)>{}(point.y);
+    }
+  };
+
+  template <>
+  struct hash<facebook::react::Size> {
+    size_t operator()(const facebook::react::Size &size) const {
+      return
+        hash<decltype(size.width)>{}(size.width) +
+        hash<decltype(size.height)>{}(size.height);
+    }
+  };
+
+  template <>
+  struct hash<facebook::react::Rect> {
+    size_t operator()(const facebook::react::Rect &rect) const {
+      return
+        hash<decltype(rect.origin)>{}(rect.origin) +
+        hash<decltype(rect.size)>{}(rect.size);
+    }
+  };
+
+  template <typename T>
+  struct hash<facebook::react::RectangleEdges<T>> {
+    size_t operator()(const facebook::react::RectangleEdges<T> &edges) const {
+      return
+        hash<decltype(edges.left)>{}(edges.left) +
+        hash<decltype(edges.right)>{}(edges.right) +
+        hash<decltype(edges.top)>{}(edges.top) +
+        hash<decltype(edges.bottom)>{}(edges.bottom);
+    }
+  };
+
+  template <typename T>
+  struct hash<facebook::react::RectangleCorners<T>> {
+    size_t operator()(const facebook::react::RectangleCorners<T> &corners) const {
+      return
+        hash<decltype(corners.topLeft)>{}(corners.topLeft) +
+        hash<decltype(corners.bottomLeft)>{}(corners.bottomLeft) +
+        hash<decltype(corners.topRight)>{}(corners.topRight) +
+        hash<decltype(corners.bottomRight)>{}(corners.bottomRight);
+    }
+  };
+
+} // namespace std

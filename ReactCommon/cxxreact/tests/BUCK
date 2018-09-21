@@ -3,9 +3,9 @@ load(
     "ANDROID_JSC_DEPS",
     "APPLE",
     "APPLE_JSC_DEPS",
-    "react_native_xplat_target",
-    "jni_instrumentation_test_lib",
     "fb_xplat_cxx_test",
+    "jni_instrumentation_test_lib",
+    "react_native_xplat_target",
 )
 
 TEST_SRCS = [

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -67,17 +67,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * subclass to enforce this requirement.
    */
   boolean isYogaLeafNode();
-
-  /**
-   * @return a mutable copy of the {@link ReactShadowNode}
-   */
-  T mutableCopy(long instanceHandle);
-
-  T mutableCopyWithNewProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
-
-  T mutableCopyWithNewChildren(long instanceHandle);
-
-  T mutableCopyWithNewChildrenAndProps(long instanceHandle, @Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -365,29 +354,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * {@link ReactShadowNode}.
    */
   List<ReactShadowNode> getChildrenList();
-
-  /**
-   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
-   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
-   */
-  @Nullable ReactShadowNode getOriginalReactShadowNode();
-
-  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
-
-  long getInstanceHandle();
-
-  void setInstanceHandle(long instanceHandle);
-
-  /**
-   * Mark this {@link ReactShadowNode} as sealed. This means that the node was already committed
-   * and it should not be updated anymore.
-   */
-  void markAsSealed();
-
-  /**
-   * @return a {@link boolean} that represents if the {@link ReactShadowNode} is sealed.
-   */
-  boolean isSealed();
 
   void updateScreenLayout(ReactShadowNode prevNode);
 }

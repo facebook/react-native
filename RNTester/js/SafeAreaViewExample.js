@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ const Modal = require('Modal');
 const React = require('react');
 const SafeAreaView = require('SafeAreaView');
 const StyleSheet = require('StyleSheet');
+const Switch = require('Switch');
 const Text = require('Text');
 const View = require('View');
 
@@ -30,11 +31,13 @@ class SafeAreaViewExample extends React.Component<
   {},
   {|
     modalVisible: boolean,
+    emulateUnlessSupported: boolean,
     insets: ?Insets,
   |},
 > {
   state = {
     modalVisible: false,
+    emulateUnlessSupported: true,
     insets: undefined,
   };
 
@@ -57,6 +60,7 @@ class SafeAreaViewExample extends React.Component<
           <View style={styles.modal}>
             <SafeAreaView
               style={styles.safeArea}
+              emulateUnlessSupported={this.state.emulateUnlessSupported}
               onInsetsChange={this._onSafeAreaViewInsetsChange}>
               <View style={styles.safeAreaContent}>
                 <Text>
@@ -67,6 +71,13 @@ class SafeAreaViewExample extends React.Component<
                   onPress={this._setModalVisible.bind(this, false)}
                   title="Close"
                 />
+                <Text>emulateUnlessSupported:</Text>
+                <Switch
+                  onValueChange={value =>
+                    this.setState({emulateUnlessSupported: value})
+                  }
+                  value={this.state.emulateUnlessSupported}
+                />
               </View>
             </SafeAreaView>
           </View>
@@ -74,6 +85,13 @@ class SafeAreaViewExample extends React.Component<
         <Button
           onPress={this._setModalVisible.bind(this, true)}
           title="Present Modal Screen with SafeAreaView"
+        />
+        <Text>emulateUnlessSupported:</Text>
+        <Switch
+          onValueChange={value =>
+            this.setState({emulateUnlessSupported: value})
+          }
+          value={this.state.emulateUnlessSupported}
         />
       </View>
     );

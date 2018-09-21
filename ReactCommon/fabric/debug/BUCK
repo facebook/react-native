@@ -1,5 +1,5 @@
 load(
-    "//configurations/buck/apple:flag_defs.bzl",
+    "@fbsource//tools/build_defs/apple:flag_defs.bzl",
     "get_debug_preprocessor_flags",
 )
 load(

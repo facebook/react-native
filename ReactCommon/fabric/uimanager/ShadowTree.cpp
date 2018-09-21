@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -18,17 +18,20 @@ namespace react {
 ShadowTree::ShadowTree(Tag rootTag):
   rootTag_(rootTag) {
 
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, nullptr);
+  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, std::shared_ptr<const EventDispatcher>());
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     ShadowNodeFragment {
       .tag = rootTag,
       .rootTag = rootTag,
       .props = RootShadowNode::defaultSharedProps(),
       .eventEmitter = noopEventEmitter,
-      .children = ShadowNode::emptySharedShadowNodeSharedList(),
     },
     nullptr
   );
+}
+
+ShadowTree::~ShadowTree() {
+  complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {}));
 }
 
 Tag ShadowTree::getRootTag() const {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,23 +33,22 @@ export type MeasureLayoutOnSuccessCallback = (
   height: number,
 ) => void;
 
-type BubblingEventType = {
-  phasedRegistrationNames: {
-    captured: string,
-    bubbled: string,
-  },
-};
-
-type DirectEventType = {
-  registrationName: string,
-};
-
 type AttributeType =
   | true
   | $ReadOnly<{|
       diff: ?<T>(arg1: T, arg2: T) => boolean,
       process: ?(arg1: any) => any,
     |}>;
+
+export type AttributeConfiguration<
+  TProps = string,
+  TStyleProps = string,
+> = $ReadOnly<{
+  [propName: TProps]: AttributeType,
+  style: $ReadOnly<{
+    [propName: TStyleProps]: AttributeType,
+  }>,
+}>;
 
 export type ReactNativeBaseComponentViewConfig<
   TProps = string,
@@ -76,12 +75,7 @@ export type ReactNativeBaseComponentViewConfig<
     [propName: string]: string,
   }>,
   uiViewClassName: string,
-  validAttributes: $ReadOnly<{
-    [propName: TProps]: AttributeType,
-    style: $ReadOnly<{
-      [propName: TStyleProps]: AttributeType,
-    }>,
-  }>,
+  validAttributes: AttributeConfiguration<TProps, TStyleProps>,
 |}>;
 
 export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -80,7 +80,7 @@ public:
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    const EventTarget &eventTarget,
+    SharedEventTarget eventTarget,
     const Tag &tag
   ) const = 0;
 };

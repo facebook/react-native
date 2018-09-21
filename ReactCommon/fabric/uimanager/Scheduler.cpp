@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -91,10 +91,14 @@ void Scheduler::shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowVi
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  const auto &iterator = shadowTreeRegistry_.find(rootTag);
-  const auto &shadowTree = iterator->second;
-  assert(shadowTree);
-  return shadowTree->complete(rootChildNodes);
+  const auto iterator = shadowTreeRegistry_.find(rootTag);
+  if (iterator == shadowTreeRegistry_.end()) {
+    // This might happen during surface unmounting/deallocation process
+    // due to the asynchronous nature of JS calls.
+    return;
+  }
+
+  return iterator->second->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) {

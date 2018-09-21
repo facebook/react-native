@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -56,13 +56,13 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
 }
 
 std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
-  std::string nameString = getDebugName();
-  std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(options, depth);
-  std::string propsString = getDebugPropsDescription(options, depth);
+  auto nameString = getDebugName();
+  auto valueString = getDebugValue();
+  auto childrenString = getDebugChildrenDescription(options, depth);
+  auto propsString = getDebugPropsDescription(options, depth);
 
-  std::string leading = options.format ? std::string(depth * 2, ' ') : "";
-  std::string trailing = options.format ? "\n" : "";
+  auto leading = options.format ? std::string(depth * 2, ' ') : std::string {""};
+  auto trailing = options.format ? std::string {"\n"} : std::string {""};
 
   return leading + "<" + nameString +
     (valueString.empty() ? "" : "=" + valueString) +

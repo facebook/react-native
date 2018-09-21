@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 #include <fabric/attributedstring/AttributedString.h>
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/core/LayoutConstraints.h>
+#include <fabric/uimanager/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -25,13 +26,14 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
 public:
-  TextLayoutManager();
+  TextLayoutManager(const SharedContextContainer &contextContainer);
   ~TextLayoutManager();
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
+    Tag reactTag,
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints

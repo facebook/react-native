@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 
 const ColorPropType = require('ColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
@@ -89,7 +90,9 @@ type Props = {
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
-    console.warn('<InputAccessoryView> is not supported on Android yet.');
+    if (Platform.OS !== 'ios') {
+      console.warn('<InputAccessoryView> is only supported on iOS.');
+    }
 
     if (React.Children.count(this.props.children) === 0) {
       return null;

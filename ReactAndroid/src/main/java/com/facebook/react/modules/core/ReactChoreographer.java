@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.thecount.api.CountEnum;
 
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks
@@ -22,7 +21,6 @@ import com.facebook.thecount.api.CountEnum;
  */
 public class ReactChoreographer {
 
-  @CountEnum
   public enum CallbackType {
 
     /**

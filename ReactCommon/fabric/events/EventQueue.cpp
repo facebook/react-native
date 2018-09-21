@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,8 @@
 namespace facebook {
 namespace react {
 
-EventQueue::EventQueue(const EventPipe &eventPipe, std::unique_ptr<EventBeat> eventBeat):
-  eventPipe_(eventPipe),
+EventQueue::EventQueue(EventPipe eventPipe, std::unique_ptr<EventBeat> eventBeat):
+  eventPipe_(std::move(eventPipe)),
   eventBeat_(std::move(eventBeat)) {
     eventBeat_->setBeatCallback(std::bind(&EventQueue::onBeat, this));
   }
@@ -39,9 +39,10 @@ void EventQueue::onBeat() const {
 
   {
     std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+
     for (const auto &event : queue) {
       eventPipe_(
-        event.isDispachable() ? event.eventTarget : EmptyEventTarget,
+        event.eventTarget.lock().get(),
         event.type,
         event.payload
       );
