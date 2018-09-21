@@ -55,9 +55,14 @@ require('shelljs/global');
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
 
+if (!buildTag) {
+  echo('Error: We publish only from git tags');
+  exit(1);
+}
+
 let match = buildTag.match(/^v(\d+\.\d+)\.\d+(?:-.+)?$/);
 if (!match) {
-  echo('Error: We publish only from stable branches');
+  echo('Error: We publish only from release version git tags');
   exit(1);
 }
 // 0.33
