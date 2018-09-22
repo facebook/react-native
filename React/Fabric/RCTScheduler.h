@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 #import <fabric/core/LayoutConstraints.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/uimanager/FabricUIManager.h>
-#import <fabric/uimanager/TreeMutationInstruction.h>
+#import <fabric/uimanager/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag;
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
+                              rootTag:(ReactTag)rootTag;
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName;
 

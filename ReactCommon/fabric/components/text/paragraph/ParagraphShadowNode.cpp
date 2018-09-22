@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ const char ParagraphComponentName[] = "Paragraph";
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
     cachedAttributedString_ =
-      BaseTextShadowNode::getAttributedString(getProps()->textAttributes, getChildren());
+      BaseTextShadowNode::getAttributedString(getProps()->textAttributes, shared_from_this());
   }
 
   return cachedAttributedString_.value();
@@ -41,6 +41,7 @@ void ParagraphShadowNode::updateLocalData() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
+    getTag(),
     getAttributedString(),
     getProps()->paragraphAttributes,
     layoutConstraints

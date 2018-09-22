@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,9 +30,9 @@ class SchedulerDelegateProxy: public SchedulerDelegate {
 public:
   SchedulerDelegateProxy(void *scheduler): scheduler_(scheduler) {}
 
-  void schedulerDidComputeMutationInstructions(Tag rootTag, const TreeMutationInstructionList &instructions) override {
+  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidComputeMutationInstructions:instructions rootTag:rootTag];
+    [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
@@ -58,8 +58,8 @@ private:
 
     SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
 
-    EventBeatFactory synchronousBeatFactory = []() {
-      return std::make_unique<MainRunLoopEventBeat>();
+    EventBeatFactory synchronousBeatFactory = [bridge]() {
+      return std::make_unique<MainRunLoopEventBeat>(bridge.jsMessageThread);
     };
 
     EventBeatFactory asynchronousBeatFactory = [bridge]() {
@@ -68,9 +68,6 @@ private:
 
     contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
     contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
-
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MainRunLoopEventBeat>(), "synchronous");
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MessageQueueEventBeat>(bridge.jsMessageThread), "asynchronous");
 
     void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
     contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));

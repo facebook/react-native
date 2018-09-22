@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,13 @@
 
 #pragma once
 
+#include <fabric/attributedstring/conversions.h>
 #include <fabric/attributedstring/primitives.h>
+#include <fabric/attributedstring/AttributedString.h>
+#include <fabric/attributedstring/ParagraphAttributes.h>
+#include <fabric/attributedstring/TextAttributes.h>
+#include <fabric/core/conversions.h>
+#include <fabric/graphics/conversions.h>
 #include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
 
@@ -83,8 +89,8 @@ inline void fromDynamic(const folly::dynamic &value, FontVariant &result) {
 }
 
 inline std::string toString(const FontVariant &fontVariant) {
-  std::string result;
-  std::string separator = ", ";
+  auto result = std::string {};
+  auto separator = std::string {", "};
   if ((int)fontVariant & (int)FontVariant::SmallCaps) { result += "small-caps" + separator; }
   if ((int)fontVariant & (int)FontVariant::OldstyleNums) { result += "oldstyle-nums" + separator; }
   if ((int)fontVariant & (int)FontVariant::LiningNums) { result += "lining-nums" + separator; }
@@ -186,6 +192,103 @@ inline std::string toString(const TextDecorationLinePattern &textDecorationLineP
     case TextDecorationLinePattern::DashDot: return "dash-dot";
     case TextDecorationLinePattern::DashDotDot: return "dash-dot-dot";
   }
+}
+
+inline folly::dynamic toDynamic(const ParagraphAttributes &paragraphAttributes) {
+  auto values = folly::dynamic::object();
+  values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
+  values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
+  values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
+  values("minimumFontSize", paragraphAttributes.minimumFontSize);
+  values("maximumFontSize", paragraphAttributes.maximumFontSize);
+  return values;
+}
+
+inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
+  auto _textAttributes = folly::dynamic::object();
+  _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+  if (textAttributes.backgroundColor) {
+    _textAttributes("backgroundColor", toDynamic(textAttributes.backgroundColor));
+  }
+  if (!isnan(textAttributes.opacity)) {
+    _textAttributes("opacity", textAttributes.opacity);
+  }
+  if (!textAttributes.fontFamily.empty()) {
+    _textAttributes("fontFamily", textAttributes.fontFamily);
+  }
+  if (!isnan(textAttributes.fontSize)) {
+    _textAttributes("fontSize", textAttributes.fontSize);
+  }
+  if (!isnan(textAttributes.fontSizeMultiplier)) {
+    _textAttributes("fontSizeMultiplier", textAttributes.fontSizeMultiplier);
+  }
+  if (textAttributes.fontWeight.has_value()) {
+    _textAttributes("fontWeight", toString(*textAttributes.fontWeight));
+  }
+  if (textAttributes.fontStyle.has_value()) {
+    _textAttributes("fontStyle", toString(*textAttributes.fontStyle));
+  }
+  if (textAttributes.fontVariant.has_value()) {
+    _textAttributes("fontVariant", toString(*textAttributes.fontVariant));
+  }
+  if (textAttributes.allowFontScaling.has_value()) {
+    _textAttributes("allowFontScaling", *textAttributes.allowFontScaling);
+  }
+  if (!isnan(textAttributes.letterSpacing)) {
+    _textAttributes("letterSpacing", textAttributes.letterSpacing);
+  }
+  if (!isnan(textAttributes.lineHeight)) {
+    _textAttributes("lineHeight", textAttributes.lineHeight);
+  }
+  if (textAttributes.alignment.has_value()) {
+    _textAttributes("alignment", toString(*textAttributes.alignment));
+  }
+  if (textAttributes.baseWritingDirection.has_value()) {
+    _textAttributes("baseWritingDirection", toString(*textAttributes.baseWritingDirection));
+  }
+  // Decoration
+  if (textAttributes.textDecorationColor) {
+    _textAttributes("textDecorationColor", toDynamic(textAttributes.textDecorationColor));
+  }
+  if (textAttributes.textDecorationLineType.has_value()) {
+    _textAttributes("textDecorationLineType", toString(*textAttributes.textDecorationLineType));
+  }
+  if (textAttributes.textDecorationLineStyle.has_value()) {
+    _textAttributes("textDecorationLineStyle", toString(*textAttributes.textDecorationLineStyle));
+  }
+  if (textAttributes.textDecorationLinePattern.has_value()) {
+    _textAttributes("textDecorationLinePattern", toString(*textAttributes.textDecorationLinePattern));
+  }
+  // Shadow
+  // textShadowOffset = textAttributes.textShadowOffset.has_value() ? textAttributes.textShadowOffset.value() : textShadowOffset;
+  if (!isnan(textAttributes.textShadowRadius)) {
+    _textAttributes("textShadowRadius", textAttributes.textShadowRadius);
+  }
+  if (textAttributes.textShadowColor) {
+    _textAttributes("textShadowColor", toDynamic(textAttributes.textShadowColor));
+  }
+  // Special
+  if (textAttributes.isHighlighted.has_value()) {
+    _textAttributes("isHighlighted", *textAttributes.isHighlighted);
+  }
+  if (textAttributes.layoutDirection.has_value()) {
+    _textAttributes("layoutDirection", toString(*textAttributes.layoutDirection));
+  }
+  return _textAttributes;
+}
+
+inline folly::dynamic toDynamic(const AttributedString &attributedString) {
+  auto value = folly::dynamic::object();
+  auto fragments = folly::dynamic::array();
+  for (auto fragment : attributedString.getFragments()) {
+    folly::dynamic dynamicFragment = folly::dynamic::object();
+    dynamicFragment["string"] = fragment.string;
+    dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
+    fragments.push_back(dynamicFragment);
+  }
+  value("fragments", fragments);
+  value("string", attributedString.getString());
+  return value;
 }
 
 } // namespace react

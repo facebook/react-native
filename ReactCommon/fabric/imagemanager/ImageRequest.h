@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,6 +40,8 @@ public:
    * `ImageResponse` future which must be moved in inside the object.
    */
   ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture);
+
+  ImageRequest();
 
   /*
    * The move constructor.

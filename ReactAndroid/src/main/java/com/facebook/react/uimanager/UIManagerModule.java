@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -107,7 +107,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     @Nullable String resolveCustomEventName(String eventName);
   }
 
-  protected static final String NAME = "UIManager";
+  public static final String NAME = "UIManager";
 
   private static final boolean DEBUG =
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.UI_MANAGER);
@@ -212,7 +212,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+      .arg("Lazy", true)
+      .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
     } finally {
@@ -226,7 +229,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_START);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
+    SystraceMessage.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants")
+      .arg("Lazy", false)
+      .flush();
     try {
       return UIManagerModuleConstantsHelper.createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);

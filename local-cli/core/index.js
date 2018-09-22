@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -152,7 +152,13 @@ async function getCliConfig(): Promise<RNConfig> {
  */
 function getProjectCommands(): Array<CommandT> {
   const commands = plugins.commands.map(pathToCommands => {
-    const name = pathToCommands.split(path.sep)[0];
+    const name =
+      pathToCommands[0] === '@'
+        ? pathToCommands
+            .split(path.sep)
+            .slice(0, 2)
+            .join(path.sep)
+        : pathToCommands.split(path.sep)[0];
 
     return attachPackage(
       require(path.join(appRoot, 'node_modules', pathToCommands)),

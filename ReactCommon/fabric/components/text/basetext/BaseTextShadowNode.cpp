@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,17 +18,18 @@ namespace react {
 
 AttributedString BaseTextShadowNode::getAttributedString(
   const TextAttributes &textAttributes,
-  const SharedShadowNodeList &childNodes
+  const SharedShadowNode &parentNode
 ) const {
-  AttributedString attributedString;
+  auto attributedString = AttributedString {};
 
-  for (const auto &childNode : childNodes) {
+  for (const auto &childNode : parentNode->getChildren()) {
     // RawShadowNode
     auto rawTextShadowNode = std::dynamic_pointer_cast<const RawTextShadowNode>(childNode);
     if (rawTextShadowNode) {
-      AttributedString::Fragment fragment;
+      auto fragment = AttributedString::Fragment {};
       fragment.string = rawTextShadowNode->getProps()->text;
       fragment.textAttributes = textAttributes;
+      fragment.parentShadowNode = parentNode;
       attributedString.appendFragment(fragment);
       continue;
     }
@@ -36,14 +37,14 @@ AttributedString BaseTextShadowNode::getAttributedString(
     // TextShadowNode
     auto textShadowNode = std::dynamic_pointer_cast<const TextShadowNode>(childNode);
     if (textShadowNode) {
-      TextAttributes localTextAttributes = textAttributes;
+      auto localTextAttributes = textAttributes;
       localTextAttributes.apply(textShadowNode->getProps()->textAttributes);
-      attributedString.appendAttributedString(textShadowNode->getAttributedString(localTextAttributes, textShadowNode->getChildren()));
+      attributedString.appendAttributedString(textShadowNode->getAttributedString(localTextAttributes, textShadowNode));
       continue;
     }
 
     // Any other kind of ShadowNode
-    AttributedString::Fragment fragment;
+    auto fragment = AttributedString::Fragment {};
     fragment.shadowNode = childNode;
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);

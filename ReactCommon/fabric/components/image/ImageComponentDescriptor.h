@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ class ImageComponentDescriptor final:
 public:
   ImageComponentDescriptor(SharedEventDispatcher eventDispatcher, const SharedContextContainer &contextContainer):
     ConcreteComponentDescriptor(eventDispatcher),
-    imageManager_(contextContainer->getInstance<SharedImageManager>()) {}
+    imageManager_(contextContainer ? contextContainer->getInstance<SharedImageManager>() : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
