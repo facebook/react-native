@@ -677,12 +677,11 @@ workflows:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
-            branches:
-              only:
-                - /.*-stable/
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
+            - analyze
+            - test_detox_end_to_end
             - test_javascript
             - test_objc
             - test_android
