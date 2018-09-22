@@ -107,7 +107,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     @Nullable String resolveCustomEventName(String eventName);
   }
 
-  protected static final String NAME = "UIManager";
+  public static final String NAME = "UIManager";
 
   private static final boolean DEBUG =
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.UI_MANAGER);
