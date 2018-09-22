@@ -19,7 +19,7 @@ var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry"),
   flattenStyle = require("flattenStyle"),
   TextInputState = require("TextInputState"),
   FabricUIManager = require("FabricUIManager"),
-  tracking = require("schedule/tracking"),
+  tracing = require("schedule/tracing"),
   ExceptionsManager = require("ExceptionsManager");
 function invariant(condition, format, a, b, c, d, e, f) {
   if (!condition) {
@@ -4509,9 +4509,9 @@ function unwindWork(workInProgress) {
 var Dispatcher = { readContext: readContext },
   ReactCurrentOwner$2 = ReactSharedInternals.ReactCurrentOwner;
 invariant(
-  null != tracking.__interactionsRef &&
-    null != tracking.__interactionsRef.current,
-  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `schedule/tracking` module with `schedule/tracking-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
+  null != tracing.__interactionsRef &&
+    null != tracing.__interactionsRef.current,
+  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `schedule/tracing` module with `schedule/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
 );
 var isWorking = !1,
   nextUnitOfWork = null,
@@ -4810,8 +4810,8 @@ function commitRoot(root, finishedWork) {
   );
   updateExpirationTimeBeforeCommit = null;
   var committedInteractions = [];
-  updateExpirationTimeBeforeCommit = tracking.__interactionsRef.current;
-  tracking.__interactionsRef.current = root.memoizedInteractions;
+  updateExpirationTimeBeforeCommit = tracing.__interactionsRef.current;
+  tracing.__interactionsRef.current = root.memoizedInteractions;
   root.pendingInteractionMap.forEach(function(
     scheduledInteractions,
     scheduledExpirationTime
@@ -4893,11 +4893,11 @@ function commitRoot(root, finishedWork) {
       : childExpirationTimeBeforeCommit;
   0 === finishedWork && (legacyErrorBoundariesThatAlreadyFailed = null);
   onCommit(root, finishedWork);
-  tracking.__interactionsRef.current = updateExpirationTimeBeforeCommit;
+  tracing.__interactionsRef.current = updateExpirationTimeBeforeCommit;
   var subscriber = void 0;
   try {
     if (
-      ((subscriber = tracking.__subscriberRef.current),
+      ((subscriber = tracing.__subscriberRef.current),
       null !== subscriber && 0 < root.memoizedInteractions.size)
     )
       subscriber.onWorkStopped(
@@ -5182,8 +5182,8 @@ function renderRoot(root, isYieldy, isExpired) {
   ReactCurrentOwner$2.currentDispatcher = Dispatcher;
   var expirationTime = root.nextExpirationTimeToWorkOn,
     prevInteractions = null;
-  prevInteractions = tracking.__interactionsRef.current;
-  tracking.__interactionsRef.current = root.memoizedInteractions;
+  prevInteractions = tracing.__interactionsRef.current;
+  tracing.__interactionsRef.current = root.memoizedInteractions;
   if (
     expirationTime !== nextRenderExpirationTime ||
     root !== nextRoot ||
@@ -5210,7 +5210,7 @@ function renderRoot(root, isYieldy, isExpired) {
     });
     root.memoizedInteractions = interactions;
     if (0 < interactions.size) {
-      var subscriber = tracking.__subscriberRef.current;
+      var subscriber = tracing.__subscriberRef.current;
       if (null !== subscriber) {
         var threadID = 1e3 * expirationTime + root.interactionThreadID;
         try {
@@ -5258,7 +5258,7 @@ function renderRoot(root, isYieldy, isExpired) {
     }
     break;
   } while (1);
-  tracking.__interactionsRef.current = prevInteractions;
+  tracing.__interactionsRef.current = prevInteractions;
   isWorking = !1;
   lastContextWithAllBitsObserved = lastContextDependency = currentlyRenderingFiber = ReactCurrentOwner$2.currentDispatcher = null;
   if (subscriber) (nextRoot = null), (root.finishedWork = null);
@@ -5363,7 +5363,7 @@ function storeInteractionsForExpirationTime(
   expirationTime,
   updateInteractionCounts
 ) {
-  var interactions = tracking.__interactionsRef.current;
+  var interactions = tracing.__interactionsRef.current;
   if (0 < interactions.size) {
     var pendingInteractions = root.pendingInteractionMap.get(expirationTime);
     null != pendingInteractions
@@ -5378,7 +5378,7 @@ function storeInteractionsForExpirationTime(
           interactions.forEach(function(interaction) {
             interaction.__count++;
           }));
-    var subscriber = tracking.__subscriberRef.current;
+    var subscriber = tracing.__subscriberRef.current;
     if (null !== subscriber)
       subscriber.onWorkScheduled(
         interactions,
@@ -5961,7 +5961,7 @@ var roots = new Map(),
           expirationTime: 0,
           firstBatch: null,
           nextScheduledRoot: null,
-          interactionThreadID: tracking.unstable_getThreadID(),
+          interactionThreadID: tracing.unstable_getThreadID(),
           memoizedInteractions: new Set(),
           pendingInteractionMap: new Map()
         };

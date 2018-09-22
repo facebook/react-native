@@ -26,7 +26,7 @@ var deepDiffer = require("deepDiffer");
 var flattenStyle = require("flattenStyle");
 var TextInputState = require("TextInputState");
 var checkPropTypes = require("prop-types/checkPropTypes");
-var tracking = require("schedule/tracking");
+var tracing = require("schedule/tracing");
 var ExceptionsManager = require("ExceptionsManager");
 
 /**
@@ -5796,7 +5796,7 @@ function createFiberRoot(containerInfo, isAsync, hydrate) {
       firstBatch: null,
       nextScheduledRoot: null,
 
-      interactionThreadID: tracking.unstable_getThreadID(),
+      interactionThreadID: tracing.unstable_getThreadID(),
       memoizedInteractions: new Set(),
       pendingInteractionMap: new Map()
     };
@@ -13178,12 +13178,12 @@ var warnAboutInvalidUpdates = void 0;
 
 if (enableSchedulerTracking) {
   // Provide explicit error message when production+profiling bundle of e.g. react-dom
-  // is used with production (non-profiling) bundle of schedule/tracking
+  // is used with production (non-profiling) bundle of schedule/tracing
   invariant(
-    tracking.__interactionsRef != null &&
-      tracking.__interactionsRef.current != null,
+    tracing.__interactionsRef != null &&
+      tracing.__interactionsRef.current != null,
     "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) " +
-      "without also replacing the `schedule/tracking` module with `schedule/tracking-profiling`. " +
+      "without also replacing the `schedule/tracing` module with `schedule/tracing-profiling`. " +
       "Your bundler might have a setting for aliasing both modules. " +
       "Learn more at http://fb.me/react-profiling"
   );
@@ -13569,8 +13569,8 @@ function commitRoot(root, finishedWork) {
   if (enableSchedulerTracking) {
     // Restore any pending interactions at this point,
     // So that cascading work triggered during the render phase will be accounted for.
-    prevInteractions = tracking.__interactionsRef.current;
-    tracking.__interactionsRef.current = root.memoizedInteractions;
+    prevInteractions = tracing.__interactionsRef.current;
+    tracing.__interactionsRef.current = root.memoizedInteractions;
 
     // We are potentially finished with the current batch of interactions.
     // So we should clear them out of the pending interaction map.
@@ -13748,12 +13748,12 @@ function commitRoot(root, finishedWork) {
   onCommit(root, earliestRemainingTimeAfterCommit);
 
   if (enableSchedulerTracking) {
-    tracking.__interactionsRef.current = prevInteractions;
+    tracing.__interactionsRef.current = prevInteractions;
 
     var subscriber = void 0;
 
     try {
-      subscriber = tracking.__subscriberRef.current;
+      subscriber = tracing.__subscriberRef.current;
       if (subscriber !== null && root.memoizedInteractions.size > 0) {
         var threadID = computeThreadID(
           committedExpirationTime,
@@ -14151,8 +14151,8 @@ function renderRoot(root, isYieldy, isExpired) {
   if (enableSchedulerTracking) {
     // We're about to start new tracked work.
     // Restore pending interactions so cascading work triggered during the render phase will be accounted for.
-    prevInteractions = tracking.__interactionsRef.current;
-    tracking.__interactionsRef.current = root.memoizedInteractions;
+    prevInteractions = tracing.__interactionsRef.current;
+    tracing.__interactionsRef.current = root.memoizedInteractions;
   }
 
   // Check if we're starting from a fresh stack, or if we're resuming from
@@ -14195,7 +14195,7 @@ function renderRoot(root, isYieldy, isExpired) {
       root.memoizedInteractions = interactions;
 
       if (interactions.size > 0) {
-        var subscriber = tracking.__subscriberRef.current;
+        var subscriber = tracing.__subscriberRef.current;
         if (subscriber !== null) {
           var threadID = computeThreadID(
             expirationTime,
@@ -14280,7 +14280,7 @@ function renderRoot(root, isYieldy, isExpired) {
 
   if (enableSchedulerTracking) {
     // Tracked work is done for now; restore the previous interactions.
-    tracking.__interactionsRef.current = prevInteractions;
+    tracing.__interactionsRef.current = prevInteractions;
   }
 
   // We're done performing work. Time to clean up.
@@ -14560,13 +14560,13 @@ function retrySuspendedRoot(root, fiber, suspendedTime) {
     if (rootExpirationTime !== NoWork) {
       if (enableSchedulerTracking) {
         // Restore previous interactions so that new work is associated with them.
-        var prevInteractions = tracking.__interactionsRef.current;
-        tracking.__interactionsRef.current = root.memoizedInteractions;
+        var prevInteractions = tracing.__interactionsRef.current;
+        tracing.__interactionsRef.current = root.memoizedInteractions;
         // Because suspense timeouts do not decrement the interaction count,
         // Continued suspense work should also not increment the count.
         storeInteractionsForExpirationTime(root, rootExpirationTime, false);
         requestWork(root, rootExpirationTime);
-        tracking.__interactionsRef.current = prevInteractions;
+        tracing.__interactionsRef.current = prevInteractions;
       } else {
         requestWork(root, rootExpirationTime);
       }
@@ -14633,7 +14633,7 @@ function storeInteractionsForExpirationTime(
     return;
   }
 
-  var interactions = tracking.__interactionsRef.current;
+  var interactions = tracing.__interactionsRef.current;
   if (interactions.size > 0) {
     var pendingInteractions = root.pendingInteractionMap.get(expirationTime);
     if (pendingInteractions != null) {
@@ -14656,7 +14656,7 @@ function storeInteractionsForExpirationTime(
       }
     }
 
-    var subscriber = tracking.__subscriberRef.current;
+    var subscriber = tracing.__subscriberRef.current;
     if (subscriber !== null) {
       var threadID = computeThreadID(expirationTime, root.interactionThreadID);
       subscriber.onWorkScheduled(interactions, threadID);
