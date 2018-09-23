@@ -179,7 +179,7 @@ type Props = $ReadOnly<{|
   autoCorrect?: ?boolean,
   autoFocus?: ?boolean,
   allowFontScaling?: ?boolean,
-  maxFontSizeMultiplier?: ?boolean,
+  maxFontSizeMultiplier?: ?number,
   editable?: ?boolean,
   keyboardType?: ?KeyboardType,
   returnKeyType?: ?ReturnKeyType,
