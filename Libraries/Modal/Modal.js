@@ -46,13 +46,13 @@ import type {SyntheticEvent} from 'CoreEventTypes';
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-export type OrientationChangeEvent = SyntheticEvent<
+type OrientationChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     orientation: 'portrait' | 'landscape',
   |}>,
 >;
 
-export type ModalProps = $ReadOnly<{|
+type ModalProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -133,7 +133,7 @@ export type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
    */
-  supportedOrientations?: ?Array<
+  supportedOrientations?: ?ReadOnlyArray<
     | 'portrait'
     | 'portrait-upside-down'
     | 'landscape'
