@@ -133,7 +133,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
    */
-  supportedOrientations?: ?ReadOnlyArray<
+  supportedOrientations?: ?$ReadOnlyArray<
     | 'portrait'
     | 'portrait-upside-down'
     | 'landscape'
