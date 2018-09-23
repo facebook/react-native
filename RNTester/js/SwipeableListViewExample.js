@@ -10,10 +10,8 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const {
   Image,
   SwipeableListView,
   TouchableHighlight,
@@ -21,31 +19,26 @@ var {
   Text,
   View,
   Alert,
-} = ReactNative;
+} = require('react-native');
 
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterPage = require('./RNTesterPage');
 
-var SwipeableListViewSimpleExample = createReactClass({
-  displayName: 'SwipeableListViewSimpleExample',
-  statics: {
-    title: '<SwipeableListView>',
-    description: 'Performant, scrollable, swipeable list of data.',
-  },
+class SwipeableListViewSimpleExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  static title = '<SwipeableListView>';
+  static description = 'Performant, scrollable, swipeable list of data.';
 
-  getInitialState: function() {
-    var ds = SwipeableListView.getNewDataSource();
-    return {
-      dataSource: ds.cloneWithRowsAndSections(...this._genDataSource({})),
-    };
-  },
+  state = {
+    dataSource: SwipeableListView.getNewDataSource().cloneWithRowsAndSections(
+      ...this._genDataSource({}),
+    ),
+  };
 
-  _pressData: ({}: {[key: number]: boolean}),
+  _pressData: {[key: number]: boolean} = {};
 
-  UNSAFE_componentWillMount: function() {
-    this._pressData = {};
-  },
-
-  render: function() {
+  render(): React.Node {
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<SwipeableListView>'}
@@ -78,16 +71,11 @@ var SwipeableListViewSimpleExample = createReactClass({
         />
       </RNTesterPage>
     );
-  },
+  }
 
-  _renderRow: function(
-    rowData: Object,
-    sectionID: number,
-    rowID: number,
-    highlightRow: (sectionID: number, rowID: number) => void,
-  ) {
-    var rowHash = Math.abs(hashCode(rowData.id));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+  _renderRow = (rowData: Object, sectionID: string, rowID: string) => {
+    const rowHash = Math.abs(hashCode(rowData.id));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight onPress={() => {}}>
         <View>
@@ -100,31 +88,31 @@ var SwipeableListViewSimpleExample = createReactClass({
         </View>
       </TouchableHighlight>
     );
-  },
+  };
 
-  _genDataSource: function(pressData: {[key: number]: boolean}): Array<any> {
-    var dataBlob = {};
-    var sectionIDs = ['Section 0'];
-    var rowIDs = [[]];
+  _genDataSource(pressData: {[key: number]: boolean}): Array<any> {
+    const dataBlob = {};
+    const sectionIDs = ['Section 0'];
+    const rowIDs = [[]];
     /**
      * dataBlob example below:
-      {
-        'Section 0': {
-          'Row 0': {
-            id: '0',
-            text: 'row 0 text'
-          },
-          'Row 1': {
-            id: '1',
-            text: 'row 1 text'
-          }
-        }
-      }
-    */
+     *   {
+     *     'Section 0': {
+     *       'Row 0': {
+     *         id: '0',
+     *         text: 'row 0 text'
+     *       },
+     *       'Row 1': {
+     *         id: '1',
+     *         text: 'row 1 text'
+     *       }
+     *     }
+     *   }
+     */
     // only one section in this example
     dataBlob['Section 0'] = {};
-    for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (pressed)' : '';
+    for (let ii = 0; ii < 100; ii++) {
+      const pressedText = pressData[ii] ? ' (pressed)' : '';
       dataBlob[sectionIDs[0]]['Row ' + ii] = {
         id: 'Row ' + ii,
         text: 'Row ' + ii + pressedText,
@@ -132,13 +120,13 @@ var SwipeableListViewSimpleExample = createReactClass({
       rowIDs[0].push('Row ' + ii);
     }
     return [dataBlob, sectionIDs, rowIDs];
-  },
+  }
 
-  _renderSeperator: function(
-    sectionID: number,
-    rowID: number,
+  _renderSeperator = (
+    sectionID: string,
+    rowID: string,
     adjacentRowHighlighted: boolean,
-  ) {
+  ) => {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -148,10 +136,10 @@ var SwipeableListViewSimpleExample = createReactClass({
         }}
       />
     );
-  },
-});
+  };
+}
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -165,19 +153,26 @@ var THUMB_URLS = [
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
 ];
-var LOREM_IPSUM =
-  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
+
+const LOREM_IPSUM = [
+  'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix ',
+  'civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi ',
+  'adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ',
+  'ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam ',
+  'intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, ',
+  'putant invidunt reprehendunt ne qui.',
+].join('');
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
-  var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
+const hashCode = function(str) {
+  let hash = 15;
+  for (let ii = str.length - 1; ii >= 0; ii--) {
     hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'center',

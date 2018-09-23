@@ -11,26 +11,49 @@
 'use strict';
 
 const ListView = require('ListView');
-const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
 
-type DefaultProps = {
-  bounceFirstRowOnMount: boolean,
-  renderQuickActions: Function,
-};
+import type {Props as ListViewProps} from 'ListView';
 
-type Props = {
+export type SwipeableListViewProps = $ReadOnly<{|
+  ...ListViewProps,
+
+  /**
+   * To alert the user that swiping is possible, the first row can bounce
+   * on component mount.
+   */
   bounceFirstRowOnMount: boolean,
+  /**
+   * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
+   * then use it just like you would a normal ListView data source
+   */
   dataSource: SwipeableListViewDataSource,
+  /**
+   * Maximum distance to open to after a swipe
+   */
   maxSwipeDistance:
     | number
     | ((rowData: any, sectionID: string, rowID: string) => number),
   onScroll?: ?Function,
-  renderRow: Function,
-  renderQuickActions: Function,
-};
+  /**
+   * Callback method to render the swipeable view
+   */
+  renderRow: (
+    rowData: any,
+    sectionID: string,
+    rowID: string,
+  ) => React.Element<any>,
+  /**
+   * Callback method to render the view that will be unveiled on swipe
+   */
+  renderQuickActions: (
+    rowData: any,
+    sectionID: string,
+    rowID: string,
+  ) => React.Element<any>,
+|}>;
 
 type State = {
   dataSource: Object,
@@ -54,10 +77,7 @@ type State = {
  * - It can bounce the 1st row of the list so users know it's swipeable
  * - More to come
  */
-class SwipeableListView extends React.Component<Props, State> {
-  props: Props;
-  state: State;
-
+class SwipeableListView extends React.Component<SwipeableListViewProps, State> {
   _listViewRef: ?React.Element<any> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
 
@@ -70,32 +90,12 @@ class SwipeableListView extends React.Component<Props, State> {
     });
   }
 
-  static propTypes = {
-    /**
-     * To alert the user that swiping is possible, the first row can bounce
-     * on component mount.
-     */
-    bounceFirstRowOnMount: PropTypes.bool.isRequired,
-    /**
-     * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
-     * then use it just like you would a normal ListView data source
-     */
-    dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
-    // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.oneOfType([PropTypes.number, PropTypes.func])
-      .isRequired,
-    // Callback method to render the swipeable view
-    renderRow: PropTypes.func.isRequired,
-    // Callback method to render the view that will be unveiled on swipe
-    renderQuickActions: PropTypes.func.isRequired,
-  };
-
   static defaultProps = {
     bounceFirstRowOnMount: false,
     renderQuickActions: () => null,
   };
 
-  constructor(props: Props, context: any): void {
+  constructor(props: SwipeableListViewProps, context: any): void {
     super(props, context);
 
     this._shouldBounceFirstRowOnMount = this.props.bounceFirstRowOnMount;
@@ -104,7 +104,7 @@ class SwipeableListView extends React.Component<Props, State> {
     };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props): void {
+  UNSAFE_componentWillReceiveProps(nextProps: SwipeableListViewProps): void {
     if (
       this.state.dataSource.getDataSource() !==
       nextProps.dataSource.getDataSource()
@@ -175,11 +175,7 @@ class SwipeableListView extends React.Component<Props, State> {
   }
 
   // This enables rows having variable width slideoutView.
-  _getMaxSwipeDistance(
-    rowData: Object,
-    sectionID: string,
-    rowID: string,
-  ): number {
+  _getMaxSwipeDistance(rowData: any, sectionID: string, rowID: string): number {
     if (typeof this.props.maxSwipeDistance === 'function') {
       return this.props.maxSwipeDistance(rowData, sectionID, rowID);
     }
@@ -188,7 +184,7 @@ class SwipeableListView extends React.Component<Props, State> {
   }
 
   _renderRow = (
-    rowData: Object,
+    rowData: any,
     sectionID: string,
     rowID: string,
   ): React.Element<any> => {
