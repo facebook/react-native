@@ -179,8 +179,8 @@ class SwipeableRow extends React.Component<SwipableRowProps, State> {
 
     const timer = (
       <Timer
-        ref={timer => {
-          this._timer = timer;
+        ref={_timer => {
+          this._timer = _timer;
         }}
       />
     );
