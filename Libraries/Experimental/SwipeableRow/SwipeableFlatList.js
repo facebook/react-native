@@ -12,28 +12,31 @@
 import type {Props as FlatListProps} from 'FlatList';
 import type {renderItemType} from 'VirtualizedList';
 
-const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableRow = require('SwipeableRow');
 const FlatList = require('FlatList');
 
-type SwipableListProps = {
+type Props = {
   /**
    * To alert the user that swiping is possible, the first row can bounce
    * on component mount.
    */
   bounceFirstRowOnMount: boolean,
-  // Maximum distance to open to after a swipe
+  /**
+   * Maximum distance to open to after a swipe
+   */
   maxSwipeDistance: number | (Object => number),
-  // Callback method to render the view that will be unveiled on swipe
+  /**
+   * Callback method to render the view that will be unveiled on swipe
+   */
   renderQuickActions: renderItemType,
 };
 
-type Props<ItemT> = SwipableListProps & FlatListProps<ItemT>;
+export type SwipableListProps<ItemT> = Props & FlatListProps<ItemT>;
 
-type State = {
+type State = {|
   openRowKey: ?string,
-};
+|};
 
 /**
  * A container component that renders multiple SwipeableRow's in a FlatList
@@ -52,29 +55,12 @@ type State = {
  * - More to come
  */
 
-class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
-  props: Props<ItemT>;
-  state: State;
-
+class SwipeableFlatList<ItemT> extends React.Component<
+  SwipableListProps<ItemT>,
+  State,
+> {
   _flatListRef: ?FlatList<ItemT> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
-
-  static propTypes = {
-    ...FlatList.propTypes,
-
-    /**
-     * To alert the user that swiping is possible, the first row can bounce
-     * on component mount.
-     */
-    bounceFirstRowOnMount: PropTypes.bool.isRequired,
-
-    // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.oneOfType([PropTypes.number, PropTypes.func])
-      .isRequired,
-
-    // Callback method to render the view that will be unveiled on swipe
-    renderQuickActions: PropTypes.func.isRequired,
-  };
 
   static defaultProps = {
     ...FlatList.defaultProps,
@@ -82,7 +68,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
     renderQuickActions: () => null,
   };
 
-  constructor(props: Props<ItemT>, context: any): void {
+  constructor(props: SwipableListProps<ItemT>, context: any): void {
     super(props, context);
     this.state = {
       openRowKey: null,

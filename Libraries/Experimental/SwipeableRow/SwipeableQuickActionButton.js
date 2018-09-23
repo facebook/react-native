@@ -19,12 +19,7 @@ const View = require('View');
 
 import type {ImageSource} from 'ImageSource';
 
-/**
- * Standard set of quick action buttons that can, if the user chooses, be used
- * with SwipeableListView. Each button takes an image and text with optional
- * formatting.
- */
-class SwipeableQuickActionButton extends React.Component<{
+export type SwipeableQuickActionButtonProps = $ReadOnly<{|
   accessibilityLabel?: string,
   imageSource?: ?(ImageSource | number),
   imageStyle?: ?DeprecatedViewPropTypes.style,
@@ -34,7 +29,16 @@ class SwipeableQuickActionButton extends React.Component<{
   testID?: string,
   text?: ?(string | Object | Array<string | Object>),
   textStyle?: ?DeprecatedViewPropTypes.style,
-}> {
+|}>;
+
+/**
+ * Standard set of quick action buttons that can, if the user chooses, be used
+ * with SwipeableListView. Each button takes an image and text with optional
+ * formatting.
+ */
+class SwipeableQuickActionButton extends React.Component<
+  SwipeableQuickActionButtonProps,
+> {
   render(): React.Node {
     if (!this.props.imageSource && !this.props.text && !this.props.mainView) {
       return null;
