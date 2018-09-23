@@ -15,6 +15,7 @@ const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
 const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 const TransformPropTypes = require('TransformPropTypes');
+const DesktopPropTypes = require('DesktopPropTypes');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.
@@ -23,6 +24,7 @@ const ViewStylePropTypes = {
   ...LayoutPropTypes,
   ...ShadowPropTypesIOS,
   ...TransformPropTypes,
+  ...DesktopPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: ColorPropType,
   borderColor: ColorPropType,
