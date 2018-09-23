@@ -95,7 +95,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#visible
    */
-  visible?: boolean,
+  visible?: ?boolean,
 
   /**
    * The `onRequestClose` callback is called when the user taps the hardware
@@ -105,7 +105,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: (event?: SyntheticEvent<null>) => mixed,
+  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -113,7 +113,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: (event?: SyntheticEvent<null>) => mixed,
+  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -121,7 +121,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
    */
-  onDismiss?: () => mixed,
+  onDismiss?: ?() => mixed,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
@@ -146,7 +146,7 @@ type ModalProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: (event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
 |}>;
 
 class Modal extends React.Component<ModalProps> {
