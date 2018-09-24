@@ -32,7 +32,7 @@ type PickerAndroidChangeEvent = SyntheticEvent<
 >;
 
 type PickerAndroidProps = $ReadOnly<{|
-  children?: ?React.Node,
+  children?: React.Node,
   style?: ?TextStyleProp,
   selectedValue?: any,
   enabled?: ?boolean,

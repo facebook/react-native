@@ -57,7 +57,7 @@ class PickerItem extends React.Component<PickerItemProps> {
 }
 
 type PickerProps = $ReadOnly<{|
-  children?: ?React.Node,
+  children?: React.Node,
   style?: ?TextStyleProp,
 
   /**
