@@ -26,6 +26,12 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   persist: () => void,
   target: ?number,
   timeStamp: number,
+  touchHistory: $ReadOnly<{|
+    indexOfSingleActiveTouch: number,
+    mostRecentTimeStamp: number,
+    numberActiveTouches: number,
+    touchBank: $ReadOnlyArray<number>,
+  |}>,
   type: ?string,
 |}>;
 
