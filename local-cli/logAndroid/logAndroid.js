@@ -4,21 +4,49 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  */
 
 'use strict';
 
 const chalk = require('chalk');
 const child_process = require('child_process');
+const adb = require('../runAndroid/adb');
+const prompt = require('../generator/promptSync')();
 
 /**
  * Starts adb logcat
  */
-function logAndroid(_device_name) {
-  return new Promise((resolve, reject) => {
-    _logAndroid(resolve, reject, _device_name);
-  });
+function logAndroid() 
+{
+	let deviceList = [];
+	let _device_name = "";
+
+	try { deviceList = adb.getDevices(); }
+	catch (e) { console.log(chalk.red('Coud not get devices list. Do you have adb in your PATH?')); }
+
+	if (deviceList.length > 1)
+	{
+		console.log(chalk.bold("\r\nMultiple connected devices found, please choose one among them from the list below :\r\n"));
+		let counter = 1;
+		deviceList.forEach( dev => {
+			console.log( "   "+dev+ "\t : " + counter);
+			counter++;
+		});
+		console.log("\r\nEnter the number against the device of your choice :");
+		const choice = prompt();
+		
+		if (!isNaN(choice) && !!deviceList[choice-1])
+			_device_name = deviceList[choice-1];
+		else
+			console.log(chalk.red("Invalid entry. Going ahead without specifying the device."));
+
+		console.log("\r\n");
+	}
+
+	return new Promise((resolve, reject) => {
+		_logAndroid(resolve, reject, _device_name);
+	});
+
 }
 
 function _logAndroid(resolve, reject, _device_name) {
