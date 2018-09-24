@@ -114,6 +114,7 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     } else {
       paint.setTypeface(Typeface.defaultFromStyle(want));
     }
+    paint.setSubpixelText(true);
   }
 
 }
