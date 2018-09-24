@@ -54,6 +54,8 @@ void Scheduler::unregisterRootTag(Tag rootTag) {
   const auto &iterator = shadowTreeRegistry_.find(rootTag);
   const auto &shadowTree = iterator->second;
   assert(shadowTree);
+  // As part of stopping the Surface, we have to commit an empty tree.
+  shadowTree->complete(std::const_pointer_cast<SharedShadowNodeList>(ShadowNode::emptySharedShadowNodeSharedList()));
   shadowTree->setDelegate(nullptr);
   shadowTreeRegistry_.erase(iterator);
 }
