@@ -26,13 +26,17 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   persist: () => void,
   target: ?number,
   timeStamp: number,
+  type: ?string,
+|}>;
+
+export type ResponderSyntheticEvent<T> = $ReadOnly<{|
+  ...SyntheticEvent<T>,
   touchHistory: $ReadOnly<{|
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
     numberActiveTouches: number,
     touchBank: $ReadOnlyArray<number>,
   |}>,
-  type: ?string,
 |}>;
 
 export type Layout = $ReadOnly<{|
@@ -63,7 +67,7 @@ export type TextLayoutEvent = SyntheticEvent<
   |}>,
 >;
 
-export type PressEvent = SyntheticEvent<
+export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
     force: number,
