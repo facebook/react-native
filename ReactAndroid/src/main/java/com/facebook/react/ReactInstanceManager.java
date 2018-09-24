@@ -717,7 +717,7 @@ public class ReactInstanceManager {
     // automatically when creation completes, as root view is part of the attached root view list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(rootView, currentContext.getCatalystInstance());
+      attachRootViewToInstance(rootView);
     }
   }
 
@@ -968,7 +968,7 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
-        attachRootViewToInstance(rootView, catalystInstance);
+        attachRootViewToInstance(rootView);
       }
     }
     ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
@@ -1006,8 +1006,7 @@ public class ReactInstanceManager {
   }
 
   private void attachRootViewToInstance(
-      final ReactRootView rootView,
-      CatalystInstance catalystInstance) {
+      final ReactRootView rootView) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
