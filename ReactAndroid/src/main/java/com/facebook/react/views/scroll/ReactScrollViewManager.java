@@ -235,6 +235,11 @@ public class ReactScrollViewManager
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactScrollView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
+
   @Override
   public void scrollToEnd(
       ReactScrollView scrollView,
