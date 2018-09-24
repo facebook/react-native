@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
 
+- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner;
+
 - (void)registerRootTag:(ReactTag)tag;
 
 - (void)unregisterRootTag:(ReactTag)tag;

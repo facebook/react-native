@@ -11,6 +11,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTImageLoader.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
@@ -20,10 +21,18 @@
 #import <React/RCTUtils.h>
 #import <fabric/core/LayoutContext.h>
 #import <fabric/core/LayoutConstraints.h>
+#import <fabric/imagemanager/ImageManager.h>
+#import <fabric/uimanager/ContextContainer.h>
 
+#import "MainRunLoopEventBeat.h"
+#import "MessageQueueEventBeat.h"
 #import "RCTConversions.h"
 
 using namespace facebook::react;
+
+@interface RCTBridge ()
+- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+@end
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
@@ -42,7 +51,25 @@ using namespace facebook::react;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
 
-    _scheduler = [[RCTScheduler alloc] init];
+    auto contextContainer = std::make_shared<ContextContainer>();
+
+    auto messageQueueThread = _batchedBridge.jsMessageThread;
+
+    EventBeatFactory synchronousBeatFactory = [messageQueueThread]() {
+      return std::make_unique<MainRunLoopEventBeat>(messageQueueThread);
+    };
+
+    EventBeatFactory asynchronousBeatFactory = [messageQueueThread]() {
+      return std::make_unique<MessageQueueEventBeat>(messageQueueThread);
+    };
+
+    contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
+    contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+
+    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
+    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
+
+    _scheduler = [[RCTScheduler alloc] initWithContextContainer:contextContainer];
     _scheduler.delegate = self;
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
