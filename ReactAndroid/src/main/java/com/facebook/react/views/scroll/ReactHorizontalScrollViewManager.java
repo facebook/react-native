@@ -250,4 +250,9 @@ public class ReactHorizontalScrollViewManager
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactHorizontalScrollView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
 }
