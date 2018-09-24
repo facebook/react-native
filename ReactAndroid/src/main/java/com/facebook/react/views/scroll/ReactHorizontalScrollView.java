@@ -27,10 +27,11 @@ import android.widget.OverScroller;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 
 import java.lang.reflect.Field;
@@ -55,6 +56,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
+  private @Nullable String mOverflow = ViewProps.HIDDEN;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -181,10 +183,23 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     awakenScrollBars();
   }
 
+  public void setOverflow(String overflow) {
+    mOverflow = overflow;
+    invalidate();
+  }
+
   @Override
   protected void onDraw(Canvas canvas) {
     getDrawingRect(mRect);
-    canvas.clipRect(mRect);
+
+    switch (mOverflow) {
+      case ViewProps.VISIBLE:
+        break;
+      case ViewProps.HIDDEN:
+        canvas.clipRect(mRect);
+        break;
+    }
+
     super.onDraw(canvas);
   }
 
