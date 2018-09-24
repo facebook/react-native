@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
+#include <utility>
 
 namespace facebook {
 namespace react {
@@ -31,7 +33,7 @@ public:
    * by `{type, key}` pair.
    */
   template<typename T>
-  void registerInstance(const T &instance, const std::string &key = "") {
+  void registerInstance(const T &instance, const std::string &key = {}) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     instances_.insert({
@@ -46,7 +48,7 @@ public:
    * by {type, key} pair.
    */
   template<typename T>
-  T getInstance(const std::string &key = "") const {
+  T getInstance(const std::string &key = {}) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return *std::static_pointer_cast<T>(instances_.at({std::type_index(typeid(T)), key}));
