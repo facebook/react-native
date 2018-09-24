@@ -12,7 +12,6 @@
 const MockNativeMethods = require.requireActual('./MockNativeMethods');
 const mockComponent = require.requireActual('./mockComponent');
 
-require.requireActual('../Libraries/polyfills/babelHelpers.js');
 require.requireActual('../Libraries/polyfills/Object.es7.js');
 require.requireActual('../Libraries/polyfills/error-guard');
 
@@ -92,7 +91,6 @@ jest
   })
   .mock('ensureComponentIsNative', () => () => true);
 
-const mockEmptyObject = {};
 const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
