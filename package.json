@@ -191,7 +191,6 @@
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^3.4.0",
     "react-timer-mixin": "^0.13.2",
-    "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
     "serve-static": "^1.13.1",
@@ -223,6 +222,7 @@
     "prettier": "1.13.6",
     "react": "16.5.0",
     "react-test-renderer": "16.5.0",
+    "regenerator-runtime": "^0.11.0",
     "shelljs": "^0.7.8",
     "sinon": "^2.2.0"
   },
