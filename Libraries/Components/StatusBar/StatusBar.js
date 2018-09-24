@@ -53,16 +53,7 @@ export type StatusBarAnimation = $Enum<{
   slide: string,
 }>;
 
-type StatusBarProps = $ReadOnly<{|
-  /**
-   * If the status bar is hidden.
-   */
-  hidden?: ?boolean,
-  /**
-   * If the transition between status bar property changes should be animated.
-   * Supported for backgroundColor, barStyle and hidden.
-   */
-  animated?: ?boolean,
+type AndroidProps = $ReadOnly<{|
   /**
    * The background color of the status bar.
    * @platform android
@@ -76,10 +67,9 @@ type StatusBarProps = $ReadOnly<{|
    * @platform android
    */
   translucent?: ?boolean,
-  /**
-   * Sets the color of the status bar text.
-   */
-  barStyle?: ?('default' | 'light-content' | 'dark-content'),
+|}>;
+
+type IOSProps = $ReadOnly<{|
   /**
    * If the network activity indicator should be visible.
    *
@@ -93,6 +83,24 @@ type StatusBarProps = $ReadOnly<{|
    * @platform ios
    */
   showHideTransition?: ?('fade' | 'slide'),
+|}>;
+
+type Props = $ReadOnly<{|
+  ...AndroidProps,
+  ...IOSProps,
+  /**
+   * If the status bar is hidden.
+   */
+  hidden?: ?boolean,
+  /**
+   * If the transition between status bar property changes should be animated.
+   * Supported for backgroundColor, barStyle and hidden.
+   */
+  animated?: ?boolean,
+  /**
+   * Sets the color of the status bar text.
+   */
+  barStyle?: ?('default' | 'light-content' | 'dark-content'),
 |}>;
 
 /**
@@ -184,7 +192,7 @@ function createStackEntry(props: any): any {
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component<StatusBarProps> {
+class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
