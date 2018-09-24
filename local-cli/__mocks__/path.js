@@ -17,4 +17,6 @@ function reset(platform) {
 
 mockPath.mock = {reset};
 
+reset('posix');
+
 module.exports = mockPath;
