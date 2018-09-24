@@ -16,36 +16,36 @@ const prompt = require('../generator/promptSync')();
 /**
  * Starts adb logcat
  */
-function logAndroid() 
-{
-	let deviceList = [];
-	let _device_name = "";
+function logAndroid() {
+  let deviceList = [];
+  let _device_name = "";
 
-	try { deviceList = adb.getDevices(); }
-	catch (e) { console.log(chalk.red('Coud not get devices list. Do you have adb in your PATH?')); }
+  try{
+    deviceList = adb.getDevices();
+  }catch(e){
+    console.log(chalk.red('Coud not get devices list. Do you have adb in your PATH?'));
+  }
 
-	if (deviceList.length > 1)
-	{
-		console.log(chalk.bold("\r\nMultiple connected devices found, please choose one among them from the list below :\r\n"));
-		let counter = 1;
-		deviceList.forEach( dev => {
-			console.log( "   "+dev+ "\t : " + counter);
-			counter++;
-		});
-		console.log("\r\nEnter the number against the device of your choice :");
-		const choice = prompt();
-		
-		if (!isNaN(choice) && !!deviceList[choice-1])
-			_device_name = deviceList[choice-1];
-		else
-			console.log(chalk.red("Invalid entry. Going ahead without specifying the device."));
+  if (deviceList.length > 1) {
+    console.log(chalk.bold("\r\nMultiple connected devices found, please choose one among them from the list below :\r\n"));
+    let counter = 1;
+    deviceList.forEach( (dev) => {
+      console.log( "   "+dev+ "\t : " + counter);
+      counter++;
+    });
+    console.log("\r\nEnter the number against the device of your choice :");
+    const choice = prompt();
+    if (!isNaN(choice) && !!deviceList[choice-1]){
+      _device_name = deviceList[choice-1];
+    }else{
+      console.log(chalk.red("Invalid entry. Going ahead without specifying the device."));
+  }
+    console.log("\r\n");
+  }
 
-		console.log("\r\n");
-	}
-
-	return new Promise((resolve, reject) => {
-		_logAndroid(resolve, reject, _device_name);
-	});
+  return new Promise((resolve, reject) => {
+    _logAndroid(resolve, reject, _device_name);
+  });
 
 }
 
@@ -57,12 +57,10 @@ function _logAndroid(resolve, reject, _device_name) {
 
     let adbArgs = ['logcat', '*:S', 'ReactNative:V', 'ReactNativeJS:V'];
 
-    if (_device_name.length > 0)
+    if (_device_name.length > 0){
       adbArgs.unshift("-s", _device_name);
-    
-    console.log(
-      chalk.bold(`Starting the logger (${adbPath} ${adbArgs.join(' ')})...`),
-    );
+    }
+    console.log(chalk.bold(`Starting the logger (${adbPath} ${adbArgs.join(' ')})...`));
 
     const log = child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
 
