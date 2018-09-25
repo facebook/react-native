@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
 
 import android.annotation.SuppressLint;
@@ -27,10 +26,11 @@ import javax.annotation.Nullable;
 public class ReactInstanceSpecForTest {
 
   private final List<NativeModule> mNativeModules =
-    new ArrayList<NativeModule>(Arrays.asList(new FakeWebSocketModule()));
+      new ArrayList<NativeModule>(Arrays.asList(new FakeWebSocketModule()));
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
   private final List<ViewManager> mViewManagers = new ArrayList<>();
   private final ArrayList<ReactPackage> mReactPackages = new ArrayList<>();
+  @Nullable private FabricUIManagerFactory mFabricUIManagerFactory = null;
   @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
 
   public ReactInstanceSpecForTest addNativeModule(NativeModule module) {
@@ -38,7 +38,8 @@ public class ReactInstanceSpecForTest {
     return this;
   }
 
-  public ReactInstanceSpecForTest setJavaScriptExecutorFactory(JavaScriptExecutorFactory javaScriptExecutorFactory) {
+  public ReactInstanceSpecForTest setJavaScriptExecutorFactory(
+      JavaScriptExecutorFactory javaScriptExecutorFactory) {
     mJavaScriptExecutorFactory = javaScriptExecutorFactory;
     return this;
   }
@@ -50,6 +51,16 @@ public class ReactInstanceSpecForTest {
     }
     mReactPackages.add(reactPackage);
     return this;
+  }
+
+  public ReactInstanceSpecForTest setFabricUIManagerFactory(@Nullable FabricUIManagerFactory fabricUIManagerFactory) {
+    mFabricUIManagerFactory = fabricUIManagerFactory;
+    return this;
+  }
+
+  @Nullable
+  public FabricUIManagerFactory getFabricUIManagerFactory() {
+    return mFabricUIManagerFactory;
   }
 
   public ReactInstanceSpecForTest addPackages(List<ReactPackage> reactPackages) {
