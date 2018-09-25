@@ -23,6 +23,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
     ]) + ([
-        react_native_dep("java/com/facebook/fbreact/testing:testing"),
+        # react_native_dep("java/com/facebook/fbreact/testing:testing"),
     ]) if not IS_OSS_BUILD else [],
 )

@@ -5,7 +5,19 @@ APP_PLATFORM := android-16
 
 APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-NDK_MODULE_PATH := $(APP_MK_DIR)$(HOST_DIRSEP)$(THIRD_PARTY_NDK_DIR)$(HOST_DIRSEP)$(REACT_COMMON_DIR)$(HOST_DIRSEP)$(APP_MK_DIR)first-party
+# What is NDK_MODULE_PATH?
+#   This is comparable to the PATH environment variable in Linux. The purpose
+#   of NDK_MODULE_PATH is to provide a list of directories that contain modules
+#   we want ndk-build to compile.
+#
+# What is HOST_DIRSEP?
+#   In PATH, the directories are separated by a ':'.
+#   In NDK_MODULE_PATH, the directories are separated by $(HOST_DIRSEP).
+#
+# Where are APP_MK_DIR, THIRD_PARTY_NDK_DIR, etc. defined?
+#   The directories inside NDK_MODULE_PATH (ex: APP_MK_DIR, THIRD_PARTY_NDK_DIR,
+#   etc.) are defined inside build.gradle.
+NDK_MODULE_PATH := $(APP_MK_DIR)$(HOST_DIRSEP)$(THIRD_PARTY_NDK_DIR)$(HOST_DIRSEP)$(REACT_COMMON_DIR)$(HOST_DIRSEP)$(APP_MK_DIR)first-party$(HOST_DIRSEP)$(REACT_SRC_DIR)
 
 APP_STL := gnustl_shared
 

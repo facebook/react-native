@@ -1,7 +1,6 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
-    "AndroidJSCFactory.h",
     "CxxModuleWrapper.h",
     "CxxModuleWrapperBase.h",
     "CxxSharedModuleWrapper.h",
@@ -54,11 +53,13 @@ rn_xplat_cxx_library(
     ],
     deps = ([
         "xplat//third-party/linker_lib:android",
+        "xplat//third-party/linker_lib:atomic",
         "xplat//folly:molly",
         "fbandroid//xplat/fbgloginit:fbgloginit",
         "xplat//fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
     ]) if not IS_OSS_BUILD else [],
 )

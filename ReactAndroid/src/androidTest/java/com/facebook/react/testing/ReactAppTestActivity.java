@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import com.facebook.fbreact.fabricxx.jsi.Binding;
+import com.facebook.fbreact.fabric.jsi.FabricJSIBinding;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -31,6 +32,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.fabric.FabricBinder;
 import com.facebook.react.fabric.FabricBinding;
+import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -250,18 +252,14 @@ public class ReactAppTestActivity extends FragmentActivity
                                 reactApplicationContext
                                     .getNativeModule(UIManagerModule.class)
                                     .getEventDispatcher();
-
-                            ViewManagerRegistry viewManagerRegistry =
-                              new ViewManagerRegistry(
-                                mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
-
-                            UIManager uiManager =
-                              new com.facebook.fbreact.fabricxx.UIManager(
-                                reactApplicationContext, viewManagerRegistry, jsContext);
-
-                            FabricBinding binding = new Binding();
-                            binding.installFabric(jsContext, (FabricBinder) uiManager);
-                            return uiManager;
+                            FabricUIManager fabricUIManager =
+                                new FabricUIManager(
+                                    reactApplicationContext,
+                                    new ViewManagerRegistry(viewManagers),
+                                    jsContext,
+                                    eventDispatcher);
+                            new FabricJSIBinding().installFabric(jsContext, fabricUIManager);
+                            return fabricUIManager;
                           }
                         };
                       }
