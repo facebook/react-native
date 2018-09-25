@@ -115,10 +115,7 @@ public class ReactViewGroup extends ViewGroup implements
 
   public ReactViewGroup(Context context) {
     super(context);
-    // TODO: Remove this check after a couple public releases.
-    if (!ViewProps.sDefaultOverflowHidden) {
-      setClipChildren(false);
-    }
+    setClipChildren(false);
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
