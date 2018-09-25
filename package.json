@@ -203,6 +203,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "babel-generator": "^6.26.0",
