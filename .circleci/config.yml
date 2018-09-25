@@ -436,6 +436,7 @@ jobs:
 
   # Xcode 10: Runs unit tests on iOS and Apple TV devices
   test_objc_xcode10:
+    <<: *defaults
     macos:
       xcode: "10.0.0"
     steps:
@@ -696,21 +697,18 @@ workflows:
             - checkout_code
 
       # Tooling Compatibility Checks
-      # Checks that newer tooling is well supported.
-      # Test Xcode 10 compatibility
       - test_objc_xcode10:
           filters: *filter-ignore-gh-pages
-      # Test Node 10 compatibility
       - test_node10:
           filters: *filter-ignore-gh-pages
 
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
-          # ignore any commit on any branch by default
-          branches:
-            ignore: /.*/
-          # only act on version tags
           filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
           requires:
