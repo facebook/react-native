@@ -10,76 +10,66 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
 
 const requireNativeComponent = require('requireNativeComponent');
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 import type {ViewProps} from 'ViewPropTypes';
+import type {ColorValue} from 'StyleSheetTypes';
 
 const RCTTabBar = requireNativeComponent('RCTTabBar');
 
 type Props = $ReadOnly<{|
   ...ViewProps,
-  style?: DangerouslyImpreciseStyleProp,
-  unselectedTintColor?: string,
-  tintColor?: string,
-  unselectedItemTintColor?: string,
-  barTintColor?: string,
-  barStyle?: 'default' | 'black',
-  translucent?: boolean,
-  itemPositioning?: 'fill' | 'center' | 'auto',
-  children: React.Node,
+
+  /**
+   * Color of text on unselected tabs
+   */
+  unselectedTintColor?: ColorValue,
+
+  /**
+   * Color of the currently selected tab icon
+   */
+  tintColor?: ColorValue,
+
+  /**
+   * Color of unselected tab icons. Available since iOS 10.
+   */
+  unselectedItemTintColor?: ColorValue,
+
+  /**
+   * Background color of the tab bar
+   */
+  barTintColor?: ColorValue,
+
+  /**
+   * The style of the tab bar. Supported values are 'default', 'black'.
+   * Use 'black' instead of setting `barTintColor` to black. This produces
+   * a tab bar with the native iOS style with higher translucency.
+   */
+  barStyle?: ?('default' | 'black'),
+
+  /**
+   * A Boolean value that indicates whether the tab bar is translucent
+   */
+  translucent?: ?boolean,
+
+  /**
+   * Specifies tab bar item positioning. Available values are:
+   * - fill - distributes items across the entire width of the tab bar
+   * - center - centers item in the available tab bar space
+   * - auto (default) - distributes items dynamically according to the
+   * user interface idiom. In a horizontally compact environment (e.g. iPhone 5)
+   * this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
+   * it defaults to center.
+   */
+  itemPositioning?: ?('fill' | 'center' | 'auto'),
 |}>;
 
 class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
-
-  static propTypes = {
-    ...DeprecatedViewPropTypes,
-    style: DeprecatedViewPropTypes.style,
-    /**
-     * Color of text on unselected tabs
-     */
-    unselectedTintColor: ColorPropType,
-    /**
-     * Color of the currently selected tab icon
-     */
-    tintColor: ColorPropType,
-    /**
-     * Color of unselected tab icons. Available since iOS 10.
-     */
-    unselectedItemTintColor: ColorPropType,
-    /**
-     * Background color of the tab bar
-     */
-    barTintColor: ColorPropType,
-    /**
-     * The style of the tab bar. Supported values are 'default', 'black'.
-     * Use 'black' instead of setting `barTintColor` to black. This produces
-     * a tab bar with the native iOS style with higher translucency.
-     */
-    barStyle: PropTypes.oneOf(['default', 'black']),
-    /**
-     * A Boolean value that indicates whether the tab bar is translucent
-     */
-    translucent: PropTypes.bool,
-    /**
-     * Specifies tab bar item positioning. Available values are:
-     * - fill - distributes items across the entire width of the tab bar
-     * - center - centers item in the available tab bar space
-     * - auto (default) - distributes items dynamically according to the
-     * user interface idiom. In a horizontally compact environment (e.g. iPhone 5)
-     * this value defaults to `fill`, in a horizontally regular one (e.g. iPad)
-     * it defaults to center.
-     */
-    itemPositioning: PropTypes.oneOf(['fill', 'center', 'auto']),
-  };
 
   render() {
     return (
