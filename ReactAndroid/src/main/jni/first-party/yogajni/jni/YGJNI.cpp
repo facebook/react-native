@@ -303,10 +303,7 @@ jlong jni_YGNodeNewWithConfig(alias_ref<jobject> thiz, jlong configPointer) {
   return reinterpret_cast<jlong>(node);
 }
 
-void jni_YGNodeSetOwner(
-    alias_ref<jobject> thiz,
-    jlong nativePointer,
-    jlong newOwnerNativePointer) {
+void jni_YGNodeSetOwner(jlong nativePointer, jlong newOwnerNativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   const YGNodeRef newOwnerNode = _jlong2YGNodeRef(newOwnerNativePointer);
 
@@ -323,7 +320,7 @@ jlong jni_YGNodeClone(
   return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
-void jni_YGNodeFree(alias_ref<jclass>, jlong nativePointer) {
+void jni_YGNodeFree(jlong nativePointer) {
   if (nativePointer == 0) {
     return;
   }
@@ -332,12 +329,12 @@ void jni_YGNodeFree(alias_ref<jclass>, jlong nativePointer) {
   YGNodeFree(node);
 }
 
-void jni_YGNodeClearChildren(alias_ref<jobject> thiz, jlong nativePointer) {
+void jni_YGNodeClearChildren(jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   node->clearChildren();
 }
 
-void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
+void jni_YGNodeReset(jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   void* context = node->getContext();
   YGNodeReset(node);
@@ -345,7 +342,7 @@ void jni_YGNodeReset(alias_ref<jobject> thiz, jlong nativePointer) {
   node->setPrintFunc(YGPrint);
 }
 
-void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
+void jni_YGNodePrint(jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
@@ -354,7 +351,6 @@ void jni_YGNodePrint(alias_ref<jobject> thiz, jlong nativePointer) {
 }
 
 void jni_YGNodeInsertChild(
-    alias_ref<jobject>,
     jlong nativePointer,
     jlong childPointer,
     jint index) {
@@ -363,7 +359,6 @@ void jni_YGNodeInsertChild(
 }
 
 void jni_YGNodeInsertSharedChild(
-    alias_ref<jobject>,
     jlong nativePointer,
     jlong childPointer,
     jint index) {
@@ -371,16 +366,13 @@ void jni_YGNodeInsertSharedChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
 
-void jni_YGNodeRemoveChild(
-    alias_ref<jobject>,
-    jlong nativePointer,
-    jlong childPointer) {
+void jni_YGNodeRemoveChild(jlong nativePointer, jlong childPointer) {
   YGNodeRemoveChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
 }
 
 void jni_YGNodeCalculateLayout(
-    alias_ref<jobject>,
+    alias_ref<jclass>,
     jlong nativePointer,
     jfloat width,
     jfloat height) {
@@ -393,40 +385,31 @@ void jni_YGNodeCalculateLayout(
   YGTransferLayoutOutputsRecursive(root);
 }
 
-void jni_YGNodeMarkDirty(alias_ref<jobject>, jlong nativePointer) {
+void jni_YGNodeMarkDirty(jlong nativePointer) {
   YGNodeMarkDirty(_jlong2YGNodeRef(nativePointer));
 }
 
-void jni_YGNodeMarkDirtyAndPropogateToDescendants(
-    alias_ref<jobject>,
-    jlong nativePointer) {
+void jni_YGNodeMarkDirtyAndPropogateToDescendants(jlong nativePointer) {
   YGNodeMarkDirtyAndPropogateToDescendants(_jlong2YGNodeRef(nativePointer));
 }
 
-jboolean jni_YGNodeIsDirty(alias_ref<jobject>, jlong nativePointer) {
+jboolean jni_YGNodeIsDirty(jlong nativePointer) {
   return (jboolean)_jlong2YGNodeRef(nativePointer)->isDirty();
 }
 
-void jni_YGNodeSetHasMeasureFunc(
-    alias_ref<jobject>,
-    jlong nativePointer,
-    jboolean hasMeasureFunc) {
+void jni_YGNodeSetHasMeasureFunc(jlong nativePointer, jboolean hasMeasureFunc) {
   _jlong2YGNodeRef(nativePointer)
       ->setMeasureFunc(hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
 }
 
 void jni_YGNodeSetHasBaselineFunc(
-    alias_ref<jobject>,
     jlong nativePointer,
     jboolean hasBaselineFunc) {
   _jlong2YGNodeRef(nativePointer)
       ->setBaseLineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 
-void jni_YGNodeCopyStyle(
-    alias_ref<jobject>,
-    jlong dstNativePointer,
-    jlong srcNativePointer) {
+void jni_YGNodeCopyStyle(jlong dstNativePointer, jlong srcNativePointer) {
   YGNodeCopyStyle(
       _jlong2YGNodeRef(dstNativePointer), _jlong2YGNodeRef(srcNativePointer));
 }
@@ -439,87 +422,81 @@ struct JYogaValue : public JavaClass<JYogaValue> {
   }
 };
 
-#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                           \
-  javatype jni_YGNodeStyleGet##name(alias_ref<jobject>, jlong nativePointer) { \
-    return (javatype)YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer));    \
-  }                                                                            \
-                                                                               \
-  void jni_YGNodeStyleSet##name(                                               \
-      alias_ref<jobject>, jlong nativePointer, javatype value) {               \
-    YGNodeStyleSet##name(                                                      \
-        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));            \
+#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                        \
+  javatype jni_YGNodeStyleGet##name(jlong nativePointer) {                  \
+    return (javatype)YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)); \
+  }                                                                         \
+                                                                            \
+  void jni_YGNodeStyleSet##name(jlong nativePointer, javatype value) {      \
+    YGNodeStyleSet##name(                                                   \
+        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));         \
   }
 
-#define YG_NODE_JNI_STYLE_UNIT_PROP(name)                            \
-  local_ref<jobject> jni_YGNodeStyleGet##name(                       \
-      alias_ref<jobject>, jlong nativePointer) {                     \
-    return JYogaValue::create(                                       \
-        YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)));      \
-  }                                                                  \
-                                                                     \
-  void jni_YGNodeStyleSet##name(                                     \
-      alias_ref<jobject>, jlong nativePointer, jfloat value) {       \
-    YGNodeStyleSet##name(                                            \
-        _jlong2YGNodeRef(nativePointer), static_cast<float>(value)); \
-  }                                                                  \
-                                                                     \
-  void jni_YGNodeStyleSet##name##Percent(                            \
-      alias_ref<jobject>, jlong nativePointer, jfloat value) {       \
-    YGNodeStyleSet##name##Percent(                                   \
-        _jlong2YGNodeRef(nativePointer), static_cast<float>(value)); \
+#define YG_NODE_JNI_STYLE_UNIT_PROP(name)                                     \
+  local_ref<jobject> jni_YGNodeStyleGet##name(                                \
+      alias_ref<jobject>, jlong nativePointer) {                              \
+    return JYogaValue::create(                                                \
+        YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)));               \
+  }                                                                           \
+                                                                              \
+  void jni_YGNodeStyleSet##name(jlong nativePointer, jfloat value) {          \
+    YGNodeStyleSet##name(                                                     \
+        _jlong2YGNodeRef(nativePointer), static_cast<float>(value));          \
+  }                                                                           \
+                                                                              \
+  void jni_YGNodeStyleSet##name##Percent(jlong nativePointer, jfloat value) { \
+    YGNodeStyleSet##name##Percent(                                            \
+        _jlong2YGNodeRef(nativePointer), static_cast<float>(value));          \
   }
 
 #define YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(name)                   \
   YG_NODE_JNI_STYLE_UNIT_PROP(name)                              \
-  void jni_YGNodeStyleSet##name##Auto(                           \
-      alias_ref<jobject>, jlong nativePointer) {                 \
+  void jni_YGNodeStyleSet##name##Auto(jlong nativePointer) {     \
     YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer)); \
   }
 
-#define YG_NODE_JNI_STYLE_EDGE_PROP(javatype, type, name)                   \
-  javatype jni_YGNodeStyleGet##name(                                        \
-      alias_ref<jobject>, jlong nativePointer, jint edge) {                 \
-    return (javatype)YGNodeStyleGet##name(                                  \
-        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge));        \
-  }                                                                         \
-                                                                            \
-  void jni_YGNodeStyleSet##name(                                            \
-      alias_ref<jobject>, jlong nativePointer, jint edge, javatype value) { \
-    YGNodeStyleSet##name(                                                   \
-        _jlong2YGNodeRef(nativePointer),                                    \
-        static_cast<YGEdge>(edge),                                          \
-        static_cast<type>(value));                                          \
+#define YG_NODE_JNI_STYLE_EDGE_PROP(javatype, type, name)             \
+  javatype jni_YGNodeStyleGet##name(jlong nativePointer, jint edge) { \
+    return (javatype)YGNodeStyleGet##name(                            \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge));  \
+  }                                                                   \
+                                                                      \
+  void jni_YGNodeStyleSet##name(                                      \
+      jlong nativePointer, jint edge, javatype value) {               \
+    YGNodeStyleSet##name(                                             \
+        _jlong2YGNodeRef(nativePointer),                              \
+        static_cast<YGEdge>(edge),                                    \
+        static_cast<type>(value));                                    \
   }
 
-#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                            \
-  local_ref<jobject> jni_YGNodeStyleGet##name(                            \
-      alias_ref<jobject>, jlong nativePointer, jint edge) {               \
-    return JYogaValue::create(YGNodeStyleGet##name(                       \
-        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge)));     \
-  }                                                                       \
-                                                                          \
-  void jni_YGNodeStyleSet##name(                                          \
-      alias_ref<jobject>, jlong nativePointer, jint edge, jfloat value) { \
-    YGNodeStyleSet##name(                                                 \
-        _jlong2YGNodeRef(nativePointer),                                  \
-        static_cast<YGEdge>(edge),                                        \
-        static_cast<float>(value));                                       \
-  }                                                                       \
-                                                                          \
-  void jni_YGNodeStyleSet##name##Percent(                                 \
-      alias_ref<jobject>, jlong nativePointer, jint edge, jfloat value) { \
-    YGNodeStyleSet##name##Percent(                                        \
-        _jlong2YGNodeRef(nativePointer),                                  \
-        static_cast<YGEdge>(edge),                                        \
-        static_cast<float>(value));                                       \
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                        \
+  local_ref<jobject> jni_YGNodeStyleGet##name(                        \
+      alias_ref<jobject>, jlong nativePointer, jint edge) {           \
+    return JYogaValue::create(YGNodeStyleGet##name(                   \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge))); \
+  }                                                                   \
+                                                                      \
+  void jni_YGNodeStyleSet##name(                                      \
+      jlong nativePointer, jint edge, jfloat value) {                 \
+    YGNodeStyleSet##name(                                             \
+        _jlong2YGNodeRef(nativePointer),                              \
+        static_cast<YGEdge>(edge),                                    \
+        static_cast<float>(value));                                   \
+  }                                                                   \
+                                                                      \
+  void jni_YGNodeStyleSet##name##Percent(                             \
+      jlong nativePointer, jint edge, jfloat value) {                 \
+    YGNodeStyleSet##name##Percent(                                    \
+        _jlong2YGNodeRef(nativePointer),                              \
+        static_cast<YGEdge>(edge),                                    \
+        static_cast<float>(value));                                   \
   }
 
-#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(name)                  \
-  YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                             \
-  void jni_YGNodeStyleSet##name##Auto(                               \
-      alias_ref<jobject>, jlong nativePointer, jint edge) {          \
-    YGNodeStyleSet##name##Auto(                                      \
-        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge)); \
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP_AUTO(name)                     \
+  YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                                \
+  void jni_YGNodeStyleSet##name##Auto(jlong nativePointer, jint edge) { \
+    YGNodeStyleSet##name##Auto(                                         \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge));    \
   }
 
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
@@ -533,10 +510,7 @@ YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
 
-void jni_YGNodeStyleSetFlex(
-    alias_ref<jobject>,
-    jlong nativePointer,
-    jfloat value) {
+void jni_YGNodeStyleSetFlex(jlong nativePointer, jfloat value) {
   YGNodeStyleSetFlex(
       _jlong2YGNodeRef(nativePointer), static_cast<float>(value));
 }
@@ -668,113 +642,127 @@ void jni_YGConfigSetLogger(
   }
 }
 
-jint jni_YGNodeGetInstanceCount(alias_ref<jclass> clazz) {
+jint jni_YGNodeGetInstanceCount() {
   return YGNodeGetInstanceCount();
 }
 
 #define YGMakeNativeMethod(name) makeNativeMethod(#name, name)
+#define YGRealMakeCriticalNativeMethod(name) \
+  makeCriticalNativeMethod(#name, name)
+#define YGWrapCriticalNativeMethodForRegularCall(name) \
+  makeNativeMethod(                                    \
+      #name,                                           \
+      ::facebook::jni::detail::CriticalMethod<decltype(&name)>::call<&name>)
 
-void jni_bindNativeMethods(alias_ref<jclass>, jboolean) {
-  registerNatives(
-      "com/facebook/yoga/YogaNode",
-      {
-          YGMakeNativeMethod(jni_YGNodeNew),
-          YGMakeNativeMethod(jni_YGNodeNewWithConfig),
-          YGMakeNativeMethod(jni_YGNodeFree),
-          YGMakeNativeMethod(jni_YGNodeReset),
-          YGMakeNativeMethod(jni_YGNodeClearChildren),
-          YGMakeNativeMethod(jni_YGNodeInsertChild),
-          YGMakeNativeMethod(jni_YGNodeInsertSharedChild),
-          YGMakeNativeMethod(jni_YGNodeRemoveChild),
-          YGMakeNativeMethod(jni_YGNodeCalculateLayout),
-          YGMakeNativeMethod(jni_YGNodeMarkDirty),
-          YGMakeNativeMethod(jni_YGNodeMarkDirtyAndPropogateToDescendants),
-          YGMakeNativeMethod(jni_YGNodeIsDirty),
-          YGMakeNativeMethod(jni_YGNodeSetHasMeasureFunc),
-          YGMakeNativeMethod(jni_YGNodeSetHasBaselineFunc),
-          YGMakeNativeMethod(jni_YGNodeCopyStyle),
-          YGMakeNativeMethod(jni_YGNodeStyleGetDirection),
-          YGMakeNativeMethod(jni_YGNodeStyleSetDirection),
-          YGMakeNativeMethod(jni_YGNodeStyleGetFlexDirection),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexDirection),
-          YGMakeNativeMethod(jni_YGNodeStyleGetJustifyContent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetJustifyContent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetAlignItems),
-          YGMakeNativeMethod(jni_YGNodeStyleSetAlignItems),
-          YGMakeNativeMethod(jni_YGNodeStyleGetAlignSelf),
-          YGMakeNativeMethod(jni_YGNodeStyleSetAlignSelf),
-          YGMakeNativeMethod(jni_YGNodeStyleGetAlignContent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetAlignContent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetPositionType),
-          YGMakeNativeMethod(jni_YGNodeStyleSetPositionType),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexWrap),
-          YGMakeNativeMethod(jni_YGNodeStyleGetOverflow),
-          YGMakeNativeMethod(jni_YGNodeStyleSetOverflow),
-          YGMakeNativeMethod(jni_YGNodeStyleGetDisplay),
-          YGMakeNativeMethod(jni_YGNodeStyleSetDisplay),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlex),
-          YGMakeNativeMethod(jni_YGNodeStyleGetFlexGrow),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexGrow),
-          YGMakeNativeMethod(jni_YGNodeStyleGetFlexShrink),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexShrink),
-          YGMakeNativeMethod(jni_YGNodeStyleGetFlexBasis),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasis),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasisPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetFlexBasisAuto),
-          YGMakeNativeMethod(jni_YGNodeStyleGetMargin),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMargin),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMarginPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMarginAuto),
-          YGMakeNativeMethod(jni_YGNodeStyleGetPadding),
-          YGMakeNativeMethod(jni_YGNodeStyleSetPadding),
-          YGMakeNativeMethod(jni_YGNodeStyleSetPaddingPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetBorder),
-          YGMakeNativeMethod(jni_YGNodeStyleSetBorder),
-          YGMakeNativeMethod(jni_YGNodeStyleGetPosition),
-          YGMakeNativeMethod(jni_YGNodeStyleSetPosition),
-          YGMakeNativeMethod(jni_YGNodeStyleSetPositionPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetWidthPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetWidthAuto),
-          YGMakeNativeMethod(jni_YGNodeStyleGetHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetHeightPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleSetHeightAuto),
-          YGMakeNativeMethod(jni_YGNodeStyleGetMinWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMinWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMinWidthPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetMinHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMinHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMinHeightPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetMaxWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMaxWidth),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMaxWidthPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetMaxHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMaxHeight),
-          YGMakeNativeMethod(jni_YGNodeStyleSetMaxHeightPercent),
-          YGMakeNativeMethod(jni_YGNodeStyleGetAspectRatio),
-          YGMakeNativeMethod(jni_YGNodeStyleSetAspectRatio),
-          YGMakeNativeMethod(jni_YGNodeGetInstanceCount),
-          YGMakeNativeMethod(jni_YGNodePrint),
-          YGMakeNativeMethod(jni_YGNodeClone),
-          YGMakeNativeMethod(jni_YGNodeSetOwner),
+#define YGRegisterNatives(YGMakeCriticalNativeMethod)                        \
+  registerNatives(                                                           \
+      "com/facebook/yoga/YogaNode",                                          \
+      {                                                                      \
+          YGMakeNativeMethod(jni_YGNodeNew),                                 \
+          YGMakeNativeMethod(jni_YGNodeNewWithConfig),                       \
+          YGMakeCriticalNativeMethod(jni_YGNodeFree),                        \
+          YGMakeCriticalNativeMethod(jni_YGNodeReset),                       \
+          YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),               \
+          YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),                 \
+          YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),                 \
+          YGMakeNativeMethod(jni_YGNodeCalculateLayout),                     \
+          YGMakeCriticalNativeMethod(jni_YGNodeMarkDirty),                   \
+          YGMakeCriticalNativeMethod(                                        \
+              jni_YGNodeMarkDirtyAndPropogateToDescendants),                 \
+          YGMakeCriticalNativeMethod(jni_YGNodeIsDirty),                     \
+          YGMakeCriticalNativeMethod(jni_YGNodeSetHasMeasureFunc),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeSetHasBaselineFunc),          \
+          YGMakeCriticalNativeMethod(jni_YGNodeCopyStyle),                   \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDirection),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDirection),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexDirection),       \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexDirection),       \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetJustifyContent),      \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetJustifyContent),      \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignItems),          \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignItems),          \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignSelf),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignSelf),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignContent),        \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignContent),        \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetPositionType),        \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionType),        \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexWrap),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetOverflow),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetOverflow),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDisplay),             \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDisplay),             \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlex),                \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexGrow),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexGrow),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexShrink),          \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexShrink),          \
+          YGMakeNativeMethod(jni_YGNodeStyleGetFlexBasis),                   \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasis),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisPercent),    \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisAuto),       \
+          YGMakeNativeMethod(jni_YGNodeStyleGetMargin),                      \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMargin),              \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginPercent),       \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginAuto),          \
+          YGMakeNativeMethod(jni_YGNodeStyleGetPadding),                     \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPadding),             \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPaddingPercent),      \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetBorder),              \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetBorder),              \
+          YGMakeNativeMethod(jni_YGNodeStyleGetPosition),                    \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPosition),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionPercent),     \
+          YGMakeNativeMethod(jni_YGNodeStyleGetWidth),                       \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidth),               \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthPercent),        \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthAuto),           \
+          YGMakeNativeMethod(jni_YGNodeStyleGetHeight),                      \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeight),              \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightPercent),       \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightAuto),          \
+          YGMakeNativeMethod(jni_YGNodeStyleGetMinWidth),                    \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidth),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidthPercent),     \
+          YGMakeNativeMethod(jni_YGNodeStyleGetMinHeight),                   \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeight),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeightPercent),    \
+          YGMakeNativeMethod(jni_YGNodeStyleGetMaxWidth),                    \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidth),            \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidthPercent),     \
+          YGMakeNativeMethod(jni_YGNodeStyleGetMaxHeight),                   \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeight),           \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeightPercent),    \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAspectRatio),         \
+          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),         \
+          YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),            \
+          YGMakeCriticalNativeMethod(jni_YGNodePrint),                       \
+          YGMakeNativeMethod(jni_YGNodeClone),                               \
+          YGMakeCriticalNativeMethod(jni_YGNodeSetOwner),                    \
+      });                                                                    \
+  registerNatives(                                                           \
+      "com/facebook/yoga/YogaConfig",                                        \
+      {                                                                      \
+          YGMakeNativeMethod(jni_YGConfigNew),                               \
+          YGMakeNativeMethod(jni_YGConfigFree),                              \
+          YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),     \
+          YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),                 \
+          YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),                  \
+          YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),               \
+          YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),      \
+          YGMakeNativeMethod(jni_YGConfigSetLogger),                         \
+          YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),               \
+          YGMakeNativeMethod(                                                \
+              jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour), \
       });
-  registerNatives(
-      "com/facebook/yoga/YogaConfig",
-      {
-          YGMakeNativeMethod(jni_YGConfigNew),
-          YGMakeNativeMethod(jni_YGConfigFree),
-          YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
-          YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
-          YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),
-          YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
-          YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
-          YGMakeNativeMethod(jni_YGConfigSetLogger),
-          YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),
-          YGMakeNativeMethod(
-              jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
-      });
+
+void jni_bindNativeMethods(alias_ref<jclass>, jboolean useFastCall) {
+  if (useFastCall) {
+    YGRegisterNatives(YGRealMakeCriticalNativeMethod);
+  } else {
+    YGRegisterNatives(YGWrapCriticalNativeMethodForRegularCall);
+  }
 }
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
