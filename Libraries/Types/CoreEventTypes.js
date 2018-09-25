@@ -35,7 +35,20 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{|
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
     numberActiveTouches: number,
-    touchBank: $ReadOnlyArray<number>,
+    touchBank: $ReadOnlyArray<
+      $ReadOnly<{|
+        touchActive: boolean,
+        startPageX: number,
+        startPageY: number,
+        startTimeStamp: number,
+        currentPageX: number,
+        currentPageY: number,
+        currentTimeStamp: number,
+        previousPageX: number,
+        previousPageY: number,
+        previousTimeStamp: number,
+      |}>,
+    >,
   |}>,
 |}>;
 

@@ -171,25 +171,32 @@ export type GestureState = {|
   _accountsForMovesUpTo: number,
 |};
 
-type PanResponderCallback = (
+type ActiveCallback = (
   event: PressEvent,
   gestureState: GestureState,
-) => mixed;
+) => boolean;
+
+type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
 
 type PanResponderConfig = $ReadOnly<{|
-  onMoveShouldSetPanResponder?: ?PanResponderCallback,
-  onMoveShouldSetPanResponderCapture?: ?PanResponderCallback,
-  onStartShouldSetPanResponder?: ?PanResponderCallback,
-  onStartShouldSetPanResponderCapture?: ?PanResponderCallback,
-  onPanResponderReject?: ?PanResponderCallback,
-  onPanResponderGrant?: ?PanResponderCallback,
-  onPanResponderStart?: ?PanResponderCallback,
-  onPanResponderEnd?: ?PanResponderCallback,
-  onPanResponderRelease?: ?PanResponderCallback,
-  onPanResponderMove?: ?PanResponderCallback,
-  onPanResponderTerminate?: ?PanResponderCallback,
-  onPanResponderTerminationRequest?: ?PanResponderCallback,
-  onShouldBlockNativeResponder?: ?PanResponderCallback,
+  onMoveShouldSetPanResponder?: ?ActiveCallback,
+  onMoveShouldSetPanResponderCapture?: ?ActiveCallback,
+  onStartShouldSetPanResponder?: ?ActiveCallback,
+  onStartShouldSetPanResponderCapture?: ?ActiveCallback,
+  /**
+   * The body of `onResponderGrant` returns a bool, but the vast majority of
+   * callsites return void and this TODO notice is found in it:
+   *   TODO: t7467124 investigate if this can be removed
+   */
+  onPanResponderGrant?: ?(PassiveCallback | ActiveCallback),
+  onPanResponderReject?: ?PassiveCallback,
+  onPanResponderStart?: ?PassiveCallback,
+  onPanResponderEnd?: ?PassiveCallback,
+  onPanResponderRelease?: ?PassiveCallback,
+  onPanResponderMove?: ?PassiveCallback,
+  onPanResponderTerminate?: ?PassiveCallback,
+  onPanResponderTerminationRequest?: ?ActiveCallback,
+  onShouldBlockNativeResponder?: ?ActiveCallback,
 |}>;
 
 const PanResponder = {
@@ -383,17 +390,17 @@ const PanResponder = {
       _accountsForMovesUpTo: 0,
     };
     const panHandlers = {
-      onStartShouldSetResponder(event: PressEvent) {
+      onStartShouldSetResponder(event: PressEvent): boolean {
         return config.onStartShouldSetPanResponder == null
           ? false
           : config.onStartShouldSetPanResponder(event, gestureState);
       },
-      onMoveShouldSetResponder(event: PressEvent) {
+      onMoveShouldSetResponder(event: PressEvent): boolean {
         return config.onMoveShouldSetPanResponder == null
           ? false
           : config.onMoveShouldSetPanResponder(event, gestureState);
       },
-      onStartShouldSetResponderCapture(event: PressEvent) {
+      onStartShouldSetResponderCapture(event: PressEvent): boolean {
         // TODO: Actually, we should reinitialize the state any time
         // touches.length increases from 0 active to > 0 active.
         if (event.nativeEvent.touches.length === 1) {
@@ -406,7 +413,7 @@ const PanResponder = {
           : false;
       },
 
-      onMoveShouldSetResponderCapture(event: PressEvent) {
+      onMoveShouldSetResponderCapture(event: PressEvent): boolean {
         const touchHistory = event.touchHistory;
         // Responder system incorrectly dispatches should* to current responder
         // Filter out any touch moves past the first one - we would have
@@ -423,7 +430,7 @@ const PanResponder = {
           : false;
       },
 
-      onResponderGrant(event: PressEvent) {
+      onResponderGrant(event: PressEvent): boolean {
         if (!interactionState.handle) {
           interactionState.handle = InteractionManager.createInteractionHandle();
         }
@@ -440,7 +447,7 @@ const PanResponder = {
           : config.onShouldBlockNativeResponder(event, gestureState);
       },
 
-      onResponderReject(event: PressEvent) {
+      onResponderReject(event: PressEvent): void {
         clearInteractionHandle(
           interactionState,
           config.onPanResponderReject,
@@ -449,7 +456,7 @@ const PanResponder = {
         );
       },
 
-      onResponderRelease(event: PressEvent) {
+      onResponderRelease(event: PressEvent): void {
         clearInteractionHandle(
           interactionState,
           config.onPanResponderRelease,
@@ -459,7 +466,7 @@ const PanResponder = {
         PanResponder._initializeGestureState(gestureState);
       },
 
-      onResponderStart(event: PressEvent) {
+      onResponderStart(event: PressEvent): void {
         const touchHistory = event.touchHistory;
         gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
         if (config.onPanResponderStart) {
@@ -467,7 +474,7 @@ const PanResponder = {
         }
       },
 
-      onResponderMove(event: PressEvent) {
+      onResponderMove(event: PressEvent): void {
         const touchHistory = event.touchHistory;
         // Guard against the dispatch of two touch moves when there are two
         // simultaneously changed touches.
@@ -485,7 +492,7 @@ const PanResponder = {
         }
       },
 
-      onResponderEnd(event: PressEvent) {
+      onResponderEnd(event: PressEvent): void {
         const touchHistory = event.touchHistory;
         gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
         clearInteractionHandle(
@@ -496,7 +503,7 @@ const PanResponder = {
         );
       },
 
-      onResponderTerminate(event: PressEvent) {
+      onResponderTerminate(event: PressEvent): void {
         clearInteractionHandle(
           interactionState,
           config.onPanResponderTerminate,
@@ -506,7 +513,7 @@ const PanResponder = {
         PanResponder._initializeGestureState(gestureState);
       },
 
-      onResponderTerminationRequest(event: PressEvent) {
+      onResponderTerminationRequest(event: PressEvent): boolean {
         return config.onPanResponderTerminationRequest == null
           ? true
           : config.onPanResponderTerminationRequest(event, gestureState);
@@ -523,7 +530,7 @@ const PanResponder = {
 
 function clearInteractionHandle(
   interactionState: {handle: ?number},
-  callback: ?PanResponderCallback,
+  callback: ?(ActiveCallback | PassiveCallback),
   event: PressEvent,
   gestureState: GestureState,
 ) {
