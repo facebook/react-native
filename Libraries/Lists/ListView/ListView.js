@@ -33,7 +33,7 @@ const DEFAULT_SCROLL_RENDER_AHEAD = 1000;
 const DEFAULT_END_REACHED_THRESHOLD = 1000;
 const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
 
-export type Props = $ReadOnly<{|
+type Props = $ReadOnly<{|
   ...ScrollViewProps,
 
   /**

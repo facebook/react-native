@@ -24,9 +24,10 @@ const {
 const RNTesterPage = require('./RNTesterPage');
 
 import type {RNTesterProps} from 'RNTesterTypes';
+import type {SwipeableListViewDataSource} from 'SwipeableListViewDataSource';
 
 type State = {|
-  dataSource: Object,
+  dataSource: SwipeableListViewDataSource,
 |};
 
 class SwipeableListViewSimpleExample extends React.Component<
@@ -79,7 +80,7 @@ class SwipeableListViewSimpleExample extends React.Component<
     );
   }
 
-  _renderRow = (rowData: Object, sectionID: string, rowID: string) => {
+  _renderRow(rowData: Object, sectionID: string, rowID: string) {
     const rowHash = Math.abs(hashCode(rowData.id));
     const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
@@ -96,7 +97,7 @@ class SwipeableListViewSimpleExample extends React.Component<
     );
   };
 
-  _genDataSource(pressData: {[key: number]: boolean}): Array<any> {
+  _genDataSource(pressData: {[key: number]: boolean}) {
     const dataBlob = {};
     const sectionIDs = ['Section 0'];
     const rowIDs = [[]];
@@ -115,7 +116,8 @@ class SwipeableListViewSimpleExample extends React.Component<
      *     }
      *   }
      */
-    // only one section in this example
+
+    // Only one section in this example
     dataBlob['Section 0'] = {};
     for (let ii = 0; ii < 100; ii++) {
       const pressedText = pressData[ii] ? ' (pressed)' : '';
@@ -128,11 +130,11 @@ class SwipeableListViewSimpleExample extends React.Component<
     return [dataBlob, sectionIDs, rowIDs];
   }
 
-  _renderSeperator = (
+  _renderSeperator(
     sectionID: string,
     rowID: string,
     adjacentRowHighlighted: boolean,
-  ) => {
+  ) {
     return (
       <View
         key={`${sectionID}-${rowID}`}
@@ -169,14 +171,15 @@ const LOREM_IPSUM = [
   'putant invidunt reprehendunt ne qui.',
 ].join('');
 
-/* eslint no-bitwise: 0 */
-const hashCode = function(str) {
+/* eslint-disable no-bitwise */
+const hashCode = str => {
   let hash = 15;
   for (let ii = str.length - 1; ii >= 0; ii--) {
     hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
+/* eslint-enable no-bitwise */
 
 const styles = StyleSheet.create({
   row: {

@@ -15,7 +15,7 @@ const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
 
-import type {Props as ListViewProps} from 'ListView';
+type ListViewProps = React.ElementConfig<typeof ListView>;
 
 type Props = $ReadOnly<{|
   ...ListViewProps,
