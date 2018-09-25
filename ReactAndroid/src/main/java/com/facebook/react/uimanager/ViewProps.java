@@ -17,11 +17,6 @@ import java.util.HashSet;
  */
 public class ViewProps {
 
-  /**
-   * Kill switch to make overflow hidden by default. This flag will eventually be removed.
-   */
-  public static boolean sDefaultOverflowHidden;
-
   public static final String VIEW_CLASS_NAME = "RCTView";
 
   // Layout only (only affect positions of children, causes no drawing)
