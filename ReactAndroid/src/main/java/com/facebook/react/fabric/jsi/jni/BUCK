@@ -1,0 +1,23 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(["*.h"]),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-std=gnu++1y",
+        "-frtti",
+    ],
+    platforms = ANDROID,
+    soname = "libfabricjsijni.$(ext)",
+    visibility = ["PUBLIC"],
+    deps = [
+        FBJNI_TARGET,
+        react_native_target("jni/react/jni:jni"),
+        "xplat//folly:molly",
+        "xplat//jsi:JSIDynamic",
+        "xplat//jsi:jsi",
+    ],
+)
