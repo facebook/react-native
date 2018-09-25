@@ -13,8 +13,6 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
-        react_native_dep("java/com/facebook/fbreact/fabricxx:fabricxx"),
-        react_native_dep("java/com/facebook/fbreact/fabricxx/jsi:jsi"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/buck-android-support:buck-android-support"),
@@ -39,5 +37,3 @@ rn_android_library(
         react_native_target("res:uimanager"),
     ],
 )
-
-# /Users/dvacca/fbsource/fbandroid/xplat_cell/ReactAndroid/src/androidTest/java/com/facebook/react/testing/BUCK
