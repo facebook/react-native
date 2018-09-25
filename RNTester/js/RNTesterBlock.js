@@ -10,32 +10,26 @@
 
 'use strict';
 
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
 
-class RNTesterBlock extends React.Component<
-  {
-    title?: string,
-    description?: string,
-  },
-  $FlowFixMeState,
-> {
-  static propTypes = {
-    title: PropTypes.string,
-    description: PropTypes.string,
-  };
+type Props = $ReadOnly<{|
+  children?: React.Node,
+  title?: ?string,
+  description?: ?string,
+|}>;
 
-  state = {description: (null: ?string)};
+type State = {|
+  description: ?string,
+|};
+
+class RNTesterBlock extends React.Component<Props, State> {
+  state = {description: null};
 
   render() {
-    var description;
-    if (this.props.description) {
-      description = (
-        <Text style={styles.descriptionText}>{this.props.description}</Text>
-      );
-    }
+    const description = this.props.description ? (
+      <Text style={styles.descriptionText}>{this.props.description}</Text>
+    ) : null;
 
     return (
       <View style={styles.container}>
@@ -43,18 +37,13 @@ class RNTesterBlock extends React.Component<
           <Text style={styles.titleText}>{this.props.title}</Text>
           {description}
         </View>
-        <View style={styles.children}>
-          {
-            // $FlowFixMe found when converting React.createClass to ES6
-            this.props.children
-          }
-        </View>
+        <View style={styles.children}>{this.props.children}</View>
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     borderWidth: 0.5,
