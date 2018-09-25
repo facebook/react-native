@@ -14,7 +14,7 @@
 // that might have more keys. This also has to be inexact to support taking
 // instances of classes like FBIcon.
 // https://fburl.com/8lynhvtw
-type ImageURISource = $ReadOnly<{
+export type ImageURISource = $ReadOnly<{
   uri?: ?string,
   bundle?: ?string,
   method?: ?string,
