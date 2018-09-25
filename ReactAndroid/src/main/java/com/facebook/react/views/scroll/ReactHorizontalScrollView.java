@@ -195,7 +195,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     switch (mOverflow) {
       case ViewProps.VISIBLE:
         break;
-      case ViewProps.HIDDEN:
+      default:
         canvas.clipRect(mRect);
         break;
     }
