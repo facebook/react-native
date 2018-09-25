@@ -384,7 +384,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     switch (mOverflow) {
       case ViewProps.VISIBLE:
         break;
-      case ViewProps.HIDDEN:
+      default:
         canvas.clipRect(mRect);
         break;
     }
