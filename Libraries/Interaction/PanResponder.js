@@ -129,43 +129,55 @@ export type GestureState = {|
    * ID of the gestureState - persisted as long as there at least one touch on screen
    */
   stateID: number,
+
   /**
    * The latest screen coordinates of the recently-moved touch
    */
   moveX: number,
+
   /**
    * The latest screen coordinates of the recently-moved touch
    */
   moveY: number,
+
   /**
    * The screen coordinates of the responder grant
    */
   x0: number,
+
   /**
    * The screen coordinates of the responder grant
    */
   y0: number,
+
   /**
    * Accumulated distance of the gesture since the touch started
    */
   dx: number,
+
   /**
    * Accumulated distance of the gesture since the touch started
    */
   dy: number,
+
   /**
    * Current velocity of the gesture
    */
   vx: number,
+
   /**
    * Current velocity of the gesture
    */
   vy: number,
+
   /**
    * Number of touches currently on screen
    */
   numberActiveTouches: number,
+
   /**
+   * All `gestureState` accounts for timeStamps up until this value
+   *
    * @private
    */
   _accountsForMovesUpTo: number,
