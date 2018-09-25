@@ -112,9 +112,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   private void init() {
-    if (!ViewProps.sDefaultOverflowHidden) {
-      setClipChildren(false);
-    }
+    setClipChildren(false);
   }
 
   @Override
