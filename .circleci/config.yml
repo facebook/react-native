@@ -187,7 +187,8 @@ aliases:
 
   - &run-flow-checks
     name: Check for errors in code using Flow
-    command: yarn flow check
+    command: yarn flow-check-ios
+    command: yarn flow-check-android
 
   - &run-sanity-checks
     name: Sanity checks
