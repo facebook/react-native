@@ -21,11 +21,21 @@ namespace react {
 class FabricUIManager;
 using UIManager = FabricUIManager;
 
+/*
+ * Particular implementations of those functions should capture references to
+ * the runtime and ensure proper threading.
+ */
+using UIManagerInstaller = void (UIManager &uiManager);
+using UIManagerUninstaller = void ();
+
 using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, const std::string &type, const folly::dynamic &payload);
 using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload);
 
 class FabricUIManager {
 public:
+
+  FabricUIManager(std::function<UIManagerInstaller> installer, std::function<UIManagerUninstaller> uninstaller);
+  ~FabricUIManager();
 
 #pragma mark - Native-facing Interface
 
@@ -77,6 +87,9 @@ private:
   mutable UniqueEventHandler eventHandler_;
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
+
+  std::function<UIManagerInstaller> installer_;
+  std::function<UIManagerUninstaller> uninstaller_;
 };
 
 } // namespace react
