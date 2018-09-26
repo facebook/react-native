@@ -77,11 +77,12 @@ var NetworkImageCallbackExample = createReactClass({
                   this._loadEventFired(
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
-                  Image.queryCache([IMAGE_PREFETCH_URL]).then((map) => {
+                  Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
                     var result = map.get(IMAGE_PREFETCH_URL);
                     if (result) {
                       this._loadEventFired(
-                        `✔ queryCache "${result}" (+${new Date() - mountTime}ms)`,
+                        `✔ queryCache "${result}" (+${new Date() -
+                          mountTime}ms)`,
                       );
                     } else {
                       this._loadEventFired(
@@ -460,23 +461,31 @@ exports.examples = [
             source={fullImage}
           />
           <Image
-            style={[styles.base, styles.leftMargin, {
-              borderWidth: 10,
-              borderTopLeftRadius: 10,
-              borderBottomRightRadius: 20,
-              borderColor: 'green',
-            }]}
+            style={[
+              styles.base,
+              styles.leftMargin,
+              {
+                borderWidth: 10,
+                borderTopLeftRadius: 10,
+                borderBottomRightRadius: 20,
+                borderColor: 'green',
+              },
+            ]}
             source={fullImage}
           />
           <Image
-            style={[styles.base, styles.leftMargin, {
-              borderWidth: 5,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 30,
-              borderBottomLeftRadius: 40,
-              borderColor: 'red',
-            }]}
+            style={[
+              styles.base,
+              styles.leftMargin,
+              {
+                borderWidth: 5,
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 20,
+                borderBottomRightRadius: 30,
+                borderBottomLeftRadius: 40,
+                borderColor: 'red',
+              },
+            ]}
             source={fullImage}
           />
         </View>
