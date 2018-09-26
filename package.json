@@ -148,6 +148,7 @@
     "react": "16.5.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
@@ -203,7 +204,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "babel-generator": "^6.26.0",
