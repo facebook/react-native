@@ -43,7 +43,6 @@ using namespace facebook::react;
   RCTBridge *_bridge;
   RCTBridge *_batchedBridge;
   RCTSurfaceRegistry *_surfaceRegistry;
-  SharedContextContainer _contextContainer;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -51,26 +50,6 @@ using namespace facebook::react;
   if (self = [super init]) {
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
-
-    auto contextContainer = std::make_shared<ContextContainer>();
-
-    auto messageQueueThread = _batchedBridge.jsMessageThread;
-
-    EventBeatFactory synchronousBeatFactory = [messageQueueThread]() {
-      return std::make_unique<MainRunLoopEventBeat>(messageQueueThread);
-    };
-
-    EventBeatFactory asynchronousBeatFactory = [messageQueueThread]() {
-      return std::make_unique<MessageQueueEventBeat>(messageQueueThread);
-    };
-
-    contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-    contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
-
-    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
-    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
-
-    _contextContainer = contextContainer;
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
 
@@ -101,7 +80,27 @@ using namespace facebook::react;
     return;
   }
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:_contextContainer];
+  auto contextContainer = std::make_shared<ContextContainer>();
+
+  auto messageQueueThread = _batchedBridge.jsMessageThread;
+
+  EventBeatFactory synchronousBeatFactory = [messageQueueThread]() {
+    return std::make_unique<MainRunLoopEventBeat>(messageQueueThread);
+  };
+
+  EventBeatFactory asynchronousBeatFactory = [messageQueueThread]() {
+    return std::make_unique<MessageQueueEventBeat>(messageQueueThread);
+  };
+
+  contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
+  contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+
+  contextContainer->registerInstance(_uiManagerInstaller, "uimanager-installer");
+  contextContainer->registerInstance(_uiManagerUninstaller, "uimanager-uninstaller");
+
+  contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]));
+
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:contextContainer];
   _scheduler.delegate = self;
 }
 
@@ -292,26 +291,6 @@ using namespace facebook::react;
 - (RCTBridge *)bridge_DO_NOT_USE
 {
   return _bridge;
-}
-
-- (void)setUiManagerInstaller:(std::function<facebook::react::UIManagerInstaller>)uiManagerInstaller
-{
-  _contextContainer->registerInstance(uiManagerInstaller, "uimanager-installer");
-}
-
-- (std::function<facebook::react::UIManagerInstaller>)uiManagerInstaller
-{
-  return _contextContainer->getInstance<std::function<facebook::react::UIManagerInstaller>>("uimanager-installer");
-}
-
-- (void)setUiManagerUninstaller:(std::function<facebook::react::UIManagerUninstaller>)uiManagerUninstaller
-{
-  _contextContainer->registerInstance(uiManagerUninstaller, "uimanager-uninstaller");
-}
-
-- (std::function<facebook::react::UIManagerUninstaller>)uiManagerUninstaller
-{
-  return _contextContainer->getInstance<std::function<facebook::react::UIManagerUninstaller>>("uimanager-uninstaller");
 }
 
 @end
