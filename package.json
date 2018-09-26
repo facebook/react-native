@@ -200,7 +200,8 @@
     "ws": "^1.1.0",
     "xcode": "^0.9.1",
     "xmldoc": "^0.4.0",
-    "yargs": "^9.0.0"
+    "yargs": "^9.0.0",
+    "yeoman-generator": "^3.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
