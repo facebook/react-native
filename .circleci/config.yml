@@ -185,9 +185,13 @@ aliases:
     name: Lint code
     command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
-  - &run-flow-checks
-    name: Check for errors in code using Flow
-    command: yarn flow check
+  - &run-flow-checks-ios
+    name: Check for errors in code using Flow (iOS)
+    command: yarn flow-check-ios
+
+  - &run-flow-checks-android
+    name: Check for errors in code using Flow (Android)
+    command: yarn flow-check-android
 
   - &run-sanity-checks
     name: Sanity checks
@@ -377,7 +381,8 @@ jobs:
           at: ~/react-native
 
       - run: *run-lint-checks
-      - run: *run-flow-checks
+      - run: *run-flow-checks-ios
+      - run: *run-flow-checks-android
 
       - store_test_results:
           path: ~/react-native/reports/junit
