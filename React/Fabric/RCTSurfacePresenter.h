@@ -27,6 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
+/*
+ * Deprecated. Do not use.
+ */
+@property (nonatomic) std::function<facebook::react::UIManagerInstaller> uiManagerInstaller;
+@property (nonatomic) std::function<facebook::react::UIManagerUninstaller> uiManagerUninstaller;
+
 @end
 
 @interface RCTSurfacePresenter (Surface)
@@ -59,9 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RCTSurfacePresenter (Deprecated)
-
-@property (nonatomic) std::function<facebook::react::UIManagerInstaller> uiManagerInstaller;
-@property (nonatomic) std::function<facebook::react::UIManagerUninstaller> uiManagerUninstaller;
 
 /**
  * We need to expose `uiManager` for registration
