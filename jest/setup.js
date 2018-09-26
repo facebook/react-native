@@ -92,7 +92,6 @@ jest
   })
   .mock('ensureComponentIsNative', () => () => true);
 
-const mockEmptyObject = {};
 const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),

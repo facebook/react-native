@@ -18,5 +18,4 @@ module.exports = () => [
   require.resolve('./Libraries/polyfills/Array.prototype.es6.js'),
   require.resolve('./Libraries/polyfills/Array.es6.js'),
   require.resolve('./Libraries/polyfills/Object.es7.js'),
-  require.resolve('./Libraries/polyfills/babelHelpers.js'),
 ];
