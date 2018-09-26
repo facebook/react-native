@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
+- (void)setProps:(NSDictionary *)props
+         surface:(RCTFabricSurface *)surface;
+
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
 /**
@@ -56,6 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RCTSurfacePresenter (Deprecated)
+
+@property (nonatomic) std::function<facebook::react::UIManagerInstaller> uiManagerInstaller;
+@property (nonatomic) std::function<facebook::react::UIManagerUninstaller> uiManagerUninstaller;
 
 /**
  * We need to expose `uiManager` for registration

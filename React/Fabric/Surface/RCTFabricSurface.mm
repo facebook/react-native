@@ -162,8 +162,7 @@
     _properties = [properties copy];
   }
 
-  // TODO: Implement this in RCTSurfacePresenter.
-  // [_surfacePresenter setProps:properties surface:self];
+  [_surfacePresenter setProps:properties surface:self];
 }
 
 #pragma mark - Layout
