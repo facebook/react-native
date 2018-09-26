@@ -7,6 +7,8 @@
 
 #import "RCTSurfacePresenter.h"
 
+#import <mutex>
+
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -38,11 +40,12 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSurfacePresenter {
-  RCTScheduler *_Nullable _scheduler;
-  RCTMountingManager *_mountingManager;
-  RCTBridge *_bridge;
+  std::mutex _schedulerMutex;
+  RCTScheduler *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
+  RCTMountingManager *_mountingManager; // Thread-safe.
+  RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
+  RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
-  RCTSurfaceRegistry *_surfaceRegistry;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -74,10 +77,71 @@ using namespace facebook::react;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)createSchedulerIfNeeded
+#pragma mark - Internal Surface-dedicated Interface
+
+- (void)registerSurface:(RCTFabricSurface *)surface
 {
+  [_surfaceRegistry registerSurface:surface];
+  [self _startSurface:surface];
+}
+
+- (void)unregisterSurface:(RCTFabricSurface *)surface
+{
+  [self _stopSurface:surface];
+  [_surfaceRegistry unregisterSurface:surface];
+}
+
+- (void)setProps:(NSDictionary *)props
+         surface:(RCTFabricSurface *)surface
+{
+  // This implementation is suboptimal indeed but still better than nothing for now.
+  [self _stopSurface:surface];
+  [self _startSurface:surface];
+}
+
+- (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
+{
+  return [_surfaceRegistry surfaceForRootTag:rootTag];
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  return [self._scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
+                                                layoutContext:layoutContext
+                                                    surfaceId:surface.rootTag];
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface
+{
+  LayoutContext layoutContext;
+  layoutContext.pointScaleFactor = RCTScreenScale();
+  LayoutConstraints layoutConstraints = {};
+  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
+  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+
+  [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
+                                                  layoutContext:layoutContext
+                                                      surfaceId:surface.rootTag];
+}
+
+#pragma mark - Private
+
+- (RCTScheduler *)_scheduler
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+
   if (_scheduler) {
-    return;
+    return _scheduler;
   }
 
   auto contextContainer = std::make_shared<ContextContainer>();
@@ -102,96 +166,26 @@ using namespace facebook::react;
 
   _scheduler = [[RCTScheduler alloc] initWithContextContainer:contextContainer];
   _scheduler.delegate = self;
+
+  return _scheduler;
 }
 
-- (void)ensureSchedulerDoesExist
-{
-  RCTAssert(_scheduler, @"RCTSurfacePresenter: RCTScheduler instance must be already instantiated at this point.");
-}
-
-#pragma mark - Internal Surface-dedicated Interface
-
-- (void)registerSurface:(RCTFabricSurface *)surface
-{
-  [_surfaceRegistry registerSurface:surface];
-
-  [self startSurface:surface];
-}
-
-- (void)unregisterSurface:(RCTFabricSurface *)surface
-{
-  [self stopSurface:surface];
-
-  [_surfaceRegistry unregisterSurface:surface];
-}
-
-- (void)setProps:(NSDictionary *)props
-         surface:(RCTFabricSurface *)surface
-{
-  // This implementation is suboptimal indeed but still better than nothing for now.
-  [self stopSurface:surface];
-  [self startSurface:surface];
-}
-
-- (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
-{
-  return [_surfaceRegistry surfaceForRootTag:rootTag];
-}
-
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
-                          surface:(RCTFabricSurface *)surface
-{
-  [self ensureSchedulerDoesExist];
-
-  LayoutContext layoutContext;
-  layoutContext.pointScaleFactor = RCTScreenScale();
-  LayoutConstraints layoutConstraints = {};
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
-
-  return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
-                                           layoutContext:layoutContext
-                                               surfaceId:surface.rootTag];
-}
-
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
-               surface:(RCTFabricSurface *)surface
-{
-  [self ensureSchedulerDoesExist];
-
-  LayoutContext layoutContext;
-  layoutContext.pointScaleFactor = RCTScreenScale();
-  LayoutConstraints layoutConstraints = {};
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
-
-  [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
-                                             layoutContext:layoutContext
-                                                 surfaceId:surface.rootTag];
-}
-
-- (void)startSurface:(RCTFabricSurface *)surface
+- (void)_startSurface:(RCTFabricSurface *)surface
 {
   [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 
-  [self createSchedulerIfNeeded];
-
-  [_scheduler startSurfaceWithSurfaceId:surface.rootTag
-                             moduleName:surface.moduleName
-                           initailProps:surface.properties];
+  [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
+                                  moduleName:surface.moduleName
+                                initailProps:surface.properties];
 
   [self setMinimumSize:surface.minimumSize
            maximumSize:surface.maximumSize
                surface:surface];
 }
 
-- (void)stopSurface:(RCTFabricSurface *)surface
+- (void)_stopSurface:(RCTFabricSurface *)surface
 {
-  [self ensureSchedulerDoesExist];
-
-  [_scheduler stopSurfaceWithSurfaceId:surface.rootTag];
+  [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
   UIView<RCTComponentViewProtocol> *rootView = [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
   [_mountingManager.componentViewRegistry enqueueComponentViewWithName:@"Root" tag:surface.rootTag componentView:rootView];
@@ -199,17 +193,17 @@ using namespace facebook::react;
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
 
-- (void)startAllSurfaces
+- (void)_startAllSurfaces
 {
   for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self startSurface:surface];
+    [self _startSurface:surface];
   }
 }
 
-- (void)stopAllSurfaces
+- (void)_stopAllSurfaces
 {
   for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self stopSurface:surface];
+    [self _stopSurface:surface];
   }
 }
 
@@ -259,8 +253,20 @@ using namespace facebook::react;
 
 - (void)handleBridgeWillReloadNotification:(NSNotification *)notification
 {
-  [self stopAllSurfaces];
-  _scheduler = nil;
+  {
+    std::lock_guard<std::mutex> lock(_schedulerMutex);
+    if (!_scheduler) {
+      // Seems we are already in the realoding process.
+      return;
+    }
+  }
+
+  [self _stopAllSurfaces];
+
+  {
+    std::lock_guard<std::mutex> lock(_schedulerMutex);
+    _scheduler = nil;
+  }
 }
 
 - (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
@@ -269,7 +275,7 @@ using namespace facebook::react;
   if (bridge != _batchedBridge) {
     _batchedBridge = bridge;
 
-    [self startAllSurfaces];
+    [self _startAllSurfaces];
   }
 }
 
