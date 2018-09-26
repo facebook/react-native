@@ -218,9 +218,9 @@ type IOSProps = $ReadOnly<{|
    */
   scrollsToTop?: ?boolean,
   /**
-    * Fires when the scroll view scrolls to top after the status bar has been tapped
-    * @platform ios
-    */
+   * Fires when the scroll view scrolls to top after the status bar has been tapped
+   * @platform ios
+   */
   onScrollToTop?: ?Function,
   /**
    * When true, shows a horizontal scroll indicator.

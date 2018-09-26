@@ -68,6 +68,8 @@ describe('getAssetDestPathAndroid', () => {
       httpServerLocation: '/assets/app/test',
     };
 
-    expect(getAssetDestPathAndroid(asset, 1)).toBe(path.normalize('raw/app_test_video.mp4'));
+    expect(getAssetDestPathAndroid(asset, 1)).toBe(
+      path.normalize('raw/app_test_video.mp4'),
+    );
   });
 });
