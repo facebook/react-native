@@ -949,8 +949,7 @@ const TextInput = createReactClass({
           <Text
             style={props.style}
             allowFontScaling={props.allowFontScaling}
-            maxFontSizeMultiplier={props.maxFontSizeMultiplier}
-          >
+            maxFontSizeMultiplier={props.maxFontSizeMultiplier}>
             {children}
           </Text>
         );

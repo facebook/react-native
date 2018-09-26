@@ -23,7 +23,9 @@ describe('getAssetDestPathIOS', () => {
       httpServerLocation: '/assets/test',
     };
 
-    expect(getAssetDestPathIOS(asset, 1)).toBe(path.normalize('assets/test/icon.png'));
+    expect(getAssetDestPathIOS(asset, 1)).toBe(
+      path.normalize('assets/test/icon.png'),
+    );
   });
 
   it('should consider scale', () => {
@@ -33,7 +35,11 @@ describe('getAssetDestPathIOS', () => {
       httpServerLocation: '/assets/test',
     };
 
-    expect(getAssetDestPathIOS(asset, 2)).toBe(path.normalize('assets/test/icon@2x.png'));
-    expect(getAssetDestPathIOS(asset, 3)).toBe(path.normalize('assets/test/icon@3x.png'));
+    expect(getAssetDestPathIOS(asset, 2)).toBe(
+      path.normalize('assets/test/icon@2x.png'),
+    );
+    expect(getAssetDestPathIOS(asset, 3)).toBe(
+      path.normalize('assets/test/icon@3x.png'),
+    );
   });
 });
