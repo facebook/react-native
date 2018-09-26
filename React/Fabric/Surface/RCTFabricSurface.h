@@ -43,10 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
-
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties;
@@ -120,11 +116,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTFabricSurface (Internal)
 
-- (void)_setStage:(RCTSurfaceStage)stage;
+/**
+ * Sets and clears given stage flags (bitmask).
+ * Returns `YES` if the actual state was changed.
+ */
+- (BOOL)_setStage:(RCTSurfaceStage)stage;
+- (BOOL)_unsetStage:(RCTSurfaceStage)stage;
 
 @end
 
 @interface RCTFabricSurface (Deprecated)
+
+/**
+ * Deprecated. Use `initWithSurfacePresenter:moduleName:initialProperties` instead.
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Deprecated. Use `rootTag` instead.
