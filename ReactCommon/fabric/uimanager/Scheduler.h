@@ -6,6 +6,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
@@ -28,17 +29,30 @@ class Scheduler final:
   public ShadowTreeDelegate {
 
 public:
-
   Scheduler(const SharedContextContainer &contextContainer);
   ~Scheduler();
 
-#pragma mark - Shadow Tree Management
+#pragma mark - Surface Management
 
-  void registerRootTag(Tag rootTag);
-  void unregisterRootTag(Tag rootTag);
+  void startSurface(
+    SurfaceId surfaceId,
+    const std::string &moduleName,
+    const folly::dynamic &initialProps
+  ) const;
 
-  Size measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  void constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext);
+  void stopSurface(SurfaceId surfaceId) const;
+
+  Size measureSurface(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  ) const;
+
+  void constraintSurfaceLayout(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  ) const;
 
 #pragma mark - Delegate
 
@@ -57,7 +71,7 @@ public:
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) override;
+  void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const override;
 
 #pragma mark - Deprecated
 
@@ -69,7 +83,8 @@ public:
 private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
-  std::unordered_map<Tag, std::unique_ptr<ShadowTree>> shadowTreeRegistry_;
+  mutable std::mutex mutex_;
+  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>> shadowTreeRegistry_; // Protected by `mutex_`.
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
 };

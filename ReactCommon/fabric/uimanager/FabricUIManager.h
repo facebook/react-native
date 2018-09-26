@@ -32,6 +32,9 @@ using UIManagerUninstaller = void ();
 using DispatchEventToEmptyTargetFunction = void (const EventHandler &eventHandler, const std::string &type, const folly::dynamic &payload);
 using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, const EventTarget &eventTarget, const std::string &type, const folly::dynamic &payload);
 
+using StartSurface = void (SurfaceId surfaceId, const std::string &moduleName, const folly::dynamic &initalProps);
+using StopSurface = void (SurfaceId surfaceId);
+
 class FabricUIManager {
 public:
 
@@ -61,10 +64,14 @@ public:
    */
   void setDispatchEventToEmptyTargetFunction(std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction);
   void setDispatchEventToTargetFunction(std::function<DispatchEventToTargetFunction> dispatchEventFunction);
+  void setStartSurfaceFunction(std::function<StartSurface>);
+  void setStopSurfaceFunction(std::function<StopSurface>);
 
 #pragma mark - Native-facing Interface
 
   void dispatchEventToTarget(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload) const;
+  void startSurface(SurfaceId surfaceId, const std::string &moduleName, const folly::dynamic &initialProps) const;
+  void stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - JavaScript/React-facing Interface
 
@@ -86,12 +93,13 @@ public:
   void registerEventHandler(UniqueEventHandler eventHandler) const;
 
 private:
-
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   mutable UniqueEventHandler eventHandler_;
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
+  std::function<StartSurface> startSurfaceFunction_;
+  std::function<StopSurface> stopSurfaceFunction_;
 
   std::unique_ptr<EventBeatBasedExecutor> executor_;
   std::function<UIManagerInstaller> installer_;
