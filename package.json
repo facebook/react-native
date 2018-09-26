@@ -185,7 +185,7 @@
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "plist": "^3.0.0",
-    "pretty-format": "^4.2.1",
+    "pretty-format": "^23.4.1",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
