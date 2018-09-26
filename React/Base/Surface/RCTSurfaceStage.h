@@ -27,6 +27,8 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   //
   // Surface object was constructed and still valid.
   RCTSurfaceStageInitialized = RCTSurfaceStageSurfaceDidInitialize,
+  // Surface was started.
+  RCTSurfaceStageStarted = 1 << 8,
   // All off-main-thread work is done; we are ready to mount the UI.
   RCTSurfaceStagePrepared = RCTSurfaceStageBridgeDidLoad | RCTSurfaceStageModuleDidLoad | RCTSurfaceStageSurfaceDidRun | RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout,
   // All main-thread work is done, the UI was mounted.

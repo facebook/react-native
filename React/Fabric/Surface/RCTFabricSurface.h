@@ -63,6 +63,22 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (RCTSurfaceView *)view;
 
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * A Surface object can be stopped and then restarted.
+ * The starting process includes initializing all underlying React Native
+ * infrastructure and running React app.
+ * Just initialized Surface object starts automatically, there is no need
+ * to call `start` explicitly. Surface also stops itself on deallocation
+ * automatically.
+ * Returns YES in case of success. Returns NO if the Surface is already
+ * started or stopped.
+ */
+- (BOOL)start;
+- (BOOL)stop;
+
 #pragma mark - Layout: Setting the size constrains
 
 /**

@@ -51,19 +51,39 @@
     _minimumSize = CGSizeZero;
     _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
 
-    _stage = RCTSurfaceStageSurfaceDidInitialize;
-
     _touchHandler = [RCTSurfaceTouchHandler new];
 
-    [_surfacePresenter registerSurface:self];
+    _stage = RCTSurfaceStageSurfaceDidInitialize;
+
+    [self start];
   }
 
   return self;
 }
 
+- (BOOL)start
+{
+  if (![self _setStage:RCTSurfaceStageStarted]) {
+    return NO;
+  }
+
+  [_surfacePresenter registerSurface:self];
+  return YES;
+}
+
+- (BOOL)stop
+{
+  if (![self _unsetStage:RCTSurfaceStageStarted]) {
+    return NO;
+  }
+
+  [_surfacePresenter unregisterSurface:self];
+  return YES;
+}
+
 - (void)dealloc
 {
-  [_surfacePresenter unregisterSurface:self];
+  [self stop];
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchonization)
