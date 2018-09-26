@@ -12,6 +12,7 @@
 #include <folly/dynamic.h>
 
 #include <fabric/core/ShadowNode.h>
+#include <fabric/events/EventBeatBasedExecutor.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/UIManagerDelegate.h>
 
@@ -34,7 +35,11 @@ using DispatchEventToTargetFunction = void (const EventHandler &eventHandler, co
 class FabricUIManager {
 public:
 
-  FabricUIManager(std::function<UIManagerInstaller> installer, std::function<UIManagerUninstaller> uninstaller);
+  FabricUIManager(
+    std::unique_ptr<EventBeatBasedExecutor> executor,
+    std::function<UIManagerInstaller> installer,
+    std::function<UIManagerUninstaller> uninstaller
+  );
   ~FabricUIManager();
 
 #pragma mark - Native-facing Interface
@@ -88,6 +93,7 @@ private:
   std::function<DispatchEventToEmptyTargetFunction> dispatchEventToEmptyTargetFunction_;
   std::function<DispatchEventToTargetFunction> dispatchEventToTargetFunction_;
 
+  std::unique_ptr<EventBeatBasedExecutor> executor_;
   std::function<UIManagerInstaller> installer_;
   std::function<UIManagerUninstaller> uninstaller_;
 };

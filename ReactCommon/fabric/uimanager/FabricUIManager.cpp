@@ -89,15 +89,24 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-FabricUIManager::FabricUIManager(std::function<UIManagerInstaller> installer, std::function<UIManagerUninstaller> uninstaller):
-  installer_(std::move(installer)),
-  uninstaller_(std::move(uninstaller)) {
+  FabricUIManager::FabricUIManager(
+    std::unique_ptr<EventBeatBasedExecutor> executor,
+    std::function<UIManagerInstaller> installer,
+    std::function<UIManagerUninstaller> uninstaller
+  ):
+    executor_(std::move(executor)),
+    installer_(std::move(installer)),
+    uninstaller_(std::move(uninstaller)) {
 
-  installer_(*this);
+  (*executor_)([this] {
+    installer_(*this);
+  });
 }
 
 FabricUIManager::~FabricUIManager() {
-  uninstaller_();
+  (*executor_)([this] {
+    uninstaller_();
+  }, EventBeatBasedExecutor::Mode::Synchronous);
 }
 
 void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {

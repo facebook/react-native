@@ -18,7 +18,11 @@ namespace react {
 Scheduler::Scheduler(const SharedContextContainer &contextContainer):
   contextContainer_(contextContainer) {
 
+  const auto asynchronousEventBeatFactory = contextContainer->getInstance<EventBeatFactory>("asynchronous");
+  const auto synchronousEventBeatFactory = contextContainer->getInstance<EventBeatFactory>("synchronous");
+
   uiManager_ = std::make_shared<FabricUIManager>(
+    std::make_unique<EventBeatBasedExecutor>(asynchronousEventBeatFactory()),
     contextContainer->getInstance<std::function<UIManagerInstaller>>("uimanager-installer"),
     contextContainer->getInstance<std::function<UIManagerUninstaller>>("uimanager-uninstaller")
   );
@@ -32,8 +36,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer):
         std::placeholders::_2,
         std::placeholders::_3
       ),
-      contextContainer->getInstance<EventBeatFactory>("synchronous"),
-      contextContainer->getInstance<EventBeatFactory>("asynchronous")
+      synchronousEventBeatFactory,
+      asynchronousEventBeatFactory
     );
 
   uiManager_->setComponentDescriptorRegistry(
