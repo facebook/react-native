@@ -11,6 +11,8 @@
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
 
+#import <React/RCTFollyConvert.h>
+
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -55,28 +57,34 @@ private:
   _scheduler->setDelegate(nullptr);
 }
 
-- (void)registerRootTag:(ReactTag)tag
+- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
+                       moduleName:(NSString *)moduleName
+                     initailProps:(NSDictionary *)initialProps
 {
-  _scheduler->registerRootTag(tag);
+  _scheduler->startSurface(
+    surfaceId,
+    RCTStringFromNSString(moduleName),
+    convertIdToFollyDynamic(initialProps)
+  );
 }
 
-- (void)unregisterRootTag:(ReactTag)tag
+- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->unregisterRootTag(tag);
+  _scheduler->stopSurface(surfaceId);
 }
 
-- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                         layoutContext:(LayoutContext)layoutContext
-                               rootTag:(ReactTag)rootTag
-{
-  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
-}
-
-- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
                                 layoutContext:(LayoutContext)layoutContext
-                                      rootTag:(ReactTag)rootTag
+                                    surfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
+  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
+}
+
+- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                       layoutContext:(LayoutContext)layoutContext
+                                           surfaceId:(SurfaceId)surfaceId
+{
+  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
 @end

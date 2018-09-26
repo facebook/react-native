@@ -165,11 +165,11 @@ void ShadowTree::toggleEventEmitters(const ShadowViewMutationList &mutations) {
 
 #pragma mark - Delegate
 
-void ShadowTree::setDelegate(ShadowTreeDelegate *delegate) {
+void ShadowTree::setDelegate(ShadowTreeDelegate const *delegate) {
   delegate_ = delegate;
 }
 
-ShadowTreeDelegate *ShadowTree::getDelegate() const {
+ShadowTreeDelegate const *ShadowTree::getDelegate() const {
   return delegate_;
 }
 

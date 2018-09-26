@@ -39,17 +39,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner;
 
-- (void)registerRootTag:(ReactTag)tag;
+- (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
+                       moduleName:(NSString *)moduleName
+                     initailProps:(NSDictionary *)initialProps;
 
-- (void)unregisterRootTag:(ReactTag)tag;
+- (void)stopSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
 
-- (CGSize)measureWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
-                         layoutContext:(facebook::react::LayoutContext)layoutContext
-                               rootTag:(ReactTag)rootTag;
-
-- (void)constraintLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+- (CGSize)measureSurfaceWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                                 layoutContext:(facebook::react::LayoutContext)layoutContext
-                                      rootTag:(ReactTag)rootTag;
+                                    surfaceId:(facebook::react::SurfaceId)surfaceId;
+
+- (void)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                       layoutContext:(facebook::react::LayoutContext)layoutContext
+                                           surfaceId:(facebook::react::SurfaceId)surfaceId;
 
 @end
 

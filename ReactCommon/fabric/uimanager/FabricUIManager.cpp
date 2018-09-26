@@ -106,7 +106,7 @@ static const std::string componentNameByReactViewName(std::string viewName) {
 FabricUIManager::~FabricUIManager() {
   (*executor_)([this] {
     uninstaller_();
-  }, EventBeatBasedExecutor::Mode::Synchronous);
+  });
 }
 
 void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
@@ -129,6 +129,14 @@ void FabricUIManager::setDispatchEventToTargetFunction(std::function<DispatchEve
   dispatchEventToTargetFunction_ = dispatchEventFunction;
 }
 
+void FabricUIManager::setStartSurfaceFunction(std::function<StartSurface> startSurfaceFunction) {
+  startSurfaceFunction_ = startSurfaceFunction;
+}
+
+void FabricUIManager::setStopSurfaceFunction(std::function<StopSurface> stopSurfaceFunction) {
+  stopSurfaceFunction_ = stopSurfaceFunction;
+}
+
 void FabricUIManager::dispatchEventToTarget(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload) const {
   if (eventTarget) {
     dispatchEventToTargetFunction_(
@@ -144,6 +152,18 @@ void FabricUIManager::dispatchEventToTarget(const EventTarget *eventTarget, cons
       const_cast<folly::dynamic &>(payload)
     );
   }
+}
+
+void FabricUIManager::startSurface(SurfaceId surfaceId, const std::string &moduleName, const folly::dynamic &initialProps) const {
+  (*executor_)([this, surfaceId, moduleName, initialProps] {
+    startSurfaceFunction_(surfaceId, moduleName, initialProps);
+  });
+}
+
+void FabricUIManager::stopSurface(SurfaceId surfaceId) const {
+  (*executor_)([this, surfaceId] {
+    stopSurfaceFunction_(surfaceId);
+  });
 }
 
 SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) const {

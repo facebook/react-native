@@ -150,9 +150,9 @@ using namespace facebook::react;
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
 
-  return [_scheduler measureWithLayoutConstraints:layoutConstraints
-                                    layoutContext:layoutContext
-                                          rootTag:surface.rootTag];
+  return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
+                                           layoutContext:layoutContext
+                                               surfaceId:surface.rootTag];
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize
@@ -167,9 +167,9 @@ using namespace facebook::react;
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
 
-  [_scheduler constraintLayoutWithLayoutConstraints:layoutConstraints
-                                      layoutContext:layoutContext
-                                            rootTag:surface.rootTag];
+  [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
+                                             layoutContext:layoutContext
+                                                 surfaceId:surface.rootTag];
 }
 
 - (void)startSurface:(RCTFabricSurface *)surface
@@ -177,27 +177,21 @@ using namespace facebook::react;
   [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 
   [self createSchedulerIfNeeded];
-  [_scheduler registerRootTag:surface.rootTag];
+
+  [_scheduler startSurfaceWithSurfaceId:surface.rootTag
+                             moduleName:surface.moduleName
+                           initailProps:surface.properties];
 
   [self setMinimumSize:surface.minimumSize
            maximumSize:surface.maximumSize
                surface:surface];
-
-  // TODO: Move this down to Scheduler.
-  NSDictionary *applicationParameters = @{
-    @"rootTag": @(surface.rootTag),
-    @"initialProps": surface.properties,
-  };
-  [self->_batchedBridge enqueueJSCall:@"AppRegistry" method:@"runApplication" args:@[surface.moduleName, applicationParameters] completion:NULL];
 }
 
 - (void)stopSurface:(RCTFabricSurface *)surface
 {
-  // TODO: Move this down to Scheduler.
-  [_batchedBridge enqueueJSCall:@"ReactFabric" method:@"unmountComponentAtNode" args:@[@(surface.rootTag)] completion:NULL];
-
   [self ensureSchedulerDoesExist];
-  [_scheduler unregisterRootTag:surface.rootTag];
+
+  [_scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
   UIView<RCTComponentViewProtocol> *rootView = [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
   [_mountingManager.componentViewRegistry enqueueComponentViewWithName:@"Root" tag:surface.rootTag componentView:rootView];
