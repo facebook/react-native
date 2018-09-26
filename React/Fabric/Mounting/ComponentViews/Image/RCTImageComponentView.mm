@@ -82,6 +82,7 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _imageView.image = nil;
+  _imageLocalData.reset();
 }
 
 #pragma mark - Other
