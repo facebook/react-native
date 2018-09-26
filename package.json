@@ -126,6 +126,8 @@
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
+    "flow-check-ios": "flow check",
+    "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
     "prettier": "prettier \"./**/*.js\" --write",
     "docker-setup-android": "docker pull reactnativeci/android-base:latest",
