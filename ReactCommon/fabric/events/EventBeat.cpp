@@ -19,12 +19,11 @@ void EventBeat::beat() const {
     return;
   }
 
-  if (!beatCallback_) {
-    return;
-  }
-
-  beatCallback_();
   isRequested_ = false;
+
+  if (beatCallback_) {
+    beatCallback_();
+  }
 }
 
 void EventBeat::induce() const {
