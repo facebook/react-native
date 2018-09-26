@@ -18,7 +18,10 @@ namespace react {
 Scheduler::Scheduler(const SharedContextContainer &contextContainer):
   contextContainer_(contextContainer) {
 
-  uiManager_ = std::make_shared<FabricUIManager>();
+  uiManager_ = std::make_shared<FabricUIManager>(
+    contextContainer->getInstance<std::function<UIManagerInstaller>>("uimanager-installer"),
+    contextContainer->getInstance<std::function<UIManagerUninstaller>>("uimanager-uninstaller")
+  );
 
   auto eventDispatcher =
     std::make_shared<EventDispatcher>(
