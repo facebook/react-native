@@ -52,7 +52,7 @@ type Props = $ReadOnly<{|
     rowData: Object,
     sectionID: string,
     rowID: string,
-  ) => React.Element<any>,
+  ) => ?React.Element<any>,
 |}>;
 
 type State = {|
