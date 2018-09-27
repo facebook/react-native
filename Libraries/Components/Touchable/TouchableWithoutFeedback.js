@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');

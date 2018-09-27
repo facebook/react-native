@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const PropTypes = require('prop-types');

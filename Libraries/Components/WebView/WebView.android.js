@@ -11,7 +11,7 @@
 
 const ActivityIndicator = require('ActivityIndicator');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');

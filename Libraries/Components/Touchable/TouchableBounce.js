@@ -11,7 +11,7 @@
 
 const Animated = require('Animated');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
 const React = require('React');

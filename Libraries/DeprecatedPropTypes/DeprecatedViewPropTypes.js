@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');

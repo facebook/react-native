@@ -11,7 +11,7 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const EdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');

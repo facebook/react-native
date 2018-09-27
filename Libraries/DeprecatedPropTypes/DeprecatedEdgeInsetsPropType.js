@@ -10,9 +10,13 @@
 
 'use strict';
 
-export type EdgeInsetsProp = $ReadOnly<{|
-  top?: ?number,
-  left?: ?number,
-  bottom?: ?number,
-  right?: ?number,
-|}>;
+const PropTypes = require('prop-types');
+
+const EdgeInsetsPropType = PropTypes.shape({
+  top: PropTypes.number,
+  left: PropTypes.number,
+  bottom: PropTypes.number,
+  right: PropTypes.number,
+});
+
+module.exports = EdgeInsetsPropType;
