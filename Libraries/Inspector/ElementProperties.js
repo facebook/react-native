@@ -32,6 +32,9 @@ type Props = $ReadOnly<{|
     fileName?: ?string,
     lineNumber?: ?number,
   },
+  frame?: ?Object,
+  selection?: ?number,
+  setSelection?: (?number) => mixed,
 |}>;
 
 class ElementProperties extends React.Component<Props> {
