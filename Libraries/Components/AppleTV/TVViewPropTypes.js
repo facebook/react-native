@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TVViewPropTypes
+ * @format
  * @flow
  */
 'use strict';
@@ -21,14 +22,14 @@ export type TVViewProps = {
    *
    * @platform ios
    */
-  isTVSelectable?: bool,
+  isTVSelectable?: boolean,
 
   /**
    * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
    *
    * @platform ios
    */
-  hasTVPreferredFocus?: bool,
+  hasTVPreferredFocus?: boolean,
 
   /**
    * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
