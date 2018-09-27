@@ -10,7 +10,7 @@
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedDeprecatedColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
 const ShadowPropTypesIOS = require('ShadowPropTypesIOS');

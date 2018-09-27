@@ -607,7 +607,7 @@ const TextInput = createReactClass({
     /**
      * The highlight and cursor color of the text input.
      */
-    selectionColor: ColorPropType,
+    selectionColor: DeprecatedColorPropType,
     /**
      * An instance of `DocumentSelectionState`, this is some state that is responsible for
      * maintaining selection information for a document.
