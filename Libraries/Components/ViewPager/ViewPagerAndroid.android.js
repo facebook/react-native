@@ -153,7 +153,7 @@ class ViewPagerAndroid extends React.Component<Props> {
   };
 
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-             * when making Flow check .android.js files. */
+    * when making Flow check .android.js files. */
   _childrenWithOverridenStyle = (): Array => {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
