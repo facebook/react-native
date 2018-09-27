@@ -34,7 +34,7 @@ type Props = $ReadOnly<{|
    * Index of initial page that should be selected. Use `setPage` method to
    * update the page, and `onPageSelected` to monitor page changes
    */
-  initialPage?: number,
+  initialPage?: ?number,
 
   /**
    * Executed when transitioning between pages (ether because of animation for
@@ -45,7 +45,7 @@ type Props = $ReadOnly<{|
    *    Value x means that (1 - x) fraction of the page at "position" index is
    *    visible, and x fraction of the next page is visible.
    */
-  onPageScroll?: Function,
+  onPageScroll?: ?Function,
 
   /**
    * Function called when the page scrolling state has changed.
@@ -55,7 +55,7 @@ type Props = $ReadOnly<{|
    * - settling, meaning that there was an interaction with the page scroller, and the
    *   page scroller is now finishing it's closing or opening animation
    */
-  onPageScrollStateChanged?: Function,
+  onPageScrollStateChanged?: ?Function,
 
   /**
    * This callback will be called once ViewPager finish navigating to selected page
@@ -63,33 +63,33 @@ type Props = $ReadOnly<{|
    * callback will have following fields:
    *  - position - index of page that has been selected
    */
-  onPageSelected?: Function,
+  onPageSelected?: ?Function,
 
   /**
    * Blank space to show between pages. This is only visible while scrolling, pages are still
    * edge-to-edge.
    */
-  pageMargin?: number,
+  pageMargin?: ?number,
 
   /**
    * Whether enable showing peekFraction or not. If this is true, the preview of
    * last and next page will show in current screen. Defaults to false.
    */
 
-  peekEnabled?: boolean,
+  peekEnabled?: ?boolean,
 
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.
    *   - 'on-drag', the keyboard is dismissed when a drag begins.
    */
-  keyboardDismissMode?: 'none' | 'on-drag',
+  keyboardDismissMode?: ?('none' | 'on-drag'),
 
   /**
    * When false, the content does not scroll.
    * The default value is true.
    */
-  scrollEnabled?: boolean,
+  scrollEnabled?: ?boolean,
 |}>;
 
 /**
