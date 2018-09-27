@@ -146,6 +146,7 @@ type GestureResponderEventProps = $ReadOnly<{|
   onResponderRelease?: ?Function,
 
   onResponderStart?: ?Function,
+  onResponderEnd?: ?Function,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other

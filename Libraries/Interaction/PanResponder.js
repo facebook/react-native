@@ -555,4 +555,9 @@ function clearInteractionHandle(
   }
 }
 
+export type PanResponderInstance = $Call<
+  $PropertyType<typeof PanResponder, 'create'>,
+  PanResponderConfig,
+>;
+
 module.exports = PanResponder;
