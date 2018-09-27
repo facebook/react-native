@@ -29,12 +29,12 @@ type Props = $ReadOnly<{|
   hierarchy: Array<$FlowFixMe>,
   style?: ?ViewStyleProp,
   source?: ?{
-    fileName?: ?string,
-    lineNumber?: ?number,
+    fileName?: string,
+    lineNumber?: number,
   },
   frame?: ?Object,
   selection?: ?number,
-  setSelection?: (?number) => mixed,
+  setSelection?: (number) => mixed,
 |}>;
 
 class ElementProperties extends React.Component<Props> {
