@@ -28,7 +28,7 @@ export type ViewLayoutEvent = LayoutEvent;
 type DirectEventProps = $ReadOnly<{|
   onAccessibilityAction?: ?Function,
   onAccessibilityTap?: ?Function,
-  onLayout?: ?(event: LayoutEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
   onMagicTap?: ?Function,
 |}>;
 
