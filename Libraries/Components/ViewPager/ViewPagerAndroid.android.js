@@ -23,6 +23,8 @@ const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
 
+import type {ViewProps} from 'ViewPropTypes';
+
 export type ViewPagerScrollState = $Enum<{
   idle: string,
   dragging: string,
@@ -72,6 +74,7 @@ export type ViewPagerScrollState = $Enum<{
  */
 
 type Props = $ReadOnly<{|
+  ...ViewProps,
   /**
    * Index of initial page that should be selected. Use `setPage` method to
    * update the page, and `onPageSelected` to monitor page changes
@@ -144,7 +147,7 @@ class ViewPagerAndroid extends React.Component<Props> {
   }
 
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-             * when making Flow check .android.js files. */
+  * when making Flow check .android.js files. */
   getInnerViewNode = (): ReactComponent => {
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
   };
@@ -156,7 +159,7 @@ class ViewPagerAndroid extends React.Component<Props> {
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-                         * when making Flow check .android.js files. */
+    * when making Flow check .android.js files. */
     return React.Children.map(this.props.children, function(child) {
       if (!child) {
         return null;
@@ -243,7 +246,7 @@ class ViewPagerAndroid extends React.Component<Props> {
         {...this.props}
         ref={VIEWPAGER_REF}
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-                * found when making Flow check .android.js files. */
+        * found when making Flow check .android.js files. */
         style={this.props.style}
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
