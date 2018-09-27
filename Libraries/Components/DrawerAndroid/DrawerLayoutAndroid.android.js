@@ -21,7 +21,8 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
+const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
+  .Constants;
 
 const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
@@ -254,7 +255,7 @@ const DrawerLayoutAndroid = createReactClass({
   openDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.openDrawer,
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands.openDrawer,
       null,
     );
   },
@@ -265,7 +266,8 @@ const DrawerLayoutAndroid = createReactClass({
   closeDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands
+        .closeDrawer,
       null,
     );
   },

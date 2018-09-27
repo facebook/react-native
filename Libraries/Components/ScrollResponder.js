@@ -436,7 +436,7 @@ const ScrollResponderMixin = {
     }
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
-      UIManager.RCTScrollView.Commands.scrollTo,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
   },
@@ -454,7 +454,7 @@ const ScrollResponderMixin = {
     const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      UIManager.RCTScrollView.Commands.scrollToEnd,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollToEnd,
       [animated],
     );
   },
@@ -513,7 +513,8 @@ const ScrollResponderMixin = {
   scrollResponderFlashScrollIndicators: function() {
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands
+        .flashScrollIndicators,
       [],
     );
   },
