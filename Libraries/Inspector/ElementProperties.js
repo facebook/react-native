@@ -11,7 +11,6 @@
 'use strict';
 
 const BoxInspector = require('BoxInspector');
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleInspector = require('StyleInspector');
 const StyleSheet = require('StyleSheet');
@@ -26,27 +25,16 @@ const openFileInEditor = require('openFileInEditor');
 
 import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
 
-class ElementProperties extends React.Component<{
+type Props = $ReadOnly<{|
   hierarchy: Array<$FlowFixMe>,
-  style?: DangerouslyImpreciseStyleProp,
-  source?: {
-    fileName?: string,
-    lineNumber?: number,
+  style?: ?DangerouslyImpreciseStyleProp,
+  source?: ?{
+    fileName?: ?string,
+    lineNumber?: ?number,
   },
-}> {
-  static propTypes = {
-    hierarchy: PropTypes.array.isRequired,
-    style: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array,
-      PropTypes.number,
-    ]),
-    source: PropTypes.shape({
-      fileName: PropTypes.string,
-      lineNumber: PropTypes.number,
-    }),
-  };
+|}>;
 
+class ElementProperties extends React.Component<Props> {
   render() {
     const style = flattenStyle(this.props.style);
     // $FlowFixMe found when converting React.createClass to ES6
