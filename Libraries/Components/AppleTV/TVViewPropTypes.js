@@ -10,6 +10,33 @@
 
 'use strict';
 
+type TVParallaxPropertiesType = {
+  /**
+   * If true, parallax effects are enabled.  Defaults to true.
+   */
+  enabled: boolean,
+
+  /**
+   * Defaults to 2.0.
+   */
+  shiftDistanceX: number,
+
+  /**
+   * Defaults to 2.0.
+   */
+  shiftDistanceY: number,
+
+  /**
+   * Defaults to 0.05.
+   */
+  tiltAngle: number,
+
+  /**
+   * Defaults to 1.0
+   */
+  magnification: number,
+};
+
 /**
  * Additional View properties for Apple TV
  */
@@ -32,15 +59,9 @@ export type TVViewProps = {
   /**
    * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
    *
-   * enabled: If true, parallax effects are enabled.  Defaults to true.
-   * shiftDistanceX: Defaults to 2.0.
-   * shiftDistanceY: Defaults to 2.0.
-   * tiltAngle: Defaults to 0.05.
-   * magnification: Defaults to 1.0.
-   *
    * @platform ios
    */
-  tvParallaxProperties?: Object,
+  tvParallaxProperties?: TVParallaxPropertiesType,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
