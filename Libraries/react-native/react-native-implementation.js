@@ -307,7 +307,7 @@ const ReactNative = {
     return require('EdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('PointPropType');
+    return require('DeprecatedPointPropType');
   },
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
