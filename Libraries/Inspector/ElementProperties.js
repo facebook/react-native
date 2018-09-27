@@ -23,11 +23,11 @@ const flattenStyle = require('flattenStyle');
 const mapWithSeparator = require('mapWithSeparator');
 const openFileInEditor = require('openFileInEditor');
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 
 type Props = $ReadOnly<{|
   hierarchy: Array<$FlowFixMe>,
-  style?: ?DangerouslyImpreciseStyleProp,
+  style?: ?ViewStyleProp,
   source?: ?{
     fileName?: ?string,
     lineNumber?: ?number,
