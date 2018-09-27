@@ -11,7 +11,7 @@
 'use strict';
 
 const ColorPropType = require('ColorPropType');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
@@ -62,7 +62,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#pressretentionoffset
    */
-  pressRetentionOffset: EdgeInsetsPropType,
+  pressRetentionOffset: DeprecatedEdgeInsetsPropType,
   /**
    * Lets the user select text.
    *

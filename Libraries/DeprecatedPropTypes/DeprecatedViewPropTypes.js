@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -316,7 +316,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#hitslop
    */
-  hitSlop: EdgeInsetsPropType,
+  hitSlop: DeprecatedEdgeInsetsPropType,
 
   /**
    * Invoked on mount and layout changes with:
