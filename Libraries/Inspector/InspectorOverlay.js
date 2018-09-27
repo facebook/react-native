@@ -12,7 +12,6 @@
 
 const Dimensions = require('Dimensions');
 const ElementBox = require('ElementBox');
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
@@ -22,23 +21,16 @@ type EventLike = {
   nativeEvent: Object,
 };
 
-class InspectorOverlay extends React.Component<{
-  inspected?: {
-    frame?: Object,
-    style?: any,
+type Props = $ReadOnly<{|
+  inspected?: ?{
+    frame?: ?Object,
+    style?: ?StyleSheet.Styles,
   },
-  inspectedViewTag?: number,
-  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => void,
-}> {
-  static propTypes = {
-    inspected: PropTypes.shape({
-      frame: PropTypes.object,
-      style: PropTypes.any,
-    }),
-    inspectedViewTag: PropTypes.number,
-    onTouchViewTag: PropTypes.func.isRequired,
-  };
+  inspectedViewTag?: ?number,
+  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
+|}>;
 
+class InspectorOverlay extends React.Component<Props> {
   findViewForTouchEvent = (e: EventLike) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
     UIManager.findSubviewIn(
