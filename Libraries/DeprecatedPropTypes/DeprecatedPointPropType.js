@@ -10,7 +10,11 @@
 
 'use strict';
 
-export type PointProp = $ReadOnly<{
-  x: number,
-  y: number,
-}>;
+const PropTypes = require('prop-types');
+
+const PointPropType = PropTypes.shape({
+  x: PropTypes.number,
+  y: PropTypes.number,
+});
+
+module.exports = PointPropType;
