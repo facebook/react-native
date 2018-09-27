@@ -12,7 +12,7 @@
 
 const ActivityIndicator = require('ActivityIndicator');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -234,7 +234,7 @@ class WebView extends React.Component {
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
      * @platform ios
      */
-    contentInset: EdgeInsetsPropType,
+    contentInset: DeprecatedEdgeInsetsPropType,
     /**
      * Function that is invoked when the `WebView` loading starts or ends.
      */
