@@ -17,6 +17,8 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
+import type {ViewStyleProp} from 'StyleSheet';
+
 type EventLike = {
   nativeEvent: Object,
 };
@@ -24,7 +26,7 @@ type EventLike = {
 type Props = $ReadOnly<{|
   inspected?: ?{
     frame?: ?Object,
-    style?: ?StyleSheet.Styles,
+    style?: ?ViewStyleProp,
   },
   inspectedViewTag?: ?number,
   onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
