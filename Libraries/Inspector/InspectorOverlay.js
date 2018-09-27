@@ -23,11 +23,13 @@ type EventLike = {
   nativeEvent: Object,
 };
 
+type Inspected = $ReadOnly<{|
+  frame?: Object,
+  style?: ViewStyleProp,
+|}>;
+
 type Props = $ReadOnly<{|
-  inspected?: ?{
-    frame?: ?Object,
-    style?: ?ViewStyleProp,
-  },
+  inspected?: Inspected,
   inspectedViewTag?: ?number,
   onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
 |}>;
