@@ -40,23 +40,7 @@ const DecomposedMatrixPropType = function(
   }
 };
 
-const TransformPropTypes = {
-  /**
-   * `transform` accepts an array of transformation objects. Each object specifies
-   * the property that will be transformed as the key, and the value to use in the
-   * transformation. Objects should not be combined. Use a single key/value pair
-   * per object.
-   *
-   * The rotate transformations require a string so that the transform may be
-   * expressed in degrees (deg) or radians (rad). For example:
-   *
-   * `transform([{ rotateX: '45deg' }, { rotateZ: '0.785398rad' }])`
-   *
-   * The skew transformations require a string so that the transform may be
-   * expressed in degrees (deg). For example:
-   *
-   * `transform([{ skewX: '45deg' }])`
-   */
+const DeprecatedTransformPropTypes = {
   transform: ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
       ReactPropTypes.shape({perspective: ReactPropTypes.number}),
@@ -73,17 +57,8 @@ const TransformPropTypes = {
       ReactPropTypes.shape({skewY: ReactPropTypes.string}),
     ]),
   ),
-
-  /**
-   * Deprecated. Use the transform prop instead.
-   */
   transformMatrix: TransformMatrixPropType,
-  /**
-   * Deprecated. Use the transform prop instead.
-   */
   decomposedMatrix: DecomposedMatrixPropType,
-
-  /* Deprecated transform props used on Android only */
   scaleX: deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
@@ -106,4 +81,4 @@ const TransformPropTypes = {
   ),
 };
 
-module.exports = TransformPropTypes;
+module.exports = DeprecatedTransformPropTypes;
