@@ -10,7 +10,7 @@
 
 'use strict';
 
-type TVParallaxPropertiesType = {
+type TVParallaxPropertiesType = $ReadOnly<{|
   /**
    * If true, parallax effects are enabled.  Defaults to true.
    */
@@ -35,12 +35,12 @@ type TVParallaxPropertiesType = {
    * Defaults to 1.0
    */
   magnification: number,
-};
+|}>;
 
 /**
  * Additional View properties for Apple TV
  */
-export type TVViewProps = {
+export type TVViewProps = $ReadOnly<{|
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
    * and navigable using the Apple TV remote.
@@ -90,4 +90,4 @@ export type TVViewProps = {
    * @platform ios
    */
   tvParallaxMagnification?: number,
-};
+|}>;
