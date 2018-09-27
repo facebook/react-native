@@ -42,7 +42,8 @@ function focusTextInput(textFieldID: ?number) {
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         textFieldID,
-        UIManager.AndroidTextInput.Commands.focusTextInput,
+        UIManager.getViewManagerConfig('AndroidTextInput').Commands
+          .focusTextInput,
         null,
       );
     }
@@ -62,7 +63,8 @@ function blurTextInput(textFieldID: ?number) {
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         textFieldID,
-        UIManager.AndroidTextInput.Commands.blurTextInput,
+        UIManager.getViewManagerConfig('AndroidTextInput').Commands
+          .blurTextInput,
         null,
       );
     }

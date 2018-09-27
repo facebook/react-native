@@ -185,8 +185,9 @@ const ToolbarAndroid = createReactClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show =
-            UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show = UIManager.getViewManagerConfig(
+            'ToolbarAndroid',
+          ).Constants.ShowAsAction[action.show];
         }
         nativeActions.push(action);
       }

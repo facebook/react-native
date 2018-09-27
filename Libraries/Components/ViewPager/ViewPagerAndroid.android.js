@@ -233,7 +233,7 @@ class ViewPagerAndroid extends React.Component<{
   setPage = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.AndroidViewPager.Commands.setPage,
+      UIManager.getViewManagerConfig('AndroidViewPager').Commands.setPage,
       [selectedPage],
     );
   };
@@ -245,7 +245,8 @@ class ViewPagerAndroid extends React.Component<{
   setPageWithoutAnimation = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
+      UIManager.getViewManagerConfig('AndroidViewPager').Commands
+        .setPageWithoutAnimation,
       [selectedPage],
     );
   };

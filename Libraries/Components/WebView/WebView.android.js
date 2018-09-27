@@ -366,7 +366,7 @@ class WebView extends React.Component {
   goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goForward,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.goForward,
       null,
     );
   };
@@ -374,7 +374,7 @@ class WebView extends React.Component {
   goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goBack,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.goBack,
       null,
     );
   };
@@ -385,7 +385,7 @@ class WebView extends React.Component {
     });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.reload,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.reload,
       null,
     );
   };
@@ -393,7 +393,7 @@ class WebView extends React.Component {
   stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.stopLoading,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.stopLoading,
       null,
     );
   };
@@ -401,7 +401,7 @@ class WebView extends React.Component {
   postMessage = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.postMessage,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.postMessage,
       [String(data)],
     );
   };
@@ -415,7 +415,7 @@ class WebView extends React.Component {
   injectJavaScript = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.injectJavaScript,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.injectJavaScript,
       [data],
     );
   };

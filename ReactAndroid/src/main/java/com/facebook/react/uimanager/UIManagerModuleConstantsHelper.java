@@ -28,9 +28,9 @@ import javax.annotation.Nullable;
   /**
    * Generates a lazy discovery enabled version of {@link UIManagerModule} constants. It only
    * contains a list of view manager names, so that JS side is aware of the managers there are.
-   * Actual ViewManager instantiation happens when {@code UIManager.SpecificViewManager} call happens.
-   * The View Manager is then registered on the JS side with the help of
-   * {@code UIManagerModule.getConstantsForViewManager}.
+   * Actual ViewManager instantiation happens when
+   * {@code UIManager.getViewManagerConfig('SpecificViewManager')} call happens. The View Manager is then
+   * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
    */
   /* package */ static Map<String, Object> createConstants(
       UIManagerModule.ViewManagerResolver resolver) {

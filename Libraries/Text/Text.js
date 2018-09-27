@@ -258,7 +258,7 @@ const RCTText = createReactNativeComponentClass(
 );
 
 const RCTVirtualText =
-  UIManager.RCTVirtualText == null
+  UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? RCTText
     : createReactNativeComponentClass('RCTVirtualText', () => ({
         validAttributes: {

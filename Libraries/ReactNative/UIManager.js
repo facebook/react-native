@@ -35,6 +35,9 @@ UIManager.takeSnapshot = function() {
       'Use ReactNative.takeSnapshot instead.',
   );
 };
+UIManager.getViewManagerConfig = function(viewManagerName: string) {
+  return UIManager[viewManagerName];
+};
 
 /**
  * Copies the ViewManager constants and commands into UIManager. This is
