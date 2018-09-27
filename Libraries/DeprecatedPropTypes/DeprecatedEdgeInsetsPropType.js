@@ -12,11 +12,11 @@
 
 const PropTypes = require('prop-types');
 
-const EdgeInsetsPropType = PropTypes.shape({
+const DeprecatedEdgeInsetsPropType = PropTypes.shape({
   top: PropTypes.number,
   left: PropTypes.number,
   bottom: PropTypes.number,
   right: PropTypes.number,
 });
 
-module.exports = EdgeInsetsPropType;
+module.exports = DeprecatedEdgeInsetsPropType;
