@@ -12,18 +12,20 @@
 
 const React = require('React');
 
-const PropTypes = require('prop-types');
-
-class StaticRenderer extends React.Component<{
+type StaticRendererProps = $ReadOnly<{|
+  /**
+   * Indicates whether the render function needs to be called again
+   */
   shouldUpdate: boolean,
+  /**
+   * (props) => renderable
+   * A function that takes in certain props that are used to render a component
+   */
   render: Function,
-}> {
-  static propTypes = {
-    shouldUpdate: PropTypes.bool.isRequired,
-    render: PropTypes.func.isRequired,
-  };
+|}>;
 
-  shouldComponentUpdate(nextProps: {shouldUpdate: boolean}): boolean {
+class StaticRenderer extends React.Component<StaticRendererProps> {
+  shouldComponentUpdate(nextProps: StaticRendererProps): boolean {
     return nextProps.shouldUpdate;
   }
 
