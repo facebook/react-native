@@ -7,8 +7,6 @@
 
 #import <objc/runtime.h>
 
-#import <JavaScriptCore/JavaScriptCore.h>
-
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 
