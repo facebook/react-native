@@ -6,29 +6,30 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule TVViewPropTypes
  * @flow
+ * @format
  */
 'use strict';
+var PropTypes = require('prop-types');
 
 /**
  * Additional View properties for Apple TV
  */
-export type TVViewProps = {
+var DeprecatedTVViewPropTypes = {
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
    * and navigable using the Apple TV remote.
    *
    * @platform ios
    */
-  isTVSelectable?: bool,
+  isTVSelectable: PropTypes.bool,
 
   /**
    * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
    *
    * @platform ios
    */
-  hasTVPreferredFocus?: bool,
+  hasTVPreferredFocus: PropTypes.bool,
 
   /**
    * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
@@ -41,33 +42,35 @@ export type TVViewProps = {
    *
    * @platform ios
    */
-  tvParallaxProperties?: Object,
+  tvParallaxProperties: PropTypes.object,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
    *
    * @platform ios
    */
-  tvParallaxShiftDistanceX?: number,
+  tvParallaxShiftDistanceX: PropTypes.number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
    *
    * @platform ios
    */
-  tvParallaxShiftDistanceY?: number,
+  tvParallaxShiftDistanceY: PropTypes.number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
    *
    * @platform ios
    */
-  tvParallaxTiltAngle?: number,
+  tvParallaxTiltAngle: PropTypes.number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
    *
    * @platform ios
    */
-  tvParallaxMagnification?: number,
+  tvParallaxMagnification: PropTypes.number,
 };
+
+module.exports = DeprecatedTVViewPropTypes;
