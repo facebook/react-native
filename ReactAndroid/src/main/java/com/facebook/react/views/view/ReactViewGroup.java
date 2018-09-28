@@ -644,7 +644,7 @@ public class ReactViewGroup extends ViewGroup implements
     invalidate();
   }
 
-  public String getOverflow() {
+  public @Nullable String getOverflow() {
     return mOverflow;
   }
 
