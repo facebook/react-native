@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
@@ -74,7 +74,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#selectioncolor
    */
-  selectionColor: ColorPropType,
+  selectionColor: DeprecatedColorPropType,
   /**
    * When `true`, no visual change is made when text is pressed down.
    *

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
 const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
@@ -24,14 +24,14 @@ const ViewStylePropTypes = {
   ...ShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ColorPropType,
-  borderColor: ColorPropType,
-  borderTopColor: ColorPropType,
-  borderRightColor: ColorPropType,
-  borderBottomColor: ColorPropType,
-  borderLeftColor: ColorPropType,
-  borderStartColor: ColorPropType,
-  borderEndColor: ColorPropType,
+  backgroundColor: DeprecatedColorPropType,
+  borderColor: DeprecatedColorPropType,
+  borderTopColor: DeprecatedColorPropType,
+  borderRightColor: DeprecatedColorPropType,
+  borderBottomColor: DeprecatedColorPropType,
+  borderLeftColor: DeprecatedColorPropType,
+  borderStartColor: DeprecatedColorPropType,
+  borderEndColor: DeprecatedColorPropType,
   borderRadius: ReactPropTypes.number,
   borderTopLeftRadius: ReactPropTypes.number,
   borderTopRightRadius: ReactPropTypes.number,
