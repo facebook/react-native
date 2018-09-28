@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +35,7 @@ import javax.annotation.Nullable;
   /* package */ static Map<String, Object> createConstants(
       UIManagerModule.ViewManagerResolver resolver) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
-    if (!ReactFeatureFlags.lazilyLoadViewManagers) {
-      constants.put("ViewManagerNames", resolver.getViewManagerNames());
-    }
-    constants.put("LazyViewManagersEnabled", true);
+    constants.put("ViewManagerNames", resolver.getViewManagerNames());
     return constants;
   }
 
