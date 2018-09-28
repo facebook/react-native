@@ -17,8 +17,8 @@ const {Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 type Props = $ReadOnly<{|
-  shouldThrow?: boolean,
-  waitOneFrame?: boolean,
+  shouldThrow?: ?boolean,
+  waitOneFrame?: ?boolean,
 |}>;
 
 type State = {|

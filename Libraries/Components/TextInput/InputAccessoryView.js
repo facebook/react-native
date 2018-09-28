@@ -84,9 +84,9 @@ type Props = $ReadOnly<{|
    * An ID which is used to associate this `InputAccessoryView` to
    * specified TextInput(s).
    */
-  nativeID?: string,
-  style?: ViewStyleProp,
-  backgroundColor?: DeprecatedColorPropType,
+  nativeID?: ?string,
+  style?: ?ViewStyleProp,
+  backgroundColor?: ?DeprecatedColorPropType,
 |}>;
 
 class InputAccessoryView extends React.Component<Props> {
