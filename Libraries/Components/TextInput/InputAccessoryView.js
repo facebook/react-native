@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Platform = require('Platform');
 const React = require('React');
@@ -85,7 +85,7 @@ type Props = {
    */
   nativeID?: string,
   style?: DeprecatedViewPropTypes.style,
-  backgroundColor?: ColorPropType,
+  backgroundColor?: DeprecatedColorPropType,
 };
 
 class InputAccessoryView extends React.Component<Props> {

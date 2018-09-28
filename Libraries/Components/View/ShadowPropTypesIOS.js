@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
 
 /**
@@ -26,7 +26,7 @@ const ShadowPropTypesIOS = {
    * Sets the drop shadow color
    * @platform ios
    */
-  shadowColor: ColorPropType,
+  shadowColor: DeprecatedColorPropType,
   /**
    * Sets the drop shadow offset
    * @platform ios
