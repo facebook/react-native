@@ -17,7 +17,7 @@ const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const TextAncestor = require('TextAncestor');
 
@@ -38,7 +38,7 @@ function generateRequestId() {
 
 const ImageProps = {
   ...DeprecatedViewPropTypes,
-  style: StyleSheetPropType(ImageStylePropTypes),
+  style: DeprecatedStyleSheetPropType(ImageStylePropTypes),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
