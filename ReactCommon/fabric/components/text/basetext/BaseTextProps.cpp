@@ -60,9 +60,11 @@ BaseTextProps::BaseTextProps(const BaseTextProps &sourceProps, const RawProps &r
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
   return textAttributes.getDebugProps();
 }
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -27,6 +27,7 @@ YogaStylableProps::YogaStylableProps(const YogaStylableProps &sourceProps, const
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
   auto defaultYogaStyle = YGStyle {};
   return {
@@ -54,6 +55,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
     debugStringConvertibleItem("aspectRatio", yogaStyle.aspectRatio, defaultYogaStyle.aspectRatio),
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

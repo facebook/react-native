@@ -23,6 +23,7 @@ const ImageRequest &ImageLocalData::getImageRequest() const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ImageLocalData::getDebugName() const {
   return "ImageLocalData";
 }
@@ -32,6 +33,7 @@ SharedDebugStringConvertibleList ImageLocalData::getDebugProps() const {
     debugStringConvertibleItem("imageSource", imageSource_)
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

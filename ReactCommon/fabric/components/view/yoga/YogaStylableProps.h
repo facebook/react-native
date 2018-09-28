@@ -33,7 +33,9 @@ public:
 
 #pragma mark - DebugStringConvertible (Partial)
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
+#endif
 };
 
 } // namespace react

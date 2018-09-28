@@ -81,6 +81,7 @@ bool AttributedString::operator!=(const AttributedString &rhs) const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   auto list = SharedDebugStringConvertibleList {};
 
@@ -103,6 +104,7 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
 
   return list;
 }
+#endif
 
 } // namespace react
 } // namespace facebook

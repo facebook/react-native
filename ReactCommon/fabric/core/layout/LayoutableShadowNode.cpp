@@ -94,6 +94,7 @@ void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   // Default implementation does nothing.
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   auto list = SharedDebugStringConvertibleList {};
 
@@ -128,6 +129,7 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
 
   return list;
 }
+#endif
 
 } // namespace react
 } // namespace facebook

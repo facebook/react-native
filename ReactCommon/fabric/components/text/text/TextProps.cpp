@@ -15,9 +15,11 @@ TextProps::TextProps(const TextProps &sourceProps, const RawProps &rawProps):
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList TextProps::getDebugProps() const {
   return BaseTextProps::getDebugProps();
 }
+#endif
 
 } // namespace react
 } // namespace facebook

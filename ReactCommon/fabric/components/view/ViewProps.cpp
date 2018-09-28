@@ -65,6 +65,7 @@ BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
   const auto &defaultViewProps = ViewProps();
 
@@ -78,6 +79,7 @@ SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
       debugStringConvertibleItem("backgroundColor", backgroundColor, defaultViewProps.backgroundColor),
     };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

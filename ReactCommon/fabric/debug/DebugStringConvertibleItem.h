@@ -14,6 +14,8 @@
 namespace facebook {
 namespace react {
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 // Trivial implementation of `DebugStringConvertible` abstract class
 // with a stored output; useful for assembling `DebugStringConvertible` values
 // in custom implementations of `getDebugChildren` and `getDebugProps`.
@@ -42,6 +44,8 @@ private:
   SharedDebugStringConvertibleList props_;
   SharedDebugStringConvertibleList children_;
 };
+
+#endif
 
 } // namespace react
 } // namespace facebook

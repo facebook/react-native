@@ -46,6 +46,7 @@ ScrollViewProps::ScrollViewProps(const ScrollViewProps &sourceProps, const RawPr
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
   auto defaultScrollViewProps = ScrollViewProps {};
 
@@ -79,6 +80,7 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
       debugStringConvertibleItem("snapToAlignment", snapToAlignment, defaultScrollViewProps.snapToAlignment),
     };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

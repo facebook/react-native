@@ -30,10 +30,12 @@ class LocalData:
   public Sealable,
   public DebugStringConvertible {
 
-  public:
-     virtual folly::dynamic getDynamic() const {
-       return folly::dynamic::object();
-     };
+public:
+  virtual ~LocalData() = default;
+
+  virtual folly::dynamic getDynamic() const {
+    return folly::dynamic::object();
+  }
 };
 
 } // namespace react

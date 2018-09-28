@@ -19,11 +19,13 @@ RawTextProps::RawTextProps(const RawTextProps &sourceProps, const RawProps &rawP
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList RawTextProps::getDebugProps() const {
   return {
     debugStringConvertibleItem("text", text)
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook
