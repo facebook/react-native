@@ -125,6 +125,11 @@ afterEvaluate {
             from jsBundleDir
             into file(config."jsBundleDir${targetName}" ?:
                 "$buildDir/intermediates/assets/${targetPath}")
+                
+            // Workaround for Android Gradle Plugin 3.2+ new asset directory
+            from jsBundleDir
+            into file(config."jsBundleDir${targetName}" ?:
+                "$buildDir/intermediates/merged_assets/${targetPath}/merge${targetName}Assets/out")
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssets)
