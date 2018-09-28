@@ -57,13 +57,13 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
 
 type Props = $ReadOnly<{|
   children?: ?React.Node,
-  isOpen?: ?boolean,
+  isOpen: boolean,
   maxSwipeDistance: number,
-  onClose?: ?Function,
-  onOpen?: ?Function,
-  onSwipeEnd?: ?Function,
-  onSwipeStart?: ?Function,
-  preventSwipeRight?: ?boolean,
+  onClose: () => mixed,
+  onOpen: () => mixed,
+  onSwipeEnd: () => mixed,
+  onSwipeStart: () => mixed,
+  preventSwipeRight: boolean,
 
   /**
    * Should bounce the row on mount
@@ -191,7 +191,7 @@ class SwipeableRow extends React.Component<Props, State> {
   }
 
   close(): void {
-    this.props.onClose && this.props.onClose();
+    this.props.onClose();
     this._animateToClosedPosition();
   }
 
@@ -220,7 +220,7 @@ class SwipeableRow extends React.Component<Props, State> {
       return;
     }
 
-    this.props.onSwipeStart && this.props.onSwipeStart();
+    this.props.onSwipeStart();
 
     if (this._isSwipingRightFromClosed(gestureState)) {
       this._swipeSlowSpeed(gestureState);
@@ -360,16 +360,16 @@ class SwipeableRow extends React.Component<Props, State> {
   _handlePanResponderEnd(event: PressEvent, gestureState: GestureState): void {
     const horizontalDistance = IS_RTL ? -gestureState.dx : gestureState.dx;
     if (this._isSwipingRightFromClosed(gestureState)) {
-      this.props.onOpen && this.props.onOpen();
+      this.props.onOpen();
       this._animateBounceBack(RIGHT_SWIPE_BOUNCE_BACK_DURATION);
     } else if (this._shouldAnimateRemainder(gestureState)) {
       if (horizontalDistance < 0) {
         // Swiped left
-        this.props.onOpen && this.props.onOpen();
+        this.props.onOpen();
         this._animateToOpenPositionWith(gestureState.vx, horizontalDistance);
       } else {
         // Swiped right
-        this.props.onClose && this.props.onClose();
+        this.props.onClose();
         this._animateToClosedPosition();
       }
     } else {
@@ -380,7 +380,7 @@ class SwipeableRow extends React.Component<Props, State> {
       }
     }
 
-    this.props.onSwipeEnd && this.props.onSwipeEnd();
+    this.props.onSwipeEnd();
   }
 }
 
