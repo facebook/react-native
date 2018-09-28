@@ -13,12 +13,12 @@ const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ImageResizeMode = require('ImageResizeMode');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
-const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
+const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
 const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
 
 const ImageStylePropTypes = {
   ...LayoutPropTypes,
-  ...ShadowPropTypesIOS,
+  ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
