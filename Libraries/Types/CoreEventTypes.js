@@ -19,7 +19,9 @@ export type SyntheticEvent<T> = $ReadOnly<{|
     registrationName: string,
   |}>,
   eventPhase: ?number,
+  preventDefault: () => void,
   isDefaultPrevented: () => boolean,
+  stopPropagation: () => void,
   isPropagationStopped: () => boolean,
   isTrusted: ?boolean,
   nativeEvent: T,
@@ -27,6 +29,29 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   target: ?number,
   timeStamp: number,
   type: ?string,
+|}>;
+
+export type ResponderSyntheticEvent<T> = $ReadOnly<{|
+  ...SyntheticEvent<T>,
+  touchHistory: $ReadOnly<{|
+    indexOfSingleActiveTouch: number,
+    mostRecentTimeStamp: number,
+    numberActiveTouches: number,
+    touchBank: $ReadOnlyArray<
+      $ReadOnly<{|
+        touchActive: boolean,
+        startPageX: number,
+        startPageY: number,
+        startTimeStamp: number,
+        currentPageX: number,
+        currentPageY: number,
+        currentTimeStamp: number,
+        previousPageX: number,
+        previousPageY: number,
+        previousTimeStamp: number,
+      |}>,
+    >,
+  |}>,
 |}>;
 
 export type Layout = $ReadOnly<{|
@@ -57,7 +82,7 @@ export type TextLayoutEvent = SyntheticEvent<
   |}>,
 >;
 
-export type PressEvent = SyntheticEvent<
+export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
     force: number,

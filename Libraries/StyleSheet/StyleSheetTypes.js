@@ -90,6 +90,22 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
 |}>;
 
 export type ____TransformStyle_Internal = $ReadOnly<{|
+  /**
+   * `transform` accepts an array of transformation objects. Each object specifies
+   * the property that will be transformed as the key, and the value to use in the
+   * transformation. Objects should not be combined. Use a single key/value pair
+   * per object.
+   *
+   * The rotate transformations require a string so that the transform may be
+   * expressed in degrees (deg) or radians (rad). For example:
+   *
+   * `transform([{ rotateX: '45deg' }, { rotateZ: '0.785398rad' }])`
+   *
+   * The skew transformations require a string so that the transform may be
+   * expressed in degrees (deg). For example:
+   *
+   * `transform([{ skewX: '45deg' }])`
+   */
   transform?: $ReadOnlyArray<
     | {|+perspective: number | AnimatedNode|}
     | {|+rotate: string | AnimatedNode|}

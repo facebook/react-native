@@ -23,7 +23,7 @@ const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
 
 function getNativeComponentAttributes(uiViewClassName: string) {
-  const viewConfig = UIManager[uiViewClassName];
+  const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
 
   invariant(
     viewConfig != null && viewConfig.NativeProps != null,
@@ -36,7 +36,7 @@ function getNativeComponentAttributes(uiViewClassName: string) {
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
   while (baseModuleName) {
-    const baseModule = UIManager[baseModuleName];
+    const baseModule = UIManager.getViewManagerConfig(baseModuleName);
     if (!baseModule) {
       warning(false, 'Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
@@ -96,7 +96,7 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-  if (UIManager.ViewManagerNames) {
+  if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {

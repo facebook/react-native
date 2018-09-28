@@ -25,6 +25,9 @@ const View = require('View');
 const createReactClass = require('create-react-class');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
+import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
+import type {GestureState} from 'PanResponder';
+
 const IS_RTL = I18nManager.isRTL;
 
 // NOTE: Eventually convert these consts to an input object of configurations
@@ -204,7 +207,7 @@ const SwipeableRow = createReactClass({
     this._animateToClosedPosition();
   },
 
-  _onSwipeableViewLayout(event: Object): void {
+  _onSwipeableViewLayout(event: LayoutEvent): void {
     this.setState({
       isSwipeableViewRendered: true,
       rowHeight: event.nativeEvent.layout.height,
@@ -212,16 +215,19 @@ const SwipeableRow = createReactClass({
   },
 
   _handleMoveShouldSetPanResponderCapture(
-    event: Object,
-    gestureState: Object,
+    event: PressEvent,
+    gestureState: GestureState,
   ): boolean {
     // Decides whether a swipe is responded to by this component or its child
     return gestureState.dy < 10 && this._isValidSwipe(gestureState);
   },
 
-  _handlePanResponderGrant(event: Object, gestureState: Object): void {},
+  _handlePanResponderGrant(
+    event: PressEvent,
+    gestureState: GestureState,
+  ): void {},
 
-  _handlePanResponderMove(event: Object, gestureState: Object): void {
+  _handlePanResponderMove(event: PressEvent, gestureState: GestureState): void {
     if (this._isSwipingExcessivelyRightFromClosedPosition(gestureState)) {
       return;
     }
@@ -235,22 +241,24 @@ const SwipeableRow = createReactClass({
     }
   },
 
-  _isSwipingRightFromClosed(gestureState: Object): boolean {
+  _isSwipingRightFromClosed(gestureState: GestureState): boolean {
     const gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
     return this._previousLeft === CLOSED_LEFT_POSITION && gestureStateDx > 0;
   },
 
-  _swipeFullSpeed(gestureState: Object): void {
+  _swipeFullSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
   },
 
-  _swipeSlowSpeed(gestureState: Object): void {
+  _swipeSlowSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(
       this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR,
     );
   },
 
-  _isSwipingExcessivelyRightFromClosedPosition(gestureState: Object): boolean {
+  _isSwipingExcessivelyRightFromClosedPosition(
+    gestureState: GestureState,
+  ): boolean {
     /**
      * We want to allow a BIT of right swipe, to allow users to know that
      * swiping is available, but swiping right does not do anything
@@ -264,8 +272,8 @@ const SwipeableRow = createReactClass({
   },
 
   _onPanResponderTerminationRequest(
-    event: Object,
-    gestureState: Object,
+    event: PressEvent,
+    gestureState: GestureState,
   ): boolean {
     return false;
   },
@@ -338,7 +346,7 @@ const SwipeableRow = createReactClass({
   },
 
   // Ignore swipes due to user's finger moving slightly when tapping
-  _isValidSwipe(gestureState: Object): boolean {
+  _isValidSwipe(gestureState: GestureState): boolean {
     if (
       this.props.preventSwipeRight &&
       this._previousLeft === CLOSED_LEFT_POSITION &&
@@ -350,7 +358,7 @@ const SwipeableRow = createReactClass({
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
   },
 
-  _shouldAnimateRemainder(gestureState: Object): boolean {
+  _shouldAnimateRemainder(gestureState: GestureState): boolean {
     /**
      * If user has swiped past a certain distance, animate the rest of the way
      * if they let go
@@ -361,7 +369,7 @@ const SwipeableRow = createReactClass({
     );
   },
 
-  _handlePanResponderEnd(event: Object, gestureState: Object): void {
+  _handlePanResponderEnd(event: PressEvent, gestureState: GestureState): void {
     const horizontalDistance = IS_RTL ? -gestureState.dx : gestureState.dx;
     if (this._isSwipingRightFromClosed(gestureState)) {
       this.props.onOpen();

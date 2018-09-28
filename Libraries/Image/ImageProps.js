@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const PropTypes = require('prop-types');
@@ -121,7 +121,7 @@ module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#capinsets
    */
-  capInsets: EdgeInsetsPropType,
+  capInsets: DeprecatedEdgeInsetsPropType,
   /**
    * See https://facebook.github.io/react-native/docs/image.html#resizemethod
    */

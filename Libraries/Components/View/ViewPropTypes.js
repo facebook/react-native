@@ -53,7 +53,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -146,6 +146,7 @@ type GestureResponderEventProps = $ReadOnly<{|
   onResponderRelease?: ?Function,
 
   onResponderStart?: ?Function,
+  onResponderEnd?: ?Function,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other

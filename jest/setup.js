@@ -253,6 +253,7 @@ const mockNativeModules = {
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
+    getViewManagerConfig: jest.fn(),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),
