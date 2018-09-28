@@ -11,7 +11,7 @@
 'use strict';
 
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const NativeModules = require('NativeModules');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -38,7 +38,7 @@ function generateRequestId() {
 
 const ImageProps = {
   ...DeprecatedViewPropTypes,
-  style: StyleSheetPropType(ImageStylePropTypes),
+  style: StyleSheetPropType(DeprecatedImageStylePropTypes),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
