@@ -57,6 +57,11 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#openurl
    */
   openURL(url: string): Promise<any> {
+    if (url.toLowerCase().indexOf('https://') == 0) {
+      url = url.replace(url.substr(0, 8), 'https://');
+    } else if (url.toLowerCase().indexOf('http://') == 0) {
+      url = url.replace(url.substr(0, 7), 'https://');
+    }
     this._validateURL(url);
     return LinkingManager.openURL(url);
   }
