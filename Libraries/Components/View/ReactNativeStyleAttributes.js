@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -25,7 +25,7 @@ const sizesDiffer = require('sizesDiffer');
 const ReactNativeStyleAttributes = {
   ...keyMirror(ViewStylePropTypes),
   ...keyMirror(TextStylePropTypes),
-  ...keyMirror(ImageStylePropTypes),
+  ...keyMirror(DeprecatedImageStylePropTypes),
 };
 
 ReactNativeStyleAttributes.transform = {process: processTransform};
