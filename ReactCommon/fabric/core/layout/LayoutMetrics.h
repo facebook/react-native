@@ -31,13 +31,13 @@ struct LayoutMetrics {
     };
   }
 
-  bool operator ==(const LayoutMetrics& rhs) const {
+  bool operator==(const LayoutMetrics &rhs) const {
     return
-      std::tie(this->frame, this->contentInsets, this->borderWidth, this->displayType, this->layoutDirection) ==
-      std::tie(rhs.frame, rhs.contentInsets, rhs.borderWidth, rhs.displayType, rhs.layoutDirection);
+      std::tie(this->frame, this->contentInsets, this->borderWidth, this->displayType, this->layoutDirection, this->pointScaleFactor) ==
+      std::tie(rhs.frame, rhs.contentInsets, rhs.borderWidth, rhs.displayType, rhs.layoutDirection, this->pointScaleFactor);
   }
 
-  bool operator !=(const LayoutMetrics& rhs) const {
+  bool operator!=(const LayoutMetrics &rhs) const {
     return !(*this == rhs);
   }
 };
