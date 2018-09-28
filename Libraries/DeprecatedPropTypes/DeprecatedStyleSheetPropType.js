@@ -13,7 +13,7 @@
 const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 const flattenStyle = require('flattenStyle');
 
-function StyleSheetPropType(shape: {
+function DeprecatedStyleSheetPropType(shape: {
   [key: string]: ReactPropsCheckType,
 }): ReactPropsCheckType {
   const shapePropType = createStrictShapeTypeChecker(shape);
@@ -28,4 +28,4 @@ function StyleSheetPropType(shape: {
   };
 }
 
-module.exports = StyleSheetPropType;
+module.exports = DeprecatedStyleSheetPropType;

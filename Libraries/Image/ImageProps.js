@@ -14,7 +14,7 @@ const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const ImageSourcePropType = require('ImageSourcePropType');
 const ImageStylePropTypes = require('ImageStylePropTypes');
 const PropTypes = require('prop-types');
-const StyleSheetPropType = require('StyleSheetPropType');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 
 import type {DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -78,7 +78,7 @@ module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#style
    */
-  style: StyleSheetPropType(ImageStylePropTypes),
+  style: DeprecatedStyleSheetPropType(ImageStylePropTypes),
   /**
    * The image source (either a remote URL or a local file resource).
    *
