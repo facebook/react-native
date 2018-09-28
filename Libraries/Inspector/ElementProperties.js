@@ -34,13 +34,12 @@ type Props = $ReadOnly<{|
   },
   frame?: ?Object,
   selection?: ?number,
-  setSelection?: (number) => mixed,
+  setSelection?: number => mixed,
 |}>;
 
 class ElementProperties extends React.Component<Props> {
   render() {
     const style = flattenStyle(this.props.style);
-    // $FlowFixMe found when converting React.createClass to ES6
     const selection = this.props.selection;
     let openFileButton;
     const source = this.props.source;
@@ -87,10 +86,7 @@ class ElementProperties extends React.Component<Props> {
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            {
-              // $FlowFixMe found when converting React.createClass to ES6
-              <BoxInspector style={style} frame={this.props.frame} />
-            }
+            {<BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>

@@ -136,11 +136,13 @@ class Picker extends React.Component<PickerProps> {
 
   render() {
     if (Platform.OS === 'ios') {
-      // $FlowFixMe found when converting React.createClass to ES6
+      /* $FlowFixMe(>=0.81.0 site=react_native_ios_fb) This suppression was
+       * added when renaming suppression sites. */
       return <PickerIOS {...this.props}>{this.props.children}</PickerIOS>;
     } else if (Platform.OS === 'android') {
       return (
-        // $FlowFixMe found when converting React.createClass to ES6
+        /* $FlowFixMe(>=0.81.0 site=react_native_android_fb) This suppression
+         * was added when renaming suppression sites. */
         <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
       );
     } else {
