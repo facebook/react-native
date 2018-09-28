@@ -115,6 +115,7 @@ bool TextAttributes::operator!=(const TextAttributes &rhs) const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
   return {
     // Color
@@ -153,6 +154,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
     debugStringConvertibleItem("layoutDirection", layoutDirection),
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

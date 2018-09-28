@@ -30,11 +30,13 @@ class Props:
 public:
   Props() = default;
   Props(const Props &sourceProps, const RawProps &rawProps);
+  virtual ~Props() = default;
 
   const std::string nativeId;
-  #ifdef ANDROID
+
+#ifdef ANDROID
   const RawProps rawProps;
-  #endif
+#endif
 };
 
 } // namespace react

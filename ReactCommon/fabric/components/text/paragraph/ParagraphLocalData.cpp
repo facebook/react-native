@@ -37,6 +37,7 @@ folly::dynamic ParagraphLocalData::getDynamic() const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ParagraphLocalData::getDebugName() const {
   return "ParagraphLocalData";
 }
@@ -46,6 +47,7 @@ SharedDebugStringConvertibleList ParagraphLocalData::getDebugProps() const {
     debugStringConvertibleItem("attributedString", attributedString_, "")
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

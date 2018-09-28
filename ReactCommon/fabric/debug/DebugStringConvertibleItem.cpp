@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 DebugStringConvertibleItem::DebugStringConvertibleItem(
   const std::string &name,
   const std::string &value,
@@ -36,6 +38,8 @@ SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugProps() con
 SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren() const {
   return children_;
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

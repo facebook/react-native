@@ -108,7 +108,9 @@ protected:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
+#endif
 
 private:
   LayoutMetrics layoutMetrics_ {};

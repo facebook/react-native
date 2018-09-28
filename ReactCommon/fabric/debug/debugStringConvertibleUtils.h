@@ -20,6 +20,8 @@
 namespace facebook {
 namespace react {
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 inline std::string toString(const std::string &value) { return value; }
 inline std::string toString(const int &value) { return folly::to<std::string>(value); }
 inline std::string toString(const bool &value) { return folly::to<std::string>(value); }
@@ -54,6 +56,8 @@ inline SharedDebugStringConvertibleList operator+(const SharedDebugStringConvert
 inline SharedDebugStringConvertible debugStringConvertibleItem(std::string name, DebugStringConvertible value, std::string defaultValue) {
   return debugStringConvertibleItem(name, value.getDebugDescription(), defaultValue);
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

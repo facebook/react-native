@@ -44,8 +44,10 @@ public:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   std::string getDebugName() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 
 private:
 

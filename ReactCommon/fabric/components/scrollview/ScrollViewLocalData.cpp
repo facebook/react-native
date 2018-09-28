@@ -22,6 +22,7 @@ Size ScrollViewLocalData::getContentSize() const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ScrollViewLocalData::getDebugName() const {
   return "ScrollViewLocalData";
 }
@@ -31,6 +32,7 @@ SharedDebugStringConvertibleList ScrollViewLocalData::getDebugProps() const {
     debugStringConvertibleItem("contentBoundingRect", contentBoundingRect)
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

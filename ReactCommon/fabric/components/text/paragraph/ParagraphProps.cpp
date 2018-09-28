@@ -34,6 +34,7 @@ ParagraphProps::ParagraphProps(const ParagraphProps &sourceProps, const RawProps
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
   return
     ViewProps::getDebugProps() +
@@ -43,6 +44,7 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
       debugStringConvertibleItem("isSelectable", isSelectable)
     };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

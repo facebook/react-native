@@ -77,7 +77,9 @@ public:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugChildren() const override;
+#endif
 
 private:
 

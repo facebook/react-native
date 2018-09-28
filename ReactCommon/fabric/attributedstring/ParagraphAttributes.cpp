@@ -16,6 +16,7 @@ namespace react {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
   return {
     debugStringConvertibleItem("maximumNumberOfLines", maximumNumberOfLines),
@@ -25,6 +26,7 @@ SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
     debugStringConvertibleItem("maximumFontSize", maximumFontSize)
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -145,6 +145,7 @@ void ShadowNode::cloneChildrenIfShared() {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ShadowNode::getDebugName() const {
   return getComponentName();
 }
@@ -173,6 +174,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
       debugStringConvertibleItem("tag", folly::to<std::string>(tag_))
     };
 }
+#endif
 
 } // namespace react
 } // namespace facebook
