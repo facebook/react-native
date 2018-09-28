@@ -128,6 +128,7 @@ function e2e_suite() {
         emulator64-arm -avd "$AVD_UUID" -no-skin -no-audio -no-window -no-boot-anim &
 
         bootanim=""
+        # shellcheck disable=SC2076
         until [[ "$bootanim" =~ "stopped" ]]; do
             sleep 5
             bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
@@ -210,15 +211,15 @@ function e2e_suite() {
       fi
 
       # kill packager process
-      if kill -0 $SERVER_PID; then
+      if kill -0 "$SERVER_PID"; then
         echo "Killing packager $SERVER_PID"
-        kill -9 $SERVER_PID
+        kill -9 "$SERVER_PID"
       fi
 
       # kill appium process
-      if kill -0 $APPIUM_PID; then
+      if kill -0 "$APPIUM_PID"; then
         echo "Killing appium $APPIUM_PID"
-        kill -9 $APPIUM_PID
+        kill -9 "$APPIUM_PID"
       fi
 
     fi
