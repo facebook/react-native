@@ -11,8 +11,8 @@
 'use strict';
 
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageSourcePropType = require('DeprecatedImageSourcePropType');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const PropTypes = require('prop-types');
 const StyleSheetPropType = require('StyleSheetPropType');
 
@@ -78,13 +78,13 @@ module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#style
    */
-  style: StyleSheetPropType(ImageStylePropTypes),
+  style: StyleSheetPropType(DeprecatedImageStylePropTypes),
   /**
    * The image source (either a remote URL or a local file resource).
    *
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
-  source: ImageSourcePropType,
+  source: DeprecatedImageSourcePropType,
   /**
    * A static image to display while loading the image source.
    *
