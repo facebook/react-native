@@ -10,7 +10,6 @@
 'use strict';
 
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const ImageResizeMode = require('ImageResizeMode');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
 const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
@@ -20,7 +19,13 @@ const ImageStylePropTypes = {
   ...LayoutPropTypes,
   ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
-  resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
+  resizeMode: ReactPropTypes.oneOf([
+    'center',
+    'contain',
+    'cover',
+    'repeat',
+    'stretch',
+  ]),
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: DeprecatedColorPropType,
   borderColor: DeprecatedColorPropType,
