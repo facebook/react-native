@@ -9,7 +9,7 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
@@ -92,7 +92,7 @@ const DrawerLayoutAndroid = createReactClass({
      * );
      * ```
      */
-    drawerBackgroundColor: ColorPropType,
+    drawerBackgroundColor: DeprecatedColorPropType,
     /**
      * Specifies the side of the screen from which the drawer will slide in.
      */
@@ -147,7 +147,7 @@ const DrawerLayoutAndroid = createReactClass({
      * status bar to allow it to open over the status bar. It will only have an
      * effect on API 21+.
      */
-    statusBarBackgroundColor: ColorPropType,
+    statusBarBackgroundColor: DeprecatedColorPropType,
   },
 
   mixins: [NativeMethodsMixin],

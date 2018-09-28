@@ -34,7 +34,7 @@ type Props = $ReadOnly<{|
   },
   frame?: ?Object,
   selection?: ?number,
-  setSelection?: (number) => mixed,
+  setSelection?: number => mixed,
 |}>;
 
 class ElementProperties extends React.Component<Props> {
@@ -86,9 +86,7 @@ class ElementProperties extends React.Component<Props> {
               <StyleInspector style={style} />
               {openFileButton}
             </View>
-            {
-              <BoxInspector style={style} frame={this.props.frame} />
-            }
+            {<BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>
