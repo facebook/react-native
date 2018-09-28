@@ -301,7 +301,7 @@ const ReactNative = {
 
   // Prop Types
   get ColorPropType() {
-    return require('ColorPropType');
+    return require('DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
     return require('DeprecatedEdgeInsetsPropType');

@@ -10,7 +10,6 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');

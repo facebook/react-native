@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ImageResizeMode = require('ImageResizeMode');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
@@ -22,8 +22,8 @@ const ImageStylePropTypes = {
   ...DeprecatedTransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ColorPropType,
-  borderColor: ColorPropType,
+  backgroundColor: DeprecatedColorPropType,
+  borderColor: DeprecatedColorPropType,
   borderWidth: ReactPropTypes.number,
   borderRadius: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
@@ -31,7 +31,7 @@ const ImageStylePropTypes = {
   /**
    * Changes the color of all the non-transparent pixels to the tintColor.
    */
-  tintColor: ColorPropType,
+  tintColor: DeprecatedColorPropType,
   opacity: ReactPropTypes.number,
   /**
    * When the image has rounded corners, specifying an overlayColor will

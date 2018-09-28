@@ -10,14 +10,14 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const TextStylePropTypes = {
   ...ViewStylePropTypes,
 
-  color: ColorPropType,
+  color: DeprecatedColorPropType,
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
@@ -56,7 +56,7 @@ const TextStylePropTypes = {
     height: ReactPropTypes.number,
   }),
   textShadowRadius: ReactPropTypes.number,
-  textShadowColor: ColorPropType,
+  textShadowColor: DeprecatedColorPropType,
   /**
    * @platform ios
    */
@@ -107,7 +107,7 @@ const TextStylePropTypes = {
   /**
    * @platform ios
    */
-  textDecorationColor: ColorPropType,
+  textDecorationColor: DeprecatedColorPropType,
   textTransform: ReactPropTypes.oneOf([
     'none' /*default*/,
     'capitalize',
