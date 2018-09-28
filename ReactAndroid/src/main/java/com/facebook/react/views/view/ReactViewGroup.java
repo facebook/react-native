@@ -644,6 +644,10 @@ public class ReactViewGroup extends ViewGroup implements
     invalidate();
   }
 
+  public @Nullable String getOverflow() {
+    return mOverflow;
+  }
+
   /**
    * Set the background for the view or remove the background. It calls {@link
    * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
