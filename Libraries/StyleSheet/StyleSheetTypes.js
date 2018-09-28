@@ -15,6 +15,19 @@ const AnimatedNode = require('AnimatedNode');
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
 
+/**
+ * React Native's layout system is based on Flexbox and is powered both
+ * on iOS and Android by an open source project called `Yoga`:
+ * https://github.com/facebook/yoga
+ *
+ * The implementation in Yoga is slightly different from what the
+ * Flexbox spec defines - for example, we chose more sensible default
+ * values. Since our layout docs are generated from the comments in this
+ * file, please keep a brief comment describing each prop type.
+ *
+ * These properties are a subset of our styles that are consumed by the layout
+ * algorithm and affect the positioning and sizing of views.
+ */
 export type ____LayoutStyle_Internal = $ReadOnly<{|
   /** `display` sets the display type of this component.
    *

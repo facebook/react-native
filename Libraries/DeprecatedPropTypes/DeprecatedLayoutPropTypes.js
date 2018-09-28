@@ -12,19 +12,6 @@
 
 const ReactPropTypes = require('prop-types');
 
-/**
- * React Native's layout system is based on Flexbox and is powered both
- * on iOS and Android by an open source project called `Yoga`:
- * https://github.com/facebook/yoga
- *
- * The implementation in Yoga is slightly different from what the
- * Flexbox spec defines - for example, we chose more sensible default
- * values. Since our layout docs are generated from the comments in this
- * file, please keep a brief comment describing each prop type.
- *
- * These properties are a subset of our styles that are consumed by the layout
- * algorithm and affect the positioning and sizing of views.
- */
 const LayoutPropTypes = {
   display: ReactPropTypes.oneOf(['none', 'flex']),
   width: ReactPropTypes.oneOfType([
