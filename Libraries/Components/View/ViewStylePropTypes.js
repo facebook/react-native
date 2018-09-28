@@ -13,7 +13,7 @@
 const ColorPropType = require('ColorPropType');
 const LayoutPropTypes = require('LayoutPropTypes');
 const ReactPropTypes = require('prop-types');
-const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
+const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
 const TransformPropTypes = require('TransformPropTypes');
 
 /**
@@ -21,7 +21,7 @@ const TransformPropTypes = require('TransformPropTypes');
  */
 const ViewStylePropTypes = {
   ...LayoutPropTypes,
-  ...ShadowPropTypesIOS,
+  ...DeprecatedShadowPropTypesIOS,
   ...TransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: ColorPropType,
