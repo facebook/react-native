@@ -73,38 +73,37 @@ inline folly::Optional<Float> optionalFloatFromYogaValue(const YGValue &value, f
 
 inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   auto layoutMetrics = LayoutMetrics {};
-  auto layout = yogaNode.getLayout();
 
   layoutMetrics.frame = Rect {
     Point {
-      floatFromYogaFloat(layout.position[YGEdgeLeft]),
-      floatFromYogaFloat(layout.position[YGEdgeTop])
+      floatFromYogaFloat(YGNodeLayoutGetLeft(&yogaNode)),
+      floatFromYogaFloat(YGNodeLayoutGetTop(&yogaNode))
     },
     Size {
-      floatFromYogaFloat(layout.dimensions[YGDimensionWidth]),
-      floatFromYogaFloat(layout.dimensions[YGDimensionHeight])
+      floatFromYogaFloat(YGNodeLayoutGetWidth(&yogaNode)),
+      floatFromYogaFloat(YGNodeLayoutGetHeight(&yogaNode))
     }
   };
 
   layoutMetrics.borderWidth = EdgeInsets {
-    floatFromYogaFloat(layout.border[YGEdgeLeft]),
-    floatFromYogaFloat(layout.border[YGEdgeTop]),
-    floatFromYogaFloat(layout.border[YGEdgeRight]),
-    floatFromYogaFloat(layout.border[YGEdgeBottom])
+    floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeLeft)),
+    floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeTop)),
+    floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeRight)),
+    floatFromYogaFloat(YGNodeLayoutGetBorder(&yogaNode, YGEdgeBottom))
   };
 
   layoutMetrics.contentInsets = EdgeInsets {
-    floatFromYogaFloat(layout.border[YGEdgeLeft] + layout.padding[YGEdgeLeft]),
-    floatFromYogaFloat(layout.border[YGEdgeTop] + layout.padding[YGEdgeTop]),
-    floatFromYogaFloat(layout.border[YGEdgeRight] + layout.padding[YGEdgeRight]),
-    floatFromYogaFloat(layout.border[YGEdgeBottom] + layout.padding[YGEdgeBottom])
+    layoutMetrics.borderWidth.left + floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeLeft)),
+    layoutMetrics.borderWidth.top + floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeTop)),
+    layoutMetrics.borderWidth.right + floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeRight)),
+    layoutMetrics.borderWidth.bottom + floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))
   };
 
   layoutMetrics.displayType =
     yogaNode.getStyle().display == YGDisplayNone ? DisplayType::None : DisplayType::Flex;
 
   layoutMetrics.layoutDirection =
-    layout.direction == YGDirectionRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+    YGNodeLayoutGetDirection(&yogaNode) == YGDirectionRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
 
   return layoutMetrics;
 }
