@@ -131,13 +131,38 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
   >,
 |}>;
 
+/**
+ * These props can be used to dynamically generate shadows on views, images, text, etc.
+ *
+ * Because they are dynamically generated, they may cause performance regressions. Static
+ * shadow image asset may be a better way to go for optimal performance.
+ *
+ * These properties are iOS only - for similar functionality on Android, use the [`elevation`
+ * property](docs/viewstyleproptypes.html#elevation).
+ */
 export type ____ShadowStyle_Internal = $ReadOnly<{|
+  /**
+   * Sets the drop shadow color
+   * @platform ios
+   */
   shadowColor?: ColorValue,
+  /**
+   * Sets the drop shadow offset
+   * @platform ios
+   */
   shadowOffset?: $ReadOnly<{|
     width?: number,
     height?: number,
   |}>,
+  /**
+   * Sets the drop shadow opacity (multiplied by the color's alpha component)
+   * @platform ios
+   */
   shadowOpacity?: number | AnimatedNode,
+  /**
+   * Sets the drop shadow blur radius
+   * @platform ios
+   */
   shadowRadius?: number,
 |}>;
 
