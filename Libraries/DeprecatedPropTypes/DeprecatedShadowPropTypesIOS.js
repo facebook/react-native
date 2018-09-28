@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
 
 const DeprecatedShadowPropTypesIOS = {
-  shadowColor: ColorPropType,
+  shadowColor: DeprecatedColorPropType,
   shadowOffset: ReactPropTypes.shape({
     width: ReactPropTypes.number,
     height: ReactPropTypes.number,
