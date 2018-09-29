@@ -33,7 +33,7 @@ type Props = $ReadOnly<{|
   setTouchTargeting?: ?(val: boolean) => void,
   networking?: ?boolean,
   setNetworking?: ?(val: boolean) => void,
-  hierarchy?: ?$ReadOnlyArray<?[?{name?: ?string}]>,
+  hierarchy?: ?$ReadOnlyArray<{name?: ?string}>,
   selection?: ?number,
   setSelection?: number => mixed,
   inspected?: ?{
