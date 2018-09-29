@@ -12,7 +12,7 @@
 
 const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const processColor = require('processColor');
 const processTransform = require('processTransform');
@@ -21,7 +21,7 @@ const sizesDiffer = require('sizesDiffer');
 const ReactNativeStyleAttributes = {};
 
 for (const attributeName of Object.keys({
-  ...ViewStylePropTypes,
+  ...DeprecatedViewStylePropTypes,
   ...TextStylePropTypes,
   ...DeprecatedImageStylePropTypes,
 })) {

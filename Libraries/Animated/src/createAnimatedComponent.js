@@ -12,7 +12,7 @@
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -184,7 +184,7 @@ function createAnimatedComponent(Component: any): any {
         return;
       }
 
-      for (const key in ViewStylePropTypes) {
+      for (const key in DeprecatedViewStylePropTypes) {
         if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' +

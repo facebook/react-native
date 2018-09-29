@@ -14,7 +14,7 @@ const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const {
   AccessibilityComponentTypes,
@@ -23,7 +23,9 @@ const {
   AccessibilityStates,
 } = require('ViewAccessibility');
 
-const stylePropType = DeprecatedStyleSheetPropType(ViewStylePropTypes);
+const stylePropType = DeprecatedStyleSheetPropType(
+  DeprecatedViewStylePropTypes,
+);
 
 module.exports = {
   /**
