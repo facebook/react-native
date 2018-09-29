@@ -14,7 +14,6 @@ const ElementProperties = require('ElementProperties');
 const NetworkOverlay = require('NetworkOverlay');
 const PerformanceOverlay = require('PerformanceOverlay');
 const React = require('React');
-const PropTypes = require('prop-types');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -33,7 +32,7 @@ type Props = $ReadOnly<{|
   setTouchTargeting?: ?(val: boolean) => void,
   networking?: ?boolean,
   setNetworking?: ?(val: boolean) => void,
-  hierarchy?: ?$ReadOnlyArray<{name?: ?string}>,
+  hierarchy?: any,
   selection?: ?number,
   setSelection?: number => mixed,
   inspected?: ?{
