@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
 const ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -23,7 +23,7 @@ const ReactNativeStyleAttributes = {};
 for (const attributeName of Object.keys({
   ...ViewStylePropTypes,
   ...TextStylePropTypes,
-  ...ImageStylePropTypes,
+  ...DeprecatedImageStylePropTypes,
 })) {
   ReactNativeStyleAttributes[attributeName] = true;
 }
