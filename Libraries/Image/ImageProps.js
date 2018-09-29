@@ -11,17 +11,17 @@
 'use strict';
 
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
-const PropTypes = require('prop-types');
+const DeprecatedImageSourcePropType = require('DeprecatedImageSourcePropType');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
+const PropTypes = require('prop-types');
 
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {ImageSource} from 'ImageSource';
+import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
 import type {DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {ImageSource} from 'ImageSource';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
 
 type OnLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -78,13 +78,13 @@ module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#style
    */
-  style: DeprecatedStyleSheetPropType(ImageStylePropTypes),
+  style: DeprecatedStyleSheetPropType(DeprecatedImageStylePropTypes),
   /**
    * The image source (either a remote URL or a local file resource).
    *
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
-  source: ImageSourcePropType,
+  source: DeprecatedImageSourcePropType,
   /**
    * A static image to display while loading the image source.
    *
