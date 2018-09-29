@@ -12,11 +12,11 @@
 
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const PropTypes = require('prop-types');
-const StyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 
-const stylePropType = StyleSheetPropType(TextStylePropTypes);
+const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
 
 module.exports = {
   ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
