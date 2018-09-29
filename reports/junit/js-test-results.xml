@@ -1,0 +1,1440 @@
+<testsuites name="jest tests" tests="609" failures="0" time="11.168">
+  <testsuite name="link" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:32" time="1.925" tests="9">
+    <testcase classname="link should reject when run in a folder without package.json" name="link should reject when run in a folder without package.json" time="0.278">
+    </testcase>
+    <testcase classname="link should accept a name of a dependency to link" name="link should accept a name of a dependency to link" time="0.027">
+    </testcase>
+    <testcase classname="link should accept the name of a dependency with a scope / tag" name="link should accept the name of a dependency with a scope / tag" time="0.041">
+    </testcase>
+    <testcase classname="link should register native module when android/ios projects are present" name="link should register native module when android/ios projects are present" time="0.426">
+    </testcase>
+    <testcase classname="link should not register modules when they are already installed" name="link should not register modules when they are already installed" time="0.042">
+    </testcase>
+    <testcase classname="link should register native modules for plugins" name="link should register native modules for plugins" time="0.033">
+    </testcase>
+    <testcase classname="link should not register native modules for plugins when already installed" name="link should not register native modules for plugins when already installed" time="0.022">
+    </testcase>
+    <testcase classname="link should run prelink and postlink commands at the appropriate times" name="link should run prelink and postlink commands at the appropriate times" time="0.059">
+    </testcase>
+    <testcase classname="link should copy assets from both project and dependencies projects" name="link should copy assets from both project and dependencies projects" time="0.052">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::removeSharedLibraries" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:34" time="0.255" tests="2">
+    <testcase classname="ios::removeSharedLibraries should remove only the specified shared library" name="ios::removeSharedLibraries should remove only the specified shared library" time="0.076">
+    </testcase>
+    <testcase classname="ios::removeSharedLibraries should ignore missing shared libraries" name="ios::removeSharedLibraries should ignore missing shared libraries" time="0.05">
+    </testcase>
+  </testsuite>
+  <testsuite name="Animated tests" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:32" time="2.484" tests="42">
+    <testcase classname="Animated tests Animated works end to end" name="Animated tests Animated works end to end" time="0.043">
+    </testcase>
+    <testcase classname="Animated tests Animated does not detach on updates" name="Animated tests Animated does not detach on updates" time="0.031">
+    </testcase>
+    <testcase classname="Animated tests Animated stops animation when detached" name="Animated tests Animated stops animation when detached" time="0.026">
+    </testcase>
+    <testcase classname="Animated tests Animated triggers callback when spring is at rest" name="Animated tests Animated triggers callback when spring is at rest" time="0.009">
+    </testcase>
+    <testcase classname="Animated tests Animated send toValue when an underdamped spring stops" name="Animated tests Animated send toValue when an underdamped spring stops" time="0.904">
+    </testcase>
+    <testcase classname="Animated tests Animated send toValue when a critically damped spring stops" name="Animated tests Animated send toValue when a critically damped spring stops" time="0.2">
+    </testcase>
+    <testcase classname="Animated tests Animated convert to JSON" name="Animated tests Animated convert to JSON" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Sequence works with an empty sequence" name="Animated tests Animated Sequence works with an empty sequence" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Sequence sequences well" name="Animated tests Animated Sequence sequences well" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Sequence supports interrupting sequence" name="Animated tests Animated Sequence supports interrupting sequence" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Sequence supports stopping sequence" name="Animated tests Animated Sequence supports stopping sequence" time="0.004">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop loops indefinitely if config not specified" name="Animated tests Animated Loop loops indefinitely if config not specified" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop loops indefinitely if iterations is -1" name="Animated tests Animated Loop loops indefinitely if iterations is -1" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop loops indefinitely if iterations not specified" name="Animated tests Animated Loop loops indefinitely if iterations not specified" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop loops three times if iterations is 3" name="Animated tests Animated Loop loops three times if iterations is 3" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop does not loop if iterations is 1" name="Animated tests Animated Loop does not loop if iterations is 1" time="0.001">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop does not animate if iterations is 0" name="Animated tests Animated Loop does not animate if iterations is 0" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop supports interrupting an indefinite loop" name="Animated tests Animated Loop supports interrupting an indefinite loop" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Loop supports stopping loop" name="Animated tests Animated Loop supports stopping loop" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Parallel works with an empty parallel" name="Animated tests Animated Parallel works with an empty parallel" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Parallel works with an empty element in array" name="Animated tests Animated Parallel works with an empty element in array" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Parallel parellelizes well" name="Animated tests Animated Parallel parellelizes well" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Parallel supports stopping parallel" name="Animated tests Animated Parallel supports stopping parallel" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Parallel does not call stop more than once when stopping" name="Animated tests Animated Parallel does not call stop more than once when stopping" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated delays should call anim after delay in sequence" name="Animated tests Animated delays should call anim after delay in sequence" time="0.018">
+    </testcase>
+    <testcase classname="Animated tests Animated delays should run stagger to end" name="Animated tests Animated delays should run stagger to end" time="0.006">
+    </testcase>
+    <testcase classname="Animated tests Animated Events should map events" name="Animated tests Animated Events should map events" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Events should call listeners" name="Animated tests Animated Events should call listeners" time="0.002">
+    </testcase>
+    <testcase classname="Animated tests Animated Events should call forked event listeners, with Animated.event() listener" name="Animated tests Animated Events should call forked event listeners, with Animated.event() listener" time="0.01">
+    </testcase>
+    <testcase classname="Animated tests Animated Events should call forked event listeners, with js listener" name="Animated tests Animated Events should call forked event listeners, with js listener" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Events should call forked event listeners, with undefined listener" name="Animated tests Animated Events should call forked event listeners, with undefined listener" time="0.009">
+    </testcase>
+    <testcase classname="Animated tests Animated Interactions registers an interaction by default" name="Animated tests Animated Interactions registers an interaction by default" time="0.114">
+    </testcase>
+    <testcase classname="Animated tests Animated Interactions does not register an interaction when specified" name="Animated tests Animated Interactions does not register an interaction when specified" time="0.103">
+    </testcase>
+    <testcase classname="Animated tests Animated Tracking should track values" name="Animated tests Animated Tracking should track values" time="0.01">
+    </testcase>
+    <testcase classname="Animated tests Animated Tracking should track interpolated values" name="Animated tests Animated Tracking should track interpolated values" time="0.003">
+    </testcase>
+    <testcase classname="Animated tests Animated Tracking should stop tracking when animated" name="Animated tests Animated Tracking should stop tracking when animated" time="0.008">
+    </testcase>
+    <testcase classname="Animated tests Animated Vectors should animate vectors" name="Animated tests Animated Vectors should animate vectors" time="0.01">
+    </testcase>
+    <testcase classname="Animated tests Animated Vectors should track vectors" name="Animated tests Animated Vectors should track vectors" time="0.01">
+    </testcase>
+    <testcase classname="Animated tests Animated Vectors should track with springs" name="Animated tests Animated Vectors should track with springs" time="0.246">
+    </testcase>
+    <testcase classname="Animated tests Animated Listeners should get updates" name="Animated tests Animated Listeners should get updates" time="0.004">
+    </testcase>
+    <testcase classname="Animated tests Animated Listeners should removeAll" name="Animated tests Animated Listeners should removeAll" time="0.004">
+    </testcase>
+    <testcase classname="Animated tests Animated Diff Clamp should get the proper value" name="Animated tests Animated Diff Clamp should get the proper value" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:34" time="0.309" tests="1">
+    <testcase classname=" renders assets based on relative path" name=" renders assets based on relative path" time="0.171">
+    </testcase>
+  </testsuite>
+  <testsuite name="SectionList" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.41" tests="5">
+    <testcase classname="SectionList renders empty list" name="SectionList renders empty list" time="0.244">
+    </testcase>
+    <testcase classname="SectionList rendering empty section headers is fine" name="SectionList rendering empty section headers is fine" time="0.014">
+    </testcase>
+    <testcase classname="SectionList renders all the bells and whistles" name="SectionList renders all the bells and whistles" time="0.03">
+    </testcase>
+    <testcase classname="SectionList renders a footer when there is no data" name="SectionList renders a footer when there is no data" time="0.007">
+    </testcase>
+    <testcase classname="SectionList renders a footer when there is no data and no header" name="SectionList renders a footer when there is no data and no header" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="bezier" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.412" tests="9">
+    <testcase classname="bezier should be a function" name="bezier should be a function" time="0.004">
+    </testcase>
+    <testcase classname="bezier should creates an object" name="bezier should creates an object" time="0.001">
+    </testcase>
+    <testcase classname="bezier should fail with wrong arguments" name="bezier should fail with wrong arguments" time="0.003">
+    </testcase>
+    <testcase classname="bezier linear curves should be linear" name="bezier linear curves should be linear" time="0.033">
+    </testcase>
+    <testcase classname="bezier common properties should be the right value at extremes" name="bezier common properties should be the right value at extremes" time="0.003">
+    </testcase>
+    <testcase classname="bezier common properties should approach the projected value of its x=y projected curve" name="bezier common properties should approach the projected value of its x=y projected curve" time="0.123">
+    </testcase>
+    <testcase classname="bezier two same instances should be strictly equals" name="bezier two same instances should be strictly equals" time="0.067">
+    </testcase>
+    <testcase classname="bezier symetric curves should have a central value y~=0.5 at x=0.5" name="bezier symetric curves should have a central value y~=0.5 at x=0.5" time="0.001">
+    </testcase>
+    <testcase classname="bezier symetric curves should be symmetrical" name="bezier symetric curves should be symmetrical" time="0.086">
+    </testcase>
+  </testsuite>
+  <testsuite name="getDependencyConfig" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.329" tests="2">
+    <testcase classname="getDependencyConfig should return an array of dependencies&apos; rnpm config" name="getDependencyConfig should return an array of dependencies&apos; rnpm config" time="0.005">
+    </testcase>
+    <testcase classname="getDependencyConfig should filter out invalid react-native projects" name="getDependencyConfig should filter out invalid react-native projects" time="0.022">
+    </testcase>
+  </testsuite>
+  <testsuite name="FlatList" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.27" tests="4">
+    <testcase classname="FlatList renders simple list" name="FlatList renders simple list" time="0.16">
+    </testcase>
+    <testcase classname="FlatList renders empty list" name="FlatList renders empty list" time="0.005">
+    </testcase>
+    <testcase classname="FlatList renders null list" name="FlatList renders null list" time="0.008">
+    </testcase>
+    <testcase classname="FlatList renders all the bells and whistles" name="FlatList renders all the bells and whistles" time="0.027">
+    </testcase>
+  </testsuite>
+  <testsuite name="VirtualizedList" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.248" tests="10">
+    <testcase classname="VirtualizedList renders simple list" name="VirtualizedList renders simple list" time="0.031">
+    </testcase>
+    <testcase classname="VirtualizedList renders empty list" name="VirtualizedList renders empty list" time="0.004">
+    </testcase>
+    <testcase classname="VirtualizedList renders null list" name="VirtualizedList renders null list" time="0.015">
+    </testcase>
+    <testcase classname="VirtualizedList renders empty list with empty component" name="VirtualizedList renders empty list with empty component" time="0.008">
+    </testcase>
+    <testcase classname="VirtualizedList renders list with empty component" name="VirtualizedList renders list with empty component" time="0.006">
+    </testcase>
+    <testcase classname="VirtualizedList renders all the bells and whistles" name="VirtualizedList renders all the bells and whistles" time="0.021">
+    </testcase>
+    <testcase classname="VirtualizedList test getItem functionality where data is not an Array" name="VirtualizedList test getItem functionality where data is not an Array" time="0.006">
+    </testcase>
+    <testcase classname="VirtualizedList handles separators correctly" name="VirtualizedList handles separators correctly" time="0.033">
+    </testcase>
+    <testcase classname="VirtualizedList handles nested lists" name="VirtualizedList handles nested lists" time="0.022">
+    </testcase>
+    <testcase classname="VirtualizedList returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data" name="VirtualizedList returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data" time="0.026">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getGroup" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:35" time="0.346" tests="4">
+    <testcase classname="ios::getGroup should return a top-level group" name="ios::getGroup should return a top-level group" time="0.068">
+    </testcase>
+    <testcase classname="ios::getGroup should return nested group when specified" name="ios::getGroup should return nested group when specified" time="0.04">
+    </testcase>
+    <testcase classname="ios::getGroup should return null when no group found" name="ios::getGroup should return null when no group found" time="0.039">
+    </testcase>
+    <testcase classname="ios::getGroup should return top-level group when name not specified" name="ios::getGroup should return top-level group when name not specified" time="0.023">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::addSharedLibraries" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:36" time="0.26" tests="3">
+    <testcase classname="ios::addSharedLibraries should automatically create Frameworks group" name="ios::addSharedLibraries should automatically create Frameworks group" time="0.05">
+    </testcase>
+    <testcase classname="ios::addSharedLibraries should add shared libraries to project" name="ios::addSharedLibraries should add shared libraries to project" time="0.036">
+    </testcase>
+    <testcase classname="ios::addSharedLibraries should not add duplicate libraries to project" name="ios::addSharedLibraries should not add duplicate libraries to project" time="0.022">
+    </testcase>
+  </testsuite>
+  <testsuite name="InteractionManager" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:36" time="0.354" tests="17">
+    <testcase classname="InteractionManager throws when clearing an undefined handle" name="InteractionManager throws when clearing an undefined handle" time="0.01">
+    </testcase>
+    <testcase classname="InteractionManager notifies asynchronously when interaction starts" name="InteractionManager notifies asynchronously when interaction starts" time="0.005">
+    </testcase>
+    <testcase classname="InteractionManager notifies asynchronously when interaction stops" name="InteractionManager notifies asynchronously when interaction stops" time="0.003">
+    </testcase>
+    <testcase classname="InteractionManager does not notify when started &amp; stopped in same event loop" name="InteractionManager does not notify when started &amp; stopped in same event loop" time="0.002">
+    </testcase>
+    <testcase classname="InteractionManager does not notify when going from two -&gt; one active interactions" name="InteractionManager does not notify when going from two -&gt; one active interactions" time="0.002">
+    </testcase>
+    <testcase classname="InteractionManager runs tasks asynchronously when there are interactions" name="InteractionManager runs tasks asynchronously when there are interactions" time="0.003">
+    </testcase>
+    <testcase classname="InteractionManager runs tasks when interactions complete" name="InteractionManager runs tasks when interactions complete" time="0.002">
+    </testcase>
+    <testcase classname="InteractionManager does not run tasks twice" name="InteractionManager does not run tasks twice" time="0.001">
+    </testcase>
+    <testcase classname="InteractionManager runs tasks added while processing previous tasks" name="InteractionManager runs tasks added while processing previous tasks" time="0.002">
+    </testcase>
+    <testcase classname="InteractionManager allows tasks to be cancelled" name="InteractionManager allows tasks to be cancelled" time="0.006">
+    </testcase>
+    <testcase classname="promise tasks should run a basic promise task" name="promise tasks should run a basic promise task" time="0.009">
+    </testcase>
+    <testcase classname="promise tasks should handle nested promises" name="promise tasks should handle nested promises" time="0.007">
+    </testcase>
+    <testcase classname="promise tasks should pause promise tasks during interactions then resume" name="promise tasks should pause promise tasks during interactions then resume" time="0.008">
+    </testcase>
+    <testcase classname="promise tasks should execute tasks in loop within deadline" name="promise tasks should execute tasks in loop within deadline" time="0.006">
+    </testcase>
+    <testcase classname="promise tasks should execute tasks one at a time if deadline exceeded" name="promise tasks should execute tasks one at a time if deadline exceeded" time="0.002">
+    </testcase>
+    <testcase classname="promise tasks resolves async tasks recusively before other queued tasks" name="promise tasks resolves async tasks recusively before other queued tasks" time="0.106">
+    </testcase>
+    <testcase classname="promise tasks should also work with a deadline" name="promise tasks should also work with a deadline" time="0.106">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::isInstalled" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:36" time="0.225" tests="3">
+    <testcase classname="ios::isInstalled should return true when .xcodeproj in Libraries" name="ios::isInstalled should return true when .xcodeproj in Libraries" time="0.057">
+    </testcase>
+    <testcase classname="ios::isInstalled should return false when .xcodeproj not in Libraries" name="ios::isInstalled should return false when .xcodeproj not in Libraries" time="0.068">
+    </testcase>
+    <testcase classname="ios::isInstalled should return false when `LibraryFolder` is missing" name="ios::isInstalled should return false when `LibraryFolder` is missing" time="0.033">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::createGroup" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:36" time="0.396" tests="4">
+    <testcase classname="ios::createGroup should create a group with given name" name="ios::createGroup should create a group with given name" time="0.113">
+    </testcase>
+    <testcase classname="ios::createGroup should attach group to main project group" name="ios::createGroup should attach group to main project group" time="0.104">
+    </testcase>
+    <testcase classname="ios::createGroup should create a nested group with given path" name="ios::createGroup should create a nested group with given path" time="0.033">
+    </testcase>
+    <testcase classname="ios::createGroup should-not create already created groups" name="ios::createGroup should-not create already created groups" time="0.021">
+    </testcase>
+  </testsuite>
+  <testsuite name="Native Animated" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:36" time="0.275" tests="28">
+    <testcase classname="Native Animated Animated Value proxies `setValue` correctly" name="Native Animated Animated Value proxies `setValue` correctly" time="0.051">
+    </testcase>
+    <testcase classname="Native Animated Animated Value should set offset" name="Native Animated Animated Value should set offset" time="0.005">
+    </testcase>
+    <testcase classname="Native Animated Animated Value should flatten offset" name="Native Animated Animated Value should flatten offset" time="0.003">
+    </testcase>
+    <testcase classname="Native Animated Animated Value should extract offset" name="Native Animated Animated Value should extract offset" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animated Listeners should get updates" name="Native Animated Animated Listeners should get updates" time="0.011">
+    </testcase>
+    <testcase classname="Native Animated Animated Listeners should removeAll" name="Native Animated Animated Listeners should removeAll" time="0.018">
+    </testcase>
+    <testcase classname="Native Animated Animated Events should map events" name="Native Animated Animated Events should map events" time="0.006">
+    </testcase>
+    <testcase classname="Native Animated Animated Events should throw on invalid event path" name="Native Animated Animated Events should throw on invalid event path" time="0.001">
+    </testcase>
+    <testcase classname="Native Animated Animated Events should call listeners" name="Native Animated Animated Events should call listeners" time="0.001">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph creates and detaches nodes" name="Native Animated Animated Graph creates and detaches nodes" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid description for value, style and props nodes" name="Native Animated Animated Graph sends a valid description for value, style and props nodes" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.add nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.add nodes" time="0.01">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.subtract nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.subtract nodes" time="0.008">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.multiply nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.multiply nodes" time="0.005">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.divide nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.divide nodes" time="0.005">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.modulo nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.modulo nodes" time="0.012">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for interpolate() nodes" name="Native Animated Animated Graph sends a valid graph description for interpolate() nodes" time="0.005">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for transform nodes" name="Native Animated Animated Graph sends a valid graph description for transform nodes" time="0.004">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph sends a valid graph description for Animated.diffClamp nodes" name="Native Animated Animated Graph sends a valid graph description for Animated.diffClamp nodes" time="0.004">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph doesn&apos;t call into native API if useNativeDriver is set to false" name="Native Animated Animated Graph doesn&apos;t call into native API if useNativeDriver is set to false" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph fails when trying to run non-native animation on native node" name="Native Animated Animated Graph fails when trying to run non-native animation on native node" time="0.003">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph fails for unsupported styles" name="Native Animated Animated Graph fails for unsupported styles" time="0">
+    </testcase>
+    <testcase classname="Native Animated Animated Graph works for any `static` props and styles" name="Native Animated Animated Graph works for any `static` props and styles" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animations sends a valid timing animation description" name="Native Animated Animations sends a valid timing animation description" time="0.001">
+    </testcase>
+    <testcase classname="Native Animated Animations sends a valid spring animation description" name="Native Animated Animations sends a valid spring animation description" time="0.008">
+    </testcase>
+    <testcase classname="Native Animated Animations sends a valid decay animation description" name="Native Animated Animations sends a valid decay animation description" time="0.005">
+    </testcase>
+    <testcase classname="Native Animated Animations works with Animated.loop" name="Native Animated Animations works with Animated.loop" time="0.002">
+    </testcase>
+    <testcase classname="Native Animated Animations sends stopAnimation command to native" name="Native Animated Animations sends stopAnimation command to native" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::removeProjectFromLibraries" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.226" tests="1">
+    <testcase classname="ios::removeProjectFromLibraries should remove file from Libraries group" name="ios::removeProjectFromLibraries should remove file from Libraries group" time="0.084">
+    </testcase>
+  </testsuite>
+  <testsuite name="TouchableHighlight" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.235" tests="1">
+    <testcase classname="TouchableHighlight renders correctly" name="TouchableHighlight renders correctly" time="0.148">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::addFileToProject" errors="0" failures="0" skipped="1" timestamp="2018-09-29T08:09:37" time="0.233" tests="3">
+    <testcase classname="ios::addFileToProject should return removed file" name="ios::addFileToProject should return removed file" time="0.074">
+    </testcase>
+    <testcase classname="ios::addFileToProject should remove file from a project" name="ios::addFileToProject should remove file from a project" time="0.058">
+    </testcase>
+    <testcase classname="ios::addFileToProject should remove file from PBXContainerProxy" name="ios::addFileToProject should remove file from PBXContainerProxy" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::hasLibraryImported" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.205" tests="2">
+    <testcase classname="ios::hasLibraryImported should return true if project has been already imported" name="ios::hasLibraryImported should return true if project has been already imported" time="0.063">
+    </testcase>
+    <testcase classname="ios::hasLibraryImported should return false if project is not imported" name="ios::hasLibraryImported should return false if project is not imported" time="0.071">
+    </testcase>
+  </testsuite>
+  <testsuite name="YellowBox" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.168" tests="4">
+    <testcase classname="YellowBox can set `disableYellowBox` after installing" name="YellowBox can set `disableYellowBox` after installing" time="0.031">
+    </testcase>
+    <testcase classname="YellowBox can set `disableYellowBox` before installing" name="YellowBox can set `disableYellowBox` before installing" time="0.007">
+    </testcase>
+    <testcase classname="YellowBox registers warnings" name="YellowBox registers warnings" time="0.007">
+    </testcase>
+    <testcase classname="YellowBox registers errors beginning with &quot;Warning: &quot;" name="YellowBox registers errors beginning with &quot;Warning: &quot;" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::writePlist" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.215" tests="2">
+    <testcase classname="ios::writePlist should write a `.plist` file" name="ios::writePlist should write a `.plist` file" time="0.083">
+    </testcase>
+    <testcase classname="ios::writePlist when plistPath is null it should return null" name="ios::writePlist when plistPath is null it should return null" time="0.059">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::mapHeaderSearchPaths" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.237" tests="2">
+    <testcase classname="ios::mapHeaderSearchPaths should be called twice" name="ios::mapHeaderSearchPaths should be called twice" time="0.082">
+    </testcase>
+    <testcase classname="ios::mapHeaderSearchPaths calls the function with an array of paths, given a project with one" name="ios::mapHeaderSearchPaths calls the function with an array of paths, given a project with one" time="0.061">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::addProjectToLibraries" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.157" tests="1">
+    <testcase classname="ios::addProjectToLibraries should append file to Libraries group" name="ios::addProjectToLibraries should append file to Libraries group" time="0.065">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getProducts" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:37" time="0.178" tests="1">
+    <testcase classname="ios::getProducts should return an array of static libraries project exports" name="ios::getProducts should return an array of static libraries project exports" time="0.08">
+    </testcase>
+  </testsuite>
+  <testsuite name="buildStyleInterpolator" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.107" tests="9">
+    <testcase classname="buildStyleInterpolator should linearly interpolate without extrapolating" name="buildStyleInterpolator should linearly interpolate without extrapolating" time="0.026">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should linearly interpolate with extrapolating" name="buildStyleInterpolator should linearly interpolate with extrapolating" time="0.003">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should round accordingly" name="buildStyleInterpolator should round accordingly" time="0.006">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should detect chnages correctly" name="buildStyleInterpolator should detect chnages correctly" time="0.002">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should handle identity" name="buildStyleInterpolator should handle identity" time="0.001">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should translate" name="buildStyleInterpolator should translate" time="0.001">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should scale" name="buildStyleInterpolator should scale" time="0.001">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should combine scale and translate" name="buildStyleInterpolator should combine scale and translate" time="0">
+    </testcase>
+    <testcase classname="buildStyleInterpolator should step" name="buildStyleInterpolator should step" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getProjectConfig" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.12" tests="3">
+    <testcase classname="ios::getProjectConfig returns an object with ios project configuration" name="ios::getProjectConfig returns an object with ios project configuration" time="0.017">
+    </testcase>
+    <testcase classname="ios::getProjectConfig returns `null` if ios project was not found" name="ios::getProjectConfig returns `null` if ios project was not found" time="0.005">
+    </testcase>
+    <testcase classname="ios::getProjectConfig returns normalized shared library names" name="ios::getProjectConfig returns normalized shared library names" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="YellowBoxRegistry" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.141" tests="17">
+    <testcase classname="YellowBoxRegistry adds and deletes warnings" name="YellowBoxRegistry adds and deletes warnings" time="0.023">
+    </testcase>
+    <testcase classname="YellowBoxRegistry clears all warnings" name="YellowBoxRegistry clears all warnings" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxRegistry sorts warnings in chronological order" name="YellowBoxRegistry sorts warnings in chronological order" time="0.004">
+    </testcase>
+    <testcase classname="YellowBoxRegistry ignores warnings matching patterns" name="YellowBoxRegistry ignores warnings matching patterns" time="0.01">
+    </testcase>
+    <testcase classname="YellowBoxRegistry ignores all warnings when disabled" name="YellowBoxRegistry ignores all warnings when disabled" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxRegistry groups warnings by simple categories" name="YellowBoxRegistry groups warnings by simple categories" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxRegistry groups warnings by format string categories" name="YellowBoxRegistry groups warnings by format string categories" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxRegistry groups warnings with consideration for arguments" name="YellowBoxRegistry groups warnings with consideration for arguments" time="0.007">
+    </testcase>
+    <testcase classname="YellowBoxRegistry ignores warnings starting with &quot;(ADVICE)&quot;" name="YellowBoxRegistry ignores warnings starting with &quot;(ADVICE)&quot;" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxRegistry does not ignore warnings formatted to start with &quot;(ADVICE)&quot;" name="YellowBoxRegistry does not ignore warnings formatted to start with &quot;(ADVICE)&quot;" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxRegistry immediately updates new observers" name="YellowBoxRegistry immediately updates new observers" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxRegistry sends batched updates asynchoronously" name="YellowBoxRegistry sends batched updates asynchoronously" time="0.005">
+    </testcase>
+    <testcase classname="YellowBoxRegistry stops sending updates to unsubscribed observers" name="YellowBoxRegistry stops sending updates to unsubscribed observers" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxRegistry updates observers when a warning is added or deleted" name="YellowBoxRegistry updates observers when a warning is added or deleted" time="0.004">
+    </testcase>
+    <testcase classname="YellowBoxRegistry updates observers when cleared" name="YellowBoxRegistry updates observers when cleared" time="0.004">
+    </testcase>
+    <testcase classname="YellowBoxRegistry updates observers when an ignore pattern is added" name="YellowBoxRegistry updates observers when an ignore pattern is added" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxRegistry updates observers when disabled or enabled" name="YellowBoxRegistry updates observers when disabled or enabled" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="findPlugins" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.082" tests="6">
+    <testcase classname="findPlugins returns an array of dependencies" name="findPlugins returns an array of dependencies" time="0.005">
+    </testcase>
+    <testcase classname="findPlugins returns an empty array if there are no plugins in this folder" name="findPlugins returns an empty array if there are no plugins in this folder" time="0.002">
+    </testcase>
+    <testcase classname="findPlugins returns an object with empty arrays if there is no package.json in the supplied folder" name="findPlugins returns an object with empty arrays if there is no package.json in the supplied folder" time="0.004">
+    </testcase>
+    <testcase classname="findPlugins returns plugins from both dependencies and dev dependencies" name="findPlugins returns plugins from both dependencies and dev dependencies" time="0.002">
+    </testcase>
+    <testcase classname="findPlugins returns unique list of plugins" name="findPlugins returns unique list of plugins" time="0">
+    </testcase>
+    <testcase classname="findPlugins returns plugins in scoped modules" name="findPlugins returns plugins in scoped modules" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::getDependencyConfig" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.12" tests="5">
+    <testcase classname="android::getDependencyConfig returns an object with android project configuration" name="android::getDependencyConfig returns an object with android project configuration" time="0.016">
+    </testcase>
+    <testcase classname="android::getDependencyConfig returns `null` if manifest file has not been found" name="android::getDependencyConfig returns `null` if manifest file has not been found" time="0.001">
+    </testcase>
+    <testcase classname="android::getDependencyConfig returns `null` if android project was not found" name="android::getDependencyConfig returns `null` if android project was not found" time="0">
+    </testcase>
+    <testcase classname="android::getDependencyConfig returns `null` if android project does not contain ReactPackage" name="android::getDependencyConfig returns `null` if android project does not contain ReactPackage" time="0.001">
+    </testcase>
+    <testcase classname="android::getDependencyConfig returns `null` if it cannot find a packageClassName" name="android::getDependencyConfig returns `null` if it cannot find a packageClassName" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getPlistPath" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.15" tests="1">
+    <testcase classname="ios::getPlistPath should return path without Xcode $(SRCROOT)" name="ios::getPlistPath should return path without Xcode $(SRCROOT)" time="0.07">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::findProject" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.22" tests="9">
+    <testcase classname="ios::findProject returns path to xcodeproj if found" name="ios::findProject returns path to xcodeproj if found" time="0.017">
+    </testcase>
+    <testcase classname="ios::findProject returns null if there are no projects" name="ios::findProject returns null if there are no projects" time="0.039">
+    </testcase>
+    <testcase classname="ios::findProject returns ios project regardless of its name" name="ios::findProject returns ios project regardless of its name" time="0.003">
+    </testcase>
+    <testcase classname="ios::findProject ignores node_modules" name="ios::findProject ignores node_modules" time="0.001">
+    </testcase>
+    <testcase classname="ios::findProject ignores Pods" name="ios::findProject ignores Pods" time="0.002">
+    </testcase>
+    <testcase classname="ios::findProject ignores Pods inside `ios` folder" name="ios::findProject ignores Pods inside `ios` folder" time="0.006">
+    </testcase>
+    <testcase classname="ios::findProject ignores xcodeproj from example folders" name="ios::findProject ignores xcodeproj from example folders" time="0.021">
+    </testcase>
+    <testcase classname="ios::findProject ignores xcodeproj from sample folders" name="ios::findProject ignores xcodeproj from sample folders" time="0.016">
+    </testcase>
+    <testcase classname="ios::findProject ignores xcodeproj from test folders at any level" name="ios::findProject ignores xcodeproj from test folders at any level" time="0.023">
+    </testcase>
+  </testsuite>
+  <testsuite name="pods::findMarkedLinesInPodfile" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.11" tests="3">
+    <testcase classname="pods::findMarkedLinesInPodfile returns empty array if file is not Podfile" name="pods::findMarkedLinesInPodfile returns empty array if file is not Podfile" time="0.002">
+    </testcase>
+    <testcase classname="pods::findMarkedLinesInPodfile returns empty array for Simple Podfile" name="pods::findMarkedLinesInPodfile returns empty array for Simple Podfile" time="0.001">
+    </testcase>
+    <testcase classname="pods::findMarkedLinesInPodfile returns correct line numbers for Podfile with marker" name="pods::findMarkedLinesInPodfile returns correct line numbers for Podfile with marker" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="XMLHttpRequest" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.133" tests="8">
+    <testcase classname="XMLHttpRequest should transition readyState correctly" name="XMLHttpRequest should transition readyState correctly" time="0.019">
+    </testcase>
+    <testcase classname="XMLHttpRequest should expose responseType correctly" name="XMLHttpRequest should expose responseType correctly" time="0.021">
+    </testcase>
+    <testcase classname="XMLHttpRequest should expose responseText correctly" name="XMLHttpRequest should expose responseText correctly" time="0.006">
+    </testcase>
+    <testcase classname="XMLHttpRequest should call ontimeout function when the request times out" name="XMLHttpRequest should call ontimeout function when the request times out" time="0.004">
+    </testcase>
+    <testcase classname="XMLHttpRequest should call onerror function when the request times out" name="XMLHttpRequest should call onerror function when the request times out" time="0.008">
+    </testcase>
+    <testcase classname="XMLHttpRequest should call onload function when there is no error" name="XMLHttpRequest should call onload function when there is no error" time="0.005">
+    </testcase>
+    <testcase classname="XMLHttpRequest should call upload onprogress" name="XMLHttpRequest should call upload onprogress" time="0.001">
+    </testcase>
+    <testcase classname="XMLHttpRequest should combine response headers with CRLF" name="XMLHttpRequest should combine response headers with CRLF" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getPlist" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.257" tests="1">
+    <testcase classname="ios::getPlist should return null when `.plist` file missing" name="ios::getPlist should return null when `.plist` file missing" time="0.092">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getTargets" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.271" tests="1">
+    <testcase classname="ios::getTargets should return an array of project targets" name="ios::getTargets should return an array of project targets" time="0.087">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::findManifest" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:38" time="0.196" tests="2">
+    <testcase classname="android::findManifest returns a manifest path if file exists in the folder" name="android::findManifest returns a manifest path if file exists in the folder" time="0.007">
+    </testcase>
+    <testcase classname="android::findManifest returns `null` if there is no manifest in the folder" name="android::findManifest returns `null` if there is no manifest in the folder" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getBuildProperty" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.158" tests="1">
+    <testcase classname="ios::getBuildProperty should return build property from main target" name="ios::getBuildProperty should return build property from main target" time="0.076">
+    </testcase>
+  </testsuite>
+  <testsuite name="Easing" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.175" tests="24">
+    <testcase classname="Easing should work with linear" name="Easing should work with linear" time="0.002">
+    </testcase>
+    <testcase classname="Easing should work with ease in linear" name="Easing should work with ease in linear" time="0.002">
+    </testcase>
+    <testcase classname="Easing should work with easy out linear" name="Easing should work with easy out linear" time="0.001">
+    </testcase>
+    <testcase classname="Easing should work with ease in quad" name="Easing should work with ease in quad" time="0.004">
+    </testcase>
+    <testcase classname="Easing should work with ease out quad" name="Easing should work with ease out quad" time="0.001">
+    </testcase>
+    <testcase classname="Easing should work with ease in-out quad" name="Easing should work with ease in-out quad" time="0.003">
+    </testcase>
+    <testcase classname="Easing should satisfy boundary conditions with elastic" name="Easing should satisfy boundary conditions with elastic" time="0.009">
+    </testcase>
+    <testcase classname="Easing should ease in_quad" name="Easing should ease in_quad" time="0.001">
+    </testcase>
+    <testcase classname="Easing should ease out_quad" name="Easing should ease out_quad" time="0.001">
+    </testcase>
+    <testcase classname="Easing should ease inOut_quad" name="Easing should ease inOut_quad" time="0.001">
+    </testcase>
+    <testcase classname="Easing should ease in_cubic" name="Easing should ease in_cubic" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease out_cubic" name="Easing should ease out_cubic" time="0.005">
+    </testcase>
+    <testcase classname="Easing should ease inOut_cubic" name="Easing should ease inOut_cubic" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease in_sin" name="Easing should ease in_sin" time="0.003">
+    </testcase>
+    <testcase classname="Easing should ease out_sin" name="Easing should ease out_sin" time="0.012">
+    </testcase>
+    <testcase classname="Easing should ease inOut_sin" name="Easing should ease inOut_sin" time="0.007">
+    </testcase>
+    <testcase classname="Easing should ease in_exp" name="Easing should ease in_exp" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease out_exp" name="Easing should ease out_exp" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease inOut_exp" name="Easing should ease inOut_exp" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease in_circle" name="Easing should ease in_circle" time="0.003">
+    </testcase>
+    <testcase classname="Easing should ease out_circle" name="Easing should ease out_circle" time="0.001">
+    </testcase>
+    <testcase classname="Easing should ease inOut_circle" name="Easing should ease inOut_circle" time="0.002">
+    </testcase>
+    <testcase classname="Easing should ease in_back_" name="Easing should ease in_back_" time="0.001">
+    </testcase>
+    <testcase classname="Easing should ease out_back_" name="Easing should ease out_back_" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="YellowBoxCategory" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.097" tests="11">
+    <testcase classname="YellowBoxCategory parses strings" name="YellowBoxCategory parses strings" time="0.007">
+    </testcase>
+    <testcase classname="YellowBoxCategory parses strings with arguments" name="YellowBoxCategory parses strings with arguments" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxCategory parses formatted strings" name="YellowBoxCategory parses formatted strings" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxCategory parses formatted strings with insufficient arguments" name="YellowBoxCategory parses formatted strings with insufficient arguments" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxCategory parses formatted strings with excess arguments" name="YellowBoxCategory parses formatted strings with excess arguments" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxCategory treats &quot;%s&quot; in arguments as literals" name="YellowBoxCategory treats &quot;%s&quot; in arguments as literals" time="0">
+    </testcase>
+    <testcase classname="YellowBoxCategory renders content with no substitutions" name="YellowBoxCategory renders content with no substitutions" time="0.006">
+    </testcase>
+    <testcase classname="YellowBoxCategory renders a single substitution" name="YellowBoxCategory renders a single substitution" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxCategory renders multiple substitutions" name="YellowBoxCategory renders multiple substitutions" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxCategory renders substitutions with leading content" name="YellowBoxCategory renders substitutions with leading content" time="0.001">
+    </testcase>
+    <testcase classname="YellowBoxCategory renders substitutions with trailing content" name="YellowBoxCategory renders substitutions with trailing content" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="parseIOSDevicesList" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.068" tests="2">
+    <testcase classname="parseIOSDevicesList parses typical output" name="parseIOSDevicesList parses typical output" time="0.001">
+    </testcase>
+    <testcase classname="parseIOSDevicesList ignores garbage" name="parseIOSDevicesList ignores garbage" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="resolveAssetSource" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.116" tests="12">
+    <testcase classname="resolveAssetSource returns same source for simple static and network images" name="resolveAssetSource returns same source for simple static and network images" time="0.001">
+    </testcase>
+    <testcase classname="resolveAssetSource does not change deprecated assets" name="resolveAssetSource does not change deprecated assets" time="0.001">
+    </testcase>
+    <testcase classname="resolveAssetSource ignores any weird data" name="resolveAssetSource ignores any weird data" time="0.002">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from network (DEV) uses network image" name="resolveAssetSource bundle was loaded from network (DEV) uses network image" time="0.008">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from network (DEV) picks matching scale" name="resolveAssetSource bundle was loaded from network (DEV) picks matching scale" time="0.002">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from file on iOS uses pre-packed image" name="resolveAssetSource bundle was loaded from file on iOS uses pre-packed image" time="0.003">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from assets on Android uses pre-packed image" name="resolveAssetSource bundle was loaded from assets on Android uses pre-packed image" time="0.004">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from file on Android uses pre-packed image" name="resolveAssetSource bundle was loaded from file on Android uses pre-packed image" time="0.005">
+    </testcase>
+    <testcase classname="resolveAssetSource bundle was loaded from raw file on Android uses sideloaded image" name="resolveAssetSource bundle was loaded from raw file on Android uses sideloaded image" time="0.006">
+    </testcase>
+    <testcase classname="resolveAssetSource source resolver can be customized uses bundled source, event when js is sideloaded" name="resolveAssetSource source resolver can be customized uses bundled source, event when js is sideloaded" time="0.004">
+    </testcase>
+    <testcase classname="resolveAssetSource source resolver can be customized allows any customization" name="resolveAssetSource source resolver can be customized allows any customization" time="0.018">
+    </testcase>
+    <testcase classname="resolveAssetSource.pickScale picks matching scale" name="resolveAssetSource.pickScale picks matching scale" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::findAndroidAppFolder" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.084" tests="2">
+    <testcase classname="android::findAndroidAppFolder returns an android app folder if it exists in the given folder" name="android::findAndroidAppFolder returns an android app folder if it exists in the given folder" time="0.001">
+    </testcase>
+    <testcase classname="android::findAndroidAppFolder returns `null` if there is no android app folder" name="android::findAndroidAppFolder returns `null` if there is no android app folder" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="promiseWaterfall" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.074" tests="3">
+    <testcase classname="promiseWaterfall should run promises in a sequence" name="promiseWaterfall should run promises in a sequence" time="0.004">
+    </testcase>
+    <testcase classname="promiseWaterfall should resolve with last promise value" name="promiseWaterfall should resolve with last promise value" time="0.002">
+    </testcase>
+    <testcase classname="promiseWaterfall should stop the sequence when one of promises is rejected" name="promiseWaterfall should stop the sequence when one of promises is rejected" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.081" tests="7">
+    <testcase classname=" returns the correct haste name for a RN library file" name=" returns the correct haste name for a RN library file" time="0.009">
+    </testcase>
+    <testcase classname=" returns the correct haste name for a file with a platform suffix" name=" returns the correct haste name for a file with a platform suffix" time="0.001">
+    </testcase>
+    <testcase classname=" returns the correct haste name for a file with an out-of-tree platform suffix" name=" returns the correct haste name for a file with an out-of-tree platform suffix" time="0.001">
+    </testcase>
+    <testcase classname=" returns the correct haste name for a file with a flow suffix" name=" returns the correct haste name for a file with a flow suffix" time="0">
+    </testcase>
+    <testcase classname=" does not calculate the haste name for a file that is not JS" name=" does not calculate the haste name for a file that is not JS" time="0.001">
+    </testcase>
+    <testcase classname=" does not calculate the haste name for a file outside of RN" name=" does not calculate the haste name for a file outside of RN" time="0">
+    </testcase>
+    <testcase classname=" does not calculate the haste name for a blacklisted file" name=" does not calculate the haste name for a blacklisted file" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="normalizeColor" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.099" tests="13">
+    <testcase classname="normalizeColor should accept only spec compliant colors" name="normalizeColor should accept only spec compliant colors" time="0.007">
+    </testcase>
+    <testcase classname="normalizeColor should temporarly accept floating point values for rgb" name="normalizeColor should temporarly accept floating point values for rgb" time="0">
+    </testcase>
+    <testcase classname="normalizeColor should refuse non spec compliant colors" name="normalizeColor should refuse non spec compliant colors" time="0.003">
+    </testcase>
+    <testcase classname="normalizeColor should handle hex6 properly" name="normalizeColor should handle hex6 properly" time="0">
+    </testcase>
+    <testcase classname="normalizeColor should handle hex3 properly" name="normalizeColor should handle hex3 properly" time="0.001">
+    </testcase>
+    <testcase classname="normalizeColor should handle hex8 properly" name="normalizeColor should handle hex8 properly" time="0.001">
+    </testcase>
+    <testcase classname="normalizeColor should handle rgb properly" name="normalizeColor should handle rgb properly" time="0.001">
+    </testcase>
+    <testcase classname="normalizeColor should handle rgba properly" name="normalizeColor should handle rgba properly" time="0.001">
+    </testcase>
+    <testcase classname="normalizeColor should handle hsl properly" name="normalizeColor should handle hsl properly" time="0.002">
+    </testcase>
+    <testcase classname="normalizeColor should handle hsla properly" name="normalizeColor should handle hsla properly" time="0">
+    </testcase>
+    <testcase classname="normalizeColor should handle named colors properly" name="normalizeColor should handle named colors properly" time="0.001">
+    </testcase>
+    <testcase classname="normalizeColor should handle number colors properly" name="normalizeColor should handle number colors properly" time="0">
+    </testcase>
+    <testcase classname="normalizeColor should return the same color when it&apos;s already normalized" name="normalizeColor should return the same color when it&apos;s already normalized" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::getProjectConfig" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.145" tests="6">
+    <testcase classname="android::getProjectConfig returns `null` if manifest file hasn&apos;t been found and userConfig is not defined" name="android::getProjectConfig returns `null` if manifest file hasn&apos;t been found and userConfig is not defined" time="0.004">
+    </testcase>
+    <testcase classname="android::getProjectConfig returns `null` if manifest file hasn&apos;t been found" name="android::getProjectConfig returns `null` if manifest file hasn&apos;t been found" time="0.001">
+    </testcase>
+    <testcase classname="android::getProjectConfig returns an object with android project configuration for nested structure" name="android::getProjectConfig returns an object with android project configuration for nested structure" time="0.023">
+    </testcase>
+    <testcase classname="android::getProjectConfig returns an object with android project configuration for flat structure" name="android::getProjectConfig returns an object with android project configuration for flat structure" time="0.007">
+    </testcase>
+    <testcase classname="android::getProjectConfig returns an object with android project configuration for multiple" name="android::getProjectConfig returns an object with android project configuration for multiple" time="0.001">
+    </testcase>
+    <testcase classname="android::getProjectConfig should return `null` if android project was not found" name="android::getProjectConfig should return `null` if android project was not found" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::findPackageClassName (posix)" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.093" tests="8">
+    <testcase classname="android::findPackageClassName (posix) returns manifest content if file exists in the folder" name="android::findPackageClassName (posix) returns manifest content if file exists in the folder" time="0.003">
+    </testcase>
+    <testcase classname="android::findPackageClassName (posix) returns the name of the java class implementing ReactPackage" name="android::findPackageClassName (posix) returns the name of the java class implementing ReactPackage" time="0.001">
+    </testcase>
+    <testcase classname="android::findPackageClassName (posix) returns the name of the kotlin class implementing ReactPackage" name="android::findPackageClassName (posix) returns the name of the kotlin class implementing ReactPackage" time="0.001">
+    </testcase>
+    <testcase classname="android::findPackageClassName (posix) returns `null` if there are no matches" name="android::findPackageClassName (posix) returns `null` if there are no matches" time="0.001">
+    </testcase>
+    <testcase classname="android::findPackageClassName (win32) returns manifest content if file exists in the folder" name="android::findPackageClassName (win32) returns manifest content if file exists in the folder" time="0.012">
+    </testcase>
+    <testcase classname="android::findPackageClassName (win32) returns the name of the java class implementing ReactPackage" name="android::findPackageClassName (win32) returns the name of the java class implementing ReactPackage" time="0.002">
+    </testcase>
+    <testcase classname="android::findPackageClassName (win32) returns the name of the kotlin class implementing ReactPackage" name="android::findPackageClassName (win32) returns the name of the kotlin class implementing ReactPackage" time="0.002">
+    </testcase>
+    <testcase classname="android::findPackageClassName (win32) returns `null` if there are no matches" name="android::findPackageClassName (win32) returns `null` if there are no matches" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="computeBlankness" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.093" tests="4">
+    <testcase classname="computeBlankness computes correct blankness of viewport" name="computeBlankness computes correct blankness of viewport" time="0.009">
+    </testcase>
+    <testcase classname="computeBlankness skips frames that are not in layout" name="computeBlankness skips frames that are not in layout" time="0">
+    </testcase>
+    <testcase classname="computeBlankness sampling rate can disable" name="computeBlankness sampling rate can disable" time="0.001">
+    </testcase>
+    <testcase classname="computeBlankness can handle multiple listeners and unsubscribe" name="computeBlankness can handle multiple listeners and unsubscribe" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="TaskQueue" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.078" tests="6">
+    <testcase classname="TaskQueue should run a basic task" name="TaskQueue should run a basic task" time="0.003">
+    </testcase>
+    <testcase classname="TaskQueue should handle blocking promise task" name="TaskQueue should handle blocking promise task" time="0.005">
+    </testcase>
+    <testcase classname="TaskQueue should handle nested simple tasks" name="TaskQueue should handle nested simple tasks" time="0.001">
+    </testcase>
+    <testcase classname="TaskQueue should handle nested promises" name="TaskQueue should handle nested promises" time="0.004">
+    </testcase>
+    <testcase classname="TaskQueue should be able to cancel tasks" name="TaskQueue should be able to cancel tasks" time="0.001">
+    </testcase>
+    <testcase classname="TaskQueue should not crash when last task is cancelled" name="TaskQueue should not crash when last task is cancelled" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="MatrixMath" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.105" tests="3">
+    <testcase classname="MatrixMath decomposes a 4x4 matrix to produce accurate Z-axis angles" name="MatrixMath decomposes a 4x4 matrix to produce accurate Z-axis angles" time="0.014">
+    </testcase>
+    <testcase classname="MatrixMath decomposes a 4x4 matrix to produce accurate Y-axis angles" name="MatrixMath decomposes a 4x4 matrix to produce accurate Y-axis angles" time="0.007">
+    </testcase>
+    <testcase classname="MatrixMath decomposes a 4x4 matrix to produce accurate X-axis angles" name="MatrixMath decomposes a 4x4 matrix to produce accurate X-axis angles" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="MessageQueue" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.079" tests="12">
+    <testcase classname="MessageQueue should enqueue native calls" name="MessageQueue should enqueue native calls" time="0.009">
+    </testcase>
+    <testcase classname="MessageQueue should call a local function with the function name" name="MessageQueue should call a local function with the function name" time="0.001">
+    </testcase>
+    <testcase classname="MessageQueue should store callbacks" name="MessageQueue should store callbacks" time="0.002">
+    </testcase>
+    <testcase classname="MessageQueue should call the stored callback" name="MessageQueue should call the stored callback" time="0.001">
+    </testcase>
+    <testcase classname="MessageQueue should throw when calling the same callback twice" name="MessageQueue should throw when calling the same callback twice" time="0.002">
+    </testcase>
+    <testcase classname="MessageQueue should throw when calling both success and failure callback" name="MessageQueue should throw when calling both success and failure callback" time="0.002">
+    </testcase>
+    <testcase classname="MessageQueue should throw when calling with unknown module" name="MessageQueue should throw when calling with unknown module" time="0">
+    </testcase>
+    <testcase classname="MessageQueue should return lazily registered module" name="MessageQueue should return lazily registered module" time="0.001">
+    </testcase>
+    <testcase classname="MessageQueue should not initialize lazily registered module before it was used for the first time" name="MessageQueue should not initialize lazily registered module before it was used for the first time" time="0.001">
+    </testcase>
+    <testcase classname="MessageQueue should initialize lazily registered module only once" name="MessageQueue should initialize lazily registered module only once" time="0">
+    </testcase>
+    <testcase classname="MessageQueue should check if the global error handler is not overriden by the DebuggerInternal object" name="MessageQueue should check if the global error handler is not overriden by the DebuggerInternal object" time="0.001">
+    </testcase>
+    <testcase classname="MessageQueue should check if the global error handler is overriden by the DebuggerInternal object" name="MessageQueue should check if the global error handler is overriden by the DebuggerInternal object" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Interpolation" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.101" tests="22">
+    <testcase classname="Interpolation should work with defaults" name="Interpolation should work with defaults" time="0.005">
+    </testcase>
+    <testcase classname="Interpolation should work with output range" name="Interpolation should work with output range" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with input range" name="Interpolation should work with input range" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should throw for non monotonic input ranges" name="Interpolation should throw for non monotonic input ranges" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with empty input range" name="Interpolation should work with empty input range" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with empty output range" name="Interpolation should work with empty output range" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with easing" name="Interpolation should work with easing" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with extrapolate" name="Interpolation should work with extrapolate" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with keyframes with extrapolate" name="Interpolation should work with keyframes with extrapolate" time="0.003">
+    </testcase>
+    <testcase classname="Interpolation should work with keyframes without extrapolate" name="Interpolation should work with keyframes without extrapolate" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should throw for an infinite input range" name="Interpolation should throw for an infinite input range" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with negative infinite" name="Interpolation should work with negative infinite" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with positive infinite" name="Interpolation should work with positive infinite" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with output ranges as string" name="Interpolation should work with output ranges as string" time="0.002">
+    </testcase>
+    <testcase classname="Interpolation should work with output ranges as short hex string" name="Interpolation should work with output ranges as short hex string" time="0">
+    </testcase>
+    <testcase classname="Interpolation should work with output ranges as long hex string" name="Interpolation should work with output ranges as long hex string" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with output ranges with mixed hex and rgba strings" name="Interpolation should work with output ranges with mixed hex and rgba strings" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should work with negative and decimal values in string ranges" name="Interpolation should work with negative and decimal values in string ranges" time="0">
+    </testcase>
+    <testcase classname="Interpolation should crash when chaining an interpolation that returns a string" name="Interpolation should crash when chaining an interpolation that returns a string" time="0.001">
+    </testcase>
+    <testcase classname="Interpolation should support a mix of color patterns" name="Interpolation should support a mix of color patterns" time="0.002">
+    </testcase>
+    <testcase classname="Interpolation should crash when defining output range with different pattern" name="Interpolation should crash when defining output range with different pattern" time="0">
+    </testcase>
+    <testcase classname="Interpolation should round the alpha channel of a color to the nearest thousandth" name="Interpolation should round the alpha channel of a color to the nearest thousandth" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="findSymlinksForProjectRoot" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:39" time="0.114" tests="5">
+    <testcase classname="findSymlinksForProjectRoot correctly finds normal module symlinks" name="findSymlinksForProjectRoot correctly finds normal module symlinks" time="0.012">
+    </testcase>
+    <testcase classname="findSymlinksForProjectRoot correctly finds scoped module symlinks" name="findSymlinksForProjectRoot correctly finds scoped module symlinks" time="0.004">
+    </testcase>
+    <testcase classname="findSymlinksForProjectRoot correctly finds module symlinks within other module symlinks" name="findSymlinksForProjectRoot correctly finds module symlinks within other module symlinks" time="0.008">
+    </testcase>
+    <testcase classname="findSymlinksForProjectRoot correctly handles duplicate symlink paths" name="findSymlinksForProjectRoot correctly handles duplicate symlink paths" time="0.007">
+    </testcase>
+    <testcase classname="findSymlinksForProjectRoot correctly handles symlink recursion" name="findSymlinksForProjectRoot correctly handles symlink recursion" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="Object (ES7)" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.083" tests="12">
+    <testcase classname="Object (ES7) Object.entries should have a length of 1" name="Object (ES7) Object.entries should have a length of 1" time="0.004">
+    </testcase>
+    <testcase classname="Object (ES7) Object.entries should check for type" name="Object (ES7) Object.entries should check for type" time="0.002">
+    </testcase>
+    <testcase classname="Object (ES7) Object.entries should return enumerable entries" name="Object (ES7) Object.entries should return enumerable entries" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.entries should work with proto-less objects" name="Object (ES7) Object.entries should work with proto-less objects" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.entries should return only own entries" name="Object (ES7) Object.entries should return only own entries" time="0">
+    </testcase>
+    <testcase classname="Object (ES7) Object.entries should convert to object primitive string" name="Object (ES7) Object.entries should convert to object primitive string" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should have a length of 1" name="Object (ES7) Object.values should have a length of 1" time="0">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should check for type" name="Object (ES7) Object.values should check for type" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should return enumerable values" name="Object (ES7) Object.values should return enumerable values" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should work with proto-less objects" name="Object (ES7) Object.values should work with proto-less objects" time="0.001">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should return only own values" name="Object (ES7) Object.values should return only own values" time="0">
+    </testcase>
+    <testcase classname="Object (ES7) Object.values should convert to object primitive string" name="Object (ES7) Object.values should convert to object primitive string" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="babel 7 smoke test" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.086" tests="6">
+    <testcase classname="babel 7 smoke test should be able to extend a class with native name" name="babel 7 smoke test should be able to extend a class with native name" time="0.002">
+    </testcase>
+    <testcase classname="Blob regression caused by circular dep &amp;&amp; babel 7" name="Blob regression caused by circular dep &amp;&amp; babel 7" time="0.004">
+    </testcase>
+    <testcase classname="File should create empty file" name="File should create empty file" time="0.006">
+    </testcase>
+    <testcase classname="File should create empty file with type" name="File should create empty file with type" time="0">
+    </testcase>
+    <testcase classname="File should create empty file with lastModified" name="File should create empty file with lastModified" time="0.001">
+    </testcase>
+    <testcase classname="File should throw on invalid arguments" name="File should throw on invalid arguments" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="filterPlatformAssetScales" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.099" tests="3">
+    <testcase classname="filterPlatformAssetScales removes everything but 2x and 3x for iOS" name="filterPlatformAssetScales removes everything but 2x and 3x for iOS" time="0.002">
+    </testcase>
+    <testcase classname="filterPlatformAssetScales keeps closest largest one if nothing matches" name="filterPlatformAssetScales keeps closest largest one if nothing matches" time="0.001">
+    </testcase>
+    <testcase classname="filterPlatformAssetScales keeps all scales for unknown platform" name="filterPlatformAssetScales keeps all scales for unknown platform" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::readManifest" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.14" tests="2">
+    <testcase classname="android::readManifest returns manifest content if file exists in the folder" name="android::readManifest returns manifest content if file exists in the folder" time="0.006">
+    </testcase>
+    <testcase classname="android::readManifest throws an error if there is no manifest in the folder" name="android::readManifest throws an error if there is no manifest in the folder" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="computeViewableItems" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.088" tests="12">
+    <testcase classname="computeViewableItems returns all 4 entirely visible rows as viewable" name="computeViewableItems returns all 4 entirely visible rows as viewable" time="0.002">
+    </testcase>
+    <testcase classname="computeViewableItems returns top 2 rows as viewable (1. entirely visible and 2. majority)" name="computeViewableItems returns top 2 rows as viewable (1. entirely visible and 2. majority)" time="0.001">
+    </testcase>
+    <testcase classname="computeViewableItems returns only 2nd row as viewable (majority)" name="computeViewableItems returns only 2nd row as viewable (majority)" time="0">
+    </testcase>
+    <testcase classname="computeViewableItems handles empty input" name="computeViewableItems handles empty input" time="0">
+    </testcase>
+    <testcase classname="computeViewableItems handles different view area coverage percent thresholds" name="computeViewableItems handles different view area coverage percent thresholds" time="0.003">
+    </testcase>
+    <testcase classname="computeViewableItems handles different item visible percent thresholds" name="computeViewableItems handles different item visible percent thresholds" time="0.001">
+    </testcase>
+    <testcase classname="onUpdate returns 1 visible row as viewable then scrolls away" name="onUpdate returns 1 visible row as viewable then scrolls away" time="0.002">
+    </testcase>
+    <testcase classname="onUpdate returns 1st visible row then 1st and 2nd then just 2nd" name="onUpdate returns 1st visible row then 1st and 2nd then just 2nd" time="0.002">
+    </testcase>
+    <testcase classname="onUpdate minimumViewTime delays callback" name="onUpdate minimumViewTime delays callback" time="0.001">
+    </testcase>
+    <testcase classname="onUpdate minimumViewTime skips briefly visible items" name="onUpdate minimumViewTime skips briefly visible items" time="0.001">
+    </testcase>
+    <testcase classname="onUpdate waitForInteraction blocks callback until interaction" name="onUpdate waitForInteraction blocks callback until interaction" time="0.002">
+    </testcase>
+    <testcase classname="onUpdate returns the right visible row after the underlying data changed" name="onUpdate returns the right visible row after the underlying data changed" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="pods::removePodEntry" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.063" tests="3">
+    <testcase classname="pods::removePodEntry should remove one line from Podfile with TestPod" name="pods::removePodEntry should remove one line from Podfile with TestPod" time="0.003">
+    </testcase>
+    <testcase classname="pods::removePodEntry should remove one line from Podfile with Yoga" name="pods::removePodEntry should remove one line from Podfile with Yoga" time="0.001">
+    </testcase>
+    <testcase classname="pods::removePodEntry should remove whole reference to React pod from Podfile" name="pods::removePodEntry should remove whole reference to React pod from Podfile" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="flattenStyle" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.1" tests="13">
+    <testcase classname="flattenStyle should merge style objects" name="flattenStyle should merge style objects" time="0.002">
+    </testcase>
+    <testcase classname="flattenStyle should override style properties" name="flattenStyle should override style properties" time="0">
+    </testcase>
+    <testcase classname="flattenStyle should overwrite properties with `undefined`" name="flattenStyle should overwrite properties with `undefined`" time="0.001">
+    </testcase>
+    <testcase classname="flattenStyle should not fail on falsy values" name="flattenStyle should not fail on falsy values" time="0">
+    </testcase>
+    <testcase classname="flattenStyle should recursively flatten arrays" name="flattenStyle should recursively flatten arrays" time="0.003">
+    </testcase>
+    <testcase classname="flattenStyle should not allocate an object when there is no style" name="flattenStyle should not allocate an object when there is no style" time="0.002">
+    </testcase>
+    <testcase classname="flattenStyle should not allocate an object when there is a style" name="flattenStyle should not allocate an object when there is a style" time="0">
+    </testcase>
+    <testcase classname="flattenStyle should not allocate an object when there is a single class" name="flattenStyle should not allocate an object when there is a single class" time="0.008">
+    </testcase>
+    <testcase classname="flattenStyle should merge single class and style properly" name="flattenStyle should merge single class and style properly" time="0">
+    </testcase>
+    <testcase classname="flattenStyle should merge multiple classes" name="flattenStyle should merge multiple classes" time="0.001">
+    </testcase>
+    <testcase classname="flattenStyle should merge multiple classes with style" name="flattenStyle should merge multiple classes with style" time="0.001">
+    </testcase>
+    <testcase classname="flattenStyle should flatten recursively" name="flattenStyle should flatten recursively" time="0">
+    </testcase>
+    <testcase classname="flattenStyle should ignore invalid class names" name="flattenStyle should ignore invalid class names" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="processColor" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.088" tests="9">
+    <testcase classname="processColor predefined color names should convert red" name="processColor predefined color names should convert red" time="0.003">
+    </testcase>
+    <testcase classname="processColor predefined color names should convert white" name="processColor predefined color names should convert white" time="0.001">
+    </testcase>
+    <testcase classname="processColor predefined color names should convert black" name="processColor predefined color names should convert black" time="0">
+    </testcase>
+    <testcase classname="processColor predefined color names should convert transparent" name="processColor predefined color names should convert transparent" time="0.001">
+    </testcase>
+    <testcase classname="processColor RGB strings should convert rgb(x, y, z)" name="processColor RGB strings should convert rgb(x, y, z)" time="0.003">
+    </testcase>
+    <testcase classname="processColor RGBA strings should convert rgba(x, y, z, a)" name="processColor RGBA strings should convert rgba(x, y, z, a)" time="0.001">
+    </testcase>
+    <testcase classname="processColor HSL strings should convert hsl(x, y%, z%)" name="processColor HSL strings should convert hsl(x, y%, z%)" time="0.001">
+    </testcase>
+    <testcase classname="processColor HSLA strings should convert hsla(x, y%, z%, a)" name="processColor HSLA strings should convert hsla(x, y%, z%, a)" time="0.001">
+    </testcase>
+    <testcase classname="processColor hex strings should convert #xxxxxx" name="processColor hex strings should convert #xxxxxx" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="groupFilesByType" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.123" tests="1">
+    <testcase classname="groupFilesByType should group files by its type" name="groupFilesByType should group files by its type" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="findAssets" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.169" tests="3">
+    <testcase classname="findAssets returns an array of all files in given folders" name="findAssets returns an array of all files in given folders" time="0.005">
+    </testcase>
+    <testcase classname="findAssets prepends assets paths with the folder path" name="findAssets prepends assets paths with the folder path" time="0.003">
+    </testcase>
+    <testcase classname="findAssets returns an empty array if given assets are null" name="findAssets returns an empty array if given assets are null" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="newRangeCount" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.069" tests="12">
+    <testcase classname="newRangeCount handles subset" name="newRangeCount handles subset" time="0.001">
+    </testcase>
+    <testcase classname="newRangeCount handles forward disjoint set" name="newRangeCount handles forward disjoint set" time="0">
+    </testcase>
+    <testcase classname="newRangeCount handles reverse disjoint set" name="newRangeCount handles reverse disjoint set" time="0">
+    </testcase>
+    <testcase classname="newRangeCount handles superset" name="newRangeCount handles superset" time="0.001">
+    </testcase>
+    <testcase classname="newRangeCount handles end extension" name="newRangeCount handles end extension" time="0">
+    </testcase>
+    <testcase classname="newRangeCount handles front extension" name="newRangeCount handles front extension" time="0">
+    </testcase>
+    <testcase classname="newRangeCount handles forward insersect" name="newRangeCount handles forward insersect" time="0.001">
+    </testcase>
+    <testcase classname="newRangeCount handles reverse intersect" name="newRangeCount handles reverse intersect" time="0">
+    </testcase>
+    <testcase classname="elementsThatOverlapOffsets handles fixed length" name="elementsThatOverlapOffsets handles fixed length" time="0.001">
+    </testcase>
+    <testcase classname="elementsThatOverlapOffsets handles variable length" name="elementsThatOverlapOffsets handles variable length" time="0">
+    </testcase>
+    <testcase classname="elementsThatOverlapOffsets handles out of bounds" name="elementsThatOverlapOffsets handles out of bounds" time="0.001">
+    </testcase>
+    <testcase classname="elementsThatOverlapOffsets errors on non-increasing offsets" name="elementsThatOverlapOffsets errors on non-increasing offsets" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="deepDiffer" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.093" tests="8">
+    <testcase classname="deepDiffer should diff primitives of the same type" name="deepDiffer should diff primitives of the same type" time="0.005">
+    </testcase>
+    <testcase classname="deepDiffer should diff primitives of different types" name="deepDiffer should diff primitives of different types" time="0.014">
+    </testcase>
+    <testcase classname="deepDiffer should diff Objects" name="deepDiffer should diff Objects" time="0.003">
+    </testcase>
+    <testcase classname="deepDiffer should diff Arrays" name="deepDiffer should diff Arrays" time="0.001">
+    </testcase>
+    <testcase classname="deepDiffer should diff mixed types" name="deepDiffer should diff mixed types" time="0.002">
+    </testcase>
+    <testcase classname="deepDiffer should distinguish between proper Array and Object" name="deepDiffer should distinguish between proper Array and Object" time="0">
+    </testcase>
+    <testcase classname="deepDiffer should diff same object" name="deepDiffer should diff same object" time="0.001">
+    </testcase>
+    <testcase classname="deepDiffer should respect maxDepth arg" name="deepDiffer should respect maxDepth arg" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getHeaderSearchPath" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.097" tests="3">
+    <testcase classname="ios::getHeaderSearchPath should return correct path when all headers are in root folder" name="ios::getHeaderSearchPath should return correct path when all headers are in root folder" time="0.002">
+    </testcase>
+    <testcase classname="ios::getHeaderSearchPath should return correct path when headers are in multiple folders" name="ios::getHeaderSearchPath should return correct path when headers are in multiple folders" time="0.001">
+    </testcase>
+    <testcase classname="ios::getHeaderSearchPath should return correct path when headers are in root and nested folders" name="ios::getHeaderSearchPath should return correct path when headers are in root and nested folders" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="checkVersion" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.095" tests="12">
+    <testcase classname="checkVersion in development passes when all the versions are zero" name="checkVersion in development passes when all the versions are zero" time="0.006">
+    </testcase>
+    <testcase classname="checkVersion in development passes when the minor matches when the major is zero" name="checkVersion in development passes when the minor matches when the major is zero" time="0.001">
+    </testcase>
+    <testcase classname="checkVersion in development logs error when the minor doesn&apos;t match when the major is zero" name="checkVersion in development logs error when the minor doesn&apos;t match when the major is zero" time="0.001">
+    </testcase>
+    <testcase classname="checkVersion in development logs error when the major doesn&apos;t match" name="checkVersion in development logs error when the major doesn&apos;t match" time="0.002">
+    </testcase>
+    <testcase classname="checkVersion in development doesn&apos;t log error if the patch doesn&apos;t match" name="checkVersion in development doesn&apos;t log error if the patch doesn&apos;t match" time="0.002">
+    </testcase>
+    <testcase classname="checkVersion in development doesn&apos;t log error if the prerelease doesn&apos;t match" name="checkVersion in development doesn&apos;t log error if the prerelease doesn&apos;t match" time="0.001">
+    </testcase>
+    <testcase classname="checkVersion in production passes when all the versions are zero" name="checkVersion in production passes when all the versions are zero" time="0.002">
+    </testcase>
+    <testcase classname="checkVersion in production passes when the minor matches when the major is zero" name="checkVersion in production passes when the minor matches when the major is zero" time="0.002">
+    </testcase>
+    <testcase classname="checkVersion in production logs error when the minor doesn&apos;t match when the major is zero" name="checkVersion in production logs error when the minor doesn&apos;t match when the major is zero" time="0.001">
+    </testcase>
+    <testcase classname="checkVersion in production logs error when the major doesn&apos;t match" name="checkVersion in production logs error when the major doesn&apos;t match" time="0.002">
+    </testcase>
+    <testcase classname="checkVersion in production doesn&apos;t log error if the patch doesn&apos;t match" name="checkVersion in production doesn&apos;t log error if the patch doesn&apos;t match" time="0.001">
+    </testcase>
+    <testcase classname="checkVersion in production doesn&apos;t log error if the prerelease doesn&apos;t match" name="checkVersion in production doesn&apos;t log error if the prerelease doesn&apos;t match" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="processTransform" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.086" tests="14">
+    <testcase classname="processTransform validation should accept an empty array" name="processTransform validation should accept an empty array" time="0.002">
+    </testcase>
+    <testcase classname="processTransform validation should accept a simple valid transform" name="processTransform validation should accept a simple valid transform" time="0.002">
+    </testcase>
+    <testcase classname="processTransform validation should throw on object with multiple properties" name="processTransform validation should throw on object with multiple properties" time="0.002">
+    </testcase>
+    <testcase classname="processTransform validation should throw on invalid transform property" name="processTransform validation should throw on invalid transform property" time="0.001">
+    </testcase>
+    <testcase classname="processTransform validation should throw when not passing an array to an array prop" name="processTransform validation should throw when not passing an array to an array prop" time="0.003">
+    </testcase>
+    <testcase classname="processTransform validation should accept a valid matrix" name="processTransform validation should accept a valid matrix" time="0">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing a matrix of the wrong size" name="processTransform validation should throw when passing a matrix of the wrong size" time="0">
+    </testcase>
+    <testcase classname="processTransform validation should accept a valid translate" name="processTransform validation should accept a valid translate" time="0.001">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing a translate of the wrong size" name="processTransform validation should throw when passing a translate of the wrong size" time="0.001">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing an invalid value to a number prop" name="processTransform validation should throw when passing an invalid value to a number prop" time="0.001">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing a perspective of 0" name="processTransform validation should throw when passing a perspective of 0" time="0.001">
+    </testcase>
+    <testcase classname="processTransform validation should accept an angle in degrees or radians" name="processTransform validation should accept an angle in degrees or radians" time="0.002">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing an invalid angle prop" name="processTransform validation should throw when passing an invalid angle prop" time="0.004">
+    </testcase>
+    <testcase classname="processTransform validation should throw when passing an Animated.Value" name="processTransform validation should throw when passing an Animated.Value" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="InteractionMixin" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.099" tests="4">
+    <testcase classname="InteractionMixin should start interactions" name="InteractionMixin should start interactions" time="0.01">
+    </testcase>
+    <testcase classname="InteractionMixin should end interactions" name="InteractionMixin should end interactions" time="0.004">
+    </testcase>
+    <testcase classname="InteractionMixin should schedule tasks" name="InteractionMixin should schedule tasks" time="0.001">
+    </testcase>
+    <testcase classname="InteractionMixin should end unfinished interactions in componentWillUnmount" name="InteractionMixin should end unfinished interactions in componentWillUnmount" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="WebViewShared" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:40" time="0.084" tests="3">
+    <testcase classname="WebViewShared extracts the origin correctly" name="WebViewShared extracts the origin correctly" time="0.005">
+    </testcase>
+    <testcase classname="WebViewShared rejects bad urls" name="WebViewShared rejects bad urls" time="0.001">
+    </testcase>
+    <testcase classname="WebViewShared creates a whitelist regex correctly" name="WebViewShared creates a whitelist regex correctly" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="truncate" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.086" tests="7">
+    <testcase classname="truncate should truncate" name="truncate should truncate" time="0.002">
+    </testcase>
+    <testcase classname="truncate should not truncate" name="truncate should not truncate" time="0.001">
+    </testcase>
+    <testcase classname="truncate should not truncate more than minDelta chars." name="truncate should not truncate more than minDelta chars." time="0.002">
+    </testcase>
+    <testcase classname="truncate should break in the middle of words" name="truncate should break in the middle of words" time="0">
+    </testcase>
+    <testcase classname="truncate should break at word boundaries" name="truncate should break at word boundaries" time="0">
+    </testcase>
+    <testcase classname="truncate should uses custom elipses" name="truncate should uses custom elipses" time="0.001">
+    </testcase>
+    <testcase classname="truncate shouldn&apos;t barf with weird input" name="truncate shouldn&apos;t barf with weird input" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makeBuildPatch" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.082" tests="5">
+    <testcase classname="makeBuildPatch should build a patch function" name="makeBuildPatch should build a patch function" time="0.001">
+    </testcase>
+    <testcase classname="makeBuildPatch should make a correct patch" name="makeBuildPatch should make a correct patch" time="0">
+    </testcase>
+    <testcase classname="makeBuildPatch should make a correct install check pattern" name="makeBuildPatch should make a correct install check pattern" time="0.001">
+    </testcase>
+    <testcase classname="makeBuildPatchWithScopedPackage should make a correct patch" name="makeBuildPatchWithScopedPackage should make a correct patch" time="0">
+    </testcase>
+    <testcase classname="makeBuildPatchWithScopedPackage should make a correct install check pattern" name="makeBuildPatchWithScopedPackage should make a correct install check pattern" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="MessageQueue" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.081" tests="2">
+    <testcase classname="MessageQueue should generate native modules" name="MessageQueue should generate native modules" time="0.013">
+    </testcase>
+    <testcase classname="MessageQueue should make round trip and clear memory" name="MessageQueue should make round trip and clear memory" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="YellowBoxWarning" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.073" tests="5">
+    <testcase classname="YellowBoxWarning starts without a symbolicated stack" name="YellowBoxWarning starts without a symbolicated stack" time="0.005">
+    </testcase>
+    <testcase classname="YellowBoxWarning updates when symbolication is in progress" name="YellowBoxWarning updates when symbolication is in progress" time="0.004">
+    </testcase>
+    <testcase classname="YellowBoxWarning updates when symbolication finishes" name="YellowBoxWarning updates when symbolication finishes" time="0.002">
+    </testcase>
+    <testcase classname="YellowBoxWarning updates when symbolication fails" name="YellowBoxWarning updates when symbolication fails" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxWarning does not update aborted requests" name="YellowBoxWarning does not update aborted requests" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::findPodspecName" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.093" tests="4">
+    <testcase classname="ios::findPodspecName returns null if there is not podspec file" name="ios::findPodspecName returns null if there is not podspec file" time="0.007">
+    </testcase>
+    <testcase classname="ios::findPodspecName returns podspec name if only one exists" name="ios::findPodspecName returns podspec name if only one exists" time="0.001">
+    </testcase>
+    <testcase classname="ios::findPodspecName returns podspec name that match packet directory" name="ios::findPodspecName returns podspec name that match packet directory" time="0.002">
+    </testcase>
+    <testcase classname="ios::findPodspecName returns first podspec name if not match in directory" name="ios::findPodspecName returns first podspec name if not match in directory" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makeStringsPatch" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.097" tests="2">
+    <testcase classname="makeStringsPatch should export a patch with &lt;string&gt; element" name="makeStringsPatch should export a patch with &lt;string&gt; element" time="0.002">
+    </testcase>
+    <testcase classname="makeStringsPatch should export an empty patch if no params given" name="makeStringsPatch should export an empty patch if no params given" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="mapWithSeparator" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.065" tests="3">
+    <testcase classname="mapWithSeparator mapWithSeparator returns expected results" name="mapWithSeparator mapWithSeparator returns expected results" time="0.001">
+    </testcase>
+    <testcase classname="mapWithSeparator mapWithSeparator indices are correct" name="mapWithSeparator mapWithSeparator indices are correct" time="0.002">
+    </testcase>
+    <testcase classname="mapWithSeparator mapWithSeparator passes correct array and indices" name="mapWithSeparator mapWithSeparator passes correct array and indices" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makeSettingsPatch" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.063" tests="4">
+    <testcase classname="makeSettingsPatch should build a patch function" name="makeSettingsPatch should build a patch function" time="0.001">
+    </testcase>
+    <testcase classname="makeSettingsPatch should make a correct patch" name="makeSettingsPatch should make a correct patch" time="0">
+    </testcase>
+    <testcase classname="makeSettingsPatchWithScopedPackage should build a patch function" name="makeSettingsPatchWithScopedPackage should build a patch function" time="0.001">
+    </testcase>
+    <testcase classname="makeSettingsPatchWithScopedPackage should make a correct patch" name="makeSettingsPatchWithScopedPackage should make a correct patch" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Blob" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.101" tests="4">
+    <testcase classname="Blob should create empty blob" name="Blob should create empty blob" time="0.004">
+    </testcase>
+    <testcase classname="Blob should create blob from other blobs and strings" name="Blob should create blob from other blobs and strings" time="0.002">
+    </testcase>
+    <testcase classname="Blob should slice a blob" name="Blob should slice a blob" time="0.002">
+    </testcase>
+    <testcase classname="Blob should close a blob" name="Blob should close a blob" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="pods::isInstalled" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.094" tests="4">
+    <testcase classname="pods::isInstalled returns false if pod is missing" name="pods::isInstalled returns false if pod is missing" time="0.001">
+    </testcase>
+    <testcase classname="pods::isInstalled returns true for existing pod with version number" name="pods::isInstalled returns true for existing pod with version number" time="0">
+    </testcase>
+    <testcase classname="pods::isInstalled returns true for existing pod with path" name="pods::isInstalled returns true for existing pod with path" time="0">
+    </testcase>
+    <testcase classname="pods::isInstalled returns true for existing pod with multiline definition" name="pods::isInstalled returns true for existing pod with multiline definition" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="setNormalizedColorAlpha" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.046" tests="4">
+    <testcase classname="setNormalizedColorAlpha should adjust the alpha of the color passed in" name="setNormalizedColorAlpha should adjust the alpha of the color passed in" time="0.002">
+    </testcase>
+    <testcase classname="setNormalizedColorAlpha should clamp invalid input" name="setNormalizedColorAlpha should clamp invalid input" time="0.001">
+    </testcase>
+    <testcase classname="setNormalizedColorAlpha should ignore the color&apos;s original alpha" name="setNormalizedColorAlpha should ignore the color&apos;s original alpha" time="0">
+    </testcase>
+    <testcase classname="setNormalizedColorAlpha should return the original color when alpha is unchanged" name="setNormalizedColorAlpha should return the original color when alpha is unchanged" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="WebSocket" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.079" tests="2">
+    <testcase classname="WebSocket should have connection lifecycle constants defined on the class" name="WebSocket should have connection lifecycle constants defined on the class" time="0.018">
+    </testcase>
+    <testcase classname="WebSocket should have connection lifecycle constants defined on the instance" name="WebSocket should have connection lifecycle constants defined on the instance" time="0.005">
+    </testcase>
+  </testsuite>
+  <testsuite name="pods::findPodTargetLine" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.084" tests="3">
+    <testcase classname="pods::findPodTargetLine returns null if file is not Podfile" name="pods::findPodTargetLine returns null if file is not Podfile" time="0.001">
+    </testcase>
+    <testcase classname="pods::findPodTargetLine returns null if there is not matching project name" name="pods::findPodTargetLine returns null if there is not matching project name" time="0">
+    </testcase>
+    <testcase classname="pods::findPodTargetLine returns null if there is not matching project name" name="pods::findPodTargetLine returns null if there is not matching project name" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="YellowBoxSymbolication" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.071" tests="2">
+    <testcase classname="YellowBoxSymbolication symbolicates different stacks" name="YellowBoxSymbolication symbolicates different stacks" time="0.003">
+    </testcase>
+    <testcase classname="YellowBoxSymbolication batch symbolicates equivalent stacks" name="YellowBoxSymbolication batch symbolicates equivalent stacks" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="FileReader" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.095" tests="2">
+    <testcase classname="FileReader should read blob as text" name="FileReader should read blob as text" time="0.01">
+    </testcase>
+    <testcase classname="FileReader should read blob as data URL" name="FileReader should read blob as data URL" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="findXcodeProject" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.122" tests="3">
+    <testcase classname="findXcodeProject should find *.xcodeproj file" name="findXcodeProject should find *.xcodeproj file" time="0.002">
+    </testcase>
+    <testcase classname="findXcodeProject should prefer *.xcworkspace" name="findXcodeProject should prefer *.xcworkspace" time="0.001">
+    </testcase>
+    <testcase classname="findXcodeProject should return null if nothing found" name="findXcodeProject should return null if nothing found" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="groupByEveryN" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.068" tests="2">
+    <testcase classname="groupByEveryN should group by with different n" name="groupByEveryN should group by with different n" time="0.002">
+    </testcase>
+    <testcase classname="groupByEveryN should fill with null" name="groupByEveryN should fill with null" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="normalizeProjectName" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.053" tests="1">
+    <testcase classname="normalizeProjectName should replace slashes with underscores" name="normalizeProjectName should replace slashes with underscores" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="android::isInstalled" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.086" tests="2">
+    <testcase classname="android::isInstalled should return true when project is already in build.gradle" name="android::isInstalled should return true when project is already in build.gradle" time="0.002">
+    </testcase>
+    <testcase classname="android::isInstalled should return false when project is not in build.gradle" name="android::isInstalled should return false when project is not in build.gradle" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makeCommand" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:41" time="0.085" tests="4">
+    <testcase classname="makeCommand generates a function around shell command" name="makeCommand generates a function around shell command" time="0.003">
+    </testcase>
+    <testcase classname="makeCommand throws an error if there is no callback provided" name="makeCommand throws an error if there is no callback provided" time="0.001">
+    </testcase>
+    <testcase classname="makeCommand invokes a callback after command execution" name="makeCommand invokes a callback after command execution" time="0.001">
+    </testcase>
+    <testcase classname="makeCommand throws an error if spawn ended up with error" name="makeCommand throws an error if spawn ended up with error" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::findPodfilePath" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.065" tests="2">
+    <testcase classname="ios::findPodfilePath returns null if there is no Podfile" name="ios::findPodfilePath returns null if there is no Podfile" time="0.004">
+    </testcase>
+    <testcase classname="ios::findPodfilePath returns Podfile path if it exists" name="ios::findPodfilePath returns Podfile path if it exists" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="setActiveScene" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.057" tests="1">
+    <testcase classname="setActiveScene can handle multiple listeners and unsubscribe" name="setActiveScene can handle multiple listeners and unsubscribe" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="deepFreezeAndThrowOnMutationInDev" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.12" tests="11">
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should be a noop on non object values" name="deepFreezeAndThrowOnMutationInDev should be a noop on non object values" time="0.016">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should not throw on object without prototype" name="deepFreezeAndThrowOnMutationInDev should not throw on object without prototype" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should throw on mutation in dev with strict" name="deepFreezeAndThrowOnMutationInDev should throw on mutation in dev with strict" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should throw on mutation in dev without strict" name="deepFreezeAndThrowOnMutationInDev should throw on mutation in dev without strict" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should throw on nested mutation in dev with strict" name="deepFreezeAndThrowOnMutationInDev should throw on nested mutation in dev with strict" time="0">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should throw on nested mutation in dev without strict" name="deepFreezeAndThrowOnMutationInDev should throw on nested mutation in dev without strict" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should throw on insertion in dev with strict" name="deepFreezeAndThrowOnMutationInDev should throw on insertion in dev with strict" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should not throw on insertion in dev without strict" name="deepFreezeAndThrowOnMutationInDev should not throw on insertion in dev without strict" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should mutate and not throw on mutation in prod" name="deepFreezeAndThrowOnMutationInDev should mutate and not throw on mutation in prod" time="0.001">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev should not deep freeze already frozen objects" name="deepFreezeAndThrowOnMutationInDev should not deep freeze already frozen objects" time="0">
+    </testcase>
+    <testcase classname="deepFreezeAndThrowOnMutationInDev shouldn&apos;t recurse infinitely" name="deepFreezeAndThrowOnMutationInDev shouldn&apos;t recurse infinitely" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Batchinator" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.172" tests="5">
+    <testcase classname="Batchinator executes vanilla tasks" name="Batchinator executes vanilla tasks" time="0.042">
+    </testcase>
+    <testcase classname="Batchinator batches up tasks" name="Batchinator batches up tasks" time="0.001">
+    </testcase>
+    <testcase classname="Batchinator flushes on dispose" name="Batchinator flushes on dispose" time="0.001">
+    </testcase>
+    <testcase classname="Batchinator should call tasks scheduled by the callback" name="Batchinator should call tasks scheduled by the callback" time="0.001">
+    </testcase>
+    <testcase classname="Batchinator does not run callbacks more than once" name="Batchinator does not run callbacks more than once" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makePackagePatch@0.20" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.089" tests="2">
+    <testcase classname="makePackagePatch@0.20 should build a patch" name="makePackagePatch@0.20 should build a patch" time="0.002">
+    </testcase>
+    <testcase classname="makePackagePatch@0.20 MainActivity contains a correct 0.20 import patch" name="makePackagePatch@0.20 MainActivity contains a correct 0.20 import patch" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="applyParams" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.114" tests="2">
+    <testcase classname="applyParams apply params to the string" name="applyParams apply params to the string" time="0.002">
+    </testcase>
+    <testcase classname="applyParams use null if no params provided" name="applyParams use null if no params provided" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="Platform" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.054" tests="2">
+    <testcase classname="Platform OS should have correct value" name="Platform OS should have correct value" time="0.005">
+    </testcase>
+    <testcase classname="Platform select should return platform specific value" name="Platform select should return platform specific value" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="pods::findLineToAddPod" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.06" tests="4">
+    <testcase classname="pods::findLineToAddPod returns null if file is not Podfile" name="pods::findLineToAddPod returns null if file is not Podfile" time="0.001">
+    </testcase>
+    <testcase classname="pods::findLineToAddPod returns correct line number for Simple Podfile" name="pods::findLineToAddPod returns correct line number for Simple Podfile" time="0.001">
+    </testcase>
+    <testcase classname="pods::findLineToAddPod returns correct line number for Podfile with target" name="pods::findLineToAddPod returns correct line number for Podfile with target" time="0.001">
+    </testcase>
+    <testcase classname="pods::findLineToAddPod returns correct line number for Podfile with function" name="pods::findLineToAddPod returns correct line number for Podfile with function" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="getAssetDestPathAndroid" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.082" tests="4">
+    <testcase classname="getAssetDestPathAndroid should use the right destination folder" name="getAssetDestPathAndroid should use the right destination folder" time="0.001">
+    </testcase>
+    <testcase classname="getAssetDestPathAndroid should lowercase path" name="getAssetDestPathAndroid should lowercase path" time="0.001">
+    </testcase>
+    <testcase classname="getAssetDestPathAndroid should remove `assets/` prefix" name="getAssetDestPathAndroid should remove `assets/` prefix" time="0">
+    </testcase>
+    <testcase classname="getAssetDestPathAndroid should put non-drawable resources to `raw/`" name="getAssetDestPathAndroid should put non-drawable resources to `raw/`" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="parseErrorStack" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.078" tests="3">
+    <testcase classname="parseErrorStack parses error stack" name="parseErrorStack parses error stack" time="0.008">
+    </testcase>
+    <testcase classname="parseErrorStack supports framesToPop" name="parseErrorStack supports framesToPop" time="0.002">
+    </testcase>
+    <testcase classname="parseErrorStack ignores bad inputs" name="parseErrorStack ignores bad inputs" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="makeImportPatch" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.057" tests="2">
+    <testcase classname="makeImportPatch should build a patch" name="makeImportPatch should build a patch" time="0.001">
+    </testcase>
+    <testcase classname="makeImportPatch MainActivity contains a correct import patch" name="makeImportPatch MainActivity contains a correct import patch" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="findMatchingSimulator" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.08" tests="10">
+    <testcase classname="findMatchingSimulator should find simulator" name="findMatchingSimulator should find simulator" time="0.002">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return null if no simulators available" name="findMatchingSimulator should return null if no simulators available" time="0.015">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return null if an odd input" name="findMatchingSimulator should return null if an odd input" time="0.001">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the first simulator in list if none is defined" name="findMatchingSimulator should return the first simulator in list if none is defined" time="0">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the first simulator in list if none is defined" name="findMatchingSimulator should return the first simulator in list if none is defined" time="0">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the booted simulator in list if none is defined" name="findMatchingSimulator should return the booted simulator in list if none is defined" time="0">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the defined simulator in list even if another device is booted" name="findMatchingSimulator should return the defined simulator in list even if another device is booted" time="0">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the booted simulator in list if none is defined (multi ios versions)" name="findMatchingSimulator should return the booted simulator in list if none is defined (multi ios versions)" time="0.001">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return the defined simulator in list even if another device is booted (multi ios versions)" name="findMatchingSimulator should return the defined simulator in list even if another device is booted (multi ios versions)" time="0">
+    </testcase>
+    <testcase classname="findMatchingSimulator should return AppleTV devices if in the list" name="findMatchingSimulator should return AppleTV devices if in the list" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="getProjectDependencies" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.074" tests="2">
+    <testcase classname="getProjectDependencies should return an array of project dependencies" name="getProjectDependencies should return an array of project dependencies" time="0.002">
+    </testcase>
+    <testcase classname="getProjectDependencies should return an empty array when no dependencies set" name="getProjectDependencies should return an empty array when no dependencies set" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="FormData" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.065" tests="2">
+    <testcase classname="FormData should return non blob null" name="FormData should return non blob null" time="0.002">
+    </testcase>
+    <testcase classname="FormData should return blob" name="FormData should return blob" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::getHeadersInFolder" errors="0" failures="0" skipped="2" timestamp="2018-09-29T08:09:42" time="0.057" tests="2">
+    <testcase classname="ios::getHeadersInFolder should return an array of all headers in given folder" name="ios::getHeadersInFolder should return an array of all headers in given folder" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="ios::getHeadersInFolder should ignore all headers in Pods, Examples &amp; node_modules" name="ios::getHeadersInFolder should ignore all headers in Pods, Examples &amp; node_modules" time="0.001">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="ios::addFileToProject" errors="0" failures="0" skipped="1" timestamp="2018-09-29T08:09:42" time="0.077" tests="1">
+    <testcase classname="ios::addFileToProject should add file to a project" name="ios::addFileToProject should add file to a project" time="0.001">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="BlobManager" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.081" tests="1">
+    <testcase classname="BlobManager should create blob from parts" name="BlobManager should create blob from parts" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="getAssetDestPathIOS" errors="0" failures="0" skipped="0" timestamp="2018-09-29T08:09:42" time="0.075" tests="2">
+    <testcase classname="getAssetDestPathIOS should build correct path" name="getAssetDestPathIOS should build correct path" time="0.001">
+    </testcase>
+    <testcase classname="getAssetDestPathIOS should consider scale" name="getAssetDestPathIOS should consider scale" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>
