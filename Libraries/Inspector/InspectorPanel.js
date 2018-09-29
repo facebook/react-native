@@ -21,21 +21,16 @@ const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 
-import type {ViewProps} from 'ViewPropTypes';
-// Will add this once I get params for the functions
-// import type {SyntheticEvent} from 'CoreEventTypes';
-
 type Props = $ReadOnly<{|
-  ...ViewProps,
   devtoolsIsOpen?: ?boolean,
   inspecting?: ?boolean,
-  setInspecting?: ?Function,
+  setInspecting?: ?(val: boolean) => void,
   perfing?: ?boolean,
-  setPerfing?: ?Function,
+  setPerfing?: ?(val: boolean) => void,
   touchTargeting?: ?boolean,
-  setTouchTargeting?: ?Function,
+  setTouchTargeting?: ?(val: boolean) => void,
   networking?: ?boolean,
-  setNetworking?: ?Function,
+  setNetworking?: ?(val: boolean) => void,
 |}>;
 
 class InspectorPanel extends React.Component<Props> {
@@ -104,14 +99,13 @@ InspectorPanel.propTypes = {
   inspected: PropTypes.object,
 };
 
-type ButtonProps = $ReadOnly<{|
-  ...ViewProps,
+type InspectorPanelButtonProps = $ReadOnly<{|
   onClick?: ?Function,
   pressed?: ?boolean,
   title?: ?string,
 |}>;
 
-class Button extends React.Component<ButtonProps> {
+class Button extends React.Component<InspectorPanelButtonProps> {
   render() {
     return (
       <TouchableHighlight
