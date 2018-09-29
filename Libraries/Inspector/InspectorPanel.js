@@ -69,22 +69,22 @@ class InspectorPanel extends React.Component<Props> {
       <View style={styles.container}>
         {!this.props.devtoolsIsOpen && contents}
         <View style={styles.buttonRow}>
-          <Button
+          <InspectorPanelButton
             title={'Inspect'}
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          <Button
+          <InspectorPanelButton
             title={'Perf'}
             pressed={this.props.perfing}
             onClick={this.props.setPerfing}
           />
-          <Button
+          <InspectorPanelButton
             title={'Network'}
             pressed={this.props.networking}
             onClick={this.props.setNetworking}
           />
-          <Button
+          <InspectorPanelButton
             title={'Touchables'}
             pressed={this.props.touchTargeting}
             onClick={this.props.setTouchTargeting}
@@ -105,7 +105,7 @@ type InspectorPanelButtonProps = $ReadOnly<{|
   title?: ?string,
 |}>;
 
-class Button extends React.Component<InspectorPanelButtonProps> {
+class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
   render() {
     return (
       <TouchableHighlight
