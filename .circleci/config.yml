@@ -585,8 +585,22 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-analysis
       - run: *yarn
+
+      - run:
+          name: Analyze Shell Scripts
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+              sudo apt-get install -y shellcheck
+              yarn add @octokit/rest@15.10.0
+              echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"
+              GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_scripts.sh
+            else
+              echo "Skipping shell script analysis."
+            fi
+          when: always
 
       - run:
           name: Analyze Code
@@ -599,7 +613,6 @@ jobs:
             fi
           when: always
 
-      - restore-cache: *restore-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
