@@ -58,8 +58,8 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
 
     this.props.onLayout(event);
     const child = React.Children.only(this.props.children);
-    if (child.props.onLayout) {
-      child.props.onLayout(event);
+    if (child.props._onLayout) {
+      child.props._onLayout(event);
     }
   };
 
