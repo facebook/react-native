@@ -21,6 +21,8 @@ const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 
+import type {ViewStyleProp} from 'StyleSheet';
+
 type Props = $ReadOnly<{|
   devtoolsIsOpen?: ?boolean,
   inspecting?: ?boolean,
@@ -31,6 +33,22 @@ type Props = $ReadOnly<{|
   setTouchTargeting?: ?(val: boolean) => void,
   networking?: ?boolean,
   setNetworking?: ?(val: boolean) => void,
+  hierarchy?: ?$ReadOnlyArray<?[?{name?: ?string}]>,
+  selection?: ?number,
+  setSelection?: number => mixed,
+  inspected?: ?{
+    style?: ?ViewStyleProp,
+    frame?: ?{
+      top?: ?number,
+      left?: ?number,
+      width?: ?number,
+      height: ?number,
+    },
+    source?: ?{
+      fileName?: string,
+      lineNumber?: number,
+    },
+  },
 |}>;
 
 class InspectorPanel extends React.Component<Props> {
@@ -94,10 +112,6 @@ class InspectorPanel extends React.Component<Props> {
     );
   }
 }
-
-InspectorPanel.propTypes = {
-  inspected: PropTypes.object,
-};
 
 type InspectorPanelButtonProps = $ReadOnly<{|
   onClick?: ?Function,
