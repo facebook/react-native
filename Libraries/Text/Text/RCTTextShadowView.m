@@ -134,7 +134,7 @@
   }
 
   __block CGFloat maximumFontLineHeight = 0;
-  
+
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
@@ -143,19 +143,19 @@
       if (!font) {
         return;
       }
-     
+
       if (maximumFontLineHeight <= font.lineHeight) {
         maximumFontLineHeight = font.lineHeight;
       }
     }
   ];
-  
+
   if (maximumLineHeight < maximumFontLineHeight) {
     return;
   }
-    
+
   CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
-  
+
   [attributedText addAttribute:NSBaselineOffsetAttributeName
                          value:@(baseLineOffset)
                          range:NSMakeRange(0, attributedText.length)];
