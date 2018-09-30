@@ -139,31 +139,26 @@
                              inRange:NSMakeRange(0, attributedText.length)
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:
-   ^(UIFont *font, NSRange range, __unused BOOL *stop) {
-     if (!font) {
-       return;
-     }
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (!font) {
+        return;
+      }
      
-     if (maximumFontLineHeight <= font.lineHeight) {
-       maximumFontLineHeight = font.lineHeight;
-     }
-     
-   }
+      if (maximumFontLineHeight <= font.lineHeight) {
+        maximumFontLineHeight = font.lineHeight;
+      }
+    }
   ];
   
   if (maximumLineHeight < maximumFontLineHeight) {
     return;
   }
-  
-  [attributedText beginEditing];
-  
+    
   CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
   
   [attributedText addAttribute:NSBaselineOffsetAttributeName
                          value:@(baseLineOffset)
                          range:NSMakeRange(0, attributedText.length)];
-  
-  [attributedText endEditing];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
