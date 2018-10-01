@@ -9,12 +9,17 @@
 
 'use strict';
 
+const ReactIs = require('react-is');
+
 module.exports = (moduleName, instanceMethods) => {
   const RealComponent = require.requireActual(moduleName);
   const React = require('react');
 
   const SuperClass =
-    typeof RealComponent === 'function' ? RealComponent : React.Component;
+    typeof RealComponent === 'function' ||
+    ReactIs.typeOf(RealComponent) === ReactIs.ForwardRef
+      ? RealComponent
+      : React.Component;
 
   const Component = class extends SuperClass {
     static displayName = SuperClass.displayName || 'Component';
