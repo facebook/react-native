@@ -217,11 +217,19 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
   (borderInsets.top + cornerInsets.topRight.height +
    borderInsets.bottom + cornerInsets.bottomLeft.height <= viewSize.height);
 
-  const UIEdgeInsets edgeInsets = (UIEdgeInsets){
+  UIEdgeInsets edgeInsets = (UIEdgeInsets){
     borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
     borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
     borderInsets.bottom + MAX(cornerInsets.bottomLeft.height, cornerInsets.bottomRight.height),
     borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width)
+  };
+
+  // Asymmetrical edgeInsets cause strange artifacting on iOS 10 and earlier.
+  edgeInsets = (UIEdgeInsets){
+    MAX(edgeInsets.top, edgeInsets.bottom),
+    MAX(edgeInsets.left, edgeInsets.right),
+    MAX(edgeInsets.top, edgeInsets.bottom),
+    MAX(edgeInsets.left, edgeInsets.right),
   };
 
   const CGSize size = makeStretchable ? (CGSize){
