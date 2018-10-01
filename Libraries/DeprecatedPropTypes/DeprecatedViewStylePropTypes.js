@@ -11,7 +11,7 @@
 'use strict';
 
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const LayoutPropTypes = require('LayoutPropTypes');
+const DeprecatedLayoutPropTypes = require('DeprecatedLayoutPropTypes');
 const ReactPropTypes = require('prop-types');
 const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
 const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
@@ -20,7 +20,7 @@ const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
  * Warning: Some of these properties may not be supported in all releases.
  */
 const DeprecatedViewStylePropTypes = {
-  ...LayoutPropTypes,
+  ...DeprecatedLayoutPropTypes,
   ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
