@@ -88,12 +88,19 @@ const converters = {
 
     input.forEach(function(report) {
       push(output, report.file, {
-        message: 'SC' + report.code + ': ' + report.message,
+        message:
+          '**[SC' +
+          report.code +
+          '](https://github.com/koalaman/shellcheck/wiki/SC' +
+          report.code +
+          '):** (' +
+          report.level +
+          ') ' +
+          report.message,
         line: report.line,
         endLine: report.endLine,
         column: report.column,
         endColumn: report.endColumn,
-        level: 'style',
         converter: 'shellcheck',
       });
     });
