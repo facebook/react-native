@@ -1,6 +1,6 @@
 const mockComponent = require('../mockComponent');
-const FakeComponent = require('FakeComponent')
-const TextInput = require('TextInput')
+const FakeComponent = require('FakeComponent');
+const TextInput = require('TextInput');
 
 it('defaults to a displayName of "Component" when the mocked component does not have one', () => {
     expect(FakeComponent.displayName).toBeUndefined();
