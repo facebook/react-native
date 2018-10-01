@@ -8,6 +8,9 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
 
+#Re-sourcing profile to update Xcode node version since Xcode use old node version
+source /.bash_profile
+
 # Print commands before executing them (useful for troubleshooting)
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
