@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const DeprecatedImageProps = require('DeprecatedImageProps');
+const DeprecatedImagePropType = require('DeprecatedImagePropType');
 const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -58,7 +58,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<
   static prefetch: typeof prefetch;
   static queryCache: typeof queryCache;
   static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof DeprecatedImageProps;
+  static propTypes: typeof DeprecatedImagePropType;
 }
 
 /**
@@ -154,7 +154,7 @@ Image.queryCache = queryCache;
  */
 Image.resolveAssetSource = resolveAssetSource;
 
-Image.propTypes = DeprecatedImageProps;
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {
