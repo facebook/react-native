@@ -23,31 +23,31 @@ const View = require('View');
 import type {ViewStyleProp} from 'StyleSheet';
 
 type Props = $ReadOnly<{|
-  devtoolsIsOpen?: ?boolean,
+  devtoolsIsOpen: boolean,
   inspecting: boolean,
   setInspecting: (val: boolean) => void,
   perfing: boolean,
   setPerfing: (val: boolean) => void,
-  touchTargeting?: ?boolean,
-  setTouchTargeting?: ?(val: boolean) => void,
-  networking?: ?boolean,
-  setNetworking?: ?(val: boolean) => void,
-  hierarchy?: any,
-  selection: number,
+  touchTargeting: boolean,
+  setTouchTargeting: (val: boolean) => void,
+  networking: boolean,
+  setNetworking: (val: boolean) => void,
+  hierarchy?: ?Array<{|name: string|}>,
+  selection?: ?number,
   setSelection: number => mixed,
-  inspected?: ?{|
+  inspected?: ?$ReadOnly<{|
     style?: ?ViewStyleProp,
-    frame?: ?{|
+    frame?: ?$ReadOnly<{|
       top?: ?number,
       left?: ?number,
       width?: ?number,
       height: ?number,
-    |},
+    |}>,
     source?: ?{|
       fileName?: string,
       lineNumber?: number,
     |},
-  |},
+  |}>,
 |}>;
 
 class InspectorPanel extends React.Component<Props> {
@@ -69,6 +69,7 @@ class InspectorPanel extends React.Component<Props> {
             style={this.props.inspected.style}
             frame={this.props.inspected.frame}
             source={this.props.inspected.source}
+            // $FlowFixMe: Hierarchy should be non-nullable
             hierarchy={this.props.hierarchy}
             selection={this.props.selection}
             setSelection={this.props.setSelection}
@@ -114,8 +115,8 @@ class InspectorPanel extends React.Component<Props> {
 
 type InspectorPanelButtonProps = $ReadOnly<{|
   onClick: (val: boolean) => void,
-  pressed?: ?boolean,
-  title?: ?string,
+  pressed: boolean,
+  title: string,
 |}>;
 
 class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
