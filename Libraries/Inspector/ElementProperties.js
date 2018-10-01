@@ -26,7 +26,7 @@ const openFileInEditor = require('openFileInEditor');
 import type {ViewStyleProp} from 'StyleSheet';
 
 type Props = $ReadOnly<{|
-  hierarchy: Array<$FlowFixMe>,
+  hierarchy: Array<{|name: string|}>,
   style?: ?ViewStyleProp,
   source?: ?{
     fileName?: string,
