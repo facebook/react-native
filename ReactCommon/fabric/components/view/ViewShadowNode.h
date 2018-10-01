@@ -15,12 +15,21 @@ namespace react {
 
 extern const char ViewComponentName[];
 
-using ViewShadowNode =
-  ConcreteViewShadowNode<
+/*
+ * `ShadowNode` for <View> component.
+ */
+class ViewShadowNode final:
+  public ConcreteViewShadowNode<
     ViewComponentName,
     ViewProps,
     ViewEventEmitter
-  >;
+  > {
+
+public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  bool isLayoutOnly() const;
+};
 
 } // namespace react
 } // namespace facebook
