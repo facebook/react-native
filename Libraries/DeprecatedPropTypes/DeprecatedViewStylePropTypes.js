@@ -19,7 +19,7 @@ const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
 /**
  * Warning: Some of these properties may not be supported in all releases.
  */
-const ViewStylePropTypes = {
+const DeprecatedViewStylePropTypes = {
   ...LayoutPropTypes,
   ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
@@ -58,4 +58,4 @@ const ViewStylePropTypes = {
   elevation: ReactPropTypes.number,
 };
 
-module.exports = ViewStylePropTypes;
+module.exports = DeprecatedViewStylePropTypes;

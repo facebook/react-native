@@ -66,7 +66,7 @@ type Props = $ReadOnly<{|
 
   /**
    * Used to style and layout the `Slider`.  See `StyleSheet.js` and
-   * `ViewStylePropTypes.js` for more info.
+   * `DeprecatedViewStylePropTypes.js` for more info.
    */
   style?: ?ViewStyleProp,
 
