@@ -10,7 +10,6 @@
 'use strict';
 
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
@@ -18,6 +17,8 @@ const StyleSheet = require('StyleSheet');
 const requireNativeComponent = require('requireNativeComponent');
 
 const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
+
+import type {ViewStyleProp} from 'StyleSheet';
 
 /**
  * Note: iOS only
@@ -77,16 +78,16 @@ const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
  * For an example, look at InputAccessoryViewExample.js in RNTester.
  */
 
-type Props = {
+type Props = $ReadOnly<{|
   +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
    * specified TextInput(s).
    */
-  nativeID?: string,
-  style?: DeprecatedViewPropTypes.style,
-  backgroundColor?: DeprecatedColorPropType,
-};
+  nativeID?: ?string,
+  style?: ?ViewStyleProp,
+  backgroundColor?: ?DeprecatedColorPropType,
+|}>;
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {

@@ -10,28 +10,22 @@
 
 'use strict';
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 const React = require('react');
-const PropTypes = require('prop-types');
 const ReactNative = require('react-native');
 const {Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-class IntegrationTestHarnessTest extends React.Component<
-  {
-    shouldThrow?: boolean,
-    waitOneFrame?: boolean,
-  },
-  $FlowFixMeState,
-> {
-  static propTypes = {
-    shouldThrow: PropTypes.bool,
-    waitOneFrame: PropTypes.bool,
-  };
+type Props = $ReadOnly<{|
+  shouldThrow?: boolean,
+  waitOneFrame?: boolean,
+|}>;
 
+type State = {|
+  done: boolean,
+|};
+
+class IntegrationTestHarnessTest extends React.Component<Props, State> {
   state = {
     done: false,
   };
