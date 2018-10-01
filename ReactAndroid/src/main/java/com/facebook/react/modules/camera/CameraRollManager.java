@@ -443,7 +443,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           retriever.release();
           photoDescriptor.close();
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
         return false;
       }
