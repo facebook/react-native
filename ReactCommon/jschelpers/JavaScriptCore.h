@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,6 +134,7 @@ jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSVal
 
 // JSClass
 #define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
+#define JSC_JSClassRetain(...) __jsc_bool_wrapper(JSClassRetain, __VA_ARGS__)
 #define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
 
 jsc_poison(JSClassCreate JSClassRelease JSClassRetain)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 #import <memory>
 
 #import <React/RCTBridge.h>
-#import <React/RCTCxxExceptionManager.h>
+#import <React/RCTPrimitives.h>
 #import <fabric/uimanager/FabricUIManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,9 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
+/*
+ * Deprecated. Do not use.
+ */
+@property (nonatomic) std::function<facebook::react::UIManagerInstaller> uiManagerInstaller;
+@property (nonatomic) std::function<facebook::react::UIManagerUninstaller> uiManagerUninstaller;
+
 @end
 
-@interface RCTSurfacePresenter (Internal)
+@interface RCTSurfacePresenter (Surface)
 
 /**
  * Surface uses those methods to register itself in the Presenter.
@@ -37,17 +43,39 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
+- (void)setProps:(NSDictionary *)props
+         surface:(RCTFabricSurface *)surface;
+
+- (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
+
+/**
+ * Measures the Surface with given constraints.
+ */
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
+                      maximumSize:(CGSize)maximumSize
+                          surface:(RCTFabricSurface *)surface;
+
+/**
+ * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
+ */
+- (void)setMinimumSize:(CGSize)minimumSize
+           maximumSize:(CGSize)maximumSize
+               surface:(RCTFabricSurface *)surface;
 
 @end
 
 @interface RCTSurfacePresenter (Deprecated)
 
 /**
- * We need to expose `exceptionManager` and `uiManager` for registration
+ * We need to expose `uiManager` for registration
  * purposes. Eventually, we will move this down to C++ side.
  */
-- (std::shared_ptr<facebook::react::ExceptionManager>)exceptionManager_DO_NOT_USE;
 - (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
+
+/**
+ * Returns a underlying bridge.
+ */
+- (RCTBridge *)bridge_DO_NOT_USE;
 
 @end
 

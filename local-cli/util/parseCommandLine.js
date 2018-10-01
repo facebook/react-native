@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,7 +16,10 @@
  *
  * NOTE: This file is used internally at Facebook and not in `local-cli` itself.
  * No changes should be made to this file without prior discussion with FB team.
+ *
+ * @format
  */
+
 'use strict';
 
 var optimistModule = require('optimist');

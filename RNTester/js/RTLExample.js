@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -373,7 +373,8 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 
 class RTLExample extends React.Component<any, State> {
   static title = 'RTLExample';
-  static description = 'Examples to show how to apply components to RTL layout.';
+  static description =
+    'Examples to show how to apply components to RTL layout.';
 
   _panResponder: Object;
 
@@ -484,7 +485,7 @@ class RTLExample extends React.Component<any, State> {
           <RNTesterBlock
             title={'Controlling Animation'}
             description={'Animation direction according to layout'}>
-            <View Style={styles.view}>
+            <View style={styles.view}>
               <AnimationBlock
                 onPress={this._linearTap}
                 imgStyle={{

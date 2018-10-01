@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConvertibleOptions options, int depth) const {
   if (depth >= options.maximumDepth) {
     return "";
@@ -18,6 +20,10 @@ std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConve
   std::string childrenString = "";
 
   for (auto child : getDebugChildren()) {
+    if (!child) {
+      continue;
+    }
+
     childrenString += child->getDebugDescription(options, depth + 1);
   }
 
@@ -32,6 +38,10 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
   std::string propsString = "";
 
   for (auto prop : getDebugProps()) {
+    if (!prop) {
+      continue;
+    }
+
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
     auto children = prop->getDebugPropsDescription(options, depth + 1);
@@ -48,13 +58,13 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
 }
 
 std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
-  std::string nameString = getDebugName();
-  std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(options, depth);
-  std::string propsString = getDebugPropsDescription(options, depth);
+  auto nameString = getDebugName();
+  auto valueString = getDebugValue();
+  auto childrenString = getDebugChildrenDescription(options, depth);
+  auto propsString = getDebugPropsDescription(options, depth);
 
-  std::string leading = options.format ? std::string(depth * 2, ' ') : "";
-  std::string trailing = options.format ? "\n" : "";
+  auto leading = options.format ? std::string(depth * 2, ' ') : std::string {""};
+  auto trailing = options.format ? std::string {"\n"} : std::string {""};
 
   return leading + "<" + nameString +
     (valueString.empty() ? "" : "=" + valueString) +
@@ -77,6 +87,8 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren() cons
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return SharedDebugStringConvertibleList();
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

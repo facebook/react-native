@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,10 +33,7 @@ function polyfillObjectProperty<T>(
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
   if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(object, backupName, {
-      ...descriptor,
-      value: object[name],
-    });
+    Object.defineProperty(object, backupName, descriptor);
   }
 
   const {enumerable, writable, configurable} = descriptor || {};

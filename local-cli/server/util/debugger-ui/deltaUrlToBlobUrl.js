@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -41,12 +41,16 @@
 
     // If nothing changed, avoid recreating a bundle blob by reusing the
     // previous one.
-    if (deltaPatcher.getLastNumModifiedFiles() === 0 && cachedBundle) {
+    if (
+      deltaPatcher.getLastNumModifiedFiles() === 0 &&
+      cachedBundle != null &&
+      cachedBundle !== ''
+    ) {
       return cachedBundle;
     }
 
     // Clean up the previous bundle URL to not leak memory.
-    if (cachedBundle) {
+    if (cachedBundle != null && cachedBundle !== '') {
       URL.revokeObjectURL(cachedBundle);
     }
 

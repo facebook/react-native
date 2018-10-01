@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_prebuilt_native_library", "rn_android_prebuilt_aar")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar", "rn_prebuilt_native_library")
 # Temp workaround to get the build working e2e, Gradle builds them for us
 
 rn_prebuilt_native_library(

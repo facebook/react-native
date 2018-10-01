@@ -1,11 +1,11 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - DoubleConversion (1.1.5)
+  - DoubleConversion (1.1.6)
   - Folly (2016.10.31.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
-  - glog (0.3.4)
+  - glog (0.3.5)
   - React/ART (1000.0.0):
     - React/Core
   - React/Core (1000.0.0):
@@ -14,9 +14,6 @@ PODS:
     - Folly (= 2016.10.31.00)
     - React/Core
     - React/cxxreact
-  - React/CxxExceptions (1000.0.0):
-    - React/CxxBridge
-    - React/exceptions
   - React/cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - Folly (= 2016.10.31.00)
@@ -25,24 +22,6 @@ PODS:
   - React/DevSupport (1000.0.0):
     - React/Core
     - React/RCTWebSocket
-  - React/exceptions (1000.0.0)
-  - React/fabric (1000.0.0):
-    - React/fabric/core (= 1000.0.0)
-    - React/fabric/debug (= 1000.0.0)
-    - React/fabric/graphics (= 1000.0.0)
-    - React/fabric/uimanager (= 1000.0.0)
-    - React/fabric/view (= 1000.0.0)
-  - React/fabric/core (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/debug (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/graphics (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/uimanager (1000.0.0):
-    - Folly (= 2016.10.31.00)
-  - React/fabric/view (1000.0.0):
-    - Folly (= 2016.10.31.00)
-    - yoga
   - React/fishhook (1000.0.0)
   - React/jschelpers (1000.0.0):
     - Folly (= 2016.10.31.00)
@@ -58,11 +37,6 @@ PODS:
   - React/RCTCameraRoll (1000.0.0):
     - React/Core
     - React/RCTImage
-  - React/RCTFabric (1000.0.0):
-    - Folly (= 2016.10.31.00)
-    - React/Core
-    - React/CxxExceptions
-    - React/fabric
   - React/RCTGeolocation (1000.0.0):
     - React/Core
   - React/RCTImage (1000.0.0):
@@ -98,7 +72,6 @@ DEPENDENCIES:
   - React/RCTAnimation (from `../`)
   - React/RCTBlob (from `../`)
   - React/RCTCameraRoll (from `../`)
-  - React/RCTFabric (from `../`)
   - React/RCTGeolocation (from `../`)
   - React/RCTImage (from `../`)
   - React/RCTLinkingIOS (from `../`)
@@ -111,7 +84,7 @@ DEPENDENCIES:
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
@@ -128,12 +101,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: e22e0762848812a87afd67ffda3998d9ef29170c
-  Folly: 9a8eea4725a0b6ba3256ebf206c21e352c23abf8
-  glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  React: e3382e39c51a5e5889248e97c6b9b1b3ca443a08
-  yoga: bdd268c5812f00bdb52cc2b58f129797e97935eb
+  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
+  glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
+  React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 1a96172007b66aa74825c234f17139dd9c3d3cd7
+PODFILE CHECKSUM: 7af77fbc34af9646e8c6389e7e2c0b4663bb16d9
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

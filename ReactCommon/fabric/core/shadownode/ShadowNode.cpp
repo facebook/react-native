@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,11 @@
 
 #include "ShadowNode.h"
 
+#include <string>
+
+#include <fabric/core/ShadowNodeFragment.h>
 #include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -21,52 +24,57 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-  const Tag &tag,
-  const Tag &rootTag,
-  const InstanceHandle &instanceHandle,
-  const SharedProps &props,
-  const SharedShadowNodeSharedList &children,
+  const ShadowNodeFragment &fragment,
   const ShadowNodeCloneFunction &cloneFunction
 ):
-  tag_(tag),
-  rootTag_(rootTag),
-  instanceHandle_(instanceHandle),
-  props_(props),
-  children_(std::make_shared<SharedShadowNodeList>(*children)),
+  tag_(fragment.tag),
+  rootTag_(fragment.rootTag),
+  props_(fragment.props),
+  eventEmitter_(fragment.eventEmitter),
+  children_(fragment.children ?: emptySharedShadowNodeSharedList()),
   cloneFunction_(cloneFunction),
-  revision_(1) {}
+  childrenAreShared_(true),
+  revision_(1) {
+
+  assert(props_);
+  assert(children_);
+}
 
 ShadowNode::ShadowNode(
-  const SharedShadowNode &shadowNode,
-  const SharedProps &props,
-  const SharedShadowNodeSharedList &children
+  const ShadowNode &sourceShadowNode,
+  const ShadowNodeFragment &fragment
 ):
-  tag_(shadowNode->tag_),
-  rootTag_(shadowNode->rootTag_),
-  instanceHandle_(shadowNode->instanceHandle_),
-  props_(props ? props : shadowNode->props_),
-  children_(std::make_shared<SharedShadowNodeList>(*(children ? children : shadowNode->children_))),
-  sourceNode_(shadowNode),
-  localData_(shadowNode->localData_),
-  cloneFunction_(shadowNode->cloneFunction_),
-  revision_(shadowNode->revision_ + 1) {}
+  tag_(fragment.tag ?: sourceShadowNode.tag_),
+  rootTag_(fragment.rootTag ?: sourceShadowNode.rootTag_),
+  props_(fragment.props ?: sourceShadowNode.props_),
+  eventEmitter_(fragment.eventEmitter ?: sourceShadowNode.eventEmitter_),
+  children_(fragment.children ?: sourceShadowNode.children_),
+  localData_(fragment.localData ?: sourceShadowNode.localData_),
+  cloneFunction_(sourceShadowNode.cloneFunction_),
+  childrenAreShared_(true),
+  revision_(sourceShadowNode.revision_ + 1) {
 
-SharedShadowNode ShadowNode::clone(
-  const SharedProps &props,
-  const SharedShadowNodeSharedList &children
-) const {
+  assert(props_);
+  assert(children_);
+}
+
+UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
   assert(cloneFunction_);
-  return cloneFunction_(shared_from_this(), props_, children_);
+  return cloneFunction_(*this, fragment);
 }
 
 #pragma mark - Getters
 
-SharedShadowNodeSharedList ShadowNode::getChildren() const {
-  return children_;
+const SharedShadowNodeList &ShadowNode::getChildren() const {
+  return *children_;
 }
 
 SharedProps ShadowNode::getProps() const {
   return props_;
+}
+
+SharedEventEmitter ShadowNode::getEventEmitter() const {
+  return eventEmitter_;
 }
 
 Tag ShadowNode::getTag() const {
@@ -75,14 +83,6 @@ Tag ShadowNode::getTag() const {
 
 Tag ShadowNode::getRootTag() const {
   return rootTag_;
-}
-
-InstanceHandle ShadowNode::getInstanceHandle() const {
-  return instanceHandle_;
-}
-
-SharedShadowNode ShadowNode::getSourceNode() const {
-  return sourceNode_.lock();
 }
 
 SharedLocalData ShadowNode::getLocalData() const {
@@ -108,20 +108,26 @@ void ShadowNode::sealRecursive() const {
 void ShadowNode::appendChild(const SharedShadowNode &child) {
   ensureUnsealed();
 
+  cloneChildrenIfShared();
   auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
   nonConstChildren->push_back(child);
 }
 
-void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild) {
+void ShadowNode::replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex) {
   ensureUnsealed();
+
+  cloneChildrenIfShared();
 
   auto nonConstChildren = std::const_pointer_cast<SharedShadowNodeList>(children_);
-  std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
-}
 
-void ShadowNode::clearSourceNode() {
-  ensureUnsealed();
-  sourceNode_.reset();
+  if (suggestedIndex != -1 && suggestedIndex < nonConstChildren->size()) {
+    if (nonConstChildren->at(suggestedIndex) == oldChild) {
+      (*nonConstChildren)[suggestedIndex] = newChild;
+      return;
+    }
+  }
+
+  std::replace(nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
 }
 
 void ShadowNode::setLocalData(const SharedLocalData &localData) {
@@ -129,42 +135,27 @@ void ShadowNode::setLocalData(const SharedLocalData &localData) {
   localData_ = localData;
 }
 
-void ShadowNode::shallowSourceNode() {
-  ensureUnsealed();
-
-  auto sourceNode = sourceNode_.lock();
-  assert(sourceNode);
-  sourceNode_ = sourceNode->getSourceNode();
-}
-
-#pragma mark - Equality
-
-bool ShadowNode::operator==(const ShadowNode& rhs) const {
-  // Note: Child nodes are not considered as part of instance's value
-  // and/or identity.
-  return
-    tag_ == rhs.tag_ &&
-    rootTag_ == rhs.rootTag_ &&
-    props_ == rhs.props_ &&
-    localData_ == rhs.localData_;
-}
-
-bool ShadowNode::operator!=(const ShadowNode& rhs) const {
-  return !(*this == rhs);
+void ShadowNode::cloneChildrenIfShared() {
+  if (!childrenAreShared_) {
+    return;
+  }
+  childrenAreShared_ = false;
+  children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ShadowNode::getDebugName() const {
   return getComponentName();
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + std::to_string(revision_) + (getSealed() ? "/sealed" : "");
+  return "r" + folly::to<std::string>(revision_) + (getSealed() ? "/sealed" : "");
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
-  SharedDebugStringConvertibleList debugChildren = {};
+  auto debugChildren = SharedDebugStringConvertibleList {};
 
   for (auto child : *children_) {
     auto debugChild = std::dynamic_pointer_cast<const DebugStringConvertible>(child);
@@ -177,26 +168,13 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
-
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("tag", std::to_string(tag_)));
-
-  if (instanceHandle_) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("handle", std::to_string((size_t)instanceHandle_)));
-  }
-
-  SharedShadowNode sourceNode = getSourceNode();
-  if (sourceNode) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
-      "source",
-      sourceNode->getDebugDescription({.maximumDepth = 1, .format = false})
-    ));
-  }
-
-  SharedDebugStringConvertibleList propsList = props_->getDebugProps();
-  std::move(propsList.begin(), propsList.end(), std::back_inserter(list));
-  return list;
+  return
+    props_->getDebugProps() +
+    SharedDebugStringConvertibleList {
+      debugStringConvertibleItem("tag", folly::to<std::string>(tag_))
+    };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

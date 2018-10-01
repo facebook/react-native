@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <atomic>
+#include <atomic>
 
 namespace facebook {
 namespace react {
@@ -40,14 +40,26 @@ namespace react {
  *   3. Call `seal()` at some point from which any modifications
  *      must be prevented.
  */
+
+#ifdef NDEBUG
+
+class Sealable {
+public:
+  inline void seal() const {}
+  inline bool getSealed() const { return true; }
+  inline void ensureUnsealed() const {}
+};
+
+#else
+
 class Sealable {
 public:
   Sealable();
-  Sealable(const Sealable& other);
-  Sealable(Sealable&& other) noexcept;
+  Sealable(const Sealable &other);
+  Sealable(Sealable &&other) noexcept;
   ~Sealable() noexcept;
-  Sealable& operator=(const Sealable& other);
-  Sealable& operator=(Sealable&& other) noexcept;
+  Sealable &operator=(const Sealable &other);
+  Sealable &operator=(Sealable &&other) noexcept;
 
   /*
    * Seals the object. This operation is irreversible;
@@ -69,6 +81,8 @@ public:
 private:
   mutable std::atomic<bool> sealed_ {false};
 };
+
+#endif
 
 } // namespace react
 } // namespace facebook

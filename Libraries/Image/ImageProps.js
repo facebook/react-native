@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,53 +10,81 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
+const DeprecatedImageSourcePropType = require('DeprecatedImageSourcePropType');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const PropTypes = require('prop-types');
-const StyleSheetPropType = require('StyleSheetPropType');
 
-import type {ImageSource} from 'ImageSource';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {LayoutEvent} from 'CoreEventTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {ImageSource} from 'ImageSource';
+import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
+import type {DimensionValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
 
-export type ImageProps = {
-  accessible?: boolean,
-  accessibilityLabel?: ?(string | Array<any> | any),
-  blurRadius?: number,
-  capInsets?: ?EdgeInsetsProp,
+type OnLoadEvent = SyntheticEvent<
+  $ReadOnly<{|
+    // Only on Android
+    uri?: string,
 
-  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
-  onLayout?: ?(event: LayoutEvent) => void,
-  onLoad?: ?() => void,
-  onLoadEnd?: ?() => void,
-  onLoadStart?: ?() => void,
-  resizeMethod?: ?('auto' | 'resize' | 'scale'),
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
-  source?: ?ImageSource,
-  style?: typeof ImageStylePropTypes,
-  testID?: ?string,
+    source: $ReadOnly<{|
+      width: number,
+      height: number,
+      url: string,
+    |}>,
+  |}>,
+>;
 
-  // ios
+type IOSImageProps = $ReadOnly<{|
   defaultSource?: ?ImageSource,
   onPartialLoad?: ?() => void,
   onProgress?: ?(
     event: SyntheticEvent<$ReadOnly<{|loaded: number, total: number|}>>,
   ) => void,
-};
+|}>;
+
+type AndroidImageProps = $ReadOnly<{|
+  loadingIndicatorSource?: ?(number | $ReadOnly<{|uri: string|}>),
+  progressiveRenderingEnabled?: ?boolean,
+  fadeDuration?: ?number,
+|}>;
+
+export type ImageProps = {|
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
+  ...IOSImageProps,
+  ...AndroidImageProps,
+  blurRadius?: ?number,
+  capInsets?: ?EdgeInsetsProp,
+
+  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
+  onLoad?: ?(event: OnLoadEvent) => void,
+  onLoadEnd?: ?() => void,
+  onLoadStart?: ?() => void,
+  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  source?: ?ImageSource,
+  style?: ?ImageStyleProp,
+
+  // Can be set via props or style, for now
+  height?: ?DimensionValue,
+  width?: ?DimensionValue,
+  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+
+  src?: empty,
+  children?: empty,
+|};
 
 module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#style
    */
-  style: StyleSheetPropType(ImageStylePropTypes),
+  style: DeprecatedStyleSheetPropType(DeprecatedImageStylePropTypes),
   /**
    * The image source (either a remote URL or a local file resource).
    *
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
-  source: ImageSourcePropType,
+  source: DeprecatedImageSourcePropType,
   /**
    * A static image to display while loading the image source.
    *
@@ -93,7 +121,7 @@ module.exports = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#capinsets
    */
-  capInsets: EdgeInsetsPropType,
+  capInsets: DeprecatedEdgeInsetsPropType,
   /**
    * See https://facebook.github.io/react-native/docs/image.html#resizemethod
    */

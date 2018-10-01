@@ -1,6 +1,9 @@
 #!/bin/bash
-set -ex
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # Script used to run iOS and tvOS tests.
 # Environment variables are used to configure what test to run.
 # If not arguments are passed to the script, it will only compile
@@ -8,6 +11,8 @@ set -ex
 # If the script is called with a single argument "test", we'll
 # also run the RNTester integration test (needs JS and packager).
 # ./objc-test.sh test
+
+set -ex
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
@@ -56,7 +61,7 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/packager.sh --max-workers=1 || echo "Can't start packager automatically" &
+npm run start --max-workers=1 || echo "Can't start packager automatically" &
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
@@ -79,7 +84,7 @@ xcodebuild \
   -sdk $SDK \
   -destination "$DESTINATION" \
   build test \
-  | xcpretty --report junit --output ~/react-native/reports/junit/objc-xcodebuild-results.xml
+  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml"
 
 else
 

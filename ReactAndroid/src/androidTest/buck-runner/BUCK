@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_binary", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "KEYSTORE_TARGET")
+load("//tools/build_defs/oss:rn_defs.bzl", "KEYSTORE_TARGET", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_binary")
 
 # We are running instrumentation tests in simple mode: app code and instrumentation are in the same APK
 # Currently you need to run these commands to execute tests:

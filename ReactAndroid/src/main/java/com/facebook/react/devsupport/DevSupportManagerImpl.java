@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,6 +32,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -149,6 +151,8 @@ public class DevSupportManagerImpl implements
 
   private InspectorPackagerConnection.BundleStatus mBundleStatus;
 
+  private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
+
   private static class JscProfileTask extends AsyncTask<String, Void, Void> {
     private static final MediaType JSON =
       MediaType.parse("application/json; charset=utf-8");
@@ -195,7 +199,8 @@ public class DevSupportManagerImpl implements
       enableOnCreate,
       null,
       null,
-      minNumShakes);
+      minNumShakes,
+      null);
   }
 
   public DevSupportManagerImpl(
@@ -205,7 +210,8 @@ public class DevSupportManagerImpl implements
       boolean enableOnCreate,
       @Nullable RedBoxHandler redBoxHandler,
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
-      int minNumShakes) {
+      int minNumShakes,
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
     mReactInstanceManagerHelper = reactInstanceManagerHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -230,6 +236,8 @@ public class DevSupportManagerImpl implements
         showDevOptionsDialog();
       }
     }, minNumShakes);
+
+    mCustomPackagerCommandHandlers = customPackagerCommandHandlers;
 
     // Prepare reload APP broadcast receiver (will be registered/unregistered from #reload)
     mReloadAppBroadcastReceiver = new BroadcastReceiver() {
@@ -841,26 +849,8 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void onPokeSamplingProfilerCommand(final Responder responder) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mCurrentContext == null) {
-          responder.error("JSCContext is missing, unable to profile");
-          return;
-        }
-        try {
-          JavaScriptContextHolder jsContext = mCurrentContext.getJavaScriptContextHolder();
-          synchronized (jsContext) {
-            Class clazz = Class.forName("com.facebook.react.packagerconnection.SamplingProfilerPackagerMethod");
-            RequestHandler handler = (RequestHandler)clazz.getConstructor(long.class).newInstance(jsContext.get());
-            handler.onRequest(null, responder);
-          }
-        } catch (Exception e) {
-          // Module not present
-        }
-      }
-    });
+  public @Nullable Map<String, RequestHandler> customCommandHandlers() {
+    return mCustomPackagerCommandHandlers;
   }
 
   private void handleCaptureHeap(final Responder responder) {
@@ -973,7 +963,7 @@ public class DevSupportManagerImpl implements
     mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
-          public void onSuccess() {
+          public void onSuccess(final @Nullable NativeDeltaClient nativeDeltaClient) {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
             synchronized (DevSupportManagerImpl.this) {
@@ -981,14 +971,14 @@ public class DevSupportManagerImpl implements
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
-              mBundleDownloadListener.onSuccess();
+              mBundleDownloadListener.onSuccess(nativeDeltaClient);
             }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
                   @Override
                   public void run() {
                     ReactMarker.logMarker(ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer(nativeDeltaClient);
                   }
                 });
           }
@@ -1072,7 +1062,7 @@ public class DevSupportManagerImpl implements
 
       // show the dev loading if it should be
       if (mDevLoadingViewVisible) {
-        mDevLoadingViewController.show();
+        mDevLoadingViewController.showMessage("Reloading...");
       }
 
       mDevServerHelper.openPackagerConnection(this.getClass().getSimpleName(), this);

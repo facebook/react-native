@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,9 @@
 #import "UIView+ComponentViewProtocol.h"
 
 #import <React/RCTAssert.h>
+#import "RCTConversions.h"
+
+using namespace facebook::react;
 
 @implementation UIView (ComponentViewProtocol)
 
@@ -24,35 +27,40 @@
   [childComponentView removeFromSuperview];
 }
 
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps
+- (void)updateProps:(SharedProps)props
+           oldProps:(SharedProps)oldProps
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLocalData:(facebook::react::SharedLocalData)localData
-           oldLocalData:(facebook::react::SharedLocalData)oldLocalData
+- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics
+- (void)updateLocalData:(SharedLocalData)localData
+           oldLocalData:(SharedLocalData)oldLocalData
+{
+  // Default implementation does nothing.
+}
+
+- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
-    self.frame = {
-      .origin = {
-        .x = layoutMetrics.frame.origin.x,
-        .y = layoutMetrics.frame.origin.y
-      },
-      .size = {
-        .width = layoutMetrics.frame.size.width,
-        .height = layoutMetrics.frame.size.height
-      }
-    };
+    self.frame = RCTCGRectFromRect(layoutMetrics.frame);
   }
 
-  // TODO: Apply another layout metrics here.
+  if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {
+    self.semanticContentAttribute =
+      layoutMetrics.layoutDirection == LayoutDirection::RightToLeft ?
+        UISemanticContentAttributeForceRightToLeft :
+        UISemanticContentAttributeForceLeftToRight;
+  }
+
+  if (layoutMetrics.displayType != oldLayoutMetrics.displayType) {
+    self.hidden = layoutMetrics.displayType == DisplayType::None;
+  }
 }
 
 - (void)prepareForRecycle

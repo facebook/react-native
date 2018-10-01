@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,12 +28,15 @@ class Props:
   public virtual DebugStringConvertible {
 
 public:
-  virtual void apply(const RawProps &rawProps);
+  Props() = default;
+  Props(const Props &sourceProps, const RawProps &rawProps);
+  virtual ~Props() = default;
 
-  const std::string &getNativeId() const;
+  const std::string nativeId;
 
-private:
-  std::string nativeId_ {""};
+#ifdef ANDROID
+  const RawProps rawProps;
+#endif
 };
 
 } // namespace react

@@ -1,20 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
+jest.mock('path');
 jest.mock('fs');
 
 let plistPath = null;
 jest.mock('../../ios/getPlistPath', () => () => plistPath);
 
-const { readFileSync } = require.requireActual('fs');
+const {readFileSync} = require.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');
@@ -33,9 +35,7 @@ const project = xcode.project('/Basic/project.pbxproj');
 
 const plist = {
   CFBundleDevelopmentRegion: 'en',
-  UISupportedInterfaceOrientations: [
-    'UIInterfaceOrientationPortrait'
-  ]
+  UISupportedInterfaceOrientations: ['UIInterfaceOrientationPortrait'],
 };
 
 describe('ios::writePlist', () => {

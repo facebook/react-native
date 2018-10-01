@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
@@ -34,6 +34,9 @@ UIManager.takeSnapshot = function() {
     'UIManager.takeSnapshot should not be called directly. ' +
       'Use ReactNative.takeSnapshot instead.',
   );
+};
+UIManager.getViewManagerConfig = function(viewManagerName: string) {
+  return UIManager[viewManagerName];
 };
 
 /**
@@ -81,14 +84,21 @@ if (Platform.OS === 'ios') {
   // However, the way things are set up, the list of view managers is not known at compile time.
   // As Prepack runs at compile it, it cannot process this loop.
   // So we wrap it in a special __residual call, which basically tells Prepack to ignore it.
-  let residual = global.__residual ? global.__residual : (_, f, ...args) => f.apply(undefined, args);
-  residual("void", (UIManager, defineLazyObjectProperty) => {
-    UIManager.ViewManagerNames.forEach(viewManagerName => {
-      defineLazyObjectProperty(UIManager, viewManagerName, {
-        get: () => UIManager.getConstantsForViewManager(viewManagerName),
+  let residual = global.__residual
+    ? global.__residual
+    : (_, f, ...args) => f.apply(undefined, args);
+  residual(
+    'void',
+    (UIManager, defineLazyObjectProperty) => {
+      UIManager.ViewManagerNames.forEach(viewManagerName => {
+        defineLazyObjectProperty(UIManager, viewManagerName, {
+          get: () => UIManager.getConstantsForViewManager(viewManagerName),
+        });
       });
-    });
-  }, UIManager, defineLazyObjectProperty);
+    },
+    UIManager,
+    defineLazyObjectProperty,
+  );
 
   // As Prepack now no longer knows which properties exactly the UIManager has,
   // we also tell Prepack that it has only partial knowledge of the UIManager,

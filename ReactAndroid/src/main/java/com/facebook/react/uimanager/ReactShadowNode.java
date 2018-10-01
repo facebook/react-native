@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -67,17 +67,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * subclass to enforce this requirement.
    */
   boolean isYogaLeafNode();
-
-  /**
-   * @return a mutable copy of the {@link ReactShadowNode}
-   */
-  T mutableCopy();
-
-  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
-
-  T mutableCopyWithNewChildren();
-
-  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
 
   String getViewClass();
 
@@ -366,11 +355,5 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   List<ReactShadowNode> getChildrenList();
 
-  /**
-   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
-   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
-   */
-  @Nullable ReactShadowNode getOriginalReactShadowNode();
-
-  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
+  void updateScreenLayout(ReactShadowNode prevNode);
 }

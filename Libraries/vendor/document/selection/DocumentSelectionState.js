@@ -1,15 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @typechecks
  */
 
 'use strict';
 
-var mixInEventEmitter = require('mixInEventEmitter');
+const mixInEventEmitter = require('mixInEventEmitter');
 
 /**
  * DocumentSelectionState is responsible for maintaining selection information
@@ -55,7 +56,7 @@ class DocumentSelectionState {
   constrainLength(maxLength) {
     this.update(
       Math.min(this._anchorOffset, maxLength),
-      Math.min(this._focusOffset, maxLength)
+      Math.min(this._focusOffset, maxLength),
     );
   }
 
@@ -112,18 +113,18 @@ class DocumentSelectionState {
    * @return {?number}
    */
   getStartOffset() {
-    return (
-      this._hasFocus ? Math.min(this._anchorOffset, this._focusOffset) : null
-    );
+    return this._hasFocus
+      ? Math.min(this._anchorOffset, this._focusOffset)
+      : null;
   }
 
   /**
    * @return {?number}
    */
   getEndOffset() {
-    return (
-      this._hasFocus ? Math.max(this._anchorOffset, this._focusOffset) : null
-    );
+    return this._hasFocus
+      ? Math.max(this._anchorOffset, this._focusOffset)
+      : null;
   }
 
   /**
@@ -134,15 +135,16 @@ class DocumentSelectionState {
   overlaps(start, end) {
     return (
       this.hasFocus() &&
-      this.getStartOffset() <= end && start <= this.getEndOffset()
+      this.getStartOffset() <= end &&
+      start <= this.getEndOffset()
     );
   }
 }
 
 mixInEventEmitter(DocumentSelectionState, {
-  'blur': true,
-  'focus': true,
-  'update': true
+  blur: true,
+  focus: true,
+  update: true,
 });
 
 module.exports = DocumentSelectionState;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,22 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <vector>
 
 namespace facebook {
 namespace react {
 
+#ifndef NDEBUG
+#define RN_DEBUG_STRING_CONVERTIBLE 1
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 class DebugStringConvertible;
 
 using SharedDebugStringConvertible = std::shared_ptr<const DebugStringConvertible>;
-using SharedDebugStringConvertibleList = std::vector<const SharedDebugStringConvertible>;
+using SharedDebugStringConvertibleList = std::vector<SharedDebugStringConvertible>;
 
 struct DebugStringConvertibleOptions {
   bool format {true};
@@ -27,7 +34,6 @@ struct DebugStringConvertibleOptions {
 // and implements basic recursive debug string assembly algorithm.
 // Use this as a base class for providing a debugging textual representation
 // of your class.
-// TODO (#26770211): Clear up the naming.
 class DebugStringConvertible {
 
 public:
@@ -61,6 +67,12 @@ public:
   virtual std::string getDebugPropsDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
   virtual std::string getDebugChildrenDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
 };
+
+#else
+
+class DebugStringConvertible {};
+
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -1,40 +1,30 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {
-  Image,
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const React = require('react');
+const createReactClass = require('create-react-class');
+const ReactNative = require('react-native');
+const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var deepDiffer = require('deepDiffer');
+import type {ViewStyleProp} from 'StyleSheet';
+
+const deepDiffer = require('deepDiffer');
 
 function debug(...args) {
   // console.log.apply(null, arguments);
 }
 
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
-type Style = {
-  margin?: number,
-  padding?: number,
-  borderColor?: string,
-  borderWidth?: number,
-  backgroundColor?: string,
-  width?: number,
-};
 
 type State = {
   didAnimation: boolean,
@@ -42,11 +32,11 @@ type State = {
   imageLayout?: Layout,
   textLayout?: Layout,
   viewLayout?: Layout,
-  viewStyle?: Style,
-  containerStyle?: Style,
+  viewStyle?: ViewStyleProp,
+  containerStyle?: ViewStyleProp,
 };
 
-var LayoutEventsTest = createReactClass({
+const LayoutEventsTest = createReactClass({
   displayName: 'LayoutEventsTest',
   getInitialState(): State {
     return {
@@ -55,27 +45,23 @@ var LayoutEventsTest = createReactClass({
   },
   animateViewLayout: function() {
     debug('animateViewLayout invoked');
-    LayoutAnimation.configureNext(
-      LayoutAnimation.Presets.spring,
-      () => {
-        debug('animateViewLayout done');
-        this.checkLayout(this.addWrapText);
-      }
-    );
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
+      debug('animateViewLayout done');
+      this.checkLayout(this.addWrapText);
+    });
     this.setState({viewStyle: {margin: 60}});
   },
   addWrapText: function() {
     debug('addWrapText invoked');
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
-      () => this.checkLayout(this.changeContainer)
+      () => this.checkLayout(this.changeContainer),
     );
   },
   changeContainer: function() {
     debug('changeContainer invoked');
-    this.setState(
-      {containerStyle: {width: 280}},
-      () => this.checkLayout(TestModule.markTestCompleted)
+    this.setState({containerStyle: {width: 280}}, () =>
+      this.checkLayout(TestModule.markTestCompleted),
     );
   },
   checkLayout: function(next?: ?Function) {
@@ -101,10 +87,11 @@ var LayoutEventsTest = createReactClass({
   },
   compare: function(node: string, measured: any, onLayout: any): void {
     if (deepDiffer(measured, onLayout)) {
-      var data = {measured, onLayout};
+      const data = {measured, onLayout};
       throw new Error(
-        node + ' onLayout mismatch with measure ' +
-          JSON.stringify(data, null, '  ')
+        node +
+          ' onLayout mismatch with measure ' +
+          JSON.stringify(data, null, '  '),
       );
     }
   },
@@ -121,9 +108,9 @@ var LayoutEventsTest = createReactClass({
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
   },
   render: function() {
-    var viewStyle = [styles.view, this.state.viewStyle];
-    var textLayout = this.state.textLayout || {width: '?', height: '?'};
-    var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    const viewStyle = [styles.view, this.state.viewStyle];
+    const textLayout = this.state.textLayout || {width: '?', height: '?'};
+    const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     debug('viewLayout', this.state.viewLayout);
     return (
       <View style={[styles.container, this.state.containerStyle]}>
@@ -145,10 +132,10 @@ var LayoutEventsTest = createReactClass({
         </View>
       </View>
     );
-  }
+  },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     margin: 40,
   },

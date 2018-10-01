@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 #import <fabric/core/LocalData.h>
 #import <fabric/core/Props.h>
 #import <fabric/core/LayoutMetrics.h>
+#import <fabric/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,6 +53,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
 
+/*
+ * Called for updating component's event handlers set.
+ * Receiver must cache `eventEmitter` object inside and use it for emitting
+ * events when needed.
+ */
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 /*
  * Called for updating component's layout metrics.
