@@ -78,7 +78,7 @@ public class AsyncStorageModuleTest {
 
   @After
   public void cleanUp() {
-    RuntimeEnvironment.application.deleteDatabase(ReactDatabaseSupplier.DATABASE_NAME);
+    // RuntimeEnvironment.application.deleteDatabase(ReactDatabaseSupplier.DATABASE_NAME);
     ReactDatabaseSupplier.deleteInstance();
   }
 
