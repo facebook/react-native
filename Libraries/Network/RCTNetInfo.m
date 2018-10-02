@@ -105,6 +105,14 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
+- (void)dealloc
+{
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+  }
+}
+
 - (SCNetworkReachabilityRef)getReachabilityRef
 {
   SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
