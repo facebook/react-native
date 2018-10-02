@@ -122,9 +122,20 @@ afterEvaluate {
             group = "react"
             description = "copy bundled JS into ${targetName}."
 
-            from jsBundleDir
-            into file(config."jsBundleDir${targetName}" ?:
-                "$buildDir/intermediates/assets/${targetPath}")
+            if (config."jsBundleDir${targetName}") {
+                from jsBundleDir
+                into file(config."jsBundleDir${targetName}")
+            } else {
+                into ("$buildDir/intermediates")
+                into ("assets/${targetPath}") {
+                    from jsBundleDir
+                }
+
+                // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                into ("merged_assets/${targetPath}/merge${targetName}Assets/out") {
+                    from jsBundleDir
+                }
+            }
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssets)
