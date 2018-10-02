@@ -20,6 +20,7 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -90,6 +91,7 @@ public class EventDispatcher implements LifecycleEventListener {
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
   private final ArrayList<EventDispatcherListener> mListeners = new ArrayList<>();
+  private final List<BatchEventDispatchedListener> mPostEventDispatchListeners = new ArrayList<>();
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback =
     new ScheduleDispatchFrameCallback();
   private final AtomicInteger mHasDispatchScheduledCount = new AtomicInteger();
@@ -147,6 +149,14 @@ public class EventDispatcher implements LifecycleEventListener {
    */
   public void removeListener(EventDispatcherListener listener) {
     mListeners.remove(listener);
+  }
+
+  public void addBatchEventDispatchedListener(BatchEventDispatchedListener listener) {
+    mPostEventDispatchListeners.add(listener);
+  }
+
+  public void removeBatchEventDispatchedListener(BatchEventDispatchedListener listener) {
+    mPostEventDispatchListeners.remove(listener);
   }
 
   @Override
@@ -354,6 +364,9 @@ public class EventDispatcher implements LifecycleEventListener {
                 event.getUniqueID());
             event.dispatch(mReactEventEmitter);
             event.dispose();
+          }
+          for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
+            listener.onBatchEventDispatched();
           }
           clearEventsToDispatch();
           mEventCookieToLastEventIdx.clear();
