@@ -233,9 +233,9 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
   };
 
   const CGSize size = makeStretchable ? (CGSize){
-    // 1pt for the middle stretchable area along each axis
-    edgeInsets.left + 1 + edgeInsets.right,
-    edgeInsets.top + 1 + edgeInsets.bottom
+    // 2pt for the middle stretchable area along each axis
+    edgeInsets.left + 2 + edgeInsets.right,
+    edgeInsets.top + 2 + edgeInsets.bottom
   } : viewSize;
 
   CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge);
@@ -393,7 +393,7 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
   UIGraphicsEndImageContext();
 
   if (makeStretchable) {
-    image = [image resizableImageWithCapInsets:edgeInsets];
+    image = [image resizableImageWithCapInsets:edgeInsets resizingMode: UIImageResizingModeStretch];
   }
 
   return image;
