@@ -16,13 +16,15 @@ namespace react {
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Capitalizes the first letter of the event type and adds "top" prefix
- * (e.g. "layout" becames "topLayout").
+ * Capitalizes the first letter of the event type and adds "top" prefix if
+ * necessary (e.g. "layout" becames "topLayout").
  */
 static std::string normalizeEventType(const std::string &type) {
   auto prefixedType = type;
-  prefixedType[0] = toupper(prefixedType[0]);
-  prefixedType.insert(0, "top");
+  if (type.find("top", 0) != 0) {
+    prefixedType.insert(0, "top");
+    prefixedType[3] = toupper(prefixedType[3]);
+  }
   return prefixedType;
 }
 
