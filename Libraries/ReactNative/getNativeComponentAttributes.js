@@ -96,7 +96,7 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-  if (UIManager.ViewManagerNames) {
+  if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {
