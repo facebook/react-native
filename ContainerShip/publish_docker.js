@@ -12,8 +12,8 @@ docker build -t gengjiawen/react-native:${finaltag} -f Dockerfile.android-base .
     const cmd = i.trim();
     if (cmd) {
       console.log(cmd);
-      // const output = execSync(cmd)
-      // console.log(output.toString());
+      const output = execSync(cmd)
+      console.log(output.toString());
     }
   })
 }
