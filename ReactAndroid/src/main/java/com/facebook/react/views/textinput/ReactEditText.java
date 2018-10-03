@@ -83,6 +83,7 @@ public class ReactEditText extends EditText {
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
   private float mLetterSpacingPt = 0;
+  private boolean mHideKeyboardOnSubmit = true;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -156,7 +157,7 @@ public class ReactEditText extends EditText {
   // since we only allow JS to change focus, which in turn causes TextView to crash.
   @Override
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_ENTER && !isMultiline()) {
+    if (keyCode == KeyEvent.KEYCODE_ENTER && !isMultiline() && getHideKeyboardOnSubmit()) {
       hideSoftKeyboard();
       return true;
     }
@@ -655,6 +656,14 @@ public class ReactEditText extends EditText {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       setLetterSpacing(PixelUtil.toPixelFromSP(mLetterSpacingPt) / getTextSize());
     }
+  }
+
+  public void setHideKeyboardOnSubmit(Boolean hideKeyboardOnSubmit) {
+    mHideKeyboardOnSubmit = hideKeyboardOnSubmit;
+  }
+
+  public boolean getHideKeyboardOnSubmit() {
+    return mHideKeyboardOnSubmit;
   }
 
   /**

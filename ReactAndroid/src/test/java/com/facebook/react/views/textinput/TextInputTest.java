@@ -12,7 +12,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-import android.widget.EditText;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -94,7 +93,7 @@ public class TextInputTest {
         ReactTextInputManager.REACT_CLASS,
         rootTag,
         JavaOnlyMap.of(
-            ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
+            ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr, "hideKeyboardOnSubmit", false));
 
     uiManager.manageChildren(
         rootTag,
@@ -107,10 +106,11 @@ public class TextInputTest {
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
 
-    EditText editText = (EditText) rootView.getChildAt(0);
+    ReactEditText editText = (ReactEditText) rootView.getChildAt(0);
     assertThat(editText.getHint()).isEqualTo(hintStr);
     assertThat(editText.getTextSize()).isEqualTo((float) Math.ceil(13.37));
     assertThat(editText.getHeight()).isEqualTo(20);
+    assertThat(editText.getHideKeyboardOnSubmit()).isEqualTo(false);
   }
 
   @Test
@@ -128,7 +128,7 @@ public class TextInputTest {
         ReactTextInputManager.REACT_CLASS,
         rootTag,
         JavaOnlyMap.of(
-            ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
+            ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr, "hideKeyboardOnSubmit", true));
 
     uiManager.manageChildren(
         rootTag,
@@ -140,25 +140,27 @@ public class TextInputTest {
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
 
-    EditText editText = (EditText) rootView.getChildAt(0);
+    ReactEditText editText = (ReactEditText) rootView.getChildAt(0);
     assertThat(editText.getHint()).isEqualTo(hintStr);
     assertThat(editText.getTextSize()).isEqualTo((float) Math.ceil(13.37));
     assertThat(editText.getHeight()).isEqualTo(20);
+    assertThat(editText.getHideKeyboardOnSubmit()).isEqualTo(true);
 
     final String hintStr2 = "such hint";
     uiManager.updateView(
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
         JavaOnlyMap.of(
-            ViewProps.FONT_SIZE, 26.74, ViewProps.HEIGHT, 40.0, "placeholder", hintStr2));
+            ViewProps.FONT_SIZE, 26.74, ViewProps.HEIGHT, 40.0, "placeholder", hintStr2, "hideKeyboardOnSubmit", false));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
 
-    EditText updatedEditText = (EditText) rootView.getChildAt(0);
+    ReactEditText updatedEditText = (ReactEditText) rootView.getChildAt(0);
     assertThat(updatedEditText.getHint()).isEqualTo(hintStr2);
     assertThat(updatedEditText.getTextSize()).isEqualTo((float) Math.ceil(26.74f));
     assertThat(updatedEditText.getHeight()).isEqualTo(40);
+    assertThat(updatedEditText.getHideKeyboardOnSubmit()).isEqualTo(false);
   }
 
   private void executePendingChoreographerCallbacks() {

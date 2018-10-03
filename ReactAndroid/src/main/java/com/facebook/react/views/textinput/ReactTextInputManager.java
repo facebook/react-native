@@ -669,6 +669,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "hideKeyboardOnSubmit", defaultBoolean = true)
+  public void setHideKeyboardOnSubmit(ReactEditText view, Boolean hideKeyboardOnSubmit) {
+    view.setHideKeyboardOnSubmit(hideKeyboardOnSubmit);
+  }
+
   /**
    * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
    * TODO: Factor into a common place they can both use
