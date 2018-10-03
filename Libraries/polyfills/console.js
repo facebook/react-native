@@ -520,7 +520,6 @@ function consoleGroupPolyfill(label) {
   groupStack.push(GROUP_PAD);
 }
 
-
 function consoleGroupCollapsedPolyfill(label) {
   global.nativeLoggingHook(groupFormat(GROUP_CLOSE, label), LOG_LEVELS.info);
   groupStack.push(GROUP_PAD);
