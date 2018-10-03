@@ -59,6 +59,8 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
+  onBlur?: ?Function,
+  onFocus?: ?Function,
   onLayout?: ?Function,
   onLongPress?: ?Function,
   onPress?: ?Function,
