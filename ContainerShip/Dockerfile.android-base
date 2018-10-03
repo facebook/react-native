@@ -74,6 +74,7 @@ RUN mkdir /opt/ndk && \
 
 # Add android SDK tools
 RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
+    "platform-tools" \
     "platforms;android-$ANDROID_BUILD_VERSION" \
     "build-tools;$ANDROID_TOOLS_VERSION" \
     "add-ons;addon-google_apis-google-23" \
