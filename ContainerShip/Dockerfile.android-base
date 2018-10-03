@@ -73,6 +73,7 @@ RUN mkdir /opt/ndk && \
   rm ndk.zip
 
 # Add android SDK tools
+RUN yes | sdkmanager --licenses && sdkmanager --update
 RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
     "platform-tools" \
     "platforms;android-$ANDROID_BUILD_VERSION" \
