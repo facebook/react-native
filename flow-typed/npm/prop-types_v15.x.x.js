@@ -9,7 +9,8 @@
  * @format
  */
 
-// TODO (bvaughn) Remove this file once flowtype/flow-typed/pull/773 is merged
+// flow-typed signature: d9a983bb1ac458a256c31c139047bdbb
+// flow-typed version: 927687984d/prop-types_v15.x.x/flow_>=v0.41.x
 
 type $npm$propTypes$ReactPropsCheckType = (
   props: any,
@@ -25,6 +26,7 @@ declare module 'prop-types' {
   declare var number: React$PropType$Primitive<number>;
   declare var object: React$PropType$Primitive<Object>;
   declare var string: React$PropType$Primitive<string>;
+  declare var symbol: React$PropType$Primitive<Symbol>;
   declare var any: React$PropType$Primitive<any>;
   declare var arrayOf: React$PropType$ArrayOf;
   declare var element: React$PropType$Primitive<any>; /* TODO */
