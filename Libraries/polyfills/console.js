@@ -520,6 +520,12 @@ function consoleGroupPolyfill(label) {
   groupStack.push(GROUP_PAD);
 }
 
+
+function consoleGroupCollapsedPolyfill(label) {
+  global.nativeLoggingHook(groupFormat(GROUP_CLOSE, label), LOG_LEVELS.info);
+  groupStack.push(GROUP_PAD);
+}
+
 function consoleGroupEndPolyfill() {
   groupStack.pop();
   global.nativeLoggingHook(groupFormat(GROUP_CLOSE), LOG_LEVELS.info);
@@ -537,6 +543,7 @@ if (global.nativeLoggingHook) {
     table: consoleTablePolyfill,
     group: consoleGroupPolyfill,
     groupEnd: consoleGroupEndPolyfill,
+    groupCollapsed: consoleGroupCollapsedPolyfill,
   };
 
   // If available, also call the original `console` method since that is
