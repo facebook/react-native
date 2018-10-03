@@ -59,7 +59,6 @@ public class AnimationsDebugModule extends ReactContextBaseJavaModule {
     }
 
     mFrameCallback = new FpsDebugFrameCallback(
-                          ChoreographerCompat.getInstance(),
                           getReactApplicationContext());
     mFrameCallback.startAndRecordFpsAtEachFrame();
   }
