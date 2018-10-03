@@ -340,7 +340,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-28-node8-alpha
+  - image: reactnativecommunity/react-native-android
   resource_class: "large"
   environment:
     - TERM: "dumb"
