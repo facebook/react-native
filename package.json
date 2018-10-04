@@ -130,6 +130,7 @@
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
     "prettier": "prettier \"./**/*.js\" --write",
+    "postinstall": "./scripts/ios-install-third-party.sh",
     "docker-setup-android": "docker pull reactnativeci/android-base:latest",
     "docker-build-android-base": "docker build -t reactnativeci/android-base -f ContainerShip/Dockerfile.android-base .",
     "docker-build-android": "docker build -t reactnativeci/android -f ContainerShip/Dockerfile.android .",
