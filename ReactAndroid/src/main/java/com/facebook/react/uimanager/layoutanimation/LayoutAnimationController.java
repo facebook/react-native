@@ -46,19 +46,19 @@ public class LayoutAnimationController {
 
     mShouldAnimateLayout = false;
     int globalDuration = config.hasKey("duration") ? config.getInt("duration") : 0;
-    if (config.hasKey(LayoutAnimationType.CREATE.toString())) {
+    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.CREATE))) {
       mLayoutCreateAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.CREATE.toString()), globalDuration);
+          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.CREATE)), globalDuration);
       mShouldAnimateLayout = true;
     }
-    if (config.hasKey(LayoutAnimationType.UPDATE.toString())) {
+    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.UPDATE))) {
       mLayoutUpdateAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.UPDATE.toString()), globalDuration);
+          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.UPDATE)), globalDuration);
       mShouldAnimateLayout = true;
     }
-    if (config.hasKey(LayoutAnimationType.DELETE.toString())) {
+    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.DELETE))) {
       mLayoutDeleteAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.DELETE.toString()), globalDuration);
+          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.DELETE)), globalDuration);
       mShouldAnimateLayout = true;
     }
   }

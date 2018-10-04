@@ -117,7 +117,7 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public String getEventName() {
-    return Assertions.assertNotNull(mTouchEventType).getJSEventName();
+    return TouchEventType.getJSEventName(Assertions.assertNotNull(mTouchEventType));
   }
 
   @Override

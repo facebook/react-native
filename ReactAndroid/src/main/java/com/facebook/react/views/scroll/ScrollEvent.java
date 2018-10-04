@@ -100,7 +100,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
 
   @Override
   public String getEventName() {
-    return Assertions.assertNotNull(mScrollEventType).getJSEventName();
+    return ScrollEventType.getJSEventName(Assertions.assertNotNull(mScrollEventType));
   }
 
   @Override

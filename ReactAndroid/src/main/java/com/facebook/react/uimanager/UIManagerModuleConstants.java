@@ -35,7 +35,7 @@ import java.util.Map;
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onSelect", "captured", "onSelectCapture")))
         .put(
-            TouchEventType.START.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.START),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -44,7 +44,7 @@ import java.util.Map;
                     "captured",
                     "onTouchStartCapture")))
         .put(
-            TouchEventType.MOVE.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.MOVE),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -53,7 +53,7 @@ import java.util.Map;
                     "captured",
                     "onTouchMoveCapture")))
         .put(
-            TouchEventType.END.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.END),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -62,7 +62,7 @@ import java.util.Map;
                     "captured",
                     "onTouchEndCapture")))
         .put(
-            TouchEventType.CANCEL.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.CANCEL),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(

@@ -11,19 +11,26 @@ package com.facebook.react.views.scroll;
  * Scroll event types that JS module RCTEventEmitter can understand
  */
 public enum ScrollEventType {
-  BEGIN_DRAG("topScrollBeginDrag"),
-  END_DRAG("topScrollEndDrag"),
-  SCROLL("topScroll"),
-  MOMENTUM_BEGIN("topMomentumScrollBegin"),
-  MOMENTUM_END("topMomentumScrollEnd");
+  BEGIN_DRAG,
+  END_DRAG,
+  SCROLL,
+  MOMENTUM_BEGIN,
+  MOMENTUM_END;
 
-  private final String mJSEventName;
-
-  ScrollEventType(String jsEventName) {
-    mJSEventName = jsEventName;
-  }
-
-  public String getJSEventName() {
-    return mJSEventName;
+  public static String getJSEventName(ScrollEventType type) {
+    switch (type) {
+      case BEGIN_DRAG:
+        return "topScrollBeginDrag";
+      case END_DRAG:
+        return "topScrollEndDrag";
+      case SCROLL:
+        return "topScroll";
+      case MOMENTUM_BEGIN:
+        return "topMomentumScrollBegin";
+      case MOMENTUM_END:
+        return "topMomentumScrollEnd";
+      default:
+        throw new IllegalArgumentException("Unsupported ScrollEventType: " + type);
+    }
   }
 }

@@ -9,29 +9,26 @@ package com.facebook.react.uimanager.layoutanimation;
  * Enum representing the different interpolators that can be used in layout animation configuration.
  */
 /* package */ enum InterpolatorType {
-  LINEAR("linear"),
-  EASE_IN("easeIn"),
-  EASE_OUT("easeOut"),
-  EASE_IN_EASE_OUT("easeInEaseOut"),
-  SPRING("spring");
-
-  private final String mName;
-
-  private InterpolatorType(String name) {
-    mName = name;
-  }
+  LINEAR,
+  EASE_IN,
+  EASE_OUT,
+  EASE_IN_EASE_OUT,
+  SPRING;
 
   public static InterpolatorType fromString(String name) {
-    for (InterpolatorType type : InterpolatorType.values()) {
-      if (type.toString().equalsIgnoreCase(name)) {
-        return type;
-      }
+    switch (name.toLowerCase()) {
+      case "linear":
+        return LINEAR;
+      case "easein":
+        return EASE_IN;
+      case "easeout":
+        return EASE_OUT;
+      case "easeineaseout":
+        return EASE_IN_EASE_OUT;
+      case "spring":
+        return SPRING;
+      default:
+        throw new IllegalArgumentException("Unsupported interpolation type : " + name);
     }
-    throw new IllegalArgumentException("Unsupported interpolation type : " + name);
-  }
-
-  @Override
-  public String toString() {
-    return mName;
   }
 }
