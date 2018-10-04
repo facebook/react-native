@@ -29,6 +29,8 @@ module.exports = (function(global, undefined) {
   // In case this module has not already been evaluated, import it now.
   require('./_wrapObjectFreezeAndFriends');
 
+  const hasOwn = Object.prototype.hasOwnProperty;
+
   /**
    * == ES6 Map Collection ==
    *
@@ -450,7 +452,7 @@ module.exports = (function(global, undefined) {
         // If the `SECRET_SIZE_PROP` property is already defined then we're not
         // in the first call to `initMap` (e.g. coming from `map.clear()`) so
         // all we need to do is reset the size without defining the properties.
-        if (map.hasOwnProperty(SECRET_SIZE_PROP)) {
+        if (hasOwn.call(map, SECRET_SIZE_PROP)) {
           map[SECRET_SIZE_PROP] = 0;
         } else {
           Object.defineProperty(map, SECRET_SIZE_PROP, {
@@ -536,17 +538,15 @@ module.exports = (function(global, undefined) {
      * @return {number}
      */
     return function getHash(o) {
-      // eslint-disable-line no-shadow
-      if (o[hashProperty]) {
+      if (hasOwn.call(o, hashProperty)) {
         return o[hashProperty];
-      } else if (
-        !isES5 &&
-        o.propertyIsEnumerable &&
-        o.propertyIsEnumerable[hashProperty]
-      ) {
-        return o.propertyIsEnumerable[hashProperty];
-      } else if (!isES5 && o[hashProperty]) {
-        return o[hashProperty];
+      }
+
+      if (!isES5) {
+        if (hasOwn.call(o, "propertyIsEnumerable") &&
+            hasOwn.call(o.propertyIsEnumerable, hashProperty)) {
+          return o.propertyIsEnumerable[hashProperty];
+        }
       }
 
       if (isExtensible(o)) {
