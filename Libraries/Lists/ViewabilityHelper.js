@@ -44,6 +44,11 @@ export type ViewabilityConfig = {|
   viewAreaCoveragePercentThreshold?: number,
 
   /**
+   *  Percent of viewport to extend. A value of 20 will extend viewport by 20% at the top and 20% at the bottom.
+   */
+  viewAreaExtensionPercent?: number,
+
+  /**
    * Similar to `viewAreaPercentThreshold`, but considers the percent of the item that is visible,
    * rather than the fraction of the viewable area it covers.
    */
@@ -100,6 +105,7 @@ class ViewabilityHelper {
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
+    viewAreaExtensionPercent?: number,
   ): Array<number> {
     const {
       itemVisiblePercentThreshold,
@@ -125,6 +131,12 @@ class ViewabilityHelper {
       last < itemCount,
       'Invalid render range ' + JSON.stringify({renderRange, itemCount}),
     );
+
+    const viewportBottom = viewAreaExtensionPercent
+      ? viewportHeight * (1 + 0.01 * viewAreaExtensionPercent)
+      : viewportHeight;
+    const viewportTop = viewportHeight - viewportBottom;
+
     for (let idx = first; idx <= last; idx++) {
       const metrics = getFrameMetrics(idx);
       if (!metrics) {
@@ -132,7 +144,7 @@ class ViewabilityHelper {
       }
       const top = metrics.offset - scrollOffset;
       const bottom = top + metrics.length;
-      if (top < viewportHeight && bottom > 0) {
+      if (top < viewportBottom && bottom > viewportTop) {
         firstVisible = idx;
         if (
           _isViewable(
@@ -140,7 +152,8 @@ class ViewabilityHelper {
             viewablePercentThreshold,
             top,
             bottom,
-            viewportHeight,
+            viewportTop,
+            viewportBottom,
             metrics.length,
           )
         ) {
@@ -184,6 +197,7 @@ class ViewabilityHelper {
         viewportHeight,
         getFrameMetrics,
         renderRange,
+        this._config.viewAreaExtensionPercent,
       );
     }
     if (
@@ -272,15 +286,19 @@ function _isViewable(
   viewablePercentThreshold: number,
   top: number,
   bottom: number,
-  viewportHeight: number,
+  viewportTop: number,
+  viewportBottom: number,
   itemLength: number,
 ): boolean {
-  if (_isEntirelyVisible(top, bottom, viewportHeight)) {
+  if (_isEntirelyVisible(top, bottom, viewportTop, viewportBottom)) {
     return true;
   } else {
-    const pixels = _getPixelsVisible(top, bottom, viewportHeight);
+    const pixels = _getPixelsVisible(top, bottom, viewportTop, viewportBottom);
     const percent =
-      100 * (viewAreaMode ? pixels / viewportHeight : pixels / itemLength);
+      100 *
+      (viewAreaMode
+        ? pixels / (viewportBottom + Math.abs(viewportTop))
+        : pixels / itemLength);
     return percent >= viewablePercentThreshold;
   }
 }
@@ -288,18 +306,21 @@ function _isViewable(
 function _getPixelsVisible(
   top: number,
   bottom: number,
-  viewportHeight: number,
+  viewportTop: number,
+  viewportBottom: number,
 ): number {
-  const visibleHeight = Math.min(bottom, viewportHeight) - Math.max(top, 0);
+  const visibleHeight =
+    Math.min(bottom, viewportBottom) - Math.max(top, viewportTop);
   return Math.max(0, visibleHeight);
 }
 
 function _isEntirelyVisible(
   top: number,
   bottom: number,
-  viewportHeight: number,
+  viewportTop: number,
+  viewportBottom: number,
 ): boolean {
-  return top >= 0 && bottom <= viewportHeight && bottom > top;
+  return top >= viewportTop && bottom <= viewportBottom && bottom > top;
 }
 
 module.exports = ViewabilityHelper;
