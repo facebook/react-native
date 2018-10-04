@@ -267,6 +267,20 @@ const TouchableHighlight = ((createReactClass({
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._showUnderlay();
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._hideUnderlay();
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
   touchableHandlePress: function(e: PressEvent) {
     clearTimeout(this._hideTimeout);
     if (!Platform.isTV) {

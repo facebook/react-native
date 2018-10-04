@@ -526,28 +526,28 @@ const TouchableMixin = {
     }
   },
 
+  // ==== Abstract Application Callbacks ====
+
   /**
    * Invoked when the item receives focus. Mixers might override this to
    * visually distinguish the `VisualRect` so that the user knows that it
    * currently has the focus. Most platforms only support a single element being
    * focused at a time, in which case there may have been a previously focused
    * element that was blurred just prior to this.
+   *
+   * @abstract
+   * touchableHandleFocus: function,
    */
-  touchableHandleFocus: function(e: Event) {
-    this.props.onFocus && this.props.onFocus(e);
-  },
 
   /**
    * Invoked when the item loses focus. Mixers might override this to
    * visually distinguish the `VisualRect` so that the user knows that it
    * no longer has focus. Most platforms only support a single element being
    * focused at a time, in which case the focus may have moved to another.
+   *
+   * @abstract
+   * touchableHandleBlur: function,
    */
-  touchableHandleBlur: function(e: Event) {
-    this.props.onBlur && this.props.onBlur(e);
-  },
-
-  // ==== Abstract Application Callbacks ====
 
   /**
    * Invoked when the item should be highlighted. Mixers should implement this

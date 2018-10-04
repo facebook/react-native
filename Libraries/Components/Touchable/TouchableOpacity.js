@@ -13,6 +13,7 @@
 const Animated = require('Animated');
 const Easing = require('Easing');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
@@ -206,6 +207,20 @@ const TouchableOpacity = ((createReactClass({
   touchableHandleActivePressOut: function(e: Event) {
     this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
+  },
+
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._opacityActive(150);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._opacityInactive(250);
+    }
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   touchableHandlePress: function(e: Event) {

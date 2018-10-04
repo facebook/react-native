@@ -13,6 +13,7 @@ const Animated = require('Animated');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
 const Touchable = require('Touchable');
@@ -117,6 +118,20 @@ const TouchableBounce = ((createReactClass({
   touchableHandleActivePressOut: function(e: Event) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
+  },
+
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(0.93, 0.1, 0);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(1, 0.4, 0);
+    }
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   touchableHandlePress: function(e: Event) {

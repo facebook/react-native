@@ -196,6 +196,14 @@ const TouchableWithoutFeedback = ((createReactClass({
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
+  touchableHandleFocus: function(e: Event) {
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
   touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
