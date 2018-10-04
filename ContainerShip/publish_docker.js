@@ -6,6 +6,7 @@ function publishDocker() {
   const cmd =`
 docker login -u ${process.env.DOCKER_USER} -p ${process.env.DOCKER_PASS}
 docker build -t gengjiawen/react-native:${finaltag} -f Dockerfile.android-base .
+docker tag gengjiawen/react-native:${finaltag} gengjiawen/react-native
 docker push gengjiawen/react-native:${finaltag}
 docker push gengjiawen/react-native
   `
