@@ -31,6 +31,7 @@ ARG NODE_VERSION=8.10.0
 ARG WATCHMAN_VERSION=4.9.0
 
 # set default environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV ADB_INSTALL_TIMEOUT=10
 ENV PATH=${PATH}:/opt/buck/bin/
 ENV ANDROID_HOME=/opt/android
