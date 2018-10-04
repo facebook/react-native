@@ -9,7 +9,7 @@
 #include <fbsystrace.h>
 #endif
 
-#include <glog/logging.h>
+#include <folly/GLog.h>
 
 #if WITH_FBJSCEXTENSIONS
 #include <pthread.h>

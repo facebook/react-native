@@ -20,7 +20,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 
-#include <glog/logging.h>
+#include <folly/GLog.h>
 
 #include <condition_variable>
 #include <fstream>
@@ -37,13 +37,12 @@ Instance::~Instance() {
 }
 
 void Instance::initializeBridge(
-    std::unique_ptr<InstanceCallback> callback,
+    std::shared_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);

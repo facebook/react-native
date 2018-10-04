@@ -5,7 +5,7 @@
 
 #include "ModuleRegistry.h"
 
-#include <glog/logging.h>
+#include <folly/GLog.h>
 
 #include "NativeModule.h"
 #include "SystraceSection.h"

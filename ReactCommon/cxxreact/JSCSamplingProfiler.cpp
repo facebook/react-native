@@ -7,6 +7,7 @@
 
 #include <jschelpers/JSCHelpers.h>
 
+#if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
 static JSValueRef pokeSamplingProfiler(
     JSContextRef ctx,
     JSObjectRef function,
@@ -29,3 +30,4 @@ void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
 }
 
 } }
+#endif

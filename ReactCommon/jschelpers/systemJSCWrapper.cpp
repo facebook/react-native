@@ -7,11 +7,14 @@
 
 #include <jschelpers/JSCWrapper.h>
 
-#if defined(__APPLE__)
+#if !defined(__ANDROID__)
 
+#include <cassert>
 #include <mutex>
 
+#if defined(__APPLE__)
 #include <objc/runtime.h>
+#endif
 
 // Crash the app (with a descriptive stack trace) if a function that is not supported by
 // the system JSC is called.
@@ -67,13 +70,17 @@ const JSCWrapper* systemJSCWrapper() {
         Unimplemented_JSEvaluateBytecodeBundle,
 
       .JSStringCreateWithUTF8CString = JSStringCreateWithUTF8CString,
+#if defined(__APPLE__)
       .JSStringCreateWithCFString = JSStringCreateWithCFString,
+#endif
       #if WITH_FBJSCEXTENSIONS
       .JSStringCreateWithUTF8CStringExpectAscii =
         (decltype(&JSStringCreateWithUTF8CStringExpectAscii))
         Unimplemented_JSStringCreateWithUTF8CStringExpectAscii,
       #endif
+#if defined(__APPLE__)
       .JSStringCopyCFString = JSStringCopyCFString,
+#endif
       .JSStringGetCharactersPtr = JSStringGetCharactersPtr,
       .JSStringGetLength = JSStringGetLength,
       .JSStringGetMaximumUTF8CStringSize = JSStringGetMaximumUTF8CStringSize,
@@ -136,13 +143,13 @@ const JSCWrapper* systemJSCWrapper() {
       .JSGlobalContextDisableDebugger =
         (decltype(&JSGlobalContextDisableDebugger))
         Unimplemented_JSGlobalContextDisableDebugger,
-
+#if  defined(__APPLE__)
       .configureJSCForIOS =
         (decltype(&configureJSCForIOS))Unimplemented_configureJSCForIOS,
 
       .JSContext = objc_getClass("JSContext"),
       .JSValue = objc_getClass("JSValue"),
-
+#endif
       .JSBytecodeFileFormatVersion = JSNoBytecodeFileFormatVersion,
     };
   });

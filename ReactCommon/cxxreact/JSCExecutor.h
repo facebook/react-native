@@ -84,6 +84,9 @@ public:
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) override;
 
+  virtual std::string getGlobalVariable(
+    std::string propName) override;
+
   virtual std::string getDescription() override;
 
   virtual void* getJavaScriptContext() override;

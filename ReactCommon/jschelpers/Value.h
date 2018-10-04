@@ -104,7 +104,7 @@ public:
     }
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
     size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
-    return unicode::utf16toUTF8(utf16, stringLength);
+    return unicode::utf16toUTF8((const uint16_t *)utf16, stringLength);
   }
 
   // Assumes that utf8 is nul-terminated

@@ -55,6 +55,7 @@ JSC_IMPORT void FBJSContextStartGCTimers(JSContextRef);
 #include <objc/objc.h>
 #include <JavaScriptCore/JSStringRefCF.h>
 #include <string>
+#include <stdint.h>
 
 /**
  * JSNoBytecodeFileFormatVersion
@@ -85,11 +86,15 @@ struct JSCWrapper {
 
   // JSString
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CString);
+#if defined(__APPLE__)
   JSC_WRAPPER_METHOD(JSStringCreateWithCFString);
+#endif
   #if WITH_FBJSCEXTENSIONS
   JSC_WRAPPER_METHOD(JSStringCreateWithUTF8CStringExpectAscii);
   #endif
+#if defined(__APPLE__)
   JSC_WRAPPER_METHOD(JSStringCopyCFString);
+#endif
   JSC_WRAPPER_METHOD(JSStringGetCharactersPtr);
   JSC_WRAPPER_METHOD(JSStringGetLength);
   JSC_WRAPPER_METHOD(JSStringGetMaximumUTF8CStringSize);
@@ -150,12 +155,13 @@ struct JSCWrapper {
   JSC_WRAPPER_METHOD(JSGlobalContextEnableDebugger);
   JSC_WRAPPER_METHOD(JSGlobalContextDisableDebugger);
 
+#if defined(__APPLE__)
   JSC_WRAPPER_METHOD(configureJSCForIOS);
 
   // Objective-C API
   Class JSContext;
   Class JSValue;
-
+#endif
   int32_t JSBytecodeFileFormatVersion;
 };
 
@@ -185,5 +191,4 @@ bool isCustomJSCPtr(T *x) {
 }
 
 } }
-
 #endif

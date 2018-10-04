@@ -21,7 +21,7 @@
 #include <folly/Memory.h>
 #include <folly/String.h>
 #include <folly/json.h>
-#include <glog/logging.h>
+#include <folly/GLog.h>
 #include <jschelpers/JSCHelpers.h>
 #include <jschelpers/Value.h>
 #include <jsinspector/InspectorInterfaces.h>
@@ -135,7 +135,6 @@ JSCExecutor::JSCExecutor(
       m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
       m_jscConfig(jscConfig) {
   initOnJSVMThread();
-
   {
     SystraceSection s("nativeModuleProxy object");
     installGlobalProxy(
@@ -231,11 +230,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
       return isNetworkInspected(ownerId, appId, deviceId);
     };
 
+#if defined(__APPLE__) || defined(__ANDROID__)
     auto& globalInspector = facebook::react::getInspectorInstance();
     JSC_JSGlobalContextEnableDebugger(
         m_context, globalInspector, ownerId.c_str(), checkIsInspectedRemote);
+#endif
   }
-
+  
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>(
       "nativeFlushQueueImmediate");
   installNativeHook<&JSCExecutor::nativeCallSyncHook>("nativeCallSyncHook");
@@ -255,11 +256,13 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
   addJSCMemoryHooks(m_context);
   addJSCPerfStatsHooks(m_context);
 
-  JSCNativeHooks::installPerfHooks(m_context);
+  if (JSCNativeHooks::installPerfHooks != nullptr) JSCNativeHooks::installPerfHooks(m_context);
 
+#if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   if (canUseSamplingProfiler(m_context)) {
     initSamplingProfilerOnMainJSCThread(m_context);
   }
+#endif
 }
 
 bool JSCExecutor::isNetworkInspected(
@@ -378,10 +381,12 @@ void JSCExecutor::terminateOnJSVMThread() {
   Object::getGlobalObject(context).setPrivate(nullptr);
   m_nativeModules.reset();
 
+#if defined(__APPLE__) || defined(__ANDROID__)
   if (canUseInspector(context)) {
     auto& globalInspector = facebook::react::getInspectorInstance();
     JSC_JSGlobalContextDisableDebugger(context, globalInspector);
   }
+#endif
 
   JSC_JSGlobalContextRelease(context);
 }
@@ -486,6 +491,7 @@ void JSCExecutor::loadApplicationScript(
     }
 
     SystraceSection s_("JSCExecutor::loadApplicationScript-evaluateScript");
+
     evaluateScript(m_context, jsScript, jsSourceURL);
   }
 
@@ -650,7 +656,21 @@ void JSCExecutor::setGlobalVariable(
     auto valueToInject = Value::fromJSON(adoptString(std::move(jsonValue)));
     Object::getGlobalObject(m_context).setProperty(
         propName.c_str(), valueToInject);
-  } catch (...) {
+  }
+  catch (...) {
+    std::throw_with_nested(
+        std::runtime_error("Error setting global variable: " + propName));
+  }
+}
+
+std::string JSCExecutor::getGlobalVariable(
+  std::string propName) {
+  try {
+    SystraceSection s("JSCExecutor::getGlobalVariable", "propName", propName);
+    return Object::getGlobalObject(m_context).getProperty(
+        propName.c_str()).toJSONString();
+  }
+  catch (...) {
     std::throw_with_nested(
         std::runtime_error("Error setting global variable: " + propName));
   }
