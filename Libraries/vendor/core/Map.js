@@ -531,6 +531,9 @@ module.exports = (function(global, undefined) {
     const hashProperty = '__MAP_POLYFILL_INTERNAL_HASH__';
     let hashCounter = 0;
 
+    const nonExtensibleObjects = [];
+    const nonExtensibleHashes = [];
+
     /**
      * Get the "hash" associated with an object.
      *
@@ -572,7 +575,15 @@ module.exports = (function(global, undefined) {
         }
         return hashCounter;
       } else {
-        throw new Error('Non-extensible objects are not allowed as keys.');
+        // If the object is not extensible, fall back to storing it in an
+        // array and using Array.prototype.indexOf to find it.
+        let index = nonExtensibleObjects.indexOf(o);
+        if (index < 0) {
+          index = nonExtensibleObjects.length;
+          nonExtensibleObjects[index] = o;
+          nonExtensibleHashes[index] = ++hashCounter;
+        }
+        return nonExtensibleHashes[index];
       }
     };
   })();
