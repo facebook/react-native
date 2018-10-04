@@ -26,6 +26,9 @@ module.exports = (function(global, undefined) {
     return global.Map;
   }
 
+  // In case this module has not already been evaluated, import it now.
+  require('./_wrapObjectFreezeAndFriends');
+
   /**
    * == ES6 Map Collection ==
    *
@@ -38,15 +41,17 @@ module.exports = (function(global, undefined) {
    *
    * https://people.mozilla.org/~jorendorff/es6-draft.html#sec-map-objects
    *
-   * There only two -- rather small -- diviations from the spec:
+   * There only two -- rather small -- deviations from the spec:
    *
-   * 1. The use of frozen objects as keys.
-   *    We decided not to allow and simply throw an error. The reason being is
-   *    we store a "hash" on the object for fast access to it's place in the
-   *    internal map entries.
-   *    If this turns out to be a popular use case it's possible to implement by
-   *    overiding `Object.freeze` to store a "hash" property on the object
-   *    for later use with the map.
+   * 1. The use of untagged frozen objects as keys.
+   *    We decided not to allow and simply throw an error, because this
+   *    implementation of Map works by tagging objects used as Map keys
+   *    with a secret hash property for fast access to the object's place
+   *    in the internal _mapData array. However, to limit the impact of
+   *    this spec deviation, Libraries/Core/InitializeCore.js also wraps
+   *    Object.freeze, Object.seal, and Object.preventExtensions so that
+   *    they tag objects before making them non-extensible, by inserting
+   *    each object into a Map and then immediately removing it.
    *
    * 2. The `size` property on a map object is a regular property and not a
    *    computed property on the prototype as described by the spec.
