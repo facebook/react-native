@@ -18,7 +18,6 @@ const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const ScrollView = require('ScrollView');
 const ScrollResponder = require('ScrollResponder');
 const StaticRenderer = require('StaticRenderer');
-const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 const cloneReferencedElement = require('react-clone-referenced-element');
 const createReactClass = require('create-react-class');
@@ -216,6 +215,7 @@ type Props = $ReadOnly<{|
 
 const ListView = createReactClass({
   displayName: 'ListView',
+  _rafId: (null: ?AnimationFrameID),
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
@@ -223,7 +223,7 @@ const ListView = createReactClass({
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
 
-  mixins: [ScrollResponder.Mixin, TimerMixin],
+  mixins: [ScrollResponder.Mixin],
 
   statics: {
     DataSource: ListViewDataSource,
@@ -347,16 +347,23 @@ const ListView = createReactClass({
       contentLength: null,
       offset: 0,
     };
+
     this._childFrames = [];
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
     this._sentEndForContentLength = null;
   },
 
+  componentWillUnmount: function() {
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
+    }
+  },
+
   componentDidMount: function() {
     // do this in animation frame until componentDidMount actually runs after
     // the component is laid out
-    this.requestAnimationFrame(() => {
+    this._rafId = requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -384,7 +391,7 @@ const ListView = createReactClass({
   },
 
   componentDidUpdate: function() {
-    this.requestAnimationFrame(() => {
+    this._rafId = requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
