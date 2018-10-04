@@ -29,30 +29,48 @@ public class AccessibilityDelegateUtil {
    */
 
   public enum AccessibilityRole {
-    NONE(null),
-    BUTTON("android.widget.Button"),
-    LINK("android.widget.ViewGroup"),
-    SEARCH("android.widget.EditText"),
-    IMAGE("android.widget.ImageView"),
-    IMAGEBUTTON("android.widget.ImageView"),
-    KEYBOARDKEY("android.inputmethodservice.Keyboard$Key"),
-    TEXT("android.widget.ViewGroup"),
-    ADJUSTABLE("android.widget.SeekBar"),
-    SUMMARY("android.widget.ViewGroup"),
-    HEADER("android.widget.ViewGroup");
+    NONE,
+    BUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER;
 
-    @Nullable private final String mValue;
-
-    AccessibilityRole(String type) {
-      mValue = type;
+    public static String getValue(AccessibilityRole role) {
+      switch (role) {
+        case NONE:
+          return null;
+        case BUTTON:
+          return "android.widget.Button";
+        case LINK:
+          return "android.widget.ViewGroup";
+        case SEARCH:
+          return "android.widget.EditText";
+        case IMAGE:
+          return "android.widget.ImageView";
+        case IMAGEBUTTON:
+          return "android.widget.ImageView";
+        case KEYBOARDKEY:
+          return "android.inputmethodservice.Keyboard$Key";
+        case TEXT:
+          return "android.widget.ViewGroup";
+        case ADJUSTABLE:
+          return "android.widget.SeekBar";
+        case SUMMARY:
+          return "android.widget.ViewGroup";
+        case HEADER:
+          return "android.widget.ViewGroup";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
     }
 
-    @Nullable
-    public String getValue() {
-      return mValue;
-    }
-
-    public static AccessibilityRole fromValue(String value) {
+    public static AccessibilityRole fromValue(@Nullable String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
         if (role.name().equalsIgnoreCase(value)) {
           return role;
@@ -105,7 +123,7 @@ public class AccessibilityDelegateUtil {
     if (role == null) {
       role = AccessibilityRole.NONE;
     }
-    nodeInfo.setClassName(role.getValue());
+    nodeInfo.setClassName(AccessibilityRole.getValue(role));
     if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
       if (role.equals(AccessibilityRole.LINK)) {
         nodeInfo.setRoleDescription(context.getString(R.string.link_description));

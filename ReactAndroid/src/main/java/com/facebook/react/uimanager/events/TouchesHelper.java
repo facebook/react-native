@@ -104,7 +104,7 @@ public class TouchesHelper {
     }
 
     rctEventEmitter.receiveTouches(
-        type.getJSEventName(),
+        TouchEventType.getJSEventName(type),
         pointers,
         changedIndices);
   }
