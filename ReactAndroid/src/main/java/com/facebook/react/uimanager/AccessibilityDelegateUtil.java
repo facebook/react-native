@@ -72,8 +72,7 @@ public class AccessibilityDelegateUtil {
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view) &&
-      accessibilityHint != null &&
-      accessibilityRole != null) { 
+      (accessibilityHint != null || accessibilityRole != null)) {
       ViewCompat.setAccessibilityDelegate(
         view,
         new AccessibilityDelegateCompat() {
