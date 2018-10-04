@@ -85,8 +85,7 @@ const SwipeableRow = createReactClass({
   displayName: 'SwipeableRow',
   _panResponder: {},
   _previousLeft: CLOSED_LEFT_POSITION,
-
-  mixins: [TimerMixin],
+  _timeoutID: (null: ?TimeoutID),
 
   propTypes: {
     children: PropTypes.any,
@@ -157,7 +156,7 @@ const SwipeableRow = createReactClass({
        * Do the on mount bounce after a delay because if we animate when other
        * components are loading, the animation will be laggy
        */
-      this.setTimeout(() => {
+      this._timeoutID = this.setTimeout(() => {
         this._animateBounceBack(ON_MOUNT_BOUNCE_DURATION);
       }, ON_MOUNT_BOUNCE_DELAY);
     }
@@ -170,6 +169,12 @@ const SwipeableRow = createReactClass({
      */
     if (this.props.isOpen && !nextProps.isOpen) {
       this._animateToClosedPosition();
+    }
+  },
+
+  componentWillUnmount() {
+    if (this._timeoutID != null) {
+      clearTimeout(this._timeoutID);
     }
   },
 
