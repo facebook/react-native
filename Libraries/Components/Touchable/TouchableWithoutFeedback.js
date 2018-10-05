@@ -13,7 +13,6 @@
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
-const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const View = require('View');
 
@@ -80,7 +79,7 @@ export type Props = $ReadOnly<{|
  */
 const TouchableWithoutFeedback = ((createReactClass({
   displayName: 'TouchableWithoutFeedback',
-  mixins: [TimerMixin, Touchable.Mixin],
+  mixins: [Touchable.Mixin],
 
   propTypes: {
     accessible: PropTypes.bool,
