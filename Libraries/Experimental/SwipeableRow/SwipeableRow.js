@@ -155,7 +155,7 @@ const SwipeableRow = createReactClass({
        * Do the on mount bounce after a delay because if we animate when other
        * components are loading, the animation will be laggy
        */
-      this._timeoutID = this.setTimeout(() => {
+      this._timeoutID = setTimeout(() => {
         this._animateBounceBack(ON_MOUNT_BOUNCE_DURATION);
       }, ON_MOUNT_BOUNCE_DELAY);
     }
