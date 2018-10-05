@@ -21,19 +21,19 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 
 const {
-  AccessibilityComponentTypes,
-  AccessibilityRoles,
-  AccessibilityStates,
-  AccessibilityTraits,
-} = require('ViewAccessibility');
+  DeprecatedAccessibilityComponentTypes,
+  DeprecatedAccessibilityRoles,
+  DeprecatedAccessibilityStates,
+  DeprecatedAccessibilityTraits,
+} = require('DeprecatedViewAccessibility');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
   AccessibilityRole,
-  AccessibilityStates as AccessibilityStatesFlow,
-  AccessibilityTraits as AccessibilityTraitsFlow,
+  AccessibilityStates,
+  AccessibilityTraits,
 } from 'ViewAccessibility';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -50,8 +50,8 @@ export type Props = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityStates?: ?AccessibilityStatesFlow,
-  accessibilityTraits?: ?AccessibilityTraitsFlow,
+  accessibilityStates?: ?AccessibilityStates,
+  accessibilityTraits?: ?AccessibilityTraits,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -86,14 +86,16 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
     accessibilityHint: PropTypes.string,
-    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
-    accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+    accessibilityComponentType: PropTypes.oneOf(
+      DeprecatedAccessibilityComponentTypes,
+    ),
+    accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
     accessibilityStates: PropTypes.arrayOf(
-      PropTypes.oneOf(AccessibilityStates),
+      PropTypes.oneOf(DeprecatedAccessibilityStates),
     ),
     accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(AccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
+      PropTypes.oneOf(DeprecatedAccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
     ]),
     /**
      * When `accessible` is true (which is the default) this may be called when
