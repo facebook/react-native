@@ -52,6 +52,7 @@ class SwipeableListViewSimpleExample extends React.Component<
         noSpacer={true}
         noScroll={true}>
         <SwipeableListView
+          bounceFirstRowOnMount={true}
           dataSource={this.state.dataSource}
           maxSwipeDistance={100}
           renderQuickActions={(
