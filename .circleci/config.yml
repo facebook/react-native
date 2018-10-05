@@ -91,6 +91,11 @@ aliases:
         - /.*-stable/
         - master
 
+  - &filter-only-master
+    branches:
+      only:
+        - master
+
   - &filter-only-stable
     branches:
       only:
@@ -199,6 +204,12 @@ aliases:
       ./scripts/circleci/check_license.sh
       ./scripts/circleci/check_cache.sh
     when: always
+
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
 
   - &download-dependencies-gradle
     name: Download Dependencies Using Gradle
@@ -626,7 +637,19 @@ jobs:
           when: always
       - save-cache: *save-cache-analysis
 
-  # Publishes new version onto npm
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    steps:
+      - checkout
+
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - run: *js-coverage
+
+      - store_artifacts:
+          path: ~/react-native/coverage/
+
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
     <<: *android_defaults
@@ -733,3 +756,9 @@ workflows:
       # Run code checks
       - analyze_pr:
           filters: *filter-ignore-master-stable
+
+  # Only run on master
+  coverage:
+    jobs:
+      - js_coverage:
+          filters: *filter-only-master
