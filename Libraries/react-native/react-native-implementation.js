@@ -266,6 +266,9 @@ const ReactNative = {
   get unstable_batchedUpdates() {
     return require('ReactNative').unstable_batchedUpdates;
   },
+  get UTFSequence() {
+    return require('UTFSequence');
+  },
   get Vibration() {
     return require('Vibration');
   },
