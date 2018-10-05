@@ -594,23 +594,35 @@ jobs:
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             sudo apt-get install -y shellcheck
             yarn add @octokit/rest@15.10.0
-            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"
-            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_scripts.sh
+            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_scripts.sh
           when: always
 
       - run:
           name: Analyze Code
           command: |
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
+            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_code.sh
           when: always
 
       - run:
           name: Analyze Pull Request
           command: |
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             cd bots
             yarn install --non-interactive --cache-folder ~/.cache/yarn
-            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
+            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
+            yarn danger
           when: always
       - save-cache: *save-cache-analysis
 

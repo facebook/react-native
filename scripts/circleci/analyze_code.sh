@@ -9,7 +9,7 @@ cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run fl
 # check status
 STATUS=$?
 if [ $STATUS == 0 ]; then
-  echo "Code analyzed successfully"
+  echo "Code analyzed successfully."
 else
-  echo "Code analysis failed, error status $STATUS"
+  echo "Code analysis failed, error status $STATUS."
 fi

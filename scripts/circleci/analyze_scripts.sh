@@ -13,7 +13,7 @@ cat <(echo shellcheck; printf '%s\n' "${results[@]}" | jq .,[] | jq -s . | jq --
 # check status
 STATUS=$?
 if [ $STATUS == 0 ]; then
-  echo "Shell scripts analyzed successfully"
+  echo "Shell scripts analyzed successfully."
 else
-  echo "Shell script analysis failed, error status $STATUS"
+  echo "Shell script analysis failed, error status $STATUS."
 fi
