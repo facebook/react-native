@@ -14,14 +14,10 @@ var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {ProgressViewIOS, StyleSheet, View} = ReactNative;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
 
 var ProgressViewExample = createReactClass({
   displayName: 'ProgressViewExample',
-  mixins: [TimerMixin],
+  _rafId: (null: ?AnimationFrameID),
 
   getInitialState() {
     return {
@@ -33,10 +29,16 @@ var ProgressViewExample = createReactClass({
     this.updateProgress();
   },
 
+  componentWillUnmount() {
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
+    }
+  },
+
   updateProgress() {
     var progress = this.state.progress + 0.01;
     this.setState({progress});
-    this.requestAnimationFrame(() => this.updateProgress());
+    this._rafId = requestAnimationFrame(() => this.updateProgress());
   },
 
   getProgress(offset) {
