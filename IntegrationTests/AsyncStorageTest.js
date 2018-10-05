@@ -256,10 +256,8 @@ function testChangeStorage() {
   AsyncStorage.setStorageLocationIOS(
     AsyncStorage.StorageLocationIOS.applicationSupport,
   );
-  AsyncStorage.clear(() =>
-    runTestCase('testSetAndGet - on application support', () =>
-      testSetAndGet(true),
-    ),
+  runTestCase('testSetAndGet - on application support', () =>
+    testSetAndGet(true),
   );
 }
 
@@ -278,7 +276,17 @@ class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
     };
-    AsyncStorage.clear(() => testSetAndGet(false));
+    AsyncStorage.clear(() => {
+      AsyncStorage.setStorageLocationIOS(
+        AsyncStorage.StorageLocationIOS.applicationSupport,
+      );
+      AsyncStorage.clear(() => {
+        AsyncStorage.setStorageLocationIOS(
+          AsyncStorage.StorageLocationIOS.documents,
+        );
+        testSetAndGet(false);
+      });
+    });
   }
 
   render() {
