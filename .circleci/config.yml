@@ -591,38 +591,38 @@ jobs:
       - run:
           name: Analyze Shell Scripts
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
-              sudo apt-get install -y shellcheck
-              yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"
-              GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_scripts.sh
-            else
-              echo "Skipping shell script analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            sudo apt-get install -y shellcheck
+            yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_scripts.sh
           when: always
 
       - run:
           name: Analyze Code
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
-            else
-              echo "Skipping code analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_code.sh
           when: always
 
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-              DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            cd bots
+            yarn install --non-interactive --cache-folder ~/.cache/yarn
+            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
+            yarn danger
           when: always
       - save-cache: *save-cache-analysis
 
@@ -730,6 +730,8 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
-      # Run code checks
+      # Run code checks on PRs from forks
       - analyze_pr:
-          filters: *filter-ignore-master-stable
+          filters:
+            branches:
+              only: /^pull\/.*$/
