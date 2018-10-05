@@ -858,7 +858,7 @@ const TextInput = createReactClass({
     if (tag != null) {
       TextInputState.unregisterInput(tag);
     }
-    if (this._rafId !== null) {
+    if (this._rafId != null) {
       cancelAnimationFrame(this._rafId);
     }
   },
