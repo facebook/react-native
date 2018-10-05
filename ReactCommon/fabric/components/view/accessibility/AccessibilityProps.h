@@ -19,22 +19,21 @@ class AccessibilityProps;
 
 typedef std::shared_ptr<const AccessibilityProps> SharedAccessibilityProps;
 
-class AccessibilityProps:
-  public virtual DebugStringConvertible {
-
-public:
-
+class AccessibilityProps : public virtual DebugStringConvertible {
+ public:
   AccessibilityProps() = default;
-  AccessibilityProps(const AccessibilityProps &sourceProps, const RawProps &rawProps);
+  AccessibilityProps(
+      const AccessibilityProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const bool accessible {false};
-  const std::vector<std::string> accessibilityActions {};
-  const std::string accessibilityLabel {""};
-  const AccessibilityTraits accessibilityTraits {AccessibilityTraits::None};
-  const bool accessibilityViewIsModal {false};
-  const bool accessibilityElementsHidden {false};
+  const bool accessible{false};
+  const std::vector<std::string> accessibilityActions{};
+  const std::string accessibilityLabel{""};
+  const AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  const bool accessibilityViewIsModal{false};
+  const bool accessibilityElementsHidden{false};
 };
 
 } // namespace react

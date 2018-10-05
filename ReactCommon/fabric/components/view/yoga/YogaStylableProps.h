@@ -20,16 +20,16 @@ class YogaStylableProps;
 typedef std::shared_ptr<const YogaStylableProps> SharedYogaStylableProps;
 
 class YogaStylableProps {
-
-public:
-
+ public:
   YogaStylableProps() = default;
   YogaStylableProps(const YGStyle &yogaStyle);
-  YogaStylableProps(const YogaStylableProps &sourceProps, const RawProps &rawProps);
+  YogaStylableProps(
+      const YogaStylableProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const YGStyle yogaStyle {};
+  const YGStyle yogaStyle{};
 
 #pragma mark - DebugStringConvertible (Partial)
 

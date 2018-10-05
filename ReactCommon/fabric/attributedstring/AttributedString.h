@@ -29,15 +29,10 @@ using SharedAttributedString = std::shared_ptr<const AttributedString>;
  * `AttributedString` is basically a list of `Fragments` which have `string` and
  * `textAttributes` + `shadowNode` associated with the `string`.
  */
-class AttributedString:
-  public Sealable,
-  public DebugStringConvertible {
-
-public:
-
+class AttributedString : public Sealable, public DebugStringConvertible {
+ public:
   class Fragment {
-
-  public:
+   public:
     std::string string;
     TextAttributes textAttributes;
     SharedShadowNode shadowNode;
@@ -81,8 +76,7 @@ public:
   SharedDebugStringConvertibleList getDebugChildren() const override;
 #endif
 
-private:
-
+ private:
   Fragments fragments_;
 };
 
@@ -90,27 +84,31 @@ private:
 } // namespace facebook
 
 namespace std {
-  template <>
-  struct hash<facebook::react::AttributedString::Fragment> {
-    size_t operator()(const facebook::react::AttributedString::Fragment &fragment) const {
-      return
-        std::hash<decltype(fragment.string)>{}(fragment.string) +
-        std::hash<decltype(fragment.textAttributes)>{}(fragment.textAttributes) +
+template <>
+struct hash<facebook::react::AttributedString::Fragment> {
+  size_t operator()(
+      const facebook::react::AttributedString::Fragment &fragment) const {
+    return std::hash<decltype(fragment.string)>{}(fragment.string) +
+        std::hash<decltype(fragment.textAttributes)>{}(
+               fragment.textAttributes) +
         std::hash<decltype(fragment.shadowNode)>{}(fragment.shadowNode) +
-        std::hash<decltype(fragment.parentShadowNode)>{}(fragment.parentShadowNode);
+        std::hash<decltype(fragment.parentShadowNode)>{}(
+               fragment.parentShadowNode);
+  }
+};
+
+template <>
+struct hash<facebook::react::AttributedString> {
+  size_t operator()(
+      const facebook::react::AttributedString &attributedString) const {
+    auto result = size_t{0};
+
+    for (const auto &fragment : attributedString.getFragments()) {
+      result +=
+          std::hash<facebook::react::AttributedString::Fragment>{}(fragment);
     }
-  };
 
-  template <>
-  struct hash<facebook::react::AttributedString> {
-    size_t operator()(const facebook::react::AttributedString &attributedString) const {
-      auto result = size_t {0};
-
-      for (const auto &fragment : attributedString.getFragments()) {
-        result += std::hash<facebook::react::AttributedString::Fragment>{}(fragment);
-      }
-
-      return result;
-    }
-  };
+    return result;
+  }
+};
 } // namespace std

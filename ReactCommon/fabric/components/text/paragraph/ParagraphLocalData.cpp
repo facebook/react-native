@@ -17,7 +17,8 @@ AttributedString ParagraphLocalData::getAttributedString() const {
   return attributedString_;
 }
 
-void ParagraphLocalData::setAttributedString(AttributedString attributedString) {
+void ParagraphLocalData::setAttributedString(
+    AttributedString attributedString) {
   ensureUnsealed();
   attributedString_ = attributedString;
 }
@@ -26,7 +27,8 @@ SharedTextLayoutManager ParagraphLocalData::getTextLayoutManager() const {
   return textLayoutManager_;
 }
 
-void ParagraphLocalData::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
+void ParagraphLocalData::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
 }
@@ -44,8 +46,7 @@ std::string ParagraphLocalData::getDebugName() const {
 
 SharedDebugStringConvertibleList ParagraphLocalData::getDebugProps() const {
   return {
-    debugStringConvertibleItem("attributedString", attributedString_, "")
-  };
+      debugStringConvertibleItem("attributedString", attributedString_, "")};
 }
 #endif
 

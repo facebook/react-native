@@ -18,24 +18,20 @@ namespace react {
 using Color = int;
 
 /*
- * On Android, a color can be represented as 32 bits integer, so there is no need
- * to instantiate complex color objects and then pass them as shared pointers.
- * Hense instead of using shared_ptr, we use a simple wrapper class
+ * On Android, a color can be represented as 32 bits integer, so there is no
+ * need to instantiate complex color objects and then pass them as shared
+ * pointers. Hense instead of using shared_ptr, we use a simple wrapper class
  * which provides a pointer-like interface.
  */
 class SharedColor {
-
-public:
+ public:
   static const Color UndefinedColor = std::numeric_limits<Color>::max();
 
-  SharedColor():
-    color_(UndefinedColor) {}
+  SharedColor() : color_(UndefinedColor) {}
 
-  SharedColor(const SharedColor &sharedColor) :
-    color_(sharedColor.color_) {}
+  SharedColor(const SharedColor &sharedColor) : color_(sharedColor.color_) {}
 
-  SharedColor(Color color):
-    color_(color) {}
+  SharedColor(Color color) : color_(color) {}
 
   SharedColor &operator=(const SharedColor &sharedColor) {
     color_ = sharedColor.color_;
@@ -50,7 +46,7 @@ public:
     return color_ != UndefinedColor;
   }
 
-private:
+ private:
   Color color_;
 };
 
@@ -60,14 +56,11 @@ ColorComponents colorComponentsFromColor(SharedColor color);
 } // namespace react
 } // namespace facebook
 
-namespace std
-{
-	template <>
-	struct hash<facebook::react::SharedColor>
-	{
-		size_t operator()(const facebook::react::SharedColor& sharedColor) const
-		{
-			return hash<decltype(*sharedColor)>{}(*sharedColor);
-		}
-	};
-}
+namespace std {
+template <>
+struct hash<facebook::react::SharedColor> {
+  size_t operator()(const facebook::react::SharedColor &sharedColor) const {
+    return hash<decltype(*sharedColor)>{}(*sharedColor);
+  }
+};
+} // namespace std
