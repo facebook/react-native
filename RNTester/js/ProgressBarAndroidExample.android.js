@@ -18,7 +18,7 @@ var RNTesterPage = require('RNTesterPage');
 
 var MovingBar = createReactClass({
   displayName: 'MovingBar',
-  _timeoutID: (null: ?TimeoutID),
+  _intervalID: (null: ?IntervalID),
 
   getInitialState: function() {
     return {
@@ -27,15 +27,15 @@ var MovingBar = createReactClass({
   },
 
   componentDidMount: function() {
-    this._timeoutID = setInterval(() => {
+    this._intervalID = setInterval(() => {
       var progress = (this.state.progress + 0.02) % 1;
       this.setState({progress: progress});
     }, 50);
   },
 
   componentWillUnmount: function() {
-    if (this._timeoutID != null) {
-      clearTimeout(this._timeoutID);
+    if (this._intervalID != null) {
+      clearInterval(this._intervalID);
     }
   },
 
