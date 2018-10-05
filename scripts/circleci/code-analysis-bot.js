@@ -9,12 +9,12 @@
 
 'use strict';
 
-if (!process.env.CIRCLE_PROJECT_USERNAME) {
-  console.error('Missing CIRCLE_PROJECT_USERNAME. Example: facebook');
+if (!process.env.GITHUB_OWNER) {
+  console.error('Missing GITHUB_OWNER. Example: facebook');
   process.exit(1);
 }
-if (!process.env.CIRCLE_PROJECT_REPONAME) {
-  console.error('Missing CIRCLE_PROJECT_REPONAME. Example: react-native');
+if (!process.env.GITHUB_REPO) {
+  console.error('Missing GITHUB_REPO. Example: react-native');
   process.exit(1);
 }
 
@@ -162,35 +162,51 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
-function sendReview(owner, repo, number, commit_id, comments, convertersUsed) {
-  if (comments.length === 0) {
-    // Do not leave an empty review.
-    return;
-  }
-
-  let body = '**Code analysis results:**\n\n';
-  convertersUsed.forEach(converter => {
-    body += '* `' + converter + '` found some issues.\n';
-  });
-
-  const event = 'REQUEST_CHANGES';
-
-  const opts = {
-    owner,
-    repo,
-    number,
-    commit_id,
-    body,
-    event,
-    comments,
-  };
-
-  octokit.pullRequests.createReview(opts, function(error, res) {
-    if (error) {
-      console.error(error);
+function sendReview(owner, repo, number, commit_id, body, comments) {
+  if (process.env.GITHUB_TOKEN) {
+    if (comments.length === 0) {
+      // Do not leave an empty review.
       return;
     }
-  });
+
+    const event = 'REQUEST_CHANGES';
+
+    const opts = {
+      owner,
+      repo,
+      number,
+      commit_id,
+      body,
+      event,
+      comments,
+    };
+
+    octokit.pullRequests.createReview(opts, function(error, res) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
+  } else {
+    if (comments.length === 0) {
+      console.log('No issues found.');
+      return;
+    }
+
+    if (process.env.CIRCLE_CI) {
+      console.error(
+        'Code analysis found issues, but the review cannot be posted to GitHub without an access token.',
+      );
+      process.exit(1);
+    }
+
+    let results = body + '\n';
+    comments.forEach(comment => {
+      results +=
+        comment.path + ':' + comment.position + ': ' + comment.body + '\n';
+    });
+    console.log(results);
+  }
 }
 
 function main(messages, owner, repo, number) {
@@ -199,17 +215,16 @@ function main(messages, owner, repo, number) {
     return;
   }
 
-  if (!process.env.GITHUB_TOKEN) {
-    console.error(
-      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e',
+  if (process.env.GITHUB_TOKEN) {
+    octokit.authenticate({
+      type: 'oauth',
+      token: process.env.GITHUB_TOKEN,
+    });
+  } else {
+    console.log(
+      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. Review feedback with code analysis results will not be provided on GitHub.',
     );
-    process.exit(1);
   }
-
-  octokit.authenticate({
-    type: 'oauth',
-    token: process.env.GITHUB_TOKEN,
-  });
 
   getShaFromPullRequest(owner, repo, number, sha => {
     getFilesFromCommit(owner, repo, sha, files => {
@@ -234,7 +249,13 @@ function main(messages, owner, repo, number) {
         }); // forEach
       }); // filter
 
-      sendReview(owner, repo, number, sha, comments, convertersUsed);
+      let body = '**Code analysis results:**\n\n';
+      const uniqueconvertersUsed = [...new Set(convertersUsed)];
+      uniqueconvertersUsed.forEach(converter => {
+        body += '* `' + converter + '` found some issues.\n';
+      });
+
+      sendReview(owner, repo, number, sha, body, comments);
     }); // getFilesFromCommit
   }); // getShaFromPullRequest
 }
@@ -287,16 +308,16 @@ process.stdin.on('end', function() {
     delete messages[absolutePath];
   }
 
-  const owner = process.env.CIRCLE_PROJECT_USERNAME;
-  const repo = process.env.CIRCLE_PROJECT_REPONAME;
+  const owner = process.env.GITHUB_OWNER;
+  const repo = process.env.GITHUB_REPO;
 
-  if (!process.env.CIRCLE_PR_NUMBER) {
-    console.error('Missing CIRCLE_PR_NUMBER. Example: 4687');
+  if (!process.env.GITHUB_PR_NUMBER) {
+    console.error('Missing GITHUB_PR_NUMBER. Example: 4687');
     // for master branch, don't throw an error
     process.exit(0);
   }
 
-  const number = process.env.CIRCLE_PR_NUMBER;
+  const number = process.env.GITHUB_PR_NUMBER;
 
   // intentional lint warning to make sure that the bot is working :)
   main(messages, owner, repo, number);
