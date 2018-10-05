@@ -169,7 +169,8 @@ function sendReview(owner, repo, number, commit_id, comments, convertersUsed) {
   }
 
   let body = '**Code analysis results:**\n\n';
-  convertersUsed.forEach(converter => {
+  const uniqueconvertersUsed = [...new Set(convertersUsed)];
+  uniqueconvertersUsed.forEach(converter => {
     body += '* `' + converter + '` found some issues.\n';
   });
 
