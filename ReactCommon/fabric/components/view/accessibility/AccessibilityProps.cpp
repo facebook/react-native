@@ -12,7 +12,9 @@
 namespace facebook {
 namespace react {
 
-AccessibilityProps::AccessibilityProps(const AccessibilityProps &sourceProps, const RawProps &rawProps) {}
+AccessibilityProps::AccessibilityProps(
+    const AccessibilityProps &sourceProps,
+    const RawProps &rawProps) {}
 
 } // namespace react
 } // namespace facebook

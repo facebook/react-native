@@ -12,7 +12,8 @@
 namespace facebook {
 namespace react {
 
-AccessibilityTraits accessibilityTraitsFromDynamic(const folly::dynamic &value) {
+AccessibilityTraits accessibilityTraitsFromDynamic(
+    const folly::dynamic &value) {
   assert(value.isString());
 
   // FIXME: Not clear yet.

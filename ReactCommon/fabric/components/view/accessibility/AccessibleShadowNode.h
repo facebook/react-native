@@ -20,21 +20,16 @@ class AccessibleShadowNode;
 using SharedAccessibleShadowNode = std::shared_ptr<const AccessibleShadowNode>;
 
 class AccessibleShadowNode {
-
-public:
-
+ public:
 #pragma mark - Constructors
 
   AccessibleShadowNode() = default;
 
-  AccessibleShadowNode(
-    const SharedAccessibilityProps &props
-  );
+  AccessibleShadowNode(const SharedAccessibilityProps &props);
 
   AccessibleShadowNode(
-    const AccessibleShadowNode &shadowNode,
-    const SharedAccessibilityProps &props = nullptr
-  );
+      const AccessibleShadowNode &shadowNode,
+      const SharedAccessibilityProps &props = nullptr);
 };
 
 } // namespace react

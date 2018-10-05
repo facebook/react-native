@@ -13,11 +13,11 @@
 namespace facebook {
 namespace react {
 
-ScrollViewLocalData::ScrollViewLocalData(Rect contentBoundingRect):
-  contentBoundingRect(contentBoundingRect) {}
+ScrollViewLocalData::ScrollViewLocalData(Rect contentBoundingRect)
+    : contentBoundingRect(contentBoundingRect) {}
 
 Size ScrollViewLocalData::getContentSize() const {
-  return Size {contentBoundingRect.getMaxX(), contentBoundingRect.getMaxY()};
+  return Size{contentBoundingRect.getMaxX(), contentBoundingRect.getMaxY()};
 }
 
 #pragma mark - DebugStringConvertible
@@ -29,8 +29,7 @@ std::string ScrollViewLocalData::getDebugName() const {
 
 SharedDebugStringConvertibleList ScrollViewLocalData::getDebugProps() const {
   return {
-    debugStringConvertibleItem("contentBoundingRect", contentBoundingRect)
-  };
+      debugStringConvertibleItem("contentBoundingRect", contentBoundingRect)};
 }
 #endif
 

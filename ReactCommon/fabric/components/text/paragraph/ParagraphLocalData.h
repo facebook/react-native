@@ -22,11 +22,8 @@ using SharedParagraphLocalData = std::shared_ptr<const ParagraphLocalData>;
  * LocalData for <Paragraph> component.
  * Represents what to render and how to render.
  */
-class ParagraphLocalData:
-  public LocalData {
-
-public:
-
+class ParagraphLocalData : public LocalData {
+ public:
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
@@ -50,8 +47,7 @@ public:
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
-private:
-
+ private:
   AttributedString attributedString_;
   SharedTextLayoutManager textLayoutManager_;
 };

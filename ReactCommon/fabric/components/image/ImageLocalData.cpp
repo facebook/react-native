@@ -29,9 +29,7 @@ std::string ImageLocalData::getDebugName() const {
 }
 
 SharedDebugStringConvertibleList ImageLocalData::getDebugProps() const {
-  return {
-    debugStringConvertibleItem("imageSource", imageSource_)
-  };
+  return {debugStringConvertibleItem("imageSource", imageSource_)};
 }
 #endif
 

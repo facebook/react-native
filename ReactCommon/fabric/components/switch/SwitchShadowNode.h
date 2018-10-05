@@ -19,12 +19,10 @@ extern const char SwitchComponentName[];
 /*
  * `ShadowNode` for <Switch> component.
  */
-using SwitchShadowNode =
-  ConcreteViewShadowNode<
+using SwitchShadowNode = ConcreteViewShadowNode<
     SwitchComponentName,
     SwitchProps,
-    SwitchEventEmitter
-  >;
+    SwitchEventEmitter>;
 
 } // namespace react
 } // namespace facebook

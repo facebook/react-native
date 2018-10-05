@@ -13,16 +13,13 @@ namespace facebook {
 namespace react {
 
 AccessibleShadowNode::AccessibleShadowNode(
-  const SharedAccessibilityProps &props
-) {
+    const SharedAccessibilityProps &props) {
   assert(props);
 }
 
 AccessibleShadowNode::AccessibleShadowNode(
-  const AccessibleShadowNode &shadowNode,
-  const SharedAccessibilityProps &props
-) {
-}
+    const AccessibleShadowNode &shadowNode,
+    const SharedAccessibilityProps &props) {}
 
 } // namespace react
 } // namespace facebook

@@ -8,8 +8,8 @@
 #pragma once
 
 #include <fabric/core/LocalData.h>
-#include <fabric/imagemanager/primitives.h>
 #include <fabric/imagemanager/ImageRequest.h>
+#include <fabric/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -22,14 +22,10 @@ using SharedImageLocalData = std::shared_ptr<const ImageLocalData>;
  * LocalData for <Image> component.
  * Represents the image request state and (possible) retrieved image bitmap.
  */
-class ImageLocalData:
-  public LocalData {
-
-public:
-
-  ImageLocalData(const ImageSource &imageSource, ImageRequest imageRequest):
-    imageSource_(imageSource),
-    imageRequest_(std::move(imageRequest)) {};
+class ImageLocalData : public LocalData {
+ public:
+  ImageLocalData(const ImageSource &imageSource, ImageRequest imageRequest)
+      : imageSource_(imageSource), imageRequest_(std::move(imageRequest)){};
 
   /*
    * Returns stored ImageSource object.
@@ -49,8 +45,7 @@ public:
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
-private:
-
+ private:
   ImageSource imageSource_;
   ImageRequest imageRequest_;
 };
