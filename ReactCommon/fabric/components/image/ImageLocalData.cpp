@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@ const ImageRequest &ImageLocalData::getImageRequest() const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ImageLocalData::getDebugName() const {
   return "ImageLocalData";
 }
@@ -32,6 +33,7 @@ SharedDebugStringConvertibleList ImageLocalData::getDebugProps() const {
     debugStringConvertibleItem("imageSource", imageSource_)
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

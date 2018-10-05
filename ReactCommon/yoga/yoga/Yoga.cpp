@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -196,6 +196,10 @@ void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
 
 bool YGNodeGetHasNewLayout(YGNodeRef node) {
   return node->getHasNewLayout();
+}
+
+void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
+  config->printTree = enabled;
 }
 
 void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
@@ -3535,7 +3539,6 @@ static void YGNodelayoutImpl(
 }
 
 uint32_t gDepth = 0;
-bool gPrintTree = false;
 bool gPrintChanges = false;
 bool gPrintSkips = false;
 
@@ -4111,7 +4114,7 @@ void YGNodeCalculateLayout(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
 
-    if (gPrintTree) {
+    if (node->getConfig()->printTree) {
       YGNodePrint(
           node,
           (YGPrintOptions)(
@@ -4163,7 +4166,7 @@ void YGNodeCalculateLayout(
       node->setLayoutDoesLegacyFlagAffectsLayout(
           !originalNode->isLayoutTreeEqualToNode(*node));
 
-      if (gPrintTree) {
+      if (originalNode->getConfig()->printTree) {
         YGNodePrint(
             originalNode,
             (YGPrintOptions)(

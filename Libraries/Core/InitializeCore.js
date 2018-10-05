@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,9 +91,6 @@ polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
   require('regenerator-runtime/runtime');
   return global.regeneratorRuntime;
 });
@@ -214,9 +211,6 @@ if (__DEV__) {
 
     // Set up inspector
     const JSInspector = require('JSInspector');
-    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.56 was deployed. To see the error
-     * delete this comment and run Flow. */
     JSInspector.registerAgent(require('NetworkAgent'));
   }
 }

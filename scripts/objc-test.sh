@@ -1,6 +1,9 @@
 #!/bin/bash
-set -ex
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # Script used to run iOS and tvOS tests.
 # Environment variables are used to configure what test to run.
 # If not arguments are passed to the script, it will only compile
@@ -8,6 +11,8 @@ set -ex
 # If the script is called with a single argument "test", we'll
 # also run the RNTester integration test (needs JS and packager).
 # ./objc-test.sh test
+
+set -ex
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)

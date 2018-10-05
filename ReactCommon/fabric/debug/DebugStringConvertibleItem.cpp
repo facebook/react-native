@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,8 @@
 
 namespace facebook {
 namespace react {
+
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 DebugStringConvertibleItem::DebugStringConvertibleItem(
   const std::string &name,
@@ -36,6 +38,8 @@ SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugProps() con
 SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren() const {
   return children_;
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

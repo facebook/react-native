@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,8 +27,9 @@ YogaStylableProps::YogaStylableProps(const YogaStylableProps &sourceProps, const
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  YGStyle defaultYogaStyle;
+  auto defaultYogaStyle = YGStyle {};
   return {
     debugStringConvertibleItem("direction", yogaStyle.direction, defaultYogaStyle.direction),
     debugStringConvertibleItem("flexDirection", yogaStyle.flexDirection, defaultYogaStyle.flexDirection),
@@ -54,6 +55,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
     debugStringConvertibleItem("aspectRatio", yogaStyle.aspectRatio, defaultYogaStyle.aspectRatio),
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

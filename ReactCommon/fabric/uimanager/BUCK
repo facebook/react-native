@@ -1,6 +1,6 @@
-load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
-    "//ReactNative:DEFS.bzl",
+    "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
     "fb_xplat_cxx_test",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ var ReactNative = require('react-native');
 var {Image, StyleSheet, Text, View} = ReactNative;
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
+const TextLegend = require('./Shared/TextLegend');
 
 class Entity extends React.Component<$FlowFixMeProps> {
   render() {
@@ -86,6 +87,9 @@ class TextExample extends React.Component<{}> {
           <Text style={{padding: 10}}>
             This text is indented by 10px padding on all sides.
           </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text metrics legend">
+          <TextLegend />
         </RNTesterBlock>
         <RNTesterBlock title="Font Family">
           <Text style={{fontFamily: 'sans-serif'}}>Sans-Serif</Text>

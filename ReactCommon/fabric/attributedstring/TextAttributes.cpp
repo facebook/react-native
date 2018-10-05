@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,8 +53,69 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   layoutDirection = textAttributes.layoutDirection.hasValue() ? textAttributes.layoutDirection : layoutDirection;
 }
 
+#pragma mark - Operators
+
+bool TextAttributes::operator==(const TextAttributes &rhs) const {
+  return
+    std::tie(
+      foregroundColor,
+      backgroundColor,
+      opacity,
+      fontFamily,
+      fontSize,
+      fontSizeMultiplier,
+      fontWeight,
+      fontStyle,
+      fontVariant,
+      allowFontScaling,
+      letterSpacing,
+      lineHeight,
+      alignment,
+      baseWritingDirection,
+      textDecorationColor,
+      textDecorationLineType,
+      textDecorationLineStyle,
+      textDecorationLinePattern,
+      textShadowOffset,
+      textShadowRadius,
+      textShadowColor,
+      isHighlighted,
+      layoutDirection
+    ) ==
+    std::tie(
+      rhs.foregroundColor,
+      rhs.backgroundColor,
+      rhs.opacity,
+      rhs.fontFamily,
+      rhs.fontSize,
+      rhs.fontSizeMultiplier,
+      rhs.fontWeight,
+      rhs.fontStyle,
+      rhs.fontVariant,
+      rhs.allowFontScaling,
+      rhs.letterSpacing,
+      rhs.lineHeight,
+      rhs.alignment,
+      rhs.baseWritingDirection,
+      rhs.textDecorationColor,
+      rhs.textDecorationLineType,
+      rhs.textDecorationLineStyle,
+      rhs.textDecorationLinePattern,
+      rhs.textShadowOffset,
+      rhs.textShadowRadius,
+      rhs.textShadowColor,
+      rhs.isHighlighted,
+      rhs.layoutDirection
+    );
+}
+
+bool TextAttributes::operator!=(const TextAttributes &rhs) const {
+  return !(*this == rhs);
+}
+
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
   return {
     // Color
@@ -93,6 +154,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
     debugStringConvertibleItem("layoutDirection", layoutDirection),
   };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

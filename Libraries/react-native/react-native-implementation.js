@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,9 +65,6 @@ const ReactNative = {
   },
   get Modal() {
     return require('Modal');
-  },
-  get NavigatorIOS() {
-    return require('NavigatorIOS');
   },
   get Picker() {
     return require('Picker');
@@ -304,13 +301,13 @@ const ReactNative = {
 
   // Prop Types
   get ColorPropType() {
-    return require('ColorPropType');
+    return require('DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
-    return require('EdgeInsetsPropType');
+    return require('DeprecatedEdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('PointPropType');
+    return require('DeprecatedPointPropType');
   },
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
@@ -322,6 +319,13 @@ const ReactNative = {
       false,
       'Navigator is deprecated and has been removed from this package. It can now be installed ' +
         'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
+        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
+    );
+  },
+  get NavigatorIOS() {
+    invariant(
+      false,
+      'NavigatorIOS is deprecated and has been removed from this package. ' +
         'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
     );
   },

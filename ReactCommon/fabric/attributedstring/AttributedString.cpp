@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,30 @@ namespace react {
 
 using Fragment = AttributedString::Fragment;
 using Fragments = AttributedString::Fragments;
+
+#pragma mark - Fragment
+
+bool Fragment::operator==(const Fragment &rhs) const {
+  return
+    std::tie(
+      string,
+      textAttributes,
+      shadowNode,
+      parentShadowNode
+    ) ==
+    std::tie(
+      rhs.string,
+      rhs.textAttributes,
+      rhs.shadowNode,
+      rhs.parentShadowNode
+    );
+}
+
+bool Fragment::operator!=(const Fragment &rhs) const {
+  return !(*this == rhs);
+}
+
+#pragma mark - AttributedString
 
 void AttributedString::appendFragment(const Fragment &fragment) {
   ensureUnsealed();
@@ -40,17 +64,26 @@ const std::vector<Fragment> &AttributedString::getFragments() const {
 }
 
 std::string AttributedString::getString() const {
-  std::string string;
+  auto string = std::string {};
   for (const auto &fragment : fragments_) {
     string += fragment.string;
   }
   return string;
 }
 
+bool AttributedString::operator==(const AttributedString &rhs) const {
+  return fragments_ != rhs.fragments_;
+}
+
+bool AttributedString::operator!=(const AttributedString &rhs) const {
+  return !(*this == rhs);
+}
+
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
-  SharedDebugStringConvertibleList list = {};
+  auto list = SharedDebugStringConvertibleList {};
 
   for (auto &&fragment : fragments_) {
     auto propsList = fragment.textAttributes.DebugStringConvertible::getDebugProps();
@@ -71,6 +104,7 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
 
   return list;
 }
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -91,6 +91,32 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(EllipsizeMode elli
   }
 
   return textStorage;
+}
+
+- (SharedShadowNode)getParentShadowNodeWithAttributeString:(AttributedString)attributedString
+                                       paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                     frame:(CGRect)frame
+                                                   atPoint:(CGPoint)point {
+  NSTextStorage *textStorage =
+    [self _textStorageAndLayoutManagerWithAttributesString:RCTNSAttributedStringFromAttributedString(attributedString)
+                                     paragraphAttributes:paragraphAttributes
+                                                    size:frame.size];
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+
+  CGFloat fraction;
+  NSUInteger characterIndex = [layoutManager characterIndexForPoint:point
+                                                    inTextContainer:textContainer
+                           fractionOfDistanceBetweenInsertionPoints:&fraction];
+
+  // If the point is not before (fraction == 0.0) the first character and not
+  // after (fraction == 1.0) the last character, then the attribute is valid.
+  if (textStorage.length > 0 && (fraction > 0 || characterIndex > 0) && (fraction < 1 || characterIndex < textStorage.length - 1)) {
+    RCTSharedShadowNodeWrapper *parentShadowNode = (RCTSharedShadowNodeWrapper *)[textStorage attribute:RCTAttributedStringParentShadowNode atIndex:characterIndex effectiveRange:NULL];
+    return parentShadowNode.node;
+  }
+
+  return nil;
 }
 
 @end

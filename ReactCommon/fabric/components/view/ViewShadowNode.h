@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,12 +15,21 @@ namespace react {
 
 extern const char ViewComponentName[];
 
-using ViewShadowNode =
-  ConcreteViewShadowNode<
+/*
+ * `ShadowNode` for <View> component.
+ */
+class ViewShadowNode final:
+  public ConcreteViewShadowNode<
     ViewComponentName,
     ViewProps,
     ViewEventEmitter
-  >;
+  > {
+
+public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  bool isLayoutOnly() const;
+};
 
 } // namespace react
 } // namespace facebook

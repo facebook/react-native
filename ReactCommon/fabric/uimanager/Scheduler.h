@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -6,6 +6,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
@@ -28,17 +29,30 @@ class Scheduler final:
   public ShadowTreeDelegate {
 
 public:
-
   Scheduler(const SharedContextContainer &contextContainer);
   ~Scheduler();
 
-#pragma mark - Shadow Tree Management
+#pragma mark - Surface Management
 
-  void registerRootTag(Tag rootTag);
-  void unregisterRootTag(Tag rootTag);
+  void startSurface(
+    SurfaceId surfaceId,
+    const std::string &moduleName,
+    const folly::dynamic &initialProps
+  ) const;
 
-  Size measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  void constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext);
+  void stopSurface(SurfaceId surfaceId) const;
+
+  Size measureSurface(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  ) const;
+
+  void constraintSurfaceLayout(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  ) const;
 
 #pragma mark - Delegate
 
@@ -57,7 +71,7 @@ public:
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) override;
+  void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const override;
 
 #pragma mark - Deprecated
 
@@ -67,10 +81,10 @@ public:
   std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
 
 private:
-
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
-  std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
+  mutable std::mutex mutex_;
+  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>> shadowTreeRegistry_; // Protected by `mutex_`.
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
 };

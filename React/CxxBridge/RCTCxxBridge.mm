@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -549,6 +549,9 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray *moduleClassesCopy = [moduleClasses copy];
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
   for (Class moduleClass in moduleClassesCopy) {
+    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      continue;
+    }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
 
     // Check for module name collisions
@@ -651,7 +654,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
 
   if (lazilyDiscovered) {
-#ifdef RCT_DEBUG
+#if RCT_DEBUG
     // Lazily discovered modules do not require instantiation here,
     // as they are not allowed to have pre-instantiated instance
     // and must not require the main queue.
@@ -1258,6 +1261,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
       callback(logData);
       #if WITH_FBSYSTRACE
+      if (![RCTFBSystrace verifyTraceSize:logData.length]) {
+        RCTLogWarn(@"Your FBSystrace trace might be truncated, try to bump up the buffer size"
+                   " in RCTFBSystrace.m or capture a shorter trace");
+      }
       [RCTFBSystrace unregisterCallbacks];
       #endif
     });

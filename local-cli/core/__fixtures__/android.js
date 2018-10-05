@@ -1,7 +1,14 @@
-/** @format */
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
 
 const fs = require.requireActual('fs');
-const path = require('path');
+const path = require.requireActual('path');
 
 const manifest = fs.readFileSync(
   path.join(__dirname, './files/AndroidManifest.xml'),

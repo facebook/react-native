@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,12 +19,11 @@ void EventBeat::beat() const {
     return;
   }
 
-  if (!beatCallback_) {
-    return;
-  }
-
-  beatCallback_();
   isRequested_ = false;
+
+  if (beatCallback_) {
+    beatCallback_();
+  }
 }
 
 void EventBeat::induce() const {

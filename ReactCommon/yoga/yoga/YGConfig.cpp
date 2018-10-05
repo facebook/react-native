@@ -1,10 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #include "YGConfig.h"
 
 const std::array<bool, YGExperimentalFeatureCount>
@@ -15,5 +15,8 @@ YGConfig::YGConfig(YGLogger logger)
       useWebDefaults(false),
       useLegacyStretchBehaviour(false),
       shouldDiffLayoutWithoutLegacyStretchBehaviour(false),
-      pointScaleFactor(1.0f), logger(logger), cloneNodeCallback(nullptr),
-      context(nullptr) {}
+      pointScaleFactor(1.0f),
+      logger(logger),
+      cloneNodeCallback(nullptr),
+      context(nullptr),
+      printTree(false) {}

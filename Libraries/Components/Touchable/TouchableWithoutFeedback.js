@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
 const TimerMixin = require('react-timer-mixin');
@@ -59,6 +59,8 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
+  onBlur?: ?Function,
+  onFocus?: ?Function,
   onLayout?: ?Function,
   onLongPress?: ?Function,
   onPress?: ?Function,
@@ -154,7 +156,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: EdgeInsetsPropType,
+    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
      * added to `pressRetentionOffset` when moving off of the button.
@@ -163,7 +165,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
-    hitSlop: EdgeInsetsPropType,
+    hitSlop: DeprecatedEdgeInsetsPropType,
   },
 
   getInitialState: function() {

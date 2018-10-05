@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -27,19 +27,20 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ActivityIndicatorViewProps>();
+    _props = defaultProps;
+
     _activityIndicatorView = [[UIActivityIndicatorView alloc] initWithFrame:self.bounds];
     _activityIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    const auto &defaultProps = ActivityIndicatorViewProps();
-
-    if (defaultProps.animating) {
+    if (defaultProps->animating) {
       [_activityIndicatorView startAnimating];
     } else {
       [_activityIndicatorView stopAnimating];
     }
-    _activityIndicatorView.color = [UIColor colorWithCGColor:defaultProps.color.get()];
-    _activityIndicatorView.hidesWhenStopped = defaultProps.hidesWhenStopped;
-    _activityIndicatorView.activityIndicatorViewStyle = convertActivityIndicatorViewStyle(defaultProps.size);
+    _activityIndicatorView.color = [UIColor colorWithCGColor:defaultProps->color.get()];
+    _activityIndicatorView.hidesWhenStopped = defaultProps->hidesWhenStopped;
+    _activityIndicatorView.activityIndicatorViewStyle = convertActivityIndicatorViewStyle(defaultProps->size);
 
     [self addSubview:_activityIndicatorView];
   }
@@ -49,15 +50,10 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
-  if (!oldProps) {
-    oldProps = _props ?: std::make_shared<ActivityIndicatorViewProps>();
-  }
-  _props = props;
+  const auto &oldViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(oldProps ?: _props);
+  const auto &newViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(props);
 
   [super updateProps:props oldProps:oldProps];
-
-  auto oldViewProps = *std::dynamic_pointer_cast<const ActivityIndicatorViewProps>(oldProps);
-  auto newViewProps = *std::dynamic_pointer_cast<const ActivityIndicatorViewProps>(props);
 
   if (oldViewProps.animating != newViewProps.animating) {
     if (newViewProps.animating) {
