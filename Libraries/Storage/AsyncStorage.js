@@ -327,14 +327,14 @@ const AsyncStorage = {
   },
 
   /**
-    * Call this set the storage location.
-    * @param storageLocation The storage location. Can be 'documents' or 'applicationSupport'.
-    *
-    * **Note**: changing this only sets the location for future actions and does not migrate
-    * the store from the previous location.
-    *
-    * @platform ios
-    */
+   * Call this set the storage location.
+   * @param storageLocation The storage location. Can be 'documents' or 'applicationSupport'.
+   *
+   * **Note**: changing this only sets the location for future actions and does not migrate
+   * the store from the previous location.
+   *
+   * @platform ios
+   */
   setStorageLocationIOS: function(storageLocation: string) {
     RCTAsyncStorage.setStorageLocation(storageLocation);
   },
@@ -342,7 +342,7 @@ const AsyncStorage = {
   StorageLocationIOS: {
     documents: 'documents',
     applicationSupport: 'applicationSupport',
-  }
+  },
 };
 
 // Not all native implementations support merge.

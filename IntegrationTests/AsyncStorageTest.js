@@ -66,7 +66,7 @@ function expectAsyncNoError(place, err) {
 }
 
 function getCurrentStorageDescription(isAlternativeStorage: boolean) {
-  return isAlternativeStorage ? 'from application support' : 'from documents'
+  return isAlternativeStorage ? 'from application support' : 'from documents';
 }
 
 function testSetAndGet(isAlternativeStorage: boolean) {
@@ -75,9 +75,17 @@ function testSetAndGet(isAlternativeStorage: boolean) {
     AsyncStorage.getItem(KEY_1, (err2, result) => {
       expectAsyncNoError('testSetAndGet/getItem', err2);
       expectEqual(result, VAL_1, 'testSetAndGet setItem');
-      updateMessage(`get(key_1) correctly returned ${getCurrentStorageDescription(isAlternativeStorage)}: ${result}`);
-      runTestCase(`should get null for missing key ${getCurrentStorageDescription(isAlternativeStorage)}`,
-                  () => testMissingGet(isAlternativeStorage));
+      updateMessage(
+        `get(key_1) correctly returned ${getCurrentStorageDescription(
+          isAlternativeStorage,
+        )}: ${result}`,
+      );
+      runTestCase(
+        `should get null for missing key ${getCurrentStorageDescription(
+          isAlternativeStorage,
+        )}`,
+        () => testMissingGet(isAlternativeStorage),
+      );
     });
   });
 }
@@ -86,9 +94,17 @@ function testMissingGet(isAlternativeStorage: boolean) {
   AsyncStorage.getItem(KEY_2, (err, result) => {
     expectAsyncNoError('testMissingGet/setItem', err);
     expectEqual(result, null, 'testMissingGet');
-    updateMessage(`missing get(key_2) correctly returned ${getCurrentStorageDescription(isAlternativeStorage)}: ${result}`);
-    runTestCase(`check set twice results in a single key ${getCurrentStorageDescription(isAlternativeStorage)}`,
-                () => testSetTwice(isAlternativeStorage));
+    updateMessage(
+      `missing get(key_2) correctly returned ${getCurrentStorageDescription(
+        isAlternativeStorage,
+      )}: ${result}`,
+    );
+    runTestCase(
+      `check set twice results in a single key ${getCurrentStorageDescription(
+        isAlternativeStorage,
+      )}`,
+      () => testSetTwice(isAlternativeStorage),
+    );
   });
 }
 
@@ -98,9 +114,17 @@ function testSetTwice(isAlternativeStorage: boolean) {
       AsyncStorage.getItem(KEY_1, (err, result) => {
         expectAsyncNoError('testSetTwice/setItem', err);
         expectEqual(result, VAL_1, 'testSetTwice');
-        updateMessage(`setTwice ${getCurrentStorageDescription(isAlternativeStorage)} worked as expected`);
-        runTestCase(`test removeItem ${getCurrentStorageDescription(isAlternativeStorage)}`,
-                    () => testRemoveItem(isAlternativeStorage));
+        updateMessage(
+          `setTwice ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )} worked as expected`,
+        );
+        runTestCase(
+          `test removeItem ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )}`,
+          () => testRemoveItem(isAlternativeStorage),
+        );
       });
     });
   });
@@ -113,29 +137,55 @@ function testRemoveItem(isAlternativeStorage: boolean) {
         expectAsyncNoError('testRemoveItem/getAllKeys', err);
         expectTrue(
           result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
-          `Missing KEY_1 or KEY_2 ${getCurrentStorageDescription(isAlternativeStorage)} in ' + '(' + result + ')`,
+          `Missing KEY_1 or KEY_2 ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )} in ' + '(' + result + ')`,
         );
-        updateMessage(`testRemoveItem ${getCurrentStorageDescription(isAlternativeStorage)} - add two items`);
+        updateMessage(
+          `testRemoveItem ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )} - add two items`,
+        );
         AsyncStorage.removeItem(KEY_1, err2 => {
           expectAsyncNoError('testRemoveItem/removeItem', err2);
-          updateMessage(`delete successful ${getCurrentStorageDescription(isAlternativeStorage)} `);
+          updateMessage(
+            `delete successful ${getCurrentStorageDescription(
+              isAlternativeStorage,
+            )} `,
+          );
           AsyncStorage.getItem(KEY_1, (err3, result2) => {
             expectAsyncNoError('testRemoveItem/getItem', err3);
             expectEqual(
               result2,
               null,
-              `testRemoveItem ${getCurrentStorageDescription(isAlternativeStorage)}: key_1 present after delete`,
+              `testRemoveItem ${getCurrentStorageDescription(
+                isAlternativeStorage,
+              )}: key_1 present after delete`,
             );
-            updateMessage(`key properly removed ${getCurrentStorageDescription(isAlternativeStorage)} `);
+            updateMessage(
+              `key properly removed ${getCurrentStorageDescription(
+                isAlternativeStorage,
+              )} `,
+            );
             AsyncStorage.getAllKeys((err4, result3) => {
               expectAsyncNoError('testRemoveItem/getAllKeys', err4);
               expectTrue(
                 result3.indexOf(KEY_1) === -1,
-                `Unexpected: KEY_1 present in ${result3} ${getCurrentStorageDescription(isAlternativeStorage)}`,
+                `Unexpected: KEY_1 present in ${result3} ${getCurrentStorageDescription(
+                  isAlternativeStorage,
+                )}`,
               );
-              updateMessage(`proper length returned ${getCurrentStorageDescription(isAlternativeStorage)}.`);
-              runTestCase(`should merge values ${getCurrentStorageDescription(isAlternativeStorage)}`,
-                          () => testMerge(isAlternativeStorage));
+              updateMessage(
+                `proper length returned ${getCurrentStorageDescription(
+                  isAlternativeStorage,
+                )}.`,
+              );
+              runTestCase(
+                `should merge values ${getCurrentStorageDescription(
+                  isAlternativeStorage,
+                )}`,
+                () => testMerge(isAlternativeStorage),
+              );
             });
           });
         });
@@ -152,9 +202,17 @@ function testMerge(isAlternativeStorage: boolean) {
       AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
         expectAsyncNoError('testMerge/setItem', err3);
         expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
-        updateMessage(`objects ${getCurrentStorageDescription(isAlternativeStorage)} deeply merged\nDone!`);
-        runTestCase(`multi set and get ${getCurrentStorageDescription(isAlternativeStorage)}`,
-                    () =>testOptimizedMultiGet(isAlternativeStorage));
+        updateMessage(
+          `objects ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )} deeply merged\nDone!`,
+        );
+        runTestCase(
+          `multi set and get ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )}`,
+          () => testOptimizedMultiGet(isAlternativeStorage),
+        );
       });
     });
   });
@@ -169,7 +227,13 @@ function testOptimizedMultiGet(isAlternativeStorage: boolean) {
       expectAsyncNoError(`${i} testOptimizedMultiGet/multiSet`, err1);
       AsyncStorage.multiGet(keys, (err2, result) => {
         expectAsyncNoError(`${i} testOptimizedMultiGet/multiGet`, err2);
-        expectEqual(result, batch, `${i} ${getCurrentStorageDescription(isAlternativeStorage)} testOptimizedMultiGet multiGet`);
+        expectEqual(
+          result,
+          batch,
+          `${i} ${getCurrentStorageDescription(
+            isAlternativeStorage,
+          )} testOptimizedMultiGet multiGet`,
+        );
         updateMessage(
           `multiGet([key_1, key_2]) correctly returned 
           ${JSON.stringify(result)} 
@@ -178,7 +242,10 @@ function testOptimizedMultiGet(isAlternativeStorage: boolean) {
         if (isAlternativeStorage) {
           done();
         } else {
-          runTestCase('changing storage location and repeat tests', testChangeStorage);
+          runTestCase(
+            'changing storage location and repeat tests',
+            testChangeStorage,
+          );
         }
       });
     });
@@ -186,9 +253,14 @@ function testOptimizedMultiGet(isAlternativeStorage: boolean) {
 }
 
 function testChangeStorage() {
-  AsyncStorage.setStorageLocationIOS(AsyncStorage.StorageLocationIOS.applicationSupport);
+  AsyncStorage.setStorageLocationIOS(
+    AsyncStorage.StorageLocationIOS.applicationSupport,
+  );
   AsyncStorage.clear(() =>
-    runTestCase('testSetAndGet - on application support', () => testSetAndGet(true)));
+    runTestCase('testSetAndGet - on application support', () =>
+      testSetAndGet(true),
+    ),
+  );
 }
 
 class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
