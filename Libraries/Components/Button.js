@@ -150,21 +150,21 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
   }),
-  text: Platform.select({
-    ios: {
-      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
-      color: '#007AFF',
-      textAlign: 'center',
-      padding: 8,
-      fontSize: 18,
-    },
-    android: {
-      color: 'white',
-      textAlign: 'center',
-      padding: 8,
-      fontWeight: '500',
-    },
-  }),
+  text: {
+    textAlign: 'center',
+    padding: 8,
+    ...Platform.select({
+      ios: {
+        // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+        color: '#007AFF',
+        fontSize: 18,
+      },
+      android: {
+        color: 'white',
+        fontWeight: '500',
+      },
+    }),
+  },
   buttonDisabled: Platform.select({
     ios: {},
     android: {
