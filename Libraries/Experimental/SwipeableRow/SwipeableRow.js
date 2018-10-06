@@ -248,12 +248,16 @@ const SwipeableRow = createReactClass({
   },
 
   _swipeFullSpeed(gestureState: GestureState): void {
-    this.state.currentLeft.setValue(PixelRatio.roundToNearestPixel(this._previousLeft + gestureState.dx));
+    this.state.currentLeft.setValue(
+      PixelRatio.roundToNearestPixel(this._previousLeft + gestureState.dx)
+    );
   },
 
   _swipeSlowSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(
-      PixelRatio.roundToNearestPixel(this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR),
+      PixelRatio.roundToNearestPixel(
+        this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR
+      ),
     );
   },
 
