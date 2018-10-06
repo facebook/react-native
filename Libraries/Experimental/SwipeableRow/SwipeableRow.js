@@ -16,6 +16,7 @@ const PanResponder = require('PanResponder');
 const React = require('React');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
+const PixelRatio = require('PixelRatio');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -247,12 +248,12 @@ const SwipeableRow = createReactClass({
   },
 
   _swipeFullSpeed(gestureState: GestureState): void {
-    this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
+    this.state.currentLeft.setValue(PixelRatio.roundToNearestPixel(this._previousLeft + gestureState.dx));
   },
 
   _swipeSlowSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(
-      this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR,
+      PixelRatio.roundToNearestPixel(this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR),
     );
   },
 
