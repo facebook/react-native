@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -570,7 +570,9 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (child == null) {
+            FLog.e(TAG, "Unable to drop null child view");
+        } else if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }

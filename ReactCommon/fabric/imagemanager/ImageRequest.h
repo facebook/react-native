@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,9 +26,7 @@ namespace react {
  * Destroy to cancel the underlying request.
  */
 class ImageRequest final {
-
-public:
-
+ public:
   /*
    * The exception which is thrown when `ImageRequest` is being deallocated
    * if the future is not ready yet.
@@ -39,7 +37,11 @@ public:
    * `ImageRequest` is constructed with `ImageSource` and
    * `ImageResponse` future which must be moved in inside the object.
    */
-  ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture);
+  ImageRequest(
+      const ImageSource &imageSource,
+      folly::Future<ImageResponse> &&responseFuture);
+
+  ImageRequest();
 
   /*
    * The move constructor.
@@ -60,8 +62,7 @@ public:
    */
   folly::Future<ImageResponse> getResponseFuture() const;
 
-private:
-
+ private:
   /*
    * Mutext to protect an access to the future.
    */
@@ -80,7 +81,7 @@ private:
   /*
    * Indicates that the object was moved and hence cannot be used anymore.
    */
-  bool moved_ {false};
+  bool moved_{false};
 };
 
 } // namespace react

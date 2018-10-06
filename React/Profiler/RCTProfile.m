@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -76,14 +76,16 @@ static systrace_arg_t *newSystraceArgsFromDictionary(NSDictionary<NSString *, NS
   }
 
   systrace_arg_t *systrace_args = malloc(sizeof(systrace_arg_t) * args.count);
-  __block size_t i = 0;
-  [args enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
-    systrace_args[i].key = [key UTF8String];
-    systrace_args[i].key_len = [key length];
-    systrace_args[i].value = [value UTF8String];
-    systrace_args[i].value_len = [value length];
-    i++;
-  }];
+  if (systrace_args) {
+    __block size_t i = 0;
+    [args enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
+      systrace_args[i].key = [key UTF8String];
+      systrace_args[i].key_len = [key length];
+      systrace_args[i].value = [value UTF8String];
+      systrace_args[i].value_len = [value length];
+      i++;
+    }];
+  }
   return systrace_args;
 }
 

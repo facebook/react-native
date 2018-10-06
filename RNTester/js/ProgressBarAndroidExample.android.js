@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,11 +16,9 @@ var createReactClass = require('create-react-class');
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
 
-var TimerMixin = require('react-timer-mixin');
-
 var MovingBar = createReactClass({
   displayName: 'MovingBar',
-  mixins: [TimerMixin],
+  _intervalID: (null: ?IntervalID),
 
   getInitialState: function() {
     return {
@@ -29,10 +27,16 @@ var MovingBar = createReactClass({
   },
 
   componentDidMount: function() {
-    this.setInterval(() => {
+    this._intervalID = setInterval(() => {
       var progress = (this.state.progress + 0.02) % 1;
       this.setState({progress: progress});
     }, 50);
+  },
+
+  componentWillUnmount: function() {
+    if (this._intervalID != null) {
+      clearInterval(this._intervalID);
+    }
   },
 
   render: function() {
@@ -48,6 +52,8 @@ class ProgressBarAndroidExample extends React.Component<{}> {
     return (
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" />
         </RNTesterBlock>
 
@@ -56,6 +62,8 @@ class ProgressBarAndroidExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Horizontal Black Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" color="black" />
         </RNTesterBlock>
 

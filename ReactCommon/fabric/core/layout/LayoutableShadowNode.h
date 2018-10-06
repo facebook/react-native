@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,11 +21,6 @@ namespace react {
 
 struct LayoutConstraints;
 struct LayoutContext;
-
-class LayoutableShadowNode;
-using SharedLayoutableShadowNode = std::shared_ptr<const LayoutableShadowNode>;
-using SharedLayoutableShadowNodeList = std::vector<SharedLayoutableShadowNode>;
-using LayoutableShadowNodeIterator = std::iterator<std::input_iterator_tag, const SharedLayoutableShadowNode>;
 
 /*
  * Describes all sufficient layout API (in approach-agnostic way)
@@ -56,6 +51,13 @@ public:
    * Returns layout metrics computed during previous layout pass.
    */
   virtual LayoutMetrics getLayoutMetrics() const;
+
+  /*
+   * Returns `true` if the node represents only information necessary for
+   * layout computation and can be safely removed from view hierarchy.
+   * Default implementation returns `false`.
+   */
+  virtual bool isLayoutOnly() const;
 
 protected:
 
@@ -90,13 +92,13 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual SharedLayoutableShadowNodeList getLayoutableChildNodes() const = 0;
+  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
    */
-  virtual SharedLayoutableShadowNode cloneAndReplaceChild(const SharedLayoutableShadowNode &child) = 0;
+  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) = 0;
 
   /*
    * Sets layout metrics for the shadow node.
@@ -106,7 +108,9 @@ protected:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
+#endif
 
 private:
   LayoutMetrics layoutMetrics_ {};

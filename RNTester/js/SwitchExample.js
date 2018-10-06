@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,17 +59,21 @@ class ColorSwitchExample extends React.Component<{}, $FlowFixMeState> {
       <View>
         <Switch
           onValueChange={value => this.setState({colorFalseSwitchIsOn: value})}
-          onTintColor="#00ff00"
           style={{marginBottom: 10}}
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorFalseSwitchIsOn}
         />
         <Switch
           onValueChange={value => this.setState({colorTrueSwitchIsOn: value})}
-          onTintColor="#00ff00"
-          thumbTintColor="#0000ff"
-          tintColor="#ff0000"
+          thumbColor="#0000ff"
+          trackColor={{
+            false: '#ff0000',
+            true: '#00ff00',
+          }}
           value={this.state.colorTrueSwitchIsOn}
         />
       </View>

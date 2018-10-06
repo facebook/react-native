@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,7 @@ const getPackageName = manifest => manifest.attr.package;
  * Gets android project config by analyzing given folder and taking some
  * defaults specified by user into consideration
  */
-exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
+exports.projectConfig = function projectConfigAndroid(folder, userConfig = {}) {
   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
 
   if (!src) {
@@ -95,7 +95,7 @@ exports.projectConfig = function projectConfigAndroid(folder, userConfig) {
  */
 exports.dependencyConfig = function dependencyConfigAndroid(
   folder,
-  userConfig,
+  userConfig = {},
 ) {
   const src = userConfig.sourceDir || findAndroidAppFolder(folder);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,7 @@ var {
   TouchableOpacity,
   Platform,
   TouchableNativeFeedback,
+  TouchableWithoutFeedback,
   View,
 } = ReactNative;
 
@@ -68,6 +69,12 @@ exports.examples = [
           </View>
         </View>
       );
+    },
+  },
+  {
+    title: '<TouchableWithoutFeedback>',
+    render: function() {
+      return <TouchableWithoutFeedbackBox />;
     },
   },
   {
@@ -150,6 +157,40 @@ exports.examples = [
   },
 ];
 
+class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  textOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
+  render() {
+    var textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableWithoutFeedback onPress';
+    }
+
+    return (
+      <View>
+        <TouchableWithoutFeedback onPress={this.textOnPress}>
+          <View style={styles.wrapperCustom}>
+            <Text style={styles.text}>Tap Here For No Feedback!</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View style={styles.logBox}>
+          <Text>{textLog}</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
@@ -195,8 +236,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
             accessibilityLabel="touchable feedback events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
+            accessibilityRole="button"
             onPress={() => this._appendEvent('press')}
             onPressIn={() => this._appendEvent('pressIn')}
             onPressOut={() => this._appendEvent('pressOut')}
@@ -360,6 +400,31 @@ class TouchableDisabled extends React.Component<{}> {
           onPress={() => console.log('custom THW text - highlight')}>
           <Text style={styles.button}>Enabled TouchableHighlight</Text>
         </TouchableHighlight>
+
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={true}>
+          <View style={styles.wrapperCustom}>
+            <Text
+              style={[
+                styles.button,
+                styles.nativeFeedbackButton,
+                styles.disabledButton,
+              ]}>
+              Disabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={false}>
+          <View style={styles.wrapperCustom}>
+            <Text style={[styles.button, styles.nativeFeedbackButton]}>
+              Enabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
 
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback

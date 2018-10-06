@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,6 @@ const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 const Subscribable = require('Subscribable');
-const TimerMixin = require('react-timer-mixin');
 
 const {View} = ReactNative;
 
@@ -27,7 +26,8 @@ const newReactViewHeight = 202;
 
 const ReactContentSizeUpdateTest = createReactClass({
   displayName: 'ReactContentSizeUpdateTest',
-  mixins: [Subscribable.Mixin, TimerMixin],
+  mixins: [Subscribable.Mixin],
+  _timeoutID: (null: ?TimeoutID),
 
   UNSAFE_componentWillMount: function() {
     this.addListenerOn(
@@ -52,9 +52,15 @@ const ReactContentSizeUpdateTest = createReactClass({
   },
 
   componentDidMount: function() {
-    this.setTimeout(() => {
+    this._timeoutID = setTimeout(() => {
       this.updateViewSize();
     }, 1000);
+  },
+
+  componentWillUnmount: function() {
+    if (this._timeoutID != null) {
+      clearTimeout(this._timeoutID);
+    }
   },
 
   rootViewDidChangeIntrinsicSize: function(intrinsicSize) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,7 @@ const ReactNative = require('ReactNative');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -222,7 +223,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
       [destX || 0, destY || 0],
     );
   },
@@ -230,7 +231,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
       [pressed],
     );
   },
@@ -238,7 +239,7 @@ const TouchableNativeFeedback = createReactClass({
   render: function() {
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       if (!Array.isArray(children)) {
         children = [children];
       }
@@ -269,8 +270,8 @@ const TouchableNativeFeedback = createReactClass({
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityTraits: this.props.accessibilityTraits,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,

@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'glog'
-  spec.version = '0.3.4'
+  spec.version = '0.3.5'
   spec.license = { :type => 'Google', :file => 'COPYING' }
   spec.homepage = 'https://github.com/google/glog'
   spec.summary = 'Google logging module'

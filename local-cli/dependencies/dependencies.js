@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,41 +15,19 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const path = require('path');
 
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
-function dependencies(argv, config, args, packagerInstance) {
+async function dependencies(argv, configPromise, args, packagerInstance) {
   const rootModuleAbsolutePath = args.entryFile;
+  const config = await configPromise;
   if (!fs.existsSync(rootModuleAbsolutePath)) {
     return Promise.reject(
       new Error(`File ${rootModuleAbsolutePath} does not exist`),
     );
   }
 
-  const transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : typeof config.getTransformModulePath === 'function'
-      ? config.getTransformModulePath()
-      : undefined;
-
-  const packageOpts = {
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    cacheStores: [],
-    projectRoot: config.getProjectRoot(),
-    blacklistRE: config.getBlacklistRE(),
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    getPolyfills: config.getPolyfills,
-    getTransformOptions: config.getTransformOptions,
-    hasteImplModulePath: config.hasteImplModulePath,
-    postMinifyProcess: config.postMinifyProcess,
-    transformModulePath: transformModulePath,
-    extraNodeModules: config.extraNodeModules,
-    verbose: config.verbose,
-    watchFolders: config.getWatchFolders(),
-    workerPath: config.getWorkerPath(),
-  };
+  config.cacheStores = [];
 
   const relativePath = path.relative(
-    packageOpts.projectRoot,
+    config.projectRoot,
     rootModuleAbsolutePath,
   );
 
@@ -66,29 +44,26 @@ function dependencies(argv, config, args, packagerInstance) {
     ? fs.createWriteStream(args.output)
     : process.stdout;
 
-  return Promise.resolve(
-    (packagerInstance
-      ? packagerInstance.getOrderedDependencyPaths(options)
-      : Metro.getOrderedDependencyPaths(packageOpts, options)
-    ).then(deps => {
-      deps.forEach(modulePath => {
-        // Temporary hack to disable listing dependencies not under this directory.
-        // Long term, we need either
-        // (a) JS code to not depend on anything outside this directory, or
-        // (b) Come up with a way to declare this dependency in Buck.
-        const isInsideProjectRoots =
-          packageOpts.watchFolders.filter(root => modulePath.startsWith(root))
-            .length > 0;
+  const deps = packagerInstance
+    ? await packagerInstance.getOrderedDependencyPaths(options)
+    : await Metro.getOrderedDependencyPaths(config, options);
 
-        if (isInsideProjectRoots) {
-          outStream.write(modulePath + '\n');
-        }
-      });
-      return writeToFile
-        ? denodeify(outStream.end).bind(outStream)()
-        : Promise.resolve();
-    }),
-  );
+  deps.forEach(modulePath => {
+    // Temporary hack to disable listing dependencies not under this directory.
+    // Long term, we need either
+    // (a) JS code to not depend on anything outside this directory, or
+    // (b) Come up with a way to declare this dependency in Buck.
+    const isInsideProjectRoots =
+      config.watchFolders.filter(root => modulePath.startsWith(root)).length >
+      0;
+
+    if (isInsideProjectRoots) {
+      outStream.write(modulePath + '\n');
+    }
+  });
+  return writeToFile
+    ? denodeify(outStream.end).bind(outStream)()
+    : Promise.resolve();
 }
 
 module.exports = {

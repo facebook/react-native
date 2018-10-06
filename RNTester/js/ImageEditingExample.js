@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,24 +25,27 @@ var {
 
 var PAGE_SIZE = 20;
 
-type ImageOffset = {
+type ImageOffset = {|
   x: number,
   y: number,
-};
+|};
 
-type ImageSize = {
+type ImageSize = {|
   width: number,
   height: number,
-};
+|};
 
-type ImageCropData = {
+type ImageCropData = {|
   offset: ImageOffset,
   size: ImageSize,
   displaySize?: ?ImageSize,
   resizeMode?: ?any,
-};
+|};
 
-class SquareImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class SquareImageCropper extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state: any;
   _isMounted: boolean;
   _transformData: ImageCropData;

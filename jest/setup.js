@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -92,7 +92,6 @@ jest
   })
   .mock('ensureComponentIsNative', () => () => true);
 
-const mockEmptyObject = {};
 const mockNativeModules = {
   AlertManager: {
     alertWithArgs: jest.fn(),
@@ -147,9 +146,6 @@ const mockNativeModules = {
     login: jest.fn(),
     logout: jest.fn(),
     queryGraphPath: jest.fn((path, method, params, callback) => callback()),
-  },
-  FbRelayNativeAdapter: {
-    updateCLC: jest.fn(),
   },
   GraphPhotoUpload: {
     upload: jest.fn(),
@@ -257,6 +253,7 @@ const mockNativeModules = {
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
+    getViewManagerConfig: jest.fn(),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),

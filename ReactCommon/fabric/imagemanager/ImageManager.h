@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,14 +23,13 @@ using SharedImageManager = std::shared_ptr<ImageManager>;
  * Cross platform facade for iOS-specific RCTImageManager.
  */
 class ImageManager {
-public:
-
+ public:
   ImageManager(void *platformSpecificCounterpart);
   ~ImageManager();
 
   ImageRequest requestImage(const ImageSource &imageSource) const;
 
-private:
+ private:
   void *self_;
 };
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,9 +41,11 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   private @Nullable ReactTextInputLocalData mLocalData;
 
   @VisibleForTesting public static final String PROP_TEXT = "text";
+  @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
+  private @Nullable String mPlaceholder = null;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
@@ -52,42 +54,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     initMeasureFunction();
   }
 
-  private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
-    super(node);
-    mMostRecentEventCount = node.mMostRecentEventCount;
-    mText = node.mText;
-    mLocalData = node.mLocalData;
-  }
-
-  @Override
-  protected ReactTextInputShadowNode copy() {
-    return new ReactTextInputShadowNode(this);
-  }
-
-  @Override
-  public ReactTextInputShadowNode mutableCopy(long instanceHandle) {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy(instanceHandle);
-    node.initMeasureFunction();
-    ThemedReactContext themedContext = getThemedContext();
-    if (themedContext != null) {
-      node.setThemedContext(themedContext);
-    }
-    return node;
-  }
-
   private void initMeasureFunction() {
     setMeasureFunction(this);
-  }
-
-  @Override
-  public ReactTextInputShadowNode mutableCopyWithNewChildren(long instanceHandle) {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-    node.initMeasureFunction();
-    ThemedReactContext themedContext = getThemedContext();
-    if (themedContext != null) {
-      node.setThemedContext(themedContext);
-    }
-    return node;
   }
 
   @Override
@@ -148,8 +116,9 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
       }
     }
 
-
-    editText.measure(
+     // make sure the placeholder content is also being measured
+     editText.setHint(getPlaceholder());
+     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
 
@@ -191,6 +160,16 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   public @Nullable String getText() {
     return mText;
+  }
+
+  @ReactProp(name = PROP_PLACEHOLDER)
+  public void setPlaceholder(@Nullable String placeholder) {
+    mPlaceholder = placeholder;
+    markUpdated();
+  }
+
+  public @Nullable String getPlaceholder() {
+    return mPlaceholder;
   }
 
   @Override

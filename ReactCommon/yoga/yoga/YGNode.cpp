@@ -1,13 +1,15 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  This source code is licensed under the MIT license found in the LICENSE
+ *  file in the root directory of this source tree.
+ *
  */
-
 #include "YGNode.h"
 #include <iostream>
 #include "Utils.h"
+
+using namespace facebook;
 
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection& axis,
@@ -96,8 +98,6 @@ YGFloatOptional YGNode::getMarginForAxis(
 }
 
 // Setters
-
-
 
 void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
   if (measureFunc == nullptr) {
@@ -254,76 +254,6 @@ void YGNode::setPosition(
       trailing[crossAxis]);
 }
 
-YGNode::YGNode()
-    : context_(nullptr),
-      print_(nullptr),
-      hasNewLayout_(true),
-      nodeType_(YGNodeTypeDefault),
-      measure_(nullptr),
-      baseline_(nullptr),
-      dirtied_(nullptr),
-      style_(YGStyle()),
-      layout_(YGLayout()),
-      lineIndex_(0),
-      owner_(nullptr),
-      children_(YGVector()),
-      config_(nullptr),
-      isDirty_(false),
-      resolvedDimensions_({{YGValueUndefined, YGValueUndefined}}) {}
-
-YGNode::YGNode(const YGNode& node)
-    : context_(node.context_),
-      print_(node.print_),
-      hasNewLayout_(node.hasNewLayout_),
-      nodeType_(node.nodeType_),
-      measure_(node.measure_),
-      baseline_(node.baseline_),
-      dirtied_(node.dirtied_),
-      style_(node.style_),
-      layout_(node.layout_),
-      lineIndex_(node.lineIndex_),
-      owner_(node.owner_),
-      children_(node.children_),
-      config_(node.config_),
-      isDirty_(node.isDirty_),
-      resolvedDimensions_(node.resolvedDimensions_) {}
-
-YGNode::YGNode(const YGConfigRef newConfig) : YGNode() {
-  config_ = newConfig;
-}
-
-YGNode::YGNode(
-    void* context,
-    YGPrintFunc print,
-    bool hasNewLayout,
-    YGNodeType nodeType,
-    YGMeasureFunc measure,
-    YGBaselineFunc baseline,
-    YGDirtiedFunc dirtied,
-    YGStyle style,
-    const YGLayout& layout,
-    uint32_t lineIndex,
-    YGNodeRef owner,
-    const YGVector& children,
-    YGConfigRef config,
-    bool isDirty,
-    std::array<YGValue, 2> resolvedDimensions)
-    : context_(context),
-      print_(print),
-      hasNewLayout_(hasNewLayout),
-      nodeType_(nodeType),
-      measure_(measure),
-      baseline_(baseline),
-      dirtied_(dirtied),
-      style_(style),
-      layout_(layout),
-      lineIndex_(lineIndex),
-      owner_(owner),
-      children_(children),
-      config_(config),
-      isDirty_(isDirty),
-      resolvedDimensions_(resolvedDimensions) {}
-
 YGNode& YGNode::operator=(const YGNode& node) {
   if (&node == this) {
     return *this;
@@ -396,7 +326,7 @@ void YGNode::resolveDimension() {
 YGDirection YGNode::resolveDirection(const YGDirection ownerDirection) {
   if (style_.direction == YGDirectionInherit) {
     return ownerDirection > YGDirectionInherit ? ownerDirection
-                                                : YGDirectionLTR;
+                                               : YGDirectionLTR;
   } else {
     return style_.direction;
   }
@@ -405,11 +335,6 @@ YGDirection YGNode::resolveDirection(const YGDirection ownerDirection) {
 void YGNode::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
-}
-
-YGNode::~YGNode() {
-  // All the member variables are deallocated externally, so no need to
-  // deallocate here
 }
 
 // Other Methods
@@ -502,7 +427,7 @@ bool YGNode::isNodeFlexible() {
 float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.border[YGEdgeStart].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(style_.border[YGEdgeStart].value) &&
+      !yoga::isUndefined(style_.border[YGEdgeStart].value) &&
       style_.border[YGEdgeStart].value >= 0.0f) {
     return style_.border[YGEdgeStart].value;
   }
@@ -515,7 +440,7 @@ float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
 float YGNode::getTrailingBorder(const YGFlexDirection& flexDirection) const {
   if (YGFlexDirectionIsRow(flexDirection) &&
       style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGFloatIsUndefined(style_.border[YGEdgeEnd].value) &&
+      !yoga::isUndefined(style_.border[YGEdgeEnd].value) &&
       style_.border[YGEdgeEnd].value >= 0.0f) {
     return style_.border[YGEdgeEnd].value;
   }

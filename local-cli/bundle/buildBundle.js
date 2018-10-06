@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,24 +13,14 @@
 const log = require('../util/log').out('bundle');
 /* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
-const {Terminal} = require('metro-core');
-const TerminalReporter = require('metro/src/lib/TerminalReporter');
 
-const {defaults} = require('metro');
 /* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');
 
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
 import type {RequestOptions, OutputOptions} from './types.flow';
-import type {ConfigT} from 'metro';
-
-const defaultAssetExts = defaults.assetExts;
-const defaultSourceExts = defaults.sourceExts;
-const defaultPlatforms = defaults.platforms;
-const defaultProvidesModuleNodeModules = defaults.providesModuleNodeModules;
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 async function buildBundle(
   args: OutputOptions & {
@@ -41,12 +31,13 @@ async function buildBundle(
     transformer: string,
     minify: boolean,
   },
-  config: ConfigT,
+  configPromise: Promise<ConfigT>,
   output = outputBundle,
 ) {
   // This is used by a bazillion of npm modules we don't control so we don't
   // have other choice than defining it as an env variable here.
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
+  const config = await configPromise;
 
   let sourceMapUrl = args.sourcemapOutput;
   if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
@@ -61,69 +52,25 @@ async function buildBundle(
     platform: args.platform,
   };
 
-  const assetExts = (config.getAssetExts && config.getAssetExts()) || [];
-  const sourceExts = (config.getSourceExts && config.getSourceExts()) || [];
-  const platforms = (config.getPlatforms && config.getPlatforms()) || [];
+  const server = new Server({...config, resetCache: args.resetCache});
 
-  const transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.getTransformModulePath();
+  try {
+    const bundle = await output.build(server, requestOpts);
 
-  const providesModuleNodeModules =
-    typeof config.getProvidesModuleNodeModules === 'function'
-      ? config.getProvidesModuleNodeModules()
-      : defaultProvidesModuleNodeModules;
+    await output.save(bundle, args, log);
 
-  const terminal = new Terminal(process.stdout);
-  const server = new Server({
-    asyncRequireModulePath: config.getAsyncRequireModulePath(),
-    assetExts: defaultAssetExts.concat(assetExts),
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    blacklistRE: config.getBlacklistRE(),
-    cacheStores: config.cacheStores,
-    cacheVersion: config.cacheVersion,
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    enableBabelRCLookup: config.getEnableBabelRCLookup(),
-    extraNodeModules: config.extraNodeModules,
-    getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
-    getPolyfills: config.getPolyfills,
-    getResolverMainFields: config.getResolverMainFields,
-    getRunModuleStatement: config.getRunModuleStatement,
-    getTransformOptions: config.getTransformOptions,
-    hasteImplModulePath: config.hasteImplModulePath,
-    maxWorkers: args.maxWorkers,
-    platforms: defaultPlatforms.concat(platforms),
-    postMinifyProcess: config.postMinifyProcess,
-    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    projectRoot: config.getProjectRoot(),
-    providesModuleNodeModules: providesModuleNodeModules,
-    reporter: new TerminalReporter(terminal),
-    resetCache: args.resetCache,
-    resolveRequest: config.resolveRequest,
-    sourceExts: sourceExts.concat(defaultSourceExts),
-    transformModulePath: transformModulePath,
-    watch: false,
-    watchFolders: config.getWatchFolders(),
-    workerPath: config.getWorkerPath && config.getWorkerPath(),
-  });
+    // Save the assets of the bundle
+    const outputAssets = await server.getAssets({
+      ...Server.DEFAULT_BUNDLE_OPTIONS,
+      ...requestOpts,
+      bundleType: 'todo',
+    });
 
-  const bundle = await output.build(server, requestOpts);
-
-  await output.save(bundle, args, log);
-
-  // Save the assets of the bundle
-  const outputAssets = await server.getAssets({
-    ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...requestOpts,
-    bundleType: 'todo',
-  });
-
-  // When we're done saving bundle output and the assets, we're done.
-  const assets = await saveAssets(outputAssets, args.platform, args.assetsDest);
-
-  server.end();
-
-  return assets;
+    // When we're done saving bundle output and the assets, we're done.
+    return await saveAssets(outputAssets, args.platform, args.assetsDest);
+  } finally {
+    server.end();
+  }
 }
 
 module.exports = buildBundle;

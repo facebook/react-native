@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,13 +9,13 @@
 
 'use strict';
 
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
-const ColorPropType = require('ColorPropType');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
@@ -68,7 +68,7 @@ const ToolbarAndroid = createReactClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
      * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
@@ -118,7 +118,7 @@ const ToolbarAndroid = createReactClass({
     /**
      * Sets the toolbar subtitle color.
      */
-    subtitleColor: ColorPropType,
+    subtitleColor: DeprecatedColorPropType,
     /**
      * Sets the toolbar title.
      */
@@ -126,7 +126,7 @@ const ToolbarAndroid = createReactClass({
     /**
      * Sets the toolbar title color.
      */
-    titleColor: ColorPropType,
+    titleColor: DeprecatedColorPropType,
     /**
      * Sets the content inset for the toolbar starting edge.
      *
@@ -185,8 +185,9 @@ const ToolbarAndroid = createReactClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show =
-            UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show = UIManager.getViewManagerConfig(
+            'ToolbarAndroid',
+          ).Constants.ShowAsAction[action.show];
         }
         nativeActions.push(action);
       }

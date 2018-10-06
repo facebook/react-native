@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ var ReactNative = require('react-native');
 var {Image, StyleSheet, Text, View} = ReactNative;
 var RNTesterBlock = require('./RNTesterBlock');
 var RNTesterPage = require('./RNTesterPage');
+const TextLegend = require('./Shared/TextLegend');
 
 class Entity extends React.Component<$FlowFixMeProps> {
   render() {
@@ -86,6 +87,9 @@ class TextExample extends React.Component<{}> {
           <Text style={{padding: 10}}>
             This text is indented by 10px padding on all sides.
           </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text metrics legend">
+          <TextLegend />
         </RNTesterBlock>
         <RNTesterBlock title="Font Family">
           <Text style={{fontFamily: 'sans-serif'}}>Sans-Serif</Text>
@@ -529,6 +533,56 @@ class TextExample extends React.Component<{}> {
             By default Android will put extra space above text to allow for
             upper-case accents or other ascenders. With some fonts, this can
             make text look slightly misaligned when centered vertically.
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text transform">
+          <Text style={{textTransform: 'uppercase'}}>
+            This text should be uppercased.
+          </Text>
+          <Text style={{textTransform: 'lowercase'}}>
+            This TEXT SHOULD be lowercased.
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            This text should be CAPITALIZED.
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            Mixed: <Text style={{textTransform: 'uppercase'}}>uppercase </Text>
+            <Text style={{textTransform: 'lowercase'}}>LoWeRcAsE </Text>
+            <Text style={{textTransform: 'capitalize'}}>
+              capitalize each word
+            </Text>
+          </Text>
+          <Text>
+            Should be "ABC":
+            <Text style={{textTransform: 'uppercase'}}>
+              a<Text>b</Text>c
+            </Text>
+          </Text>
+          <Text>
+            Should be "AbC":
+            <Text style={{textTransform: 'uppercase'}}>
+              a<Text style={{textTransform: 'none'}}>b</Text>c
+            </Text>
+          </Text>
+          <Text style={{textTransform: 'none'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'uppercase'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'lowercase'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
+          </Text>
+          <Text style={{textTransform: 'capitalize'}}>
+            {
+              '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
+            }
           </Text>
         </RNTesterBlock>
       </RNTesterPage>

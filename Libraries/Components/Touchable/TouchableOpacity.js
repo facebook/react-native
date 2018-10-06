@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,6 @@ const Easing = require('Easing');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const PropTypes = require('prop-types');
-const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
@@ -132,7 +131,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
-  mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -256,8 +255,9 @@ const TouchableOpacity = ((createReactClass({
       <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}

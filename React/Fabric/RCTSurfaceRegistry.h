@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
  * The registry stores Surface objects as weak refereces.
  */
 @interface RCTSurfaceRegistry : NSObject
+
+- (NSEnumerator<RCTFabricSurface *> *)enumerator;
 
 /**
  * Adds Surface object into the registry.
