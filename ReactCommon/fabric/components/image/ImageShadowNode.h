@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,15 +21,11 @@ extern const char ImageComponentName[];
 /*
  * `ShadowNode` for <Image> component.
  */
-class ImageShadowNode final:
-  public ConcreteViewShadowNode<
-    ImageComponentName,
-    ImageProps,
-    ImageEventEmitter
-  > {
-
-public:
-
+class ImageShadowNode final : public ConcreteViewShadowNode<
+                                  ImageComponentName,
+                                  ImageProps,
+                                  ImageEventEmitter> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   /*
@@ -41,8 +37,7 @@ public:
 
   void layout(LayoutContext layoutContext) override;
 
-private:
-
+ private:
   /*
    * (Re)Creates a `LocalData` object (with `ImageRequest`) if needed.
    */

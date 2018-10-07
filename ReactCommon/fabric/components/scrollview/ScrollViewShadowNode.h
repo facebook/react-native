@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,23 +20,18 @@ extern const char ScrollViewComponentName[];
 /*
  * `ShadowNode` for <ScrollView> component.
  */
-class ScrollViewShadowNode final:
-  public ConcreteViewShadowNode<
-      ScrollViewComponentName,
-      ScrollViewProps,
-      ScrollViewEventEmitter
-    > {
-
-public:
-
+class ScrollViewShadowNode final : public ConcreteViewShadowNode<
+                                       ScrollViewComponentName,
+                                       ScrollViewProps,
+                                       ScrollViewEventEmitter> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
 
-private:
-
+ private:
   void updateLocalData();
 };
 

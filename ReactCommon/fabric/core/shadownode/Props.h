@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,11 +30,13 @@ class Props:
 public:
   Props() = default;
   Props(const Props &sourceProps, const RawProps &rawProps);
+  virtual ~Props() = default;
 
   const std::string nativeId;
-  #ifdef ANDROID
+
+#ifdef ANDROID
   const RawProps rawProps;
-  #endif
+#endif
 };
 
 } // namespace react

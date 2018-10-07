@@ -1,11 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.views.text;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
@@ -150,7 +151,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if (textShadowNode.mTextShadowOffsetDx != 0 || textShadowNode.mTextShadowOffsetDy != 0) {
+      if ((textShadowNode.mTextShadowOffsetDx != 0
+        || textShadowNode.mTextShadowOffsetDy != 0
+        || textShadowNode.mTextShadowRadius != 0)
+        && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -301,38 +305,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
   public ReactBaseTextShadowNode() {}
-
-  public ReactBaseTextShadowNode(ReactBaseTextShadowNode node) {
-    super(node);
-    mLineHeight = node.mLineHeight;
-    mIsColorSet = node.mIsColorSet;
-    mAllowFontScaling = node.mAllowFontScaling;
-    mColor = node.mColor;
-    mIsBackgroundColorSet = node.mIsBackgroundColorSet;
-    mBackgroundColor = node.mBackgroundColor;
-
-    mNumberOfLines = node.mNumberOfLines;
-    mFontSize = node.mFontSize;
-    mFontSizeInput = node.mFontSizeInput;
-    mLineHeightInput = node.mLineHeightInput;
-    mTextAlign = node.mTextAlign;
-    mTextBreakStrategy = node.mTextBreakStrategy;
-    mTextTransform = node.mTextTransform;
-
-    mTextShadowOffsetDx = node.mTextShadowOffsetDx;
-    mTextShadowOffsetDy = node.mTextShadowOffsetDy;
-    mTextShadowRadius = node.mTextShadowRadius;
-    mTextShadowColor = node.mTextShadowColor;
-
-    mIsUnderlineTextDecorationSet = node.mIsUnderlineTextDecorationSet;
-    mIsLineThroughTextDecorationSet = node.mIsLineThroughTextDecorationSet;
-    mIncludeFontPadding = node.mIncludeFontPadding;
-    mFontStyle = node.mFontStyle;
-    mFontWeight = node.mFontWeight;
-    mFontFamily = node.mFontFamily;
-    mContainsImages = node.mContainsImages;
-    mHeightOfTallestInlineImage = node.mHeightOfTallestInlineImage;
-  }
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.

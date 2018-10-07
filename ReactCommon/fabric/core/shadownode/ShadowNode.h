@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,6 +63,8 @@ public:
     const ShadowNodeFragment &fragment
   );
 
+  virtual ~ShadowNode() = default;
+
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
@@ -101,24 +103,14 @@ public:
    */
   void setLocalData(const SharedLocalData &localData);
 
-#pragma mark - Equality
-
-  /*
-   * Equality operators.
-   * Use this to compare `ShadowNode`s values for equality (and non-equality).
-   * Same values indicates that nodes must not produce mutations
-   * during tree diffing process.
-   * Child nodes are not considered as part of the value.
-   */
-  virtual bool operator==(const ShadowNode& rhs) const;
-  virtual bool operator!=(const ShadowNode& rhs) const;
-
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   std::string getDebugName() const override;
   std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugChildren() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 
 protected:
   Tag tag_;

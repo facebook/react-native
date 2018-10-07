@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,7 +134,9 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when an underdamped spring stops', () => {
+    // This test is flaky and we are asking open source to fix it
+    // https://github.com/facebook/react-native/issues/21517
+    it.skip('send toValue when an underdamped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
       anim.addListener(listener);

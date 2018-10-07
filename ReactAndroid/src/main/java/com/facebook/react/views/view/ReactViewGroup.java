@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -110,13 +110,12 @@ public class ReactViewGroup extends ViewGroup implements
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
 
   public ReactViewGroup(Context context) {
     super(context);
-    // TODO: Remove this check after a couple public releases.
-    if (!ViewProps.sDefaultOverflowHidden) {
-      setClipChildren(false);
-    }
+    setClipChildren(false);
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -239,8 +238,7 @@ public class ReactViewGroup extends ViewGroup implements
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius);
 
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-      && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 || Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
       final int UPDATED_LAYER_TYPE =
         backgroundDrawable.hasRoundedBorders()
           ? View.LAYER_TYPE_SOFTWARE
@@ -255,9 +253,8 @@ public class ReactViewGroup extends ViewGroup implements
   public void setBorderRadius(float borderRadius, int position) {
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius, position);
-
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2 || Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
       final int UPDATED_LAYER_TYPE =
           backgroundDrawable.hasRoundedBorders()
               ? View.LAYER_TYPE_SOFTWARE
@@ -647,6 +644,10 @@ public class ReactViewGroup extends ViewGroup implements
     invalidate();
   }
 
+  public @Nullable String getOverflow() {
+    return mOverflow;
+  }
+
   /**
    * Set the background for the view or remove the background. It calls {@link
    * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
@@ -835,5 +836,37 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+
+    if (isBackfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = getRotationX();
+    float rotationY = getRotationY();
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }

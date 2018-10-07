@@ -185,9 +185,13 @@ aliases:
     name: Lint code
     command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
-  - &run-flow-checks
-    name: Check for errors in code using Flow
-    command: yarn flow check
+  - &run-flow-checks-ios
+    name: Check for errors in code using Flow (iOS)
+    command: yarn flow-check-ios
+
+  - &run-flow-checks-android
+    name: Check for errors in code using Flow (Android)
+    command: yarn flow-check-android
 
   - &run-sanity-checks
     name: Sanity checks
@@ -377,7 +381,8 @@ jobs:
           at: ~/react-native
 
       - run: *run-lint-checks
-      - run: *run-flow-checks
+      - run: *run-flow-checks-ios
+      - run: *run-flow-checks-android
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -417,6 +422,32 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/react-native
+
+      - run: *boot-simulator-iphone
+      - run: *boot-simulator-appletv
+      - run: *brew-install-watchman
+
+      - run: *run-objc-ios-tests
+      - run: *run-objc-tvos-tests
+
+      # TODO: Fix these failing tests.
+      - run: *display-broken-tests-warning
+      - run: *run-podspec-tests
+      - run: *run-objc-ios-e2e-tests
+      - run: *run-objc-tvos-e2e-tests
+
+      - store_test_results:
+          path: ~/react-native/reports/junit
+
+  # Xcode 10: Runs unit tests on iOS and Apple TV devices
+  test_objc_xcode10:
+    <<: *defaults
+    macos:
+      xcode: "10.0.0"
+    steps:
+      - checkout
+      - run: *setup-artifacts
+      - run: *yarn
 
       - run: *boot-simulator-iphone
       - run: *boot-simulator-appletv
@@ -538,43 +569,60 @@ jobs:
   # Analyze pull request and raise any lint/flow issues.
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
+  # The public github tokens are publicly visible by design
   analyze_pr:
     <<: *defaults
     docker:
       - image: circleci/node:10
     environment:
       - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: "150e1341f4dd9c944d2a"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: "78a72af35445ca3f8180"
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: "b1a98e0bbd56ff1ccba1"
+
     steps:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-analysis
       - run: *yarn
+
+      - run:
+          name: Analyze Shell Scripts
+          command: |
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            sudo apt-get install -y shellcheck
+            yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_scripts.sh
+          when: always
 
       - run:
           name: Analyze Code
           command: |
-            # GITHUB_TOKEN=eslint-bot public_repo access token
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" ./scripts/circleci/analyze_code.sh
-            else
-              echo "Skipping code analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_code.sh
           when: always
 
-      - restore-cache: *restore-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
-            # DANGER_GITHUB_API_TOKEN=React-Linter public_repo access token
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-              DANGER_GITHUB_API_TOKEN="80aa64c50f38a267e9ba""575d41d528f9c234edb8" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            cd bots
+            yarn install --non-interactive --cache-folder ~/.cache/yarn
+            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
+            yarn danger
           when: always
       - save-cache: *save-cache-analysis
 
@@ -649,10 +697,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Test JavaScript and Node 10 compatibility
-      - test_node10:
-          filters: *filter-ignore-gh-pages
-
       # Test Android
       - test_android:
           filters: *filter-ignore-gh-pages
@@ -670,19 +714,24 @@ workflows:
           requires:
             - checkout_code
 
+      # Tooling Compatibility Checks
+      - test_objc_xcode10:
+          filters: *filter-ignore-gh-pages
+      - test_node10:
+          filters: *filter-ignore-gh-pages
+
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
+            # ignore any commit on any branch by default
             branches:
-              only:
-                - /.*-stable/
+              ignore: /.*/
+            # only act on version tags
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-          requires:
-            - test_javascript
-            - test_objc
-            - test_android
 
-      # Run code checks
+      # Run code checks on PRs from forks
       - analyze_pr:
-          filters: *filter-ignore-master-stable
+          filters:
+            branches:
+              only: /^pull\/.*$/

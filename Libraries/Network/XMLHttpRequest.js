@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -246,6 +246,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       case 'blob':
         if (typeof this._response === 'object' && this._response) {
           this._cachedResponse = BlobManager.createFromOptions(this._response);
+        } else if (this._response === '') {
+          this._cachedResponse = null;
         } else {
           throw new Error(`Invalid response for blob: ${this._response}`);
         }

@@ -1,3 +1,8 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
+
 import org.apache.tools.ant.taskdefs.condition.Os
 
 def config = project.hasProperty("react") ? project.react : [];
@@ -117,9 +122,20 @@ afterEvaluate {
             group = "react"
             description = "copy bundled JS into ${targetName}."
 
-            from jsBundleDir
-            into file(config."jsBundleDir${targetName}" ?:
-                "$buildDir/intermediates/assets/${targetPath}")
+            if (config."jsBundleDir${targetName}") {
+                from jsBundleDir
+                into file(config."jsBundleDir${targetName}")
+            } else {
+                into ("$buildDir/intermediates")
+                into ("assets/${targetPath}") {
+                    from jsBundleDir
+                }
+
+                // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                into ("merged_assets/${targetPath}/merge${targetName}Assets/out") {
+                    from jsBundleDir
+                }
+            }
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssets)

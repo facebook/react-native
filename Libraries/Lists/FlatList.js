@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -525,8 +525,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       // comparison.
       if (!this._hasWarnedLegacy) {
         console.warn(
-          'FlatList: Using legacyImplementation - some features not supported and performance ' +
-            'may suffer',
+          'FlatList: legacyImplementation is deprecated and will be removed in a ' +
+            'future release - some features not supported and performance may suffer. ' +
+            'Please migrate to the default implementation.',
         );
         this._hasWarnedLegacy = true;
       }

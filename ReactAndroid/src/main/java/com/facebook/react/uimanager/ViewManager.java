@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,9 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -201,5 +203,24 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   public Map<String, String> getNativeProps() {
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
+  }
+
+  /**
+   *
+   */
+  public @Nullable Object updateLocalData(T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+    return null;
+  }
+
+  public float[] measure(
+      ReactContext context,
+      T view,
+      ReadableNativeMap localData,
+      ReadableNativeMap props,
+      float width,
+      int widthMode,
+      float height,
+      int heightMode) {
+    return null;
   }
 }

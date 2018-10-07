@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,15 @@
 
 'use strict';
 
+const DeprecatedTextPropTypes = require('DeprecatedTextPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const TextAncestor = require('TextAncestor');
-const TextPropTypes = require('TextPropTypes');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -58,6 +58,7 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
+    maxFontSizeMultiplier: true,
     disabled: true,
     selectable: true,
     selectionColor: true,
@@ -257,12 +258,13 @@ const RCTText = createReactNativeComponentClass(
 );
 
 const RCTVirtualText =
-  UIManager.RCTVirtualText == null
+  UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? RCTText
     : createReactNativeComponentClass('RCTVirtualText', () => ({
         validAttributes: {
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,
+          maxFontSizeMultiplier: true,
         },
         uiViewClassName: 'RCTVirtualText',
       }));
@@ -277,6 +279,6 @@ const Text = (
 const TextToExport = React.forwardRef(Text);
 
 // TODO: Deprecate this.
-TextToExport.propTypes = TextPropTypes;
+TextToExport.propTypes = DeprecatedTextPropTypes;
 
 module.exports = (TextToExport: Class<NativeComponent<TextProps>>);

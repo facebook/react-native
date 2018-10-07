@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -143,25 +143,9 @@ void ShadowNode::cloneChildrenIfShared() {
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
-#pragma mark - Equality
-
-bool ShadowNode::operator==(const ShadowNode& rhs) const {
-  // Note: Child nodes are not considered as part of instance's value
-  // and/or identity.
-  return
-    tag_ == rhs.tag_ &&
-    rootTag_ == rhs.rootTag_ &&
-    props_ == rhs.props_ &&
-    eventEmitter_ == rhs.eventEmitter_ &&
-    localData_ == rhs.localData_;
-}
-
-bool ShadowNode::operator!=(const ShadowNode& rhs) const {
-  return !(*this == rhs);
-}
-
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ShadowNode::getDebugName() const {
   return getComponentName();
 }
@@ -171,7 +155,7 @@ std::string ShadowNode::getDebugValue() const {
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
-  SharedDebugStringConvertibleList debugChildren = {};
+  auto debugChildren = SharedDebugStringConvertibleList {};
 
   for (auto child : *children_) {
     auto debugChild = std::dynamic_pointer_cast<const DebugStringConvertible>(child);
@@ -190,6 +174,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
       debugStringConvertibleItem("tag", folly::to<std::string>(tag_))
     };
 }
+#endif
 
 } // namespace react
 } // namespace facebook

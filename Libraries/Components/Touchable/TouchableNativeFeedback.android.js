@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -223,7 +223,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
       [destX || 0, destY || 0],
     );
   },
@@ -231,7 +231,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
       [pressed],
     );
   },

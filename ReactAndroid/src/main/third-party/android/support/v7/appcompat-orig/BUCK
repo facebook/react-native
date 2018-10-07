@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_android_resource", "react_native_dep", "rn_prebuilt_jar")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,8 +11,22 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 
 const {getHasteName} = require('../hasteImpl');
+
+// RNPM currently does not support plugins when using Yarn Plug 'n Play
+const testIfNotPnP = fs.existsSync(
+  path.join(
+    __dirname,
+    '../..',
+    'node_modules',
+    'react-native-dummy',
+    'package.json',
+  ),
+)
+  ? test
+  : test.skip;
 
 function getPath(...parts) {
   return path.join(__dirname, '..', '..', ...parts);
@@ -45,6 +59,24 @@ it('returns the correct haste name for a file with a platform suffix', () => {
     ).toEqual('AccessibilityInfo');
   }
 });
+
+testIfNotPnP(
+  'returns the correct haste name for a file with an out-of-tree platform suffix',
+  () => {
+    for (const platform of ['dummy']) {
+      expect(
+        getHasteName(
+          getPath(
+            'Libraries',
+            'Components',
+            'AccessibilityInfo',
+            `AccessibilityInfo.${platform}.js`,
+          ),
+        ),
+      ).toEqual('AccessibilityInfo');
+    }
+  },
+);
 
 it('returns the correct haste name for a file with a flow suffix', () => {
   expect(

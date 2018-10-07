@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,19 +11,13 @@ namespace facebook {
 namespace react {
 
 RawEvent::RawEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventTarget &eventTarget,
-  const std::function<bool()> &isDispatchable
+  std::string type,
+  folly::dynamic payload,
+  WeakEventTarget eventTarget
 ):
-  type(type),
-  payload(payload),
-  eventTarget(eventTarget),
-  isDispachable_(isDispatchable) {}
-
-bool RawEvent::isDispachable() const {
-  return isDispachable_();
-}
+  type(std::move(type)),
+  payload(std::move(payload)),
+  eventTarget(std::move(eventTarget)) {}
 
 } // namespace react
 } // namespace facebook

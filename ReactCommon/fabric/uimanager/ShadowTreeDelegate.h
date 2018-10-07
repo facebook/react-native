@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -16,12 +16,14 @@ class ShadowTree;
  * Abstract class for ShadowTree's delegate.
  */
 class ShadowTreeDelegate {
-public:
 
+public:
   /*
    * Called right after Shadow Tree commit a new state of the the tree.
    */
-  virtual void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) = 0;
+  virtual void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const = 0;
+
+  virtual ~ShadowTreeDelegate() noexcept = default;
 };
 
 } // namespace react

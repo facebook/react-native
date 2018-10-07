@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -55,6 +55,7 @@
 // need to be coalesced before sending, for performance reasons.
 @property (nonatomic, copy) RCTDirectEventBlock onScrollBeginDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy) RCTDirectEventBlock onScrollToTop;
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;

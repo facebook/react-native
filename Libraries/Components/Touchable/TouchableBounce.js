@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 
 const Animated = require('Animated');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -70,7 +70,7 @@ const TouchableBounce = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: EdgeInsetsPropType,
+    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
     releaseVelocity: PropTypes.number.isRequired,
     releaseBounciness: PropTypes.number.isRequired,
     /**
