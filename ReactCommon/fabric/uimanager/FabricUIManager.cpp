@@ -106,11 +106,9 @@ FabricUIManager::~FabricUIManager() {
   auto executor = std::shared_ptr<EventBeatBasedExecutor> {std::move(executor_)};
   auto uninstaller = std::move(uninstaller_);
 
-  // We have to call this synchronously to postpose UIManager deallocation
-  // until it is fully uninstalled and JavaScript cannot access this anymore.
   (*executor)([uninstaller, executor]() {
     uninstaller();
-  }, EventBeatBasedExecutor::Mode::Synchronous);
+  });
 }
 
 void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
