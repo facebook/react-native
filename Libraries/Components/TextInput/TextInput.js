@@ -402,7 +402,7 @@ const TextInput = createReactClass({
       'cc-exp',
       'cc-exp-month',
       'cc-exp-year',
-      'off'
+      'off',
     ]),
     /**
      * If `false`, disables auto-correct. The default value is `true`.
