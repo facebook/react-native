@@ -523,6 +523,39 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
+    if ("username".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
+    } else if ("password".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+    } else if ("email".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+    } else if ("name".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_NAME);
+    } else if ("tel".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PHONE);
+    } else if ("street-address".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_ADDRESS);
+    } else if ("postal-code".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_CODE);
+    } else if ("cc-number".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+    } else if ("cc-csc".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+    } else if ("cc-exp".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    } else if ("cc-exp-month".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+    } else if ("cc-exp-year".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+    } else if ("off".equals(autocomplete)) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid autocomplete option: " + autocomplete);
+    }
+  }
+
   @ReactProp(name = "autoCorrect")
   public void setAutoCorrect(ReactEditText view, @Nullable Boolean autoCorrect) {
     // clear auto correct flags, set SUGGESTIONS or NO_SUGGESTIONS depending on value

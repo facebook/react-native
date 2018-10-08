@@ -162,6 +162,21 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  autoCompleteType?: ?(
+    | 'username'
+    | 'password'
+    | 'email'
+    | 'name'
+    | 'tel'
+    | 'street-address'
+    | 'postal-code'
+    | 'cc-number'
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'off'
+  ),
   returnKeyLabel?: ?string,
   numberOfLines?: ?number,
   disableFullscreenUI?: ?boolean,
@@ -349,6 +364,45 @@ const TextInput = createReactClass({
       'sentences',
       'words',
       'characters',
+    ]),
+    /**
+     * Determines which content to suggest on auto complete, e.g.`username`.
+     * To disable auto complete, use `off`.
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `username`
+     * - `password`
+     * - `email`
+     * - `name`
+     * - `tel`
+     * - `street-address`
+     * - `postal-code`
+     * - `cc-number`
+     * - `cc-csc`
+     * - `cc-exp`
+     * - `cc-exp-month`
+     * - `cc-exp-year`
+     * - `off`
+     *
+     * @platform android
+     */
+    autoCompleteType: PropTypes.oneOf([
+      'username',
+      'password',
+      'email',
+      'name',
+      'tel',
+      'street-address',
+      'postal-code',
+      'cc-number',
+      'cc-csc',
+      'cc-exp',
+      'cc-exp-month',
+      'cc-exp-year',
+      'off'
     ]),
     /**
      * If `false`, disables auto-correct. The default value is `true`.
