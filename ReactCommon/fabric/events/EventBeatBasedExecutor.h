@@ -43,7 +43,7 @@ public:
   void operator()(Routine routine, Mode mode = Mode::Asynchronous) const;
 
 private:
-  void onBeat() const;
+  void onBeat(bool success = true) const;
   void execute(Task task) const;
 
   std::unique_ptr<EventBeat> eventBeat_;
