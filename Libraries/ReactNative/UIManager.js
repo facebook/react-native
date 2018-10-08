@@ -11,11 +11,13 @@
 
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
+const UIManagerProperties = require('UIManagerProperties');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
 const invariant = require('fbjs/lib/invariant');
 
 const {UIManager} = NativeModules;
+const viewManagerConfigs = {};
 
 invariant(
   UIManager,
@@ -35,6 +37,22 @@ UIManager.takeSnapshot = function() {
       'Use ReactNative.takeSnapshot instead.',
   );
 };
+UIManager.getViewManagerConfig = function(viewManagerName: string) {
+  if (
+    viewManagerConfigs[viewManagerName] === undefined &&
+    UIManager.getConstantsForViewManager
+  ) {
+    try {
+      viewManagerConfigs[
+        viewManagerName
+      ] = UIManager.getConstantsForViewManager(viewManagerName);
+    } catch (e) {
+      viewManagerConfigs[viewManagerName] = null;
+    }
+  }
+
+  return viewManagerConfigs[viewManagerName];
+};
 
 /**
  * Copies the ViewManager constants and commands into UIManager. This is
@@ -45,6 +63,7 @@ if (Platform.OS === 'ios') {
   Object.keys(UIManager).forEach(viewName => {
     const viewConfig = UIManager[viewName];
     if (viewConfig.Manager) {
+      viewManagerConfigs[viewName] = viewConfig;
       defineLazyObjectProperty(viewConfig, 'Constants', {
         get: () => {
           const viewManager = NativeModules[viewConfig.Manager];
@@ -102,6 +121,25 @@ if (Platform.OS === 'ios') {
   // so that any accesses to unknown properties along the global code will fail
   // when Prepack encounters them.
   if (global.__makePartial) global.__makePartial(UIManager);
+}
+
+if (__DEV__) {
+  Object.keys(UIManager).forEach(viewManagerName => {
+    if (!UIManagerProperties.includes(viewManagerName)) {
+      if (!viewManagerConfigs[viewManagerName]) {
+        viewManagerConfigs[viewManagerName] = UIManager[viewManagerName];
+      }
+      defineLazyObjectProperty(UIManager, viewManagerName, {
+        get: () => {
+          console.warn(
+            `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
+              `is no longer supported. Use UIManager.getViewManager('${viewManagerName}') instead.`,
+          );
+          return UIManager.getViewManagerConfig(viewManagerName);
+        },
+      });
+    }
+  });
 }
 
 module.exports = UIManager;

@@ -68,8 +68,8 @@ public:
    * The delegate is stored as a raw pointer, so the owner must null
    * the pointer before being destroyed.
    */
-  void setDelegate(ShadowTreeDelegate *delegate);
-  ShadowTreeDelegate *getDelegate() const;
+  void setDelegate(ShadowTreeDelegate const *delegate);
+  ShadowTreeDelegate const *getDelegate() const;
 
 private:
 
@@ -85,7 +85,7 @@ private:
 
   const Tag rootTag_;
   SharedRootShadowNode rootShadowNode_;
-  ShadowTreeDelegate *delegate_;
+  ShadowTreeDelegate const *delegate_;
   mutable std::mutex commitMutex_;
 };
 

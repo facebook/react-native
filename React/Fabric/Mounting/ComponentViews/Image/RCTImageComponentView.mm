@@ -74,7 +74,7 @@ using namespace facebook::react;
   assert(_imageLocalData);
   auto future = _imageLocalData->getImageRequest().getResponseFuture();
   future.via(&MainQueueExecutor::instance()).then([self](ImageResponse &&imageResponse) {
-    self.image = (__bridge_transfer UIImage *)imageResponse.getImage().get();
+    self.image = (__bridge UIImage *)imageResponse.getImage().get();
   });
 }
 
@@ -82,6 +82,7 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _imageView.image = nil;
+  _imageLocalData.reset();
 }
 
 #pragma mark - Other

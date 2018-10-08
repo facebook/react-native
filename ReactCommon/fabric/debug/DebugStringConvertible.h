@@ -14,6 +14,12 @@
 namespace facebook {
 namespace react {
 
+#ifndef NDEBUG
+#define RN_DEBUG_STRING_CONVERTIBLE 1
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 class DebugStringConvertible;
 
 using SharedDebugStringConvertible = std::shared_ptr<const DebugStringConvertible>;
@@ -28,7 +34,6 @@ struct DebugStringConvertibleOptions {
 // and implements basic recursive debug string assembly algorithm.
 // Use this as a base class for providing a debugging textual representation
 // of your class.
-// TODO (#26770211): Clear up the naming.
 class DebugStringConvertible {
 
 public:
@@ -62,6 +67,12 @@ public:
   virtual std::string getDebugPropsDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
   virtual std::string getDebugChildrenDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
 };
+
+#else
+
+class DebugStringConvertible {};
+
+#endif
 
 } // namespace react
 } // namespace facebook

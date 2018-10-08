@@ -134,7 +134,9 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when an underdamped spring stops', () => {
+    // This test is flaky and we are asking open source to fix it
+    // https://github.com/facebook/react-native/issues/21517
+    it.skip('send toValue when an underdamped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
       anim.addListener(listener);

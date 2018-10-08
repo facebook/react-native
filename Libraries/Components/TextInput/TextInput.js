@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
@@ -179,7 +179,7 @@ type Props = $ReadOnly<{|
   autoCorrect?: ?boolean,
   autoFocus?: ?boolean,
   allowFontScaling?: ?boolean,
-  maxFontSizeMultiplier?: ?boolean,
+  maxFontSizeMultiplier?: ?number,
   editable?: ?boolean,
   keyboardType?: ?KeyboardType,
   returnKeyType?: ?ReturnKeyType,
@@ -592,7 +592,7 @@ const TextInput = createReactClass({
     /**
      * The text color of the placeholder string.
      */
-    placeholderTextColor: ColorPropType,
+    placeholderTextColor: DeprecatedColorPropType,
     /**
      * If `false`, scrolling of the text view will be disabled.
      * The default value is `true`. Does only work with 'multiline={true}'.
@@ -607,7 +607,7 @@ const TextInput = createReactClass({
     /**
      * The highlight and cursor color of the text input.
      */
-    selectionColor: ColorPropType,
+    selectionColor: DeprecatedColorPropType,
     /**
      * An instance of `DocumentSelectionState`, this is some state that is responsible for
      * maintaining selection information for a document.
@@ -698,7 +698,7 @@ const TextInput = createReactClass({
      * The color of the `TextInput` underline.
      * @platform android
      */
-    underlineColorAndroid: ColorPropType,
+    underlineColorAndroid: DeprecatedColorPropType,
 
     /**
      * If defined, the provided image resource will be rendered on the left.
@@ -875,7 +875,7 @@ const TextInput = createReactClass({
   render: function() {
     let textInput;
     if (Platform.OS === 'ios') {
-      textInput = UIManager.RCTVirtualText
+      textInput = UIManager.getViewManagerConfig('RCTVirtualText')
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
@@ -949,8 +949,7 @@ const TextInput = createReactClass({
           <Text
             style={props.style}
             allowFontScaling={props.allowFontScaling}
-            maxFontSizeMultiplier={props.maxFontSizeMultiplier}
-          >
+            maxFontSizeMultiplier={props.maxFontSizeMultiplier}>
             {children}
           </Text>
         );
@@ -1049,10 +1048,9 @@ const TextInput = createReactClass({
   _renderAndroid: function() {
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
-    props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
-        props.autoCapitalize || 'sentences'
-      ];
+    props.autoCapitalize = UIManager.getViewManagerConfig(
+      'AndroidTextInput',
+    ).Constants.AutoCapitalizationType[props.autoCapitalize || 'sentences'];
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */

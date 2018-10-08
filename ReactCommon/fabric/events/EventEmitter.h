@@ -61,7 +61,13 @@ public:
   void setEnabled(bool enabled) const;
   bool getEnabled() const;
 
-protected:
+  protected:
+
+#ifdef ANDROID
+// We need this temporarily due to lack of Java-counterparts for particular subclasses.
+public:
+#endif
+
   /*
    * Initates an event delivery process.
    * Is used by particular subclasses only.

@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -85,9 +85,9 @@ const styleError = function(message1, style, caller?, message2?) {
 const allStylePropTypes = {};
 
 if (__DEV__ && !global.__RCTProfileIsProfiling) {
-  StyleSheetValidation.addValidStylePropTypes(ImageStylePropTypes);
+  StyleSheetValidation.addValidStylePropTypes(DeprecatedImageStylePropTypes);
   StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);
-  StyleSheetValidation.addValidStylePropTypes(ViewStylePropTypes);
+  StyleSheetValidation.addValidStylePropTypes(DeprecatedViewStylePropTypes);
 }
 
 module.exports = StyleSheetValidation;

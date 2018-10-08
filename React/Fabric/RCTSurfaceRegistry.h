@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfaceRegistry : NSObject
 
+- (NSEnumerator<RCTFabricSurface *> *)enumerator;
+
 /**
  * Adds Surface object into the registry.
  * The registry does not retain Surface references.

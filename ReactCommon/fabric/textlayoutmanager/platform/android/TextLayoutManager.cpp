@@ -31,7 +31,7 @@ Size TextLayoutManager::measure(
 
   const jni::global_ref<jobject> & fabricUIManager = contextContainer_->getInstance<jni::global_ref<jobject>>("FabricUIManager");
 
-  auto clazz = jni::findClassStatic("com/facebook/fbreact/fabricxx/UIManager");
+  auto clazz = jni::findClassStatic("com/facebook/fbreact/fabric/FabricUIManager");
   static auto measure =
       clazz->getMethod<JArrayFloat::javaobject(jint, jstring, ReadableNativeMap::javaobject, ReadableNativeMap::javaobject, jint, jint)>("measure");
 

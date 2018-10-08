@@ -27,10 +27,11 @@ import android.widget.OverScroller;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 
 import java.lang.reflect.Field;
@@ -55,6 +56,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
+  private @Nullable String mOverflow = ViewProps.HIDDEN;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -181,10 +183,23 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     awakenScrollBars();
   }
 
+  public void setOverflow(String overflow) {
+    mOverflow = overflow;
+    invalidate();
+  }
+
   @Override
   protected void onDraw(Canvas canvas) {
     getDrawingRect(mRect);
-    canvas.clipRect(mRect);
+
+    switch (mOverflow) {
+      case ViewProps.VISIBLE:
+        break;
+      default:
+        canvas.clipRect(mRect);
+        break;
+    }
+
     super.onDraw(canvas);
   }
 
@@ -272,7 +287,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @Override
   public void fling(int velocityX) {
     if (mPagingEnabled) {
-      smoothScrollAndSnap(velocityX);
+      flingAndSnap(velocityX);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -450,7 +465,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
             // Only if we have pagingEnabled and we have not snapped to the page do we
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
-            smoothScrollAndSnap(0);
+            flingAndSnap(0);
             ViewCompat.postOnAnimationDelayed(ReactHorizontalScrollView.this,
               this,
               ReactScrollViewHelper.MOMENTUM_DELAY);
@@ -469,23 +484,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
-  /**
-   * This will smooth scroll us to the nearest snap offset point
-   * It currently just looks at where the content is and slides to the nearest point.
-   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
-   */
-  private void smoothScrollAndSnap(int velocityX) {
-    if (getChildCount() <= 0) {
-      return;
-    }
-
-    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    int targetOffset = 0;
-    int smallerOffset = 0;
-    int largerOffset = maximumOffset;
-    int firstOffset = 0;
-    int lastOffset = maximumOffset;
-
+  private int predictFinalScrollPosition(int velocityX) {
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
     // so we can predict where a fling would land and snap to nearby that point.
@@ -493,6 +492,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     scroller.setFriction(1.0f - mDecelerationRate);
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
+    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
     int width = getWidth() - getPaddingStart() - getPaddingEnd();
     scroller.fling(
       getScrollX(), // startX
@@ -506,7 +506,76 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       width/2, // overX
       0 // overY
     );
-    targetOffset = scroller.getFinalX();
+    return scroller.getFinalX();
+  }
+
+  /**
+   * This will smooth scroll us to the nearest snap offset point
+   * It currently just looks at where the content is and slides to the nearest point.
+   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
+   */
+  private void smoothScrollAndSnap(int velocity) {
+    double interval = (double) getSnapInterval();
+    double currentOffset = (double) getScrollX();
+    double targetOffset = (double) predictFinalScrollPosition(velocity);
+
+    int previousPage = (int) Math.floor(currentOffset / interval);
+    int nextPage = (int) Math.ceil(currentOffset / interval);
+    int currentPage = (int) Math.round(currentOffset / interval);
+    int targetPage = (int) Math.round(targetOffset / interval);
+
+    if (velocity > 0 && nextPage == previousPage) {
+      nextPage ++;
+    } else if (velocity < 0 && previousPage == nextPage) {
+      previousPage --;
+    }
+
+    if (
+      // if scrolling towards next page
+      velocity > 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage < nextPage &&
+      // and it would have been crossed after flinging
+      targetPage > previousPage
+    ) {
+      currentPage = nextPage;
+    }
+    else if (
+      // if scrolling towards previous page
+      velocity < 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage > previousPage &&
+      // and it would have been crossed after flinging
+      targetPage < nextPage
+    ) {
+      currentPage = previousPage;
+    }
+
+    targetOffset = currentPage * interval;
+    if (targetOffset != currentOffset) {
+      mActivelyScrolling = true;
+      smoothScrollTo((int) targetOffset, getScrollY());
+    }
+  }
+
+  private void flingAndSnap(int velocityX) {
+    if (getChildCount() <= 0) {
+      return;
+    }
+
+    // pagingEnabled only allows snapping one interval at a time
+    if (mSnapInterval == 0 && mSnapOffsets == null) {
+      smoothScrollAndSnap(velocityX);
+      return;
+    }
+
+    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
+    int targetOffset = predictFinalScrollPosition(velocityX);
+    int smallerOffset = 0;
+    int largerOffset = maximumOffset;
+    int firstOffset = 0;
+    int lastOffset = maximumOffset;
+    int width = getWidth() - getPaddingStart() - getPaddingEnd();
 
     // offsets are from the right edge in RTL layouts
     boolean isRTL = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_RTL;

@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include <assert.h>
 #include <fabric/attributedstring/TextAttributes.h>
 #include <fabric/attributedstring/conversions.h>
 #include <fabric/attributedstring/primitives.h>
 #include <fabric/graphics/conversions.h>
 #include <gtest/gtest.h>
-#include <assert.h>
 
 namespace facebook {
 namespace react {
@@ -23,7 +23,8 @@ TEST(AttributedStringTest, testSomething) {
   fragment->string = "test";
 
   auto text = new TextAttributes();
-  text->foregroundColor = {colorFromComponents({100/255.0, 153/255.0, 200/255.0, 1.0})};
+  text->foregroundColor = {
+      colorFromComponents({100 / 255.0, 153 / 255.0, 200 / 255.0, 1.0})};
   text->opacity = 0.5;
   text->fontStyle = FontStyle::Italic;
   text->fontWeight = FontWeight::Thin;
@@ -41,5 +42,5 @@ TEST(AttributedStringTest, testSomething) {
   assert(textAttribute["fontWeight"] == toString(*text->fontWeight));
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

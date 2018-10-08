@@ -71,7 +71,7 @@ import javax.inject.Provider;
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
     return Arrays.asList(
         ModuleSpec.nativeModuleSpec(
-            AndroidInfoModule.class,
+            AndroidInfoModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -79,7 +79,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceEventManagerModule.class,
+            DeviceEventManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -87,7 +87,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            ExceptionsManagerModule.class,
+            ExceptionsManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -95,7 +95,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            HeadlessJsTaskSupportModule.class,
+            HeadlessJsTaskSupportModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -103,7 +103,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            SourceCodeModule.class,
+            SourceCodeModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -111,7 +111,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            Timing.class,
+            Timing.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -119,7 +119,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            UIManagerModule.class,
+            UIManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -127,7 +127,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceInfoModule.class,
+            DeviceInfoModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {

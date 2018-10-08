@@ -14,10 +14,6 @@ var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
 var RNTesterButton = require('./RNTesterButton');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
@@ -123,13 +119,15 @@ class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
 
 var TimerTester = createReactClass({
   displayName: 'TimerTester',
-  mixins: [TimerMixin],
 
   _ii: 0,
   _iters: 0,
   _start: 0,
+  _timerId: (null: ?TimeoutID),
+  _rafId: (null: ?AnimationFrameID),
+  _intervalId: (null: ?IntervalID),
+  _immediateId: (null: ?Object),
   _timerFn: (null: ?() => any),
-  _handle: (null: any),
 
   render: function() {
     var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
@@ -138,6 +136,24 @@ var TimerTester = createReactClass({
         Measure: {this.props.type}({args}) - {this._ii || 0}
       </RNTesterButton>
     );
+  },
+
+  componentWillUnmount() {
+    if (this._timerId != null) {
+      clearTimeout(this._timerId);
+    }
+
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
+    }
+
+    if (this._immediateId != null) {
+      clearImmediate(this._immediateId);
+    }
+
+    if (this._intervalId != null) {
+      clearInterval(this._intervalId);
+    }
   },
 
   _run: function() {
@@ -152,19 +168,25 @@ var TimerTester = createReactClass({
         } else if (this.props.dt > 20) {
           this._iters = 10;
         }
-        this._timerFn = () => this.setTimeout(this._run, this.props.dt);
+        this._timerFn = () => {
+          this._timerId = setTimeout(this._run, this.props.dt);
+        };
       } else if (this.props.type === 'requestAnimationFrame') {
-        this._timerFn = () => this.requestAnimationFrame(this._run);
+        this._timerFn = () => {
+          this._rafId = requestAnimationFrame(this._run);
+        };
       } else if (this.props.type === 'setImmediate') {
         this._iters = 5000;
-        this._timerFn = () => this.setImmediate(this._run);
+        this._timerFn = () => {
+          this._immediateId = setImmediate(this._run);
+        };
       } else if (this.props.type === 'setInterval') {
         this._iters = 30; // Only used for forceUpdate periodicidy
         this._timerFn = null;
-        this._handle = this.setInterval(this._run, this.props.dt);
+        this._intervalId = setInterval(this._run, this.props.dt);
       }
     }
-    if (this._ii >= this._iters && !this._handle) {
+    if (this._ii >= this._iters && this._intervalId == null) {
       var d = new Date();
       var e = d.getTime() - this._start;
       var msg =
@@ -195,14 +217,16 @@ var TimerTester = createReactClass({
     if (this._ii % (this._iters / 5) === 0) {
       this.forceUpdate();
     }
-    this._timerFn && this._timerFn();
+    if (this._timerFn) {
+      this._timerId = this._timerFn();
+    }
   },
 
   clear: function() {
-    this.clearInterval(this._handle); // invalid handles are ignored
-    if (this._handle) {
+    if (this._intervalId != null) {
+      clearInterval(this._intervalId);
       // Configure things so we can do a final run to update UI and reset state.
-      this._handle = null;
+      this._intervalId = null;
       this._iters = this._ii;
       this._run();
     }

@@ -20,10 +20,8 @@ using SharedScrollViewLocalData = std::shared_ptr<const ScrollViewLocalData>;
 /*
  * LocalData for <ScrollView> component.
  */
-class ScrollViewLocalData:
-  public LocalData {
-
-public:
+class ScrollViewLocalData : public LocalData {
+ public:
   ScrollViewLocalData(Rect contentBoundingRect);
 
   /*
@@ -38,8 +36,10 @@ public:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   std::string getDebugName() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace react

@@ -7,28 +7,20 @@
 
 #import "RCTScheduler.h"
 
-#import <fabric/imagemanager/ImageManager.h>
 #import <fabric/uimanager/ContextContainer.h>
 #import <fabric/uimanager/Scheduler.h>
 #import <fabric/uimanager/SchedulerDelegate.h>
-#import <React/RCTImageLoader.h>
-#import <React/RCTBridge+Private.h>
 
-#import "MainRunLoopEventBeat.h"
-#import "MessageQueueEventBeat.h"
+#import <React/RCTFollyConvert.h>
+
 #import "RCTConversions.h"
-
-@interface RCTBridge ()
-
-- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-
-@end
 
 using namespace facebook::react;
 
 class SchedulerDelegateProxy: public SchedulerDelegate {
 public:
-  SchedulerDelegateProxy(void *scheduler): scheduler_(scheduler) {}
+  SchedulerDelegateProxy(void *scheduler):
+    scheduler_(scheduler) {}
 
   void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
@@ -49,30 +41,11 @@ private:
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)init
+- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-
-    RCTBridge *bridge = [RCTBridge currentBridge];
-
-    SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
-
-    EventBeatFactory synchronousBeatFactory = [bridge]() {
-      return std::make_unique<MainRunLoopEventBeat>(bridge.jsMessageThread);
-    };
-
-    EventBeatFactory asynchronousBeatFactory = [bridge]() {
-      return std::make_unique<MessageQueueEventBeat>(bridge.jsMessageThread);
-    };
-
-    contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-    contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
-
-    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
-    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
-
-    _scheduler = std::make_shared<Scheduler>(contextContainer);
+    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner));
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -84,28 +57,34 @@ private:
   _scheduler->setDelegate(nullptr);
 }
 
-- (void)registerRootTag:(ReactTag)tag
+- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
+                       moduleName:(NSString *)moduleName
+                     initailProps:(NSDictionary *)initialProps
 {
-  _scheduler->registerRootTag(tag);
+  _scheduler->startSurface(
+    surfaceId,
+    RCTStringFromNSString(moduleName),
+    convertIdToFollyDynamic(initialProps)
+  );
 }
 
-- (void)unregisterRootTag:(ReactTag)tag
+- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->unregisterRootTag(tag);
+  _scheduler->stopSurface(surfaceId);
 }
 
-- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                         layoutContext:(LayoutContext)layoutContext
-                               rootTag:(ReactTag)rootTag
-{
-  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
-}
-
-- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
                                 layoutContext:(LayoutContext)layoutContext
-                                      rootTag:(ReactTag)rootTag
+                                    surfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
+  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
+}
+
+- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                       layoutContext:(LayoutContext)layoutContext
+                                           surfaceId:(SurfaceId)surfaceId
+{
+  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
 @end

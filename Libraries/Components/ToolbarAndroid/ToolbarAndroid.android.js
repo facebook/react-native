@@ -9,7 +9,7 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
@@ -118,7 +118,7 @@ const ToolbarAndroid = createReactClass({
     /**
      * Sets the toolbar subtitle color.
      */
-    subtitleColor: ColorPropType,
+    subtitleColor: DeprecatedColorPropType,
     /**
      * Sets the toolbar title.
      */
@@ -126,7 +126,7 @@ const ToolbarAndroid = createReactClass({
     /**
      * Sets the toolbar title color.
      */
-    titleColor: ColorPropType,
+    titleColor: DeprecatedColorPropType,
     /**
      * Sets the content inset for the toolbar starting edge.
      *
@@ -185,8 +185,9 @@ const ToolbarAndroid = createReactClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show =
-            UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show = UIManager.getViewManagerConfig(
+            'ToolbarAndroid',
+          ).Constants.ShowAsAction[action.show];
         }
         nativeActions.push(action);
       }

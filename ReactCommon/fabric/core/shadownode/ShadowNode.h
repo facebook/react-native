@@ -63,6 +63,8 @@ public:
     const ShadowNodeFragment &fragment
   );
 
+  virtual ~ShadowNode() = default;
+
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */
@@ -103,10 +105,12 @@ public:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   std::string getDebugName() const override;
   std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugChildren() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 
 protected:
   Tag tag_;

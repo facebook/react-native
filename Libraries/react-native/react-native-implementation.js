@@ -301,13 +301,13 @@ const ReactNative = {
 
   // Prop Types
   get ColorPropType() {
-    return require('ColorPropType');
+    return require('DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
-    return require('EdgeInsetsPropType');
+    return require('DeprecatedEdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('PointPropType');
+    return require('DeprecatedPointPropType');
   },
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');

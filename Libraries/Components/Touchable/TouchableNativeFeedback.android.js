@@ -223,7 +223,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
       [destX || 0, destY || 0],
     );
   },
@@ -231,7 +231,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
       [pressed],
     );
   },

@@ -9,9 +9,7 @@
 
 'use strict';
 
-const {
-  createProjectFromTemplate,
-} = require('../generator/templates');
+const {createProjectFromTemplate} = require('../generator/templates');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const minimist = require('minimist');

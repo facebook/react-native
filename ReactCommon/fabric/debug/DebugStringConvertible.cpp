@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConvertibleOptions options, int depth) const {
   if (depth >= options.maximumDepth) {
     return "";
@@ -85,6 +87,8 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren() cons
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return SharedDebugStringConvertibleList();
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

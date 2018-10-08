@@ -13,7 +13,8 @@
 namespace facebook {
 namespace react {
 
-using ActivityIndicatorViewComponentDescriptor = ConcreteComponentDescriptor<ActivityIndicatorViewShadowNode>;
+using ActivityIndicatorViewComponentDescriptor =
+    ConcreteComponentDescriptor<ActivityIndicatorViewShadowNode>;
 
 } // namespace react
 } // namespace facebook

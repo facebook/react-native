@@ -9,4 +9,4 @@ mount -o remount,exec /dev/shm
 set -x
 
 # run unit tests
-buck test ReactAndroid/src/test/... --config build.threads=$UNIT_TESTS_BUILD_THREADS
+buck test ReactAndroid/src/test/... --config build.threads="$UNIT_TESTS_BUILD_THREADS"

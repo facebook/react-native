@@ -21,8 +21,9 @@ import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('UIManager')
-    .AndroidSwipeRefreshLayout;
+  const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+    'AndroidSwipeRefreshLayout',
+  );
   var RefreshLayoutConsts = AndroidSwipeRefreshLayout
     ? AndroidSwipeRefreshLayout.Constants
     : {SIZE: {}};
