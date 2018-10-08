@@ -49,7 +49,7 @@ function fetch_and_unpack () {
     done
 
     dir=$(basename "$file" .tar.gz)
-    if [ "$fetched" = "yes" ] || [ ! -d "third-party/$dir" ]; then
+    if [ "$fetched" = "yes" ] || [ ! -f "third-party/$dir/.installed" ]; then
         (cd third-party;
          rm -rf "$dir"
          echo Unpacking "$cachedir/$file"...
@@ -57,7 +57,7 @@ function fetch_and_unpack () {
              file_fail "$cachedir/$file" "Unpacking '$cachedir/$file' failed"
          fi
          cd "$dir"
-         eval "${cmd:-true}")
+         eval "${cmd:-true}" && touch .installed)
     fi
 }
 
