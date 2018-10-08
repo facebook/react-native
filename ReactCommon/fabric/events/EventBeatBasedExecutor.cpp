@@ -19,7 +19,8 @@ using Mode = EventBeatBasedExecutor::Mode;
 EventBeatBasedExecutor::EventBeatBasedExecutor(std::unique_ptr<EventBeat> eventBeat):
   eventBeat_(std::move(eventBeat)) {
 
-  eventBeat_->setBeatCallback(std::bind(&EventBeatBasedExecutor::onBeat, this));
+  eventBeat_->setBeatCallback(std::bind(&EventBeatBasedExecutor::onBeat, this, true));
+  eventBeat_->setFailCallback(std::bind(&EventBeatBasedExecutor::onBeat, this, false));
 }
 
 void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
@@ -52,7 +53,7 @@ void EventBeatBasedExecutor::execute(Task task) const {
   eventBeat_->induce();
 }
 
-void EventBeatBasedExecutor::onBeat() const {
+void EventBeatBasedExecutor::onBeat(bool success) const {
   std::vector<Task> tasks;
 
   {
@@ -67,7 +68,9 @@ void EventBeatBasedExecutor::onBeat() const {
   }
 
   for (const auto task : tasks) {
-    task.routine();
+    if (success) {
+      task.routine();
+    }
 
     if (task.callback) {
       task.callback();
