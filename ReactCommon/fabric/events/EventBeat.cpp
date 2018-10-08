@@ -34,5 +34,9 @@ void EventBeat::setBeatCallback(const BeatCallback &beatCallback) {
   beatCallback_ = beatCallback;
 }
 
+void EventBeat::setFailCallback(const FailCallback &failCallback) {
+  failCallback_ = failCallback;
+}
+
 } // namespace react
 } // namespace facebook
