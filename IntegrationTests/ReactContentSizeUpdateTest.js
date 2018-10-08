@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
@@ -13,11 +14,11 @@ const React = require('react');
 const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
-const Subscribable = require('Subscribable');
 
 const {View} = ReactNative;
 
 const {TestModule} = ReactNative.NativeModules;
+import type EmitterSubscription from 'EmitterSubscription';
 
 const reactViewWidth = 101;
 const reactViewHeight = 102;
@@ -26,12 +27,11 @@ const newReactViewHeight = 202;
 
 const ReactContentSizeUpdateTest = createReactClass({
   displayName: 'ReactContentSizeUpdateTest',
-  mixins: [Subscribable.Mixin],
   _timeoutID: (null: ?TimeoutID),
+  _subscription: (null: ?EmitterSubscription),
 
   UNSAFE_componentWillMount: function() {
-    this.addListenerOn(
-      RCTNativeAppEventEmitter,
+    this._subscription = RCTNativeAppEventEmitter.addListener(
       'rootViewDidChangeIntrinsicSize',
       this.rootViewDidChangeIntrinsicSize,
     );
@@ -60,6 +60,10 @@ const ReactContentSizeUpdateTest = createReactClass({
   componentWillUnmount: function() {
     if (this._timeoutID != null) {
       clearTimeout(this._timeoutID);
+    }
+
+    if (this._subscription != null) {
+      this._subscription.remove();
     }
   },
 
