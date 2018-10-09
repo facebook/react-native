@@ -14,11 +14,12 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {ProgressViewIOS, StyleSheet, View} = ReactNative;
 
+type Props = {||};
 type State = {|
   progress: number,
 |};
 
-class ProgressViewExample extends React.Component<{}, State> {
+class ProgressViewExample extends React.Component<Props, State> {
   _rafId: ?AnimationFrameID = null;
 
   state = {
