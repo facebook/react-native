@@ -67,11 +67,10 @@ public:
     std::string name;
 
     size_t callbacks;
+    bool isPromise;
     std::function<void(folly::dynamic, Callback, Callback)> func;
 
     std::function<folly::dynamic(folly::dynamic)> syncFunc;
-
-    bool isPromise;
 
     const char *getType() {
       assert(func || syncFunc);
