@@ -19,7 +19,7 @@ type State = {|
   progress: number,
 |};
 
-class MovingBar extends React.Component<{}, State> {
+class MovingBar extends React.Component<$FlowFixMeProps, State> {
   static displayName: ?string = 'MovingBar';
   _intervalID: ?IntervalID = null;
 
