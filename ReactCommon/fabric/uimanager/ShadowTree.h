@@ -49,17 +49,19 @@ public:
   /*
    * Applies given `layoutConstraints` and `layoutContext` and commit
    * the new shadow tree.
+   * Returns `true` if the operation is finished successfully.
    * Can be called from any thread.
    */
-  void constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext);
+  void constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
 
 #pragma mark - Application
 
   /*
    * Create a new shadow tree with given `rootChildNodes` and commit.
    * Can be called from any thread.
+   * Returns `true` if the operation is finished successfully.
    */
-  void complete(const SharedShadowNodeUnsharedList &rootChildNodes);
+  void complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
 
 #pragma mark - Delegate
 
@@ -74,17 +76,22 @@ public:
 private:
 
   UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  void complete(UnsharedRootShadowNode newRootShadowNode);
+  void complete(UnsharedRootShadowNode newRootShadowNode) const;
   bool commit(
     const SharedRootShadowNode &oldRootShadowNode,
     const SharedRootShadowNode &newRootShadowNode,
     const ShadowViewMutationList &mutations
-  );
-  void toggleEventEmitters(const ShadowViewMutationList &mutations);
-  void emitLayoutEvents(const ShadowViewMutationList &mutations);
+  ) const;
+  void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
+  void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
+
+  /*
+   * Return `rootShadowNodeMutex_` protected by `commitMutex_`.
+   */
+  SharedRootShadowNode getRootShadowNode() const;
 
   const Tag rootTag_;
-  SharedRootShadowNode rootShadowNode_;
+  mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
   mutable std::mutex commitMutex_;
 };

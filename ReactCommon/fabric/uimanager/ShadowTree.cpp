@@ -38,6 +38,11 @@ Tag ShadowTree::getRootTag() const {
   return rootTag_;
 }
 
+SharedRootShadowNode ShadowTree::getRootShadowNode() const {
+  std::lock_guard<std::mutex> lock(commitMutex_);
+  return rootShadowNode_;
+}
+
 #pragma mark - Layout
 
 Size ShadowTree::measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
@@ -46,7 +51,7 @@ Size ShadowTree::measure(const LayoutConstraints &layoutConstraints, const Layou
   return newRootShadowNode->getLayoutMetrics().frame.size;
 }
 
-void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) {
+void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
   auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
   complete(newRootShadowNode);
 }
@@ -54,15 +59,15 @@ void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, co
 #pragma mark - Commiting
 
 UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto oldRootShadowNode = rootShadowNode_;
+  auto oldRootShadowNode = getRootShadowNode();
   const auto &props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(*oldRootShadowNode, ShadowNodeFragment {.props = props});
   return newRootShadowNode;
 }
 
-void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) {
-  auto oldRootShadowNode = rootShadowNode_;
+void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) const {
+  auto oldRootShadowNode = getRootShadowNode();
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(
       *oldRootShadowNode,
@@ -74,8 +79,8 @@ void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) {
   complete(newRootShadowNode);
 }
 
-void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
-  SharedRootShadowNode oldRootShadowNode = rootShadowNode_;
+void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) const {
+  SharedRootShadowNode oldRootShadowNode = getRootShadowNode();
 
   newRootShadowNode->layout();
 
@@ -99,7 +104,7 @@ bool ShadowTree::commit(
   const SharedRootShadowNode &oldRootShadowNode,
   const SharedRootShadowNode &newRootShadowNode,
   const ShadowViewMutationList &mutations
-) {
+) const {
   std::lock_guard<std::mutex> lock(commitMutex_);
 
   if (oldRootShadowNode != rootShadowNode_) {
@@ -109,10 +114,11 @@ bool ShadowTree::commit(
   rootShadowNode_ = newRootShadowNode;
 
   toggleEventEmitters(mutations);
+
   return true;
 }
 
-void ShadowTree::emitLayoutEvents(const ShadowViewMutationList &mutations) {
+void ShadowTree::emitLayoutEvents(const ShadowViewMutationList &mutations) const {
   for (const auto &mutation : mutations) {
     // Only `Insert` and `Update` mutations can affect layout metrics.
     if (
@@ -147,7 +153,7 @@ void ShadowTree::emitLayoutEvents(const ShadowViewMutationList &mutations) {
   }
 }
 
-void ShadowTree::toggleEventEmitters(const ShadowViewMutationList &mutations) {
+void ShadowTree::toggleEventEmitters(const ShadowViewMutationList &mutations) const {
   std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
 
   for (const auto &mutation : mutations) {
