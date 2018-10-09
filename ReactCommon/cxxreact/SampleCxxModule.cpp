@@ -118,18 +118,18 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
         auto a = jsArgAsDouble(args, 0);
         auto b = jsArgAsDouble(args, 1);
         if (a < 0 || b < 0) {
-          cbError("Negative number!");
+          cbError({"Negative number!"});
         } else {
-          cb(a + b);
+          cb({a + b});
         }
       }),
     Method("addIfPositiveAsAsync", [this](dynamic args, Callback cb, Callback cbError) {
         auto a = jsArgAsDouble(args, 0);
         auto b = jsArgAsDouble(args, 1);
         if (a < 0 || b < 0) {
-          cbError("Negative number!");
+          cbError({"Negative number!"});
         } else {
-          cb(a + b);
+          cb({a + b});
         }
       }, AsyncTag),
 
