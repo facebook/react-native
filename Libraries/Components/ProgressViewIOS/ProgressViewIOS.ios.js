@@ -21,8 +21,6 @@ import type {ImageSource} from 'ImageSource';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
-const RCTProgressView = requireNativeComponent('RCTProgressView');
-
 type Props = $ReadOnly<{|
   ...ViewProps,
 
@@ -57,12 +55,18 @@ type Props = $ReadOnly<{|
   trackImage?: ?ImageSource,
 |}>;
 
+type NativeProgressViewIOS = Class<NativeComponent<Props>>;
+
+const RCTProgressView = ((requireNativeComponent(
+  'RCTProgressView',
+): any): NativeProgressViewIOS);
+
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
 const ProgressViewIOS = (
   props: Props,
-  forwardedRef?: ?React.Ref<'RCTProgressView'>,
+  forwardedRef?: ?React.Ref<typeof RCTProgressView>,
 ) => (
   <RCTProgressView
     {...props}
@@ -80,4 +84,4 @@ const styles = StyleSheet.create({
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ProgressViewIOSWithRef = React.forwardRef(ProgressViewIOS);
 
-module.exports = (ProgressViewIOSWithRef: Class<NativeComponent<Props>>);
+module.exports = (ProgressViewIOSWithRef: NativeProgressViewIOS);
