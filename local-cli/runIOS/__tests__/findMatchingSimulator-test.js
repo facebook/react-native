@@ -65,6 +65,58 @@ describe('findMatchingSimulator', () => {
     });
   });
 
+  it('should find simulator with new xcrun format', () => {
+    expect(
+      findMatchingSimulator(
+        {
+          devices: {
+            'iOS 12.1': [
+              {
+                state: 'Shutdown',
+                isAvailable: 'YES',
+                name: 'iPhone 6s',
+                udid: 'D0F29BE7-CC3C-4976-888D-C739B4F50508',
+              },
+              {
+                state: 'Shutdown',
+                isAvailable: 'YES',
+                name: 'iPhone 6',
+                udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
+              },
+              {
+                state: 'Shutdown',
+                isAvailable: 'YES',
+                name: 'iPhone XS Max',
+                udid: 'B9B5E161-416B-43C4-A78F-729CB96CC8C6',
+                availabilityError: '',
+              },
+              {
+                state: 'Shutdown',
+                isAvailable: 'YES',
+                name: 'iPad Air',
+                udid: '1CCBBF8B-5773-4EA6-BD6F-C308C87A1ADB',
+                availabilityError: '',
+              },
+              {
+                state: 'Shutdown',
+                isAvailable: 'YES',
+                name: 'iPad (5th generation)',
+                udid: '9564ABEE-9EC2-4B4A-B443-D3710929A45A',
+                availabilityError: '',
+              },
+            ],
+          },
+        },
+        'iPhone 6',
+      ),
+    ).toEqual({
+      udid: 'BA0D93BD-07E6-4182-9B0A-F60A2474139C',
+      name: 'iPhone 6',
+      booted: false,
+      version: 'iOS 12.1',
+    });
+  });
+
   it('should return null if no simulators available', () => {
     expect(
       findMatchingSimulator(

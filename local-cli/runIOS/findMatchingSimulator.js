@@ -34,7 +34,10 @@ function findMatchingSimulator(simulators, simulatorName) {
     for (let i in devices[version]) {
       let simulator = devices[version][i];
       // Skipping non-available simulator
-      if (simulator.availability !== '(available)') {
+      if (
+        simulator.availability !== '(available)' &&
+        simulator.isAvailable !== 'YES'
+      ) {
         continue;
       }
       let booted = simulator.state === 'Booted';
