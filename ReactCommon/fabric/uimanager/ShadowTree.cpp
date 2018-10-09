@@ -15,15 +15,26 @@
 namespace facebook {
 namespace react {
 
-ShadowTree::ShadowTree(Tag rootTag):
-  rootTag_(rootTag) {
+ShadowTree::ShadowTree(
+  SurfaceId surfaceId,
+  const LayoutConstraints &layoutConstraints,
+  const LayoutContext &layoutContext
+):
+  surfaceId_(surfaceId) {
 
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, std::shared_ptr<const EventDispatcher>());
+  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, -1, std::shared_ptr<const EventDispatcher>());
+
+  const auto props = std::make_shared<const RootProps>(
+    *RootShadowNode::defaultSharedProps(),
+    layoutConstraints,
+    layoutContext
+  );
+
   rootShadowNode_ = std::make_shared<RootShadowNode>(
     ShadowNodeFragment {
-      .tag = rootTag,
-      .rootTag = rootTag,
-      .props = RootShadowNode::defaultSharedProps(),
+      .tag = surfaceId,
+      .rootTag = surfaceId,
+      .props = props,
       .eventEmitter = noopEventEmitter,
     },
     nullptr
@@ -34,8 +45,8 @@ ShadowTree::~ShadowTree() {
   complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {}));
 }
 
-Tag ShadowTree::getRootTag() const {
-  return rootTag_;
+Tag ShadowTree::getSurfaceId() const {
+  return surfaceId_;
 }
 
 SharedRootShadowNode ShadowTree::getRootShadowNode() const {

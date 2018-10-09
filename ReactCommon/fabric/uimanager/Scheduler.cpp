@@ -54,11 +54,13 @@ Scheduler::~Scheduler() {
 void Scheduler::startSurface(
   SurfaceId surfaceId,
   const std::string &moduleName,
-  const folly::dynamic &initialProps
+  const folly::dynamic &initialProps,
+  const LayoutConstraints &layoutConstraints,
+  const LayoutContext &layoutContext
 ) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  auto shadowTree = std::make_unique<ShadowTree>(surfaceId);
+  auto shadowTree = std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
   shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
@@ -121,7 +123,7 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const {
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(shadowTree.getRootTag(), mutations);
+    delegate_->schedulerDidFinishTransaction(shadowTree.getSurfaceId(), mutations);
   }
 }
 
