@@ -38,6 +38,16 @@ public:
    */
   Tag getRootTag() const;
 
+  /*
+   * Synchronously runs `function` when `commitMutex_` is acquired.
+   * It is useful in cases when transactional consistency and/or successful
+   * commit are required. E.g. you might want to run `measure` and
+   * `constraintLayout` as part of a single congious transaction.
+   * Use this only if it is necessary. All public methods of the class are
+   * already thread-safe.
+   */
+  void synchronize(std::function<void(void)> function) const;
+
 #pragma mark - Layout
 
   /*
@@ -93,7 +103,7 @@ private:
   const Tag rootTag_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
-  mutable std::mutex commitMutex_;
+  mutable std::recursive_mutex commitMutex_;
 };
 
 } // namespace react
