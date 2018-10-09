@@ -87,14 +87,23 @@ public:
   ShadowTreeDelegate const *getDelegate() const;
 
 private:
+  UnsharedRootShadowNode cloneRootShadowNode(
+    const SharedRootShadowNode &oldRootShadowNode,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  ) const;
 
-  UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  bool complete(UnsharedRootShadowNode newRootShadowNode) const;
+  bool complete(
+    const SharedRootShadowNode &oldRootShadowNode,
+    const UnsharedRootShadowNode &newRootShadowNode
+  ) const;
+
   bool commit(
     const SharedRootShadowNode &oldRootShadowNode,
     const SharedRootShadowNode &newRootShadowNode,
     const ShadowViewMutationList &mutations
   ) const;
+
   void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
 

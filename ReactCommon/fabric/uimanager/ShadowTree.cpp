@@ -62,27 +62,31 @@ void ShadowTree::synchronize(std::function<void(void)> function) const {
 #pragma mark - Layout
 
 Size ShadowTree::measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
+  auto newRootShadowNode = cloneRootShadowNode(getRootShadowNode(), layoutConstraints, layoutContext);
   newRootShadowNode->layout();
   return newRootShadowNode->getLayoutMetrics().frame.size;
 }
 
 bool ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
-  return complete(newRootShadowNode);
+  auto oldRootShadowNode = getRootShadowNode();
+  auto newRootShadowNode = cloneRootShadowNode(oldRootShadowNode, layoutConstraints, layoutContext);
+  return complete(oldRootShadowNode, newRootShadowNode);
 }
 
 #pragma mark - Commiting
 
-UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto oldRootShadowNode = getRootShadowNode();
-  const auto &props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
+UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(
+  const SharedRootShadowNode &oldRootShadowNode,
+  const LayoutConstraints &layoutConstraints,
+  const LayoutContext &layoutContext
+) const {
+  auto props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(*oldRootShadowNode, ShadowNodeFragment {.props = props});
   return newRootShadowNode;
 }
 
-bool  ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) const {
+bool ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) const {
   auto oldRootShadowNode = getRootShadowNode();
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(
@@ -92,14 +96,14 @@ bool  ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) c
       }
     );
 
-  return complete(newRootShadowNode);
+  return complete(oldRootShadowNode, newRootShadowNode);
 }
 
-bool ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) const {
-  SharedRootShadowNode oldRootShadowNode = getRootShadowNode();
-
+bool ShadowTree::complete(
+  const SharedRootShadowNode &oldRootShadowNode,
+  const UnsharedRootShadowNode &newRootShadowNode
+) const {
   newRootShadowNode->layout();
-
   newRootShadowNode->sealRecursive();
 
   auto mutations = calculateShadowViewMutations(
