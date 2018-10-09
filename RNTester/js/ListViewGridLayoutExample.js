@@ -22,6 +22,8 @@ const {
 } = ReactNative;
 const ListViewDataSource = require('ListViewDataSource');
 
+import type {RNTesterProps} from 'RNTesterTypes';
+
 var THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
@@ -41,7 +43,7 @@ type State = {|
   dataSource: ListViewDataSource,
 |};
 
-class ListViewGridLayoutExample extends React.Component<{}, State> {
+class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
   static title = '<ListView> - Grid Layout';
   static description = 'Flexbox grid layout.';
 
