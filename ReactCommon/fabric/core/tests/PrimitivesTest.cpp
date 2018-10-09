@@ -30,7 +30,8 @@ TEST(SealableTest, handleAssignmentsCorrectly) {
   Sealable other2;
   EXPECT_THROW(obj = other2, std::runtime_error);
 
-  // It doesn't matter if the other object is also sealed, it's still not allowed.
+  // It doesn't matter if the other object is also sealed, it's still not
+  // allowed.
   other2.seal();
   EXPECT_THROW(obj = other2, std::runtime_error);
 

@@ -18,12 +18,12 @@
 using namespace facebook::react;
 
 /**
- * This defines a set of TestComponent classes: Props, ShadowNode, ComponentDescriptor.
- * To be used for testing purpose.
+ * This defines a set of TestComponent classes: Props, ShadowNode,
+ * ComponentDescriptor. To be used for testing purpose.
  */
 
-class TestLocalData: public LocalData {
-public:
+class TestLocalData : public LocalData {
+ public:
   void setNumber(const int &number) {
     number_ = number;
   }
@@ -32,28 +32,28 @@ public:
     return number_;
   }
 
-private:
-  int number_ {0};
+ private:
+  int number_{0};
 };
 
 static const char TestComponentName[] = "Test";
 
 class TestProps : public Props {
-public:
+ public:
   using Props::Props;
-  TestProps():
-    Props(Props(), {{"nativeID", "testNativeID"}}) {}
+  TestProps() : Props(Props(), {{"nativeID", "testNativeID"}}) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
 
 class TestShadowNode;
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 class TestShadowNode : public ConcreteShadowNode<TestComponentName, TestProps> {
-public:
+ public:
   using ConcreteShadowNode::ConcreteShadowNode;
 };
 
-class TestComponentDescriptor: public ConcreteComponentDescriptor<TestShadowNode> {
-public:
+class TestComponentDescriptor
+    : public ConcreteComponentDescriptor<TestShadowNode> {
+ public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 };

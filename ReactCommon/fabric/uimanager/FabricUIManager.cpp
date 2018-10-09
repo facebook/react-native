@@ -12,9 +12,9 @@
 #include <fabric/components/view/ViewComponentDescriptor.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/ViewShadowNode.h>
-#include <fabric/core/componentDescriptor.h>
 #include <fabric/core/LayoutContext.h>
 #include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/core/componentDescriptor.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 
@@ -22,7 +22,8 @@ namespace facebook {
 namespace react {
 
 static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
-  // TODO: Convert this to something smarter, probably returning `std::iterator`.
+  // TODO: Convert this to something smarter, probably returning
+  // `std::iterator`.
   RawProps result;
 
   if (object.isNull()) {
@@ -44,7 +45,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   // eventually, all names will be unified.
 
   std::string rctPrefix("RCT");
-  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin()).first == rctPrefix.end()) {
+  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin())
+          .first == rctPrefix.end()) {
     // If `viewName` has "RCT" prefix, remove it.
     viewName.erase(0, rctPrefix.length());
   }
@@ -72,13 +74,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
 
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components.
-  if (
-    viewName == "SinglelineTextInputView" ||
-    viewName == "MultilineTextInputView" ||
-    viewName == "RefreshControl" ||
-    viewName == "SafeAreaView" ||
-    viewName == "ScrollContentView" ||
-    viewName == "AndroidHorizontalScrollContentView" // Android
+  if (viewName == "SinglelineTextInputView" ||
+      viewName == "MultilineTextInputView" || viewName == "RefreshControl" ||
+      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
+      viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
   }
@@ -86,32 +85,27 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-  FabricUIManager::FabricUIManager(
+FabricUIManager::FabricUIManager(
     std::unique_ptr<EventBeatBasedExecutor> executor,
     std::function<UIManagerInstaller> installer,
-    std::function<UIManagerUninstaller> uninstaller
-  ):
-    executor_(std::move(executor)),
-    installer_(std::move(installer)),
-    uninstaller_(std::move(uninstaller)) {
-
-  (*executor_)([this] {
-    installer_(*this);
-  });
+    std::function<UIManagerUninstaller> uninstaller)
+    : executor_(std::move(executor)),
+      installer_(std::move(installer)),
+      uninstaller_(std::move(uninstaller)) {
+  (*executor_)([this] { installer_(*this); });
 }
 
 FabricUIManager::~FabricUIManager() {
   // We move `executor_` and `uninstaller_` inside a lambda to extend their
   // life-time until the lambda finishes.
-  auto executor = std::shared_ptr<EventBeatBasedExecutor> {std::move(executor_)};
+  auto executor = std::shared_ptr<EventBeatBasedExecutor>{std::move(executor_)};
   auto uninstaller = std::move(uninstaller_);
 
-  (*executor)([uninstaller, executor]() {
-    uninstaller();
-  });
+  (*executor)([uninstaller, executor]() { uninstaller(); });
 }
 
-void FabricUIManager::setComponentDescriptorRegistry(const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
+void FabricUIManager::setComponentDescriptorRegistry(
+    const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
 }
 
@@ -123,63 +117,74 @@ UIManagerDelegate *FabricUIManager::getDelegate() {
   return delegate_;
 }
 
-void FabricUIManager::setDispatchEventToEmptyTargetFunction(std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction) {
+void FabricUIManager::setDispatchEventToEmptyTargetFunction(
+    std::function<DispatchEventToEmptyTargetFunction> dispatchEventFunction) {
   dispatchEventToEmptyTargetFunction_ = dispatchEventFunction;
 }
 
-void FabricUIManager::setDispatchEventToTargetFunction(std::function<DispatchEventToTargetFunction> dispatchEventFunction) {
+void FabricUIManager::setDispatchEventToTargetFunction(
+    std::function<DispatchEventToTargetFunction> dispatchEventFunction) {
   dispatchEventToTargetFunction_ = dispatchEventFunction;
 }
 
-void FabricUIManager::setStartSurfaceFunction(std::function<StartSurface> startSurfaceFunction) {
+void FabricUIManager::setStartSurfaceFunction(
+    std::function<StartSurface> startSurfaceFunction) {
   startSurfaceFunction_ = startSurfaceFunction;
 }
 
-void FabricUIManager::setStopSurfaceFunction(std::function<StopSurface> stopSurfaceFunction) {
+void FabricUIManager::setStopSurfaceFunction(
+    std::function<StopSurface> stopSurfaceFunction) {
   stopSurfaceFunction_ = stopSurfaceFunction;
 }
 
-void FabricUIManager::dispatchEventToTarget(const EventTarget *eventTarget, const std::string &type, const folly::dynamic &payload) const {
+void FabricUIManager::dispatchEventToTarget(
+    const EventTarget *eventTarget,
+    const std::string &type,
+    const folly::dynamic &payload) const {
   if (eventTarget) {
     dispatchEventToTargetFunction_(
-      *eventHandler_,
-      *eventTarget,
-      const_cast<std::string &>(type),
-      const_cast<folly::dynamic &>(payload)
-    );
+        *eventHandler_,
+        *eventTarget,
+        const_cast<std::string &>(type),
+        const_cast<folly::dynamic &>(payload));
   } else {
     dispatchEventToEmptyTargetFunction_(
-      *eventHandler_,
-      const_cast<std::string &>(type),
-      const_cast<folly::dynamic &>(payload)
-    );
+        *eventHandler_,
+        const_cast<std::string &>(type),
+        const_cast<folly::dynamic &>(payload));
   }
 }
 
-void FabricUIManager::startSurface(SurfaceId surfaceId, const std::string &moduleName, const folly::dynamic &initialProps) const {
+void FabricUIManager::startSurface(
+    SurfaceId surfaceId,
+    const std::string &moduleName,
+    const folly::dynamic &initialProps) const {
   (*executor_)([this, surfaceId, moduleName, initialProps] {
     startSurfaceFunction_(surfaceId, moduleName, initialProps);
   });
 }
 
 void FabricUIManager::stopSurface(SurfaceId surfaceId) const {
-  (*executor_)([this, surfaceId] {
-    stopSurfaceFunction_(surfaceId);
-  });
+  (*executor_)([this, surfaceId] { stopSurfaceFunction_(surfaceId); });
 }
 
-SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) const {
+SharedShadowNode FabricUIManager::createNode(
+    int tag,
+    std::string viewName,
+    int rootTag,
+    folly::dynamic props,
+    SharedEventTarget eventTarget) const {
   ComponentName componentName = componentNameByReactViewName(viewName);
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[componentName];
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);
 
-  SharedShadowNode shadowNode =
-    componentDescriptor->createShadowNode({
-      .tag = tag,
-      .rootTag = rootTag,
-      .eventEmitter = componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-      .props = componentDescriptor->cloneProps(nullptr, rawProps)
-    });
+  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
+      {.tag = tag,
+       .rootTag = rootTag,
+       .eventEmitter =
+           componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
+       .props = componentDescriptor->cloneProps(nullptr, rawProps)});
 
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
@@ -188,83 +193,91 @@ SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int 
   return shadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNode(const SharedShadowNode &shadowNode) const {
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+SharedShadowNode FabricUIManager::cloneNode(
+    const SharedShadowNode &shadowNode) const {
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[shadowNode];
 
   SharedShadowNode clonedShadowNode =
-    componentDescriptor->cloneShadowNode(*shadowNode, {});
+      componentDescriptor->cloneShadowNode(*shadowNode, {});
 
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(const SharedShadowNode &shadowNode) const {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildren(
+    const SharedShadowNode &shadowNode) const {
   // Assuming semantic: Cloning with same props but empty children.
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[shadowNode];
 
-  SharedShadowNode clonedShadowNode =
-    componentDescriptor->cloneShadowNode(
-      *shadowNode,
-      {
-        .children = ShadowNode::emptySharedShadowNodeSharedList()
-      }
-    );
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(
+      *shadowNode, {.children = ShadowNode::emptySharedShadowNodeSharedList()});
 
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewProps(const SharedShadowNode &shadowNode, folly::dynamic props) const {
+SharedShadowNode FabricUIManager::cloneNodeWithNewProps(
+    const SharedShadowNode &shadowNode,
+    folly::dynamic props) const {
   // Assuming semantic: Cloning with same children and specified props.
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[shadowNode];
   RawProps rawProps = rawPropsFromDynamic(props);
 
-  SharedShadowNode clonedShadowNode =
-    componentDescriptor->cloneShadowNode(
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(
       *shadowNode,
-      {
-        .props = componentDescriptor->cloneProps(shadowNode->getProps(), rawProps)
-      }
-    );
+      {.props =
+           componentDescriptor->cloneProps(shadowNode->getProps(), rawProps)});
 
   return clonedShadowNode;
 }
 
-SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(const SharedShadowNode &shadowNode, folly::dynamic props) const {
+SharedShadowNode FabricUIManager::cloneNodeWithNewChildrenAndProps(
+    const SharedShadowNode &shadowNode,
+    folly::dynamic props) const {
   // Assuming semantic: Cloning with empty children and specified props.
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[shadowNode];
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[shadowNode];
   RawProps rawProps = rawPropsFromDynamic(props);
 
-  SharedShadowNode clonedShadowNode =
-    componentDescriptor->cloneShadowNode(
+  SharedShadowNode clonedShadowNode = componentDescriptor->cloneShadowNode(
       *shadowNode,
-      {
-        .props = componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
-        .children = ShadowNode::emptySharedShadowNodeSharedList()
-      }
-    );
+      {.props =
+           componentDescriptor->cloneProps(shadowNode->getProps(), rawProps),
+       .children = ShadowNode::emptySharedShadowNodeSharedList()});
 
   return clonedShadowNode;
 }
 
-void FabricUIManager::appendChild(const SharedShadowNode &parentShadowNode, const SharedShadowNode &childShadowNode) const {
-  const SharedComponentDescriptor &componentDescriptor = (*componentDescriptorRegistry_)[parentShadowNode];
+void FabricUIManager::appendChild(
+    const SharedShadowNode &parentShadowNode,
+    const SharedShadowNode &childShadowNode) const {
+  const SharedComponentDescriptor &componentDescriptor =
+      (*componentDescriptorRegistry_)[parentShadowNode];
   componentDescriptor->appendChild(parentShadowNode, childShadowNode);
 }
 
-SharedShadowNodeUnsharedList FabricUIManager::createChildSet(int rootTag) const {
+SharedShadowNodeUnsharedList FabricUIManager::createChildSet(
+    int rootTag) const {
   return std::make_shared<SharedShadowNodeList>(SharedShadowNodeList({}));
 }
 
-void FabricUIManager::appendChildToSet(const SharedShadowNodeUnsharedList &shadowNodeList, const SharedShadowNode &shadowNode) const {
+void FabricUIManager::appendChildToSet(
+    const SharedShadowNodeUnsharedList &shadowNodeList,
+    const SharedShadowNode &shadowNode) const {
   shadowNodeList->push_back(shadowNode);
 }
 
-void FabricUIManager::completeRoot(int rootTag, const SharedShadowNodeUnsharedList &children) const {
+void FabricUIManager::completeRoot(
+    int rootTag,
+    const SharedShadowNodeUnsharedList &children) const {
   if (delegate_) {
     delegate_->uiManagerDidFinishTransaction(rootTag, children);
   }
 }
 
-void FabricUIManager::registerEventHandler(UniqueEventHandler eventHandler) const {
+void FabricUIManager::registerEventHandler(
+    UniqueEventHandler eventHandler) const {
   // Technically, it should be protected by a mutex but regularly it should
   // be safe because it used only during initialization process.
   eventHandler_ = std::move(eventHandler);

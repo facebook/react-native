@@ -13,15 +13,11 @@ namespace react {
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 DebugStringConvertibleItem::DebugStringConvertibleItem(
-  const std::string &name,
-  const std::string &value,
-  const SharedDebugStringConvertibleList &props,
-  const SharedDebugStringConvertibleList &children
-):
-  name_(name),
-  value_(value),
-  props_(props),
-  children_(children) {}
+    const std::string &name,
+    const std::string &value,
+    const SharedDebugStringConvertibleList &props,
+    const SharedDebugStringConvertibleList &children)
+    : name_(name), value_(value), props_(props), children_(children) {}
 
 std::string DebugStringConvertibleItem::getDebugName() const {
   return name_;
@@ -31,11 +27,13 @@ std::string DebugStringConvertibleItem::getDebugValue() const {
   return value_;
 }
 
-SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugProps() const {
+SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugProps()
+    const {
   return props_;
 }
 
-SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren() const {
+SharedDebugStringConvertibleList DebugStringConvertibleItem::getDebugChildren()
+    const {
   return children_;
 }
 

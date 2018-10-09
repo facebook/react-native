@@ -26,11 +26,11 @@ namespace react {
 
 #ifndef NDEBUG
 
-Sealable::Sealable(): sealed_(false) {}
+Sealable::Sealable() : sealed_(false) {}
 
-Sealable::Sealable(const Sealable &other): sealed_(false) {};
+Sealable::Sealable(const Sealable &other) : sealed_(false){};
 
-Sealable::Sealable(Sealable &&other) noexcept: sealed_(false) {};
+Sealable::Sealable(Sealable &&other) noexcept : sealed_(false){};
 
 Sealable::~Sealable() noexcept {};
 
