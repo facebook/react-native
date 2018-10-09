@@ -29,11 +29,14 @@ class AccessibilityProps : public virtual DebugStringConvertible {
 #pragma mark - Props
 
   const bool accessible{false};
-  const std::vector<std::string> accessibilityActions{};
-  const std::string accessibilityLabel{""};
   const AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  const std::string accessibilityLabel{""};
+  const std::string accessibilityHint{""};
+  const std::vector<std::string> accessibilityActions{};
   const bool accessibilityViewIsModal{false};
   const bool accessibilityElementsHidden{false};
+  const bool accessibilityIgnoresInvertColors{false};
+  const std::string testId{""};
 };
 
 } // namespace react
