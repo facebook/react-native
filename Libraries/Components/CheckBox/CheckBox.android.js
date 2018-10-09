@@ -26,21 +26,7 @@ type CheckBoxEvent = SyntheticEvent<
   |}>,
 >;
 
-type Props = $ReadOnly<{|
-  ...ViewProps,
-
-  /**
-   * The value of the checkbox.  If true the checkbox will be turned on.
-   * Default value is false.
-   */
-  value?: ?boolean,
-
-  /**
-   * If true the user won't be able to toggle the checkbox.
-   * Default value is false.
-   */
-  disabled?: ?boolean,
-
+type CommonProps = $ReadOnly<{|
   /**
    * Used in case the props change removes the component.
    */
@@ -59,11 +45,31 @@ type Props = $ReadOnly<{|
   /**
    * Used to get the ref for the native checkbox
    */
-  ref?: ?Object,
+  // $FlowFixMe: Properly type the ref prop type
+  ref?: $FlowIssue,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  ...CommonProps,
+
+  /**
+   * The value of the checkbox.  If true the checkbox will be turned on.
+   * Default value is false.
+   */
+  value?: ?boolean,
+
+  /**
+   * If true the user won't be able to toggle the checkbox.
+   * Default value is false.
+   */
+  disabled?: ?boolean,
 |}>;
 
 type NativeProps = $ReadOnly<{|
-  ...Props,
+  ...ViewProps,
+  ...CommonProps,
+
   on?: ?boolean,
   enabled?: boolean,
 |}>;
@@ -161,18 +167,19 @@ class CheckBox extends React.Component<Props> {
   };
 
   render() {
-    const props = {
-      ...this.props,
+    const {disabled, value, ...props} = this.props;
+    const nativeProps = {
+      ...props,
       onStartShouldSetResponder: () => true,
       onResponderTerminationRequest: () => false,
-      enabled: !this.props.disabled,
-      on: this.props.value,
-      style: [styles.rctCheckBox, this.props.style],
+      enabled: !disabled,
+      on: value,
+      style: [styles.rctCheckBox, props.style],
     };
 
     return (
       <RCTCheckBox
-        {...props}
+        {...nativeProps}
         ref={this._setAndForwardRef}
         onChange={this._onChange}
       />
