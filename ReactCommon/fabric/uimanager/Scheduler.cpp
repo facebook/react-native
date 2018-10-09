@@ -94,7 +94,7 @@ Size Scheduler::measureSurface(
   return shadowTree->measure(layoutConstraints, layoutContext);
 }
 
-bool Scheduler::constraintSurfaceLayout(
+void Scheduler::constraintSurfaceLayout(
   SurfaceId surfaceId,
   const LayoutConstraints &layoutConstraints,
   const LayoutContext &layoutContext
@@ -102,7 +102,9 @@ bool Scheduler::constraintSurfaceLayout(
   std::lock_guard<std::mutex> lock(mutex_);
   const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
   assert(shadowTree);
-  return shadowTree->constraintLayout(layoutConstraints, layoutContext);
+  shadowTree->synchronize([&]() {
+    shadowTree->constraintLayout(layoutConstraints, layoutContext);
+  });
 }
 
 #pragma mark - Delegate

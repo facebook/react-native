@@ -39,8 +39,13 @@ Tag ShadowTree::getRootTag() const {
 }
 
 SharedRootShadowNode ShadowTree::getRootShadowNode() const {
-  std::lock_guard<std::mutex> lock(commitMutex_);
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
   return rootShadowNode_;
+}
+
+void ShadowTree::synchronize(std::function<void(void)> function) const {
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+  function();
 }
 
 #pragma mark - Layout
@@ -109,7 +114,7 @@ bool ShadowTree::commit(
   const SharedRootShadowNode &newRootShadowNode,
   const ShadowViewMutationList &mutations
 ) const {
-  std::lock_guard<std::mutex> lock(commitMutex_);
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   if (oldRootShadowNode != rootShadowNode_) {
     return false;

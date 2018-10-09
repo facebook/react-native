@@ -57,9 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
- * Returns `YES` if the operation finished successfully.
  */
-- (BOOL)setMinimumSize:(CGSize)minimumSize
+- (void)setMinimumSize:(CGSize)minimumSize
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface;
 
