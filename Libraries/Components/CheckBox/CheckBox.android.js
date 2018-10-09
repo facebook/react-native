@@ -10,7 +10,6 @@
 'use strict';
 
 const React = require('React');
-const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 
 const requireNativeComponent = require('requireNativeComponent');
