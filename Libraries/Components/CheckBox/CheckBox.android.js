@@ -15,10 +15,9 @@ const StyleSheet = require('StyleSheet');
 const requireNativeComponent = require('requireNativeComponent');
 const nullthrows = require('nullthrows');
 
-const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
-
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
+import type {NativeComponent} from 'ReactNative';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -62,6 +61,18 @@ type Props = $ReadOnly<{|
    */
   ref?: ?Object,
 |}>;
+
+type NativeProps = $ReadOnly<{|
+  ...Props,
+  on?: ?boolean,
+  enabled?: boolean,
+|}>;
+
+type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
+
+const RCTCheckBox = ((requireNativeComponent(
+  'AndroidCheckBox',
+): any): CheckBoxNativeType);
 
 /**
  * Renders a boolean input (Android only).
@@ -119,8 +130,7 @@ type Props = $ReadOnly<{|
  * @keyword toggle
  */
 class CheckBox extends React.Component<Props> {
-  // $FlowFixMe How to type a native component to be able to call setNativeProps
-  _nativeRef: ?React.ElementRef<typeof RCTCheckBox> = null;
+  _nativeRef: ?React.ElementRef<CheckBoxNativeType> = null;
 
   static defaultProps = {
     value: false,
