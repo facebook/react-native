@@ -64,4 +64,5 @@ module.exports = [
   'focus',
   'genericBubblingEventTypes',
   'genericDirectEventTypes',
+  'lazilyLoadView',
 ];
