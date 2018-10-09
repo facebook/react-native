@@ -17,9 +17,8 @@ namespace react {
  * The list of mutations might be and might not be optimal.
  */
 ShadowViewMutationList calculateShadowViewMutations(
-  const ShadowNode &oldRootShadowNode,
-  const ShadowNode &newRootShadowNode
-);
+    const ShadowNode &oldRootShadowNode,
+    const ShadowNode &newRootShadowNode);
 
 } // namespace react
 } // namespace facebook

@@ -8,7 +8,8 @@
 namespace facebook {
 namespace react {
 
-void ComponentDescriptorRegistry::registerComponentDescriptor(SharedComponentDescriptor componentDescriptor) {
+void ComponentDescriptorRegistry::registerComponentDescriptor(
+    SharedComponentDescriptor componentDescriptor) {
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
@@ -16,17 +17,20 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(SharedComponentDes
   _registryByName[componentName] = componentDescriptor;
 }
 
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const SharedShadowNode &shadowNode) const {
+const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](
+    const SharedShadowNode &shadowNode) const {
   ComponentHandle componentHandle = shadowNode->getComponentHandle();
   return _registryByHandle.at(componentHandle);
 }
 
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](const ComponentName &componentName) const {
+const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](
+    const ComponentName &componentName) const {
   auto it = _registryByName.find(componentName);
   if (it == _registryByName.end()) {
-     throw std::invalid_argument(("Unable to find componentDescriptor for " + componentName).c_str());
-   }
-   return it->second;
+    throw std::invalid_argument(
+        ("Unable to find componentDescriptor for " + componentName).c_str());
+  }
+  return it->second;
 }
 
 } // namespace react

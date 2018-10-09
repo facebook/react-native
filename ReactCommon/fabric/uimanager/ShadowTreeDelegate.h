@@ -16,12 +16,13 @@ class ShadowTree;
  * Abstract class for ShadowTree's delegate.
  */
 class ShadowTreeDelegate {
-
-public:
+ public:
   /*
    * Called right after Shadow Tree commit a new state of the the tree.
    */
-  virtual void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const = 0;
+  virtual void shadowTreeDidCommit(
+      const ShadowTree &shadowTree,
+      const ShadowViewMutationList &mutations) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;
 };

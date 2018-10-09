@@ -22,17 +22,14 @@ namespace react {
  * Represents the shadow tree and its lifecycle.
  */
 class ShadowTree final {
-
-public:
-
+ public:
   /*
    * Creates a new shadow tree instance.
    */
   ShadowTree(
-    SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext
-  );
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext);
 
   ~ShadowTree();
 
@@ -54,10 +51,12 @@ public:
 #pragma mark - Layout
 
   /*
-   * Measures the shadow tree with given `layoutConstraints` and `layoutContext`.
-   * Can be called from any thread, side-effect-less.
+   * Measures the shadow tree with given `layoutConstraints` and
+   * `layoutContext`. Can be called from any thread, side-effect-less.
    */
-  Size measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
+  Size measure(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
   /*
    * Applies given `layoutConstraints` and `layoutContext` and commit
@@ -65,7 +64,9 @@ public:
    * Returns `true` if the operation finished successfully.
    * Can be called from any thread.
    */
-  bool constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
+  bool constraintLayout(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
 #pragma mark - Application
 
@@ -86,23 +87,20 @@ public:
   void setDelegate(ShadowTreeDelegate const *delegate);
   ShadowTreeDelegate const *getDelegate() const;
 
-private:
+ private:
   UnsharedRootShadowNode cloneRootShadowNode(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext
-  ) const;
+      const SharedRootShadowNode &oldRootShadowNode,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
   bool complete(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const UnsharedRootShadowNode &newRootShadowNode
-  ) const;
+      const SharedRootShadowNode &oldRootShadowNode,
+      const UnsharedRootShadowNode &newRootShadowNode) const;
 
   bool commit(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const SharedRootShadowNode &newRootShadowNode,
-    const ShadowViewMutationList &mutations
-  ) const;
+      const SharedRootShadowNode &oldRootShadowNode,
+      const SharedRootShadowNode &newRootShadowNode,
+      const ShadowViewMutationList &mutations) const;
 
   void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;

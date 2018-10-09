@@ -16,11 +16,13 @@ namespace react {
 
 using Mode = EventBeatBasedExecutor::Mode;
 
-EventBeatBasedExecutor::EventBeatBasedExecutor(std::unique_ptr<EventBeat> eventBeat):
-  eventBeat_(std::move(eventBeat)) {
-
-  eventBeat_->setBeatCallback(std::bind(&EventBeatBasedExecutor::onBeat, this, true));
-  eventBeat_->setFailCallback(std::bind(&EventBeatBasedExecutor::onBeat, this, false));
+EventBeatBasedExecutor::EventBeatBasedExecutor(
+    std::unique_ptr<EventBeat> eventBeat)
+    : eventBeat_(std::move(eventBeat)) {
+  eventBeat_->setBeatCallback(
+      std::bind(&EventBeatBasedExecutor::onBeat, this, true));
+  eventBeat_->setFailCallback(
+      std::bind(&EventBeatBasedExecutor::onBeat, this, false));
 }
 
 void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
@@ -32,12 +34,8 @@ void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
   std::mutex mutex;
   mutex.lock();
 
-  execute({
-    .routine = std::move(routine),
-    .callback = [&mutex]() {
-      mutex.unlock();
-    }
-  });
+  execute({.routine = std::move(routine),
+           .callback = [&mutex]() { mutex.unlock(); }});
 
   mutex.lock();
 }
