@@ -13,13 +13,10 @@ namespace react {
 const char ViewComponentName[] = "View";
 
 bool ViewShadowNode::isLayoutOnly() const {
-#ifdef ANDROID
-  // This feature is not properly tested on Android yet.
-  return false;
-#else
   const auto &viewProps = *std::static_pointer_cast<const ViewProps>(props_);
 
   return
+      viewProps.collapsable &&
       // Event listeners
       !viewProps.onLayout &&
       // Generic Props
@@ -33,7 +30,6 @@ bool ViewShadowNode::isLayoutOnly() const {
       viewProps.transform == Transform{} && viewProps.zIndex == 0 &&
       // Layout Metrics
       getLayoutMetrics().borderWidth == EdgeInsets{};
-#endif
 }
 
 } // namespace react
