@@ -51,9 +51,9 @@ Size ShadowTree::measure(const LayoutConstraints &layoutConstraints, const Layou
   return newRootShadowNode->getLayoutMetrics().frame.size;
 }
 
-void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
+bool ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
   auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
-  complete(newRootShadowNode);
+  return complete(newRootShadowNode);
 }
 
 #pragma mark - Commiting
@@ -66,7 +66,7 @@ UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &
   return newRootShadowNode;
 }
 
-void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) const {
+bool  ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) const {
   auto oldRootShadowNode = getRootShadowNode();
   auto newRootShadowNode =
     std::make_shared<RootShadowNode>(
@@ -76,10 +76,10 @@ void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) co
       }
     );
 
-  complete(newRootShadowNode);
+  return complete(newRootShadowNode);
 }
 
-void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) const {
+bool ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) const {
   SharedRootShadowNode oldRootShadowNode = getRootShadowNode();
 
   newRootShadowNode->layout();
@@ -91,13 +91,17 @@ void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) const {
     *newRootShadowNode
   );
 
-  if (commit(oldRootShadowNode, newRootShadowNode, mutations)) {
-    emitLayoutEvents(mutations);
-
-    if (delegate_) {
-      delegate_->shadowTreeDidCommit(*this, mutations);
-    }
+  if (!commit(oldRootShadowNode, newRootShadowNode, mutations)) {
+    return false;
   }
+
+  emitLayoutEvents(mutations);
+
+  if (delegate_) {
+    delegate_->shadowTreeDidCommit(*this, mutations);
+  }
+
+  return true;
 }
 
 bool ShadowTree::commit(
