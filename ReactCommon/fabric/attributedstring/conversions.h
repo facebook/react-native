@@ -387,7 +387,9 @@ inline folly::dynamic toDynamic(
 
 inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
-  _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+  if (textAttributes.foregroundColor) {
+    _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+  }
   if (textAttributes.backgroundColor) {
     _textAttributes(
         "backgroundColor", toDynamic(textAttributes.backgroundColor));
