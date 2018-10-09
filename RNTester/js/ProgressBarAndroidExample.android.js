@@ -16,33 +16,31 @@ var createReactClass = require('create-react-class');
 var RNTesterBlock = require('RNTesterBlock');
 var RNTesterPage = require('RNTesterPage');
 
-var MovingBar = createReactClass({
-  displayName: 'MovingBar',
-  _intervalID: (null: ?IntervalID),
+class MovingBar extends React.Component<{}> {
+  displayName = 'MovingBar';
+  _intervalID = IntervalID ? IntervalID : null;
 
-  getInitialState: function() {
-    return {
-      progress: 0,
-    };
-  },
+  state = {
+    progress: 0,
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this._intervalID = setInterval(() => {
       var progress = (this.state.progress + 0.02) % 1;
       this.setState({progress: progress});
     }, 50);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnMount() {
     if (this._intervalID != null) {
       clearInterval(this._intervalID);
     }
-  },
+  }
 
-  render: function() {
+  render() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
-  },
-});
+  }
+}
 
 class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';
