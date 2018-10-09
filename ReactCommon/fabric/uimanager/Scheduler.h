@@ -48,7 +48,15 @@ public:
     const LayoutContext &layoutContext
   ) const;
 
-  void constraintSurfaceLayout(
+  /*
+   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
+   * The user interface will be relaid out as a result. The operation will be
+   * performed synchronously (including mounting) if the method is called
+   * on the main thread.
+   * Returns `true` if the operation finished successfully.
+   * Can be called from any thread.
+   */
+  bool constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext

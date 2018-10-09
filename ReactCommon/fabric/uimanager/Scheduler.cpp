@@ -94,7 +94,7 @@ Size Scheduler::measureSurface(
   return shadowTree->measure(layoutConstraints, layoutContext);
 }
 
-void Scheduler::constraintSurfaceLayout(
+bool Scheduler::constraintSurfaceLayout(
   SurfaceId surfaceId,
   const LayoutConstraints &layoutConstraints,
   const LayoutContext &layoutContext
@@ -135,7 +135,7 @@ void Scheduler::uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNod
     return;
   }
 
-  return iterator->second->complete(rootChildNodes);
+  iterator->second->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) {

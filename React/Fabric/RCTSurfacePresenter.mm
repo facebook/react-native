@@ -119,7 +119,7 @@ using namespace facebook::react;
                                                     surfaceId:surface.rootTag];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize
+- (BOOL)setMinimumSize:(CGSize)minimumSize
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface
 {
@@ -129,9 +129,9 @@ using namespace facebook::react;
   layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
   layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
 
-  [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
-                                                  layoutContext:layoutContext
-                                                      surfaceId:surface.rootTag];
+  return [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
+                                                         layoutContext:layoutContext
+                                                             surfaceId:surface.rootTag];
 }
 
 #pragma mark - Private

@@ -80,11 +80,11 @@ private:
   return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
 }
 
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+- (BOOL)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
                                        layoutContext:(LayoutContext)layoutContext
                                            surfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
+  return _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
 @end

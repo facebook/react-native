@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 layoutContext:(facebook::react::LayoutContext)layoutContext
                                     surfaceId:(facebook::react::SurfaceId)surfaceId;
 
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+- (BOOL)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                                        layoutContext:(facebook::react::LayoutContext)layoutContext
                                            surfaceId:(facebook::react::SurfaceId)surfaceId;
 
