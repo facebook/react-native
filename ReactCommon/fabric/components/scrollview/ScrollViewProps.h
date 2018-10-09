@@ -21,8 +21,8 @@ class ScrollViewProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool alwaysBounceHorizontal{true};
-  const bool alwaysBounceVertical{true};
+  const bool alwaysBounceHorizontal{};
+  const bool alwaysBounceVertical{};
   const bool bounces{true};
   const bool bouncesZoom{true};
   const bool canCancelContentTouches{true};
