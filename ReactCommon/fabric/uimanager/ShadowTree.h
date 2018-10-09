@@ -26,17 +26,20 @@ class ShadowTree final {
 public:
 
   /*
-   * Creates a new shadow tree instance with given `rootTag`.
+   * Creates a new shadow tree instance.
    */
-  ShadowTree(Tag rootTag);
+  ShadowTree(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext
+  );
 
   ~ShadowTree();
 
   /*
-   * Returns the rootTag associated with the shadow tree (the tag of the
-   * root shadow node).
+   * Returns the `SurfaceId` associated with the shadow tree.
    */
-  Tag getRootTag() const;
+  SurfaceId getSurfaceId() const;
 
   /*
    * Synchronously runs `function` when `commitMutex_` is acquired.
@@ -100,7 +103,7 @@ private:
    */
   SharedRootShadowNode getRootShadowNode() const;
 
-  const Tag rootTag_;
+  const SurfaceId surfaceId_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
   mutable std::recursive_mutex commitMutex_;

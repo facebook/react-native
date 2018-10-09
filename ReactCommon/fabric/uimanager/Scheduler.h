@@ -37,7 +37,9 @@ public:
   void startSurface(
     SurfaceId surfaceId,
     const std::string &moduleName,
-    const folly::dynamic &initialProps
+    const folly::dynamic &initialProps,
+    const LayoutConstraints &layoutConstraints = {},
+    const LayoutContext &layoutContext = {}
   ) const;
 
   void stopSurface(SurfaceId surfaceId) const;
