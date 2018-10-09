@@ -9,21 +9,60 @@
  */
 'use strict';
 
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('prop-types');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
+const nullthrows = require('nullthrows');
 
 const RCTCheckBox = requireNativeComponent('AndroidCheckBox');
 
-type DefaultProps = {
-  value: boolean,
-  disabled: boolean,
-};
+import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
+
+type CheckBoxEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+    value: boolean,
+  |}>,
+>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+
+  /**
+   * The value of the checkbox.  If true the checkbox will be turned on.
+   * Default value is false.
+   */
+  value?: ?boolean,
+
+  /**
+   * If true the user won't be able to toggle the checkbox.
+   * Default value is false.
+   */
+  disabled?: ?boolean,
+
+  /**
+   * Used in case the props change removes the component.
+   */
+  onChange?: ?(event: CheckBoxEvent) => mixed,
+
+  /**
+   * Invoked with the new value when the value changes.
+   */
+  onValueChange?: ?(value: boolean) => mixed,
+
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+
+  /**
+   * Used to get the ref for the native checkbox
+   */
+  ref?: ?Object,
+|}>;
 
 /**
  * Renders a boolean input (Android only).
@@ -80,81 +119,59 @@ type DefaultProps = {
  * @keyword checkbox
  * @keyword toggle
  */
-let CheckBox = createReactClass({
-  displayName: 'CheckBox',
-  propTypes: {
-    ...DeprecatedViewPropTypes,
-    /**
-     * The value of the checkbox.  If true the checkbox will be turned on.
-     * Default value is false.
-     */
-    value: PropTypes.bool,
-    /**
-     * If true the user won't be able to toggle the checkbox.
-     * Default value is false.
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Used in case the props change removes the component.
-     */
-    onChange: PropTypes.func,
-    /**
-     * Invoked with the new value when the value changes.
-     */
-    onValueChange: PropTypes.func,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
-  },
+class CheckBox extends React.Component<Props> {
+  // $FlowFixMe How to type a native component to be able to call setNativeProps
+  _nativeRef: ?React.ElementRef<typeof RCTCheckBox> = null;
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      value: false,
-      disabled: false,
-    };
-  },
+  static defaultProps = {
+    value: false,
+    disabled: false,
+  };
 
-  mixins: [NativeMethodsMixin],
+  _setAndForwardRef = nativeRef => {
+    const {ref} = this.props;
 
-  _rctCheckBox: {},
-  _onChange: function(event: Object) {
-    this._rctCheckBox.setNativeProps({value: this.props.value});
+    this._nativeRef = nativeRef;
+
+    // Forward to user ref prop (if one has been specified)
+    // String-based refs cannot be shared.
+    if (typeof ref === 'function') {
+      ref(nativeRef);
+    } else if (typeof ref === 'object' && ref != null) {
+      ref.current = nativeRef;
+    }
+  };
+
+  _onChange = (event: CheckBoxEvent) => {
+    nullthrows(this._nativeRef).setNativeProps({value: this.props.value});
     // Change the props after the native props are set in case the props
     // change removes the component
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
       this.props.onValueChange(event.nativeEvent.value);
-  },
+  };
 
-  render: function() {
-    let props = {...this.props};
-    props.onStartShouldSetResponder = () => true;
-    props.onResponderTerminationRequest = () => false;
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    props.enabled = !this.props.disabled;
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    props.on = this.props.value;
-    props.style = [styles.rctCheckBox, this.props.style];
+  render() {
+    const props = {
+      ...this.props,
+      onStartShouldSetResponder: () => true,
+      onResponderTerminationRequest: () => false,
+      enabled: !this.props.disabled,
+      on: this.props.value,
+      style: [styles.rctCheckBox, this.props.style],
+    };
 
     return (
       <RCTCheckBox
         {...props}
-        ref={ref => {
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */
-          this._rctCheckBox = ref;
-        }}
+        ref={this._setAndForwardRef}
         onChange={this._onChange}
       />
     );
-  },
-});
+  }
+}
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   rctCheckBox: {
     height: 32,
     width: 32,
