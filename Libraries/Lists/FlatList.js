@@ -190,7 +190,10 @@ type OptionalProps<ItemT> = {
    * @platform android
    */
   progressViewOffset?: number,
-  legacyImplementation?: ?boolean,
+  /**
+   * The legacy implementation is no longer supported.
+   */
+  legacyImplementation?: empty,
   /**
    * Set this true while waiting for new data from a refresh.
    */
