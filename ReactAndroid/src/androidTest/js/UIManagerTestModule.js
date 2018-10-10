@@ -36,7 +36,8 @@ class FlexTestApp extends React.Component<FlexTestAppProps> {
       </View>
     );
   }
-}
+};
+
 const FlexTestAppStyles = StyleSheet.create({
   container: {
     width: 200,
@@ -53,8 +54,12 @@ const FlexTestAppStyles = StyleSheet.create({
     width: 50,
     height: 60,
   },
-  bgRed: { backgroundColor: '#ff0000' },
-  bgBlue: { backgroundColor: '#0000ff' },
+  bgRed: {
+    backgroundColor: '#ff0000',
+  },
+  bgBlue: {
+    backgroundColor: '#0000ff',
+  },
 });
 
 type FlexWithTextProps = $ReadOnly<{||}>;
@@ -72,7 +77,8 @@ class FlexWithText extends React.Component<FlexWithTextProps> {
       </View>
     );
   }
-}
+};
+
 const FlexWithTextStyles = StyleSheet.create({
   container: {
     flexDirection: 'column',
@@ -102,7 +108,7 @@ class AbsolutePositionTestApp extends React.Component<
       />
     );
   }
-}
+};
 
 const AbsolutePositionTestAppStyles = StyleSheet.create({
   absolute: {
@@ -131,7 +137,7 @@ class AbsolutePositionBottomRightTestApp extends React.Component<
       </View>
     );
   }
-}
+};
 
 const AbsolutePositionBottomRightTestAppStyles = StyleSheet.create({
   container: {
@@ -162,7 +168,7 @@ class CenteredTextView extends React.Component<CenteredTextViewProps> {
       </View>
     );
   }
-}
+};
 
 const CenteredTextViewStyles = StyleSheet.create({
   parent: {
@@ -187,7 +193,9 @@ class UpdatePositionInListTestApp extends React.Component<
   UpdatePositionInListTestAppProps,
   UpdatePositionInListTestAppState,
   > {
-  state = { active: false };
+  state = {
+    active: false
+  };
 
   flushUpdatePositionInList = () => this.setState({ active: true });
 
@@ -212,7 +220,7 @@ class UpdatePositionInListTestApp extends React.Component<
       </View>
     );
   }
-}
+};
 
 const UpdatePositionInListTestAppStyles = StyleSheet.create({
   element: {
