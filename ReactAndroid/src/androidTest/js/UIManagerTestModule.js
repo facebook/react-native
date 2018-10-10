@@ -18,7 +18,6 @@ var Text = require('Text');
 var createReactClass = require('create-react-class');
 var renderApplication = require('renderApplication');
 
-
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
   _styles = StyleSheet.create({
@@ -37,7 +36,7 @@ class FlexTestApp extends React.Component<FlexTestAppProps> {
       width: 50,
       height: 60,
     },
-  })
+  });
   render() {
     return (
       <View
@@ -45,11 +44,11 @@ class FlexTestApp extends React.Component<FlexTestAppProps> {
         testID="container"
         collapsable={false}>
         <View
-          style={[this._styles.child, { backgroundColor: '#ff0000' }]}
+          style={[this._styles.child, {backgroundColor: '#ff0000'}]}
           collapsable={false}
         />
         <View
-          style={[this._styles.child, { backgroundColor: '#0000ff' }]}
+          style={[this._styles.child, {backgroundColor: '#0000ff'}]}
           collapsable={false}
         />
       </View>
@@ -73,7 +72,7 @@ class FlexWithText extends React.Component<FlexWithTextProps> {
       flex: 1,
       margin: 10,
     },
-  })
+  });
   render() {
     return (
       <View
@@ -90,7 +89,9 @@ class FlexWithText extends React.Component<FlexWithTextProps> {
 }
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
+class AbsolutePositionTestApp extends React.Component<
+  AbsolutePositionTestAppProps,
+> {
   _styles = StyleSheet.create({
     absolute: {
       position: 'absolute',
@@ -99,7 +100,7 @@ class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppPro
       width: 50,
       height: 60,
     },
-  })
+  });
   render() {
     return (
       <View
@@ -112,7 +113,9 @@ class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppPro
 }
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
+class AbsolutePositionBottomRightTestApp extends React.Component<
+  AbsolutePositionBottomRightTestAppProps,
+> {
   _styles = StyleSheet.create({
     container: {
       width: 100,
@@ -125,7 +128,7 @@ class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositio
       width: 50,
       height: 60,
     },
-  })
+  });
 
   render() {
     return (
@@ -155,7 +158,7 @@ class CenteredTextView extends React.Component<CenteredTextViewProps> {
       fontSize: 15,
       color: '#672831',
     },
-  })
+  });
 
   render() {
     return (
@@ -173,10 +176,13 @@ class CenteredTextView extends React.Component<CenteredTextViewProps> {
 let flushUpdatePositionInList = null;
 type UpdatePositionInListTestAppProps = $ReadOnly<{||}>;
 type UpdatePositionInListTestAppState = $ReadOnly<{|
-  active?: ?boolean
-    |}>;
-class UpdatePositionInListTestApp extends React.Component<UpdatePositionInListTestAppProps, UpdatePositionInListTestAppState> {
-  state = { active: false }
+  active?: ?boolean,
+|}>;
+class UpdatePositionInListTestApp extends React.Component<
+  UpdatePositionInListTestAppProps,
+  UpdatePositionInListTestAppState,
+> {
+  state = {active: false};
 
   _styles = StyleSheet.create({
     element: {
@@ -185,9 +191,9 @@ class UpdatePositionInListTestApp extends React.Component<UpdatePositionInListTe
     active: {
       height: 50,
     },
-  })
+  });
 
-  flushUpdatePositionInList = () => this.setState({ active: true });
+  flushUpdatePositionInList = () => this.setState({active: true});
 
   render() {
     return (
@@ -207,25 +213,25 @@ class UpdatePositionInListTestApp extends React.Component<UpdatePositionInListTe
 }
 
 const UIManagerTestModule = {
-  renderFlexTestApplication = rootTag => {
+  renderFlexTestApplication(rootTag) {
     renderApplication(FlexTestApp, {}, rootTag);
   },
-  renderFlexWithTextApplication = rootTag => {
+  renderFlexWithTextApplication(rootTag) {
     renderApplication(FlexWithText, {}, rootTag);
   },
-  renderAbsolutePositionBottomRightTestApplication = rootTag => {
+  renderAbsolutePositionBottomRightTestApplication(rootTag) {
     renderApplication(AbsolutePositionBottomRightTestApp, {}, rootTag);
   },
-  renderAbsolutePositionTestApplication = rootTag => {
+  renderAbsolutePositionTestApplication(rootTag) {
     renderApplication(AbsolutePositionTestApp, {}, rootTag);
   },
-  renderCenteredTextViewTestApplication = (rootTag, text) => {
-    renderApplication(CenteredTextView, { text: text }, rootTag);
+  renderCenteredTextViewTestApplication(rootTag, text) {
+    renderApplication(CenteredTextView, {text: text}, rootTag);
   },
-  renderUpdatePositionInListTestApplication = rootTag => {
+  renderUpdatePositionInListTestApplication(rootTag) {
     renderApplication(UpdatePositionInListTestApp, {}, rootTag);
   },
-  flushUpdatePositionInList = () => {
+  flushUpdatePositionInList() {
     flushUpdatePositionInList();
   },
 };
