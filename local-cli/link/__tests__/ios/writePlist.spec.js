@@ -20,11 +20,14 @@ const {readFileSync} = require.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');
-const path = require('path');
 const writePlist = require('../../ios/writePlist');
 
-const projectPath = path.join(__dirname, '../../__fixtures__/project.pbxproj');
-const infoPlistPath = path.join(__dirname, '../../__fixtures__/Info.plist');
+const realPath = require.requireActual('path');
+const projectPath = realPath.join(
+  __dirname,
+  '../../__fixtures__/project.pbxproj',
+);
+const infoPlistPath = realPath.join(__dirname, '../../__fixtures__/Info.plist');
 
 fs.readFileSync = jest.fn(() => readFileSync(projectPath).toString());
 
