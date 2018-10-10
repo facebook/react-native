@@ -138,9 +138,9 @@ class TimerTester extends React.Component<TimerTesterProps> {
         Measure: {this.props.type}({args}) - {this._ii || 0}
       </RNTesterButton>
     );
-  }
+  };
 
-  componentWillUnmount = () => {
+  componentWillUnmount() {
     if (this._timerId != null) {
       clearTimeout(this._timerId);
     }
