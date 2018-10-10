@@ -53,8 +53,8 @@ const FlexTestAppStyles = StyleSheet.create({
     width: 50,
     height: 60,
   },
-  bgRed: {backgroundColor: '#ff0000'},
-  bgBlue: {backgroundColor: '#0000ff'},
+  bgRed: { backgroundColor: '#ff0000' },
+  bgBlue: { backgroundColor: '#0000ff' },
 });
 
 type FlexWithTextProps = $ReadOnly<{||}>;
@@ -92,7 +92,7 @@ const FlexWithTextStyles = StyleSheet.create({
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionTestApp extends React.Component<
   AbsolutePositionTestAppProps,
-> {
+  > {
   render() {
     return (
       <View
@@ -104,7 +104,7 @@ class AbsolutePositionTestApp extends React.Component<
   }
 }
 
-AbsolutePositionTestAppStyles = StyleSheet.create({
+const AbsolutePositionTestAppStyles = StyleSheet.create({
   absolute: {
     position: 'absolute',
     top: 15,
@@ -117,7 +117,7 @@ AbsolutePositionTestAppStyles = StyleSheet.create({
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionBottomRightTestApp extends React.Component<
   AbsolutePositionBottomRightTestAppProps,
-> {
+  > {
   render() {
     return (
       <View
@@ -186,10 +186,10 @@ type UpdatePositionInListTestAppState = $ReadOnly<{|
 class UpdatePositionInListTestApp extends React.Component<
   UpdatePositionInListTestAppProps,
   UpdatePositionInListTestAppState,
-> {
-  state = {active: false};
+  > {
+  state = { active: false };
 
-  flushUpdatePositionInList = () => this.setState({active: true});
+  flushUpdatePositionInList = () => this.setState({ active: true });
 
   render() {
     return (
@@ -237,7 +237,7 @@ const UIManagerTestModule = {
     renderApplication(AbsolutePositionTestApp, {}, rootTag);
   },
   renderCenteredTextViewTestApplication(rootTag, text) {
-    renderApplication(CenteredTextView, {text: text}, rootTag);
+    renderApplication(CenteredTextView, { text: text }, rootTag);
   },
   renderUpdatePositionInListTestApplication(rootTag) {
     renderApplication(UpdatePositionInListTestApp, {}, rootTag);
