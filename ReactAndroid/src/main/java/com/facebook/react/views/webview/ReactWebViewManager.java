@@ -21,6 +21,7 @@ import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -411,6 +412,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       @Override
       public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
         callback.invoke(origin, true, false);
+      }
+      
+      @Override
+      public void onPermissionRequest(final PermissionRequest request) {
+        request.grant(request.getResources());
       }
     });
     reactContext.addLifecycleEventListener(webView);
