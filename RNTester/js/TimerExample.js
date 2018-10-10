@@ -125,11 +125,11 @@ class TimerTester extends React.Component<TimerTesterProps> {
   _ii = 0;
   _iters = 0;
   _start = 0;
-  _timerId = (null: ?TimeoutID);
-  _rafId = (null: ?AnimationFrameID);
-  _intervalId = (null: ?IntervalID);
-  _immediateId = (null: ?Object);
-  _timerFn = (null: ?() => any);
+  _timeId: ?TimeoutID = null;
+  _rafId: ?AnimationFrameID = null;
+  _intervalId: ?IntervalID = null;
+  _immediateId: ?Object = null;
+  _timerFn: ?() => any = null;
 
   render() {
     var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
