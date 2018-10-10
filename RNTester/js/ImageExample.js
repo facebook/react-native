@@ -29,10 +29,6 @@ const IMAGE_PREFETCH_URL =
   'http://origami.design/public/images/bird-logo.png?r=1&t=' + Date.now();
 const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-/* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.63 was deployed. To see the error delete this comment and
- * run Flow. */
-
 type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
@@ -52,8 +48,6 @@ class NetworkImageCallbackExample extends React.Component<
   NetworkImageCallbackExampleProps,
   NetworkImageCallbackExampleState,
 > {
-  static displayName: ?string = 'NetworkImageCallbackExample';
-
   state = {
     events: [],
     startLoadPrefetched: false,
