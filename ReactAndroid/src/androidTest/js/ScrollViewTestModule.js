@@ -9,21 +9,22 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var View = require('View');
-var ScrollView = require('ScrollView');
-var Text = require('Text');
-var StyleSheet = require('StyleSheet');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var ScrollListener = require('NativeModules').ScrollListener;
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const View = require('View');
+const ScrollView = require('ScrollView');
+const Text = require('Text');
+const StyleSheet = require('StyleSheet');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const ScrollListener = require('NativeModules').ScrollListener;
 
-var NUM_ITEMS = 100;
+const React = require('react');
+
+const NUM_ITEMS = 100;
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
-var scrollViewApp;
+let scrollViewApp;
 
 class Item extends React.Component {
   render() {
@@ -37,54 +38,52 @@ class Item extends React.Component {
   }
 }
 
-var getInitialState = function() {
-  var data = [];
-  for (var i = 0; i < NUM_ITEMS; i++) {
-    data[i] = {text: 'Item ' + i + '!'};
+class ScrollViewTestApp extends React.Component {
+  constructor() {
+    super();
+    this.scrollView = React.createRef();
   }
-  return {
-    data: data,
+
+  getInitialState = () => {
+    var data = [];
+    for (var i = 0; i < NUM_ITEMS; i++) {
+      data[i] = {text: 'Item ' + i + '!'};
+    }
+    return {
+      data: data,
+    };
   };
-};
 
-var onScroll = function(e) {
-  ScrollListener.onScroll(
-    e.nativeEvent.contentOffset.x,
-    e.nativeEvent.contentOffset.y,
-  );
-};
+  onScroll = e => {
+    ScrollListener.onScroll(
+      e.nativeEvent.contentOffset.x,
+      e.nativeEvent.contentOffset.y,
+    );
+  };
 
-var onScrollBeginDrag = function(e) {
-  ScrollListener.onScrollBeginDrag(
-    e.nativeEvent.contentOffset.x,
-    e.nativeEvent.contentOffset.y,
-  );
-};
+  onItemPress = itemNumber => {
+    ScrollListener.onItemPress(itemNumber);
+  };
 
-var onScrollEndDrag = function(e) {
-  ScrollListener.onScrollEndDrag(
-    e.nativeEvent.contentOffset.x,
-    e.nativeEvent.contentOffset.y,
-  );
-};
+  onScrollBeginDrag = e => {
+    ScrollListener.onScrollBeginDrag(
+      e.nativeEvent.contentOffset.x,
+      e.nativeEvent.contentOffset.y,
+    );
+  };
 
-var onItemPress = function(itemNumber) {
-  ScrollListener.onItemPress(itemNumber);
-};
+  onScrollEndDrag = e => {
+    ScrollListener.onScrollEndDrag(
+      e.nativeEvent.contentOffset.x,
+      e.nativeEvent.contentOffset.y,
+    );
+  };
 
-var ScrollViewTestApp = createReactClass({
-  displayName: 'ScrollViewTestApp',
-  getInitialState: getInitialState,
-  onScroll: onScroll,
-  onItemPress: onItemPress,
-  onScrollBeginDrag: onScrollBeginDrag,
-  onScrollEndDrag: onScrollEndDrag,
+  scrollTo = (destX, destY) => {
+    this.scrollView.scrollTo(destY, destX);
+  };
 
-  scrollTo: function(destX, destY) {
-    this.refs.scrollView.scrollTo(destY, destX);
-  },
-
-  render: function() {
+  render() {
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
@@ -98,24 +97,45 @@ var ScrollViewTestApp = createReactClass({
         onScroll={this.onScroll}
         onScrollBeginDrag={this.onScrollBeginDrag}
         onScrollEndDrag={this.onScrollEndDrag}
-        ref="scrollView">
+        ref={this.scrollView}>
         {children}
       </ScrollView>
     );
-  },
-});
+  }
+}
 
-var HorizontalScrollViewTestApp = createReactClass({
-  displayName: 'HorizontalScrollViewTestApp',
-  getInitialState: getInitialState,
-  onScroll: onScroll,
-  onItemPress: onItemPress,
+class HorizontalScrollViewTestApp extends React.Component {
+  constructor() {
+    super();
+    this.scrollView = React.createRef();
+  }
 
-  scrollTo: function(destX, destY) {
-    this.refs.scrollView.scrollTo(destY, destX);
-  },
+  getInitialState() {
+    var data = [];
+    for (var i = 0; i < NUM_ITEMS; i++) {
+      data[i] = {text: 'Item ' + i + '!'};
+    }
+    return {
+      data: data,
+    };
+  }
 
-  render: function() {
+  onScroll = e => {
+    ScrollListener.onScroll(
+      e.nativeEvent.contentOffset.x,
+      e.nativeEvent.contentOffset.y,
+    );
+  };
+
+  onItemPress = itemNumber => {
+    ScrollListener.onItemPress(itemNumber);
+  };
+
+  scrollTo = (destX, destY) => {
+    this.scrollView.scrollTo(destY, destX);
+  };
+
+  render() {
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
@@ -125,12 +145,16 @@ var HorizontalScrollViewTestApp = createReactClass({
       />
     ));
     return (
-      <ScrollView horizontal={true} onScroll={this.onScroll} ref="scrollView">
+      <ScrollView
+        onScroll={this.onScroll}
+        onScrollBeginDrag={this.onScrollBeginDrag}
+        onScrollEndDrag={this.onScrollEndDrag}
+        ref={this.scrollView}>
         {children}
       </ScrollView>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   item_container: {
