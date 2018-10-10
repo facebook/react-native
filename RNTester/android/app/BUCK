@@ -18,6 +18,7 @@ rn_android_library(
         react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react:react"),
+        react_native_target("java/com/facebook/react/common:build_config"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("jni/prebuilt:android-jsc"),
