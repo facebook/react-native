@@ -14,20 +14,25 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {PanResponder, StyleSheet, View} = ReactNative;
 
+import type {PanResponderInstance} from 'PanResponder';
+
+type CircleStylesType = {|
+  backgroundColor: string,
+  left: number,
+  top: number,
+|};
+
 const CIRCLE_SIZE = 80;
 
 class PanResponderExample extends React.Component<{}> {
-  static displayName: ?string = 'PanResponderExample';
+  static title = 'PanResponder Sample';
+  static description =
+    'Shows the Use of PanResponder to provide basic gesture handling';
 
-  statics: {
-    title: 'PanResponder Sample',
-    description: 'Shows the use of PanResponder to provide basic gesture handling.',
-  };
-
-  _panResponder: Object = {};
+  _panResponder: PanResponderInstance | Object = {};
   _previousLeft: number = 0;
   _previousTop: number = 0;
-  _circleStyles: Object = {};
+  _circleStyles: {|style: CircleStylesType | Object|} = {style: {}};
   circle: ?{setNativeProps(props: Object): void} = null;
 
   UNSAFE_componentWillMount() {
