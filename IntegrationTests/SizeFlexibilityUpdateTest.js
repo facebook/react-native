@@ -13,10 +13,10 @@ const React = require('react');
 const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
-const Subscribable = require('Subscribable');
 const {View} = ReactNative;
 
 const {TestModule} = ReactNative.NativeModules;
+import type EmitterSubscription from 'EmitterSubscription';
 
 const reactViewWidth = 111;
 const reactViewHeight = 222;
@@ -25,14 +25,19 @@ let finalState = false;
 
 const SizeFlexibilityUpdateTest = createReactClass({
   displayName: 'SizeFlexibilityUpdateTest',
-  mixins: [Subscribable.Mixin],
+  _subscription: (null: ?EmitterSubscription),
 
   UNSAFE_componentWillMount: function() {
-    this.addListenerOn(
-      RCTNativeAppEventEmitter,
+    this._subscription = RCTNativeAppEventEmitter.addListener(
       'rootViewDidChangeIntrinsicSize',
       this.rootViewDidChangeIntrinsicSize,
     );
+  },
+
+  componentWillUnmount: function() {
+    if (this._subscription != null) {
+      this._subscription.remove();
+    }
   },
 
   markPassed: function() {
