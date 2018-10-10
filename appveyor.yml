@@ -1,13 +1,13 @@
 environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
-    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17b"
+    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17c"
     ANDROID_BUILD_VERSION: 27
     ANDROID_TOOLS_VERSION: 27.0.3
 
     GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     SDK_TOOLS_URL: https://dl.google.com/android/repository/sdk-tools-windows-3859397.zip
-    NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r17b-windows-x86_64.zip
+    NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r17c-windows-x86_64.zip
 
     matrix:
         - nodejs_version: 8
