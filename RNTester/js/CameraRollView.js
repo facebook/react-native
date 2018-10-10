@@ -28,11 +28,23 @@ const ListViewDataSource = require('ListViewDataSource');
 const groupByEveryN = require('groupByEveryN');
 const logError = require('logError');
 
-import type {RNTesterProps} from 'RNTesterTypes';
+import type {GetPhotosEdge, GetPhotosReturn} from 'CameraRoll';
+
+const rowHasChanged = function(r1: Array<Image>, r2: Array<Image>): boolean {
+  if (r1.length !== r2.length) {
+    return true;
+  }
+
+  for (var i = 0; i < r1.length; i++) {
+    if (r1[i] !== r2[i]) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 type Props = $ReadOnly<{|
-  ...RNTesterProps,
-
   /**
    * The group where the photos will be fetched from. Possible
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
@@ -55,7 +67,7 @@ type Props = $ReadOnly<{|
   /**
    * A function that takes a single image as a parameter and renders it.
    */
-  renderImage: $FlowFixMe => React.Node,
+  renderImage: GetPhotosEdge => React.Node,
 
   /**
    * imagesPerRow: Number of images to be shown in each row.
@@ -70,7 +82,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 type State = {|
-  assets: Array<Image>,
+  assets: Array<GetPhotosEdge>,
   lastCursor: ?string,
   noMore: boolean,
   loadingMore: boolean,
@@ -83,7 +95,7 @@ class CameraRollView extends React.Component<Props, State> {
     batchSize: 5,
     imagesPerRow: 1,
     assetType: 'Photos',
-    renderImage: function(asset: $FlowFixMe) {
+    renderImage: function(asset: GetPhotosEdge) {
       const imageSize = 150;
       const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
       return <Image source={asset.node.image} style={imageStyle} />;
@@ -98,7 +110,7 @@ class CameraRollView extends React.Component<Props, State> {
       lastCursor: null,
       noMore: false,
       loadingMore: false,
-      dataSource: new ListView.DataSource({rowHasChanged: this._rowHasChanged}),
+      dataSource: new ListView.DataSource({rowHasChanged: rowHasChanged}),
     };
   }
 
@@ -107,7 +119,7 @@ class CameraRollView extends React.Component<Props, State> {
    * component to re-render its assets.
    */
   rendererChanged() {
-    const ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+    const ds = new ListView.DataSource({rowHasChanged: rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
       // $FlowFixMe(>=0.41.0)
       groupByEveryN(this.state.assets, this.props.imagesPerRow),
@@ -127,7 +139,7 @@ class CameraRollView extends React.Component<Props, State> {
     }
   }
 
-  _fetch = async (clear?: boolean) => {
+  async _fetch(clear?: boolean) {
     if (clear) {
       this.setState(this.getInitialState(), this.fetch);
       return;
@@ -166,7 +178,7 @@ class CameraRollView extends React.Component<Props, State> {
     } catch (e) {
       logError(e);
     }
-  };
+  }
 
   /**
    * Fetches more images from the camera roll. If clear is set to true, it will
@@ -193,20 +205,6 @@ class CameraRollView extends React.Component<Props, State> {
     );
   }
 
-  _rowHasChanged(r1: Array<Image>, r2: Array<Image>): boolean {
-    if (r1.length !== r2.length) {
-      return true;
-    }
-
-    for (var i = 0; i < r1.length; i++) {
-      if (r1[i] !== r2[i]) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   _renderFooterSpinner = () => {
     if (!this.state.noMore) {
       return <ActivityIndicator />;
@@ -215,7 +213,11 @@ class CameraRollView extends React.Component<Props, State> {
   };
 
   // rowData is an array of images
-  _renderRow = (rowData: Array<Image>, sectionID: string, rowID: string) => {
+  _renderRow = (
+    rowData: Array<GetPhotosEdge>,
+    sectionID: string,
+    rowID: string,
+  ) => {
     const images = rowData.map(image => {
       if (image === null) {
         return null;
@@ -227,9 +229,9 @@ class CameraRollView extends React.Component<Props, State> {
     return <View style={styles.row}>{images}</View>;
   };
 
-  _appendAssets = (data: Object) => {
+  _appendAssets(data: GetPhotosReturn) {
     const assets = data.edges;
-    const newState: Object = {loadingMore: false};
+    const newState: $Shape<State> = {loadingMore: false};
 
     if (!data.page_info.has_next_page) {
       newState.noMore = true;
@@ -245,7 +247,7 @@ class CameraRollView extends React.Component<Props, State> {
     }
 
     this.setState(newState);
-  };
+  }
 
   _onEndReached = () => {
     if (!this.state.noMore) {
