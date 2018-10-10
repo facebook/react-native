@@ -39,15 +39,10 @@ class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
   _view: ?View;
   _img: ?Image;
   _txt: ?Text;
-  _isMounted: boolean = true;
 
   state: State = {
     didAnimation: false,
   };
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
 
   animateViewLayout = () => {
     debug('animateViewLayout invoked');
@@ -74,7 +69,7 @@ class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
   };
 
   checkLayout = (next?: ?Function) => {
-    if (!this._isMounted) {
+    if (this._view == null || this._txt == null || this._img == null) {
       return;
     }
 
