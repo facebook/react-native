@@ -125,7 +125,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
   _ii = 0;
   _iters = 0;
   _start = 0;
-  _timeId: ?TimeoutID = null;
+  _timerId: ?TimeoutID = null;
   _rafId: ?AnimationFrameID = null;
   _intervalId: ?IntervalID = null;
   _immediateId: ?Object = null;
@@ -138,7 +138,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
         Measure: {this.props.type}({args}) - {this._ii || 0}
       </RNTesterButton>
     );
-  };
+  }
 
   componentWillUnmount() {
     if (this._timerId != null) {
@@ -156,7 +156,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
     if (this._intervalId != null) {
       clearInterval(this._intervalId);
     }
-  };
+  }
 
   _run = () => {
     if (!this._start) {
