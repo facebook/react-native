@@ -18,8 +18,6 @@ const StyleSheet = require('StyleSheet');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const ScrollListener = require('NativeModules').ScrollListener;
 
-const React = require('react');
-
 const NUM_ITEMS = 100;
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
