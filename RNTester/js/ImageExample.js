@@ -33,19 +33,19 @@ const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
  * found when Flow v0.63 was deployed. To see the error delete this comment and
  * run Flow. */
 
-type NetworkImageCallbackExampleState = {
-  events: string[],
+type ImageSource = $ReadOnly<{|
+  uri: string,
+|}>;
+
+type NetworkImageCallbackExampleState = {|
+  events: Array<string>,
   startLoadPrefetched: boolean,
   mountTime: Date,
-};
+|};
 
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
-  source: {
-    uri: string,
-  },
-  prefetchedSource: {
-    uri: string,
-  },
+  source: ImageSource,
+  prefetchedSource: ImageSource,
 |}>;
 
 class NetworkImageCallbackExample extends React.Component<
@@ -156,17 +156,15 @@ class NetworkImageCallbackExample extends React.Component<
   }
 }
 
-type NetworkImageExampleProps = $ReadOnly<{|
-  source: {
-    uri: string,
-  },
-|}>;
-
-type NetworkImageExampleState = {
+type NetworkImageExampleState = {|
   error: boolean,
   loading: boolean,
   progress: number,
-};
+|};
+
+type NetworkImageExampleProps = $ReadOnly<{|
+  source: ImageSource,
+|}>;
 
 class NetworkImageExample extends React.Component<
   NetworkImageExampleProps,
@@ -209,15 +207,13 @@ class NetworkImageExample extends React.Component<
   }
 }
 
-type ImageSizeExampleState = {
+type ImageSizeExampleState = {|
   width: number,
   height: number,
-};
+|};
 
 type ImageSizeExampleProps = $ReadOnly<{|
-  source: {
-    uri: string,
-  },
+  source: ImageSource,
 |}>;
 
 class ImageSizeExample extends React.Component<
@@ -230,11 +226,9 @@ class ImageSizeExample extends React.Component<
   };
 
   componentDidMount() {
-    if (this.props.source.uri != null) {
-      Image.getSize(this.props.source.uri, (width, height) => {
-        this.setState({width, height});
-      });
-    }
+    Image.getSize(this.props.source.uri, (width, height) => {
+      this.setState({width, height});
+    });
   }
 
   render() {
@@ -258,13 +252,15 @@ class ImageSizeExample extends React.Component<
   }
 }
 
-type MultipleSourcesExampleState = {
+type MultipleSourcesExampleState = {|
   width: number,
   height: number,
-};
+|};
+
+type MultipleSourcesExampleProps = $ReadOnly<{||}>;
 
 class MultipleSourcesExample extends React.Component<
-  {},
+  MultipleSourcesExampleProps,
   MultipleSourcesExampleState,
 > {
   state = {
