@@ -131,7 +131,6 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
             }
             keyboardShouldPersistTaps="always"
             keyboardDismissMode="on-drag"
-            legacyImplementation={false}
             numColumns={1}
             onEndReached={this._onEndReached}
             onRefresh={this._onRefresh}
