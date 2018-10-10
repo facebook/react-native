@@ -11,21 +11,22 @@
 'use strict';
 
 const getDependencyConfig = require('../getDependencyConfig');
-const sinon = require('sinon');
 
 describe('getDependencyConfig', () => {
   it("should return an array of dependencies' rnpm config", () => {
     const config = {
-      getDependencyConfig: sinon.stub(),
+      getDependencyConfig: jest.fn(),
     };
 
     expect(Array.isArray(getDependencyConfig(config, ['abcd']))).toBeTruthy();
-    expect(config.getDependencyConfig.callCount).toEqual(1);
+    expect(config.getDependencyConfig.mock.calls.length).toEqual(1);
   });
 
   it('should filter out invalid react-native projects', () => {
     const config = {
-      getDependencyConfig: sinon.stub().throws(new Error('Cannot require')),
+      getDependencyConfig: jest.fn().mockImplementation(() => {
+        throw new Error('Cannot require');
+      }),
     };
 
     expect(getDependencyConfig(config, ['abcd'])).toEqual([]);
