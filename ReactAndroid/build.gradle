@@ -315,7 +315,8 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
     androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:0.3'
+    androidTestImplementation "com.android.support.test:runner:${ANDROID_SUPPORT_TEST_VERSION}"
+    androidTestImplementation "com.android.support.test:rules:${ANDROID_SUPPORT_TEST_VERSION}"
     androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 
