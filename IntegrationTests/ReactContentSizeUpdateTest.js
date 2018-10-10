@@ -29,7 +29,7 @@ type State = {|
   width: number,
 |};
 
-class ReactContentSizeUpdateTest extends React.Component<{}, State>{
+class ReactContentSizeUpdateTest extends React.Component<{}, State> {
   _timeoutID: ?TimeoutID = null;
   _subscription: ?EmitterSubscription = null;
 
