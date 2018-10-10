@@ -85,8 +85,7 @@
       "source-map",
       "fastpath",
       "denodeify",
-      "fbjs",
-      "sinon"
+      "fbjs"
     ],
     "testEnvironment": "node"
   },
@@ -226,8 +225,7 @@
     "react": "16.6.0-alpha.400d197",
     "react-native-dummy": "0.1.0",
     "react-test-renderer": "16.6.0-alpha.400d197",
-    "shelljs": "^0.7.8",
-    "sinon": "^2.2.0"
+    "shelljs": "^0.7.8"
   },
   "detox": {
     "test-runner": "jest",
