@@ -111,7 +111,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
-          legacyImplementation={false}
           renderSectionHeader={renderSectionHeader}
         />
       </View>

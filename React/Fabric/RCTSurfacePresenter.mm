@@ -108,11 +108,14 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext;
-  layoutContext.pointScaleFactor = RCTScreenScale();
-  LayoutConstraints layoutConstraints = {};
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+  LayoutContext layoutContext = {
+    .pointScaleFactor = RCTScreenScale()
+  };
+
+  LayoutConstraints layoutConstraints = {
+    .minimumSize = RCTSizeFromCGSize(minimumSize),
+    .maximumSize = RCTSizeFromCGSize(maximumSize)
+  };
 
   return [self._scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                                 layoutContext:layoutContext
@@ -123,11 +126,14 @@ using namespace facebook::react;
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext;
-  layoutContext.pointScaleFactor = RCTScreenScale();
-  LayoutConstraints layoutConstraints = {};
-  layoutConstraints.minimumSize = RCTSizeFromCGSize(minimumSize);
-  layoutConstraints.maximumSize = RCTSizeFromCGSize(maximumSize);
+  LayoutContext layoutContext = {
+    .pointScaleFactor = RCTScreenScale()
+  };
+
+  LayoutConstraints layoutConstraints = {
+    .minimumSize = RCTSizeFromCGSize(minimumSize),
+    .maximumSize = RCTSizeFromCGSize(maximumSize)
+  };
 
   [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                                   layoutContext:layoutContext
@@ -174,13 +180,20 @@ using namespace facebook::react;
 {
   [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
 
+  LayoutContext layoutContext = {
+    .pointScaleFactor = RCTScreenScale()
+  };
+
+  LayoutConstraints layoutConstraints = {
+    .minimumSize = RCTSizeFromCGSize(surface.minimumSize),
+    .maximumSize = RCTSizeFromCGSize(surface.maximumSize)
+  };
+
   [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
                                   moduleName:surface.moduleName
-                                initailProps:surface.properties];
-
-  [self setMinimumSize:surface.minimumSize
-           maximumSize:surface.maximumSize
-               surface:surface];
+                                initailProps:surface.properties
+                           layoutConstraints:layoutConstraints
+                               layoutContext:layoutContext];
 }
 
 - (void)_stopSurface:(RCTFabricSurface *)surface

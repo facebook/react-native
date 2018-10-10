@@ -14,17 +14,23 @@ namespace react {
 
 inline std::string toString(const LayoutDirection &layoutDirection) {
   switch (layoutDirection) {
-    case LayoutDirection::Undefined: return "undefined";
-    case LayoutDirection::LeftToRight: return "ltr";
-    case LayoutDirection::RightToLeft: return "rtl";
+    case LayoutDirection::Undefined:
+      return "undefined";
+    case LayoutDirection::LeftToRight:
+      return "ltr";
+    case LayoutDirection::RightToLeft:
+      return "rtl";
   }
 }
 
 inline std::string toString(const DisplayType &displayType) {
   switch (displayType) {
-    case DisplayType::None: return "none";
-    case DisplayType::Flex: return "flex";
-    case DisplayType::Inline: return "inline";
+    case DisplayType::None:
+      return "none";
+    case DisplayType::Flex:
+      return "flex";
+    case DisplayType::Inline:
+      return "inline";
   }
 }
 

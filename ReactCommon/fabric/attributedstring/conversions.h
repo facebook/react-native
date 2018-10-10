@@ -7,14 +7,16 @@
 
 #pragma once
 
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/attributedstring/primitives.h>
 #include <fabric/attributedstring/AttributedString.h>
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/attributedstring/primitives.h>
 #include <fabric/core/conversions.h>
-#include <fabric/graphics/Geometry.h>
+#include <fabric/core/LayoutableShadowNode.h>
+#include <fabric/core/ShadowNode.h>
 #include <fabric/graphics/conversions.h>
+#include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
 
 namespace facebook {
@@ -385,7 +387,9 @@ inline folly::dynamic toDynamic(
 
 inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
-  _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+  if (textAttributes.foregroundColor) {
+    _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+  }
   if (textAttributes.backgroundColor) {
     _textAttributes(
         "backgroundColor", toDynamic(textAttributes.backgroundColor));
@@ -474,6 +478,7 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   for (auto fragment : attributedString.getFragments()) {
     folly::dynamic dynamicFragment = folly::dynamic::object();
     dynamicFragment["string"] = fragment.string;
+    dynamicFragment["reactTag"] = fragment.parentShadowNode->getTag();
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);
   }

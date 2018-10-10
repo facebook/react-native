@@ -21,60 +21,46 @@ namespace react {
  * Use static methods to instantiate mutations of different types.
  */
 struct ShadowViewMutation final {
-
 #pragma mark - Designated Initializers
 
   /*
    * Creates and returns an `Create` mutation.
    */
-  static ShadowViewMutation CreateMutation(
-    ShadowView shadowView
-  );
+  static ShadowViewMutation CreateMutation(ShadowView shadowView);
 
   /*
    * Creates and returns an `Delete` mutation.
    */
-  static ShadowViewMutation DeleteMutation(
-    ShadowView shadowView
-  );
+  static ShadowViewMutation DeleteMutation(ShadowView shadowView);
 
   /*
    * Creates and returns an `Insert` mutation.
    */
   static ShadowViewMutation InsertMutation(
-    ShadowView parentShadowView,
-    ShadowView childShadowView,
-    int index
-  );
+      ShadowView parentShadowView,
+      ShadowView childShadowView,
+      int index);
 
   /*
    * Creates and returns a `Remove` mutation.
    */
   static ShadowViewMutation RemoveMutation(
-    ShadowView parentShadowView,
-    ShadowView childShadowView,
-    int index
-  );
+      ShadowView parentShadowView,
+      ShadowView childShadowView,
+      int index);
 
   /*
    * Creates and returns an `Update` mutation.
    */
   static ShadowViewMutation UpdateMutation(
-    ShadowView parentShadowView,
-    ShadowView oldChildShadowView,
-    ShadowView newChildShadowView,
-    int index
-  );
+      ShadowView parentShadowView,
+      ShadowView oldChildShadowView,
+      ShadowView newChildShadowView,
+      int index);
 
 #pragma mark - Type
 
-  enum Type {
-    Create,
-    Delete,
-    Insert,
-    Remove,
-    Update
-  };
+  enum Type { Create, Delete, Insert, Remove, Update };
 
 #pragma mark - Fields
 

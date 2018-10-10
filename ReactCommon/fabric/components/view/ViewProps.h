@@ -58,6 +58,8 @@ class ViewProps : public Props,
   const EdgeInsets hitSlop{};
   const bool onLayout{};
 
+  const bool collapsable{true};
+
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(bool isRTL) const;

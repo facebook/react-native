@@ -16,9 +16,8 @@ namespace react {
  * This is a sample implementation. Each app should provide its own.
  */
 SharedComponentDescriptorRegistry ComponentDescriptorFactory::buildRegistry(
-  const SharedEventDispatcher &eventDispatcher,
-  const SharedContextContainer &contextContainer
-) {
+    const SharedEventDispatcher &eventDispatcher,
+    const SharedContextContainer &contextContainer) {
   auto registry = std::make_shared<ComponentDescriptorRegistry>();
   return registry;
 }

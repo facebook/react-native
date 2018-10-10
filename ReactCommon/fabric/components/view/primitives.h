@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <cmath>
 #include <fabric/graphics/Color.h>
 #include <fabric/graphics/Geometry.h>
 #include <folly/Optional.h>

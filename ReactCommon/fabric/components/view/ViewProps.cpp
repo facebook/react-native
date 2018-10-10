@@ -67,7 +67,12 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps)
       pointerEvents(
           convertRawProp(rawProps, "pointerEvents", sourceProps.pointerEvents)),
       hitSlop(convertRawProp(rawProps, "hitSlop", sourceProps.hitSlop)),
-      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)){};
+      onLayout(convertRawProp(rawProps, "onLayout", sourceProps.onLayout)),
+      collapsable(convertRawProp(
+          rawProps,
+          "collapsable",
+          sourceProps.collapsable,
+          true)){};
 
 #pragma mark - Convenience Methods
 

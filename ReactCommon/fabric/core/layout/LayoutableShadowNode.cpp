@@ -96,10 +96,11 @@ void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
-  auto list = SharedDebugStringConvertibleList {};
+  auto list = SharedDebugStringConvertibleList{};
 
   if (getHasNewLayout()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
+    list.push_back(
+        std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
   }
 
   if (!getIsLayoutClean()) {
@@ -109,14 +110,17 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
   auto layoutMetrics = getLayoutMetrics();
   auto defaultLayoutMetrics = LayoutMetrics();
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", toString(layoutMetrics.frame)));
+  list.push_back(std::make_shared<DebugStringConvertibleItem>(
+      "frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("borderWidth", toString(layoutMetrics.borderWidth)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+        "borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("contentInsets", toString(layoutMetrics.contentInsets)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+        "contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {

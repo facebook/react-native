@@ -23,13 +23,11 @@ ScrollViewProps::ScrollViewProps(
       alwaysBounceHorizontal(convertRawProp(
           rawProps,
           "alwaysBounceHorizontal",
-          sourceProps.alwaysBounceHorizontal,
-          true)),
+          sourceProps.alwaysBounceHorizontal)),
       alwaysBounceVertical(convertRawProp(
           rawProps,
           "alwaysBounceVertical",
-          sourceProps.alwaysBounceVertical,
-          true)),
+          sourceProps.alwaysBounceVertical)),
       bounces(convertRawProp(rawProps, "bounces", sourceProps.bounces, true)),
       bouncesZoom(convertRawProp(
           rawProps,
