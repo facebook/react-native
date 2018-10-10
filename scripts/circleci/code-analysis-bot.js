@@ -9,35 +9,19 @@
 
 'use strict';
 
-if (!process.env.CIRCLE_PROJECT_USERNAME) {
-  console.error('Missing CIRCLE_PROJECT_USERNAME. Example: facebook');
+if (!process.env.GITHUB_OWNER) {
+  console.error('Missing GITHUB_OWNER. Example: facebook');
   process.exit(1);
 }
-if (!process.env.CIRCLE_PROJECT_REPONAME) {
-  console.error('Missing CIRCLE_PROJECT_REPONAME. Example: react-native');
+if (!process.env.GITHUB_REPO) {
+  console.error('Missing GITHUB_REPO. Example: react-native');
   process.exit(1);
-}
-if (!process.env.GITHUB_TOKEN) {
-  console.error(
-    'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e',
-  );
-  process.exit(1);
-}
-if (!process.env.CIRCLE_PR_NUMBER) {
-  console.error('Missing CIRCLE_PR_NUMBER. Example: 4687');
-  // for master branch, don't throw an error
-  process.exit(0);
 }
 
 // https://octokit.github.io/rest.js/
 const octokit = require('@octokit/rest')();
 
-var path = require('path');
-
-octokit.authenticate({
-  type: 'oauth',
-  token: process.env.GITHUB_TOKEN,
-});
+const path = require('path');
 
 function push(arr, key, value) {
   if (!arr[key]) {
@@ -58,9 +42,9 @@ function push(arr, key, value) {
  * This is an object where the keys are the path of the files and values
  * is an array of objects of the shape message and line.
  */
-var converters = {
+const converters = {
   raw: function(output, input) {
-    for (var key in input) {
+    for (let key in input) {
       input[key].forEach(function(message) {
         push(output, key, message);
       });
@@ -76,6 +60,7 @@ var converters = {
       push(output, error.message[0].path, {
         message: error.message.map(message => message.descr).join(' '),
         line: error.message[0].line,
+        converter: 'flow',
       });
     });
   },
@@ -90,7 +75,33 @@ var converters = {
         push(output, file.filePath, {
           message: message.ruleId + ': ' + message.message,
           line: message.line,
+          converter: 'eslint',
         });
+      });
+    });
+  },
+
+  shellcheck: function(output, input) {
+    if (!input) {
+      return;
+    }
+
+    input.forEach(function(report) {
+      push(output, report.file, {
+        message:
+          '**[SC' +
+          report.code +
+          '](https://github.com/koalaman/shellcheck/wiki/SC' +
+          report.code +
+          '):** (' +
+          report.level +
+          ') ' +
+          report.message,
+        line: report.line,
+        endLine: report.endLine,
+        column: report.column,
+        endColumn: report.endColumn,
+        converter: 'shellcheck',
       });
     });
   },
@@ -129,9 +140,9 @@ function getFilesFromCommit(owner, repo, sha, callback) {
  * in the patch file
  */
 function getLineMapFromPatch(patchString) {
-  var diffLineIndex = 0;
-  var fileLineIndex = 0;
-  var lineMap = {};
+  let diffLineIndex = 0;
+  let fileLineIndex = 0;
+  let lineMap = {};
 
   patchString.split('\n').forEach(line => {
     if (line.match(/^@@/)) {
@@ -151,57 +162,51 @@ function getLineMapFromPatch(patchString) {
   return lineMap;
 }
 
-function sendReview(owner, repo, number, commit_id, comments) {
-  if (comments.length === 0) {
-    // Do not leave an empty review.
-    return;
-  }
-
-  const body =
-    '`eslint` found some issues. You may run `yarn prettier` or `npm run prettier` to fix these.';
-  const event = 'REQUEST_CHANGES';
-
-  const opts = {
-    owner,
-    repo,
-    number,
-    commit_id,
-    body,
-    event,
-    comments,
-  };
-
-  octokit.pullRequests.createReview(opts, function(error, res) {
-    if (error) {
-      console.error(error);
+function sendReview(owner, repo, number, commit_id, body, comments) {
+  if (process.env.GITHUB_TOKEN) {
+    if (comments.length === 0) {
+      // Do not leave an empty review.
       return;
     }
-  });
-}
 
-function sendComment(owner, repo, number, sha, filename, lineMap, message) {
-  if (!lineMap[message.line]) {
-    // Do not send messages on lines that did not change
-    return;
-  }
+    const event = 'REQUEST_CHANGES';
 
-  var opts = {
-    owner,
-    repo,
-    number,
-    sha,
-    commit_id: sha,
-    path: filename,
-    position: lineMap[message.line],
-    body: message.message,
-  };
-  octokit.pullRequests.createComment(opts, function(error, res) {
-    if (error) {
-      console.error(error);
+    const opts = {
+      owner,
+      repo,
+      number,
+      commit_id,
+      body,
+      event,
+      comments,
+    };
+
+    octokit.pullRequests.createReview(opts, function(error, res) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
+  } else {
+    if (comments.length === 0) {
+      console.log('No issues found.');
       return;
     }
-  });
-  console.log('Sending comment', opts);
+
+    if (process.env.CIRCLE_CI) {
+      console.error(
+        'Code analysis found issues, but the review cannot be posted to GitHub without an access token.',
+      );
+      process.exit(1);
+    }
+
+    let results = body + '\n';
+    comments.forEach(comment => {
+      results +=
+        comment.path + ':' + comment.position + ': ' + comment.body + '\n';
+    });
+    console.log(results);
+  }
 }
 
 function main(messages, owner, repo, number) {
@@ -210,40 +215,58 @@ function main(messages, owner, repo, number) {
     return;
   }
 
+  if (process.env.GITHUB_TOKEN) {
+    octokit.authenticate({
+      type: 'oauth',
+      token: process.env.GITHUB_TOKEN,
+    });
+  } else {
+    console.log(
+      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. Review feedback with code analysis results will not be provided on GitHub.',
+    );
+  }
+
   getShaFromPullRequest(owner, repo, number, sha => {
     getFilesFromCommit(owner, repo, sha, files => {
-      var comments = [];
+      let comments = [];
+      let convertersUsed = [];
       files.filter(file => messages[file.filename]).forEach(file => {
         // github api sometimes does not return a patch on large commits
         if (!file.patch) {
           return;
         }
-        var lineMap = getLineMapFromPatch(file.patch);
+        const lineMap = getLineMapFromPatch(file.patch);
         messages[file.filename].forEach(message => {
           if (lineMap[message.line]) {
-            var comment = {
+            const comment = {
               path: file.filename,
               position: lineMap[message.line],
               body: message.message,
             };
-
+            convertersUsed.push(message.converter);
             comments.push(comment);
           }
         }); // forEach
       }); // filter
 
-      sendReview(owner, repo, number, sha, comments);
+      let body = '**Code analysis results:**\n\n';
+      const uniqueconvertersUsed = [...new Set(convertersUsed)];
+      uniqueconvertersUsed.forEach(converter => {
+        body += '* `' + converter + '` found some issues.\n';
+      });
+
+      sendReview(owner, repo, number, sha, body, comments);
     }); // getFilesFromCommit
   }); // getShaFromPullRequest
 }
 
-var content = '';
+let content = '';
 process.stdin.resume();
 process.stdin.on('data', function(buf) {
   content += buf.toString();
 });
 process.stdin.on('end', function() {
-  var messages = {};
+  let messages = {};
 
   // Since we send a few http requests to setup the process, we don't want
   // to run this file one time per code analysis tool. Instead, we write all
@@ -259,13 +282,13 @@ process.stdin.on('end', function() {
   //
   //   cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | node code-analysis-bot.js
 
-  var lines = content.trim().split('\n');
-  for (var i = 0; i < Math.ceil(lines.length / 2); ++i) {
-    var converter = converters[lines[i * 2]];
+  const lines = content.trim().split('\n');
+  for (let i = 0; i < Math.ceil(lines.length / 2); ++i) {
+    const converter = converters[lines[i * 2]];
     if (!converter) {
       throw new Error('Unknown converter ' + lines[i * 2]);
     }
-    var json;
+    let json;
     try {
       json = JSON.parse(lines[i * 2 + 1]);
     } catch (e) {}
@@ -275,9 +298,9 @@ process.stdin.on('end', function() {
 
   // The paths are returned in absolute from code analysis tools but github works
   // on paths relative from the root of the project. Doing the normalization here.
-  var pwd = path.resolve('.');
-  for (var absolutePath in messages) {
-    var relativePath = path.relative(pwd, absolutePath);
+  const pwd = path.resolve('.');
+  for (let absolutePath in messages) {
+    const relativePath = path.relative(pwd, absolutePath);
     if (relativePath === absolutePath) {
       continue;
     }
@@ -285,9 +308,16 @@ process.stdin.on('end', function() {
     delete messages[absolutePath];
   }
 
-  var owner = process.env.CIRCLE_PROJECT_USERNAME;
-  var repo = process.env.CIRCLE_PROJECT_REPONAME;
-  var number = process.env.CIRCLE_PR_NUMBER;
+  const owner = process.env.GITHUB_OWNER;
+  const repo = process.env.GITHUB_REPO;
+
+  if (!process.env.GITHUB_PR_NUMBER) {
+    console.error('Missing GITHUB_PR_NUMBER. Example: 4687');
+    // for master branch, don't throw an error
+    process.exit(0);
+  }
+
+  const number = process.env.GITHUB_PR_NUMBER;
 
   // intentional lint warning to make sure that the bot is working :)
   main(messages, owner, repo, number);

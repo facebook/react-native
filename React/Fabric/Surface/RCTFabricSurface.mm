@@ -216,9 +216,9 @@
     _minimumSize = minimumSize;
   }
 
-  return [_surfacePresenter setMinimumSize:minimumSize
-                               maximumSize:maximumSize
-                                   surface:self];
+  [_surfacePresenter setMinimumSize:minimumSize
+                        maximumSize:maximumSize
+                            surface:self];
 }
 
 - (CGSize)minimumSize

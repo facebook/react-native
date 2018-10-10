@@ -11,23 +11,36 @@ namespace facebook {
 namespace react {
 
 static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode &shadowNode) {
-  auto layoutableShadowNode = dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
-  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics() : EmptyLayoutMetrics;
+  auto layoutableShadowNode =
+      dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
+  return layoutableShadowNode ? layoutableShadowNode->getLayoutMetrics()
+                              : EmptyLayoutMetrics;
 }
 
-ShadowView::ShadowView(const ShadowNode &shadowNode):
-  componentName(shadowNode.getComponentName()),
-  componentHandle(shadowNode.getComponentHandle()),
-  tag(shadowNode.getTag()),
-  props(shadowNode.getProps()),
-  eventEmitter(shadowNode.getEventEmitter()),
-  layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
-  localData(shadowNode.getLocalData()) {}
+ShadowView::ShadowView(const ShadowNode &shadowNode)
+    : componentName(shadowNode.getComponentName()),
+      componentHandle(shadowNode.getComponentHandle()),
+      tag(shadowNode.getTag()),
+      props(shadowNode.getProps()),
+      eventEmitter(shadowNode.getEventEmitter()),
+      layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
+      localData(shadowNode.getLocalData()) {}
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
-  return
-    std::tie(this->tag, this->componentName, this->props, this->eventEmitter, this->layoutMetrics, this->localData) ==
-    std::tie(rhs.tag, rhs.componentName, rhs.props, rhs.eventEmitter, rhs.layoutMetrics, rhs.localData);
+  return std::tie(
+             this->tag,
+             this->componentName,
+             this->props,
+             this->eventEmitter,
+             this->layoutMetrics,
+             this->localData) ==
+      std::tie(
+             rhs.tag,
+             rhs.componentName,
+             rhs.props,
+             rhs.eventEmitter,
+             rhs.layoutMetrics,
+             rhs.localData);
 }
 
 bool ShadowView::operator!=(const ShadowView &rhs) const {

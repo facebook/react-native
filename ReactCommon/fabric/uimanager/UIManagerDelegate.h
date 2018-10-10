@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/ShadowNode.h>
 #include <fabric/core/ReactPrimitives.h>
+#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -17,20 +17,22 @@ namespace react {
  * Abstract class for UIManager's delegate.
  */
 class UIManagerDelegate {
-
-public:
+ public:
   /*
    * Called right after the new/updated Shadow Node tree is constructed.
    * The tree is not layed out and not sealed at this time.
    */
-  virtual void uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
+  virtual void uiManagerDidFinishTransaction(
+      Tag rootTag,
+      const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver
    * maight use this to preluminary optimistically allocate a new native view
    * instances.
    */
-  virtual void uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) = 0;
+  virtual void uiManagerDidCreateShadowNode(
+      const SharedShadowNode &shadowNode) = 0;
 
   virtual ~UIManagerDelegate() noexcept = default;
 };

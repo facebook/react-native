@@ -22,7 +22,6 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextAncestor = require('TextAncestor');
 const TextInputState = require('TextInputState');
-const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
@@ -803,7 +802,7 @@ const TextInput = createReactClass({
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
-  mixins: [NativeMethodsMixin, TimerMixin],
+  mixins: [NativeMethodsMixin],
 
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
@@ -819,6 +818,7 @@ const TextInput = createReactClass({
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
+  _rafId: (null: ?AnimationFrameID),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -833,7 +833,7 @@ const TextInput = createReactClass({
         'focus',
         el => {
           if (this === el) {
-            this.requestAnimationFrame(this.focus);
+            this._rafId = requestAnimationFrame(this.focus);
           } else if (this.isFocused()) {
             this.blur();
           }
@@ -844,7 +844,7 @@ const TextInput = createReactClass({
       }
     } else {
       if (this.props.autoFocus) {
-        this.requestAnimationFrame(this.focus);
+        this._rafId = requestAnimationFrame(this.focus);
       }
     }
   },
@@ -857,6 +857,9 @@ const TextInput = createReactClass({
     const tag = ReactNative.findNodeHandle(this._inputRef);
     if (tag != null) {
       TextInputState.unregisterInput(tag);
+    }
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
     }
   },
 

@@ -26,14 +26,13 @@ using SharedLocalData = std::shared_ptr<const LocalData>;
  * All `LocalData` objects *must* be immutable (sealed) when they became
  * a part of the shadow tree.
  */
-class LocalData:
-  public Sealable,
-  public DebugStringConvertible {
+class LocalData : public Sealable, public DebugStringConvertible {
+ public:
+  virtual ~LocalData() = default;
 
-  public:
-     virtual folly::dynamic getDynamic() const {
-       return folly::dynamic::object();
-     };
+  virtual folly::dynamic getDynamic() const {
+    return folly::dynamic::object();
+  }
 };
 
 } // namespace react

@@ -39,6 +39,7 @@ export type AccessibilityComponentType =
   | 'radiobutton_checked'
   | 'radiobutton_unchecked';
 
+// This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
   | 'none'
   | 'button'
@@ -52,48 +53,5 @@ export type AccessibilityRole =
   | 'header'
   | 'summary';
 
+// This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
 export type AccessibilityStates = $ReadOnlyArray<'disabled' | 'selected'>;
-
-module.exports = {
-  AccessibilityTraits: [
-    'none',
-    'button',
-    'link',
-    'header',
-    'search',
-    'image',
-    'selected',
-    'plays',
-    'key',
-    'text',
-    'summary',
-    'disabled',
-    'frequentUpdates',
-    'startsMedia',
-    'adjustable',
-    'allowsDirectInteraction',
-    'pageTurn',
-  ],
-  AccessibilityComponentTypes: [
-    'none',
-    'button',
-    'radiobutton_checked',
-    'radiobutton_unchecked',
-  ],
-  // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
-  AccessibilityRoles: [
-    'none',
-    'button',
-    'link',
-    'search',
-    'image',
-    'keyboardkey',
-    'text',
-    'adjustable',
-    'imagebutton',
-    'header',
-    'summary',
-  ],
-  // This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-  AccessibilityStates: ['selected', 'disabled'],
-};

@@ -14,4 +14,13 @@ public class ReactFeatureFlags {
    */
   public static boolean lazilyLoadViewManagers = false;
 
+  /**
+   * Reduce the number of Java-JS interops while accessing native arrays
+   */
+  public static boolean useArrayNativeAccessor = false;
+
+  /**
+   * Reduce the number of Java-JS interops while accessing native maps
+   */
+  public static boolean useMapNativeAccessor = false;
 }

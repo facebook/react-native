@@ -12,10 +12,10 @@
 
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const TextStylePropTypes = {
-  ...ViewStylePropTypes,
+  ...DeprecatedViewStylePropTypes,
 
   color: DeprecatedColorPropType,
   fontFamily: ReactPropTypes.string,

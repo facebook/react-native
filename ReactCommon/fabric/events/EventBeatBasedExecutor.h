@@ -20,8 +20,7 @@ namespace react {
  * General purpose executor that uses EventBeat to ensure proper threading.
  */
 class EventBeatBasedExecutor {
-
-public:
+ public:
   using Routine = std::function<void()>;
   using Callback = std::function<void()>;
 
@@ -30,10 +29,7 @@ public:
     Callback callback;
   };
 
-  enum class Mode {
-    Synchronous,
-    Asynchronous
-  };
+  enum class Mode { Synchronous, Asynchronous };
 
   EventBeatBasedExecutor(std::unique_ptr<EventBeat> eventBeat);
 
@@ -42,8 +38,8 @@ public:
    */
   void operator()(Routine routine, Mode mode = Mode::Asynchronous) const;
 
-private:
-  void onBeat() const;
+ private:
+  void onBeat(bool success = true) const;
   void execute(Task task) const;
 
   std::unique_ptr<EventBeat> eventBeat_;

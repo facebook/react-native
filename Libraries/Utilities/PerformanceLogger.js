@@ -193,7 +193,7 @@ const PerformanceLogger = {
     infoLog(extras);
   },
 
-  markPoint(key: string) {
+  markPoint(key: string, timestamp?: number) {
     if (points[key]) {
       if (__DEV__) {
         infoLog(
@@ -203,7 +203,7 @@ const PerformanceLogger = {
       }
       return;
     }
-    points[key] = performanceNow();
+    points[key] = timestamp ?? performanceNow();
   },
 
   getPoints() {

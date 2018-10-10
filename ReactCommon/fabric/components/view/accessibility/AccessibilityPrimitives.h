@@ -12,7 +12,7 @@
 namespace facebook {
 namespace react {
 
-enum class AccessibilityTraits: uint32_t {
+enum class AccessibilityTraits : uint32_t {
   None = 0,
   Button = (1 << 0),
   Link = (1 << 1),
@@ -32,7 +32,9 @@ enum class AccessibilityTraits: uint32_t {
   Header = (1 << 15),
 };
 
-constexpr enum AccessibilityTraits operator |(const enum AccessibilityTraits lhs, const enum AccessibilityTraits rhs) {
+constexpr enum AccessibilityTraits operator|(
+    const enum AccessibilityTraits lhs,
+    const enum AccessibilityTraits rhs) {
   return (enum AccessibilityTraits)((uint32_t)lhs | (uint32_t)rhs);
 }
 
