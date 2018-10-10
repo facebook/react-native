@@ -209,7 +209,7 @@
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "babel-generator": "^6.26.0",
-    "detox": "^8.2.3",
+    "detox": "9.0.4",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
