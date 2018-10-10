@@ -36,7 +36,7 @@ class FlexTestApp extends React.Component<FlexTestAppProps> {
       </View>
     );
   }
-};
+}
 
 const FlexTestAppStyles = StyleSheet.create({
   container: {
@@ -77,7 +77,7 @@ class FlexWithText extends React.Component<FlexWithTextProps> {
       </View>
     );
   }
-};
+}
 
 const FlexWithTextStyles = StyleSheet.create({
   container: {
@@ -98,7 +98,7 @@ const FlexWithTextStyles = StyleSheet.create({
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionTestApp extends React.Component<
   AbsolutePositionTestAppProps,
-  > {
+> {
   render() {
     return (
       <View
@@ -108,7 +108,7 @@ class AbsolutePositionTestApp extends React.Component<
       />
     );
   }
-};
+}
 
 const AbsolutePositionTestAppStyles = StyleSheet.create({
   absolute: {
@@ -123,7 +123,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
 class AbsolutePositionBottomRightTestApp extends React.Component<
   AbsolutePositionBottomRightTestAppProps,
-  > {
+> {
   render() {
     return (
       <View
@@ -137,7 +137,7 @@ class AbsolutePositionBottomRightTestApp extends React.Component<
       </View>
     );
   }
-};
+}
 
 const AbsolutePositionBottomRightTestAppStyles = StyleSheet.create({
   container: {
@@ -168,7 +168,7 @@ class CenteredTextView extends React.Component<CenteredTextViewProps> {
       </View>
     );
   }
-};
+}
 
 const CenteredTextViewStyles = StyleSheet.create({
   parent: {
@@ -192,12 +192,12 @@ type UpdatePositionInListTestAppState = $ReadOnly<{|
 class UpdatePositionInListTestApp extends React.Component<
   UpdatePositionInListTestAppProps,
   UpdatePositionInListTestAppState,
-  > {
+> {
   state = {
-    active: false
+    active: false,
   };
 
-  flushUpdatePositionInList = () => this.setState({ active: true });
+  flushUpdatePositionInList = () => this.setState({active: true});
 
   render() {
     return (
@@ -220,7 +220,7 @@ class UpdatePositionInListTestApp extends React.Component<
       </View>
     );
   }
-};
+}
 
 const UpdatePositionInListTestAppStyles = StyleSheet.create({
   element: {
@@ -245,7 +245,7 @@ const UIManagerTestModule = {
     renderApplication(AbsolutePositionTestApp, {}, rootTag);
   },
   renderCenteredTextViewTestApplication(rootTag, text) {
-    renderApplication(CenteredTextView, { text: text }, rootTag);
+    renderApplication(CenteredTextView, {text: text}, rootTag);
   },
   renderUpdatePositionInListTestApplication(rootTag) {
     renderApplication(UpdatePositionInListTestApp, {}, rootTag);
