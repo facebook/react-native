@@ -37,18 +37,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
-    key: 'ListViewExample',
-    module: require('./ListViewExample'),
-  },
-  {
-    key: 'ListViewGridLayoutExample',
-    module: require('./ListViewGridLayoutExample'),
-  },
-  {
-    key: 'ListViewPagingExample',
-    module: require('./ListViewPagingExample'),
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },
