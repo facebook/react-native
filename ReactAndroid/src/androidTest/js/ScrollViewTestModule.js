@@ -110,7 +110,7 @@ class HorizontalScrollViewTestApp extends React.Component {
     this.scrollView = React.createRef();
   }
 
-  getInitialState() {
+  getInitialState = () => {
     var data = [];
     for (var i = 0; i < NUM_ITEMS; i++) {
       data[i] = {text: 'Item ' + i + '!'};
@@ -118,7 +118,7 @@ class HorizontalScrollViewTestApp extends React.Component {
     return {
       data: data,
     };
-  }
+  };
 
   onScroll = e => {
     ScrollListener.onScroll(
@@ -146,9 +146,8 @@ class HorizontalScrollViewTestApp extends React.Component {
     ));
     return (
       <ScrollView
+        horizontal={true}
         onScroll={this.onScroll}
-        onScrollBeginDrag={this.onScrollBeginDrag}
-        onScrollEndDrag={this.onScrollEndDrag}
         ref={this.scrollView}>
         {children}
       </ScrollView>
