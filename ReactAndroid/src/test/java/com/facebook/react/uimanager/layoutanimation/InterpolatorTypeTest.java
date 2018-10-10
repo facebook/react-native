@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.layoutanimation;
 
 import com.facebook.react.uimanager.layoutanimation.InterpolatorType;
+import java.util.Locale;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -30,6 +31,12 @@ public class InterpolatorTypeTest {
     assertThat(InterpolatorType.fromString("EASEIN")).isEqualTo(InterpolatorType.EASE_IN);
     assertThat(InterpolatorType.fromString("easeout")).isEqualTo(InterpolatorType.EASE_OUT);
     assertThat(InterpolatorType.fromString("easeineaseout")).isEqualTo(InterpolatorType.EASE_IN_EASE_OUT);
+  }
+
+  @Test
+  public void testLocales() {
+    Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+    assertThat(InterpolatorType.fromString("easeInEaseOut")).isEqualTo(InterpolatorType.EASE_IN_EASE_OUT);
   }
 
   @Test(expected = IllegalArgumentException.class)
