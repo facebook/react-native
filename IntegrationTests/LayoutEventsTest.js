@@ -25,6 +25,8 @@ function debug(...args) {
 
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
 
+type Props = $ReadOnly<{||}>;
+
 type State = {
   didAnimation: boolean,
   extraText?: string,
@@ -35,7 +37,7 @@ type State = {
   containerStyle?: ViewStyleProp,
 };
 
-class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
+class LayoutEventsTest extends React.Component<Props, State> {
   _view: ?View;
   _img: ?Image;
   _txt: ?Text;
@@ -44,14 +46,14 @@ class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
     didAnimation: false,
   };
 
-  animateViewLayout = () => {
+  animateViewLayout() {
     debug('animateViewLayout invoked');
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
       debug('animateViewLayout done');
       this.checkLayout(this.addWrapText);
     });
     this.setState({viewStyle: {margin: 60}});
-  };
+  }
 
   addWrapText = () => {
     debug('addWrapText invoked');
@@ -69,11 +71,7 @@ class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
   };
 
   checkLayout = (next?: ?Function) => {
-    if (this._view == null || this._txt == null || this._img == null) {
-      return;
-    }
-
-    if (this._view) {
+    this._view &&
       this._view.measure((x, y, width, height) => {
         this.compare(
           'view',
@@ -88,19 +86,16 @@ class LayoutEventsTest extends React.Component<$FlowFixMeProps, State> {
           this.state.didAnimation = true;
         }
       });
-    }
 
-    if (this._txt) {
+    this._txt &&
       this._txt.measure((x, y, width, height) => {
         this.compare('txt', {x, y, width, height}, this.state.textLayout);
       });
-    }
 
-    if (this._img) {
+    this._img &&
       this._img.measure((x, y, width, height) => {
         this.compare('img', {x, y, width, height}, this.state.imageLayout);
       });
-    }
   };
 
   compare(node: string, measured: any, onLayout: any): void {
