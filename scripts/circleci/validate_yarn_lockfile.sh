@@ -33,7 +33,7 @@ pushd "$REACT_NATIVE_TEMP_DIR" >/dev/null
 if ! $YARN_BINARY --ignore-scripts --silent --non-interactive --mutex network --frozen-lockfile; then
   msg "Yarn validation failed."
   echo "This means the package.json and yarn.lock disagree in some way."
-  echo "Try fixing it by running \`yarn\` and comitting the changes."
+  echo "Try fixing it by running \`yarn\` and committing the changes."
 fi
 
 popd >/dev/null
