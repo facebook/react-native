@@ -152,7 +152,7 @@ if (__DEV__) {
         get: () => {
           console.warn(
             `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
-              `is no longer supported. Use UIManager.getViewManager('${viewManagerName}') instead.`,
+              `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
           return UIManager.getViewManagerConfig(viewManagerName);
         },
