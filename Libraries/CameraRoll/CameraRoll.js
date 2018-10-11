@@ -13,7 +13,7 @@ const PropTypes = require('prop-types');
 const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
-const deprecatedCreateStrictShapeTypeChecker = require('DeprecatedCreateStrictShapeTypeChecker');
+const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
 const invariant = require('fbjs/lib/invariant');
 
 const GROUP_TYPES_OPTIONS = {
