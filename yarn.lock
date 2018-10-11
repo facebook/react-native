@@ -2191,7 +2191,7 @@ detox@9.0.4:
     tempfile "^2.0.0"
     ws "^1.1.1"
 
-diff@^3.1.0, diff@^3.2.0:
+diff@^3.2.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
@@ -2857,13 +2857,6 @@ form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "1.0.6"
     mime-types "^2.1.12"
-
-formatio@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/formatio/-/formatio-1.2.0.tgz#f3b2167d9068c4698a8d51f4f760a39a54d818eb"
-  integrity sha1-87IWfZBoxGmKjVH092CjmlTYGOs=
-  dependencies:
-    samsam "1.x"
 
 fragment-cache@^0.2.1:
   version "0.2.1"
@@ -3549,11 +3542,6 @@ is-windows@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-1.0.2.tgz#d1850eb9791ecd18e6182ce12a30f396634bb19d"
   integrity sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==
-
-isarray@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
-  integrity sha1-ihis/Kmo9Bd+Cav8YDiTmwXR7t8=
 
 isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
@@ -4279,11 +4267,6 @@ lodash@4.x.x, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.4, l
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
 
-lolex@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/lolex/-/lolex-1.6.0.tgz#3a9a0283452a47d7439e72731b9e07d7386e49f6"
-  integrity sha1-OpoCg0UqR9dDnnJzG54H1zhuSfY=
-
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -4349,10 +4332,10 @@ merge@^1.2.0:
   resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
   integrity sha1-dTHjnUlJwoGma4xabgJl6LBYlNo=
 
-metro-babel-register@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.48.0.tgz#51ac2eaf1733346f131bba4e801f9573428c818c"
-  integrity sha512-1hi+FxAgaUspuEQ32G79541PCMIWGhDtmPWusSUN6zfrvTVYYPmUIE+E/QLVj+6o0I1S8GkgNIm0f622sufF6g==
+metro-babel-register@^0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-babel-register/-/metro-babel-register-0.48.1.tgz#b889aee7fe78423a35c895dc1fb6a8d1a375ff5c"
+  integrity sha512-bSjMAD16vpyHRWeMJ6CXvhWbFbiW58YXhA9zgRbFBdxOcJPbkhj6HEX+FlxTlr2O0MNY27/4U96MFXTcRWcZhQ==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/plugin-proposal-class-properties" "^7.0.0"
@@ -4367,60 +4350,60 @@ metro-babel-register@^0.48.0:
     core-js "^2.2.2"
     escape-string-regexp "^1.0.5"
 
-metro-babel7-plugin-react-transform@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.48.0.tgz#3aabfbd695833bd3aad0713668e89ad91627f207"
-  integrity sha512-0z0fj9lj2F1F3/yLdSdsCR2r2wBbvjJdHtUW+5eb4kr0B6ZDq9aBuaple2u7/srghRsqG89kfTZHgRgOQ15oIw==
+metro-babel7-plugin-react-transform@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-babel7-plugin-react-transform/-/metro-babel7-plugin-react-transform-0.48.1.tgz#d5c8aeadcf30b75344477017b52edf4683a00e6a"
+  integrity sha512-b39Sowwzp0bqitbS3NkF5fzcuoT6vpLqj6Su7xgfCyW5EmYpvxunK7HwMSoZagAIpbD0H6r+iw+L2Ib1EEWfWw==
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
 
-metro-cache@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.48.0.tgz#2a3fbd2ae4fca90f067440b5dec02989a6e9ba20"
-  integrity sha512-Bv0GN2TwCDny2LYlHbOnWZxw9I2fLIh+UZdg606QKCu67C0jZIP2JF+9EwIOGuSL6iBBYhA5TN69O8xsYFZ7Tw==
+metro-cache@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-cache/-/metro-cache-0.48.1.tgz#befbac2f3a0f259f76d064a0f47e93e00441775d"
+  integrity sha512-Nq1RQ7SkhVKKO/uWKzc6JtvDm0JJD/kDsoIQNR2Db37fNlyGxij0FoYRNOX3BOnyhz0NG8kU1pz0qH43bPQ5rg==
   dependencies:
     jest-serializer "23.0.1"
-    metro-core "0.48.0"
+    metro-core "0.48.1"
     mkdirp "^0.5.1"
     rimraf "^2.5.4"
 
-metro-config@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-config/-/metro-config-0.48.0.tgz#faac7ea7c272f399b13421013afeea49eb2b0300"
-  integrity sha512-YRe7tE+BJ8WLcNMuegSHRmOYtmGkmNqXQtPUgMuUiamXHDFXvLdU4cAOaE+0bybF0egAw8GoOomTKROKRJbxjQ==
+metro-config@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-config/-/metro-config-0.48.1.tgz#b5fac7d3a7e3817d7ff25ff88dcba9578876aae4"
+  integrity sha512-pqdbDHUtoQPfWiL8h3x/cN5Q8w/sPt5/UaXk4oIzalU+ooEh0Hi9w10wJHKVRtWzD27o828O04En51C9eEDY5g==
   dependencies:
     cosmiconfig "^5.0.5"
-    metro "0.48.0"
-    metro-cache "0.48.0"
-    metro-core "0.48.0"
+    metro "0.48.1"
+    metro-cache "0.48.1"
+    metro-core "0.48.1"
     pretty-format "^23.4.1"
 
-metro-core@0.48.0, metro-core@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.48.0.tgz#9c6acc2ec0d4be2fe7a0b7b4ac76cf56d0de411c"
-  integrity sha512-edIEeKbOJRTMWvG3/gbPgsmH6MZ8v0Oh2yJYK90BKhh71zweIk0vhhTlesxMF2LzdWWBxs9B6vq2M9hiz0D3zA==
+metro-core@0.48.1, metro-core@^0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-core/-/metro-core-0.48.1.tgz#67980160b8d24859308bad9f4394e7e43b54c237"
+  integrity sha512-uctosjP4imHThHlD5hAt0Yg7tiRLmY3GlU4VaIs0YH2i82yI56b93RtTCI1ACWhL7LUuttSVpPXCBN3ERTe+KA==
   dependencies:
     jest-haste-map "23.5.0"
     lodash.throttle "^4.1.1"
-    metro-resolver "0.48.0"
+    metro-resolver "0.48.1"
     wordwrap "^1.0.0"
 
-metro-memory-fs@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.48.0.tgz#a18dec484a91f1b951de2af0e7af1cf754fb7290"
-  integrity sha512-wpSVOo/8foAur5w8S/CiTM4et6L3qOljnRHA2PG7POEjM3d33zO6292cWEnvZ/Uus08SBfhOQP6t65I/jGaY1A==
+metro-memory-fs@^0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.48.1.tgz#3590f224ded5c33fb7684d4c0611e74dcafab039"
+  integrity sha512-ASbRBpmfRraFilm5o5gdY9X0DQAmkvCgAHDunCo0J2vlQ730VbuhhR67pVRmRr5oXXmDdEIYUkJSIqzP0Q+UKQ==
 
-metro-minify-uglify@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-minify-uglify/-/metro-minify-uglify-0.48.0.tgz#aefe8f353cdf20fdfb14049aaa271b5384d638f1"
-  integrity sha512-wdMC3Xzgr7o/eGkAvWq7G/w9DIgHFh6yAQBW4LLSMJ1Y1laTnr4BvXfeodLFD91Z6GRFJR7kQiO6yf0jbPmoJg==
+metro-minify-uglify@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-minify-uglify/-/metro-minify-uglify-0.48.1.tgz#f8122bb266f7ad799a6b81eef85f0ae3a5623e18"
+  integrity sha512-8htDNs3dil5CopLnMrE6SGjMGg44KB+omE3ZyTNSWXbmZl8aG3spl+xpSJyvkIQrSFNSCzMVZ8V+lDJDwKJ/zg==
   dependencies:
     uglify-es "^3.1.9"
 
-metro-react-native-babel-preset@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.48.0.tgz#edb9d88d8e0a2e47865a08be0ba81b5fe31e8b8e"
-  integrity sha512-HjHWmbpvistlC/UuaTKh+AkVmNxw5pqUhb/RSL7isxLrOgxFCG063P0aHl+GwT8EFA4ZnHL9YCqceop1Ewfq9w==
+metro-react-native-babel-preset@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.48.1.tgz#dddbbe205bdfe75f25cd8dafeb7d1b628a90b755"
+  integrity sha512-euJ0MOyBYTa76kQNbly6An9FNpu9BqxfkXhKtD8hWZxo5dxIAk25AmoWfXU2OHj7PogG/u0Ndo3tmhZZ2NWYvA==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.0.0"
     "@babel/plugin-proposal-export-default-from" "^7.0.0"
@@ -4455,27 +4438,27 @@ metro-react-native-babel-preset@0.48.0:
     "@babel/plugin-transform-typescript" "^7.0.0"
     "@babel/plugin-transform-unicode-regex" "^7.0.0"
     "@babel/template" "^7.0.0"
-    metro-babel7-plugin-react-transform "0.48.0"
+    metro-babel7-plugin-react-transform "0.48.1"
     react-transform-hmr "^1.0.4"
 
-metro-resolver@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.48.0.tgz#52eae2b7a5accf788fc26e461ef6b3e39a3b7544"
-  integrity sha512-e7yJ7g/OxZflNEiV1ewPa7iFxiZAx/dfL291tNxZWFXVUbkJ3/gbY2Qt8HTr3KGwiZmQP+XHh6m5KISr9fuyCg==
+metro-resolver@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-resolver/-/metro-resolver-0.48.1.tgz#31078581624f3af828fb5943e916f3f0b97e8cde"
+  integrity sha512-d28ki5RTRUPFNQVJEgiMx3Zr81NlxOm1mKgaBx93Alyy2ZZ1Gvs25olZHwHgKPsRTgCqg5kgImkIHtjP2j8BdQ==
   dependencies:
     absolute-path "^0.0.0"
 
-metro-source-map@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro-source-map/-/metro-source-map-0.48.0.tgz#578bdf0676b4d9d73b0a9ff363b6ec80d5b7ef35"
-  integrity sha512-DByXLAwvwyE7524QytWva2rw8C/LXaNaG5byrbNNgp84fd8wJX2TObHJpY3140b0vwoOsDJcjwfnnn3+fdLGgw==
+metro-source-map@0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro-source-map/-/metro-source-map-0.48.1.tgz#800ea0666d5cc0b640dfd9e66f76f8a3c5f6202c"
+  integrity sha512-6+YSKB3zRLGA39I0G/wfPizf1HPlrnmeX70E1vvH0G1HVD/ko5dqjJgH4vlr71Za9xYZLSuaXoQmmgkcf6at4w==
   dependencies:
     source-map "^0.5.6"
 
-metro@0.48.0, metro@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/metro/-/metro-0.48.0.tgz#52e2ca1fb220ed8c03977f17f63447178f339967"
-  integrity sha512-iJGsn7M9IKDXCyUXQRHSkUk3Oees7mV4dDTpDtgmzWUDo+pA0dGyxApE1obWNzAYltp6yKdJw1mcQoEMDZdfVw==
+metro@0.48.1, metro@^0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/metro/-/metro-0.48.1.tgz#10cc5cbca1bdf8e4239bf43d3aa74babcf573705"
+  integrity sha512-7V+YOqfmgGhomdWAoD58zRQvPxUgBIo6b1YgcZULvh7yPPMo3tTkTvrzS2Qd2N3LFTysRQWzOlkb7O7jAV5FDw==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/generator" "^7.0.0"
@@ -4503,13 +4486,13 @@ metro@0.48.0, metro@^0.48.0:
     json-stable-stringify "^1.0.1"
     lodash.throttle "^4.1.1"
     merge-stream "^1.0.1"
-    metro-cache "0.48.0"
-    metro-config "0.48.0"
-    metro-core "0.48.0"
-    metro-minify-uglify "0.48.0"
-    metro-react-native-babel-preset "0.48.0"
-    metro-resolver "0.48.0"
-    metro-source-map "0.48.0"
+    metro-cache "0.48.1"
+    metro-config "0.48.1"
+    metro-core "0.48.1"
+    metro-minify-uglify "0.48.1"
+    metro-react-native-babel-preset "0.48.1"
+    metro-resolver "0.48.1"
+    metro-source-map "0.48.1"
     mime-types "2.1.11"
     mkdirp "^0.5.1"
     node-fetch "^2.2.0"
@@ -4724,11 +4707,6 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
-
-native-promise-only@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/native-promise-only/-/native-promise-only-0.8.1.tgz#20a318c30cb45f71fe7adfbf7b21c99c1472ef11"
-  integrity sha1-IKMYwwy0X3H+et+/eyHJnBRy7xE=
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -5127,13 +5105,6 @@ path-parse@^1.0.5:
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
   integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
 
-path-to-regexp@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-1.7.0.tgz#59fde0f435badacba103a84e9d3bc64e96b9937d"
-  integrity sha1-Wf3g9DW62suhA6hOnTvGTpa5k30=
-  dependencies:
-    isarray "0.0.1"
-
 path-type@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-1.1.0.tgz#59c44f7ee491da704da415da5a4070ba4f8fe441"
@@ -5386,10 +5357,10 @@ react-devtools-core@^3.4.0:
     shell-quote "^1.6.1"
     ws "^3.3.1"
 
-react-is@^16.6.0-alpha.400d197:
-  version "16.6.0-alpha.400d197"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.0-alpha.400d197.tgz#2ca008cdc80ebc1cdd706ce59dadbd2e3774b30a"
-  integrity sha512-ZmcGAxIHbjEydr+3lswKHHyBwfSMIcISdo8jzPKEhW3ikAUGtJcim/P19iBDxTkrqMVwZZYoGIsc/u7B9KLv0w==
+react-is@^16.6.0-alpha.8af6728:
+  version "16.6.0-alpha.8af6728"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.0-alpha.8af6728.tgz#3ce01f13f164b90a76ad902735834fc12d06e30e"
+  integrity sha512-F65AeMavskvRglteO7dC0Nvq3Br1ESnpCOG5M6fenQX52Uhpt6eCI0vL3ICM/hnVhIOQY2fwnSWtST33OlgxVA==
 
 react-native-dummy@0.1.0:
   version "0.1.0"
@@ -5404,15 +5375,15 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-test-renderer@16.6.0-alpha.400d197:
-  version "16.6.0-alpha.400d197"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.6.0-alpha.400d197.tgz#f0f5c703fef5685a66fd5bcb43e059994ebaed54"
-  integrity sha512-wGv0xcq/dGInTtsF+LwwBEawprtIbjMTCgJEinZzOW2R8+Izx12PRBPr8pZmAoNCuJVyB/y8fdJsvZdABsQ33w==
+react-test-renderer@16.6.0-alpha.8af6728:
+  version "16.6.0-alpha.8af6728"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.6.0-alpha.8af6728.tgz#5b9eaa972f0016c95d1ef5d93f727c5dc4a5a0ee"
+  integrity sha512-42RB1hvEjVuJGrGddGqVj1obs9NhWiuijkz+qsuY0qRzF0ygD5xg4eRdm0H4YNtkp+332g6OWO9O2ussu67cFQ==
   dependencies:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-    react-is "^16.6.0-alpha.400d197"
-    scheduler "^0.10.0-alpha.400d197"
+    react-is "^16.6.0-alpha.8af6728"
+    scheduler "^0.10.0-alpha.8af6728"
 
 react-timer-mixin@^0.13.2:
   version "0.13.4"
@@ -5427,15 +5398,15 @@ react-transform-hmr@^1.0.4:
     global "^4.3.0"
     react-proxy "^1.1.7"
 
-react@16.6.0-alpha.400d197:
-  version "16.6.0-alpha.400d197"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.6.0-alpha.400d197.tgz#250974bc3abc0327c34088fdcd10e3a62130d195"
-  integrity sha512-Ve8p2P2D9SZTTLro7jrW+pkO1NZkB2lWq8qvyO4c5NEi/OlaLDwQStKcPJGkw2kpMLu8mxBZ4ERDcwrAIwMSdw==
+react@16.6.0-alpha.8af6728:
+  version "16.6.0-alpha.8af6728"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.6.0-alpha.8af6728.tgz#b97b6453c252a1f6ad185acc81aca1485cd3e120"
+  integrity sha512-W5NwSMey/JjF4wdeB7ek/+qG4bJJhgM1O/NaHvhUswgJxBMcFLUroODPELbq6IVolgua+anEirtOCx3fMXHZjw==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-    scheduler "^0.10.0-alpha.400d197"
+    scheduler "^0.10.0-alpha.8af6728"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"
@@ -5784,11 +5755,6 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
-samsam@1.x, samsam@^1.1.3:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/samsam/-/samsam-1.3.0.tgz#8d1d9350e25622da30de3e44ba692b5221ab7c50"
-  integrity sha512-1HwIYD/8UlOtFS3QO3w7ey+SdSDFE4HRNLZoZRYVQefrOY3l17epswImeB1ijgJFQJodIaHcwkp3r/myBjFVbg==
-
 sane@^2.0.0:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/sane/-/sane-2.5.2.tgz#b4dc1861c21b427e929507a3e751e2a2cb8ab3fa"
@@ -5822,10 +5788,10 @@ sax@~1.1.1:
   resolved "http://registry.npmjs.org/sax/-/sax-1.1.6.tgz#5d616be8a5e607d54e114afae55b7eaf2fcc3240"
   integrity sha1-XWFr6KXmB9VOEUr65Vt+ry/MMkA=
 
-scheduler@^0.10.0-alpha.400d197:
-  version "0.10.0-alpha.400d197"
-  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.10.0-alpha.400d197.tgz#9eeea8bd403bba465e177b4a8d30fb846af20b79"
-  integrity sha512-PLCKZLDzUG+b1dIECw6UW35lgrA+OO+VRfHshMbths5qXzlapPTPNmZb9F25FOJy+H288RRqpp21MSZhofXVNQ==
+scheduler@^0.10.0-alpha.8af6728:
+  version "0.10.0-alpha.f47a958"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.10.0-alpha.f47a958.tgz#0063a5c21aad2038111c316e417e9702d1ca7007"
+  integrity sha512-GVz1gvEU4JhqqiLB+DhRwd17sqKCmVsmdrsDoKMOIRCu0z+qYhimF6PvA3q61BgCqHDWJZiAidom6saiE8ZrOQ==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
@@ -5960,20 +5926,6 @@ simple-plist@^0.2.1:
     bplist-creator "0.0.7"
     bplist-parser "0.1.1"
     plist "2.0.1"
-
-sinon@^2.2.0:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-2.4.1.tgz#021fd64b54cb77d9d2fb0d43cdedfae7629c3a36"
-  integrity sha512-vFTrO9Wt0ECffDYIPSP/E5bBugt0UjcBQOfQUMh66xzkyPEnhl/vM2LRZi2ajuTdkH07sA6DzrM6KvdvGIH8xw==
-  dependencies:
-    diff "^3.1.0"
-    formatio "1.2.0"
-    lolex "^1.6.0"
-    native-promise-only "^0.8.1"
-    path-to-regexp "^1.7.0"
-    samsam "^1.1.3"
-    text-encoding "0.6.4"
-    type-detect "^4.0.0"
 
 sisteransi@^0.1.1:
   version "0.1.1"
@@ -6342,11 +6294,6 @@ test-exclude@^4.2.1:
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
 
-text-encoding@0.6.4:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
-  integrity sha1-45mpgiV6J22uQou5KEXLcb3CbRk=
-
 text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
@@ -6467,11 +6414,6 @@ type-check@~0.3.2:
   integrity sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=
   dependencies:
     prelude-ls "~1.1.2"
-
-type-detect@^4.0.0:
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
-  integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
 
 typedarray@^0.0.6:
   version "0.0.6"
