@@ -79,7 +79,7 @@ const getPhotosParamChecker = createStrictShapeTypeChecker({
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
 
-export type GetPhotosEdge = {
+export type PhotoIdentifier = {
   node: {
     type: string,
     group_name: string,
@@ -101,8 +101,8 @@ export type GetPhotosEdge = {
   },
 };
 
-export type GetPhotosReturn = {
-  edges: Array<GetPhotosEdge>,
+export type PhotoIdentifiersPage = {
+  edges: Array<PhotoIdentifier>,
   page_info: {
     has_next_page: boolean,
     start_cursor?: string,
@@ -206,7 +206,7 @@ class CameraRoll {
    *
    * See https://facebook.github.io/react-native/docs/cameraroll.html#getphotos
    */
-  static getPhotos(params: GetPhotosParams): Promise<GetPhotosReturn> {
+  static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},

@@ -28,7 +28,7 @@ const ListViewDataSource = require('ListViewDataSource');
 const groupByEveryN = require('groupByEveryN');
 const logError = require('logError');
 
-import type {GetPhotosEdge, GetPhotosReturn} from 'CameraRoll';
+import type {PhotoIdentifier, PhotoIdentifiersPage} from 'CameraRoll';
 
 const rowHasChanged = function(r1: Array<Image>, r2: Array<Image>): boolean {
   if (r1.length !== r2.length) {
@@ -44,7 +44,7 @@ const rowHasChanged = function(r1: Array<Image>, r2: Array<Image>): boolean {
   return false;
 };
 
-type Props = $ReadOnly<{|
+type PropsObject = {|
   /**
    * The group where the photos will be fetched from. Possible
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
@@ -67,7 +67,7 @@ type Props = $ReadOnly<{|
   /**
    * A function that takes a single image as a parameter and renders it.
    */
-  renderImage: GetPhotosEdge => React.Node,
+  renderImage: PhotoIdentifier => React.Node,
 
   /**
    * imagesPerRow: Number of images to be shown in each row.
@@ -79,10 +79,12 @@ type Props = $ReadOnly<{|
    * The asset type, one of 'Photos', 'Videos' or 'All'
    */
   assetType: 'Photos' | 'Videos' | 'All',
-|}>;
+|};
+
+type Props = $ReadOnly<PropsObject>;
 
 type State = {|
-  assets: Array<GetPhotosEdge>,
+  assets: Array<PhotoIdentifier>,
   lastCursor: ?string,
   noMore: boolean,
   loadingMore: boolean,
@@ -95,7 +97,7 @@ class CameraRollView extends React.Component<Props, State> {
     batchSize: 5,
     imagesPerRow: 1,
     assetType: 'Photos',
-    renderImage: function(asset: GetPhotosEdge) {
+    renderImage: function(asset: PhotoIdentifier) {
       const imageSize = 150;
       const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
       return <Image source={asset.node.image} style={imageStyle} />;
@@ -121,7 +123,6 @@ class CameraRollView extends React.Component<Props, State> {
   rendererChanged() {
     const ds = new ListView.DataSource({rowHasChanged: rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
-      // $FlowFixMe(>=0.41.0)
       groupByEveryN(this.state.assets, this.props.imagesPerRow),
     );
   }
@@ -130,10 +131,7 @@ class CameraRollView extends React.Component<Props, State> {
     this.fetch();
   }
 
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
-  UNSAFE_componentWillReceiveProps(nextProps: {groupTypes?: string}) {
+  UNSAFE_componentWillReceiveProps(nextProps: $Shape<PropsObject>) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }
@@ -214,7 +212,7 @@ class CameraRollView extends React.Component<Props, State> {
 
   // rowData is an array of images
   _renderRow = (
-    rowData: Array<GetPhotosEdge>,
+    rowData: Array<PhotoIdentifier>,
     sectionID: string,
     rowID: string,
   ) => {
@@ -222,14 +220,13 @@ class CameraRollView extends React.Component<Props, State> {
       if (image === null) {
         return null;
       }
-      // $FlowFixMe(>=0.41.0)
       return this.props.renderImage(image);
     });
 
     return <View style={styles.row}>{images}</View>;
   };
 
-  _appendAssets(data: GetPhotosReturn) {
+  _appendAssets(data: PhotoIdentifiersPage) {
     const assets = data.edges;
     const newState: $Shape<State> = {loadingMore: false};
 
@@ -241,7 +238,6 @@ class CameraRollView extends React.Component<Props, State> {
       newState.lastCursor = data.page_info.end_cursor;
       newState.assets = this.state.assets.concat(assets);
       newState.dataSource = this.state.dataSource.cloneWithRows(
-        // $FlowFixMe(>=0.41.0)
         groupByEveryN(newState.assets, this.props.imagesPerRow),
       );
     }

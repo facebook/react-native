@@ -28,7 +28,7 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-import type {GetPhotosEdge} from 'CameraRoll';
+import type {PhotoIdentifier} from 'CameraRoll';
 
 class CameraRollExample extends React.Component<
   $FlowFixMeProps,
@@ -76,7 +76,7 @@ class CameraRollExample extends React.Component<
     }
   }
 
-  _renderImage = (asset: GetPhotosEdge) => {
+  _renderImage = (asset: PhotoIdentifier) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
