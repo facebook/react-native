@@ -110,7 +110,9 @@ const maybeVectorAnim = function(
     const configX = {...config};
     const configY = {...config};
     for (const key in config) {
-      if (config[key] === undefined || config[key] === null) continue;
+      if (config[key] === undefined || config[key] === null) {
+        continue;
+      }
       const {x, y} = config[key];
       if (x !== undefined && y !== undefined) {
         configX[key] = x;
