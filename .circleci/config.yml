@@ -198,6 +198,7 @@ aliases:
     command: |
       ./scripts/circleci/check_license.sh
       ./scripts/circleci/check_cache.sh
+      ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
   - &download-dependencies-gradle
