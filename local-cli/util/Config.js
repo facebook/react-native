@@ -41,15 +41,16 @@ const resolveSymlinksForRoots = roots =>
      * error found when Flow v0.70 was deployed. To see the error delete this
      * comment and run Flow. */
     (arr, rootPath) => arr.concat(findSymlinkedModules(rootPath, roots)),
-    [...roots],
+    [],
   );
 
 const getWatchFolders = () => {
   const root = process.env.REACT_NATIVE_APP_ROOT;
   if (root) {
-    return resolveSymlinksForRoots([path.resolve(root)]);
+    const rootFullPath = path.resolve(root);
+    return [rootFullPath, ...resolveSymlinksForRoots([rootFullPath])];
   }
-  return [];
+  return resolveSymlinksForRoots([getProjectRoot()]);
 };
 
 const getBlacklistRE = () => {
