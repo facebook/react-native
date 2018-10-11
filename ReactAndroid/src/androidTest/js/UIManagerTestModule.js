@@ -184,7 +184,7 @@ const CenteredTextViewStyles = StyleSheet.create({
   },
 });
 
-let flushUpdatePositionInList;
+let flushUpdatePositionInList = null;
 
 type UpdatePositionInListTestAppProps = $ReadOnly<{||}>;
 type UpdatePositionInListTestAppState = $ReadOnly<{|
@@ -200,10 +200,8 @@ class UpdatePositionInListTestApp extends React.Component<
 
   constructor(...args) {
     super(...args);
-    this.flushUpdatePositionInList();
+    flushUpdatePositionInList = () => this.setState({active: true});
   }
-
-  flushUpdatePositionInList = () => this.setState({active: true});
 
   render() {
     return (
@@ -256,9 +254,7 @@ const UIManagerTestModule = {
   renderUpdatePositionInListTestApplication(rootTag) {
     renderApplication(UpdatePositionInListTestApp, {}, rootTag);
   },
-  flushUpdatePositionInList() {
-    flushUpdatePositionInList();
-  },
+  flushUpdatePositionInList,
 };
 
 BatchedBridge.registerCallableModule(
