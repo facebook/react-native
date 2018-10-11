@@ -40,51 +40,6 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
   return result;
 }
 
-static const std::string componentNameByReactViewName(std::string viewName) {
-  // We need this function only for the transition period;
-  // eventually, all names will be unified.
-
-  std::string rctPrefix("RCT");
-  if (std::mismatch(rctPrefix.begin(), rctPrefix.end(), viewName.begin())
-          .first == rctPrefix.end()) {
-    // If `viewName` has "RCT" prefix, remove it.
-    viewName.erase(0, rctPrefix.length());
-  }
-
-  // Fabric uses slightly new names for Text components because of differences
-  // in semantic.
-  if (viewName == "Text") {
-    return "Paragraph";
-  }
-  if (viewName == "VirtualText") {
-    return "Text";
-  }
-
-  if (viewName == "ImageView") {
-    return "Image";
-  }
-
-  if (viewName == "AndroidHorizontalScrollView") {
-    return "ScrollView";
-  }
-
-  if (viewName == "AndroidProgressBar") {
-    return "ActivityIndicatorView";
-  }
-
-  // We need this temporarly for testing purposes until we have proper
-  // implementation of core components.
-  if (viewName == "SinglelineTextInputView" ||
-      viewName == "MultilineTextInputView" || viewName == "RefreshControl" ||
-      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
-      viewName == "AndroidHorizontalScrollContentView" // Android
-  ) {
-    return "View";
-  }
-
-  return viewName;
-}
-
 FabricUIManager::FabricUIManager(
     std::unique_ptr<EventBeatBasedExecutor> executor,
     std::function<UIManagerInstaller> installer,
@@ -168,28 +123,11 @@ void FabricUIManager::stopSurface(SurfaceId surfaceId) const {
   (*executor_)([this, surfaceId] { stopSurfaceFunction_(surfaceId); });
 }
 
-SharedShadowNode FabricUIManager::createNode(
-    int tag,
-    std::string viewName,
-    int rootTag,
-    folly::dynamic props,
-    SharedEventTarget eventTarget) const {
-  ComponentName componentName = componentNameByReactViewName(viewName);
-  const SharedComponentDescriptor &componentDescriptor =
-      (*componentDescriptorRegistry_)[componentName];
-  RawProps rawProps = rawPropsFromDynamic(props);
-
-  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
-      {.tag = tag,
-       .rootTag = rootTag,
-       .eventEmitter =
-           componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-       .props = componentDescriptor->cloneProps(nullptr, rawProps)});
-
+SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) const {
+  SharedShadowNode shadowNode = componentDescriptorRegistry_->createNode(tag, viewName, rootTag, props, eventTarget);
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
   }
-
   return shadowNode;
 }
 

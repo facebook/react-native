@@ -33,6 +33,9 @@ inline void fromDynamic(const folly::dynamic &value, double &result) {
 inline void fromDynamic(const folly::dynamic &value, std::string &result) {
   result = value.getString();
 }
+inline void fromDynamic(const folly::dynamic &value, folly::dynamic &result) {
+  result = value;
+}
 
 template <typename T>
 inline void fromDynamic(const folly::dynamic &value, std::vector<T> &result) {

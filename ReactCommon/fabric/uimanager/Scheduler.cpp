@@ -8,6 +8,7 @@
 #include <fabric/core/LayoutContext.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/uimanager/TemplateRenderer.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -39,9 +40,11 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
       synchronousEventBeatFactory,
       asynchronousEventBeatFactory);
 
+  componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
+    eventDispatcher, contextContainer);
   uiManager_->setComponentDescriptorRegistry(
-      ComponentDescriptorFactory::buildRegistry(
-          eventDispatcher, contextContainer));
+    componentDescriptorRegistry_
+  );
 
   uiManager_->setDelegate(this);
 }
@@ -55,7 +58,7 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
+    const LayoutContext &layoutContext) {
   std::lock_guard<std::mutex> lock(mutex_);
 
   auto shadowTree =
@@ -64,7 +67,18 @@ void Scheduler::startSurface(
   shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
 #ifndef ANDROID
-  uiManager_->startSurface(surfaceId, moduleName, initialProps);
+
+  // TODO: Is this an ok place to do this?
+  auto serializedCommands = initialProps.find("serializedCommands");
+  if (serializedCommands != initialProps.items().end()) {
+    auto tree = TemplateRenderer::buildShadowTree(serializedCommands->second.asString(), surfaceId, folly::dynamic::object(), *componentDescriptorRegistry_);
+
+    uiManagerDidFinishTransactionWithoutLock(surfaceId, std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {tree}));
+    // TODO: hydrate rather than replace
+    uiManager_->startSurface(surfaceId, moduleName, initialProps);
+  } else {
+    uiManager_->startSurface(surfaceId, moduleName, initialProps);
+  }
 #endif
 }
 
@@ -107,6 +121,16 @@ void Scheduler::constraintSurfaceLayout(
   });
 }
 
+void Scheduler::uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
+  const auto iterator = shadowTreeRegistry_.find(rootTag);
+  if (iterator == shadowTreeRegistry_.end()) {
+    // This might happen during surface unmounting/deallocation process
+    // due to the asynchronous nature of JS calls.
+    return;
+  }
+  iterator->second->complete(rootChildNodes);
+}
+
 #pragma mark - Delegate
 
 void Scheduler::setDelegate(SchedulerDelegate *delegate) {
@@ -134,15 +158,7 @@ void Scheduler::uiManagerDidFinishTransaction(
     Tag rootTag,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   std::lock_guard<std::mutex> lock(mutex_);
-
-  const auto iterator = shadowTreeRegistry_.find(rootTag);
-  if (iterator == shadowTreeRegistry_.end()) {
-    // This might happen during surface unmounting/deallocation process
-    // due to the asynchronous nature of JS calls.
-    return;
-  }
-
-  iterator->second->complete(rootChildNodes);
+  uiManagerDidFinishTransactionWithoutLock(rootTag, rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

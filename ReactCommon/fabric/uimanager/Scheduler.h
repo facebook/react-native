@@ -10,6 +10,7 @@
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/ContextContainer.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
@@ -36,7 +37,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const std::string &moduleName,
       const folly::dynamic &initialProps,
       const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {}) const;
+      const LayoutContext &layoutContext = {});
 
   void stopSurface(SurfaceId surfaceId) const;
 
@@ -91,11 +92,15 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable std::mutex mutex_;
   mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       shadowTreeRegistry_; // Protected by `mutex_`.
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
+
+  void uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes);
+
 };
 
 } // namespace react
