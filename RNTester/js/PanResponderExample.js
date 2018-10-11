@@ -16,11 +16,11 @@ const {PanResponder, StyleSheet, View} = ReactNative;
 
 import type {PanResponderInstance} from 'PanResponder';
 
-type CircleStylesType = {|
-  backgroundColor: string,
-  left: number,
-  top: number,
-|};
+type CircleStylesType = {
+  backgroundColor?: string,
+  left?: number,
+  top?: number,
+};
 
 const CIRCLE_SIZE = 80;
 
@@ -29,10 +29,10 @@ class PanResponderExample extends React.Component<{}> {
   static description =
     'Shows the Use of PanResponder to provide basic gesture handling';
 
-  _panResponder: PanResponderInstance | Object = {};
+  _panResponder: ?PanResponderInstance = null;
   _previousLeft: number = 0;
   _previousTop: number = 0;
-  _circleStyles: {|style: CircleStylesType | Object|} = {style: {}};
+  _circleStyles: {|style: CircleStylesType|} = {style: {}};
   circle: ?{setNativeProps(props: Object): void} = null;
 
   UNSAFE_componentWillMount() {
@@ -113,7 +113,7 @@ class PanResponderExample extends React.Component<{}> {
             this.circle = circle;
           }}
           style={styles.circle}
-          {...this._panResponder.panHandlers}
+          {...this._panResponder?.panHandlers}
         />
       </View>
     );
