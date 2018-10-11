@@ -171,6 +171,7 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
+    sendIntent: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),
