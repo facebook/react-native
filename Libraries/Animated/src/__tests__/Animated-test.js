@@ -782,6 +782,25 @@ describe('Animated tests', () => {
       expect(Math.round(value2.__getValue().x)).toEqual(2);
       expect(Math.round(value2.__getValue().y)).toEqual(2);
     });
+
+    it('should accept undefined values in the config object', () => {
+      const value1 = new Animated.ValueXY();
+      const value2 = new Animated.ValueXY();
+      Animated.spring(value2, {
+        toValue: value1,
+        tension: 3000, // faster spring for faster test
+        friction: 60,
+        stiffness: undefined,
+      }).start();
+      value1.setValue({x: 1, y: 1});
+      jest.runAllTimers();
+      expect(Math.round(value2.__getValue().x)).toEqual(1);
+      expect(Math.round(value2.__getValue().y)).toEqual(1);
+      value1.setValue({x: 2, y: 2});
+      jest.runAllTimers();
+      expect(Math.round(value2.__getValue().x)).toEqual(2);
+      expect(Math.round(value2.__getValue().y)).toEqual(2);
+    });
   });
 
   describe('Animated Listeners', () => {
