@@ -120,8 +120,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       if (!mLastLoadFailed) {
         ReactWebView reactWebView = (ReactWebView) webView;
-        reactWebView.callInjectedJavaScript();
         reactWebView.linkBridge();
+        reactWebView.callInjectedJavaScript();
         emitFinishEvent(webView, url);
       }
     }
