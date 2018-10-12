@@ -17,7 +17,7 @@
 namespace facebook {
 namespace react {
 
-TEST(AttributedStringTest, testSomething) {
+TEST(AttributedStringTest, testToDynamic) {
   auto attString = new AttributedString();
   auto fragment = new AttributedString::Fragment();
   fragment->string = "test";
