@@ -49,11 +49,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
@@ -344,7 +344,7 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
