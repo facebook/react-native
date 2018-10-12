@@ -9,193 +9,114 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
-var Text = require('Text');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
+const Text = require('Text');
 
-var createReactClass = require('create-react-class');
-var renderApplication = require('renderApplication');
+const renderApplication = require('renderApplication');
 
-var FlexTestApp = createReactClass({
-  displayName: 'FlexTestApp',
-  _styles: StyleSheet.create({
-    container: {
-      width: 200,
-      height: 200,
-      flexDirection: 'row',
-    },
-    child: {
-      flex: 1,
-    },
-    absolute: {
-      position: 'absolute',
-      top: 15,
-      left: 10,
-      width: 50,
-      height: 60,
-    },
-  }),
-  render: function() {
-    return (
+const FlexTestApp = () => {
+  return (
+    <View
+      style={styles.flexTestApp.container}
+      testID="container"
+      collapsable={false}>
       <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
-        <View
-          style={[this._styles.child, {backgroundColor: '#ff0000'}]}
-          collapsable={false}
-        />
-        <View
-          style={[this._styles.child, {backgroundColor: '#0000ff'}]}
-          collapsable={false}
-        />
-      </View>
-    );
-  },
-});
-
-var FlexWithText = createReactClass({
-  displayName: 'FlexWithText',
-  _styles: StyleSheet.create({
-    container: {
-      flexDirection: 'column',
-      margin: 20,
-    },
-    row: {
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-      height: 300,
-    },
-    inner: {
-      flex: 1,
-      margin: 10,
-    },
-  }),
-  render: function() {
-    return (
-      <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
-        <View style={this._styles.row} collapsable={false}>
-          <Text style={this._styles.inner}>Hello</Text>
-          <Text style={this._styles.inner}>World</Text>
-        </View>
-      </View>
-    );
-  },
-});
-
-var AbsolutePositionTestApp = createReactClass({
-  displayName: 'AbsolutePositionTestApp',
-  _styles: StyleSheet.create({
-    absolute: {
-      position: 'absolute',
-      top: 15,
-      left: 10,
-      width: 50,
-      height: 60,
-    },
-  }),
-  render: function() {
-    return (
-      <View
-        style={this._styles.absolute}
-        testID="absolute"
+        style={[styles.flexTestApp.child, {backgroundColor: '#ff0000'}]}
         collapsable={false}
       />
-    );
-  },
-});
-
-var AbsolutePositionBottomRightTestApp = createReactClass({
-  displayName: 'AbsolutePositionBottomRightTestApp',
-  _styles: StyleSheet.create({
-    container: {
-      width: 100,
-      height: 100,
-    },
-    absolute: {
-      position: 'absolute',
-      bottom: 15,
-      right: 10,
-      width: 50,
-      height: 60,
-    },
-  }),
-  render: function() {
-    return (
       <View
-        style={this._styles.container}
-        testID="container"
-        collapsable={false}>
-        <View style={this._styles.absolute} collapsable={false} />
-      </View>
-    );
-  },
-});
+        style={[styles.flexTestApp.child, {backgroundColor: '#0000ff'}]}
+        collapsable={false}
+      />
+    </View>
+  );
+};
 
-var CenteredTextView = createReactClass({
-  displayName: 'CenteredTextView',
-  _styles: StyleSheet.create({
-    parent: {
-      width: 200,
-      height: 100,
-      backgroundColor: '#aa3311',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    text: {
-      fontSize: 15,
-      color: '#672831',
-    },
-  }),
-  render: function() {
-    return (
-      <View collapsable={false}>
-        <View style={this._styles.parent} collapsable={false}>
-          <Text style={this._styles.text} testID="text">
-            {this.props.text}
-          </Text>
-        </View>
+const FlexWithText = () => {
+  return (
+    <View
+      style={styles.flexWithText.container}
+      testID="container"
+      collapsable={false}>
+      <View style={styles.flexWithText.row} collapsable={false}>
+        <Text style={styles.flexWithText.inner}>Hello</Text>
+        <Text style={styles.flexWithText.inner}>World</Text>
       </View>
-    );
-  },
-});
+    </View>
+  );
+};
 
-var flushUpdatePositionInList = null;
-var UpdatePositionInListTestApp = createReactClass({
-  displayName: 'UpdatePositionInListTestApp',
-  _styles: StyleSheet.create({
-    element: {
-      height: 10,
-    },
-    active: {
-      height: 50,
-    },
-  }),
-  getInitialState: function() {
+const AbsolutePositionTestApp = () => {
+  return (
+    <View
+      style={styles.absolutePositionTestApp.absolute}
+      testID="absolute"
+      collapsable={false}
+    />
+  );
+};
+
+const AbsolutePositionBottomRightTestApp = () => {
+  return (
+    <View
+      style={styles.absolutePositionBottomRightTestApp.container}
+      testID="container"
+      collapsable={false}>
+      <View
+        style={styles.absolutePositionBottomRightTestApp.absolute}
+        collapsable={false}
+      />
+    </View>
+  );
+};
+
+const CenteredTextView = props => {
+  return (
+    <View collapsable={false}>
+      <View style={styles.centeredTextView.parent} collapsable={false}>
+        <Text style={styles.centeredTextView.text} testID="text">
+          {props.text}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+let flushUpdatePositionInList = null;
+class UpdatePositionInListTestApp extends React.Component {
+  constructor(props) {
+    super(props);
     flushUpdatePositionInList = () => this.setState({active: true});
-    return {active: false};
-  },
-  render: function() {
+    this.state = {
+      active: false,
+    };
+  }
+
+  render() {
     return (
       <View collapsable={false} testID="container">
-        <View style={this._styles.element} collapsable={false} />
+        <View
+          style={styles.updatePositionInListTestApp.element}
+          collapsable={false}
+        />
         <View
           style={[
-            this._styles.element,
-            this.state.active && this._styles.active,
+            styles.updatePositionInListTestApp.element,
+            this.state.active && this.styles.active,
           ]}
           collapsable={false}
         />
-        <View style={this._styles.element} collapsable={false} />
+        <View
+          style={styles.updatePositionInListTestApp.element}
+          collapsable={false}
+        />
       </View>
     );
-  },
-});
+  }
+}
 
 var UIManagerTestModule = {
   renderFlexTestApplication: function(rootTag) {
@@ -225,5 +146,83 @@ BatchedBridge.registerCallableModule(
   'UIManagerTestModule',
   UIManagerTestModule,
 );
+
+const styles = StyleSheet.create({
+  flexTestApp: {
+    container: {
+      width: 200,
+      height: 200,
+      flexDirection: 'row',
+    },
+    child: {
+      flex: 1,
+    },
+    absolute: {
+      position: 'absolute',
+      top: 15,
+      left: 10,
+      width: 50,
+      height: 60,
+    },
+  },
+  flexWithText: {
+    container: {
+      flexDirection: 'column',
+      margin: 20,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      height: 300,
+    },
+    inner: {
+      flex: 1,
+      margin: 10,
+    },
+  },
+  absolutePositionTestApp: {
+    absolute: {
+      position: 'absolute',
+      top: 15,
+      left: 10,
+      width: 50,
+      height: 60,
+    },
+  },
+  absolutePositionBottomRightTestApp: {
+    container: {
+      width: 100,
+      height: 100,
+    },
+    absolute: {
+      position: 'absolute',
+      bottom: 15,
+      right: 10,
+      width: 50,
+      height: 60,
+    },
+  },
+  centeredTextView: {
+    parent: {
+      width: 200,
+      height: 100,
+      backgroundColor: '#aa3311',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    text: {
+      fontSize: 15,
+      color: '#672831',
+    },
+  },
+  updatePositionInListTestApp: {
+    element: {
+      height: 10,
+    },
+    active: {
+      height: 50,
+    },
+  },
+});
 
 module.exports = UIManagerTestModule;
