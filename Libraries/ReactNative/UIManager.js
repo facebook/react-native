@@ -57,6 +57,14 @@ UIManager.getViewManagerConfig = function(viewManagerName: string) {
     return config;
   }
 
+  // If we're in the Chrome Debugger, let's not even try calling the sync
+  // method.
+  if (__DEV__) {
+    if (!global.nativeCallSyncHook) {
+      return config;
+    }
+  }
+
   if (UIManager.lazilyLoadView && !triedLoadingConfig.has(viewManagerName)) {
     const result = UIManager.lazilyLoadView(viewManagerName);
     triedLoadingConfig.add(viewManagerName);
