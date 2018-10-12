@@ -201,6 +201,13 @@ aliases:
       ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
+    - &js-coverage
+      name: Test coverage
+      command: |
+        yarn test --coverage --maxWorkers=2
+        cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+      when: always
+
   - &download-dependencies-gradle
     name: Download Dependencies Using Gradle
     command: ./scripts/circleci/gradle_download_deps.sh
@@ -627,6 +634,17 @@ jobs:
           when: always
       - save-cache: *save-cache-analysis
 
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    steps:
+      - checkout
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - run: *js-coverage
+      - store_artifacts:
+          path: ~/react-native/coverage/
+
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
@@ -721,6 +739,8 @@ workflows:
       - test_node10:
           filters: *filter-ignore-gh-pages
 
+  releases:
+    jobs:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
@@ -731,8 +751,16 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
+  analysis:
+    jobs:
       # Run code checks on PRs from forks
       - analyze_pr:
           filters:
             branches:
               only: /^pull\/.*$/
+
+      # Gather coverage on master
+      - js_coverage:
+          filters:
+            branches:
+              only: master
