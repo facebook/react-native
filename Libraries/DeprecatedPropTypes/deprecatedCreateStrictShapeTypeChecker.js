@@ -13,7 +13,7 @@
 const invariant = require('fbjs/lib/invariant');
 const merge = require('merge');
 
-function createStrictShapeTypeChecker(shapeTypes: {
+function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
   [key: string]: ReactPropsCheckType,
 }): ReactPropsChainableTypeChecker {
   function checkType(
@@ -83,4 +83,4 @@ function createStrictShapeTypeChecker(shapeTypes: {
   return chainedCheckType;
 }
 
-module.exports = createStrictShapeTypeChecker;
+module.exports = deprecatedCreateStrictShapeTypeChecker;

@@ -13,7 +13,7 @@ const PropTypes = require('prop-types');
 const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
-const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
 const invariant = require('fbjs/lib/invariant');
 
 const GROUP_TYPES_OPTIONS = {
@@ -44,7 +44,7 @@ type GetPhotosParams = {
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
-const getPhotosParamChecker = createStrictShapeTypeChecker({
+const getPhotosParamChecker = deprecatedCreateStrictShapeTypeChecker({
   /**
    * The number of photos wanted in reverse order of the photo application
    * (i.e. most recent first for SavedPhotos).
@@ -111,16 +111,16 @@ type GetPhotosReturn = Promise<{
 /**
  * Shape of the return value of the `getPhotos` function.
  */
-const getPhotosReturnChecker = createStrictShapeTypeChecker({
+const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
   edges: PropTypes.arrayOf(
     /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.66 was deployed. To see the error delete this
      * comment and run Flow. */
-    createStrictShapeTypeChecker({
-      node: createStrictShapeTypeChecker({
+    deprecatedCreateStrictShapeTypeChecker({
+      node: deprecatedCreateStrictShapeTypeChecker({
         type: PropTypes.string.isRequired,
         group_name: PropTypes.string.isRequired,
-        image: createStrictShapeTypeChecker({
+        image: deprecatedCreateStrictShapeTypeChecker({
           uri: PropTypes.string.isRequired,
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
@@ -128,7 +128,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
           playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
-        location: createStrictShapeTypeChecker({
+        location: deprecatedCreateStrictShapeTypeChecker({
           latitude: PropTypes.number,
           longitude: PropTypes.number,
           altitude: PropTypes.number,
@@ -138,7 +138,7 @@ const getPhotosReturnChecker = createStrictShapeTypeChecker({
       }).isRequired,
     }),
   ).isRequired,
-  page_info: createStrictShapeTypeChecker({
+  page_info: deprecatedCreateStrictShapeTypeChecker({
     has_next_page: PropTypes.bool.isRequired,
     start_cursor: PropTypes.string,
     end_cursor: PropTypes.string,
