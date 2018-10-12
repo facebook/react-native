@@ -201,12 +201,12 @@ aliases:
       ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
-    - &js-coverage
-      name: Test coverage
-      command: |
-        yarn test --coverage --maxWorkers=2
-        cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
-      when: always
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+    when: always
 
   - &download-dependencies-gradle
     name: Download Dependencies Using Gradle
