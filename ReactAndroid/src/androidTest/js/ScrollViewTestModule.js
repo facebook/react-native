@@ -36,46 +36,44 @@ class Item extends React.Component {
   }
 }
 
-class ScrollViewTestApp extends React.Component {
-  constructor() {
-    super();
-    this.scrollView = React.createRef();
+const getInitialState = function() {
+  var data = [];
+  for (var i = 0; i < NUM_ITEMS; i++) {
+    data[i] = {text: 'Item ' + i + '!'};
   }
-
-  getInitialState = () => {
-    var data = [];
-    for (var i = 0; i < NUM_ITEMS; i++) {
-      data[i] = {text: 'Item ' + i + '!'};
-    }
-    return {
-      data: data,
-    };
+  return {
+    data: data,
   };
+};
 
-  onScroll = e => {
-    ScrollListener.onScroll(
-      e.nativeEvent.contentOffset.x,
-      e.nativeEvent.contentOffset.y,
-    );
-  };
+const onScroll = function(e) {
+  ScrollListener.onScroll(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
+};
 
-  onItemPress = itemNumber => {
-    ScrollListener.onItemPress(itemNumber);
-  };
+const onScrollBeginDrag = function(e) {
+  ScrollListener.onScrollBeginDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
+};
 
-  onScrollBeginDrag = e => {
-    ScrollListener.onScrollBeginDrag(
-      e.nativeEvent.contentOffset.x,
-      e.nativeEvent.contentOffset.y,
-    );
-  };
+const onScrollEndDrag = function(e) {
+  ScrollListener.onScrollEndDrag(
+    e.nativeEvent.contentOffset.x,
+    e.nativeEvent.contentOffset.y,
+  );
+};
 
-  onScrollEndDrag = e => {
-    ScrollListener.onScrollEndDrag(
-      e.nativeEvent.contentOffset.x,
-      e.nativeEvent.contentOffset.y,
-    );
-  };
+const onItemPress = function(itemNumber) {
+  ScrollListener.onItemPress(itemNumber);
+};
+
+class ScrollViewTestApp extends React.Component {
+  scrollView = React.createRef();
+  state = getInitialState();
 
   scrollTo = (destX, destY) => {
     this.scrollView.scrollTo(destY, destX);
@@ -87,14 +85,14 @@ class ScrollViewTestApp extends React.Component {
       <Item
         key={index}
         text={item.text}
-        onPress={this.onItemPress.bind(this, index)}
+        onPress={onItemPress.bind(this, index)}
       />
     ));
     return (
       <ScrollView
-        onScroll={this.onScroll}
-        onScrollBeginDrag={this.onScrollBeginDrag}
-        onScrollEndDrag={this.onScrollEndDrag}
+        onScroll={onScroll}
+        onScrollBeginDrag={onScrollBeginDrag}
+        onScrollEndDrag={onScrollEndDrag}
         ref={this.scrollView}>
         {children}
       </ScrollView>
@@ -103,31 +101,8 @@ class ScrollViewTestApp extends React.Component {
 }
 
 class HorizontalScrollViewTestApp extends React.Component {
-  constructor() {
-    super();
-    this.scrollView = React.createRef();
-  }
-
-  getInitialState = () => {
-    var data = [];
-    for (var i = 0; i < NUM_ITEMS; i++) {
-      data[i] = {text: 'Item ' + i + '!'};
-    }
-    return {
-      data: data,
-    };
-  };
-
-  onScroll = e => {
-    ScrollListener.onScroll(
-      e.nativeEvent.contentOffset.x,
-      e.nativeEvent.contentOffset.y,
-    );
-  };
-
-  onItemPress = itemNumber => {
-    ScrollListener.onItemPress(itemNumber);
-  };
+  scrollView = React.createRef();
+  state = getInitialState();
 
   scrollTo = (destX, destY) => {
     this.scrollView.scrollTo(destY, destX);
@@ -139,14 +114,11 @@ class HorizontalScrollViewTestApp extends React.Component {
       <Item
         key={index}
         text={item.text}
-        onPress={this.onItemPress.bind(this, index)}
+        onPress={onItemPress.bind(this, index)}
       />
     ));
     return (
-      <ScrollView
-        horizontal={true}
-        onScroll={this.onScroll}
-        ref={this.scrollView}>
+      <ScrollView horizontal={true} onScroll={onScroll} ref={this.scrollView}>
         {children}
       </ScrollView>
     );
