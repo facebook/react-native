@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   hidden: {
-    height: 0,
+    height: 1, // UIWebView does not finish loading when 100% hidden; see https://github.com/facebook/react-native/issues/5974
     flex: 0, // disable 'flex:1' when hiding a View
   },
   loadingView: {
