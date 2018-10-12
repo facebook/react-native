@@ -299,7 +299,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (_messagingEnabled) {
     #if RCT_DEV
     // See isNative in lodash
-    NSString *testPostMessageNative = @"String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+    NSString *testPostMessageNative = @"RegExp('^'+String(Object.prototype.toString).replace(/[.*+?^${}()|[\]\/\\]/g, '\\$&').replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$').test(String(window.postMessage))";
     BOOL postMessageIsNative = [
       [webView stringByEvaluatingJavaScriptFromString:testPostMessageNative]
       isEqualToString:@"true"

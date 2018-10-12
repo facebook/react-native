@@ -344,7 +344,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (messagingEnabled) {
         if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
           // See isNative in lodash
-          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+          String testPostMessageNative = "RegExp('^'+String(Object.prototype.toString).replace(/[.*+?^${}()|[\\]\\/\\\\]/g, '\\\\$&').replace(/toString|(function).*?(?=\\\\\\()| for .+?(?=\\\\\\])/g, '$1.*?') + '$').test(String(window.postMessage))";
           evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String value) {
