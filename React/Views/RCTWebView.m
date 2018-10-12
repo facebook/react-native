@@ -28,6 +28,7 @@ static NSString *const kPostMessageHost = @"postMessage";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
 @property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 @property (nonatomic, copy) RCTDirectEventBlock onMessage;
+@property (nonatomic, copy) RCTDirectEventBlock onScroll;
 
 @end
 
@@ -50,6 +51,7 @@ static NSString *const kPostMessageHost = @"postMessage";
     _contentInset = UIEdgeInsetsZero;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
+    _webView.scrollView.delegate = self;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -58,6 +60,32 @@ static NSString *const kPostMessageHost = @"postMessage";
     [self addSubview:_webView];
   }
   return self;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  NSDictionary *event = @{
+    @"contentOffset": @{
+        @"x": @(scrollView.contentOffset.x),
+        @"y": @(scrollView.contentOffset.y)
+        },
+    @"contentInset": @{
+        @"top": @(scrollView.contentInset.top),
+        @"left": @(scrollView.contentInset.left),
+        @"bottom": @(scrollView.contentInset.bottom),
+        @"right": @(scrollView.contentInset.right)
+        },
+    @"contentSize": @{
+        @"width": @(scrollView.contentSize.width),
+        @"height": @(scrollView.contentSize.height)
+        },
+    @"layoutMeasurement": @{
+        @"width": @(scrollView.frame.size.width),
+        @"height": @(scrollView.frame.size.height)
+        },
+    @"zoomScale": @(scrollView.zoomScale ?: 1),
+    };
+  _onScroll(event);
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
