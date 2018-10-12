@@ -28,7 +28,6 @@ type State = {|
 |};
 class TimersTest extends React.Component<Props, State> {
   _nextTest = () => {};
-  _interval = -1;
   _timeoutID: ?TimeoutID = null;
   // $FlowFixMe
   _intervalId: ?IntervalID = -1;
