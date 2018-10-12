@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include <string>
+#include <limits.h>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace facebook {
