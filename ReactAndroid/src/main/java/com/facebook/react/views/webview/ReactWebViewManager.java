@@ -45,6 +45,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.ContentSizeChangeEvent;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
+import com.facebook.react.views.scroll.OnScrollDispatchHelper;
 import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
 import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
@@ -59,6 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -246,6 +250,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     protected @Nullable String injectedJS;
     protected boolean messagingEnabled = false;
     protected @Nullable ReactWebViewClient mReactWebViewClient;
+    private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
     protected class ReactWebViewBridge {
       ReactWebView mContext;
@@ -366,6 +371,26 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void onMessage(String message) {
       dispatchEvent(this, new TopMessageEvent(this.getId(), message));
+    }
+
+    protected void onScrollChanged(int x, int y, int oldX, int oldY) {
+      super.onScrollChanged(x, y, oldX, oldY);
+
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+        ScrollEvent event = ScrollEvent.obtain(
+                this.getId(),
+                ScrollEventType.SCROLL,
+                x,
+                y,
+                mOnScrollDispatchHelper.getXFlingVelocity(),
+                mOnScrollDispatchHelper.getYFlingVelocity(),
+                this.computeHorizontalScrollRange(),
+                this.computeVerticalScrollRange(),
+                this.getWidth(),
+                this.getHeight());
+
+        dispatchEvent(this, event);
+      }
     }
 
     protected void cleanupCallbacksAndDestroy() {
