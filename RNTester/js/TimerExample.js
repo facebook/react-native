@@ -11,7 +11,6 @@
 'use strict';
 
 var React = require('react');
-var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
 var {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
 var RNTesterButton = require('./RNTesterButton');
@@ -117,26 +116,29 @@ class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-var TimerTester = createReactClass({
-  displayName: 'TimerTester',
+type TimerTesterProps = $ReadOnly<{|
+  dt?: number,
+  type: string,
+|}>;
 
-  _ii: 0,
-  _iters: 0,
-  _start: 0,
-  _timerId: (null: ?TimeoutID),
-  _rafId: (null: ?AnimationFrameID),
-  _intervalId: (null: ?IntervalID),
-  _immediateId: (null: ?Object),
-  _timerFn: (null: ?() => any),
+class TimerTester extends React.Component<TimerTesterProps> {
+  _ii = 0;
+  _iters = 0;
+  _start = 0;
+  _timerId: ?TimeoutID = null;
+  _rafId: ?AnimationFrameID = null;
+  _intervalId: ?IntervalID = null;
+  _immediateId: ?Object = null;
+  _timerFn: ?() => any = null;
 
-  render: function() {
+  render() {
     var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
       <RNTesterButton onPress={this._run}>
         Measure: {this.props.type}({args}) - {this._ii || 0}
       </RNTesterButton>
     );
-  },
+  }
 
   componentWillUnmount() {
     if (this._timerId != null) {
@@ -154,18 +156,18 @@ var TimerTester = createReactClass({
     if (this._intervalId != null) {
       clearInterval(this._intervalId);
     }
-  },
+  }
 
-  _run: function() {
+  _run = () => {
     if (!this._start) {
       var d = new Date();
       this._start = d.getTime();
       this._iters = 100;
       this._ii = 0;
       if (this.props.type === 'setTimeout') {
-        if (this.props.dt < 1) {
+        if (this.props.dt !== undefined && this.props.dt < 1) {
           this._iters = 5000;
-        } else if (this.props.dt > 20) {
+        } else if (this.props.dt !== undefined && this.props.dt > 20) {
           this._iters = 10;
         }
         this._timerFn = () => {
@@ -220,9 +222,9 @@ var TimerTester = createReactClass({
     if (this._timerFn) {
       this._timerId = this._timerFn();
     }
-  },
+  };
 
-  clear: function() {
+  clear = () => {
     if (this._intervalId != null) {
       clearInterval(this._intervalId);
       // Configure things so we can do a final run to update UI and reset state.
@@ -230,8 +232,8 @@ var TimerTester = createReactClass({
       this._iters = this._ii;
       this._run();
     }
-  },
-});
+  };
+}
 
 exports.framework = 'React';
 exports.title = 'Timers, TimerMixin';
