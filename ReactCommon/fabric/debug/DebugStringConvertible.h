@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <climits>
 #include <memory>
 #include <string>
 #include <vector>
