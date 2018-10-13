@@ -25,7 +25,7 @@ const TimersTest = createReactClass({
   _rafIDs: ([]: Array<AnimationFrameID>),
 
   _nextTest: () => {},
-  _interval: -1,
+  _interval: (null: ?IntervalID),
 
   getInitialState() {
     return {
@@ -45,7 +45,7 @@ const TimersTest = createReactClass({
     this._intervalIDs = [];
     this._immediateIDs.forEach(clearImmediate);
     this._immediateIDs = [];
-    this._rafIs.forEach(cancelAnimationFrame);
+    this._rafIDs.forEach(cancelAnimationFrame);
     this._rafIDs = [];
   },
 
@@ -164,49 +164,65 @@ const TimersTest = createReactClass({
     );
   },
 
-  _setTimeout: function(fn: () => void, ms?: number): void {
+  _setTimeout: function(fn: () => void, ms?: number): TimeoutID {
     const timeoutID = setTimeout(() => {
       this._timeoutIDs.splice(this._timeoutIDs.indexOf(timeoutID));
       fn();
     }, ms);
     this._timeoutIDs.push(timeoutID);
+    return timeoutID;
   },
 
-  _setInterval: function(fn: () => void, ms?: number): void {
+  _setInterval: function(fn: () => void, ms?: number): IntervalID {
     const intervalID = setInterval(() => {
       this._intervalIDs.splice(this._intervalIDs.indexOf(intervalID));
       fn();
     }, ms);
     this._intervalIDs.push(intervalID);
+    return intervalID;
   },
 
-  _setImmediate: function(fn: () => void): void {
+  _setImmediate: function(fn: () => void): Object {
     const immediateID = setImmediate(() => {
       this._immediateIDs.splice(this._immediateIDs.indexOf(immediateID));
       fn();
     });
     this._immediateIDs.push(immediateID);
+    return immediateID;
   },
 
-  _requestAnimationFrame: function(fn: () => void): void {
+  _requestAnimationFrame: function(fn: () => void): AnimationFrameID {
     const rafID = requestAnimationFrame(() => {
       this._rafIDs.splice(this._rafIDs.indexOf(rafID));
       fn();
     });
     this._rafIDs.push(rafID);
+    return rafID;
   },
 
-  _clearTimeout: function(timeoutID: TimeoutID) {
+  _clearTimeout: function(timeoutID: ?TimeoutID) {
+    if (timeoutID == null) {
+      return;
+    }
+
     clearTimeout(timeoutID);
     this._timeoutIDs = this._timeoutIDs.filter(id => id !== timeoutID);
   },
 
-  _clearInterval: function(intervalID: IntervalID) {
+  _clearInterval: function(intervalID: ?IntervalID) {
+    if (intervalID == null) {
+      return;
+    }
+
     clearInterval(intervalID);
     this._intervalIDs = this._intervalIDs.filter(id => id !== intervalID);
   },
 
-  _cancelAnimationFrame: function(rafID: AnimationFrameID) {
+  _cancelAnimationFrame: function(rafID: ?AnimationFrameID) {
+    if (rafID == null) {
+      return;
+    }
+
     cancelAnimationFrame(rafID);
     this._rafIDs = this._rafIDs.filter(id => id !== rafID);
   },
