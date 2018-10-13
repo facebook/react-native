@@ -20,6 +20,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView
 {
   UIColor *_backgroundColor;
+  CALayer *_borderLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -48,6 +49,10 @@ using namespace facebook::react;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+
+  if (_borderLayer) {
+    _borderLayer.frame = self.layer.bounds;
+  }
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
@@ -346,8 +351,11 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     );
 
   if (useCoreAnimationBorderRendering) {
-    layer.contents = nil;
-    layer.needsDisplayOnBoundsChange = NO;
+    if (_borderLayer) {
+      [_borderLayer removeFromSuperlayer];
+      _borderLayer = nil;
+    }
+
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     layer.borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
@@ -355,6 +363,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     _contentView.layer.masksToBounds = YES;
   } else {
+    if (!_borderLayer) {
+      _borderLayer = [[CALayer alloc] init];
+      _borderLayer.zPosition = -1024.0f;
+      _borderLayer.frame = layer.bounds;
+      _borderLayer.magnificationFilter = kCAFilterNearest;
+      [layer addSublayer:_borderLayer];
+    }
+
     layer.backgroundColor = nil;
     layer.borderWidth = 0;
     layer.borderColor = nil;
@@ -373,8 +389,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     );
 
     if (image == nil) {
-      layer.contents = nil;
-      layer.needsDisplayOnBoundsChange = NO;
+      _borderLayer.contents = nil;
     } else {
       CGSize imageSize = image.size;
       UIEdgeInsets imageCapInsets = image.capInsets;
@@ -383,16 +398,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
         CGSize {(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}
       };
 
-      layer.contents = (id)image.CGImage;
-      layer.contentsScale = image.scale;
-      layer.needsDisplayOnBoundsChange = YES;
-      layer.magnificationFilter = kCAFilterNearest;
+      _borderLayer.contents = (id)image.CGImage;
+      _borderLayer.contentsScale = image.scale;
 
       const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
-        layer.contentsCenter = contentsCenter;
+        _borderLayer.contentsCenter = contentsCenter;
       } else {
-        layer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
+        _borderLayer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
       }
     }
 
@@ -420,10 +433,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
-
-  // After updating `layer`'s parameters we have to redraw on top of it
-  // all custom content (calling `drawRect:` implemented in subclasses).
-  [layer setNeedsDisplay];
 }
 
 #pragma mark - Accessibility
