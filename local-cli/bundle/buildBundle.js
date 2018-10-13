@@ -11,7 +11,6 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-/* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 
 /* $FlowFixMe(site=react_native_oss) */

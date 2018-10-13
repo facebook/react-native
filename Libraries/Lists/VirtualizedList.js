@@ -947,7 +947,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
-      // $FlowFixMe Invalid prop usage
       {
         ref: this._captureScrollRef,
       },
