@@ -1148,7 +1148,7 @@ var ContextProvider = 12;
 var ForwardRef = 13;
 var ForwardRefLazy = 14;
 var Profiler = 15;
-var PlaceholderComponent = 16;
+var SuspenseComponent = 16;
 var PureComponent = 17;
 var PureComponentLazy = 18;
 
@@ -2656,9 +2656,7 @@ var REACT_CONCURRENT_MODE_TYPE = hasSymbol
 var REACT_FORWARD_REF_TYPE = hasSymbol
   ? Symbol.for("react.forward_ref")
   : 0xead0;
-var REACT_PLACEHOLDER_TYPE = hasSymbol
-  ? Symbol.for("react.placeholder")
-  : 0xead1;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for("react.suspense") : 0xead1;
 var REACT_PURE_TYPE = hasSymbol ? Symbol.for("react.pure") : 0xead3;
 
 var MAYBE_ITERATOR_SYMBOL = typeof Symbol === "function" && Symbol.iterator;
@@ -2687,6 +2685,14 @@ function getResultFromResolvedThenable(thenable) {
 
 function refineResolvedThenable(thenable) {
   return thenable._reactStatus === Resolved ? thenable._reactResult : null;
+}
+
+function getWrappedName(outerType, innerType, wrapperName) {
+  var functionName = innerType.displayName || innerType.name || "";
+  return (
+    outerType.displayName ||
+    (functionName !== "" ? wrapperName + "(" + functionName + ")" : wrapperName)
+  );
 }
 
 function getComponentName(type) {
@@ -2720,8 +2726,8 @@ function getComponentName(type) {
       return "Profiler";
     case REACT_STRICT_MODE_TYPE:
       return "StrictMode";
-    case REACT_PLACEHOLDER_TYPE:
-      return "Placeholder";
+    case REACT_SUSPENSE_TYPE:
+      return "Suspense";
   }
   if (typeof type === "object") {
     switch (type.$$typeof) {
@@ -2730,14 +2736,9 @@ function getComponentName(type) {
       case REACT_PROVIDER_TYPE:
         return "Context.Provider";
       case REACT_FORWARD_REF_TYPE:
-        var renderFn = type.render;
-        var functionName = renderFn.displayName || renderFn.name || "";
-        return (
-          type.displayName ||
-          (functionName !== ""
-            ? "ForwardRef(" + functionName + ")"
-            : "ForwardRef")
-        );
+        return getWrappedName(type, type.render, "ForwardRef");
+      case REACT_PURE_TYPE:
+        return getWrappedName(type, type.render, "Pure");
     }
     if (typeof type.then === "function") {
       var thenable = type;
@@ -4144,7 +4145,6 @@ function setCurrentPhase(lifeCyclePhase) {
 var debugRenderPhaseSideEffects = false;
 var debugRenderPhaseSideEffectsForStrictMode = false;
 var enableUserTimingAPI = true;
-var enableSuspense = false;
 var warnAboutDeprecatedLifecycles = false;
 var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 var enableProfilerTimer = true;
@@ -4422,7 +4422,10 @@ function stopFailedWorkTimer(fiber) {
       return;
     }
     fiber._debugIsCurrentlyTiming = false;
-    var warning = "An error was thrown inside this error boundary";
+    var warning =
+      fiber.tag === SuspenseComponent
+        ? "Rendering was suspended"
+        : "An error was thrown inside this error boundary";
     endFiberMark(fiber, null, warning);
   }
 }
@@ -5344,8 +5347,8 @@ function createFiberFromElement(element, mode, expirationTime) {
         break;
       case REACT_PROFILER_TYPE:
         return createFiberFromProfiler(pendingProps, mode, expirationTime, key);
-      case REACT_PLACEHOLDER_TYPE:
-        fiberTag = PlaceholderComponent;
+      case REACT_SUSPENSE_TYPE:
+        fiberTag = SuspenseComponent;
         break;
       default: {
         if (typeof type === "object" && type !== null) {
@@ -10224,6 +10227,7 @@ function updatePureComponent(
   renderExpirationTime
 ) {
   var render = Component.render;
+  var ref = workInProgress.ref;
 
   if (
     current$$1 !== null &&
@@ -10234,7 +10238,10 @@ function updatePureComponent(
     // Default to shallow comparison
     var compare = Component.compare;
     compare = compare !== null ? compare : shallowEqual;
-    if (compare(prevProps, nextProps)) {
+    if (
+      workInProgress.ref === current$$1.ref &&
+      compare(prevProps, nextProps)
+    ) {
       return bailoutOnAlreadyFinishedWork(
         current$$1,
         workInProgress,
@@ -10249,7 +10256,7 @@ function updatePureComponent(
   {
     ReactCurrentOwner$3.current = workInProgress;
     setCurrentPhase("render");
-    nextChildren = render(nextProps);
+    nextChildren = render(nextProps, ref);
     setCurrentPhase(null);
   }
 
@@ -10689,11 +10696,15 @@ function mountIndeterminateComponent(
     Component !== null &&
     typeof Component.then === "function"
   ) {
+    // We can't start a User Timing measurement with correct label yet.
+    // Cancel and resume right after we know the tag.
+    cancelWorkTimer(workInProgress);
     Component = readLazyComponentType(Component);
     var resolvedTag = (workInProgress.tag = resolveLazyComponentTag(
       workInProgress,
       Component
     ));
+    startWorkTimer(workInProgress);
     var resolvedProps = resolveDefaultProps(Component, props);
     var child = void 0;
     switch (resolvedTag) {
@@ -10904,79 +10915,72 @@ function mountIndeterminateComponent(
   }
 }
 
-function updatePlaceholderComponent(
+function updateSuspenseComponent(
   current$$1,
   workInProgress,
   renderExpirationTime
 ) {
-  if (enableSuspense) {
-    var nextProps = workInProgress.pendingProps;
+  var nextProps = workInProgress.pendingProps;
 
-    // Check if we already attempted to render the normal state. If we did,
-    // and we timed out, render the placeholder state.
-    var alreadyCaptured = (workInProgress.effectTag & DidCapture) === NoEffect;
+  // Check if we already attempted to render the normal state. If we did,
+  // and we timed out, render the placeholder state.
+  var alreadyCaptured = (workInProgress.effectTag & DidCapture) === NoEffect;
 
-    var nextDidTimeout = void 0;
-    if (current$$1 !== null && workInProgress.updateQueue !== null) {
-      // We're outside strict mode. Something inside this Placeholder boundary
-      // suspended during the last commit. Switch to the placholder.
-      workInProgress.updateQueue = null;
-      nextDidTimeout = true;
-    } else {
-      nextDidTimeout = !alreadyCaptured;
-    }
-
-    if ((workInProgress.mode & StrictMode) !== NoEffect) {
-      if (nextDidTimeout) {
-        // If the timed-out view commits, schedule an update effect to record
-        // the committed time.
-        workInProgress.effectTag |= Update;
-      } else {
-        // The state node points to the time at which placeholder timed out.
-        // We can clear it once we switch back to the normal children.
-        workInProgress.stateNode = null;
-      }
-    }
-
-    // If the `children` prop is a function, treat it like a render prop.
-    // TODO: This is temporary until we finalize a lower level API.
-    var children = nextProps.children;
-    var nextChildren = void 0;
-    if (typeof children === "function") {
-      nextChildren = children(nextDidTimeout);
-    } else {
-      nextChildren = nextDidTimeout ? nextProps.fallback : children;
-    }
-
-    if (
-      current$$1 !== null &&
-      nextDidTimeout !== workInProgress.memoizedState
-    ) {
-      // We're about to switch from the placeholder children to the normal
-      // children, or vice versa. These are two different conceptual sets that
-      // happen to be stored in the same set. Call this special function to
-      // force the new set not to match with the current set.
-      // TODO: The proper way to model this is by storing each set separately.
-      forceUnmountCurrentAndReconcile(
-        current$$1,
-        workInProgress,
-        nextChildren,
-        renderExpirationTime
-      );
-    } else {
-      reconcileChildren(
-        current$$1,
-        workInProgress,
-        nextChildren,
-        renderExpirationTime
-      );
-    }
-    workInProgress.memoizedProps = nextProps;
-    workInProgress.memoizedState = nextDidTimeout;
-    return workInProgress.child;
+  var nextDidTimeout = void 0;
+  if (current$$1 !== null && workInProgress.updateQueue !== null) {
+    // We're outside strict mode. Something inside this Placeholder boundary
+    // suspended during the last commit. Switch to the placholder.
+    workInProgress.updateQueue = null;
+    nextDidTimeout = true;
   } else {
-    return null;
+    nextDidTimeout = !alreadyCaptured;
   }
+
+  if ((workInProgress.mode & StrictMode) !== NoEffect) {
+    if (nextDidTimeout) {
+      // If the timed-out view commits, schedule an update effect to record
+      // the committed time.
+      workInProgress.effectTag |= Update;
+    } else {
+      // The state node points to the time at which placeholder timed out.
+      // We can clear it once we switch back to the normal children.
+      workInProgress.stateNode = null;
+    }
+  }
+
+  // If the `children` prop is a function, treat it like a render prop.
+  // TODO: This is temporary until we finalize a lower level API.
+  var children = nextProps.children;
+  var nextChildren = void 0;
+  if (typeof children === "function") {
+    nextChildren = children(nextDidTimeout);
+  } else {
+    nextChildren = nextDidTimeout ? nextProps.fallback : children;
+  }
+
+  if (current$$1 !== null && nextDidTimeout !== workInProgress.memoizedState) {
+    // We're about to switch from the placeholder children to the normal
+    // children, or vice versa. These are two different conceptual sets that
+    // happen to be stored in the same set. Call this special function to
+    // force the new set not to match with the current set.
+    // TODO: The proper way to model this is by storing each set separately.
+    forceUnmountCurrentAndReconcile(
+      current$$1,
+      workInProgress,
+      nextChildren,
+      renderExpirationTime
+    );
+  } else {
+    reconcileChildren(
+      current$$1,
+      workInProgress,
+      nextChildren,
+      renderExpirationTime
+    );
+  }
+  workInProgress.memoizedProps = nextProps;
+  workInProgress.memoizedState = nextDidTimeout;
+  return workInProgress.child;
 }
 
 function updatePortalComponent(
@@ -11075,12 +11079,35 @@ function updateContextProvider(
   return workInProgress.child;
 }
 
+var hasWarnedAboutUsingContextAsConsumer = false;
+
 function updateContextConsumer(
   current$$1,
   workInProgress,
   renderExpirationTime
 ) {
   var context = workInProgress.type;
+  // The logic below for Context differs depending on PROD or DEV mode. In
+  // DEV mode, we create a separate object for Context.Consumer that acts
+  // like a proxy to Context. This proxy object adds unnecessary code in PROD
+  // so we use the old behaviour (Context.Consumer references Context) to
+  // reduce size and overhead. The separate object references context via
+  // a property called "_context", which also gives us the ability to check
+  // in DEV mode if this property exists or not and warn if it does not.
+  {
+    if (context._context === undefined) {
+      if (!hasWarnedAboutUsingContextAsConsumer) {
+        hasWarnedAboutUsingContextAsConsumer = true;
+        warning$1(
+          false,
+          "Rendering <Context> directly is not supported and will be removed in " +
+            "a future major release. Did you mean to render <Context.Consumer> instead?"
+        );
+      }
+    } else {
+      context = context._context;
+    }
+  }
   var newProps = workInProgress.pendingProps;
   var render = newProps.children;
 
@@ -11320,8 +11347,8 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
       );
     case HostText:
       return updateHostText(current$$1, workInProgress);
-    case PlaceholderComponent:
-      return updatePlaceholderComponent(
+    case SuspenseComponent:
+      return updateSuspenseComponent(
         current$$1,
         workInProgress,
         renderExpirationTime
@@ -11820,7 +11847,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
     case ForwardRef:
     case ForwardRefLazy:
       break;
-    case PlaceholderComponent:
+    case SuspenseComponent:
       break;
     case Fragment:
       break;
@@ -12228,22 +12255,20 @@ function commitLifeCycles(
       }
       return;
     }
-    case PlaceholderComponent: {
-      if (enableSuspense) {
-        if ((finishedWork.mode & StrictMode) === NoEffect) {
-          // In loose mode, a placeholder times out by scheduling a synchronous
-          // update in the commit phase. Use `updateQueue` field to signal that
-          // the Timeout needs to switch to the placeholder. We don't need an
-          // entire queue. Any non-null value works.
-          // $FlowFixMe - Intentionally using a value other than an UpdateQueue.
-          finishedWork.updateQueue = emptyObject$1;
-          scheduleWork(finishedWork, Sync);
-        } else {
-          // In strict mode, the Update effect is used to record the time at
-          // which the placeholder timed out.
-          var currentTime = requestCurrentTime();
-          finishedWork.stateNode = { timedOutAt: currentTime };
-        }
+    case SuspenseComponent: {
+      if ((finishedWork.mode & StrictMode) === NoEffect) {
+        // In loose mode, a placeholder times out by scheduling a synchronous
+        // update in the commit phase. Use `updateQueue` field to signal that
+        // the Timeout needs to switch to the placeholder. We don't need an
+        // entire queue. Any non-null value works.
+        // $FlowFixMe - Intentionally using a value other than an UpdateQueue.
+        finishedWork.updateQueue = emptyObject$1;
+        scheduleWork(finishedWork, Sync);
+      } else {
+        // In strict mode, the Update effect is used to record the time at
+        // which the placeholder timed out.
+        var currentTime = requestCurrentTime();
+        finishedWork.stateNode = { timedOutAt: currentTime };
       }
       return;
     }
@@ -12732,7 +12757,7 @@ function commitWork(current$$1, finishedWork) {
     case Profiler: {
       return;
     }
-    case PlaceholderComponent: {
+    case SuspenseComponent: {
       return;
     }
     default: {
@@ -12832,7 +12857,6 @@ function throwException(
   sourceFiber.firstEffect = sourceFiber.lastEffect = null;
 
   if (
-    enableSuspense &&
     value !== null &&
     typeof value === "object" &&
     typeof value.then === "function"
@@ -12849,7 +12873,7 @@ function throwException(
     var earliestTimeoutMs = -1;
     var startTimeMs = -1;
     do {
-      if (_workInProgress.tag === PlaceholderComponent) {
+      if (_workInProgress.tag === SuspenseComponent) {
         var current = _workInProgress.alternate;
         if (
           current !== null &&
@@ -12867,7 +12891,7 @@ function throwException(
           // Do not search any further.
           break;
         }
-        var timeoutPropMs = _workInProgress.pendingProps.delayMs;
+        var timeoutPropMs = _workInProgress.pendingProps.maxDuration;
         if (typeof timeoutPropMs === "number") {
           if (timeoutPropMs <= 0) {
             earliestTimeoutMs = 0;
@@ -12882,10 +12906,10 @@ function throwException(
       _workInProgress = _workInProgress.return;
     } while (_workInProgress !== null);
 
-    // Schedule the nearest Placeholder to re-render the timed out view.
+    // Schedule the nearest Suspense to re-render the timed out view.
     _workInProgress = returnFiber;
     do {
-      if (_workInProgress.tag === PlaceholderComponent) {
+      if (_workInProgress.tag === SuspenseComponent) {
         var didTimeout = _workInProgress.memoizedState;
         if (!didTimeout) {
           // Found the nearest boundary.
@@ -12912,10 +12936,10 @@ function throwException(
           // If the boundary is outside of strict mode, we should *not* suspend
           // the commit. Pretend as if the suspended component rendered null and
           // keep rendering. In the commit phase, we'll schedule a subsequent
-          // synchronous update to re-render the Placeholder.
+          // synchronous update to re-render the Suspense.
           //
           // Note: It doesn't matter whether the component that suspended was
-          // inside a strict mode tree. If the Placeholder is outside of it, we
+          // inside a strict mode tree. If the Suspense is outside of it, we
           // should *not* suspend the commit.
           if ((_workInProgress.mode & StrictMode) === NoEffect) {
             _workInProgress.effectTag |= Update;
@@ -13105,7 +13129,7 @@ function unwindWork(workInProgress, renderExpirationTime) {
       popHostContext(workInProgress);
       return null;
     }
-    case PlaceholderComponent: {
+    case SuspenseComponent: {
       var _effectTag3 = workInProgress.effectTag;
       if (_effectTag3 & ShouldCapture) {
         workInProgress.effectTag = (_effectTag3 & ~ShouldCapture) | DidCapture;
@@ -14343,7 +14367,7 @@ function renderRoot(root, isYieldy, isExpired) {
     }
   }
 
-  if (enableSuspense && !isExpired && nextLatestAbsoluteTimeoutMs !== -1) {
+  if (!isExpired && nextLatestAbsoluteTimeoutMs !== -1) {
     // The tree was suspended.
     var _suspendedExpirationTime2 = expirationTime;
     markSuspendedPriorityLevel(root, _suspendedExpirationTime2);
@@ -14507,41 +14531,39 @@ function renderDidError() {
 }
 
 function retrySuspendedRoot(root, fiber, suspendedTime) {
-  if (enableSuspense) {
-    var retryTime = void 0;
+  var retryTime = void 0;
 
-    if (isPriorityLevelSuspended(root, suspendedTime)) {
-      // Ping at the original level
-      retryTime = suspendedTime;
+  if (isPriorityLevelSuspended(root, suspendedTime)) {
+    // Ping at the original level
+    retryTime = suspendedTime;
 
-      markPingedPriorityLevel(root, retryTime);
-    } else {
-      // Placeholder already timed out. Compute a new expiration time
-      var currentTime = requestCurrentTime();
-      retryTime = computeExpirationForFiber(currentTime, fiber);
-      markPendingPriorityLevel(root, retryTime);
+    markPingedPriorityLevel(root, retryTime);
+  } else {
+    // Suspense already timed out. Compute a new expiration time
+    var currentTime = requestCurrentTime();
+    retryTime = computeExpirationForFiber(currentTime, fiber);
+    markPendingPriorityLevel(root, retryTime);
+  }
+
+  // TODO: If the placeholder fiber has already rendered the primary children
+  // without suspending (that is, all of the promises have already resolved),
+  // we should not trigger another update here. One case this happens is when
+  // we are in sync mode and a single promise is thrown both on initial render
+  // and on update; we attach two .then(retrySuspendedRoot) callbacks and each
+  // one performs Sync work, rerendering the Suspense.
+
+  if ((fiber.mode & ConcurrentMode) !== NoContext) {
+    if (root === nextRoot && nextRenderExpirationTime === suspendedTime) {
+      // Received a ping at the same priority level at which we're currently
+      // rendering. Restart from the root.
+      nextRoot = null;
     }
+  }
 
-    // TODO: If the placeholder fiber has already rendered the primary children
-    // without suspending (that is, all of the promises have already resolved),
-    // we should not trigger another update here. One case this happens is when
-    // we are in sync mode and a single promise is thrown both on initial render
-    // and on update; we attach two .then(retrySuspendedRoot) callbacks and each
-    // one performs Sync work, rerendering the Placeholder.
-
-    if ((fiber.mode & ConcurrentMode) !== NoContext) {
-      if (root === nextRoot && nextRenderExpirationTime === suspendedTime) {
-        // Received a ping at the same priority level at which we're currently
-        // rendering. Restart from the root.
-        nextRoot = null;
-      }
-    }
-
-    scheduleWorkToRoot(fiber, retryTime);
-    var rootExpirationTime = root.expirationTime;
-    if (rootExpirationTime !== NoWork) {
-      requestWork(root, rootExpirationTime);
-    }
+  scheduleWorkToRoot(fiber, retryTime);
+  var rootExpirationTime = root.expirationTime;
+  if (rootExpirationTime !== NoWork) {
+    requestWork(root, rootExpirationTime);
   }
 }
 
@@ -14778,7 +14800,7 @@ function onSuspend(
   msUntilTimeout
 ) {
   root.expirationTime = rootExpirationTime;
-  if (enableSuspense && msUntilTimeout === 0 && !shouldYield()) {
+  if (msUntilTimeout === 0 && !shouldYield()) {
     // Don't wait an additional tick. Commit the tree immediately.
     root.pendingCommitExpirationTime = suspendedExpirationTime;
     root.finishedWork = finishedWork;
@@ -14796,17 +14818,15 @@ function onYield(root) {
 }
 
 function onTimeout(root, finishedWork, suspendedExpirationTime) {
-  if (enableSuspense) {
-    // The root timed out. Commit it.
-    root.pendingCommitExpirationTime = suspendedExpirationTime;
-    root.finishedWork = finishedWork;
-    // Read the current time before entering the commit phase. We can be
-    // certain this won't cause tearing related to batching of event updates
-    // because we're at the top of a timer event.
-    recomputeCurrentRendererTime();
-    currentSchedulerTime = currentRendererTime;
-    flushRoot(root, suspendedExpirationTime);
-  }
+  // The root timed out. Commit it.
+  root.pendingCommitExpirationTime = suspendedExpirationTime;
+  root.finishedWork = finishedWork;
+  // Read the current time before entering the commit phase. We can be
+  // certain this won't cause tearing related to batching of event updates
+  // because we're at the top of a timer event.
+  recomputeCurrentRendererTime();
+  currentSchedulerTime = currentRendererTime;
+  flushRoot(root, suspendedExpirationTime);
 }
 
 function onCommit(root, expirationTime) {
@@ -15144,7 +15164,7 @@ function performWorkOnRoot(root, expirationTime, isExpired) {
       // If this root previously suspended, clear its existing timeout, since
       // we're about to try rendering again.
       var timeoutHandle = root.timeoutHandle;
-      if (enableSuspense && timeoutHandle !== noTimeout) {
+      if (timeoutHandle !== noTimeout) {
         root.timeoutHandle = noTimeout;
         // $FlowFixMe Complains noTimeout is not a TimeoutID, despite the check above
         cancelTimeout(timeoutHandle);
@@ -15168,7 +15188,7 @@ function performWorkOnRoot(root, expirationTime, isExpired) {
       // If this root previously suspended, clear its existing timeout, since
       // we're about to try rendering again.
       var _timeoutHandle = root.timeoutHandle;
-      if (enableSuspense && _timeoutHandle !== noTimeout) {
+      if (_timeoutHandle !== noTimeout) {
         root.timeoutHandle = noTimeout;
         // $FlowFixMe Complains noTimeout is not a TimeoutID, despite the check above
         cancelTimeout(_timeoutHandle);
@@ -15324,9 +15344,11 @@ function flushInteractiveUpdates$1() {
 // Might add PROFILE later.
 
 var didWarnAboutNestedUpdates = void 0;
+var didWarnAboutFindNodeInStrictMode = void 0;
 
 {
   didWarnAboutNestedUpdates = false;
+  didWarnAboutFindNodeInStrictMode = {};
 }
 
 function getContextForSubtree(parentComponent) {
@@ -15442,6 +15464,64 @@ function findHostInstance$1(component) {
   return hostFiber.stateNode;
 }
 
+function findHostInstanceWithWarning$1(component, methodName) {
+  {
+    var fiber = get$1(component);
+    if (fiber === undefined) {
+      if (typeof component.render === "function") {
+        invariant(false, "Unable to find node on an unmounted component.");
+      } else {
+        invariant(
+          false,
+          "Argument appears to not be a ReactComponent. Keys: %s",
+          Object.keys(component)
+        );
+      }
+    }
+    var hostFiber = findCurrentHostFiber(fiber);
+    if (hostFiber === null) {
+      return null;
+    }
+    if (hostFiber.mode & StrictMode) {
+      var componentName = getComponentName(fiber.type) || "Component";
+      if (!didWarnAboutFindNodeInStrictMode[componentName]) {
+        didWarnAboutFindNodeInStrictMode[componentName] = true;
+        if (fiber.mode & StrictMode) {
+          warningWithoutStack$1(
+            false,
+            "%s is deprecated in StrictMode. " +
+              "%s was passed an instance of %s which is inside StrictMode. " +
+              "Instead, add a ref directly to the element you want to reference." +
+              "\n%s" +
+              "\n\nLearn more about using refs safely here:" +
+              "\nhttps://fb.me/react-strict-mode-find-node",
+            methodName,
+            methodName,
+            componentName,
+            getStackByFiberInDevAndProd(hostFiber)
+          );
+        } else {
+          warningWithoutStack$1(
+            false,
+            "%s is deprecated in StrictMode. " +
+              "%s was passed an instance of %s which renders StrictMode children. " +
+              "Instead, add a ref directly to the element you want to reference." +
+              "\n%s" +
+              "\n\nLearn more about using refs safely here:" +
+              "\nhttps://fb.me/react-strict-mode-find-node",
+            methodName,
+            methodName,
+            componentName,
+            getStackByFiberInDevAndProd(hostFiber)
+          );
+        }
+      }
+    }
+    return hostFiber.stateNode;
+  }
+  return findHostInstance$1(component);
+}
+
 function createContainer(containerInfo, isConcurrent, hydrate) {
   return createFiberRoot(containerInfo, isConcurrent, hydrate);
 }
@@ -15519,7 +15599,7 @@ function createPortal(
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.5.2";
+var ReactVersion = "16.6.0-alpha.8af6728";
 
 // Modules provided by RN:
 var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
@@ -16029,6 +16109,7 @@ var getInspectorDataForViewTag = void 0;
 
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 var findHostInstance = findHostInstance$1;
+var findHostInstanceWithWarning = findHostInstanceWithWarning$1;
 
 function findNodeHandle(componentOrHandle) {
   {
@@ -16062,7 +16143,14 @@ function findNodeHandle(componentOrHandle) {
   if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag) {
     return componentOrHandle.canonical._nativeTag;
   }
-  var hostInstance = findHostInstance(componentOrHandle);
+  var hostInstance = void 0;
+  {
+    hostInstance = findHostInstanceWithWarning(
+      componentOrHandle,
+      "findNodeHandle"
+    );
+  }
+
   if (hostInstance == null) {
     return hostInstance;
   }
