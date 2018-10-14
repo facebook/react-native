@@ -86,7 +86,12 @@ public class AccessibilityDelegateUtil {
 
   public static void setDelegate(final View view) {
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-    final AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
+    AccessibilityRole ar = null;
+    Object tag = view.getTag(R.id.accessibility_role);
+    if(tag != null){
+      ar = AccessibilityRole.fromValue(tag.toString());
+    }
+    final AccessibilityRole accessibilityRole = ar;
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view) &&
