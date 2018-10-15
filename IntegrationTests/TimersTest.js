@@ -166,7 +166,7 @@ const TimersTest = createReactClass({
 
   _setTimeout: function(fn: () => void, ms?: number): TimeoutID {
     const timeoutID = setTimeout(() => {
-      this._timeoutIDs.splice(this._timeoutIDs.indexOf(timeoutID));
+      this._timeoutIDs = this._timeoutIDs.filter(id => id !== timeoutID);
       fn();
     }, ms);
     this._timeoutIDs.push(timeoutID);
@@ -175,7 +175,6 @@ const TimersTest = createReactClass({
 
   _setInterval: function(fn: () => void, ms?: number): IntervalID {
     const intervalID = setInterval(() => {
-      this._intervalIDs.splice(this._intervalIDs.indexOf(intervalID));
       fn();
     }, ms);
     this._intervalIDs.push(intervalID);
@@ -184,7 +183,7 @@ const TimersTest = createReactClass({
 
   _setImmediate: function(fn: () => void): Object {
     const immediateID = setImmediate(() => {
-      this._immediateIDs.splice(this._immediateIDs.indexOf(immediateID));
+      this._immediateIDs = this._immediateIDs.filter(id => id !== immediateID);
       fn();
     });
     this._immediateIDs.push(immediateID);
@@ -193,7 +192,7 @@ const TimersTest = createReactClass({
 
   _requestAnimationFrame: function(fn: () => void): AnimationFrameID {
     const rafID = requestAnimationFrame(() => {
-      this._rafIDs.splice(this._rafIDs.indexOf(rafID));
+      this._rafIDs = this._rafIDs.filter(id => id !== rafID);
       fn();
     });
     this._rafIDs.push(rafID);
