@@ -336,7 +336,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (!NSEqualRanges(range, NSMakeRange(0, 0)) && _predictedText) {
     _predictedText = [_predictedText stringByReplacingCharactersInRange:range withString:text];
   } else {
-    _predictedText = text;
+    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
   }
 
   if (_onTextInput) {
