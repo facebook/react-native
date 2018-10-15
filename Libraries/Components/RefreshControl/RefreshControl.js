@@ -30,7 +30,7 @@ if (Platform.OS === 'android') {
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
-type NativeRefreshControlType = Class<NativeComponent<Props>>;
+type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
 
 const NativeRefreshControl: NativeRefreshControlType =
   Platform.OS === 'ios'
@@ -78,7 +78,7 @@ type AndroidProps = $ReadOnly<{|
   progressViewOffset?: ?number,
 |}>;
 
-type Props = $ReadOnly<{|
+export type RefreshControlProps = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
@@ -139,7 +139,7 @@ type Props = $ReadOnly<{|
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
-class RefreshControl extends React.Component<Props> {
+class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE = RefreshLayoutConsts.SIZE;
 
   _nativeRef: ?React.ElementRef<NativeRefreshControlType> = null;
@@ -149,7 +149,7 @@ class RefreshControl extends React.Component<Props> {
     this._lastNativeRefreshing = this.props.refreshing;
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: RefreshControlProps) {
     // RefreshControl is a controlled component so if the native refreshing
     // value doesn't match the current js refreshing prop update it to
     // the js value.
