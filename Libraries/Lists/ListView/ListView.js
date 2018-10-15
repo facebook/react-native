@@ -544,7 +544,10 @@ const ListView = createReactClass({
 
   _requestAnimationFrame: function(fn: () => void): void {
     const rafId = requestAnimationFrame(() => {
-      this._rafIds.splice(this._rafIds.indexOf(rafId));
+      const index = this._rafIds.indexOf(rafId);
+      if (index !== -1) {
+        this._rafIds.splice(index, 1);
+      }
       fn();
     });
     this._rafIds.push(rafId);
