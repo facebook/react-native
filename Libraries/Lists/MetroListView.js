@@ -29,7 +29,6 @@ type NormalProps = {
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
-  // $FlowFixMe - Something is a little off with the type Array<Item>
   sections?: ?Array<{key: string, data: Array<Item>}>,
 
   /**
