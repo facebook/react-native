@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 const {View} = ReactNative;
@@ -24,29 +23,38 @@ const reactViewHeight = 222;
 
 let finalState = false;
 
-const SizeFlexibilityUpdateTest = createReactClass({
-  displayName: 'SizeFlexibilityUpdateTest',
-  _subscription: (null: ?EmitterSubscription),
+type Props = $ReadOnly<{|
+  width: boolean,
+  height: boolean,
+  both: boolean,
+  none: boolean,
+|}>;
 
-  UNSAFE_componentWillMount: function() {
+class SizeFlexibilityUpdateTest extends React.Component<Props> {
+  _subscription: ?EmitterSubscription = null;
+
+  UNSAFE_componentWillMount() {
     this._subscription = RCTNativeAppEventEmitter.addListener(
       'rootViewDidChangeIntrinsicSize',
       this.rootViewDidChangeIntrinsicSize,
     );
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     if (this._subscription != null) {
       this._subscription.remove();
     }
-  },
+  }
 
-  markPassed: function() {
+  markPassed = () => {
     TestModule.markTestPassed(true);
     finalState = true;
-  },
+  };
 
-  rootViewDidChangeIntrinsicSize: function(intrinsicSize) {
+  rootViewDidChangeIntrinsicSize = (intrinsicSize: {
+    width: number,
+    height: number,
+  }) => {
     if (finalState) {
       // If a test reaches its final state, it is not expected to do anything more
       TestModule.markTestPassed(false);
@@ -89,13 +97,11 @@ const SizeFlexibilityUpdateTest = createReactClass({
         return;
       }
     }
-  },
+  };
 
   render() {
     return <View style={{height: reactViewHeight, width: reactViewWidth}} />;
-  },
-});
-
-SizeFlexibilityUpdateTest.displayName = 'SizeFlexibilityUpdateTest';
+  }
+}
 
 module.exports = SizeFlexibilityUpdateTest;
