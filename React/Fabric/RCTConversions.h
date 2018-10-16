@@ -12,8 +12,14 @@
 #import <fabric/graphics/Color.h>
 #import <fabric/graphics/Geometry.h>
 
-inline NSString *_Nullable RCTNSStringFromString(const std::string &string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
+NS_ASSUME_NONNULL_BEGIN
+
+inline NSString *RCTNSStringFromString(const std::string &string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
   return [NSString stringWithCString:string.c_str() encoding:encoding];
+}
+
+inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(const std::string &string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
+  return string.empty() ? nil : RCTNSStringFromString(string, encoding);
 }
 
 inline std::string RCTStringFromNSString(NSString *string, const NSStringEncoding &encoding = NSUTF8StringEncoding) {
@@ -103,3 +109,4 @@ inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
+NS_ASSUME_NONNULL_END
