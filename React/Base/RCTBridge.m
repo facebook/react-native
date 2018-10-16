@@ -44,8 +44,6 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return result;
 }
 
-void RCTFBQuickPerformanceLoggerConfigureHooks(__unused JSGlobalContextRef ctx) { }
-
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
@@ -272,11 +270,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
-- (id)jsBoundExtraModuleForClass:(Class)moduleClass
-{
-  return [self.batchedBridge jsBoundExtraModuleForClass:moduleClass];
-}
-
 - (void)reload
 {
   #if RCT_ENABLE_INSPECTOR
@@ -390,11 +383,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
-}
-
-- (JSGlobalContextRef)jsContextRef
-{
-  return [self.batchedBridge jsContextRef];
 }
 
 @end
