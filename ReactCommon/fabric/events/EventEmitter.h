@@ -55,8 +55,8 @@ class EventEmitter {
   /*
    * Indicates that an event can be delivered to `eventTarget`.
    * Callsite must acquire `DispatchMutex` to access those methods.
-   * The `setEnabled` operation is not guaranteed: the `EventEmitter` cannot
-   * be re-enabled after disabling; in this case, the method does nothing.
+   * The `setEnabled` operation is not guaranteed: sometimes `EventEmitter`
+   * can be re-enabled after disabling, sometimes not.
    */
   void setEnabled(bool enabled) const;
   bool getEnabled() const;
@@ -79,6 +79,7 @@ class EventEmitter {
 
  private:
   mutable SharedEventTarget eventTarget_;
+  mutable WeakEventTarget weakEventTarget_;
   Tag tag_;
   WeakEventDispatcher eventDispatcher_;
 };
