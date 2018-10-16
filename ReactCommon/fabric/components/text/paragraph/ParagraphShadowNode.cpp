@@ -16,8 +16,11 @@ const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getProps()->textAttributes);
+
     cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
-        getProps()->textAttributes, shared_from_this());
+        textAttributes, shared_from_this());
   }
 
   return cachedAttributedString_.value();

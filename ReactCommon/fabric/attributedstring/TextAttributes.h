@@ -27,6 +27,13 @@ using SharedTextAttributes = std::shared_ptr<const TextAttributes>;
 
 class TextAttributes : public DebugStringConvertible {
  public:
+  /*
+   * Returns TextAttribute object which has actual default attribute values
+   * (e.g. `foregroundColor = black`), in oppose to TextAttribute's default
+   * constructor which creates an object with nulled attributes.
+   */
+  static TextAttributes defaultTextAttributes();
+
 #pragma mark - Fields
 
   // Color
