@@ -49,11 +49,11 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
@@ -185,15 +185,20 @@ aliases:
     name: Lint code
     command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
-  - &run-flow-checks
-    name: Check for errors in code using Flow
-    command: yarn flow check
+  - &run-flow-checks-ios
+    name: Check for errors in code using Flow (iOS)
+    command: yarn flow-check-ios
+
+  - &run-flow-checks-android
+    name: Check for errors in code using Flow (Android)
+    command: yarn flow-check-android
 
   - &run-sanity-checks
     name: Sanity checks
     command: |
       ./scripts/circleci/check_license.sh
       ./scripts/circleci/check_cache.sh
+      ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
   - &download-dependencies-gradle
@@ -340,7 +345,7 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
@@ -377,7 +382,8 @@ jobs:
           at: ~/react-native
 
       - run: *run-lint-checks
-      - run: *run-flow-checks
+      - run: *run-flow-checks-ios
+      - run: *run-flow-checks-android
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -580,31 +586,44 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-analysis
       - run: *yarn
+
+      - run:
+          name: Analyze Shell Scripts
+          command: |
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            sudo apt-get install -y shellcheck
+            yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_scripts.sh
+          when: always
 
       - run:
           name: Analyze Code
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
-            else
-              echo "Skipping code analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_code.sh
           when: always
 
-      - restore-cache: *restore-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-              DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            cd bots
+            yarn install --non-interactive --cache-folder ~/.cache/yarn
+            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
+            yarn danger
           when: always
       - save-cache: *save-cache-analysis
 
@@ -711,13 +730,9 @@ workflows:
             # only act on version tags
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-          requires:
-            - analyze
-            - test_detox_end_to_end
-            - test_javascript
-            - test_objc
-            - test_android
 
-      # Run code checks
+      # Run code checks on PRs from forks
       - analyze_pr:
-          filters: *filter-ignore-master-stable
+          filters:
+            branches:
+              only: /^pull\/.*$/

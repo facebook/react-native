@@ -68,7 +68,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
 
   // Keyed by viewName
-  NSDictionary *_componentDataByName;
+  NSMutableDictionary *_componentDataByName;
 }
 
 @synthesize bridge = _bridge;
@@ -148,17 +148,15 @@ RCT_EXPORT_MODULE()
 
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
-  // Get view managers from bridge
-  NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
+  // Get view managers from bridge=
+  _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
       RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
                                                                                 bridge:_bridge];
-      componentDataByName[componentData.name] = componentData;
+      _componentDataByName[componentData.name] = componentData;
     }
   }
-
-  _componentDataByName = [componentDataByName copy];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
@@ -1485,6 +1483,62 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
+static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    RCTComponentData *componentData) {
+  NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
+
+  // Register which event-types this view dispatches.
+  // React needs this for the event plugin.
+  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
+  // Add manager class
+  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+
+  // Add native props
+  NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
+  moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+  moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+  moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+  moduleConstants[@"directEventTypes"] = directEventTypes;
+
+  // Add direct events
+  for (NSString *eventName in viewConfig[@"directEvents"]) {
+    if (!directEvents[eventName]) {
+      directEvents[eventName] = @{
+                                  @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+                                  };
+    }
+    directEventTypes[eventName] = directEvents[eventName];
+    if (RCT_DEBUG && bubblingEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
+                  "direct event", componentData.name, eventName);
+    }
+  }
+
+  // Add bubbling events
+  for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+                                    @"phasedRegistrationNames": @{
+                                        @"bubbled": bubbleName,
+                                        @"captured": [bubbleName stringByAppendingString:@"Capture"],
+                                        }
+                                    };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
+                  "bubbling event", componentData.name, eventName);
+    }
+  }
+
+  return moduleConstants;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
@@ -1492,60 +1546,41 @@ RCT_EXPORT_METHOD(clearJSResponder)
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
   [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
-
-     // Register which event-types this view dispatches.
-     // React needs this for the event plugin.
-     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
-     NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
-
-     // Add manager class
-     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
-
-     // Add native props
-     NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
-     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
-     moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
-     moduleConstants[@"directEventTypes"] = directEventTypes;
-
-     // Add direct events
-     for (NSString *eventName in viewConfig[@"directEvents"]) {
-       if (!directEvents[eventName]) {
-         directEvents[eventName] = @{
-           @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
-         };
-       }
-       directEventTypes[eventName] = directEvents[eventName];
-       if (RCT_DEBUG && bubblingEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
-                     "direct event", componentData.name, eventName);
-       }
-     }
-
-     // Add bubbling events
-     for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
-       if (!bubblingEvents[eventName]) {
-         NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-         bubblingEvents[eventName] = @{
-           @"phasedRegistrationNames": @{
-             @"bubbled": bubbleName,
-             @"captured": [bubbleName stringByAppendingString:@"Capture"],
-           }
-         };
-       }
-       bubblingEventTypes[eventName] = bubblingEvents[eventName];
-       if (RCT_DEBUG && directEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
-                     "bubbling event", componentData.name, eventName);
-       }
-     }
-
-     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
-     constants[name] = moduleConstants;
+    RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+    NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+    constants[name] = moduleConstants;
   }];
 
   return constants;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
+{
+  if (_componentDataByName[name]) {
+    return @{};
+  }
+
+  id<RCTBridgeDelegate> delegate = self.bridge.delegate;
+  if (![delegate respondsToSelector:@selector(bridge:didNotFindModule:)]) {
+    return @{};
+  }
+
+  NSString *moduleName = [name stringByAppendingString:@"Manager"];
+  BOOL result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  if (!result) {
+    return @{};
+  }
+
+  id module = [self.bridge moduleForName:moduleName];
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  _componentDataByName[componentData.name] = componentData;
+  NSMutableDictionary *directEvents = [NSMutableDictionary new];
+  NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+  return
+  @{
+    @"viewConfig": moduleConstants,
+    };
 }
 
 RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config

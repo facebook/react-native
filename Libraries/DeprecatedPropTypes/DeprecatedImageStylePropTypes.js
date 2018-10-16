@@ -9,21 +9,26 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const ImageResizeMode = require('ImageResizeMode');
-const LayoutPropTypes = require('LayoutPropTypes');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedLayoutPropTypes = require('DeprecatedLayoutPropTypes');
 const ReactPropTypes = require('prop-types');
-const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
-const TransformPropTypes = require('TransformPropTypes');
+const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
+const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
 
 const ImageStylePropTypes = {
-  ...LayoutPropTypes,
-  ...ShadowPropTypesIOS,
-  ...TransformPropTypes,
-  resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
+  ...DeprecatedLayoutPropTypes,
+  ...DeprecatedShadowPropTypesIOS,
+  ...DeprecatedTransformPropTypes,
+  resizeMode: ReactPropTypes.oneOf([
+    'center',
+    'contain',
+    'cover',
+    'repeat',
+    'stretch',
+  ]),
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ColorPropType,
-  borderColor: ColorPropType,
+  backgroundColor: DeprecatedColorPropType,
+  borderColor: DeprecatedColorPropType,
   borderWidth: ReactPropTypes.number,
   borderRadius: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
@@ -31,7 +36,7 @@ const ImageStylePropTypes = {
   /**
    * Changes the color of all the non-transparent pixels to the tintColor.
    */
-  tintColor: ColorPropType,
+  tintColor: DeprecatedColorPropType,
   opacity: ReactPropTypes.number,
   /**
    * When the image has rounded corners, specifying an overlayColor will

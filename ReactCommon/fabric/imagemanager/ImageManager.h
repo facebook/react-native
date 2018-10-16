@@ -23,14 +23,13 @@ using SharedImageManager = std::shared_ptr<ImageManager>;
  * Cross platform facade for iOS-specific RCTImageManager.
  */
 class ImageManager {
-public:
-
+ public:
   ImageManager(void *platformSpecificCounterpart);
   ~ImageManager();
 
   ImageRequest requestImage(const ImageSource &imageSource) const;
 
-private:
+ private:
   void *self_;
 };
 

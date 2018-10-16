@@ -10,28 +10,28 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const LayoutPropTypes = require('LayoutPropTypes');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedLayoutPropTypes = require('DeprecatedLayoutPropTypes');
 const ReactPropTypes = require('prop-types');
-const ShadowPropTypesIOS = require('ShadowPropTypesIOS');
-const TransformPropTypes = require('TransformPropTypes');
+const DeprecatedShadowPropTypesIOS = require('DeprecatedShadowPropTypesIOS');
+const DeprecatedTransformPropTypes = require('DeprecatedTransformPropTypes');
 
 /**
  * Warning: Some of these properties may not be supported in all releases.
  */
-const ViewStylePropTypes = {
-  ...LayoutPropTypes,
-  ...ShadowPropTypesIOS,
-  ...TransformPropTypes,
+const DeprecatedViewStylePropTypes = {
+  ...DeprecatedLayoutPropTypes,
+  ...DeprecatedShadowPropTypesIOS,
+  ...DeprecatedTransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ColorPropType,
-  borderColor: ColorPropType,
-  borderTopColor: ColorPropType,
-  borderRightColor: ColorPropType,
-  borderBottomColor: ColorPropType,
-  borderLeftColor: ColorPropType,
-  borderStartColor: ColorPropType,
-  borderEndColor: ColorPropType,
+  backgroundColor: DeprecatedColorPropType,
+  borderColor: DeprecatedColorPropType,
+  borderTopColor: DeprecatedColorPropType,
+  borderRightColor: DeprecatedColorPropType,
+  borderBottomColor: DeprecatedColorPropType,
+  borderLeftColor: DeprecatedColorPropType,
+  borderStartColor: DeprecatedColorPropType,
+  borderEndColor: DeprecatedColorPropType,
   borderRadius: ReactPropTypes.number,
   borderTopLeftRadius: ReactPropTypes.number,
   borderTopRightRadius: ReactPropTypes.number,
@@ -58,4 +58,4 @@ const ViewStylePropTypes = {
   elevation: ReactPropTypes.number,
 };
 
-module.exports = ViewStylePropTypes;
+module.exports = DeprecatedViewStylePropTypes;

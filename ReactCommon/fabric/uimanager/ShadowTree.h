@@ -22,44 +22,60 @@ namespace react {
  * Represents the shadow tree and its lifecycle.
  */
 class ShadowTree final {
-
-public:
-
+ public:
   /*
-   * Creates a new shadow tree instance with given `rootTag`.
+   * Creates a new shadow tree instance.
    */
-  ShadowTree(Tag rootTag);
+  ShadowTree(
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext);
 
   ~ShadowTree();
 
   /*
-   * Returns the rootTag associated with the shadow tree (the tag of the
-   * root shadow node).
+   * Returns the `SurfaceId` associated with the shadow tree.
    */
-  Tag getRootTag() const;
+  SurfaceId getSurfaceId() const;
+
+  /*
+   * Synchronously runs `function` when `commitMutex_` is acquired.
+   * It is useful in cases when transactional consistency and/or successful
+   * commit are required. E.g. you might want to run `measure` and
+   * `constraintLayout` as part of a single congious transaction.
+   * Use this only if it is necessary. All public methods of the class are
+   * already thread-safe.
+   */
+  void synchronize(std::function<void(void)> function) const;
 
 #pragma mark - Layout
 
   /*
-   * Measures the shadow tree with given `layoutConstraints` and `layoutContext`.
-   * Can be called from any thread, side-effect-less.
+   * Measures the shadow tree with given `layoutConstraints` and
+   * `layoutContext`. Can be called from any thread, side-effect-less.
    */
-  Size measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
+  Size measure(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
   /*
    * Applies given `layoutConstraints` and `layoutContext` and commit
    * the new shadow tree.
+   * Returns `true` if the operation finished successfully.
    * Can be called from any thread.
    */
-  void constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext);
+  bool constraintLayout(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
 #pragma mark - Application
 
   /*
    * Create a new shadow tree with given `rootChildNodes` and commit.
    * Can be called from any thread.
+   * Returns `true` if the operation finished successfully.
    */
-  void complete(const SharedShadowNodeUnsharedList &rootChildNodes);
+  bool complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
 
 #pragma mark - Delegate
 
@@ -71,22 +87,33 @@ public:
   void setDelegate(ShadowTreeDelegate const *delegate);
   ShadowTreeDelegate const *getDelegate() const;
 
-private:
+ private:
+  UnsharedRootShadowNode cloneRootShadowNode(
+      const SharedRootShadowNode &oldRootShadowNode,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
-  UnsharedRootShadowNode cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  void complete(UnsharedRootShadowNode newRootShadowNode);
+  bool complete(
+      const SharedRootShadowNode &oldRootShadowNode,
+      const UnsharedRootShadowNode &newRootShadowNode) const;
+
   bool commit(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const SharedRootShadowNode &newRootShadowNode,
-    const ShadowViewMutationList &mutations
-  );
-  void toggleEventEmitters(const ShadowViewMutationList &mutations);
-  void emitLayoutEvents(const ShadowViewMutationList &mutations);
+      const SharedRootShadowNode &oldRootShadowNode,
+      const SharedRootShadowNode &newRootShadowNode,
+      const ShadowViewMutationList &mutations) const;
 
-  const Tag rootTag_;
-  SharedRootShadowNode rootShadowNode_;
+  void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
+  void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
+
+  /*
+   * Return `rootShadowNodeMutex_` protected by `commitMutex_`.
+   */
+  SharedRootShadowNode getRootShadowNode() const;
+
+  const SurfaceId surfaceId_;
+  mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
-  mutable std::mutex commitMutex_;
+  mutable std::recursive_mutex commitMutex_;
 };
 
 } // namespace react

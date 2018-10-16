@@ -102,7 +102,13 @@ float UIAnimationDragCoefficient(void);
 CGFloat RCTAnimationDragCoefficient()
 {
 #if TARGET_IPHONE_SIMULATOR
-  return (CGFloat)UIAnimationDragCoefficient();
+  if (NSClassFromString(@"XCTest") != nil) {
+    // UIAnimationDragCoefficient is 10.0 in tests for some reason, but
+    // we need it to be 1.0. Fixes T34233294
+    return 1.0;
+  } else {
+    return (CGFloat)UIAnimationDragCoefficient();
+  }
 #else
   return 1.0;
 #endif

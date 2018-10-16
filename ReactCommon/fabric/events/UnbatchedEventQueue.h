@@ -16,14 +16,12 @@ namespace react {
  * Event Queue that dispatches events as granular as possible without waiting
  * for the next beat.
  */
-class UnbatchedEventQueue final: public EventQueue {
-
-public:
+class UnbatchedEventQueue final : public EventQueue {
+ public:
   using EventQueue::EventQueue;
 
   void enqueueEvent(const RawEvent &rawEvent) const override;
 };
-
 
 } // namespace react
 } // namespace facebook

@@ -54,12 +54,19 @@ async function runServer(args: Args, config: ConfigT) {
 
   args.watchFolders.forEach(middlewareManager.serveStatic);
 
+  // $FlowFixMe Metro configuration is immutable.
   config.maxWorkers = args.maxWorkers;
+  // $FlowFixMe Metro configuration is immutable.
   config.server.port = args.port;
+  // $FlowFixMe Metro configuration is immutable.
   config.reporter = reporter;
+  // $FlowFixMe Metro configuration is immutable.
   config.resetCache = args.resetCache;
+  // $FlowFixMe Metro configuration is immutable.
   config.projectRoot = args.projectRoot;
+  // $FlowFixMe Metro configuration is immutable.
   config.watchFolders = args.watchFolders.slice(0);
+  // $FlowFixMe Metro configuration is immutable.
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 

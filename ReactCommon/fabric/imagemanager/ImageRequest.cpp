@@ -10,24 +10,25 @@
 namespace facebook {
 namespace react {
 
-class ImageRequest::ImageNoLongerNeededException:
-  public std::logic_error {
-public:
-  ImageNoLongerNeededException():
-    std::logic_error("Image no longer needed.") {}
+class ImageRequest::ImageNoLongerNeededException : public std::logic_error {
+ public:
+  ImageNoLongerNeededException()
+      : std::logic_error("Image no longer needed.") {}
 };
 
 ImageRequest::ImageRequest() {}
 
-ImageRequest::ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture):
-  imageSource_(imageSource),
-  responseFutureSplitter_(folly::splitFuture(std::move(responseFuture))) {}
+ImageRequest::ImageRequest(
+    const ImageSource &imageSource,
+    folly::Future<ImageResponse> &&responseFuture)
+    : imageSource_(imageSource),
+      responseFutureSplitter_(folly::splitFuture(std::move(responseFuture))) {}
 
-ImageRequest::ImageRequest(ImageRequest &&other) noexcept:
-  imageSource_(std::move(other.imageSource_)),
-  responseFutureSplitter_(std::move(other.responseFutureSplitter_)) {
-    other.moved_ = true;
-  };
+ImageRequest::ImageRequest(ImageRequest &&other) noexcept
+    : imageSource_(std::move(other.imageSource_)),
+      responseFutureSplitter_(std::move(other.responseFutureSplitter_)) {
+  other.moved_ = true;
+};
 
 ImageRequest::~ImageRequest() {
   if (!moved_) {

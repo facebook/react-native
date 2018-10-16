@@ -28,8 +28,9 @@ fi
 
 while :
 do
-    BOOTANIM=`adb -e shell getprop init.svc.bootanim`
-    if [ -n `echo $BOOTANIM | grep stopped` ]; then
+    BOOTANIM=$(adb -e shell getprop init.svc.bootanim)
+    # shellcheck disable=SC2143
+    if [[ -n $(echo "$BOOTANIM" | grep stopped) ]]; then
         break
     fi
     echo "Waiting for the emulator to finish booting..."

@@ -10,23 +10,11 @@
 namespace facebook {
 namespace react {
 
-enum class ScrollViewSnapToAlignment {
-  Start,
-  Center,
-  End
-};
+enum class ScrollViewSnapToAlignment { Start, Center, End };
 
-enum class ScrollViewIndicatorStyle {
-  Default,
-  Black,
-  White
-};
+enum class ScrollViewIndicatorStyle { Default, Black, White };
 
-enum class ScrollViewKeyboardDismissMode {
-  None,
-  OnDrag,
-  Interactive
-};
+enum class ScrollViewKeyboardDismissMode { None, OnDrag, Interactive };
 
 } // namespace react
 } // namespace facebook

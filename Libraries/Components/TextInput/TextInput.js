@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DocumentSelectionState = require('DocumentSelectionState');
 const EventEmitter = require('EventEmitter');
@@ -22,7 +22,6 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TextAncestor = require('TextAncestor');
 const TextInputState = require('TextInputState');
-const TimerMixin = require('react-timer-mixin');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
@@ -592,7 +591,7 @@ const TextInput = createReactClass({
     /**
      * The text color of the placeholder string.
      */
-    placeholderTextColor: ColorPropType,
+    placeholderTextColor: DeprecatedColorPropType,
     /**
      * If `false`, scrolling of the text view will be disabled.
      * The default value is `true`. Does only work with 'multiline={true}'.
@@ -607,7 +606,7 @@ const TextInput = createReactClass({
     /**
      * The highlight and cursor color of the text input.
      */
-    selectionColor: ColorPropType,
+    selectionColor: DeprecatedColorPropType,
     /**
      * An instance of `DocumentSelectionState`, this is some state that is responsible for
      * maintaining selection information for a document.
@@ -698,7 +697,7 @@ const TextInput = createReactClass({
      * The color of the `TextInput` underline.
      * @platform android
      */
-    underlineColorAndroid: ColorPropType,
+    underlineColorAndroid: DeprecatedColorPropType,
 
     /**
      * If defined, the provided image resource will be rendered on the left.
@@ -803,7 +802,7 @@ const TextInput = createReactClass({
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
-  mixins: [NativeMethodsMixin, TimerMixin],
+  mixins: [NativeMethodsMixin],
 
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
@@ -819,6 +818,7 @@ const TextInput = createReactClass({
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
   _lastNativeSelection: (undefined: ?Selection),
+  _rafId: (null: ?AnimationFrameID),
 
   componentDidMount: function() {
     this._lastNativeText = this.props.value;
@@ -833,7 +833,7 @@ const TextInput = createReactClass({
         'focus',
         el => {
           if (this === el) {
-            this.requestAnimationFrame(this.focus);
+            this._rafId = requestAnimationFrame(this.focus);
           } else if (this.isFocused()) {
             this.blur();
           }
@@ -844,7 +844,7 @@ const TextInput = createReactClass({
       }
     } else {
       if (this.props.autoFocus) {
-        this.requestAnimationFrame(this.focus);
+        this._rafId = requestAnimationFrame(this.focus);
       }
     }
   },
@@ -857,6 +857,9 @@ const TextInput = createReactClass({
     const tag = ReactNative.findNodeHandle(this._inputRef);
     if (tag != null) {
       TextInputState.unregisterInput(tag);
+    }
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
     }
   },
 
@@ -875,7 +878,7 @@ const TextInput = createReactClass({
   render: function() {
     let textInput;
     if (Platform.OS === 'ios') {
-      textInput = UIManager.RCTVirtualText
+      textInput = UIManager.getViewManagerConfig('RCTVirtualText')
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
@@ -1048,10 +1051,9 @@ const TextInput = createReactClass({
   _renderAndroid: function() {
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
-    props.autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[
-        props.autoCapitalize || 'sentences'
-      ];
+    props.autoCapitalize = UIManager.getViewManagerConfig(
+      'AndroidTextInput',
+    ).Constants.AutoCapitalizationType[props.autoCapitalize || 'sentences'];
     /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */

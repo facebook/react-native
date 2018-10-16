@@ -569,7 +569,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       double interval = (double) getSnapInterval();
       double ratio = (double) targetOffset / interval;
       smallerOffset = (int) (Math.floor(ratio) * interval);
-      largerOffset = (int) (Math.ceil(ratio) * interval);
+      largerOffset = Math.min((int) (Math.ceil(ratio) * interval), maximumOffset);
     }
 
     // Calculate the nearest offset

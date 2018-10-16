@@ -10,10 +10,10 @@
 
 'use strict';
 
+const DeprecatedTextPropTypes = require('DeprecatedTextPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const TextAncestor = require('TextAncestor');
-const TextPropTypes = require('TextPropTypes');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
@@ -258,7 +258,7 @@ const RCTText = createReactNativeComponentClass(
 );
 
 const RCTVirtualText =
-  UIManager.RCTVirtualText == null
+  UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? RCTText
     : createReactNativeComponentClass('RCTVirtualText', () => ({
         validAttributes: {
@@ -279,6 +279,6 @@ const Text = (
 const TextToExport = React.forwardRef(Text);
 
 // TODO: Deprecate this.
-TextToExport.propTypes = TextPropTypes;
+TextToExport.propTypes = DeprecatedTextPropTypes;
 
 module.exports = (TextToExport: Class<NativeComponent<TextProps>>);

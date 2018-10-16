@@ -25,40 +25,39 @@ using SharedParagraphAttributes = std::shared_ptr<const ParagraphAttributes>;
  * Two data structures, ParagraphAttributes and AttributedText, should be
  * enough to define visual representation of a piece of text on the screen.
  */
-class ParagraphAttributes:
-  public DebugStringConvertible {
-
-public:
-
+class ParagraphAttributes : public DebugStringConvertible {
+ public:
 #pragma mark - Fields
 
   /*
    * Maximum number of lines which paragraph can take.
    * Zero value represents "no limit".
    */
-  int maximumNumberOfLines {};
+  int maximumNumberOfLines{};
 
   /*
    * In case if a text cannot fit given boundaries, defines a place where
    * an ellipsize should be placed.
    */
-  EllipsizeMode ellipsizeMode {};
+  EllipsizeMode ellipsizeMode{};
 
   /*
    * Enables font size adjustment to fit constrained boundaries.
    */
-  bool adjustsFontSizeToFit {};
+  bool adjustsFontSizeToFit{};
 
   /*
    * In case of font size adjustment enabled, defines minimum and maximum
    * font sizes.
    */
-  Float minimumFontSize {std::numeric_limits<Float>::quiet_NaN()};
-  Float maximumFontSize {std::numeric_limits<Float>::quiet_NaN()};
+  Float minimumFontSize{std::numeric_limits<Float>::quiet_NaN()};
+  Float maximumFontSize{std::numeric_limits<Float>::quiet_NaN()};
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace react

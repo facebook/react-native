@@ -88,4 +88,5 @@ public enum ReactMarkerConstants {
   REGISTER_JS_SEGMENT_START,
   REGISTER_JS_SEGMENT_STOP,
   VM_INIT,
+  ON_FRAGMENT_CREATE,
 }

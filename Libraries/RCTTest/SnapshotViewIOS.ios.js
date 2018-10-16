@@ -25,7 +25,7 @@ import type {ViewProps} from 'ViewPropTypes';
 // Verify that RCTSnapshot is part of the UIManager since it is only loaded
 // if you have linked against RCTTest like in tests, otherwise we will have
 // a warning printed out
-const RCTSnapshot = UIManager.RCTSnapshot
+const RCTSnapshot = UIManager.getViewManagerConfig('RCTSnapshot')
   ? requireNativeComponent('RCTSnapshot')
   : View;
 

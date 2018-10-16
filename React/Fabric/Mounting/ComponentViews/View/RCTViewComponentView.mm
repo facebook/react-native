@@ -420,6 +420,10 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
+
+  // After updating `layer`'s parameters we have to redraw on top of it
+  // all custom content (calling `drawRect:` implemented in subclasses).
+  [layer setNeedsDisplay];
 }
 
 #pragma mark - Accessibility

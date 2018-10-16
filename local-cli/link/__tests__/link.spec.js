@@ -10,9 +10,7 @@
 
 'use strict';
 
-const sinon = require('sinon');
 const log = require('npmlog');
-const path = require('path');
 jest.setMock('chalk', {grey: str => str});
 
 describe('link', () => {
@@ -37,14 +35,16 @@ describe('link', () => {
     const config = {
       getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({assets: []}),
-      getDependencyConfig: sinon.stub().returns({assets: [], commands: {}}),
+      getDependencyConfig: jest
+        .fn()
+        .mockReturnValue({assets: [], commands: {}}),
     };
 
     const link = require('../link').func;
     link(['react-native-gradient'], config).then(() => {
-      expect(
-        config.getDependencyConfig.calledWith('react-native-gradient'),
-      ).toBeTruthy();
+      expect(config.getDependencyConfig.mock.calls[0]).toEqual([
+        'react-native-gradient',
+      ]);
       done();
     });
   });
@@ -53,18 +53,20 @@ describe('link', () => {
     const config = {
       getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({assets: []}),
-      getDependencyConfig: sinon.stub().returns({assets: [], commands: {}}),
+      getDependencyConfig: jest
+        .fn()
+        .mockReturnValue({assets: [], commands: {}}),
     };
 
     const link = require('../link').func;
     await link(['@scope/something@latest'], config);
-    expect(
-      config.getDependencyConfig.calledWith('@scope/something'),
-    ).toBeTruthy();
+    expect(config.getDependencyConfig.mock.calls[0]).toEqual([
+      '@scope/something',
+    ]);
   });
 
   it('should register native module when android/ios projects are present', done => {
-    const registerNativeModule = sinon.stub();
+    const registerNativeModule = jest.fn();
     const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};
     const androidLinkConfig = require('../android');
     const iosLinkConfig = require('../ios');
@@ -74,37 +76,37 @@ describe('link', () => {
         android: {linkConfig: androidLinkConfig},
       }),
       getProjectConfig: () => ({android: {}, ios: {}, assets: []}),
-      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+      getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
-    jest.setMock('../android/isInstalled.js', sinon.stub().returns(false));
+    jest.setMock('../android/isInstalled.js', jest.fn().mockReturnValue(false));
 
     jest.setMock('../android/registerNativeModule.js', registerNativeModule);
 
-    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(false));
+    jest.setMock('../ios/isInstalled.js', jest.fn().mockReturnValue(false));
 
     jest.setMock('../ios/registerNativeModule.js', registerNativeModule);
 
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
-      expect(registerNativeModule.calledTwice).toBeTruthy();
+      expect(registerNativeModule.mock.calls.length).toBe(2);
       done();
     });
   });
 
   it('should not register modules when they are already installed', done => {
-    const registerNativeModule = sinon.stub();
+    const registerNativeModule = jest.fn();
     const dependencyConfig = {ios: {}, android: {}, assets: [], commands: {}};
     const config = {
       getPlatformConfig: () => ({ios: {}, android: {}}),
       getProjectConfig: () => ({ios: {}, android: {}, assets: []}),
-      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+      getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
-    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../ios/isInstalled.js', jest.fn().mockReturnValue(true));
 
-    jest.setMock('../android/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../android/isInstalled.js', jest.fn().mockReturnValue(true));
 
     jest.setMock('../ios/registerNativeModule.js', registerNativeModule);
 
@@ -113,13 +115,13 @@ describe('link', () => {
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
-      expect(registerNativeModule.callCount).toEqual(0);
+      expect(registerNativeModule.mock.calls.length).toEqual(0);
       done();
     });
   });
 
   it('should register native modules for plugins', done => {
-    const registerNativeModule = sinon.stub();
+    const registerNativeModule = jest.fn();
     const dependencyConfig = {
       ios: {},
       android: {},
@@ -138,23 +140,23 @@ describe('link', () => {
         test: {linkConfig: () => linkPluginConfig},
       }),
       getProjectConfig: () => ({ios: {}, android: {}, test: {}, assets: []}),
-      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+      getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
-    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../ios/isInstalled.js', jest.fn().mockReturnValue(true));
 
-    jest.setMock('../android/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../android/isInstalled.js', jest.fn().mockReturnValue(true));
 
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
-      expect(registerNativeModule.calledOnce).toBeTruthy();
+      expect(registerNativeModule.mock.calls.length).toBe(1);
       done();
     });
   });
 
   it('should not register native modules for plugins when already installed', done => {
-    const registerNativeModule = sinon.stub();
+    const registerNativeModule = jest.fn();
     const dependencyConfig = {
       ios: {},
       android: {},
@@ -173,35 +175,35 @@ describe('link', () => {
         test: {linkConfig: () => linkPluginConfig},
       }),
       getProjectConfig: () => ({ios: {}, android: {}, test: {}, assets: []}),
-      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+      getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
-    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../ios/isInstalled.js', jest.fn().mockReturnValue(true));
 
-    jest.setMock('../android/isInstalled.js', sinon.stub().returns(true));
+    jest.setMock('../android/isInstalled.js', jest.fn().mockReturnValue(true));
 
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
-      expect(registerNativeModule.callCount).toEqual(0);
+      expect(registerNativeModule.mock.calls.length).toEqual(0);
       done();
     });
   });
 
-  it('should run prelink and postlink commands at the appropriate times', done => {
-    const registerNativeModule = sinon.stub();
-    const prelink = sinon.stub().yieldsAsync();
-    const postlink = sinon.stub().yieldsAsync();
+  it('should run prelink and postlink commands at the appropriate times', async () => {
+    const registerNativeModule = jest.fn();
+    const prelink = jest.fn().mockImplementation(cb => cb());
+    const postlink = jest.fn().mockImplementation(cb => cb());
 
     jest.setMock('../ios/registerNativeModule.js', registerNativeModule);
 
-    jest.setMock('../ios/isInstalled.js', sinon.stub().returns(false));
+    jest.setMock('../ios/isInstalled.js', jest.fn().mockReturnValue(false));
 
     const linkConfig = require('../ios');
     const config = {
       getPlatformConfig: () => ({ios: {linkConfig: linkConfig}}),
       getProjectConfig: () => ({ios: {}, assets: []}),
-      getDependencyConfig: sinon.stub().returns({
+      getDependencyConfig: jest.fn().mockReturnValue({
         ios: {},
         assets: [],
         commands: {prelink, postlink},
@@ -209,19 +211,21 @@ describe('link', () => {
     };
 
     const link = require('../link').func;
+    await link(['react-native-blur'], config);
 
-    link(['react-native-blur'], config).then(() => {
-      expect(prelink.calledBefore(registerNativeModule)).toBeTruthy();
-      expect(postlink.calledAfter(registerNativeModule)).toBeTruthy();
-      done();
-    });
+    expect(prelink.mock.invocationCallOrder[0]).toBeLessThan(
+      registerNativeModule.mock.invocationCallOrder[0],
+    );
+    expect(postlink.mock.invocationCallOrder[0]).toBeGreaterThan(
+      registerNativeModule.mock.invocationCallOrder[0],
+    );
   });
 
   it('should copy assets from both project and dependencies projects', done => {
     const dependencyAssets = ['Fonts/Font.ttf'];
     const dependencyConfig = {assets: dependencyAssets, ios: {}, commands: {}};
     const projectAssets = ['Fonts/FontC.ttf'];
-    const copyAssets = sinon.stub();
+    const copyAssets = jest.fn();
 
     jest.setMock('../ios/copyAssets.js', copyAssets);
 
@@ -229,14 +233,14 @@ describe('link', () => {
     const config = {
       getPlatformConfig: () => ({ios: {linkConfig: linkConfig}}),
       getProjectConfig: () => ({ios: {}, assets: projectAssets}),
-      getDependencyConfig: sinon.stub().returns(dependencyConfig),
+      getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
     const link = require('../link').func;
 
     link(['react-native-blur'], config).then(() => {
-      expect(copyAssets.calledOnce).toBeTruthy();
-      expect(copyAssets.getCall(0).args[0]).toEqual(
+      expect(copyAssets.mock.calls.length).toBe(1);
+      expect(copyAssets.mock.calls[0][0]).toEqual(
         projectAssets.concat(dependencyAssets),
       );
       done();

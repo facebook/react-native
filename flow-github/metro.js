@@ -67,3 +67,7 @@ declare module 'metro/src/Server' {
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
   declare module.exports: any;
 }
+
+declare module 'metro/src/JSTransformer/worker' {
+  declare module.exports: any;
+}
