@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
  * On iOS, this just implements a stub.
  *
  * @format
+ * @flow
  */
 
 'use strict';
@@ -17,9 +18,10 @@ const TVEventHandler = require('TVEventHandler');
 
 type BackPressEventName = $Enum<{
   backPress: string,
+  hardwareBackPress: string,
 }>;
 
-function emptyFunction() {}
+function emptyFunction(): void {}
 
 /**
  * Detect hardware button presses for back navigation.
@@ -100,12 +102,12 @@ if (Platform.isTV) {
 } else {
   BackHandler = {
     exitApp: emptyFunction,
-    addEventListener() {
+    addEventListener(_eventName: BackPressEventName, _handler: Function) {
       return {
         remove: emptyFunction,
       };
     },
-    removeEventListener: emptyFunction,
+    removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
   };
 }
 

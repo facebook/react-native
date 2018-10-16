@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,9 +21,11 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
+/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
+ * making Flow check .android.js files. */
 import type {RNTesterExample} from './RNTesterList.ios';
 import type {PassProps} from './RNTesterStatePersister';
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 
 type Props = {
   onNavigate: Function,
@@ -32,8 +34,8 @@ type Props = {
     APIExamples: Array<RNTesterExample>,
   },
   persister: PassProps<*>,
-  searchTextInputStyle: DangerouslyImpreciseStyleProp,
-  style?: ?DangerouslyImpreciseStyleProp,
+  searchTextInputStyle: TextStyleProp,
+  style?: ?ViewStyleProp,
 };
 
 class RowComponent extends React.PureComponent<{
@@ -73,7 +75,18 @@ const renderSectionHeader = ({section}) => (
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filterText = this.props.persister.state.filter;
-    const filterRegex = new RegExp(String(filterText), 'i');
+    let filterRegex = /.*/;
+
+    try {
+      filterRegex = new RegExp(String(filterText), 'i');
+    } catch (error) {
+      console.warn(
+        'Failed to create RegExp: %s\n%s',
+        filterText,
+        error.message,
+      );
+    }
+
     const filter = example =>
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this
@@ -109,7 +122,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
-          legacyImplementation={false}
           renderSectionHeader={renderSectionHeader}
         />
       </View>

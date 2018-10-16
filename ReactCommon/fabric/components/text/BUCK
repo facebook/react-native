@@ -1,6 +1,6 @@
-load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
-    "//ReactNative:DEFS.bzl",
+    "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
     "fb_xplat_cxx_test",
@@ -67,6 +67,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/graphics:graphics"),
         react_native_xplat_target("fabric/textlayoutmanager:textlayoutmanager"),
         react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/uimanager:uimanager"),
     ],
 )
 
@@ -81,7 +82,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = APPLE,
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

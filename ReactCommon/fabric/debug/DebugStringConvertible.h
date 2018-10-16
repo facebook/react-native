@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,31 +7,38 @@
 
 #pragma once
 
-#include <string>
+#include <climits>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace facebook {
 namespace react {
 
+#ifndef NDEBUG
+#define RN_DEBUG_STRING_CONVERTIBLE 1
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 class DebugStringConvertible;
 
-using SharedDebugStringConvertible = std::shared_ptr<const DebugStringConvertible>;
-using SharedDebugStringConvertibleList = std::vector<SharedDebugStringConvertible>;
+using SharedDebugStringConvertible =
+    std::shared_ptr<const DebugStringConvertible>;
+using SharedDebugStringConvertibleList =
+    std::vector<SharedDebugStringConvertible>;
 
 struct DebugStringConvertibleOptions {
-  bool format {true};
-  int maximumDepth {INT_MAX};
+  bool format{true};
+  int maximumDepth{INT_MAX};
 };
 
 // Abstract class describes conformance to DebugStringConvertible concept
 // and implements basic recursive debug string assembly algorithm.
 // Use this as a base class for providing a debugging textual representation
 // of your class.
-// TODO (#26770211): Clear up the naming.
 class DebugStringConvertible {
-
-public:
+ public:
   virtual ~DebugStringConvertible() = default;
 
   // Returns a name of the object.
@@ -55,13 +62,25 @@ public:
   // Returns a string which represents the object in a human-readable way.
   // Default implementation returns a description of the subtree
   // rooted at this node, represented in XML-like format.
-  virtual std::string getDebugDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
+  virtual std::string getDebugDescription(
+      DebugStringConvertibleOptions options = {},
+      int depth = 0) const;
 
   // Do same as `getDebugDescription` but return only *children* and
   // *properties* parts (which are used in `getDebugDescription`).
-  virtual std::string getDebugPropsDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
-  virtual std::string getDebugChildrenDescription(DebugStringConvertibleOptions options = {}, int depth = 0) const;
+  virtual std::string getDebugPropsDescription(
+      DebugStringConvertibleOptions options = {},
+      int depth = 0) const;
+  virtual std::string getDebugChildrenDescription(
+      DebugStringConvertibleOptions options = {},
+      int depth = 0) const;
 };
+
+#else
+
+class DebugStringConvertible {};
+
+#endif
 
 } // namespace react
 } // namespace facebook

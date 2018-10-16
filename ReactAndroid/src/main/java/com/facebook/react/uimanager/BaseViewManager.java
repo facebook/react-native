@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+import java.util.Locale;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -28,6 +30,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
+  private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
@@ -119,9 +122,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
   }
 
+  @ReactProp(name = PROP_ACCESSIBILITY_HINT)
+  public void setAccessibilityHint(T view, String accessibilityHint) {
+    view.setTag(R.id.accessibility_hint, accessibilityHint);
+  }
+
   @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(T view, String accessibilityRole) {
-    AccessibilityRoleUtil.updateAccessibilityRole(view, accessibilityRole);
+    if (accessibilityRole == null) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
@@ -238,5 +250,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setScaleX(1);
     view.setScaleY(1);
     view.setCameraDistance(0);
+  }
+
+  private void updateViewAccessibility(T view) {
+    AccessibilityDelegateUtil.setDelegate(view);
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(T view) {
+    super.onAfterUpdateTransaction(view);
+    updateViewAccessibility(view);
   }
 }

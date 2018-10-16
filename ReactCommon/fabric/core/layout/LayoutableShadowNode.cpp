@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,6 +29,10 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
 
   layoutMetrics_ = layoutMetrics;
   return true;
+}
+
+bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
+  return false;
 }
 
 void LayoutableShadowNode::cleanLayout() {
@@ -74,12 +78,12 @@ void LayoutableShadowNode::layout(LayoutContext layoutContext) {
     child->ensureUnsealed();
     child->setHasNewLayout(false);
 
-    const LayoutMetrics childLayoutMetrics = child->getLayoutMetrics();
+    const auto childLayoutMetrics = child->getLayoutMetrics();
     if (childLayoutMetrics.displayType == DisplayType::None) {
       continue;
     }
 
-    LayoutContext childLayoutContext = LayoutContext(layoutContext);
+    auto childLayoutContext = LayoutContext(layoutContext);
     childLayoutContext.absolutePosition += childLayoutMetrics.frame.origin;
 
     child->layout(layoutContext);
@@ -90,28 +94,33 @@ void LayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   // Default implementation does nothing.
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
-  SharedDebugStringConvertibleList list = {};
+  auto list = SharedDebugStringConvertibleList{};
 
   if (getHasNewLayout()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
+    list.push_back(
+        std::make_shared<DebugStringConvertibleItem>("hasNewLayout"));
   }
 
   if (!getIsLayoutClean()) {
     list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
   }
 
-  LayoutMetrics layoutMetrics = getLayoutMetrics();
-  LayoutMetrics defaultLayoutMetrics = LayoutMetrics();
+  auto layoutMetrics = getLayoutMetrics();
+  auto defaultLayoutMetrics = LayoutMetrics();
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>("frame", toString(layoutMetrics.frame)));
+  list.push_back(std::make_shared<DebugStringConvertibleItem>(
+      "frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("borderWidth", toString(layoutMetrics.borderWidth)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+        "borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("contentInsets", toString(layoutMetrics.contentInsets)));
+    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+        "contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {
@@ -124,6 +133,7 @@ SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
 
   return list;
 }
+#endif
 
 } // namespace react
 } // namespace facebook

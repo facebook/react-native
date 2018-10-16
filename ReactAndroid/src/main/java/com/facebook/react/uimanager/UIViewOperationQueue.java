@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -556,6 +556,22 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class LayoutUpdateFinishedOperation implements UIOperation {
+
+    private final ReactShadowNode mNode;
+    private final UIImplementation.LayoutUpdateListener mListener;
+
+    private LayoutUpdateFinishedOperation(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+      mNode = node;
+      mListener = listener;
+    }
+
+    @Override
+    public void execute() {
+      mListener.onLayoutUpdated(mNode);
+    }
+  }
+
   private class UIBlockOperation implements UIOperation {
     private final UIBlock mBlock;
     public UIBlockOperation (UIBlock block) {
@@ -827,6 +843,10 @@ public class UIViewOperationQueue {
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
+  }
+
+  public void enqueueLayoutUpdateFinished(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+    mOperations.add(new LayoutUpdateFinishedOperation(node, listener));
   }
 
   public void enqueueUIBlock(UIBlock block) {

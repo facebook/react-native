@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,16 +14,17 @@ const Dimensions = require('Dimensions');
 const FrameRateLogger = require('FrameRateLogger');
 const Keyboard = require('Keyboard');
 const ReactNative = require('ReactNative');
-const Subscribable = require('Subscribable');
 const TextInputState = require('TextInputState');
 const UIManager = require('UIManager');
 
 const invariant = require('fbjs/lib/invariant');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
 const {ScrollViewManager} = require('NativeModules');
+
+import type EmitterSubscription from 'EmitterSubscription';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -115,7 +116,10 @@ type State = {
 type Event = Object;
 
 const ScrollResponderMixin = {
-  mixins: [Subscribable.Mixin],
+  _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
+  _subscriptionKeyboardWillHide: (null: ?EmitterSubscription),
+  _subscriptionKeyboardDidShow: (null: ?EmitterSubscription),
+  _subscriptionKeyboardDidHide: (null: ?EmitterSubscription),
   scrollResponderMixinGetInitialState: function(): State {
     return {
       isTouching: false,
@@ -436,7 +440,7 @@ const ScrollResponderMixin = {
     }
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
-      UIManager.RCTScrollView.Commands.scrollTo,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
   },
@@ -454,7 +458,7 @@ const ScrollResponderMixin = {
     const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      UIManager.RCTScrollView.Commands.scrollToEnd,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollToEnd,
       [animated],
     );
   },
@@ -513,7 +517,8 @@ const ScrollResponderMixin = {
   scrollResponderFlashScrollIndicators: function() {
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      UIManager.RCTScrollView.Commands.flashScrollIndicators,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands
+        .flashScrollIndicators,
       [],
     );
   },
@@ -601,26 +606,37 @@ const ScrollResponderMixin = {
 
     this.keyboardWillOpenTo = null;
     this.additionalScrollOffset = 0;
-    this.addListenerOn(
-      Keyboard,
+    this._subscriptionKeyboardWillShow = Keyboard.addListener(
       'keyboardWillShow',
       this.scrollResponderKeyboardWillShow,
     );
-    this.addListenerOn(
-      Keyboard,
+    this._subscriptionKeyboardWillHide = Keyboard.addListener(
       'keyboardWillHide',
       this.scrollResponderKeyboardWillHide,
     );
-    this.addListenerOn(
-      Keyboard,
+    this._subscriptionKeyboardDidShow = Keyboard.addListener(
       'keyboardDidShow',
       this.scrollResponderKeyboardDidShow,
     );
-    this.addListenerOn(
-      Keyboard,
+    this._subscriptionKeyboardDidHide = Keyboard.addListener(
       'keyboardDidHide',
       this.scrollResponderKeyboardDidHide,
     );
+  },
+
+  componentWillUnmount: function() {
+    if (this._subscriptionKeyboardWillShow != null) {
+      this._subscriptionKeyboardWillShow.remove();
+    }
+    if (this._subscriptionKeyboardWillHide != null) {
+      this._subscriptionKeyboardWillHide.remove();
+    }
+    if (this._subscriptionKeyboardDidShow != null) {
+      this._subscriptionKeyboardDidShow.remove();
+    }
+    if (this._subscriptionKeyboardDidHide != null) {
+      this._subscriptionKeyboardDidHide.remove();
+    }
   },
 
   /**

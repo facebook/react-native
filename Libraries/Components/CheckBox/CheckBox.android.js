@@ -1,19 +1,19 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow
  * @format
  */
 'use strict';
 
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
@@ -83,7 +83,7 @@ type DefaultProps = {
 let CheckBox = createReactClass({
   displayName: 'CheckBox',
   propTypes: {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     /**
      * The value of the checkbox.  If true the checkbox will be turned on.
      * Default value is false.
@@ -131,7 +131,11 @@ let CheckBox = createReactClass({
     let props = {...this.props};
     props.onStartShouldSetResponder = () => true;
     props.onResponderTerminationRequest = () => false;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.enabled = !this.props.disabled;
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     props.on = this.props.value;
     props.style = [styles.rctCheckBox, this.props.style];
 

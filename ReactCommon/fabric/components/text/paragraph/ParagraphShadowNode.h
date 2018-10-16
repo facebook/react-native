@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,32 +11,30 @@
 #include <fabric/components/text/TextShadowNode.h>
 #include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
 #include <fabric/core/LayoutContext.h>
+#include <fabric/core/ShadowNode.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
 #include <folly/Optional.h>
 
 namespace facebook {
 namespace react {
 
-class ParagraphShadowNode;
+extern const char ParagraphComponentName[];
 
-using SharedParagraphShadowNode = std::shared_ptr<const ParagraphShadowNode>;
+using ParagraphEventEmitter = ViewEventEmitter;
 
 /*
  * `ShadowNode` for <Paragraph> component, represents <View>-like component
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
  */
-class ParagraphShadowNode:
-  public ConcreteViewShadowNode<ParagraphProps>,
-  public BaseTextShadowNode {
-
-public:
-
+class ParagraphShadowNode : public ConcreteViewShadowNode<
+                                ParagraphComponentName,
+                                ParagraphProps,
+                                ParagraphEventEmitter>,
+                            public BaseTextShadowNode {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
@@ -55,8 +53,7 @@ public:
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
-private:
-
+ private:
   /*
    * Creates a `LocalData` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
@@ -69,7 +66,7 @@ private:
    * Cached attributed string that represents the content of the subtree started
    * from the node.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_ {};
+  mutable folly::Optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

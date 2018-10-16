@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,26 +7,25 @@
 
 #pragma once
 
-#include <memory>
-
-#include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/ConcreteViewShadowNode.h>
+#include <fabric/components/view/ViewProps.h>
 
 namespace facebook {
 namespace react {
 
-class ViewShadowNode;
+extern const char ViewComponentName[];
 
-using SharedViewShadowNode = std::shared_ptr<const ViewShadowNode>;
-
-class ViewShadowNode final:
-  public ConcreteViewShadowNode<ViewProps, ViewEventEmitter> {
-
-public:
-
+/*
+ * `ShadowNode` for <View> component.
+ */
+class ViewShadowNode final : public ConcreteViewShadowNode<
+                                 ViewComponentName,
+                                 ViewProps,
+                                 ViewEventEmitter> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  ComponentName getComponentName() const override;
+  bool isLayoutOnly() const;
 };
 
 } // namespace react

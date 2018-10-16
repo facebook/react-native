@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const deepDiffer = require('deepDiffer');
 const MetroListView = require('MetroListView'); // Used as a fallback legacy option
 const React = require('React');
 const View = require('View');
@@ -18,7 +19,7 @@ const StyleSheet = require('StyleSheet');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {DangerouslyImpreciseStyleProp, ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -104,7 +105,7 @@ type OptionalProps<ItemT> = {
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
+  columnWrapperStyle?: ViewStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -189,7 +190,10 @@ type OptionalProps<ItemT> = {
    * @platform android
    */
   progressViewOffset?: number,
-  legacyImplementation?: ?boolean,
+  /**
+   * The legacy implementation is no longer supported.
+   */
+  legacyImplementation?: empty,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -472,7 +476,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       'Changing onViewableItemsChanged on the fly is not supported',
     );
     invariant(
-      prevProps.viewabilityConfig === this.props.viewabilityConfig,
+      !deepDiffer(prevProps.viewabilityConfig, this.props.viewabilityConfig),
       'Changing viewabilityConfig on the fly is not supported',
     );
     invariant(
@@ -524,8 +528,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       // comparison.
       if (!this._hasWarnedLegacy) {
         console.warn(
-          'FlatList: Using legacyImplementation - some features not supported and performance ' +
-            'may suffer',
+          'FlatList: legacyImplementation is deprecated and will be removed in a ' +
+            'future release - some features not supported and performance may suffer. ' +
+            'Please migrate to the default implementation.',
         );
         this._hasWarnedLegacy = true;
       }
@@ -645,14 +650,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   render() {
     if (this.props.legacyImplementation) {
       return (
-        /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.66 was deployed. To see the error delete
-         * this comment and run Flow. */
         <MetroListView
           {...this.props}
-          /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.66 was deployed. To see the error
-           * delete this comment and run Flow. */
           items={this.props.data}
           ref={this._captureRef}
         />

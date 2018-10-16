@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ImageProps = require('ImageProps');
+const DeprecatedImagePropType = require('DeprecatedImagePropType');
 const NativeModules = require('NativeModules');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -23,6 +23,7 @@ const ImageViewManager = NativeModules.ImageViewManager;
 
 const RCTImageView = requireNativeComponent('RCTImageView');
 
+import type {ImageStyleProp} from 'StyleSheet';
 import type {ImageProps as ImagePropsType} from 'ImageProps';
 
 function getSize(
@@ -44,13 +45,20 @@ function prefetch(url: string) {
   return ImageViewManager.prefetchImage(url);
 }
 
+async function queryCache(
+  urls: Array<string>,
+): Promise<Map<string, 'memory' | 'disk'>> {
+  return await ImageViewManager.queryCache(urls);
+}
+
 declare class ImageComponentType extends ReactNative.NativeComponent<
   ImagePropsType,
 > {
   static getSize: typeof getSize;
   static prefetch: typeof prefetch;
+  static queryCache: typeof queryCache;
   static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof ImageProps;
+  static propTypes: typeof DeprecatedImagePropType;
 }
 
 /**
@@ -71,12 +79,14 @@ let Image = (
   };
 
   let sources;
-  let style;
+  let style: ImageStyleProp;
   if (Array.isArray(source)) {
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
     const {width, height, uri} = source;
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -131,13 +141,20 @@ Image.getSize = getSize;
 Image.prefetch = prefetch;
 
 /**
+ * Performs cache interrogation.
+ *
+ *  See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+Image.queryCache = queryCache;
+
+/**
  * Resolves an asset reference into an object.
  *
  * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
  */
 Image.resolveAssetSource = resolveAssetSource;
 
-Image.propTypes = ImageProps;
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {

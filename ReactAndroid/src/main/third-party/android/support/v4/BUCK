@@ -5,6 +5,7 @@ android_library(
         ":android-lifecycle-common",
         ":android-lifecycle-core",
         ":android-lifecycle-runtime",
+        ":android-lifecycle-viewmodel",
         ":lib-support-v4-support-compat",
         ":lib-support-v4-support-core-ui",
         ":lib-support-v4-support-core-utils",
@@ -26,6 +27,11 @@ prebuilt_jar(
 android_prebuilt_aar(
     name = "android-lifecycle-runtime",
     aar = ":android-lifecycle-runtime-aar",
+)
+
+android_prebuilt_aar(
+    name = "android-lifecycle-viewmodel",
+    aar = ":android-lifecycle-viewmodel-aar",
 )
 
 android_prebuilt_aar(
@@ -55,48 +61,54 @@ android_prebuilt_aar(
 
 remote_file(
     name = "android-lifecycle-runtime-aar",
-    sha1 = "30c60a8a357ee1321ffd0c9f08ef54b24045cd10",
-    url = "mvn:android.arch.lifecycle:runtime:aar:1.0.0",
+    sha1 = "95428e5f6bf6875a6a1125d2157c3836a1a837f5",
+    url = "mvn:android.arch.lifecycle:runtime:aar:1.1.0",
 )
 
 remote_file(
     name = "android-lifecycle-common.jar",
-    sha1 = "e414a4cb28434e25c4f6aa71426eb20cf4874ae9",
-    url = "mvn:android.arch.lifecycle:common:jar:1.0.0",
+    sha1 = "0edf3f7bfb84a7521d0599efa3b0113a0ee90f85",
+    url = "mvn:android.arch.lifecycle:common:jar:1.1.0",
 )
 
 remote_file(
     name = "android-lifecycle-core.jar",
-    sha1 = "a2d487452376193fc8c103dd2b9bd5f2b1b44563",
-    url = "mvn:android.arch.core:common:jar:1.0.0",
+    sha1 = "8007981f7d7540d89cd18471b8e5dcd2b4f99167",
+    url = "mvn:android.arch.core:common:jar:1.1.0",
+)
+
+remote_file(
+    name = "android-lifecycle-viewmodel-aar",
+    sha1 = "74ee369b874da61b5b81bebd7b8df0c2577309c8",
+    url = "mvn:android.arch.lifecycle:viewmodel:aar:1.1.0",
 )
 
 remote_file(
     name = "lib-support-v4-support-compat-aar",
-    sha1 = "1e1c8ffc01d277d8f01dfd11d5d2ce3a2af4b98c",
-    url = "mvn:com.android.support:support-compat:aar:26.1.0",
+    sha1 = "a55ad550d0b84c7fec7ecca012690636062c0e64",
+    url = "mvn:com.android.support:support-compat:aar:27.1.1",
 )
 
 remote_file(
     name = "lib-support-v4-support-core-utils-aar",
-    sha1 = "1bfaae21c4d5c5532c5e732071e9ce234cd58cff",
-    url = "mvn:com.android.support:support-core-utils:aar:26.1.0",
+    sha1 = "b3a7a4040fda0c5138dbc8c477103b6723b9dbe6",
+    url = "mvn:com.android.support:support-core-utils:aar:27.1.1",
 )
 
 remote_file(
     name = "lib-support-v4-support-core-ui-aar",
-    sha1 = "e306308d54052a1ded7bf9c2f5c2fdf5152a1f22",
-    url = "mvn:com.android.support:support-core-ui:aar:26.1.0",
+    sha1 = "f9acdb8a4c3a9fe883fd7fa5efd3f0426bb9dcda",
+    url = "mvn:com.android.support:support-core-ui:aar:27.1.1",
 )
 
 remote_file(
     name = "lib-support-v4-support-media-compat-aar",
-    sha1 = "09fb587f27cde19aa8f2e50c5c9ee645d9aec44d",
-    url = "mvn:com.android.support:support-media-compat:aar:26.1.0",
+    sha1 = "10e309e2cc22ff4cab30bd5f573e4bb30be707ad",
+    url = "mvn:com.android.support:support-media-compat:aar:27.1.1",
 )
 
 remote_file(
     name = "lib-support-v4-support-fragment-aar",
-    sha1 = "ddacf369bb98dd6558606558de8ddcd53895cf91",
-    url = "mvn:com.android.support:support-fragment:aar:26.1.0",
+    sha1 = "eb8053ebf038b7561c29e5e8964664fac05f375e",
+    url = "mvn:com.android.support:support-fragment:aar:27.1.1",
 )

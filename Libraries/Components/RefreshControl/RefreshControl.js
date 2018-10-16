@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,21 +15,22 @@ const React = require('React');
 const {NativeComponent} = require('ReactNative');
 
 const requireNativeComponent = require('requireNativeComponent');
-const nullthrows = require('fbjs/lib/nullthrows');
+const nullthrows = require('nullthrows');
 
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('UIManager')
-    .AndroidSwipeRefreshLayout;
+  const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+    'AndroidSwipeRefreshLayout',
+  );
   var RefreshLayoutConsts = AndroidSwipeRefreshLayout
     ? AndroidSwipeRefreshLayout.Constants
     : {SIZE: {}};
 } else {
   var RefreshLayoutConsts = {SIZE: {}};
 }
-type NativeRefreshControlType = Class<NativeComponent<Props>>;
+type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
 
 const NativeRefreshControl: NativeRefreshControlType =
   Platform.OS === 'ios'
@@ -77,7 +78,7 @@ type AndroidProps = $ReadOnly<{|
   progressViewOffset?: ?number,
 |}>;
 
-type Props = $ReadOnly<{|
+export type RefreshControlProps = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
@@ -138,7 +139,7 @@ type Props = $ReadOnly<{|
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
-class RefreshControl extends React.Component<Props> {
+class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE = RefreshLayoutConsts.SIZE;
 
   _nativeRef: ?React.ElementRef<NativeRefreshControlType> = null;
@@ -148,7 +149,7 @@ class RefreshControl extends React.Component<Props> {
     this._lastNativeRefreshing = this.props.refreshing;
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: RefreshControlProps) {
     // RefreshControl is a controlled component so if the native refreshing
     // value doesn't match the current js refreshing prop update it to
     // the js value.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,6 +36,10 @@ declare module 'metro/src/DeltaBundler' {
   declare module.exports: any;
 }
 
+declare module 'metro/src/DeltaBundler/types.flow.js' {
+  declare module.exports: any;
+}
+
 declare module 'metro/src/ModuleGraph/types.flow.js' {
   declare module.exports: any;
 }
@@ -61,5 +65,9 @@ declare module 'metro/src/Server' {
 }
 
 declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
+  declare module.exports: any;
+}
+
+declare module 'metro/src/JSTransformer/worker' {
   declare module.exports: any;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,30 +7,23 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
 #include <fabric/components/text/BaseTextShadowNode.h>
 #include <fabric/components/text/TextProps.h>
-#include <fabric/components/text/TextShadowNode.h>
+#include <fabric/components/view/ViewEventEmitter.h>
 #include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
 
-class TextShadowNode;
+extern const char TextComponentName[];
 
-using SharedTextShadowNode = std::shared_ptr<const TextShadowNode>;
+using TextEventEmitter = TouchEventEmitter;
 
-class TextShadowNode:
-  public ConcreteShadowNode<TextProps>,
-  public BaseTextShadowNode {
-
-public:
-
+class TextShadowNode
+    : public ConcreteShadowNode<TextComponentName, TextProps, TextEventEmitter>,
+      public BaseTextShadowNode {
+ public:
   using ConcreteShadowNode::ConcreteShadowNode;
-
-  ComponentName getComponentName() const override;
 };
 
 } // namespace react

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@
 'use strict';
 
 const log = require('../util/log').out('bundle');
-/* $FlowFixMe(site=react_native_oss) */
 const Server = require('metro/src/Server');
 
 /* $FlowFixMe(site=react_native_oss) */
@@ -44,10 +43,6 @@ async function buildBundle(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  config.transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.transformModulePath;
-
   const requestOpts: RequestOptions = {
     entryFile: args.entryFile,
     sourceMapUrl,
@@ -56,7 +51,7 @@ async function buildBundle(
     platform: args.platform,
   };
 
-  const server = new Server(config);
+  const server = new Server({...config, resetCache: args.resetCache});
 
   try {
     const bundle = await output.build(server, requestOpts);
