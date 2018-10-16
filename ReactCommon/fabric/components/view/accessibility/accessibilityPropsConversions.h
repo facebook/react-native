@@ -67,7 +67,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     return;
   }
   if (string == "allowsDirectInteraction") {
-    result = AccessibilityTraits::DirectInteraction;
+    result = AccessibilityTraits::AllowsDirectInteraction;
     return;
   }
   if (string == "pageTurn") {
