@@ -11,7 +11,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var createReactClass = require('create-react-class');
+// var createReactClass = require('create-react-class');
 var View = require('View');
 var ScrollView = require('ScrollView');
 var Text = require('Text');
@@ -72,19 +72,23 @@ var onItemPress = function(itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
-var ScrollViewTestApp = createReactClass({
-  displayName: 'ScrollViewTestApp',
-  getInitialState: getInitialState,
-  onScroll: onScroll,
-  onItemPress: onItemPress,
-  onScrollBeginDrag: onScrollBeginDrag,
-  onScrollEndDrag: onScrollEndDrag,
+class ScrollViewTestApp extends React.Component ({
+  constructor() {
+    super();
+    this.displayName = 'ScrollViewTestApp';
+    this.state = getInitialState;
+    this.onScroll = onScroll;
+    this.onItemPress = onItemPress;
+    this.onScrollBeginDrag = onScrollBeginDrag;
+    this.onScrollEndDrag = onScrollEndDrag;
+  }
+  
 
   scrollTo: function(destX, destY) {
     this.refs.scrollView.scrollTo(destY, destX);
-  },
+  }
 
-  render: function() {
+  render () {
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
@@ -102,20 +106,24 @@ var ScrollViewTestApp = createReactClass({
         {children}
       </ScrollView>
     );
-  },
-});
+  }
+})
 
-var HorizontalScrollViewTestApp = createReactClass({
-  displayName: 'HorizontalScrollViewTestApp',
-  getInitialState: getInitialState,
-  onScroll: onScroll,
-  onItemPress: onItemPress,
+class HorizontalScrollViewTestApp extends React.Component({
+  constructor() {
+    super();
+    displayName: 'HorizontalScrollViewTestApp';
+    this.getInitialState = getInitialState;
+    this.onScroll = onScroll;
+    this.onItemPress = onItemPress;
+    this.state = Store.getInitialState();
+  }
 
   scrollTo: function(destX, destY) {
     this.refs.scrollView.scrollTo(destY, destX);
-  },
+  }
 
-  render: function() {
+  render() {
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
@@ -129,8 +137,8 @@ var HorizontalScrollViewTestApp = createReactClass({
         {children}
       </ScrollView>
     );
-  },
-});
+  }
+})
 
 var styles = StyleSheet.create({
   item_container: {
