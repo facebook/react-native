@@ -77,7 +77,8 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
-  NSString *superAccessibilityLabel = [super accessibilityLabel];
+  NSString *superAccessibilityLabel =
+    RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
   if (superAccessibilityLabel) {
     return superAccessibilityLabel;
   }
