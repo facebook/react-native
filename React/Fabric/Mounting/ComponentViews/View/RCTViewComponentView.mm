@@ -193,7 +193,7 @@ using namespace facebook::react;
 
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
-    self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
+    self.nativeId = RCTNSStringFromStringNilIfEmpty(newViewProps.nativeId);
   }
 
   // `accessible`
@@ -203,12 +203,12 @@ using namespace facebook::react;
 
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
-    self.accessibilityElement.accessibilityLabel = RCTNSStringFromString(newViewProps.accessibilityLabel);
+    self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
   }
 
   // `accessibilityHint`
   if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
-    self.accessibilityElement.accessibilityHint = RCTNSStringFromString(newViewProps.accessibilityHint);
+    self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
   }
 
   // `accessibilityTraits`
