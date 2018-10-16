@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
@@ -26,6 +25,8 @@ function debug(...args) {
 
 import type {Layout, LayoutEvent} from 'CoreEventTypes';
 
+type Props = $ReadOnly<{||}>;
+
 type State = {
   didAnimation: boolean,
   extraText?: string,
@@ -36,40 +37,54 @@ type State = {
   containerStyle?: ViewStyleProp,
 };
 
-const LayoutEventsTest = createReactClass({
-  displayName: 'LayoutEventsTest',
-  getInitialState(): State {
-    return {
-      didAnimation: false,
-    };
-  },
-  animateViewLayout: function() {
+class LayoutEventsTest extends React.Component<Props, State> {
+  _view: ?React.ElementRef<typeof View>;
+  _img: ?React.ElementRef<typeof Image>;
+  _txt: ?React.ElementRef<typeof Text>;
+
+  state: State = {
+    didAnimation: false,
+  };
+
+  animateViewLayout() {
     debug('animateViewLayout invoked');
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
       debug('animateViewLayout done');
       this.checkLayout(this.addWrapText);
     });
     this.setState({viewStyle: {margin: 60}});
-  },
-  addWrapText: function() {
+  }
+
+  addWrapText = () => {
     debug('addWrapText invoked');
     this.setState(
       {extraText: '  And a bunch more text to wrap around a few lines.'},
       () => this.checkLayout(this.changeContainer),
     );
-  },
-  changeContainer: function() {
+  };
+
+  changeContainer = () => {
     debug('changeContainer invoked');
     this.setState({containerStyle: {width: 280}}, () =>
       this.checkLayout(TestModule.markTestCompleted),
     );
-  },
-  checkLayout: function(next?: ?Function) {
-    if (!this.isMounted()) {
+  };
+
+  checkLayout = (next?: ?() => void) => {
+    const view = this._view;
+    const txt = this._txt;
+    const img = this._img;
+
+    if (view == null || txt == null || img == null) {
       return;
     }
-    this.refs.view.measure((x, y, width, height) => {
-      this.compare('view', {x, y, width, height}, this.state.viewLayout);
+
+    view.measure((x, y, width, height) => {
+      this.compare(
+        'view',
+        {x, y, width, height},
+        this.state.viewLayout || null,
+      );
       if (typeof next === 'function') {
         next();
       } else if (!this.state.didAnimation) {
@@ -78,14 +93,17 @@ const LayoutEventsTest = createReactClass({
         this.state.didAnimation = true;
       }
     });
-    this.refs.txt.measure((x, y, width, height) => {
+
+    txt.measure((x, y, width, height) => {
       this.compare('txt', {x, y, width, height}, this.state.textLayout);
     });
-    this.refs.img.measure((x, y, width, height) => {
+
+    img.measure((x, y, width, height) => {
       this.compare('img', {x, y, width, height}, this.state.imageLayout);
     });
-  },
-  compare: function(node: string, measured: any, onLayout: any): void {
+  };
+
+  compare(node: string, measured: Layout, onLayout?: ?Layout): void {
     if (deepDiffer(measured, onLayout)) {
       const data = {measured, onLayout};
       throw new Error(
@@ -94,34 +112,50 @@ const LayoutEventsTest = createReactClass({
           JSON.stringify(data, null, '  '),
       );
     }
-  },
-  onViewLayout: function(e: LayoutEvent) {
+  }
+
+  onViewLayout = (e: LayoutEvent) => {
     debug('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout}, this.checkLayout);
-  },
-  onTextLayout: function(e: LayoutEvent) {
+  };
+
+  onTextLayout = (e: LayoutEvent) => {
     debug('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout}, this.checkLayout);
-  },
-  onImageLayout: function(e: LayoutEvent) {
+  };
+
+  onImageLayout = (e: LayoutEvent) => {
     debug('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
-  },
-  render: function() {
+  };
+
+  render() {
     const viewStyle = [styles.view, this.state.viewStyle];
     const textLayout = this.state.textLayout || {width: '?', height: '?'};
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     debug('viewLayout', this.state.viewLayout);
     return (
       <View style={[styles.container, this.state.containerStyle]}>
-        <View ref="view" onLayout={this.onViewLayout} style={viewStyle}>
+        <View
+          ref={ref => {
+            this._view = ref;
+          }}
+          onLayout={this.onViewLayout}
+          style={viewStyle}>
           <Image
-            ref="img"
+            ref={ref => {
+              this._img = ref;
+            }}
             onLayout={this.onImageLayout}
             style={styles.image}
             source={{uri: 'uie_thumb_big.png'}}
           />
-          <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
+          <Text
+            ref={ref => {
+              this._txt = ref;
+            }}
+            onLayout={this.onTextLayout}
+            style={styles.text}>
             A simple piece of text.{this.state.extraText}
           </Text>
           <Text>
@@ -132,8 +166,8 @@ const LayoutEventsTest = createReactClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -158,7 +192,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
-LayoutEventsTest.displayName = 'LayoutEventsTest';
 
 module.exports = LayoutEventsTest;
