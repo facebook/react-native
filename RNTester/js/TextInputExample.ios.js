@@ -10,11 +10,18 @@
 
 'use strict';
 
-const Button = require('Button');
-const InputAccessoryView = require('InputAccessoryView');
-var React = require('react');
-var ReactNative = require('react-native');
-var {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const React = require('react');
+const {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Slider,
+  Switch,
+  Button,
+  InputAccessoryView,
+} = require('react-native');
+const nullthrows = require('nullthrows');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -275,15 +282,18 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 class BlurOnSubmitExample extends React.Component<{}> {
+  fields = {};
   focusNextField = nextField => {
-    this.refs[nextField].focus();
+    nullthrows(this.fields[nextField]).focus();
   };
 
   render() {
     return (
       <View>
         <TextInput
-          ref="1"
+          ref={ref => {
+            this.fields['1'] = ref;
+          }}
           style={styles.default}
           placeholder="blurOnSubmit = false"
           returnKeyType="next"
@@ -291,7 +301,9 @@ class BlurOnSubmitExample extends React.Component<{}> {
           onSubmitEditing={() => this.focusNextField('2')}
         />
         <TextInput
-          ref="2"
+          ref={ref => {
+            this.fields['2'] = ref;
+          }}
           style={styles.default}
           keyboardType="email-address"
           placeholder="blurOnSubmit = false"
@@ -300,7 +312,9 @@ class BlurOnSubmitExample extends React.Component<{}> {
           onSubmitEditing={() => this.focusNextField('3')}
         />
         <TextInput
-          ref="3"
+          ref={ref => {
+            this.fields['3'] = ref;
+          }}
           style={styles.default}
           keyboardType="url"
           placeholder="blurOnSubmit = false"
@@ -309,7 +323,9 @@ class BlurOnSubmitExample extends React.Component<{}> {
           onSubmitEditing={() => this.focusNextField('4')}
         />
         <TextInput
-          ref="4"
+          ref={ref => {
+            this.fields['4'] = ref;
+          }}
           style={styles.default}
           keyboardType="numeric"
           returnKeyType="done"
@@ -318,7 +334,9 @@ class BlurOnSubmitExample extends React.Component<{}> {
           onSubmitEditing={() => this.focusNextField('5')}
         />
         <TextInput
-          ref="5"
+          ref={ref => {
+            this.fields['5'] = ref;
+          }}
           style={styles.default}
           keyboardType="numbers-and-punctuation"
           placeholder="blurOnSubmit = true"
@@ -329,13 +347,13 @@ class BlurOnSubmitExample extends React.Component<{}> {
   }
 }
 
-type SelectionExampleState = {
+type SelectionExampleState = {|
   selection: {|
     start: number,
     end?: number,
   |},
   value: string,
-};
+|};
 
 class SelectionExample extends React.Component<
   $FlowFixMeProps,
