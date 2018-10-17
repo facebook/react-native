@@ -49,14 +49,6 @@ type Selection = $ReadOnly<{|
   end?: number,
 |}>;
 
-type InputEvent = SyntheticEvent<
-  $ReadOnly<{|
-    text: string,
-    previousText: string,
-    range: Selection,
-  |}>,
->;
-
 type DataDetectorTypes =
   | 'phoneNumber'
   | 'link'

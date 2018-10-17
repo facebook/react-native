@@ -66,7 +66,7 @@ describe('setAndForwardRef', () => {
   it('should forward refs (function-based)', () => {
     let testRef = null;
 
-    const component = ReactTestRenderer.create(
+    ReactTestRenderer.create(
       <TestComponentWithRef
         ref={ref => {
           testRef = ref;
@@ -80,7 +80,7 @@ describe('setAndForwardRef', () => {
   });
 
   it('should forward refs (createRef-based)', () => {
-    const component = ReactTestRenderer.create(
+    ReactTestRenderer.create(
       <TestComponentWithRef ref={createdRef} />,
     );
     const val = createdRef.current.testFunc();
@@ -99,8 +99,10 @@ describe('setAndForwardRef', () => {
   });
 
   it('should throw on string-based refs', () => {
+    /* eslint-disable react/no-string-refs */
     expect(() =>
       ReactTestRenderer.create(<TestComponentWithRef ref="stringRef" />),
     ).toThrow();
+    /* eslint-enable react/no-string-refs */
   });
 });
