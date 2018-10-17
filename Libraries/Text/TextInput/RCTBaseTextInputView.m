@@ -328,15 +328,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   NSString *previousText = [_predictedText substringWithRange:range] ?: @"";
 
-  // After clearing the text by replacing it with an empty string, `_predictedText`
-  // still preserves the deleted text.
-  // As the first character in the TextInput always comes with the range value (0, 0),
-  // we should check the range value in order to avoid appending a character to the deleted string
-  // (which caused the issue #18374)
-  if (!NSEqualRanges(range, NSMakeRange(0, 0)) && _predictedText) {
-    _predictedText = [_predictedText stringByReplacingCharactersInRange:range withString:text];
-  } else {
+  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
     _predictedText = text;
+  } else {
+    _predictedText = [_predictedText stringByReplacingCharactersInRange:range withString:text];
   }
 
   if (_onTextInput) {
