@@ -199,7 +199,7 @@
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
     "ws": "^1.1.0",
-    "xcode": "^0.9.1",
+    "xcode": "^1.0.0",
     "xmldoc": "^0.4.0",
     "yargs": "^9.0.0"
   },
