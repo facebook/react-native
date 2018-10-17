@@ -74,7 +74,6 @@ var onItemPress = function(itemNumber) {
 class ScrollViewTestApp extends React.Component ({
   constructor() {
     super();
-    this.displayName = 'ScrollViewTestApp';
     this.state = getInitialState;
     this.onScroll = onScroll;
     this.onItemPress = onItemPress;
