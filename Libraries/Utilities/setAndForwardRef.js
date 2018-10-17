@@ -57,15 +57,11 @@ function setAndForwardRef({getForwardedRef, setLocalRef}: Args) {
     setLocalRef(ref);
 
     // Forward to user ref prop (if one has been specified)
-    // String-based refs cannot be shared.
-    if (typeof forwardedRef === 'string') {
-      invariant(
-        false,
-        `String-based refs are not supported on this component. Got ref: '${forwardedRef}'`,
-      );
-    } else if (typeof forwardedRef === 'function') {
+    if (typeof forwardedRef === 'function') {
+      // Handle function-based refs. String-based refs are handled as functions.
       forwardedRef(ref);
     } else if (typeof forwardedRef === 'object' && forwardedRef != null) {
+      // Handle createRef-based refs
       forwardedRef.current = ref;
     }
   };
