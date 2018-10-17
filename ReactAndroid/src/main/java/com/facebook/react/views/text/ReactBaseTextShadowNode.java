@@ -172,6 +172,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  protected int getDefaultFontSize() {
+    return mAllowFontScaling ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+      : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+  }
+
   protected static Spannable spannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode, String text) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -190,10 +195,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     if (textShadowNode.mFontSize == UNSET) {
-      int defaultFontSize =
-          textShadowNode.mAllowFontScaling
-              ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-              : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+      int defaultFontSize = textShadowNode.getDefaultFontSize();
 
       ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
     }
