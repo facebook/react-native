@@ -82,7 +82,7 @@ class ScrollViewTestApp extends React.Component ({
   }
   
 
-  scrollTo: function(destX, destY) {
+   scrollTo(destX, destY) {
     this.refs.scrollView.scrollTo(destY, destX);
   }
 
