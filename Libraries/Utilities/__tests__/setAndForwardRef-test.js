@@ -101,7 +101,9 @@ describe('setAndForwardRef', () => {
       |}>;
 
       componentDidMount() {
+        /* eslint-disable react/no-string-refs */
         this.refs.stringRef && this.refs.stringRef.testFunc();
+        /* eslint-enable react/no-string-refs */
       }
 
       render() {
