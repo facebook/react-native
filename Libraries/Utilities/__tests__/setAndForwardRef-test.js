@@ -80,9 +80,7 @@ describe('setAndForwardRef', () => {
   });
 
   it('should forward refs (createRef-based)', () => {
-    ReactTestRenderer.create(
-      <TestComponentWithRef ref={createdRef} />,
-    );
+    ReactTestRenderer.create(<TestComponentWithRef ref={createdRef} />);
     const val = createdRef.current.testFunc();
 
     expect(innerFuncCalled).toBe(true);
