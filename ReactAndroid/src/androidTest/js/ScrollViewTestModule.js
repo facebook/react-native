@@ -11,7 +11,6 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-// var createReactClass = require('create-react-class');
 var View = require('View');
 var ScrollView = require('ScrollView');
 var Text = require('Text');
