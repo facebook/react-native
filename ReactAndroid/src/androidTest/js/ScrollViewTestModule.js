@@ -87,7 +87,7 @@ class ScrollViewTestApp extends React.Component ({
     this.refs.scrollView.scrollTo(destY, destX);
   }
 
-  render () {
+  render() {
     scrollViewApp = this;
     var children = this.state.data.map((item, index) => (
       <Item
