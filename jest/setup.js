@@ -9,19 +9,17 @@
 
 'use strict';
 
-const MockNativeMethods = require.requireActual('./MockNativeMethods');
-const mockComponent = require.requireActual('./mockComponent');
+const MockNativeMethods = jest.requireActual('./MockNativeMethods');
+const mockComponent = jest.requireActual('./mockComponent');
 
-require.requireActual('../Libraries/polyfills/babelHelpers.js');
-require.requireActual('../Libraries/polyfills/Object.es7.js');
-require.requireActual('../Libraries/polyfills/error-guard');
+jest.requireActual('../Libraries/polyfills/babelHelpers.js');
+jest.requireActual('../Libraries/polyfills/Object.es7.js');
+jest.requireActual('../Libraries/polyfills/error-guard');
 
 global.__DEV__ = true;
 
-global.Promise = require.requireActual('promise');
-global.regeneratorRuntime = require.requireActual(
-  'regenerator-runtime/runtime',
-);
+global.Promise = jest.requireActual('promise');
+global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 
 global.requestAnimationFrame = function(callback) {
   return setTimeout(callback, 0);
@@ -42,12 +40,12 @@ jest
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View', MockNativeMethods))
-  .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
-  .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
+  .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
+  .mock('ScrollView', () => jest.requireMock('ScrollViewMock'))
   .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
-  .mock('ListView', () => require.requireMock('ListViewMock'))
+  .mock('ListView', () => jest.requireMock('ListViewMock'))
   .mock('ListViewDataSource', () => {
-    const DataSource = require.requireActual('ListViewDataSource');
+    const DataSource = jest.requireActual('ListViewDataSource');
     DataSource.prototype.toJSON = function() {
       function ListViewDataSource(dataBlob) {
         this.items = 0;
@@ -68,9 +66,7 @@ jest
     return DataSource;
   })
   .mock('AnimatedImplementation', () => {
-    const AnimatedImplementation = require.requireActual(
-      'AnimatedImplementation',
-    );
+    const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
     AnimatedImplementation.createAnimatedComponent = function(Component) {
       const Wrapped = oldCreate(Component);
@@ -80,7 +76,7 @@ jest
     return AnimatedImplementation;
   })
   .mock('ReactNative', () => {
-    const ReactNative = require.requireActual('ReactNative');
+    const ReactNative = jest.requireActual('ReactNative');
     const NativeMethodsMixin =
       ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
         .NativeMethodsMixin;

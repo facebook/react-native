@@ -16,13 +16,13 @@ jest.mock('fs');
 let plistPath = null;
 jest.mock('../../ios/getPlistPath', () => () => plistPath);
 
-const {readFileSync} = require.requireActual('fs');
+const {readFileSync} = jest.requireActual('fs');
 const fs = require('fs');
 
 const xcode = require('xcode');
 const writePlist = require('../../ios/writePlist');
 
-const realPath = require.requireActual('path');
+const realPath = jest.requireActual('path');
 const projectPath = realPath.join(
   __dirname,
   '../../__fixtures__/project.pbxproj',
