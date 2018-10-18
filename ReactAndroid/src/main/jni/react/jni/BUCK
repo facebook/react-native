@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "AndroidJSCFactory.h",
@@ -40,8 +40,6 @@ rn_xplat_cxx_library(
         "-Wno-inconsistent-missing-override",
     ],
     fbandroid_allow_jni_merging = True,
-    fbandroid_deps = ANDROID_JSC_DEPS,
-    fbobjc_deps = APPLE_JSC_DEPS,
     platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
@@ -59,6 +57,7 @@ rn_xplat_cxx_library(
         "xplat//fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
     ]) if not IS_OSS_BUILD else [],
 )
