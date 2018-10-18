@@ -28,18 +28,32 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-import type {PhotoIdentifier} from 'CameraRoll';
+import type {PhotoIdentifier, GroupTypes} from 'CameraRoll';
 
-class CameraRollExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+type Props = $ReadOnly<{|
+  navigator?: ?Array<
+    $ReadOnly<{|
+      title: string,
+      component: Class<React.Component<any, any>>,
+      backButtonTitle: string,
+      passProps: $ReadOnly<{|asset: PhotoIdentifier|}>,
+    |}>,
+  >,
+|}>;
+
+type State = {|
+  groupTypes: GroupTypes,
+  sliderValue: number,
+  bigImages: boolean,
+|};
+
+class CameraRollExample extends React.Component<Props, State> {
   state = {
     groupTypes: 'SavedPhotos',
     sliderValue: 1,
     bigImages: true,
   };
-  _cameraRollView: ?CameraRollView;
+  _cameraRollView: ?React.ElementRef<typeof CameraRollView>;
   render() {
     return (
       <View>
@@ -139,7 +153,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Photos',
-    render(): React.Element<any> {
+    render(): React.Node {
       return <CameraRollExample />;
     },
   },
