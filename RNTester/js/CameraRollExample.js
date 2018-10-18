@@ -28,6 +28,8 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
+import type {PhotoIdentifier} from 'CameraRoll';
+
 class CameraRollExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
@@ -74,7 +76,7 @@ class CameraRollExample extends React.Component<
     }
   }
 
-  _renderImage = asset => {
+  _renderImage = (asset: PhotoIdentifier) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
@@ -82,7 +84,9 @@ class CameraRollExample extends React.Component<
       ? JSON.stringify(location)
       : 'Unknown location';
     return (
-      <TouchableOpacity key={asset} onPress={this.loadAsset.bind(this, asset)}>
+      <TouchableOpacity
+        key={asset.node.image.uri}
+        onPress={this.loadAsset.bind(this, asset)}>
         <View style={styles.row}>
           <Image source={asset.node.image} style={imageStyle} />
           <View style={styles.info}>

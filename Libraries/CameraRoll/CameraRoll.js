@@ -79,34 +79,36 @@ const getPhotosParamChecker = deprecatedCreateStrictShapeTypeChecker({
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
 
-type GetPhotosReturn = Promise<{
-  edges: Array<{
-    node: {
-      type: string,
-      group_name: string,
-      image: {
-        uri: string,
-        height: number,
-        width: number,
-        isStored?: boolean,
-        playableDuration: number,
-      },
-      timestamp: number,
-      location?: {
-        latitude?: number,
-        longitude?: number,
-        altitude?: number,
-        heading?: number,
-        speed?: number,
-      },
+export type PhotoIdentifier = {
+  node: {
+    type: string,
+    group_name: string,
+    image: {
+      uri: string,
+      height: number,
+      width: number,
+      isStored?: boolean,
+      playableDuration: number,
     },
-  }>,
+    timestamp: number,
+    location?: {
+      latitude?: number,
+      longitude?: number,
+      altitude?: number,
+      heading?: number,
+      speed?: number,
+    },
+  },
+};
+
+export type PhotoIdentifiersPage = {
+  edges: Array<PhotoIdentifier>,
   page_info: {
     has_next_page: boolean,
     start_cursor?: string,
     end_cursor?: string,
   },
-}>;
+};
 
 /**
  * Shape of the return value of the `getPhotos` function.
@@ -204,7 +206,7 @@ class CameraRoll {
    *
    * See https://facebook.github.io/react-native/docs/cameraroll.html#getphotos
    */
-  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
+  static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},
