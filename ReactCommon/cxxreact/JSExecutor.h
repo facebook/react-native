@@ -85,8 +85,6 @@ public:
   virtual void setGlobalVariable(std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) = 0;
 
-  virtual std::string getGlobalVariable(std::string propName) = 0;
-
   virtual void* getJavaScriptContext() {
     return nullptr;
   }
