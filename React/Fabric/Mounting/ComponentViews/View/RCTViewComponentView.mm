@@ -193,12 +193,46 @@ using namespace facebook::react;
 
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
-    self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
+    self.nativeId = RCTNSStringFromStringNilIfEmpty(newViewProps.nativeId);
   }
 
   // `accessible`
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
+  }
+
+  // `accessibilityLabel`
+  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+    self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
+  }
+
+  // `accessibilityHint`
+  if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
+    self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
+  }
+
+  // `accessibilityTraits`
+  if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
+    self.accessibilityElement.accessibilityTraits = RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
+  // `accessibilityViewIsModal`
+  if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
+    self.accessibilityElement.accessibilityViewIsModal = newViewProps.accessibilityViewIsModal;
+  }
+
+  // `accessibilityElementsHidden`
+  if (oldViewProps.accessibilityElementsHidden != newViewProps.accessibilityElementsHidden) {
+    self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
+  }
+
+  // `accessibilityIgnoresInvertColors`
+  if (oldViewProps.accessibilityIgnoresInvertColors != newViewProps.accessibilityIgnoresInvertColors) {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if (@available(iOS 11.0, *)) {
+      self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
+    }
+#endif
   }
 
   if (needsInvalidateLayer) {
@@ -440,6 +474,34 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 - (NSObject *)accessibilityElement
 {
   return self;
+}
+
+static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
+{
+  NSMutableString *result = [NSMutableString stringWithString:@""];
+  for (UIView *subview in view.subviews) {
+    NSString *label = subview.accessibilityLabel;
+    if (!label) {
+      label = RCTRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (result.length > 0) {
+        [result appendString:@" "];
+      }
+      [result appendString:label];
+    }
+  }
+  return result;
+}
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+
+  return RCTRecursiveAccessibilityLabel(self);
 }
 
 #pragma mark - Accessibility Events

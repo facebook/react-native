@@ -19,7 +19,7 @@ namespace react {
 struct LayoutConstraints {
   Size minimumSize{0, 0};
   Size maximumSize{kFloatUndefined, kFloatUndefined};
-  LayoutDirection layoutDirection;
+  LayoutDirection layoutDirection{LayoutDirection::Undefined};
 };
 
 } // namespace react

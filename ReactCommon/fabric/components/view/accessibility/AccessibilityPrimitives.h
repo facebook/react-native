@@ -27,7 +27,7 @@ enum class AccessibilityTraits : uint32_t {
   SearchField = (1 << 10),
   StartsMediaSession = (1 << 11),
   Adjustable = (1 << 12),
-  DirectInteraction = (1 << 13),
+  AllowsDirectInteraction = (1 << 13),
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
 };
@@ -36,6 +36,12 @@ constexpr enum AccessibilityTraits operator|(
     const enum AccessibilityTraits lhs,
     const enum AccessibilityTraits rhs) {
   return (enum AccessibilityTraits)((uint32_t)lhs | (uint32_t)rhs);
+}
+
+constexpr enum AccessibilityTraits operator&(
+    const enum AccessibilityTraits lhs,
+    const enum AccessibilityTraits rhs) {
+  return (enum AccessibilityTraits)((uint32_t)lhs & (uint32_t)rhs);
 }
 
 } // namespace react

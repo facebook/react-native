@@ -170,11 +170,6 @@ RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
 - (BOOL)moduleIsInitialized:(Class)moduleClass;
 
 /**
- * Retrieve an extra module that gets bound to the JS context, if any.
- */
-- (id)jsBoundExtraModuleForClass:(Class)moduleClass;
-
-/**
  * All registered bridge module classes.
  */
 @property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;

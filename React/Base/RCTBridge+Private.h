@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <JavaScriptCore/JavaScriptCore.h>
-#import <JavaScriptCore/JSBase.h>
-
 #import <React/RCTBridge.h>
 
 @class RCTModuleData;
 @protocol RCTJavaScriptExecutor;
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-RCT_EXTERN __attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(JSGlobalContextRef ctx);
 
 #if RCT_DEBUG
 RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
@@ -138,15 +133,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
-
-@end
-
-@interface RCTBridge (JavaScriptCore)
-
-/**
- * The raw JSGlobalContextRef used by the bridge.
- */
-@property (nonatomic, readonly, assign) JSGlobalContextRef jsContextRef;
 
 @end
 

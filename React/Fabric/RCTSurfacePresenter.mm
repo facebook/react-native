@@ -307,12 +307,3 @@ using namespace facebook::react;
 }
 
 @end
-
-@implementation RCTBridge (RCTSurfacePresenter)
-
-- (RCTSurfacePresenter *)surfacePresenter
-{
-  return [self jsBoundExtraModuleForClass:[RCTSurfacePresenter class]];
-}
-
-@end

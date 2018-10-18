@@ -15,7 +15,7 @@ const invariant = require('fbjs/lib/invariant');
 let showedListViewDeprecation = false;
 
 // Export React, plus some native additions.
-const ReactNative = {
+module.exports = {
   // Components
   get AccessibilityInfo() {
     return require('AccessibilityInfo');
@@ -340,5 +340,3 @@ const ReactNative = {
     );
   },
 };
-
-module.exports = ReactNative;

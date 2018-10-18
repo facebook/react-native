@@ -149,6 +149,18 @@ bool TextAttributes::operator!=(const TextAttributes &rhs) const {
   return !(*this == rhs);
 }
 
+TextAttributes TextAttributes::defaultTextAttributes() {
+  static auto textAttributes = [] {
+    auto textAttributes = TextAttributes{};
+    // Non-obvious (can be different among platforms) default text attributes.
+    textAttributes.foregroundColor = blackColor();
+    textAttributes.backgroundColor = clearColor();
+    textAttributes.fontSize = 12.0;
+    return textAttributes;
+  }();
+  return textAttributes;
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -76,6 +76,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Folly", folly_version
     ss.dependency             "React/Core"
     ss.dependency             "React/cxxreact"
+    ss.dependency             "React/jsiexecutor"
     ss.compiler_flags       = folly_compiler_flags
     ss.private_header_files = "React/Cxx*/*.h"
     ss.source_files         = "React/Cxx*/*.{h,m,mm}"
@@ -105,19 +106,29 @@ Pod::Spec.new do |s|
     ss.source_files         = "React/**/RCTTV*.{h,m}"
   end
 
-  s.subspec "jschelpers" do |ss|
-    ss.dependency             "Folly", folly_version
-    ss.dependency             "React/PrivateDatabase"
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "ReactCommon/jschelpers/*.{cpp,h}"
-    ss.private_header_files = "ReactCommon/jschelpers/*.h"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-    ss.framework            = "JavaScriptCore"
-  end
-
   s.subspec "jsinspector" do |ss|
     ss.source_files         = "ReactCommon/jsinspector/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsinspector/*.h"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+  end
+
+  s.subspec "jsiexecutor" do |ss|
+    ss.dependency             "React/cxxreact"
+    ss.dependency             "React/jsi"
+    ss.dependency             "Folly", folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/jsiexecutor/jsireact/*.h"
+    ss.header_dir           = "jsireact"
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+  end
+
+  s.subspec "jsi" do |ss|
+    ss.dependency             "Folly", folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "ReactCommon/jsi/*.{cpp,h}"
+    ss.private_header_files = "ReactCommon/jsi/*.h"
+    ss.framework            = "JavaScriptCore"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
@@ -128,7 +139,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "cxxreact" do |ss|
-    ss.dependency             "React/jschelpers"
     ss.dependency             "React/jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", folly_version

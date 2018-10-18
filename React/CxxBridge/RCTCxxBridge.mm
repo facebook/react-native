@@ -29,15 +29,14 @@
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
 #import <cxxreact/JSBundleType.h>
-#import <cxxreact/JSCExecutor.h>
 #import <cxxreact/JSIndexedRAMBundle.h>
 #import <cxxreact/ModuleRegistry.h>
-#import <cxxreact/Platform.h>
 #import <cxxreact/RAMBundleRegistry.h>
-#import <jschelpers/Value.h>
+#import <cxxreact/ReactMarker.h>
+#import <jsi/JSCRuntime.h>
+#import <jsireact/JSIExecutor.h>
 
 #import "NSDataBigString.h"
-#import "RCTJSCHelpers.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
 
@@ -57,6 +56,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 typedef void (^RCTPendingCall)();
 
+using namespace facebook::jsc;
 using namespace facebook::react;
 
 /**
@@ -177,18 +177,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
-
-+ (void)initialize
-{
-  if (self == [RCTCxxBridge class]) {
-    RCTPrepareJSCExecutor();
-  }
-}
-
-- (JSGlobalContextRef)jsContextRef
-{
-  return (JSGlobalContextRef)(_reactInstance ? _reactInstance->getJavaScriptContext() : nullptr);
-}
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
@@ -328,22 +316,13 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      BOOL useCustomJSC =
-        [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
-        [self.delegate shouldBridgeUseCustomJSC:self];
-      // We use the name of the device and the app for debugging & metrics
-      NSString *deviceName = [[UIDevice currentDevice] name];
-      NSString *appName = [[NSBundle mainBundle] bundleIdentifier];
-      // The arg is a cache dir.  It's not used with standard JSC.
-      executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
-        ("OwnerIdentity", "ReactNative")
-        ("AppIdentity", [(appName ?: @"unknown") UTF8String])
-        ("DeviceIdentity", [(deviceName ?: @"unknown") UTF8String])
-        ("UseCustomJSC", (bool)useCustomJSC)
-  #if RCT_PROFILE
-        ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
-  #endif
-      ));
+      executorFactory = std::make_shared<JSIExecutorFactory>(
+          makeJSCRuntime(),
+          [](const std::string &message, unsigned int logLevel) {
+              _RCTLogJavaScriptInternal(
+                  static_cast<RCTLogLevel>(logLevel),
+                  [NSString stringWithUTF8String:message.c_str()]);
+          }, nullptr);
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -461,18 +440,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
-- (id)jsBoundExtraModuleForClass:(Class)moduleClass
-{
-  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
-    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
-    if ([cxxDelegate respondsToSelector:@selector(jsBoundExtraModuleForClass:)]) {
-      return [cxxDelegate jsBoundExtraModuleForClass:moduleClass];
-    }
-  }
-
-  return nil;
-}
-
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
 {
   if (!self.valid) {
@@ -534,8 +501,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         std::make_unique<JSBigStdString>("true"));
     }
 #endif
-
-    [self installExtraJSBinding];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -632,16 +597,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     [_moduleDataByID addObject:moduleData];
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)installExtraJSBinding
-{
-  if ([self.delegate conformsToProtocol:@protocol(RCTCxxBridgeDelegate)]) {
-    id<RCTCxxBridgeDelegate> cxxDelegate = (id<RCTCxxBridgeDelegate>) self.delegate;
-    if ([cxxDelegate respondsToSelector:@selector(installExtraJSBinding:)]) {
-      [cxxDelegate installExtraJSBinding:self.jsContextRef];
-    }
-  }
 }
 
 - (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules

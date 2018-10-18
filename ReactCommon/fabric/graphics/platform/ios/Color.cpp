@@ -35,5 +35,20 @@ ColorComponents colorComponentsFromColor(SharedColor color) {
                          (float)components[3]};
 }
 
+SharedColor clearColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 0});
+  return color;
+}
+
+SharedColor blackColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 1});
+  return color;
+}
+
+SharedColor whiteColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{1, 1, 1, 1});
+  return color;
+}
+
 } // namespace react
 } // namespace facebook

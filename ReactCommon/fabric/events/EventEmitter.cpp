@@ -38,6 +38,7 @@ EventEmitter::EventEmitter(
     Tag tag,
     WeakEventDispatcher eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
+      weakEventTarget_({}),
       tag_(tag),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
@@ -66,7 +67,11 @@ void EventEmitter::setEnabled(bool enabled) const {
     return;
   }
 
-  if (!enabled) {
+  if (enabled) {
+    eventTarget_ = weakEventTarget_.lock();
+    weakEventTarget_.reset();
+  } else {
+    weakEventTarget_ = eventTarget_;
     eventTarget_.reset();
   }
 }
