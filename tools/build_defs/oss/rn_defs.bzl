@@ -22,8 +22,6 @@ GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
-APPLE_JSC_INTERNAL_DEPS = []
-
 APPLE_JSC_DEPS = []
 
 ANDROID_JSC_INTERNAL_DEPS = [
