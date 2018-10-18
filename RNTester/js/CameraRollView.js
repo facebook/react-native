@@ -28,9 +28,13 @@ const ListViewDataSource = require('ListViewDataSource');
 const groupByEveryN = require('groupByEveryN');
 const logError = require('logError');
 
-import type {PhotoIdentifier, PhotoIdentifiersPage} from 'CameraRoll';
+import type {
+  PhotoIdentifier,
+  PhotoIdentifiersPage,
+  GetPhotosParams,
+} from 'CameraRoll';
 
-const rowHasChanged = function(r1: Array<Image>, r2: Array<Image>): boolean {
+function rowHasChanged<T>(r1: Array<T>, r2: Array<T>): boolean {
   if (r1.length !== r2.length) {
     return true;
   }
@@ -42,9 +46,9 @@ const rowHasChanged = function(r1: Array<Image>, r2: Array<Image>): boolean {
   }
 
   return false;
-};
+}
 
-type PropsObject = {|
+type Props = $ReadOnly<{|
   /**
    * The group where the photos will be fetched from. Possible
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
@@ -79,9 +83,7 @@ type PropsObject = {|
    * The asset type, one of 'Photos', 'Videos' or 'All'
    */
   assetType: 'Photos' | 'Videos' | 'All',
-|};
-
-type Props = $ReadOnly<PropsObject>;
+|}>;
 
 type State = {|
   assets: Array<PhotoIdentifier>,
@@ -131,7 +133,7 @@ class CameraRollView extends React.Component<Props, State> {
     this.fetch();
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: $Shape<PropsObject>) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }
@@ -157,7 +159,7 @@ class CameraRollView extends React.Component<Props, State> {
       }
     }
 
-    const fetchParams: Object = {
+    const fetchParams: GetPhotosParams = {
       first: this.props.batchSize,
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,

@@ -32,10 +32,12 @@ const ASSET_TYPE_OPTIONS = {
   Photos: 'Photos',
 };
 
-type GetPhotosParams = {
+export type GroupTypes = $Keys<typeof GROUP_TYPES_OPTIONS>;
+
+export type GetPhotosParams = {
   first: number,
   after?: string,
-  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
+  groupTypes?: GroupTypes,
   groupName?: string,
   assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
   mimeTypes?: Array<string>,
@@ -84,6 +86,7 @@ export type PhotoIdentifier = {
     type: string,
     group_name: string,
     image: {
+      filename: string,
       uri: string,
       height: number,
       width: number,
@@ -153,8 +156,8 @@ const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
  * See https://facebook.github.io/react-native/docs/cameraroll.html
  */
 class CameraRoll {
-  static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
-  static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
+  static GroupTypesOptions = GROUP_TYPES_OPTIONS;
+  static AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
