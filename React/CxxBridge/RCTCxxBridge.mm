@@ -603,8 +603,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
-  RCTAssert(!(RCTIsMainQueue() && lazilyDiscovered), @"Lazy discovery can only happen off the Main Queue");
-
   // Set up moduleData for automatically-exported modules
   NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
 
