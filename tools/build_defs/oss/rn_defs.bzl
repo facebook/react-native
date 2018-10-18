@@ -83,10 +83,14 @@ def react_native_tests_target(path):
 def react_native_integration_tests_target(path):
     return "//ReactAndroid/src/androidTest/" + path
 
-# Helper for referring to non-RN code from RN OSS code.
+# Helpers for referring to non-RN code from RN OSS code.
 # Example: react_native_dep('java/com/facebook/systrace:systrace')
 def react_native_dep(path):
     return "//ReactAndroid/src/main/" + path
+
+# Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
+def react_native_xplat_dep(path):
+    return "//ReactCommon/" + path
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
