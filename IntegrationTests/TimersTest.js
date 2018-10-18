@@ -13,20 +13,19 @@
 const React = require('react');
 const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const TimerMixin = require('react-timer-mixin');
 
 const {StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 const TimersTest = createReactClass({
   displayName: 'TimersTest',
-  mixins: [TimerMixin],
+  _timeoutIDs: ([]: Array<TimeoutID>),
+  _intervalIDs: ([]: Array<IntervalID>),
+  _immediateIDs: ([]: Array<Object>),
+  _rafIDs: ([]: Array<AnimationFrameID>),
 
   _nextTest: () => {},
-  _interval: -1,
+  _interval: (null: ?IntervalID),
 
   getInitialState() {
     return {
@@ -36,73 +35,87 @@ const TimersTest = createReactClass({
   },
 
   componentDidMount() {
-    this.setTimeout(this.testSetTimeout0, 1000);
+    this._setTimeout(this.testSetTimeout0, 1000);
+  },
+
+  componentWillUnmount: function() {
+    this._timeoutIDs.forEach(clearTimeout);
+    this._timeoutIDs = [];
+    this._intervalIDs.forEach(clearInterval);
+    this._intervalIDs = [];
+    this._immediateIDs.forEach(clearImmediate);
+    this._immediateIDs = [];
+    this._rafIDs.forEach(cancelAnimationFrame);
+    this._rafIDs = [];
   },
 
   testSetTimeout0() {
-    this.setTimeout(this.testSetTimeout1, 0);
+    this._setTimeout(this.testSetTimeout1, 0);
   },
 
   testSetTimeout1() {
-    this.setTimeout(this.testSetTimeout50, 1);
+    this._setTimeout(this.testSetTimeout50, 1);
   },
 
   testSetTimeout50() {
-    this.setTimeout(this.testRequestAnimationFrame, 50);
+    this._setTimeout(this.testRequestAnimationFrame, 50);
   },
 
   testRequestAnimationFrame() {
-    this.requestAnimationFrame(this.testSetInterval0);
+    this._requestAnimationFrame(this.testSetInterval0);
   },
 
   testSetInterval0() {
     this._nextTest = this.testSetInterval20;
-    this._interval = this.setInterval(this._incrementInterval, 0);
+    this._interval = this._setInterval(this._incrementInterval, 0);
   },
 
   testSetInterval20() {
     this._nextTest = this.testSetImmediate;
-    this._interval = this.setInterval(this._incrementInterval, 20);
+    this._interval = this._setInterval(this._incrementInterval, 20);
   },
 
   testSetImmediate() {
-    this.setImmediate(this.testClearTimeout0);
+    this._setImmediate(this.testClearTimeout0);
   },
 
   testClearTimeout0() {
-    const timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
-    this.clearTimeout(timeout);
+    const timeout = this._setTimeout(() => this._fail('testClearTimeout0'), 0);
+    this._clearTimeout(timeout);
     this.testClearTimeout30();
   },
 
   testClearTimeout30() {
-    const timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
-    this.clearTimeout(timeout);
-    this.setTimeout(this.testClearMulti, 50);
+    const timeout = this._setTimeout(
+      () => this._fail('testClearTimeout30'),
+      30,
+    );
+    this._clearTimeout(timeout);
+    this._setTimeout(this.testClearMulti, 50);
   },
 
   testClearMulti() {
     const fails = [];
-    fails.push(this.setTimeout(() => this._fail('testClearMulti-1'), 20));
-    fails.push(this.setTimeout(() => this._fail('testClearMulti-2'), 50));
-    const delayClear = this.setTimeout(
+    fails.push(this._setTimeout(() => this._fail('testClearMulti-1'), 20));
+    fails.push(this._setTimeout(() => this._fail('testClearMulti-2'), 50));
+    const delayClear = this._setTimeout(
       () => this._fail('testClearMulti-3'),
       50,
     );
-    fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
-    fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
+    fails.push(this._setTimeout(() => this._fail('testClearMulti-4'), 0));
+    fails.push(this._setTimeout(() => this._fail('testClearMulti-5'), 10));
 
-    fails.forEach(timeout => this.clearTimeout(timeout));
-    this.setTimeout(() => this.clearTimeout(delayClear), 20);
+    fails.forEach(timeout => this._clearTimeout(timeout));
+    this._setTimeout(() => this._clearTimeout(delayClear), 20);
 
-    this.setTimeout(this.testOrdering, 50);
+    this._setTimeout(this.testOrdering, 50);
   },
 
   testOrdering() {
     // Clear timers are set first because it's more likely to uncover bugs.
     let fail0;
-    this.setImmediate(() => this.clearTimeout(fail0));
-    fail0 = this.setTimeout(
+    this._setImmediate(() => this._clearTimeout(fail0));
+    fail0 = this._setTimeout(
       () =>
         this._fail(
           'testOrdering-t0, setImmediate should happen before ' +
@@ -111,18 +124,18 @@ const TimersTest = createReactClass({
       0,
     );
     let failAnim; // This should fail without the t=0 fastpath feature.
-    this.setTimeout(() => this.cancelAnimationFrame(failAnim), 0);
-    failAnim = this.requestAnimationFrame(() =>
+    this._setTimeout(() => this._cancelAnimationFrame(failAnim), 0);
+    failAnim = this._requestAnimationFrame(() =>
       this._fail(
         'testOrdering-Anim, setTimeout 0 should happen before ' +
           'requestAnimationFrame',
       ),
     );
     let fail25;
-    this.setTimeout(() => {
-      this.clearTimeout(fail25);
+    this._setTimeout(() => {
+      this._clearTimeout(fail25);
     }, 20);
-    fail25 = this.setTimeout(
+    fail25 = this._setTimeout(
       () =>
         this._fail(
           'testOrdering-t25, setTimeout 20 should happen before ' +
@@ -130,7 +143,7 @@ const TimersTest = createReactClass({
         ),
       25,
     );
-    this.setTimeout(this.done, 50);
+    this._setTimeout(this.done, 50);
   },
 
   done() {
@@ -151,12 +164,74 @@ const TimersTest = createReactClass({
     );
   },
 
+  _setTimeout: function(fn: () => void, ms?: number): TimeoutID {
+    const timeoutID = setTimeout(() => {
+      this._timeoutIDs = this._timeoutIDs.filter(id => id !== timeoutID);
+      fn();
+    }, ms);
+    this._timeoutIDs.push(timeoutID);
+    return timeoutID;
+  },
+
+  _setInterval: function(fn: () => void, ms?: number): IntervalID {
+    const intervalID = setInterval(() => {
+      fn();
+    }, ms);
+    this._intervalIDs.push(intervalID);
+    return intervalID;
+  },
+
+  _setImmediate: function(fn: () => void): Object {
+    const immediateID = setImmediate(() => {
+      this._immediateIDs = this._immediateIDs.filter(id => id !== immediateID);
+      fn();
+    });
+    this._immediateIDs.push(immediateID);
+    return immediateID;
+  },
+
+  _requestAnimationFrame: function(fn: () => void): AnimationFrameID {
+    const rafID = requestAnimationFrame(() => {
+      this._rafIDs = this._rafIDs.filter(id => id !== rafID);
+      fn();
+    });
+    this._rafIDs.push(rafID);
+    return rafID;
+  },
+
+  _clearTimeout: function(timeoutID: ?TimeoutID) {
+    if (timeoutID == null) {
+      return;
+    }
+
+    clearTimeout(timeoutID);
+    this._timeoutIDs = this._timeoutIDs.filter(id => id !== timeoutID);
+  },
+
+  _clearInterval: function(intervalID: ?IntervalID) {
+    if (intervalID == null) {
+      return;
+    }
+
+    clearInterval(intervalID);
+    this._intervalIDs = this._intervalIDs.filter(id => id !== intervalID);
+  },
+
+  _cancelAnimationFrame: function(rafID: ?AnimationFrameID) {
+    if (rafID == null) {
+      return;
+    }
+
+    cancelAnimationFrame(rafID);
+    this._rafIDs = this._rafIDs.filter(id => id !== rafID);
+  },
+
   _incrementInterval() {
     if (this.state.count > 3) {
       throw new Error('interval incremented past end.');
     }
     if (this.state.count === 3) {
-      this.clearInterval(this._interval);
+      this._clearInterval(this._interval);
       this.setState({count: 0}, this._nextTest);
       return;
     }
