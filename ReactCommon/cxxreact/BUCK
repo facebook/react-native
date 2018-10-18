@@ -147,6 +147,5 @@ rn_xplat_cxx_library(
         react_native_xplat_target("microprofiler:microprofiler"),
         "xplat//folly:optional",
         "xplat//third-party/glog:glog",
-        react_native_xplat_target("privatedata:privatedata"),
     ],
 )
