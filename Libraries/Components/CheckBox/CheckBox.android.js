@@ -14,6 +14,7 @@ const StyleSheet = require('StyleSheet');
 
 const requireNativeComponent = require('requireNativeComponent');
 const nullthrows = require('nullthrows');
+const setAndForwardRef = require('setAndForwardRef');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
@@ -27,6 +28,8 @@ type CheckBoxEvent = SyntheticEvent<
 >;
 
 type CommonProps = $ReadOnly<{|
+  ...ViewProps,
+
   /**
    * Used in case the props change removes the component.
    */
@@ -41,16 +44,18 @@ type CommonProps = $ReadOnly<{|
    * Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
-
-  /**
-   * Used to get the ref for the native checkbox
-   */
-  // $FlowFixMe: Properly type the ref prop type
-  ref?: $FlowIssue,
 |}>;
 
+type NativeProps = $ReadOnly<{|
+  ...CommonProps,
+
+  on?: ?boolean,
+  enabled?: boolean,
+|}>;
+
+type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
+
 type Props = $ReadOnly<{|
-  ...ViewProps,
   ...CommonProps,
 
   /**
@@ -64,17 +69,12 @@ type Props = $ReadOnly<{|
    * Default value is false.
    */
   disabled?: ?boolean,
+
+  /**
+   * Used to get the ref for the native checkbox
+   */
+  forwardedRef?: ?React.Ref<CheckBoxNativeType>,
 |}>;
-
-type NativeProps = $ReadOnly<{|
-  ...ViewProps,
-  ...CommonProps,
-
-  on?: ?boolean,
-  enabled?: boolean,
-|}>;
-
-type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
 
 const RCTCheckBox = ((requireNativeComponent(
   'AndroidCheckBox',
@@ -137,24 +137,16 @@ const RCTCheckBox = ((requireNativeComponent(
  */
 class CheckBox extends React.Component<Props> {
   _nativeRef: ?React.ElementRef<CheckBoxNativeType> = null;
+  _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => this.props.forwardedRef,
+    setLocalRef: ref => {
+      this._nativeRef = ref;
+    },
+  });
 
   static defaultProps = {
     value: false,
     disabled: false,
-  };
-
-  _setAndForwardRef = nativeRef => {
-    const {ref} = this.props;
-
-    this._nativeRef = nativeRef;
-
-    // Forward to user ref prop (if one has been specified)
-    // String-based refs cannot be shared.
-    if (typeof ref === 'function') {
-      ref(nativeRef);
-    } else if (typeof ref === 'object' && ref != null) {
-      ref.current = nativeRef;
-    }
   };
 
   _onChange = (event: CheckBoxEvent) => {
@@ -167,7 +159,7 @@ class CheckBox extends React.Component<Props> {
   };
 
   render() {
-    const {disabled, value, ...props} = this.props;
+    const {disabled, value, forwardedRef, ...props} = this.props;
     const nativeProps = {
       ...props,
       onStartShouldSetResponder: () => true,
@@ -180,7 +172,7 @@ class CheckBox extends React.Component<Props> {
     return (
       <RCTCheckBox
         {...nativeProps}
-        ref={this._setAndForwardRef}
+        ref={this._setNativeRef}
         onChange={this._onChange}
       />
     );
@@ -194,4 +186,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = CheckBox;
+/**
+ * Can't use CheckBoxNativeType because it has different props
+ */
+type CheckBoxType = Class<NativeComponent<Props>>;
+
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const CheckBoxWithRef = React.forwardRef((props, ref) => (
+  <CheckBox {...props} forwardedRef={ref} />
+));
+
+module.exports = (CheckBoxWithRef: CheckBoxType);
