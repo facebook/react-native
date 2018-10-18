@@ -59,3 +59,38 @@ rn_xplat_cxx_library(
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
+
+rn_xplat_cxx_library(
+    name = "JSCRuntime",
+    srcs = [
+        "JSCRuntime.cpp",
+    ],
+    header_namespace = "jsi",
+    exported_headers = [
+        "JSCRuntime.h",
+    ],
+    cxx_deps = [
+        "xplat//jsc:jsc",
+    ],
+    fbandroid_compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-O3",
+    ],
+    fbandroid_deps = [
+        "xplat//jsc:jsc",
+    ],
+    fbobjc_compiler_flags = [
+        "-Os",
+    ],
+    fbobjc_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
+    ],
+    visibility = ["PUBLIC"],
+    xplat_mangled_args = {
+        "soname": "libjscjsi.$(ext)",
+    },
+    exported_deps = [
+        react_native_xplat_dep("jsi:jsi"),
+    ],
+)
