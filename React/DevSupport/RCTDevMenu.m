@@ -269,12 +269,6 @@ RCT_EXPORT_MODULE()
     }]];
   }
 
-  if (devSettings.isJSCSamplingProfilerAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
-      [devSettings toggleJSCSamplingProfiler];
-    }]];
-  }
-
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Toggle Inspector";
   } handler:^{
