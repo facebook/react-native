@@ -211,7 +211,11 @@ class JSCRuntime : public jsi::Runtime {
 #endif
 };
 
-#if __has_builtin(__builtin_expect)
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+
+#if __has_builtin(__builtin_expect) || defined(__GNUC__)
 #define JSC_LIKELY(EXPR) __builtin_expect((bool)(EXPR), true)
 #define JSC_UNLIKELY(EXPR) __builtin_expect((bool)(EXPR), false)
 #else

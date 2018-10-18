@@ -8,9 +8,11 @@
 #include <cxxreact/SystraceSection.h>
 #include <folly/Conv.h>
 #include <folly/json.h>
-#include <glog/logging.h>
+#include <folly/GLog.h>
 #include <jsi/JSIDynamic.h>
+#include <jsi/JSCRuntime.h>
 
+#include <sstream>
 #include <stdexcept>
 
 using namespace facebook::jsi;
