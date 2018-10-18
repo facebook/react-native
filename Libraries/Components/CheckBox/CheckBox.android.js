@@ -159,14 +159,14 @@ class CheckBox extends React.Component<Props> {
   };
 
   render() {
-    const {disabled, value, forwardedRef, ...props} = this.props;
+    const {disabled, value, style, forwardedRef, ...props} = this.props;
     const nativeProps = {
       ...props,
       onStartShouldSetResponder: () => true,
       onResponderTerminationRequest: () => false,
       enabled: !disabled,
       on: value,
-      style: [styles.rctCheckBox, props.style],
+      style: [styles.rctCheckBox, style],
     };
 
     return (
