@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @format
@@ -16,132 +14,89 @@ require('../../setupBabel')();
 
 const Metro = require('metro');
 
-const HmrServer = require('metro/src/HmrServer');
-
 const {Terminal} = require('metro-core');
 
-const attachWebsocketServer = require('./util/attachWebsocketServer');
-const compression = require('compression');
-const connect = require('connect');
-const copyToClipBoardMiddleware = require('./middleware/copyToClipBoardMiddleware');
-const defaultAssetExts = Metro.defaults.assetExts;
-const defaultSourceExts = Metro.defaults.sourceExts;
-const defaultPlatforms = Metro.defaults.platforms;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const defaultProvidesModuleNodeModules =
-  Metro.defaults.providesModuleNodeModules;
-const errorhandler = require('errorhandler');
-const fs = require('fs');
-const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const http = require('http');
-const https = require('https');
-const indexPageMiddleware = require('./middleware/indexPage');
-const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
-const messageSocket = require('./util/messageSocket.js');
+const messageSocket = require('./util/messageSocket');
 const morgan = require('morgan');
-const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
-const serveStatic = require('serve-static');
-const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
-const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const webSocketProxy = require('./util/webSocketProxy.js');
+const webSocketProxy = require('./util/webSocketProxy');
+const MiddlewareManager = require('./middleware/MiddlewareManager');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const TransformCaching = require('metro/src/lib/TransformCaching');
-
-const {ASSET_REGISTRY_PATH} = require('../core/Constants');
-
-import type {ConfigT} from 'metro';
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-import type {Reporter} from 'metro/src/lib/reporting';
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 export type Args = {|
   +assetExts: $ReadOnlyArray<string>,
+  +cert: string,
+  +customLogReporterPath?: string,
   +host: string,
+  +https: boolean,
   +maxWorkers: number,
+  +key: string,
   +nonPersistent: boolean,
   +platforms: $ReadOnlyArray<string>,
   +port: number,
-  +projectRoots: $ReadOnlyArray<string>,
+  +projectRoot: string,
+  +providesModuleNodeModules: Array<string>,
   +resetCache: boolean,
   +sourceExts: $ReadOnlyArray<string>,
+  +transformer?: string,
   +verbose: boolean,
+  +watchFolders: $ReadOnlyArray<string>,
 |};
 
-function runServer(
-  args: Args,
-  config: ConfigT,
-  // FIXME: this is weird design. The top-level should pass down a custom
-  // reporter rather than passing it up as argument to an event.
-  startedCallback: (reporter: Reporter) => mixed,
-  readyCallback: (reporter: Reporter) => mixed,
-) {
-  var wsProxy = null;
-  var ms = null;
-
+async function runServer(args: Args, config: ConfigT) {
   const terminal = new Terminal(process.stdout);
   const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
   const reporter = new ReporterImpl(terminal);
-  const packagerServer = getPackagerServer(args, config, reporter);
-  startedCallback(reporter);
+  const middlewareManager = new MiddlewareManager(args);
 
-  const app = connect()
-    .use(loadRawBodyMiddleware)
-    .use(compression())
-    .use(
-      '/debugger-ui',
-      serveStatic(path.join(__dirname, 'util', 'debugger-ui')),
-    )
-    .use(
-      getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()),
-    )
-    .use(getDevToolsMiddleware(args, () => ms && ms.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware(args))
-    .use(copyToClipBoardMiddleware)
-    .use(statusPageMiddleware)
-    .use(systraceProfileMiddleware)
-    .use(indexPageMiddleware)
-    .use(packagerServer.processRequest.bind(packagerServer));
+  middlewareManager.getConnectInstance().use(morgan('combined'));
 
-  args.projectRoots.forEach(root => app.use(serveStatic(root)));
+  args.watchFolders.forEach(middlewareManager.serveStatic);
 
-  app.use(morgan('combined')).use(errorhandler());
+  // $FlowFixMe Metro configuration is immutable.
+  config.maxWorkers = args.maxWorkers;
+  // $FlowFixMe Metro configuration is immutable.
+  config.server.port = args.port;
+  // $FlowFixMe Metro configuration is immutable.
+  config.reporter = reporter;
+  // $FlowFixMe Metro configuration is immutable.
+  config.resetCache = args.resetCache;
+  // $FlowFixMe Metro configuration is immutable.
+  config.projectRoot = args.projectRoot;
+  // $FlowFixMe Metro configuration is immutable.
+  config.watchFolders = args.watchFolders.slice(0);
+  // $FlowFixMe Metro configuration is immutable.
+  config.server.enhanceMiddleware = middleware =>
+    middlewareManager.getConnectInstance().use(middleware);
 
-  if (args.https && (!args.key || !args.cert)) {
-    throw new Error('Cannot use https without specifying key and cert options');
-  }
-
-  const serverInstance = args.https
-    ? https.createServer(
-        {
-          key: fs.readFileSync(args.key),
-          cert: fs.readFileSync(args.cert),
-        },
-        app,
-      )
-    : http.createServer(app);
-
-  serverInstance.listen(args.port, args.host, 511, function() {
-    attachWebsocketServer({
-      httpServer: serverInstance,
-      path: '/hot',
-      websocketServer: new HmrServer(packagerServer, reporter),
-    });
-
-    wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
-    ms = messageSocket.attachToServer(serverInstance, '/message');
-    readyCallback(reporter);
+  const serverInstance = await Metro.runServer(config, {
+    host: args.host,
+    secure: args.https,
+    secureCert: args.cert,
+    secureKey: args.key,
+    hmrEnabled: true,
   });
-  // Disable any kind of automatic timeout behavior for incoming
-  // requests in case it takes the packager more than the default
-  // timeout of 120 seconds to respond to a request.
-  serverInstance.timeout = 0;
+
+  const wsProxy = webSocketProxy.attachToServer(
+    serverInstance,
+    '/debugger-proxy',
+  );
+  const ms = messageSocket.attachToServer(serverInstance, '/message');
+  middlewareManager.attachDevToolsSocket(wsProxy);
+  middlewareManager.attachDevToolsSocket(ms);
+
+  // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
+  // early versions of Node 8, this was implemented in a buggy way which caused
+  // some HTTP responses (like those containing large JS bundles) to be
+  // terminated early.
+  //
+  // As a workaround, arbitrarily increase the keep-alive from 5 to 30 seconds,
+  // which should be enough to send even the largest of JS bundles.
+  //
+  // For more info: https://github.com/nodejs/node/issues/13391
+  //
+  serverInstance.keepAliveTimeout = 30000;
 }
 
 function getReporterImpl(customLogReporterPath: ?string) {
@@ -162,46 +117,6 @@ function getReporterImpl(customLogReporterPath: ?string) {
     /* $FlowFixMe: can't type dynamic require */
     return require(path.resolve(customLogReporterPath));
   }
-}
-
-function getPackagerServer(args, config, reporter) {
-  const transformModulePath = args.transformer
-    ? path.resolve(args.transformer)
-    : config.getTransformModulePath();
-
-  const providesModuleNodeModules =
-    args.providesModuleNodeModules || defaultProvidesModuleNodeModules;
-
-  return Metro.createServer({
-    assetExts: defaultAssetExts.concat(args.assetExts),
-    assetRegistryPath: ASSET_REGISTRY_PATH,
-    blacklistRE: config.getBlacklistRE(),
-    cacheVersion: '3',
-    enableBabelRCLookup: config.getEnableBabelRCLookup(),
-    extraNodeModules: config.extraNodeModules,
-    dynamicDepsInPackages: config.dynamicDepsInPackages,
-    getModulesRunBeforeMainModule: config.getModulesRunBeforeMainModule,
-    getPolyfills: config.getPolyfills,
-    getTransformOptions: config.getTransformOptions,
-    globalTransformCache: null,
-    hasteImpl: config.hasteImpl,
-    maxWorkers: args.maxWorkers,
-    platforms: defaultPlatforms.concat(args.platforms),
-    polyfillModuleNames: config.getPolyfillModuleNames(),
-    postMinifyProcess: config.postMinifyProcess,
-    postProcessBundleSourcemap: config.postProcessBundleSourcemap,
-    postProcessModules: config.postProcessModules,
-    projectRoots: args.projectRoots,
-    providesModuleNodeModules: providesModuleNodeModules,
-    reporter,
-    resetCache: args.resetCache,
-    sourceExts: defaultSourceExts.concat(args.sourceExts),
-    transformModulePath: transformModulePath,
-    transformCache: TransformCaching.useTempDir(),
-    verbose: args.verbose,
-    watch: !args.nonPersistent,
-    workerPath: config.getWorkerPath(),
-  });
 }
 
 module.exports = runServer;

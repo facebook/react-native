@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing.idledetection;
 
+import android.view.Choreographer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +56,8 @@ public class ReactIdleDetectionUtil {
         new Runnable() {
           @Override
           public void run() {
-            ChoreographerCompat.getInstance().postFrameCallback(
+            final ChoreographerCompat choreographerCompat = ChoreographerCompat.getInstance();
+            choreographerCompat.postFrameCallback(
                 new ChoreographerCompat.FrameCallback() {
 
                   private int frameCount = 0;
@@ -67,7 +68,7 @@ public class ReactIdleDetectionUtil {
                     if (frameCount == waitFrameCount) {
                       latch.countDown();
                     } else {
-                      ChoreographerCompat.getInstance().postFrameCallback(this);
+                      choreographerCompat.postFrameCallback(this);
                     }
                   }
                 });

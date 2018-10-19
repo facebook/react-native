@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -16,11 +15,19 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.TextView;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -44,6 +51,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   private @Nullable Spannable mPreparedSpannableText;
 
+  private boolean mShouldNotifyOnTextLayout;
+
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
         @Override
@@ -55,6 +64,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
+          textPaint.setTextSize(mFontSize != UNSET ? mFontSize : getDefaultFontSize());
           Layout layout;
           Spanned text = Assertions.assertNotNull(
               mPreparedSpannableText,
@@ -65,6 +75,19 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           // technically, width should never be negative, but there is currently a bug in
           boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
+
+          Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+          switch (getTextAlign()) {
+            case Gravity.LEFT:
+              alignment = Layout.Alignment.ALIGN_NORMAL;
+              break;
+            case Gravity.RIGHT:
+              alignment = Layout.Alignment.ALIGN_OPPOSITE;
+              break;
+            case Gravity.CENTER_HORIZONTAL:
+              alignment = Layout.Alignment.ALIGN_CENTER;
+              break;
+          }
 
           if (boring == null &&
               (unconstrainedWidth ||
@@ -78,13 +101,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                 text,
                 textPaint,
                 hintWidth,
-                Layout.Alignment.ALIGN_NORMAL,
+                alignment,
                 1.f,
                 0.f,
                 mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setAlignment(alignment)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)
@@ -99,7 +122,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                 text,
                 textPaint,
                 boring.width,
-                Layout.Alignment.ALIGN_NORMAL,
+                alignment,
                 1.f,
                 0.f,
                 boring,
@@ -112,13 +135,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   text,
                   textPaint,
                   (int) width,
-                  Layout.Alignment.ALIGN_NORMAL,
+                  alignment,
                   1.f,
                   0.f,
                   mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setAlignment(alignment)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)
@@ -127,11 +150,18 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             }
           }
 
-          if (mNumberOfLines != UNSET &&
-              mNumberOfLines < layout.getLineCount()) {
-            return YogaMeasureOutput.make(
-                layout.getWidth(),
-                layout.getLineBottom(mNumberOfLines - 1));
+          if (mShouldNotifyOnTextLayout) {
+            WritableArray lines =
+              FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, getThemedContext());
+            WritableMap event = Arguments.createMap();
+            event.putArray("lines", lines);
+            getThemedContext()
+                .getJSModule(RCTEventEmitter.class)
+                .receiveEvent(getReactTag(), "topTextLayout", event);
+          }
+
+          if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
+            return YogaMeasureOutput.make(layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
           } else {
             return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
           }
@@ -139,6 +169,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       };
 
   public ReactTextShadowNode() {
+    initMeasureFunction();
+  }
+
+  private void initMeasureFunction() {
     if (!isVirtual()) {
       setMeasureFunction(mTextMeasureFunction);
     }
@@ -194,5 +228,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
         );
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
+  }
+
+  @ReactProp(name = "onTextLayout")
+  public void setShouldNotifyOnTextLayout(boolean shouldNotifyOnTextLayout) {
+    mShouldNotifyOnTextLayout = shouldNotifyOnTextLayout;
   }
 }

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ReadableNativeMap.h"
 
@@ -26,7 +29,7 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
   jint size = keys_.value().size();
   auto jarray = JArrayClass<jstring>::newArray(size);
   for (jint i = 0; i < size; i++) {
-    jarray->setElement(i, make_jstring(keys_.value()[i].getString().c_str()).release());
+    (*jarray)[i] = make_jstring(keys_.value()[i].getString());
   }
   return jarray;
 }
@@ -43,29 +46,26 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
         break;
       }
       case folly::dynamic::Type::BOOL: {
-        jarray->
-          setElement(i,
-              JBoolean::valueOf(ReadableNativeMap::getBooleanKey(key)).release());
+        (*jarray)[i] =
+              JBoolean::valueOf(ReadableNativeMap::getBooleanKey(key));
         break;
       }
       case folly::dynamic::Type::INT64:
       case folly::dynamic::Type::DOUBLE: {
-        jarray->setElement(i,
-          JDouble::valueOf(ReadableNativeMap::getDoubleKey(key)).release());
+        (*jarray)[i] =
+          JDouble::valueOf(ReadableNativeMap::getDoubleKey(key));
         break;
       }
       case folly::dynamic::Type::STRING: {
-        jarray->
-          setElement(i,
-                     ReadableNativeMap::getStringKey(key).release());
+        (*jarray)[i] = ReadableNativeMap::getStringKey(key);
         break;
       }
       case folly::dynamic::Type::OBJECT: {
-        jarray->setElement(i,ReadableNativeMap::getMapKey(key).release());
+        (*jarray)[i] = ReadableNativeMap::getMapKey(key);
         break;
       }
       case folly::dynamic::Type::ARRAY: {
-        jarray->setElement(i,ReadableNativeMap::getArrayKey(key).release());
+        (*jarray)[i] = ReadableNativeMap::getArrayKey(key);
         break;
       }
       default: {
@@ -82,7 +82,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint i = 0; i < size; i++) {
     std::string key = keys_.value()[i].getString().c_str();
-    jarray->setElement(i, ReadableNativeMap::getValueType(key).release());
+    (*jarray)[i] = ReadableNativeMap::getValueType(key);
   }
   return jarray;
 }

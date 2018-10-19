@@ -1,10 +1,8 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
@@ -142,6 +140,25 @@ inline std::string makeDescriptor(R (*)(alias_ref<C>, Args... args)) {
 template<typename R, typename C, typename... Args>
 inline std::string makeDescriptor(R (C::*)(Args... args)) {
   return jmethod_traits_from_cxx<R(Args...)>::descriptor();
+}
+
+template<typename R, typename ...Args>
+template<R(*func)(Args...)>
+JNI_ENTRY_POINT R CriticalMethod<R(*)(Args...)>::call(alias_ref<jclass>, Args... args) {
+  static_assert(
+    IsJniPrimitive<R>() || std::is_void<R>(),
+    "Critical Native Methods may only return primitive JNI types, or void.");
+  static_assert(
+    AreJniPrimitives<Args...>(),
+    "Critical Native Methods may only use primitive JNI types as parameters");
+
+  return func(std::forward<Args>(args)...);
+}
+
+template<typename R, typename ...Args>
+template<R(*func)(Args...)>
+inline std::string CriticalMethod<R(*)(Args...)>::desc() {
+  return makeDescriptor(call<func>);
 }
 
 }

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTRedBoxExtraDataViewController.h"
@@ -45,10 +43,9 @@
         self.keyLabel.textColor = [UIColor whiteColor];
         self.keyLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.keyLabel.lineBreakMode = UILineBreakModeWordWrap;
-#endif
+        self.keyLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.keyLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
-
+#endif
         self.valueLabel = [UILabel new];
         [self.contentView addSubview:self.valueLabel];
 
@@ -66,9 +63,9 @@
         self.valueLabel.textColor = [UIColor whiteColor];
         self.valueLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.valueLabel.lineBreakMode = UILineBreakModeWordWrap;
-#endif
+        self.valueLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.valueLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
+#endif
     }
     return self;
 }

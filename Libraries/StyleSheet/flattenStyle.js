@@ -1,49 +1,35 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule flattenStyle
- * @flow
+ * @flow strict-local
+ * @format
  */
 'use strict';
 
-var invariant = require('fbjs/lib/invariant');
-var ReactNativePropRegistry;
+import type {
+  DangerouslyImpreciseStyle,
+  DangerouslyImpreciseStyleProp,
+} from 'StyleSheet';
 
-import type { StyleObj } from 'StyleSheetTypes';
-
-function getStyle(style) {
-  if (ReactNativePropRegistry === undefined) {
-    ReactNativePropRegistry = require('ReactNativePropRegistry');
-  }
-  if (typeof style === 'number') {
-    return ReactNativePropRegistry.getByID(style);
-  }
-  return style;
-}
-
-function flattenStyle(style: ?StyleObj): ?Object {
-  if (!style) {
+function flattenStyle(
+  style: ?DangerouslyImpreciseStyleProp,
+): ?DangerouslyImpreciseStyle {
+  if (style === null || typeof style !== 'object') {
     return undefined;
   }
-  invariant(style !== true, 'style may be false but not true');
 
   if (!Array.isArray(style)) {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
-    return getStyle(style);
+    return style;
   }
 
-  var result = {};
-  for (var i = 0, styleLength = style.length; i < styleLength; ++i) {
-    var computedStyle = flattenStyle(style[i]);
+  const result = {};
+  for (let i = 0, styleLength = style.length; i < styleLength; ++i) {
+    const computedStyle = flattenStyle(style[i]);
     if (computedStyle) {
-      for (var key in computedStyle) {
+      for (const key in computedStyle) {
         result[key] = computedStyle[key];
       }
     }

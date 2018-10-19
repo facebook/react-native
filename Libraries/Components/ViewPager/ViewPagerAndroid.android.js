@@ -1,26 +1,27 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewPagerAndroid
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var UIManager = require('UIManager');
-var ViewPropTypes = require('ViewPropTypes');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const UIManager = require('UIManager');
 
-var dismissKeyboard = require('dismissKeyboard');
-var requireNativeComponent = require('requireNativeComponent');
+const dismissKeyboard = require('dismissKeyboard');
+const requireNativeComponent = require('requireNativeComponent');
 
-var VIEWPAGER_REF = 'viewPager';
+const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager');
+
+import type {ViewStyleProp} from 'StyleSheet';
+
+const VIEWPAGER_REF = 'viewPager';
 
 type Event = Object;
 
@@ -29,6 +30,73 @@ export type ViewPagerScrollState = $Enum<{
   dragging: string,
   settling: string,
 }>;
+
+type Props = $ReadOnly<{|
+  /**
+   * Index of initial page that should be selected. Use `setPage` method to
+   * update the page, and `onPageSelected` to monitor page changes
+   */
+  initialPage?: ?number,
+
+  /**
+   * Executed when transitioning between pages (ether because of animation for
+   * the requested page change or when user is swiping/dragging between pages)
+   * The `event.nativeEvent` object for this callback will carry following data:
+   *  - position - index of first page from the left that is currently visible
+   *  - offset - value from range [0,1) describing stage between page transitions.
+   *    Value x means that (1 - x) fraction of the page at "position" index is
+   *    visible, and x fraction of the next page is visible.
+   */
+  onPageScroll?: ?Function,
+
+  /**
+   * Function called when the page scrolling state has changed.
+   * The page scrolling state can be in 3 states:
+   * - idle, meaning there is no interaction with the page scroller happening at the time
+   * - dragging, meaning there is currently an interaction with the page scroller
+   * - settling, meaning that there was an interaction with the page scroller, and the
+   *   page scroller is now finishing it's closing or opening animation
+   */
+  onPageScrollStateChanged?: ?Function,
+
+  /**
+   * This callback will be called once ViewPager finish navigating to selected page
+   * (when user swipes between pages). The `event.nativeEvent` object passed to this
+   * callback will have following fields:
+   *  - position - index of page that has been selected
+   */
+  onPageSelected?: ?Function,
+
+  /**
+   * Blank space to show between pages. This is only visible while scrolling, pages are still
+   * edge-to-edge.
+   */
+  pageMargin?: ?number,
+
+  /**
+   * Whether enable showing peekFraction or not. If this is true, the preview of
+   * last and next page will show in current screen. Defaults to false.
+   */
+
+  peekEnabled?: ?boolean,
+
+  /**
+   * Determines whether the keyboard gets dismissed in response to a drag.
+   *   - 'none' (the default), drags do not dismiss the keyboard.
+   *   - 'on-drag', the keyboard is dismissed when a drag begins.
+   */
+  keyboardDismissMode?: ?('none' | 'on-drag'),
+
+  /**
+   * When false, the content does not scroll.
+   * The default value is true.
+   */
+  scrollEnabled?: ?boolean,
+
+  children?: React.Node,
+
+  style?: ?ViewStyleProp,
+|}>;
 
 /**
  * Container that allows to flip left and right between child views. Each
@@ -71,92 +139,22 @@ export type ViewPagerScrollState = $Enum<{
  * }
  * ```
  */
-class ViewPagerAndroid extends React.Component<{
-  initialPage?: number,
-  onPageScroll?: Function,
-  onPageScrollStateChanged?: Function,
-  onPageSelected?: Function,
-  pageMargin?: number,
-  peekEnabled?: boolean,
-  keyboardDismissMode?: 'none' | 'on-drag',
-  scrollEnabled?: boolean,
-}> {
-  static propTypes = {
-    ...ViewPropTypes,
-    /**
-     * Index of initial page that should be selected. Use `setPage` method to
-     * update the page, and `onPageSelected` to monitor page changes
-     */
-    initialPage: PropTypes.number,
 
-    /**
-     * Executed when transitioning between pages (ether because of animation for
-     * the requested page change or when user is swiping/dragging between pages)
-     * The `event.nativeEvent` object for this callback will carry following data:
-     *  - position - index of first page from the left that is currently visible
-     *  - offset - value from range [0,1) describing stage between page transitions.
-     *    Value x means that (1 - x) fraction of the page at "position" index is
-     *    visible, and x fraction of the next page is visible.
-     */
-    onPageScroll: PropTypes.func,
-
-    /**
-     * Function called when the page scrolling state has changed.
-     * The page scrolling state can be in 3 states:
-     * - idle, meaning there is no interaction with the page scroller happening at the time
-     * - dragging, meaning there is currently an interaction with the page scroller
-     * - settling, meaning that there was an interaction with the page scroller, and the
-     *   page scroller is now finishing it's closing or opening animation
-     */
-    onPageScrollStateChanged: PropTypes.func,
-
-    /**
-     * This callback will be called once ViewPager finish navigating to selected page
-     * (when user swipes between pages). The `event.nativeEvent` object passed to this
-     * callback will have following fields:
-     *  - position - index of page that has been selected
-     */
-    onPageSelected: PropTypes.func,
-
-    /**
-     * Blank space to show between pages. This is only visible while scrolling, pages are still
-     * edge-to-edge.
-     */
-    pageMargin: PropTypes.number,
-
-    /**
-     * Determines whether the keyboard gets dismissed in response to a drag.
-     *   - 'none' (the default), drags do not dismiss the keyboard.
-     *   - 'on-drag', the keyboard is dismissed when a drag begins.
-     */
-    keyboardDismissMode: PropTypes.oneOf([
-      'none', // default
-      'on-drag',
-    ]),
-
-    /**
-    * When false, the content does not scroll.
-    * The default value is true.
-    */
-    scrollEnabled: PropTypes.bool,
-
-    /**
-     * Whether enable showing peekFraction or not. If this is true, the preview of
-     * last and next page will show in current screen. Defaults to false.
-     */
-     peekEnabled: PropTypes.bool,
-  };
-
+class ViewPagerAndroid extends React.Component<Props> {
   componentDidMount() {
     if (this.props.initialPage != null) {
       this.setPageWithoutAnimation(this.props.initialPage);
     }
   }
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   getInnerViewNode = (): ReactComponent => {
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
   };
 
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   _childrenWithOverridenStyle = (): Array => {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
@@ -165,24 +163,32 @@ class ViewPagerAndroid extends React.Component<{
       if (!child) {
         return null;
       }
-      var newProps = {
+      const newProps = {
         ...child.props,
-        style: [child.props.style, {
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: undefined,
-          height: undefined,
-        }],
+        style: [
+          child.props.style,
+          {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: undefined,
+            height: undefined,
+          },
+        ],
         collapsable: false,
       };
-      if (child.type &&
-          child.type.displayName &&
-          (child.type.displayName !== 'RCTView') &&
-          (child.type.displayName !== 'View')) {
-        console.warn('Each ViewPager child must be a <View>. Was ' + child.type.displayName);
+      if (
+        child.type &&
+        child.type.displayName &&
+        child.type.displayName !== 'RCTView' &&
+        child.type.displayName !== 'View'
+      ) {
+        console.warn(
+          'Each ViewPager child must be a <View>. Was ' +
+            child.type.displayName,
+        );
       }
       return React.createElement(child.type, newProps);
     });
@@ -216,7 +222,7 @@ class ViewPagerAndroid extends React.Component<{
   setPage = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.AndroidViewPager.Commands.setPage,
+      UIManager.getViewManagerConfig('AndroidViewPager').Commands.setPage,
       [selectedPage],
     );
   };
@@ -228,7 +234,8 @@ class ViewPagerAndroid extends React.Component<{
   setPageWithoutAnimation = (selectedPage: number) => {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
+      UIManager.getViewManagerConfig('AndroidViewPager').Commands
+        .setPageWithoutAnimation,
       [selectedPage],
     );
   };
@@ -247,7 +254,5 @@ class ViewPagerAndroid extends React.Component<{
     );
   }
 }
-
-var NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
 
 module.exports = ViewPagerAndroid;

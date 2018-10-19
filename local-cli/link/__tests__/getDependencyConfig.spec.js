@@ -1,34 +1,32 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * All rights reserved.
- *
+ * @format
  * @emails oncall+javascript_foundation
  */
 
 'use strict';
 
 const getDependencyConfig = require('../getDependencyConfig');
-const sinon = require('sinon');
 
 describe('getDependencyConfig', () => {
-  it('should return an array of dependencies\' rnpm config', () => {
+  it("should return an array of dependencies' rnpm config", () => {
     const config = {
-      getDependencyConfig: sinon.stub(),
+      getDependencyConfig: jest.fn(),
     };
 
     expect(Array.isArray(getDependencyConfig(config, ['abcd']))).toBeTruthy();
-    expect(config.getDependencyConfig.callCount).toEqual(1);
+    expect(config.getDependencyConfig.mock.calls.length).toEqual(1);
   });
 
   it('should filter out invalid react-native projects', () => {
     const config = {
-      getDependencyConfig: sinon.stub().throws(new Error('Cannot require')),
+      getDependencyConfig: jest.fn().mockImplementation(() => {
+        throw new Error('Cannot require');
+      }),
     };
 
     expect(getDependencyConfig(config, ['abcd'])).toEqual([]);

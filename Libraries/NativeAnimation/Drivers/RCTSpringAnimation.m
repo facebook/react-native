@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSpringAnimation.h"
@@ -14,6 +12,7 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
+#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTSpringAnimation ()
@@ -47,7 +46,7 @@ const NSTimeInterval MAX_DELTA_TIME = 0.064;
 
   NSInteger _iterations;
   NSInteger _currentLoop;
-  
+
   NSTimeInterval _t; // Current time (startTime + dt)
 }
 
@@ -57,31 +56,35 @@ const NSTimeInterval MAX_DELTA_TIME = 0.064;
                   callBack:(nullable RCTResponseSenderBlock)callback
 {
   if ((self = [super init])) {
-    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
-
     _animationId = animationId;
-    _toValue = [RCTConvert CGFloat:config[@"toValue"]];
-    _fromValue = valueNode.value;
-    _lastPosition = 0;
+    _lastPosition = valueNode.value;
     _valueNode = valueNode;
-    _overshootClamping = [RCTConvert BOOL:config[@"overshootClamping"]];
-    _restDisplacementThreshold = [RCTConvert CGFloat:config[@"restDisplacementThreshold"]];
-    _restSpeedThreshold = [RCTConvert CGFloat:config[@"restSpeedThreshold"]];
-    _stiffness = [RCTConvert CGFloat:config[@"stiffness"]];
-    _damping = [RCTConvert CGFloat:config[@"damping"]];
-    _mass = [RCTConvert CGFloat:config[@"mass"]];
-    _initialVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
-    
+    _lastVelocity = [RCTConvert CGFloat:config[@"initialVelocity"]];
     _callback = [callback copy];
-
-    _lastPosition = _fromValue;
-    _lastVelocity = _initialVelocity;
-
-    _animationHasFinished = iterations.integerValue == 0;
-    _iterations = iterations.integerValue;
-    _currentLoop = 1;
+    [self resetAnimationConfig:config];
   }
   return self;
+}
+
+- (void)resetAnimationConfig:(NSDictionary *)config
+{
+  NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+  _toValue = [RCTConvert CGFloat:config[@"toValue"]];
+  _overshootClamping = [RCTConvert BOOL:config[@"overshootClamping"]];
+  _restDisplacementThreshold = [RCTConvert CGFloat:config[@"restDisplacementThreshold"]];
+  _restSpeedThreshold = [RCTConvert CGFloat:config[@"restSpeedThreshold"]];
+  _stiffness = [RCTConvert CGFloat:config[@"stiffness"]];
+  _damping = [RCTConvert CGFloat:config[@"damping"]];
+  _mass = [RCTConvert CGFloat:config[@"mass"]];
+  _initialVelocity = _lastVelocity;
+  _fromValue = _lastPosition;
+  _fromValue = _lastPosition;
+  _lastVelocity = _initialVelocity;
+  _animationHasFinished = iterations.integerValue == 0;
+  _iterations = iterations.integerValue;
+  _currentLoop = 1;
+  _animationStartTime = _animationCurrentTime = -1;
+  _animationHasBegun = YES;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -108,7 +111,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // Animation has not begun or animation has already finished.
     return;
   }
-  
+
   // calculate delta time
   NSTimeInterval deltaTime;
   if(_animationStartTime == -1) {
@@ -118,22 +121,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   } else {
     // Handle frame drops, and only advance dt by a max of MAX_DELTA_TIME
     deltaTime = MIN(MAX_DELTA_TIME, currentTime - _animationCurrentTime);
-    _t = _t + deltaTime;
+    _t = _t + deltaTime / RCTAnimationDragCoefficient();
   }
-  
+
   // store the timestamp
   _animationCurrentTime = currentTime;
-  
+
   CGFloat c = _damping;
   CGFloat m = _mass;
   CGFloat k = _stiffness;
   CGFloat v0 = -_initialVelocity;
-  
+
   CGFloat zeta = c / (2 * sqrtf(k * m));
   CGFloat omega0 = sqrtf(k / m);
   CGFloat omega1 = omega0 * sqrtf(1.0 - (zeta * zeta));
   CGFloat x0 = _toValue - _fromValue;
-  
+
   CGFloat position;
   CGFloat velocity;
   if (zeta < 1) {
@@ -161,12 +164,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     velocity =
       envelope * (v0 * (_t * omega0 - 1) + _t * x0 * (omega0 * omega0));
   }
-  
+
   _lastPosition = position;
   _lastVelocity = velocity;
-  
+
   [self onUpdate:position];
-  
+
   // Conditions for stopping the spring animation
   BOOL isOvershooting = NO;
   if (_overshootClamping && _stiffness != 0) {
@@ -181,7 +184,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (_stiffness != 0) {
     isDisplacement = ABS(_toValue - position) <= _restDisplacementThreshold;
   }
-  
+
   if (isOvershooting || (isVelocity && isDisplacement)) {
     if (_stiffness != 0) {
       // Ensure that we end up with a round value
@@ -190,7 +193,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
       [self onUpdate:_toValue];
     }
-    
+
     if (_iterations == -1 || _currentLoop < _iterations) {
       _lastPosition = _fromValue;
       _lastVelocity = _initialVelocity;

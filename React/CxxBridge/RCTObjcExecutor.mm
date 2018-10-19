@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTObjcExecutor.h"
@@ -19,6 +17,7 @@
 #import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
+#import <cxxreact/RAMBundleRegistry.h>
 #import <folly/json.h>
 
 namespace facebook {
@@ -40,8 +39,8 @@ public:
                   std::shared_ptr<ExecutorDelegate> delegate)
     : m_jse(jse)
     , m_errorBlock(errorBlock)
-    , m_jsThread(std::move(jsThread))
     , m_delegate(std::move(delegate))
+    , m_jsThread(std::move(jsThread))
   {
     m_jsCallback = ^(id json, NSError *error) {
       if (error) {

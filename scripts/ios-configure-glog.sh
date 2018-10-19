@@ -1,8 +1,24 @@
 #!/bin/bash
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 set -e
 
 PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
-CURRENT_ARCH="${CURRENT_ARCH:-armv7}"
+CURRENT_ARCH="${CURRENT_ARCH}"
+
+if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
+    # Xcode 10 beta sets CURRENT_ARCH to "undefined_arch", this leads to incorrect linker arg.
+    # it's better to rely on platform name as fallback because architecture differs between simulator and device
+
+    if [[ "$PLATFORM_NAME" == *"simulator"* ]]; then
+        CURRENT_ARCH="x86_64"
+    else
+        CURRENT_ARCH="armv7"
+    fi
+fi
 
 export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
 export CXX="$CC"

@@ -1,4 +1,6 @@
-const fs = require.requireActual('fs');
+/** @format */
+
+const fs = jest.requireActual('fs');
 const path = require('path');
 const android = require('./android');
 

@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule createAnimatedComponent
  * @flow
  * @format
  */
@@ -15,9 +12,18 @@
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+
+const invariant = require('fbjs/lib/invariant');
 
 function createAnimatedComponent(Component: any): any {
+  invariant(
+    typeof Component !== 'function' ||
+      (Component.prototype && Component.prototype.isReactComponent),
+    '`createAnimatedComponent` does not support stateless functional components; ' +
+      'use a class component instead.',
+  );
+
   class AnimatedComponent extends React.Component<Object> {
     _component: any;
     _invokeAnimatedPropsCallbackOnMount: boolean = false;
@@ -42,7 +48,7 @@ function createAnimatedComponent(Component: any): any {
       this._component.setNativeProps(props);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this._attachProps(this.props);
     }
 
@@ -127,7 +133,7 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
       this._attachProps(newProps);
     }
 
@@ -178,7 +184,7 @@ function createAnimatedComponent(Component: any): any {
         return;
       }
 
-      for (const key in ViewStylePropTypes) {
+      for (const key in DeprecatedViewStylePropTypes) {
         if (!propTypes[key] && props[key] !== undefined) {
           console.warn(
             'You are setting the style `{ ' +

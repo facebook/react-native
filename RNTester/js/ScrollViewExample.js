@@ -1,18 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule ScrollViewExample
  * @format
  */
 'use strict';
-
-import type {StyleObj} from 'StyleSheetTypes';
 
 const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
@@ -26,6 +21,8 @@ const {
   View,
   Image,
 } = ReactNative;
+
+import type {ViewStyleProp} from 'StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
@@ -42,6 +39,7 @@ exports.examples = [
         <View>
           <ScrollView
             ref={scrollView => {
+              // $FlowFixMe Invalid prop usage
               _scrollView = scrollView;
             }}
             automaticallyAdjustContentInsets={false}
@@ -81,11 +79,11 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        addtionalStyles: typeof StyleSheet,
+        additionalStyles: ViewStyleProp,
       ) {
-        let _scrollView: ScrollView;
+        let _scrollView: ?ScrollView;
         return (
-          <View style={addtionalStyles}>
+          <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
             <ScrollView
               ref={scrollView => {
@@ -99,18 +97,21 @@ exports.examples = [
             <Button
               label="Scroll to start"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.scrollTo({x: 0});
               }}
             />
             <Button
               label="Scroll to end"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.scrollToEnd({animated: true});
               }}
             />
             <Button
               label="Flash scroll indicators"
               onPress={() => {
+                // $FlowFixMe Invalid prop usage
                 _scrollView.flashScrollIndicators();
               }}
             />
@@ -254,7 +255,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: StyleObj,
+  style?: ViewStyleProp,
 |}> {
   render() {
     const {source} = this.props;

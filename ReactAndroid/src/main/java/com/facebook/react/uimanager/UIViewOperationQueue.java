@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -23,6 +21,7 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -94,6 +93,54 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.updateProperties(mTag, mProps);
+    }
+  }
+
+  private final class EmitOnLayoutEventOperation extends ViewOperation {
+
+    private final int mScreenX;
+    private final int mScreenY;
+    private final int mScreenWidth;
+    private final int mScreenHeight;
+
+    public EmitOnLayoutEventOperation(
+        int tag,
+        int screenX,
+        int screenY,
+        int screenWidth,
+        int screenHeight) {
+      super(tag);
+      mScreenX = screenX;
+      mScreenY = screenY;
+      mScreenWidth = screenWidth;
+      mScreenHeight = screenHeight;
+    }
+
+    @Override
+    public void execute() {
+      mReactApplicationContext.getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(OnLayoutEvent.obtain(
+          mTag,
+          mScreenX,
+          mScreenY,
+          mScreenWidth,
+          mScreenHeight));
+    }
+  }
+
+  private final class UpdateInstanceHandleOperation extends ViewOperation {
+
+    private final long mInstanceHandle;
+
+    private UpdateInstanceHandleOperation(int tag, long instanceHandle) {
+      super(tag);
+      mInstanceHandle = instanceHandle;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.updateInstanceHandle(mTag, mInstanceHandle);
     }
   }
 
@@ -266,20 +313,30 @@ public class UIViewOperationQueue {
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
+    private final Callback mError;
     private final Callback mSuccess;
 
     public ShowPopupMenuOperation(
         int tag,
         ReadableArray items,
+        Callback error,
         Callback success) {
       super(tag);
       mItems = items;
+      mError = error;
       mSuccess = success;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess);
+      mNativeViewHierarchyManager.showPopupMenu(mTag, mItems, mSuccess, mError);
+    }
+  }
+
+  private final class DismissPopupMenuOperation implements UIOperation {
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dismissPopupMenu();
     }
   }
 
@@ -499,6 +556,22 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class LayoutUpdateFinishedOperation implements UIOperation {
+
+    private final ReactShadowNode mNode;
+    private final UIImplementation.LayoutUpdateListener mListener;
+
+    private LayoutUpdateFinishedOperation(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+      mNode = node;
+      mListener = listener;
+    }
+
+    @Override
+    public void execute() {
+      mListener.onLayoutUpdated(mNode);
+    }
+  }
+
   private class UIBlockOperation implements UIOperation {
     private final UIBlock mBlock;
     public UIBlockOperation (UIBlock block) {
@@ -638,7 +711,7 @@ public class UIViewOperationQueue {
   public void enqueueDispatchCommand(
       int reactTag,
       int commandId,
-      ReadableArray commandArgs) {
+      @Nullable ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
   }
 
@@ -651,7 +724,11 @@ public class UIViewOperationQueue {
       ReadableArray items,
       Callback error,
       Callback success) {
-    mOperations.add(new ShowPopupMenuOperation(reactTag, items, success));
+    mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
+  }
+
+  public void enqueueDismissPopupMenu() {
+    mOperations.add(new DismissPopupMenuOperation());
   }
 
   public void enqueueCreateView(
@@ -669,9 +746,23 @@ public class UIViewOperationQueue {
     }
   }
 
+  public void enqueueUpdateInstanceHandle(int reactTag, long instanceHandle) {
+    mOperations.add(new UpdateInstanceHandleOperation(reactTag, instanceHandle));
+  }
+
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
+
+  public void enqueueOnLayoutEvent(
+    int tag,
+    int screenX,
+    int screenY,
+    int screenWidth,
+    int screenHeight) {
+    mOperations.add(new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
+  }
+
 
   public void enqueueUpdateLayout(
       int parentTag,
@@ -754,6 +845,10 @@ public class UIViewOperationQueue {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
   }
 
+  public void enqueueLayoutUpdateFinished(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+    mOperations.add(new LayoutUpdateFinishedOperation(node, listener));
+  }
+
   public void enqueueUIBlock(UIBlock block) {
     mOperations.add(new UIBlockOperation(block));
   }
@@ -762,7 +857,7 @@ public class UIViewOperationQueue {
     mOperations.add(0, new UIBlockOperation(block));
   }
 
-  /* package */ void dispatchViewUpdates(
+  public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

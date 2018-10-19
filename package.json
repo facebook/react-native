@@ -2,13 +2,13 @@
   "name": "react-native",
   "version": "1000.0.0",
   "description": "A framework for building native apps using React",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8.3"
   },
   "prettier": {
     "requirePragma": true,
@@ -20,7 +20,7 @@
   },
   "jest": {
     "transform": {
-      "^[./a-zA-Z0-9$_-]+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
+      "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
     "setupFiles": [
@@ -33,10 +33,12 @@
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
-      "local-cli/templates/"
+      "local-cli/templates/",
+      "RNTester/e2e"
     ],
     "haste": {
       "defaultPlatform": "ios",
+      "hasteImplModulePath": "<rootDir>/jest/hasteImpl.js",
       "providesModuleNodeModules": [
         "react-native"
       ],
@@ -66,7 +68,6 @@
       "node_modules/fbjs/lib/flattenArray.js",
       "node_modules/fbjs/lib/forEachObject.js",
       "node_modules/fbjs/lib/isEmpty.js",
-      "node_modules/fbjs/lib/nullthrows.js",
       "node_modules/fbjs/lib/removeFromArray.js",
       "node_modules/fbjs/lib/resolveImmediate.js",
       "node_modules/fbjs/lib/someObject.js",
@@ -84,8 +85,7 @@
       "source-map",
       "fastpath",
       "denodeify",
-      "fbjs",
-      "sinon"
+      "fbjs"
     ],
     "testEnvironment": "node"
   },
@@ -112,7 +112,6 @@
     "LICENSE",
     "local-cli",
     "packager",
-    "PATENTS",
     "react.gradle",
     "React.podspec",
     "React",
@@ -122,75 +121,76 @@
     "third-party-podspecs"
   ],
   "scripts": {
+    "start": "node ./local-cli/cli.js start",
     "test": "jest",
+    "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
+    "flow-check-ios": "flow check",
+    "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
-    "prettier": "find . -name node_modules -prune -or -name '*.js' -print | xargs prettier --write",
-    "start": "/usr/bin/env bash -c './scripts/packager.sh \"$@\" || true' --",
-    "test-android-setup": "docker pull hramos/android-base:latest",
-    "test-android-build-base": "docker build -t hramos/android-base -f ContainerShip/Dockerfile.android-base .",
-    "test-android-build": "docker build -t react/android -f ContainerShip/Dockerfile.android .",
-    "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
-    "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it react/android bash ContainerShip/scripts/run-android-docker-unit-tests.sh",
-    "test-android-run-e2e": "docker run --privileged -it react/android bash ContainerShip/scripts/run-ci-e2e-tests.sh --android --js",
-    "test-android-all": "npm run test-android-build && npm run test-android-run-unit && npm run test-android-run-instrumentation && npm run test-android-run-e2e",
-    "test-android-instrumentation": "npm run test-android-build && npm run test-android-run-instrumentation",
-    "test-android-unit": "npm run test-android-build && npm run test-android-run-unit",
-    "test-android-e2e": "npm run test-android-build && npm run test-android-run-e2e"
+    "prettier": "prettier \"./**/*.js\" --write",
+    "docker-setup-android": "docker pull reactnativeci/android-base:latest",
+    "docker-build-android-base": "docker build -t reactnativeci/android-base -f ContainerShip/Dockerfile.android-base .",
+    "docker-build-android": "docker build -t reactnativeci/android -f ContainerShip/Dockerfile.android .",
+    "test-android-run-instrumentation": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash ContainerShip/scripts/run-android-docker-instrumentation-tests.sh",
+    "test-android-run-unit": "docker run --cap-add=SYS_ADMIN -it reactnativeci/android bash ContainerShip/scripts/run-android-docker-unit-tests.sh",
+    "test-android-run-e2e": "docker run --privileged -it reactnativeci/android bash ContainerShip/scripts/run-ci-e2e-tests.sh --android --js",
+    "test-android-all": "yarn run docker-build-android && yarn run test-android-run-unit && yarn run test-android-run-instrumentation && yarn run test-android-run-e2e",
+    "test-android-instrumentation": "yarn run docker-build-android && yarn run test-android-run-instrumentation",
+    "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
+    "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
+    "build-ios-e2e": "detox build -c ios.sim.release",
+    "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
   },
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-    "react": "16.2.0"
+    "react": "16.6.0-alpha.8af6728"
   },
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "babel-core": "^6.24.1",
-    "babel-plugin-syntax-trailing-function-commas": "^6.20.0",
-    "babel-plugin-transform-async-to-generator": "6.16.0",
-    "babel-plugin-transform-class-properties": "^6.18.0",
-    "babel-plugin-transform-exponentiation-operator": "^6.5.0",
-    "babel-plugin-transform-flow-strip-types": "^6.21.0",
-    "babel-plugin-transform-object-rest-spread": "^6.20.2",
-    "babel-register": "^6.24.1",
-    "babel-runtime": "^6.23.0",
     "base64-js": "^1.1.2",
     "chalk": "^1.1.1",
     "commander": "^2.9.0",
     "compression": "^1.7.1",
     "connect": "^3.6.5",
-    "create-react-class": "^15.5.2",
+    "create-react-class": "^15.6.3",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
-    "envinfo": "^3.0.0",
+    "envinfo": "^5.7.0",
     "errorhandler": "^1.5.0",
+    "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
-    "fbjs": "^0.8.14",
+    "fbjs": "^1.0.0",
     "fbjs-scripts": "^0.8.1",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
-    "lodash": "^4.16.6",
-    "metro": "^0.24.4",
-    "metro-core": "^0.24.4",
+    "lodash": "^4.17.5",
+    "metro": "^0.48.1",
+    "metro-babel-register": "^0.48.1",
+    "metro-core": "^0.48.1",
+    "metro-memory-fs": "^0.48.1",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "morgan": "^1.9.0",
-    "node-fetch": "^1.3.3",
-    "node-notifier": "^5.1.2",
+    "node-fetch": "^2.2.0",
+    "node-notifier": "^5.2.1",
     "npmlog": "^2.0.4",
+    "nullthrows": "^1.1.0",
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
-    "plist": "^1.2.0",
-    "pretty-format": "^4.2.1",
+    "plist": "^3.0.0",
+    "pretty-format": "^23.4.1",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "3.0.0",
+    "react-devtools-core": "^3.4.0",
     "react-timer-mixin": "^0.13.2",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
@@ -198,28 +198,46 @@
     "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
-    "whatwg-fetch": "^1.0.0",
     "ws": "^1.1.0",
-    "xcode": "^0.9.1",
+    "xcode": "^1.0.0",
     "xmldoc": "^0.4.0",
     "yargs": "^9.0.0"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^3.19.0",
-    "eslint-config-fb-strict": "^20.0.3",
-    "eslint-config-fbjs": "^1.1.1",
-    "eslint-plugin-eslint-comments": "^2.0.1",
-    "eslint-plugin-flowtype": "^2.33.0",
-    "eslint-plugin-jest": "^21.5.0",
-    "eslint-plugin-prettier": "2.1.1",
-    "eslint-plugin-react": "^7.2.1",
-    "flow-bin": "^0.63.0",
-    "jest": "22.1.2",
-    "prettier": "1.9.1",
-    "react": "16.2.0",
-    "react-test-renderer": "16.2.0",
-    "shelljs": "^0.7.8",
-    "sinon": "^2.2.0"
+    "@babel/core": "^7.0.0",
+    "async": "^2.4.0",
+    "babel-eslint": "9.0.0",
+    "babel-generator": "^6.26.0",
+    "detox": "9.0.4",
+    "eslint": "5.1.0",
+    "eslint-config-fb-strict": "22.1.0",
+    "eslint-config-fbjs": "2.0.1",
+    "eslint-plugin-eslint-comments": "^3.0.1",
+    "eslint-plugin-flowtype": "2.43.0",
+    "eslint-plugin-jest": "21.8.0",
+    "eslint-plugin-prettier": "2.6.0",
+    "eslint-plugin-react": "7.8.2",
+    "eslint-plugin-react-native": "^3.2.1",
+    "flow-bin": "^0.83.0",
+    "jest": "23.4.1",
+    "jest-junit": "5.1.0",
+    "prettier": "1.13.6",
+    "react": "16.6.0-alpha.8af6728",
+    "react-native-dummy": "0.1.0",
+    "react-test-renderer": "16.6.0-alpha.8af6728",
+    "shelljs": "^0.7.8"
+  },
+  "detox": {
+    "test-runner": "jest",
+    "runner-config": "RNTester/e2e/config.json",
+    "specs": "RNTester/e2e",
+    "configurations": {
+      "ios.sim.release": {
+        "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      }
+    }
   }
 }

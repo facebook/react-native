@@ -2,14 +2,11 @@
 
 #if RCT_DEV
 
-#import <jschelpers/JSCWrapper.h>
 #import <UIKit/UIKit.h>
 #import <React/RCTLog.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
-
-using namespace facebook::react;
 
 static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
@@ -104,7 +101,7 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
   sendEventToAllConnections(kDebuggerMsgDisable);
 }
 
-+ (void)connectWithBundleURL:(NSURL *)bundleURL
++ (RCTInspectorPackagerConnection *)connectWithBundleURL:(NSURL *)bundleURL
 {
   NSURL *inspectorURL = getInspectorDeviceUrl(bundleURL);
 
@@ -122,6 +119,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
     socketConnections[key] = connection;
     [connection connect];
   }
+
+  return connection;
 }
 
 @end

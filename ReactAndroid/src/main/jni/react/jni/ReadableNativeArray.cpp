@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ReadableNativeArray.h"
 
@@ -66,29 +69,24 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importArray() {
         break;
       }
       case folly::dynamic::Type::BOOL: {
-        jarray->
-          setElement(i,
-              JBoolean::valueOf(ReadableNativeArray::getBoolean(i)).release());
+        (*jarray)[i] = JBoolean::valueOf(ReadableNativeArray::getBoolean(i));
         break;
       }
       case folly::dynamic::Type::INT64:
       case folly::dynamic::Type::DOUBLE: {
-        jarray->setElement(i,
-          JDouble::valueOf(ReadableNativeArray::getDouble(i)).release());
+        (*jarray)[i] = JDouble::valueOf(ReadableNativeArray::getDouble(i));
         break;
       }
       case folly::dynamic::Type::STRING: {
-        jarray->
-          setElement(i,
-                     make_jstring(ReadableNativeArray::getString(i)).release());
+        (*jarray)[i] = make_jstring(ReadableNativeArray::getString(i));
         break;
       }
       case folly::dynamic::Type::OBJECT: {
-        jarray->setElement(i,ReadableNativeArray::getMap(i).release());
+        (*jarray)[i] = ReadableNativeArray::getMap(i);
         break;
       }
       case folly::dynamic::Type::ARRAY: {
-        jarray->setElement(i,ReadableNativeArray::getArray(i).release());
+        (*jarray)[i] = ReadableNativeArray::getArray(i);
         break;
       }
       default:
@@ -115,7 +113,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
   jint size = array_.size();
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint i = 0; i < size; i++) {
-    jarray->setElement(i, ReadableNativeArray::getType(i).release());
+    jarray->setElement(i, ReadableNativeArray::getType(i).get());
   }
   return jarray;
 }

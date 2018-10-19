@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
  *
- * @providesModule BackHandler
+ * @format
+ * @flow
  */
 
 'use strict';
@@ -19,9 +18,10 @@ const TVEventHandler = require('TVEventHandler');
 
 type BackPressEventName = $Enum<{
   backPress: string,
+  hardwareBackPress: string,
 }>;
 
-function emptyFunction() {}
+function emptyFunction(): void {}
 
 /**
  * Detect hardware button presses for back navigation.
@@ -55,16 +55,18 @@ function emptyFunction() {}
  */
 let BackHandler;
 
-if (Platform.isTVOS) {
+if (Platform.isTV) {
   const _tvEventHandler = new TVEventHandler();
-  var _backPressSubscriptions = new Set();
+  const _backPressSubscriptions = new Set();
 
   _tvEventHandler.enable(this, function(cmp, evt) {
     if (evt && evt.eventType === 'menu') {
-      var invokeDefault = true;
-      var subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
+      let invokeDefault = true;
+      const subscriptions = Array.from(
+        _backPressSubscriptions.values(),
+      ).reverse();
 
-      for (var i = 0; i < subscriptions.length; ++i) {
+      for (let i = 0; i < subscriptions.length; ++i) {
         if (subscriptions[i]()) {
           invokeDefault = false;
           break;
@@ -80,9 +82,9 @@ if (Platform.isTVOS) {
   BackHandler = {
     exitApp: emptyFunction,
 
-    addEventListener: function (
+    addEventListener: function(
       eventName: BackPressEventName,
-      handler: Function
+      handler: Function,
     ): {remove: () => void} {
       _backPressSubscriptions.add(handler);
       return {
@@ -92,25 +94,21 @@ if (Platform.isTVOS) {
 
     removeEventListener: function(
       eventName: BackPressEventName,
-      handler: Function
+      handler: Function,
     ): void {
       _backPressSubscriptions.delete(handler);
     },
-
   };
-
 } else {
-
   BackHandler = {
     exitApp: emptyFunction,
-    addEventListener() {
+    addEventListener(_eventName: BackPressEventName, _handler: Function) {
       return {
         remove: emptyFunction,
       };
     },
-    removeEventListener: emptyFunction,
+    removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
   };
-
 }
 
 module.exports = BackHandler;

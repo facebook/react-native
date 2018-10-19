@@ -1,25 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
-
-import java.util.List;
-
 import android.app.Application;
-
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -39,7 +36,9 @@ public abstract class ReactNativeHost {
    */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);
     }
     return mReactInstanceManager;
   }
@@ -64,13 +63,14 @@ public abstract class ReactNativeHost {
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
       .setApplication(mApplication)
       .setJSMainModulePath(getJSMainModuleName())
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
       .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-      .setUIImplementationProvider(getUIImplementationProvider())
+      .setJSIModulesPackage(getJSIModulePackage())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -83,7 +83,9 @@ public abstract class ReactNativeHost {
     } else {
       builder.setBundleAssetName(Assertions.assertNotNull(getBundleAssetName()));
     }
-    return builder.build();
+    ReactInstanceManager reactInstanceManager = builder.build();
+    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END);
+    return reactInstanceManager;
   }
 
   /**
@@ -105,14 +107,9 @@ public abstract class ReactNativeHost {
     return mApplication;
   }
 
-  /**
-   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
-   * custom UI implementation.
-   *
-   * Note: this is very advanced functionality, in 99% of cases you don't need to override this.
-   */
-  protected UIImplementationProvider getUIImplementationProvider() {
-    return new UIImplementationProvider();
+  protected @Nullable
+  JSIModulePackage getJSIModulePackage() {
+    return null;
   }
 
   /**

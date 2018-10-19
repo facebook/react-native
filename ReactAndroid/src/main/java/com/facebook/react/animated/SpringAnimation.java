@@ -37,24 +37,32 @@ import com.facebook.react.bridge.ReadableMap;
   // thresholds for determining when the spring is at rest
   private double mRestSpeedThreshold;
   private double mDisplacementFromRestThreshold;
-  private double mTimeAccumulator = 0;
+  private double mTimeAccumulator;
   // for controlling loop
   private int mIterations;
-  private int mCurrentLoop = 0;
+  private int mCurrentLoop;
   private double mOriginalValue;
 
   SpringAnimation(ReadableMap config) {
+    mCurrentState.velocity = config.getDouble("initialVelocity");
+    resetConfig(config);
+  }
+
+  @Override
+  public void resetConfig(ReadableMap config) {
     mSpringStiffness = config.getDouble("stiffness");
     mSpringDamping = config.getDouble("damping");
     mSpringMass = config.getDouble("mass");
-    mInitialVelocity = config.getDouble("initialVelocity");
-    mCurrentState.velocity = mInitialVelocity;
+    mInitialVelocity = mCurrentState.velocity;
     mEndValue = config.getDouble("toValue");
     mRestSpeedThreshold = config.getDouble("restSpeedThreshold");
     mDisplacementFromRestThreshold = config.getDouble("restDisplacementThreshold");
     mOvershootClampingEnabled = config.getBoolean("overshootClamping");
     mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
     mHasFinished = mIterations == 0;
+    mCurrentLoop = 0;
+    mTimeAccumulator = 0;
+    mSpringStarted = false;
   }
 
   @Override

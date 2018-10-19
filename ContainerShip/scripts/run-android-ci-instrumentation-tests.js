@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 'use strict';
@@ -30,7 +28,7 @@ const path = require('path');
 const colors = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
-    RESET: '\x1b[0m'
+    RESET: '\x1b[0m',
 };
 
 const test_opts = {
@@ -43,7 +41,7 @@ const test_opts = {
     TEST_TIMEOUT: parseInt(argv['test-timeout'] || 1000 * 60 * 10),
 
     OFFSET: argv.offset,
-    COUNT: argv.count
+    COUNT: argv.count,
 };
 
 let max_test_class_length = Number.NEGATIVE_INFINITY;
@@ -90,7 +88,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
 
     return async.retry(test_opts.RETRIES, (retryCb) => {
         const test_process = child_process.spawn('./ContainerShip/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
-            stdio: 'inherit'
+            stdio: 'inherit',
         });
 
         const timeout = setTimeout(() => {
@@ -114,7 +112,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
     }, (err) => {
         return callback(null, {
             name: clazz,
-            status: err ? 'failure' : 'success'
+            status: err ? 'failure' : 'success',
         });
     });
 }, (err, results) => {

@@ -1,85 +1,87 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ProgressViewIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const requireNativeComponent = require('requireNativeComponent');
+
+import type {NativeComponent} from 'ReactNative';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+
+  /**
+   * The progress bar style.
+   */
+  progressViewStyle?: ?('default' | 'bar'),
+
+  /**
+   * The progress value (between 0 and 1).
+   */
+  progress?: ?number,
+
+  /**
+   * The tint color of the progress bar itself.
+   */
+  progressTintColor?: ?ColorValue,
+
+  /**
+   * The tint color of the progress bar track.
+   */
+  trackTintColor?: ?ColorValue,
+
+  /**
+   * A stretchable image to display as the progress bar.
+   */
+  progressImage?: ?ImageSource,
+
+  /**
+   * A stretchable image to display behind the progress bar.
+   */
+  trackImage?: ?ImageSource,
+|}>;
+
+type NativeProgressViewIOS = Class<NativeComponent<Props>>;
+
+const RCTProgressView = ((requireNativeComponent(
+  'RCTProgressView',
+): any): NativeProgressViewIOS);
 
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
-var ProgressViewIOS = createReactClass({
-  displayName: 'ProgressViewIOS',
-  mixins: [NativeMethodsMixin],
+const ProgressViewIOS = (
+  props: Props,
+  forwardedRef?: ?React.Ref<typeof RCTProgressView>,
+) => (
+  <RCTProgressView
+    {...props}
+    style={[styles.progressView, props.style]}
+    ref={forwardedRef}
+  />
+);
 
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * The progress bar style.
-     */
-    progressViewStyle: PropTypes.oneOf(['default', 'bar']),
-
-    /**
-     * The progress value (between 0 and 1).
-     */
-    progress: PropTypes.number,
-
-    /**
-     * The tint color of the progress bar itself.
-     */
-    progressTintColor: PropTypes.string,
-
-    /**
-     * The tint color of the progress bar track.
-     */
-    trackTintColor: PropTypes.string,
-
-    /**
-     * A stretchable image to display as the progress bar.
-     */
-    progressImage: Image.propTypes.source,
-
-    /**
-     * A stretchable image to display behind the progress bar.
-     */
-    trackImage: Image.propTypes.source,
-  },
-
-  render: function() {
-    return (
-      <RCTProgressView
-        {...this.props}
-        style={[styles.progressView, this.props.style]}
-      />
-    );
-  }
-});
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   progressView: {
     height: 2,
   },
 });
 
-var RCTProgressView = requireNativeComponent(
-  'RCTProgressView',
-  ProgressViewIOS
-);
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const ProgressViewIOSWithRef = React.forwardRef(ProgressViewIOS);
 
-module.exports = ProgressViewIOS;
+module.exports = (ProgressViewIOSWithRef: NativeProgressViewIOS);

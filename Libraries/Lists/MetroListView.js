@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule MetroListView
  * @flow
  * @format
  */
@@ -32,7 +29,6 @@ type NormalProps = {
 
   // Provide either `items` or `sections`
   items?: ?Array<Item>, // By default, an Item is assumed to be {key: string}
-  // $FlowFixMe - Something is a little off with the type Array<Item>
   sections?: ?Array<{key: string, data: Array<Item>}>,
 
   /**
@@ -52,8 +48,6 @@ type NormalProps = {
 type DefaultProps = {
   keyExtractor: (item: Item, index: number) => string,
 };
-/* $FlowFixMe - the renderItem passed in from SectionList is optional there but
- * required here */
 type Props = NormalProps & DefaultProps;
 
 /**
@@ -90,6 +84,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
   }
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
+    // $FlowFixMe Invalid prop usage
     this._listRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -107,6 +102,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     renderScrollComponent: (props: Props) => {
       if (props.onRefresh) {
         return (
+          // $FlowFixMe Invalid prop usage
           <ScrollView
             {...props}
             refreshControl={
@@ -122,6 +118,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
           />
         );
       } else {
+        // $FlowFixMe Invalid prop usage
         return <ScrollView {...props} />;
       }
     },
@@ -135,11 +132,12 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     }),
     sectionHeaderData: {},
   });
-  componentWillReceiveProps(newProps: Props) {
+  UNSAFE_componentWillReceiveProps(newProps: Props) {
     this.setState(state => this._computeState(newProps, state));
   }
   render() {
     return (
+      // $FlowFixMe Found when typing ListView
       <ListView
         {...this.props}
         dataSource={this.state.ds}
@@ -151,7 +149,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
       />
     );
   }
-  _listRef: ListView;
+  _listRef: ?ListView;
   _captureRef = ref => {
     this._listRef = ref;
   };
@@ -172,6 +170,7 @@ class MetroListView extends React.Component<Props, $FlowFixMeState> {
     } else {
       invariant(!props.sections, 'Cannot have both sections and items props.');
       return {
+        // $FlowFixMe Found when typing ListView
         ds: state.ds.cloneWithRows(props.items),
         sectionHeaderData,
       };

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUITextField.h"
@@ -87,6 +85,17 @@
   self.enabled = editable;
 }
 
+#pragma mark - Context Menu
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if (_contextMenuHidden) {
+    return NO;
+  }
+
+  return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark - Caret Manipulation
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
@@ -111,12 +120,6 @@
 }
 
 #pragma mark - Overrides
-
-- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
-{
-  [super setSelectedTextRange:selectedTextRange];
-  [_textInputDelegateAdapter selectedTextRangeWasSet];
-}
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {

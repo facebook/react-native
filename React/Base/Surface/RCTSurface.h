@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -36,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurface : NSObject
 
 @property (atomic, readonly) RCTSurfaceStage stage;
-@property (atomic, readonly) RCTBridge *bridge;
 @property (atomic, readonly) NSString *moduleName;
 @property (atomic, readonly) NSNumber *rootViewTag;
 
@@ -116,6 +113,28 @@ NS_ASSUME_NONNULL_BEGIN
  *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * Those methods are not implemented yet for regular RCTSurface.
+ */
+- (BOOL)start;
+- (BOOL)stop;
+
+#pragma mark - Mounting/Unmounting of React components
+
+/**
+ * Mount the React component specified by the given moduleName. This is typically
+ * calling runApplication.js from the native side.
+ */
+- (void)mountReactComponentWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName params:(NSDictionary *)params;
+
+/**
+ * Unmount the React component specified by the given rootViewTag, called from native.
+ */
+- (void)unmountReactComponentWithBridge:(RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag;
 
 @end
 

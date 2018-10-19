@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.views.text;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
@@ -52,6 +52,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public static final String PROP_SHADOW_OFFSET_HEIGHT = "height";
   public static final String PROP_SHADOW_RADIUS = "textShadowRadius";
   public static final String PROP_SHADOW_COLOR = "textShadowColor";
+
+  public static final String PROP_TEXT_TRANSFORM = "textTransform";
 
   public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
@@ -119,6 +121,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!Float.isNaN(textShadowNode.mLetterSpacing)) {
+          ops.add(new SetSpanOperation(
+            start,
+            end,
+            new CustomLetterSpacingSpan(textShadowNode.mLetterSpacing)));
+        }
+      }
       if (textShadowNode.mFontSize != UNSET) {
         ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textShadowNode.mFontSize)));
       }
@@ -141,7 +151,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if (textShadowNode.mTextShadowOffsetDx != 0 || textShadowNode.mTextShadowOffsetDy != 0) {
+      if ((textShadowNode.mTextShadowOffsetDx != 0
+        || textShadowNode.mTextShadowOffsetDy != 0
+        || textShadowNode.mTextShadowRadius != 0)
+        && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -157,8 +170,20 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
       }
+      if (textShadowNode.mTextTransform != TextTransform.UNSET) {
+        ops.add(
+          new SetSpanOperation(
+            start,
+            end,
+            new CustomTextTransformSpan(textShadowNode.mTextTransform)));
+      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
+  }
+
+  protected int getDefaultFontSize() {
+    return mAllowFontScaling ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+      : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
   }
 
   protected static Spannable spannedFromShadowNode(
@@ -179,10 +204,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     if (textShadowNode.mFontSize == UNSET) {
-      int defaultFontSize =
-          textShadowNode.mAllowFontScaling
-              ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-              : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+      int defaultFontSize = textShadowNode.getDefaultFontSize();
 
       ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
     }
@@ -229,6 +251,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   protected float mLineHeight = Float.NaN;
+  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -239,9 +262,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mFontSize = UNSET;
   protected float mFontSizeInput = UNSET;
   protected float mLineHeightInput = UNSET;
+  protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -280,6 +305,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
+
+  public ReactBaseTextShadowNode() {}
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
@@ -324,12 +351,22 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
+  public void setLetterSpacing(float letterSpacing) {
+    mLetterSpacingInput = letterSpacing;
+    mLetterSpacing = mAllowFontScaling
+      ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
+      : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+    markUpdated();
+  }
+
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
     if (allowFontScaling != mAllowFontScaling) {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
+      setLetterSpacing(mLetterSpacingInput);
       markUpdated();
     }
   }
@@ -508,5 +545,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       mTextShadowColor = textShadowColor;
       markUpdated();
     }
+  }
+
+  @ReactProp(name = PROP_TEXT_TRANSFORM)
+  public void setTextTransform(@Nullable String textTransform) {
+    if (textTransform == null || "none".equals(textTransform)) {
+      mTextTransform = TextTransform.NONE;
+    } else if ("uppercase".equals(textTransform)) {
+      mTextTransform = TextTransform.UPPERCASE;
+    } else if ("lowercase".equals(textTransform)) {
+      mTextTransform = TextTransform.LOWERCASE;
+    } else if ("capitalize".equals(textTransform)) {
+      mTextTransform = TextTransform.CAPITALIZE;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+    }
+    markUpdated();
   }
 }
