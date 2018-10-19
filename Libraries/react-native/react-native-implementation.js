@@ -13,6 +13,7 @@
 const invariant = require('fbjs/lib/invariant');
 
 let showedListViewDeprecation = false;
+let showedSwipeableListViewDeprecation = false;
 
 // Export React, plus some native additions.
 module.exports = {
@@ -119,6 +120,14 @@ module.exports = {
     return require('SwipeableFlatList');
   },
   get SwipeableListView() {
+    if (!showedSwipeableListViewDeprecation) {
+      console.warn(
+        'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
+          'See https://fb.me/nolistview for more information',
+      );
+
+      showedSwipeableListViewDeprecation = true;
+    }
     return require('SwipeableListView');
   },
   get TabBarIOS() {
