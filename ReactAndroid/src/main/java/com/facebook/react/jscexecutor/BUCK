@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "rn_xplat_cxx_library", "react_native_xplat_target", "react_native_target", "react_native_dep", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library")
 
 rn_android_library(
     name = "jscexecutor",
@@ -19,8 +19,8 @@ rn_xplat_cxx_library(
     headers = glob(["*.h"]),
     header_namespace = "",
     compiler_flags = ["-fexceptions"],
-    platforms = ANDROID,
     fbandroid_allow_jni_merging = True,
+    platforms = ANDROID,
     soname = "libjscexecutor.$(ext)",
     visibility = [
         react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
