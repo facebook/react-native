@@ -76,11 +76,11 @@ public class AccessibilityDelegateUtil {
 
     public static AccessibilityRole fromValue(@Nullable String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (role.name().equalsIgnoreCase(value)) {
+        if (role.getValue() != null && role.getValue().equals(value)) {
           return role;
         }
       }
-      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
+      return AccessibilityRole.NONE;
     }
   }
 
