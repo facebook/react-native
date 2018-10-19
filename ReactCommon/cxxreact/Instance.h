@@ -53,7 +53,7 @@ public:
   virtual void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                      std::unique_ptr<const JSBigString> startupScript,
                      std::string startupScriptSourceURL, bool loadSynchronously);
-  virtual bool supportsProfiling();
+  bool supportsProfiling();
   virtual void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
   virtual void *getJavaScriptContext();
@@ -72,7 +72,7 @@ public:
   virtual void handleMemoryPressure(int pressureLevel);
 
 protected:
-  virtual void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
+  void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
   virtual void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> startupScript,
                        std::string startupScriptSourceURL);
