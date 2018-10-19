@@ -195,9 +195,6 @@ module.exports = {
   get AsyncStorage() {
     return require('AsyncStorage');
   },
-  get BackAndroid() {
-    return require('BackAndroid');
-  }, // deprecated: use BackHandler instead
   get BackHandler() {
     return require('BackHandler');
   },
