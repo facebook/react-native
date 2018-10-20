@@ -19,12 +19,11 @@ void EventBeat::beat() const {
     return;
   }
 
-  if (!beatCallback_) {
-    return;
-  }
-
-  beatCallback_();
   isRequested_ = false;
+
+  if (beatCallback_) {
+    beatCallback_();
+  }
 }
 
 void EventBeat::induce() const {
@@ -33,6 +32,10 @@ void EventBeat::induce() const {
 
 void EventBeat::setBeatCallback(const BeatCallback &beatCallback) {
   beatCallback_ = beatCallback;
+}
+
+void EventBeat::setFailCallback(const FailCallback &failCallback) {
+  failCallback_ = failCallback;
 }
 
 } // namespace react

@@ -14,7 +14,6 @@ const Batchinator = require('Batchinator');
 const IncrementalGroup = require('IncrementalGroup');
 const React = require('React');
 const ScrollView = require('ScrollView');
-const Set = require('Set');
 const StyleSheet = require('StyleSheet');
 const Systrace = require('Systrace');
 const View = require('View');

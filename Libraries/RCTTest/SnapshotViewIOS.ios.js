@@ -10,8 +10,6 @@
 
 'use strict';
 
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
@@ -21,27 +19,30 @@ const requireNativeComponent = require('requireNativeComponent');
 
 const {TestModule} = require('NativeModules');
 
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
 // Verify that RCTSnapshot is part of the UIManager since it is only loaded
 // if you have linked against RCTTest like in tests, otherwise we will have
 // a warning printed out
-const RCTSnapshot = UIManager.RCTSnapshot
+const RCTSnapshot = UIManager.getViewManagerConfig('RCTSnapshot')
   ? requireNativeComponent('RCTSnapshot')
   : View;
 
-class SnapshotViewIOS extends React.Component<{
-  onSnapshotReady?: Function,
-  testIdentifier?: string,
-}> {
-  // $FlowFixMe(>=0.41.0)
-  static propTypes = {
-    ...DeprecatedViewPropTypes,
-    // A callback when the Snapshot view is ready to be compared
-    onSnapshotReady: PropTypes.func,
-    // A name to identify the individual instance to the SnapshotView
-    testIdentifier: PropTypes.string,
-  };
+type SnapshotReadyEvent = SyntheticEvent<
+  $ReadOnly<{
+    testIdentifier: string,
+  }>,
+>;
 
-  onDefaultAction = (event: Object) => {
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
+  testIdentifier?: ?string,
+|}>;
+
+class SnapshotViewIOS extends React.Component<Props> {
+  onDefaultAction = (event: SnapshotReadyEvent) => {
     TestModule.verifySnapshot(TestModule.markTestPassed);
   };
 

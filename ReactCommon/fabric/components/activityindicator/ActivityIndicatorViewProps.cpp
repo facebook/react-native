@@ -12,12 +12,17 @@
 namespace facebook {
 namespace react {
 
-ActivityIndicatorViewProps::ActivityIndicatorViewProps(const ActivityIndicatorViewProps &sourceProps, const RawProps &rawProps):
-  ViewProps(sourceProps, rawProps),
-  animating(convertRawProp(rawProps, "animating", sourceProps.animating)),
-  color(convertRawProp(rawProps, "color", sourceProps.color)),
-  hidesWhenStopped(convertRawProp(rawProps, "hidesWhenStopped", sourceProps.hidesWhenStopped)),
-  size(convertRawProp(rawProps, "size", sourceProps.size)) {}
+ActivityIndicatorViewProps::ActivityIndicatorViewProps(
+    const ActivityIndicatorViewProps &sourceProps,
+    const RawProps &rawProps)
+    : ViewProps(sourceProps, rawProps),
+      animating(convertRawProp(rawProps, "animating", sourceProps.animating)),
+      color(convertRawProp(rawProps, "color", sourceProps.color)),
+      hidesWhenStopped(convertRawProp(
+          rawProps,
+          "hidesWhenStopped",
+          sourceProps.hidesWhenStopped)),
+      size(convertRawProp(rawProps, "size", sourceProps.size)) {}
 
 } // namespace react
 } // namespace facebook

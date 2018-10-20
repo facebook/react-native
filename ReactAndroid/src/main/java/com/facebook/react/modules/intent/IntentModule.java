@@ -79,7 +79,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
     try {
       Activity currentActivity = getCurrentActivity();
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
 
       String selfPackageName = getReactApplicationContext().getPackageName();
       ComponentName componentName = intent.resolveActivity(

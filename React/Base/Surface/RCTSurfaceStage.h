@@ -21,6 +21,18 @@ typedef NS_OPTIONS(NSInteger, RCTSurfaceStage) {
   RCTSurfaceStageSurfaceDidInitialLayout = 1 << 5,     // UIManager completed the first layout pass
   RCTSurfaceStageSurfaceDidInitialMounting = 1 << 6,   // UIManager completed the first mounting pass
   RCTSurfaceStageSurfaceDidStop = 1 << 7,              // Surface stopped
+
+  // Most of the previously existed stages make no sense in the new architecture;
+  // now Surface exposes only three simple stages:
+  //
+  // Surface object was constructed and still valid.
+  RCTSurfaceStageInitialized = RCTSurfaceStageSurfaceDidInitialize,
+  // Surface was started.
+  RCTSurfaceStageStarted = 1 << 8,
+  // All off-main-thread work is done; we are ready to mount the UI.
+  RCTSurfaceStagePrepared = RCTSurfaceStageBridgeDidLoad | RCTSurfaceStageModuleDidLoad | RCTSurfaceStageSurfaceDidRun | RCTSurfaceStageSurfaceDidInitialRendering | RCTSurfaceStageSurfaceDidInitialLayout,
+  // All main-thread work is done, the UI was mounted.
+  RCTSurfaceStageMounted = RCTSurfaceStageSurfaceDidInitialMounting,
 };
 
 /**

@@ -11,13 +11,12 @@ namespace facebook {
 namespace react {
 
 RawEvent::RawEvent(
-  std::string type,
-  folly::dynamic payload,
-  WeakEventTarget eventTarget
-):
-  type(std::move(type)),
-  payload(std::move(payload)),
-  eventTarget(std::move(eventTarget)) {}
+    std::string type,
+    folly::dynamic payload,
+    WeakEventTarget eventTarget)
+    : type(std::move(type)),
+      payload(std::move(payload)),
+      eventTarget(std::move(eventTarget)) {}
 
 } // namespace react
 } // namespace facebook

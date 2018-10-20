@@ -64,6 +64,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             YogaMeasureMode heightMode) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
+          textPaint.setTextSize(mFontSize != UNSET ? mFontSize : getDefaultFontSize());
           Layout layout;
           Spanned text = Assertions.assertNotNull(
               mPreparedSpannableText,
@@ -74,6 +75,19 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           // technically, width should never be negative, but there is currently a bug in
           boolean unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0;
+
+          Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+          switch (getTextAlign()) {
+            case Gravity.LEFT:
+              alignment = Layout.Alignment.ALIGN_NORMAL;
+              break;
+            case Gravity.RIGHT:
+              alignment = Layout.Alignment.ALIGN_OPPOSITE;
+              break;
+            case Gravity.CENTER_HORIZONTAL:
+              alignment = Layout.Alignment.ALIGN_CENTER;
+              break;
+          }
 
           if (boring == null &&
               (unconstrainedWidth ||
@@ -87,13 +101,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                 text,
                 textPaint,
                 hintWidth,
-                Layout.Alignment.ALIGN_NORMAL,
+                alignment,
                 1.f,
                 0.f,
                 mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setAlignment(alignment)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)
@@ -108,7 +122,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                 text,
                 textPaint,
                 boring.width,
-                Layout.Alignment.ALIGN_NORMAL,
+                alignment,
                 1.f,
                 0.f,
                 boring,
@@ -121,13 +135,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   text,
                   textPaint,
                   (int) width,
-                  Layout.Alignment.ALIGN_NORMAL,
+                  alignment,
                   1.f,
                   0.f,
                   mIncludeFontPadding);
             } else {
               layout = StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setAlignment(alignment)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(mIncludeFontPadding)
                 .setBreakStrategy(mTextBreakStrategy)

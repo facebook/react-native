@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import com.facebook.fbreact.fabricxx.jsi.Binding;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -29,8 +28,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.fabric.FabricBinder;
-import com.facebook.react.fabric.FabricBinding;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -199,7 +196,7 @@ public class ReactAppTestActivity extends FragmentActivity
           throw new RuntimeException("Layout never occurred for component " + appKey, e);}
   }
 
-  public void loadBundle(ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
+  public void loadBundle(final ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
 
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
@@ -243,25 +240,12 @@ public class ReactAppTestActivity extends FragmentActivity
                         return new JSIModuleProvider() {
                           @Override
                           public UIManager get() {
-                            List<ViewManager> viewManagers =
-                                mReactInstanceManager.getOrCreateViewManagers(
-                                    reactApplicationContext);
-                            EventDispatcher eventDispatcher =
-                                reactApplicationContext
-                                    .getNativeModule(UIManagerModule.class)
-                                    .getEventDispatcher();
-
                             ViewManagerRegistry viewManagerRegistry =
                               new ViewManagerRegistry(
                                 mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
 
-                            UIManager uiManager =
-                              new com.facebook.fbreact.fabricxx.UIManager(
-                                reactApplicationContext, viewManagerRegistry, jsContext);
-
-                            FabricBinding binding = new Binding();
-                            binding.installFabric(jsContext, (FabricBinder) uiManager);
-                            return uiManager;
+                            FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
+                            return factory != null ? factory.getFabricUIManager(reactApplicationContext, viewManagerRegistry, jsContext) : null;
                           }
                         };
                       }

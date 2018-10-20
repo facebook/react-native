@@ -19,9 +19,8 @@ class ViewEventEmitter;
 
 using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
 
-class ViewEventEmitter:
-  public TouchEventEmitter {
-public:
+class ViewEventEmitter : public TouchEventEmitter {
+ public:
   using TouchEventEmitter::TouchEventEmitter;
 
 #pragma mark - Accessibility

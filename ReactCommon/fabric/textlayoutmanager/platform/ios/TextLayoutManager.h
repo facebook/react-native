@@ -25,7 +25,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  * Cross platform facade for iOS-specific RCTTTextLayoutManager.
  */
 class TextLayoutManager {
-public:
+ public:
   TextLayoutManager(const SharedContextContainer &contextContainer);
   ~TextLayoutManager();
 
@@ -33,11 +33,10 @@ public:
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
-    Tag reactTag,
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    LayoutConstraints layoutConstraints
-  ) const;
+      Tag reactTag,
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
@@ -45,7 +44,7 @@ public:
    */
   void *getNativeTextLayoutManager() const;
 
-private:
+ private:
   void *self_;
 };
 

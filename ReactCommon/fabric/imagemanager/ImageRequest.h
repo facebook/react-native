@@ -26,9 +26,7 @@ namespace react {
  * Destroy to cancel the underlying request.
  */
 class ImageRequest final {
-
-public:
-
+ public:
   /*
    * The exception which is thrown when `ImageRequest` is being deallocated
    * if the future is not ready yet.
@@ -39,9 +37,9 @@ public:
    * `ImageRequest` is constructed with `ImageSource` and
    * `ImageResponse` future which must be moved in inside the object.
    */
-  ImageRequest(const ImageSource &imageSource, folly::Future<ImageResponse> &&responseFuture);
-
-  ImageRequest();
+  ImageRequest(
+      const ImageSource &imageSource,
+      folly::Future<ImageResponse> &&responseFuture);
 
   /*
    * The move constructor.
@@ -62,8 +60,7 @@ public:
    */
   folly::Future<ImageResponse> getResponseFuture() const;
 
-private:
-
+ private:
   /*
    * Mutext to protect an access to the future.
    */
@@ -82,7 +79,7 @@ private:
   /*
    * Indicates that the object was moved and hence cannot be used anymore.
    */
-  bool moved_ {false};
+  bool moved_{false};
 };
 
 } // namespace react

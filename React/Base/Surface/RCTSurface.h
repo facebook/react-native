@@ -114,6 +114,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
 
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * Those methods are not implemented yet for regular RCTSurface.
+ */
+- (BOOL)start;
+- (BOOL)stop;
+
 #pragma mark - Mounting/Unmounting of React components
 
 /**

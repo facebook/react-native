@@ -17,7 +17,7 @@ namespace facebook {
 namespace react {
 
 class ScrollViewMetrics {
-public:
+ public:
   Size contentSize;
   Point contentOffset;
   EdgeInsets contentInset;
@@ -27,13 +27,11 @@ public:
 
 class ScrollViewEventEmitter;
 
-using SharedScrollViewEventEmitter = std::shared_ptr<const ScrollViewEventEmitter>;
+using SharedScrollViewEventEmitter =
+    std::shared_ptr<const ScrollViewEventEmitter>;
 
-class ScrollViewEventEmitter:
-  public ViewEventEmitter {
-
-public:
-
+class ScrollViewEventEmitter : public ViewEventEmitter {
+ public:
   using ViewEventEmitter::ViewEventEmitter;
 
   void onScroll(const ScrollViewMetrics &scrollViewMetrics) const;
@@ -42,9 +40,11 @@ public:
   void onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const;
   void onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const;
 
-private:
-
-  void dispatchScrollViewEvent(const std::string &name, const ScrollViewMetrics &scrollViewMetrics, const folly::dynamic &payload = {}) const;
+ private:
+  void dispatchScrollViewEvent(
+      const std::string &name,
+      const ScrollViewMetrics &scrollViewMetrics,
+      const folly::dynamic &payload = {}) const;
 };
 
 } // namespace react

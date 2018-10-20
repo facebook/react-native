@@ -17,7 +17,8 @@ AttributedString ParagraphLocalData::getAttributedString() const {
   return attributedString_;
 }
 
-void ParagraphLocalData::setAttributedString(AttributedString attributedString) {
+void ParagraphLocalData::setAttributedString(
+    AttributedString attributedString) {
   ensureUnsealed();
   attributedString_ = attributedString;
 }
@@ -26,7 +27,8 @@ SharedTextLayoutManager ParagraphLocalData::getTextLayoutManager() const {
   return textLayoutManager_;
 }
 
-void ParagraphLocalData::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
+void ParagraphLocalData::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
 }
@@ -37,15 +39,16 @@ folly::dynamic ParagraphLocalData::getDynamic() const {
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
 std::string ParagraphLocalData::getDebugName() const {
   return "ParagraphLocalData";
 }
 
 SharedDebugStringConvertibleList ParagraphLocalData::getDebugProps() const {
   return {
-    debugStringConvertibleItem("attributedString", attributedString_, "")
-  };
+      debugStringConvertibleItem("attributedString", attributedString_, "")};
 }
+#endif
 
 } // namespace react
 } // namespace facebook

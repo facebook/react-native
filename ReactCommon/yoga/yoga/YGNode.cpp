@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+ *  Copyright (c) 2018-present, Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -458,7 +458,7 @@ YGFloatOptional YGNode::getLeadingPadding(
       YGResolveValue(style_.padding[YGEdgeStart], widthSize);
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-      !paddingEdgeStart.isUndefined() && paddingEdgeStart.getValue() > 0.0f) {
+      !paddingEdgeStart.isUndefined() && paddingEdgeStart.getValue() >= 0.0f) {
     return paddingEdgeStart;
   }
 

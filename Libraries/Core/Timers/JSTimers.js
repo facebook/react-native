@@ -360,9 +360,6 @@ const JSTimers = {
     return id;
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   cancelIdleCallback: function(timerID: number) {
     _freeCallback(timerID);
     const index = requestIdleCallbacks.indexOf(timerID);
@@ -381,23 +378,14 @@ const JSTimers = {
     }
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   clearTimeout: function(timerID: number) {
     _freeCallback(timerID);
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   clearInterval: function(timerID: number) {
     _freeCallback(timerID);
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   clearImmediate: function(timerID: number) {
     _freeCallback(timerID);
     const index = immediates.indexOf(timerID);
@@ -406,9 +394,6 @@ const JSTimers = {
     }
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   cancelAnimationFrame: function(timerID: number) {
     _freeCallback(timerID);
   },
@@ -417,9 +402,6 @@ const JSTimers = {
    * This is called from the native side. We are passed an array of timerIDs,
    * and
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   callTimers: function(timersToCall: Array<number>) {
     invariant(
       timersToCall.length !== 0,
@@ -450,9 +432,6 @@ const JSTimers = {
     }
   },
 
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   callIdleCallbacks: function(frameTime: number) {
     if (
       FRAME_DURATION - (performanceNow() - frameTime) <
@@ -489,9 +468,6 @@ const JSTimers = {
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   callImmediates() {
     errors = null;
     while (_callImmediatesPass()) {}
@@ -507,9 +483,6 @@ const JSTimers = {
   /**
    * Called from native (in development) when environment times are out-of-sync.
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   emitTimeDriftWarning(warningMessage: string) {
     if (hasEmittedTimeDriftWarning) {
       return;
