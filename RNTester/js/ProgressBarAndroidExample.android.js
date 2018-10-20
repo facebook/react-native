@@ -26,7 +26,7 @@ type MovingBarState = {
 };
 
 class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
-  _intervalID: (null: ?IntervalID);
+  _intervalID: ?IntervalID = null;
 
   state = {
     progress: 0,
