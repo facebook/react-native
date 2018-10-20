@@ -26,6 +26,7 @@ import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
@@ -59,6 +60,7 @@ import javax.inject.Provider;
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      @Nullable UIImplementationProvider uiImplementationProvider,
       boolean lazyViewManagersEnabled,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
