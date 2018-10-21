@@ -26,6 +26,9 @@ static YGStyle yogaStyleFromLayoutConstraints(
   yogaStyle.maxDimensions[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
 
+  yogaStyle.direction =
+      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
+
   return yogaStyle;
 }
 

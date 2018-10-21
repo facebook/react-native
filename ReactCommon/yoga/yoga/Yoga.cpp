@@ -1,11 +1,10 @@
 /*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+ *  Copyright (c) 2018-present, Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
  *
  */
-
 #include "Yoga.h"
 #include <float.h>
 #include <string.h>
@@ -3608,7 +3607,27 @@ float YGRoundValueToPixelGrid(
     const bool forceCeil,
     const bool forceFloor) {
   float scaledValue = value * pointScaleFactor;
+  // We want to calculate `fractial` such that `floor(scaledValue) = scaledValue
+  // - fractial`.
   float fractial = fmodf(scaledValue, 1.0f);
+  if (fractial < 0) {
+    // This branch is for handling negative numbers for `value`.
+    //
+    // Regarding `floor` and `ceil`. Note that for a number x, `floor(x) <= x <=
+    // ceil(x)` even for negative numbers. Here are a couple of examples:
+    //   - x =  2.2: floor( 2.2) =  2, ceil( 2.2) =  3
+    //   - x = -2.2: floor(-2.2) = -3, ceil(-2.2) = -2
+    //
+    // Regarding `fmodf`. For fractional negative numbers, `fmodf` returns a
+    // negative number. For example, `fmodf(-2.2) = -0.2`. However, we want
+    // `fractial` to be the number such that subtracting it from `value` will
+    // give us `floor(value)`. In the case of negative numbers, adding 1 to
+    // `fmodf(value)` gives us this. Let's continue the example from above:
+    //   - fractial = fmodf(-2.2) = -0.2
+    //   - Add 1 to the fraction: fractial2 = fractial + 1 = -0.2 + 1 = 0.8
+    //   - Finding the `floor`: -2.2 - fractial2 = -2.2 - 0.8 = -3
+    ++fractial;
+  }
   if (YGFloatsEqual(fractial, 0)) {
     // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;

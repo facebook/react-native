@@ -47,8 +47,12 @@ extern const YGValue YGValueAuto;
 
 #ifdef __cplusplus
 
+YG_EXTERN_C_END
+
 extern bool operator==(const YGValue& lhs, const YGValue& rhs);
 extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
+
+YG_EXTERN_C_BEGIN
 
 #endif
 

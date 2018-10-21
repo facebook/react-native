@@ -12,9 +12,9 @@ See <https://docs.docker.com/engine/installation/> for more information on how t
 
 We have added a number of default run scripts to the `package.json` file to simplify building and running your tests.
 
-`npm run test-android-setup` - Pulls down the base android docker image used for running the tests
+`npm run docker-setup-android` - Pulls down the base android docker image used for running the tests
 
-`npm run test-android-build` - Builds the docker image used to run the tests
+`npm run docker-build-android` - Builds the docker image used to run the tests
 
 `npm run test-android-run-unit` - Runs all the unit tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail)
 
