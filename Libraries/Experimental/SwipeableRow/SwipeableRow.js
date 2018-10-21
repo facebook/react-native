@@ -14,11 +14,9 @@ const Animated = require('Animated');
 const I18nManager = require('I18nManager');
 const PanResponder = require('PanResponder');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const createReactClass = require('create-react-class');
 const emptyFunction = require('fbjs/lib/emptyFunction');
 
 import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
@@ -59,7 +57,7 @@ const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
 type Props = $ReadOnly<{|
   children?: ?React.Node,
   isOpen?: ?boolean,
-  maxSwipeDistance?: ?number,
+  maxSwipeDistance: number,
   onClose?: ?Function,
   onOpen?: ?Function,
   onSwipeEnd?: ?Function,
@@ -67,8 +65,14 @@ type Props = $ReadOnly<{|
   preventSwipeRight?: ?boolean,
   shouldBounceOnMount?: ?boolean,
   slideoutView?: ?React.Node,
-  swipeThreshold?: ?number,
+  swipeThreshold: number,
 |}>;
+
+type State = {
+  currentLeft: Animated.Value,
+  isSwipeableViewRendered: boolean,
+  rowHeight: ?number,
+};
 
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
@@ -77,61 +81,33 @@ type Props = $ReadOnly<{|
  * used in a normal ListView. See the renderRow for SwipeableListView to see how
  * to use this component separately.
  */
-const SwipeableRow = createReactClass({
-  displayName: 'SwipeableRow',
-  _panResponder: {},
-  _previousLeft: CLOSED_LEFT_POSITION,
-  _timeoutID: (null: ?TimeoutID),
+class SwipeableRow extends React.Component<Props, State> {
+  _panResponder = {};
+  _previousLeft = CLOSED_LEFT_POSITION;
+  _timeoutID: ?TimeoutID = null;
 
-  propTypes: {
-    children: PropTypes.any,
-    isOpen: PropTypes.bool,
-    preventSwipeRight: PropTypes.bool,
-    maxSwipeDistance: PropTypes.number.isRequired,
-    onOpen: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onSwipeEnd: PropTypes.func.isRequired,
-    onSwipeStart: PropTypes.func.isRequired,
-    // Should bounce the row on mount
-    shouldBounceOnMount: PropTypes.bool,
+  static defaultProps = {
+    isOpen: false,
+    preventSwipeRight: false,
+    maxSwipeDistance: 0,
+    onOpen: emptyFunction,
+    onClose: emptyFunction,
+    onSwipeEnd: emptyFunction,
+    onSwipeStart: emptyFunction,
+    swipeThreshold: 30,
+  };
+
+  state = {
+    currentLeft: new Animated.Value(this._previousLeft),
     /**
-     * A ReactElement that is unveiled when the user swipes
+     * In order to render component A beneath component B, A must be rendered
+     * before B. However, this will cause "flickering", aka we see A briefly
+     * then B. To counter this, _isSwipeableViewRendered flag is used to set
+     * component A to be transparent until component B is loaded.
      */
-    slideoutView: PropTypes.node.isRequired,
-    /**
-     * The minimum swipe distance required before fully animating the swipe. If
-     * the user swipes less than this distance, the item will return to its
-     * previous (open/close) position.
-     */
-    swipeThreshold: PropTypes.number.isRequired,
-  },
-
-  getInitialState(): Object {
-    return {
-      currentLeft: new Animated.Value(this._previousLeft),
-      /**
-       * In order to render component A beneath component B, A must be rendered
-       * before B. However, this will cause "flickering", aka we see A briefly
-       * then B. To counter this, _isSwipeableViewRendered flag is used to set
-       * component A to be transparent until component B is loaded.
-       */
-      isSwipeableViewRendered: false,
-      rowHeight: (null: ?number),
-    };
-  },
-
-  getDefaultProps(): Object {
-    return {
-      isOpen: false,
-      preventSwipeRight: false,
-      maxSwipeDistance: 0,
-      onOpen: emptyFunction,
-      onClose: emptyFunction,
-      onSwipeEnd: emptyFunction,
-      onSwipeStart: emptyFunction,
-      swipeThreshold: 30,
-    };
-  },
+    isSwipeableViewRendered: false,
+    rowHeight: null,
+  };
 
   UNSAFE_componentWillMount(): void {
     this._panResponder = PanResponder.create({
@@ -144,7 +120,7 @@ const SwipeableRow = createReactClass({
       onPanResponderTerminate: this._handlePanResponderEnd,
       onShouldBlockNativeResponder: (event, gestureState) => false,
     });
-  },
+  }
 
   componentDidMount(): void {
     if (this.props.shouldBounceOnMount) {
@@ -156,7 +132,7 @@ const SwipeableRow = createReactClass({
         this._animateBounceBack(ON_MOUNT_BOUNCE_DURATION);
       }, ON_MOUNT_BOUNCE_DELAY);
     }
-  },
+  }
 
   UNSAFE_componentWillReceiveProps(nextProps: Object): void {
     /**
@@ -166,13 +142,13 @@ const SwipeableRow = createReactClass({
     if (this.props.isOpen && !nextProps.isOpen) {
       this._animateToClosedPosition();
     }
-  },
+  }
 
   componentWillUnmount() {
     if (this._timeoutID != null) {
       clearTimeout(this._timeoutID);
     }
-  },
+  }
 
   render(): React.Element<any> {
     // The view hidden behind the main view
@@ -201,19 +177,19 @@ const SwipeableRow = createReactClass({
         {swipeableView}
       </View>
     );
-  },
+  }
 
   close(): void {
-    this.props.onClose();
+    this.props.onClose && this.props.onClose();
     this._animateToClosedPosition();
-  },
+  }
 
   _onSwipeableViewLayout(event: LayoutEvent): void {
     this.setState({
       isSwipeableViewRendered: true,
       rowHeight: event.nativeEvent.layout.height,
     });
-  },
+  }
 
   _handleMoveShouldSetPanResponderCapture(
     event: PressEvent,
@@ -221,41 +197,41 @@ const SwipeableRow = createReactClass({
   ): boolean {
     // Decides whether a swipe is responded to by this component or its child
     return gestureState.dy < 10 && this._isValidSwipe(gestureState);
-  },
+  }
 
   _handlePanResponderGrant(
     event: PressEvent,
     gestureState: GestureState,
-  ): void {},
+  ): void {}
 
   _handlePanResponderMove(event: PressEvent, gestureState: GestureState): void {
     if (this._isSwipingExcessivelyRightFromClosedPosition(gestureState)) {
       return;
     }
 
-    this.props.onSwipeStart();
+    this.props.onSwipeStart && this.props.onSwipeStart();
 
     if (this._isSwipingRightFromClosed(gestureState)) {
       this._swipeSlowSpeed(gestureState);
     } else {
       this._swipeFullSpeed(gestureState);
     }
-  },
+  }
 
   _isSwipingRightFromClosed(gestureState: GestureState): boolean {
     const gestureStateDx = IS_RTL ? -gestureState.dx : gestureState.dx;
     return this._previousLeft === CLOSED_LEFT_POSITION && gestureStateDx > 0;
-  },
+  }
 
   _swipeFullSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(this._previousLeft + gestureState.dx);
-  },
+  }
 
   _swipeSlowSpeed(gestureState: GestureState): void {
     this.state.currentLeft.setValue(
       this._previousLeft + gestureState.dx / SLOW_SPEED_SWIPE_FACTOR,
     );
-  },
+  }
 
   _isSwipingExcessivelyRightFromClosedPosition(
     gestureState: GestureState,
@@ -270,14 +246,14 @@ const SwipeableRow = createReactClass({
       this._isSwipingRightFromClosed(gestureState) &&
       gestureStateDx > RIGHT_SWIPE_THRESHOLD
     );
-  },
+  }
 
   _onPanResponderTerminationRequest(
     event: PressEvent,
     gestureState: GestureState,
   ): boolean {
     return false;
-  },
+  }
 
   _animateTo(
     toValue: number,
@@ -292,14 +268,15 @@ const SwipeableRow = createReactClass({
       this._previousLeft = toValue;
       callback();
     });
-  },
+  }
 
   _animateToOpenPosition(): void {
     const maxSwipeDistance = IS_RTL
       ? -this.props.maxSwipeDistance
       : this.props.maxSwipeDistance;
+
     this._animateTo(-maxSwipeDistance);
-  },
+  }
 
   _animateToOpenPositionWith(speed: number, distMoved: number): void {
     /**
@@ -321,15 +298,15 @@ const SwipeableRow = createReactClass({
       ? -this.props.maxSwipeDistance
       : this.props.maxSwipeDistance;
     this._animateTo(-maxSwipeDistance, duration);
-  },
+  }
 
   _animateToClosedPosition(duration: number = SWIPE_DURATION): void {
     this._animateTo(CLOSED_LEFT_POSITION, duration);
-  },
+  }
 
   _animateToClosedPositionDuringBounce(): void {
     this._animateToClosedPosition(RIGHT_SWIPE_BOUNCE_BACK_DURATION);
-  },
+  }
 
   _animateBounceBack(duration: number): void {
     /**
@@ -344,7 +321,7 @@ const SwipeableRow = createReactClass({
       duration,
       this._animateToClosedPositionDuringBounce,
     );
-  },
+  }
 
   // Ignore swipes due to user's finger moving slightly when tapping
   _isValidSwipe(gestureState: GestureState): boolean {
@@ -357,7 +334,7 @@ const SwipeableRow = createReactClass({
     }
 
     return Math.abs(gestureState.dx) > HORIZONTAL_SWIPE_DISTANCE_THRESHOLD;
-  },
+  }
 
   _shouldAnimateRemainder(gestureState: GestureState): boolean {
     /**
@@ -368,21 +345,21 @@ const SwipeableRow = createReactClass({
       Math.abs(gestureState.dx) > this.props.swipeThreshold ||
       gestureState.vx > HORIZONTAL_FULL_SWIPE_SPEED_THRESHOLD
     );
-  },
+  }
 
   _handlePanResponderEnd(event: PressEvent, gestureState: GestureState): void {
     const horizontalDistance = IS_RTL ? -gestureState.dx : gestureState.dx;
     if (this._isSwipingRightFromClosed(gestureState)) {
-      this.props.onOpen();
+      this.props.onOpen && this.props.onOpen();
       this._animateBounceBack(RIGHT_SWIPE_BOUNCE_BACK_DURATION);
     } else if (this._shouldAnimateRemainder(gestureState)) {
       if (horizontalDistance < 0) {
         // Swiped left
-        this.props.onOpen();
+        this.props.onOpen && this.props.onOpen();
         this._animateToOpenPositionWith(gestureState.vx, horizontalDistance);
       } else {
         // Swiped right
-        this.props.onClose();
+        this.props.onClose && this.props.onClose();
         this._animateToClosedPosition();
       }
     } else {
@@ -393,13 +370,8 @@ const SwipeableRow = createReactClass({
       }
     }
 
-    this.props.onSwipeEnd();
-  },
-});
-
-// TODO: Delete this when `SwipeableRow` uses class syntax.
-class TypedSwipeableRow extends React.Component<Props> {
-  close() {}
+    this.props.onSwipeEnd && this.props.onSwipeEnd();
+  }
 }
 
 const styles = StyleSheet.create({
@@ -412,4 +384,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((SwipeableRow: any): Class<TypedSwipeableRow>);
+module.exports = SwipeableRow;
