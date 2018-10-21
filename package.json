@@ -165,7 +165,7 @@
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
     "fbjs": "^1.0.0",
-    "fbjs-scripts": "^0.8.1",
+    "fbjs-scripts": "^1.0.0",
     "fs-extra": "^1.0.0",
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
