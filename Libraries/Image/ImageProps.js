@@ -17,16 +17,14 @@ import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
 import type {DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
-type OnLoadEvent = SyntheticEvent<
+export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
-    // Only on Android
-    uri?: string,
-
     source: $ReadOnly<{|
       width: number,
       height: number,
       url: string,
     |}>,
+    uri?: string, // Only on Android
   |}>,
 >;
 
@@ -112,7 +110,7 @@ export type ImageProps = {|
    *
    * See https://facebook.github.io/react-native/docs/image.html#onload
    */
-  onLoad?: ?(event: OnLoadEvent) => void,
+  onLoad?: ?(event: ImageLoadEvent) => void,
 
   /**
    * Invoked when load either succeeds or fails.
