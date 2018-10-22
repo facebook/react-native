@@ -10,19 +10,13 @@
 
 'use strict';
 
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-
-const RCTSegmentedControl = requireNativeComponent('RCTSegmentedControl');
+import type {NativeComponent} from 'ReactNative';
 
 type DefaultProps = {
   values: $ReadOnlyArray<string>,
@@ -31,18 +25,44 @@ type DefaultProps = {
 
 type Props = $ReadOnly<{|
   ...ViewProps,
+  /**
+   * The labels for the control's segment buttons, in order.
+   */
   values?: ?$ReadOnlyArray<string>,
+  /**
+   * The index in `props.values` of the segment to be (pre)selected.
+   */
   selectedIndex?: ?number,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the segment's value as an argument
+   */
   onValueChange?: ?Function,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the event as an argument
+   */
   onChange?: ?Function,
+  /**
+   * If false the user won't be able to interact with the control.
+   * Default value is true.
+   */
   enabled?: ?boolean,
+  /**
+   * Accent color of the control.
+   */
   tintColor?: ?string,
+  /**
+   * If true, then selecting a segment won't persist visually.
+   * The `onValueChange` callback will still work as expected.
+   */
   momentary?: ?boolean,
 |}>;
 
 const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
 
 type Event = Object;
+type NativeSegmentedControlIOS = Class<NativeComponent<Props>>;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -64,66 +84,24 @@ type Event = Object;
  * />
  * ````
  */
-const SegmentedControlIOS = createReactClass({
-  displayName: 'SegmentedControlIOS',
-  mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...DeprecatedViewPropTypes,
-    /**
-     * The labels for the control's segment buttons, in order.
-     */
-    values: PropTypes.arrayOf(PropTypes.string),
+const RCTSegmentedControl = ((requireNativeComponent(
+  'RCTSegmentedControl',
+): any): NativeSegmentedControlIOS);
 
-    /**
-     * The index in `props.values` of the segment to be (pre)selected.
-     */
-    selectedIndex: PropTypes.number,
+class SegmentedControlIOS extends React.Component<Props> {
+  static defaultProps: DefaultProps = {
+    values: [],
+    enabled: true,
+  };
 
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the segment's value as an argument
-     */
-    onValueChange: PropTypes.func,
-
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the event as an argument
-     */
-    onChange: PropTypes.func,
-
-    /**
-     * If false the user won't be able to interact with the control.
-     * Default value is true.
-     */
-    enabled: PropTypes.bool,
-
-    /**
-     * Accent color of the control.
-     */
-    tintColor: PropTypes.string,
-
-    /**
-     * If true, then selecting a segment won't persist visually.
-     * The `onValueChange` callback will still work as expected.
-     */
-    momentary: PropTypes.bool,
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
-      values: [],
-      enabled: true,
-    };
-  },
-
-  _onChange: function(event: Event) {
+  _onChange = (event: Event) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
       this.props.onValueChange(event.nativeEvent.value);
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <RCTSegmentedControl
         {...this.props}
@@ -132,8 +110,8 @@ const SegmentedControlIOS = createReactClass({
         onChange={this._onChange}
       />
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   segmentedControl: {
@@ -141,6 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((SegmentedControlIOS: any): Class<
-  ReactNative.NativeComponent<Props>,
->);
+module.exports = SegmentedControlIOS;
