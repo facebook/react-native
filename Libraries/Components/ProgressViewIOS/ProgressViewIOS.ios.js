@@ -13,7 +13,6 @@
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {NativeComponent} from 'ReactNative';
