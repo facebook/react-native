@@ -119,4 +119,7 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SegmentedControlIOS;
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const SegmentedControlIOSWithRef = React.forwardRef(SegmentedControlIOS);
+
+module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);
