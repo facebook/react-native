@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+ImageRequest::ImageRequest() {}
+
 ImageRequest::ImageRequest(
     const ImageSource &imageSource,
     folly::Future<ImageResponse> &&responseFuture) {
