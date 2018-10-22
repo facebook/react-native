@@ -9,24 +9,16 @@
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const Image = require('Image');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const PropTypes = require('prop-types');
 const React = require('React');
 const UIManager = require('UIManager');
 
-const createReactClass = require('create-react-class');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
-const optionalImageSource = PropTypes.oneOfType([
-  Image.propTypes.source,
-  // Image.propTypes.source is required but we want it to be optional, so we OR
-  // it with a nullable propType.
-  PropTypes.oneOf([]),
-]);
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -63,106 +55,119 @@ const optionalImageSource = PropTypes.oneOfType([
  *
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
-const ToolbarAndroid = createReactClass({
-  displayName: 'ToolbarAndroid',
-  mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...DeprecatedViewPropTypes,
-    /**
-     * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
-     * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
-     * menu.
-     *
-     * This property takes an array of objects, where each object has the following keys:
-     *
-     * * `title`: **required**, the title of this action
-     * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
-     * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
-     * `ifRoom` or `never`
-     * * `showWithText`: boolean, whether to show text alongside the icon or not
-     */
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        icon: optionalImageSource,
-        show: PropTypes.oneOf(['always', 'ifRoom', 'never']),
-        showWithText: PropTypes.bool,
-      }),
-    ),
-    /**
-     * Sets the toolbar logo.
-     */
-    logo: optionalImageSource,
-    /**
-     * Sets the navigation icon.
-     */
-    navIcon: optionalImageSource,
-    /**
-     * Callback that is called when an action is selected. The only argument that is passed to the
-     * callback is the position of the action in the actions array.
-     */
-    onActionSelected: PropTypes.func,
-    /**
-     * Callback called when the icon is selected.
-     */
-    onIconClicked: PropTypes.func,
-    /**
-     * Sets the overflow icon.
-     */
-    overflowIcon: optionalImageSource,
-    /**
-     * Sets the toolbar subtitle.
-     */
-    subtitle: PropTypes.string,
-    /**
-     * Sets the toolbar subtitle color.
-     */
-    subtitleColor: DeprecatedColorPropType,
-    /**
-     * Sets the toolbar title.
-     */
-    title: PropTypes.string,
-    /**
-     * Sets the toolbar title color.
-     */
-    titleColor: DeprecatedColorPropType,
-    /**
-     * Sets the content inset for the toolbar starting edge.
-     *
-     * The content inset affects the valid area for Toolbar content other than
-     * the navigation button and menu. Insets define the minimum margin for
-     * these components and can be used to effectively align Toolbar content
-     * along well-known gridlines.
-     */
-    contentInsetStart: PropTypes.number,
-    /**
-     * Sets the content inset for the toolbar ending edge.
-     *
-     * The content inset affects the valid area for Toolbar content other than
-     * the navigation button and menu. Insets define the minimum margin for
-     * these components and can be used to effectively align Toolbar content
-     * along well-known gridlines.
-     */
-    contentInsetEnd: PropTypes.number,
-    /**
-     * Used to set the toolbar direction to RTL.
-     * In addition to this property you need to add
-     *
-     *   android:supportsRtl="true"
-     *
-     * to your application AndroidManifest.xml and then call
-     * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
-     * `onCreate` method.
-     */
-    rtl: PropTypes.bool,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
-  },
+type Action = $Readonly<{|
+  title: string,
+  icon?: ?ImageSource,
+  show?: 'always' | 'ifRoom' | 'never',
+  showWithText?: boolean,
+|}>;
 
-  render: function() {
+type ToolbarAndroidChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+  |}>,
+>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  /**
+   * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
+   * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
+   * menu.
+   *
+   * This property takes an array of objects, where each object has the following keys:
+   *
+   * * `title`: **required**, the title of this action
+   * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
+   * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
+   * `ifRoom` or `never`
+   * * `showWithText`: boolean, whether to show text alongside the icon or not
+   */
+  actions?: ?Array<Action>,
+  /**
+   * Sets the toolbar logo.
+   */
+  logo?: ?ImageSource,
+  /**
+   * Sets the navigation icon.
+   */
+  navIcon?: ?ImageSource,
+  /**
+   * Callback that is called when an action is selected. The only argument that is passed to the
+   * callback is the position of the action in the actions array.
+   */
+  onActionSelected?: ?Function,
+  /**
+   * Callback called when the icon is selected.
+   */
+  onIconClicked?: ?Function,
+  /**
+   * Sets the overflow icon.
+   */
+  overflowIcon?: ?optionalImageSource,
+  /**
+   * Sets the toolbar subtitle.
+   */
+  subtitle?: ?string,
+  /**
+   * Sets the toolbar subtitle color.
+   */
+  subtitleColor?: ?ColorValue,
+  /**
+   * Sets the toolbar title.
+   */
+  title?: ?string,
+  /**
+   * Sets the toolbar title color.
+   */
+  titleColor?: ?ColorValue,
+  /**
+   * Sets the content inset for the toolbar starting edge.
+   *
+   * The content inset affects the valid area for Toolbar content other than
+   * the navigation button and menu. Insets define the minimum margin for
+   * these components and can be used to effectively align Toolbar content
+   * along well-known gridlines.
+   */
+  contentInsetStart?: ?number,
+  /**
+   * Sets the content inset for the toolbar ending edge.
+   *
+   * The content inset affects the valid area for Toolbar content other than
+   * the navigation button and menu. Insets define the minimum margin for
+   * these components and can be used to effectively align Toolbar content
+   * along well-known gridlines.
+   */
+  contentInsetEnd?: ?number,
+  /**
+   * Used to set the toolbar direction to RTL.
+   * In addition to this property you need to add
+   *
+   *   android:supportsRtl="true"
+   *
+   * to your application AndroidManifest.xml and then call
+   * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
+   * `onCreate` method.
+   */
+  rtl?: ?boolean,
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+|}>;
+
+class ToolbarAndroid extends React.Component<Props> {
+  _onSelect = (event: ToolbarAndroidChangeEvent) => {
+    const position = event.nativeEvent.position;
+    if (position === -1) {
+      this.props.onIconClicked && this.props.onIconClicked();
+    } else {
+      this.props.onActionSelected && this.props.onActionSelected(position);
+    }
+  };
+
+  render() {
     const nativeProps = {
       ...this.props,
     };
@@ -195,17 +200,8 @@ const ToolbarAndroid = createReactClass({
     }
 
     return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
-  },
-
-  _onSelect: function(event) {
-    const position = event.nativeEvent.position;
-    if (position === -1) {
-      this.props.onIconClicked && this.props.onIconClicked();
-    } else {
-      this.props.onActionSelected && this.props.onActionSelected(position);
-    }
-  },
-});
+  }
+}
 
 const NativeToolbar = requireNativeComponent('ToolbarAndroid');
 
