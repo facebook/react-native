@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 import android.widget.Toast;
 import com.facebook.common.logging.FLog;
@@ -31,7 +32,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
-import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -64,7 +64,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -295,7 +294,7 @@ public class DevSupportManagerImpl implements
 
     @Override
     public void log(Exception e) {
-      StringBuilder message = new StringBuilder(e.getMessage());
+      StringBuilder message = new StringBuilder(e.getMessage() == null ? "Exception in native call from JS" : e.getMessage());
       Throwable cause = e.getCause();
       while (cause != null) {
         message.append("\n\n").append(cause.getMessage());
@@ -320,7 +319,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void showNewJavaError(String message, Throwable e) {
+  public void showNewJavaError(@Nullable String message, Throwable e) {
     FLog.e(ReactConstants.TAG, "Exception in native call", e);
     showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE, ErrorType.NATIVE);
   }
@@ -414,7 +413,7 @@ public class DevSupportManagerImpl implements
   }
 
   private void showNewError(
-      final String message,
+      @Nullable final String message,
       final StackFrame[] stack,
       final int errorCookie,
       final ErrorType errorType) {
@@ -893,7 +892,7 @@ public class DevSupportManagerImpl implements
   }
 
   private void updateLastErrorInfo(
-      final String message,
+      @Nullable final String message,
       final StackFrame[] stack,
       final int errorCookie,
       final ErrorType errorType) {

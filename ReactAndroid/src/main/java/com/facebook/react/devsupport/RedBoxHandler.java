@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.text.SpannedString;
 
 import com.facebook.react.devsupport.interfaces.StackFrame;
@@ -42,7 +43,7 @@ public interface RedBoxHandler {
   /**
    * Handle the information from the redbox.
    */
-  void handleRedbox(String title, StackFrame[] stack, ErrorType errorType);
+  void handleRedbox(@Nullable String title, StackFrame[] stack, ErrorType errorType);
 
   /**
    * Whether the report feature is enabled.
