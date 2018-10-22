@@ -25,6 +25,9 @@
  */
 'use strict';
 
+const startTime =
+  global.nativePerformanceNow != null ? global.nativePerformanceNow() : null;
+
 const {polyfillObjectProperty, polyfillGlobal} = require('PolyfillFunctions');
 
 if (global.GLOBAL === undefined) {
@@ -215,4 +218,9 @@ if (__DEV__) {
     const JSInspector = require('JSInspector');
     JSInspector.registerAgent(require('NetworkAgent'));
   }
+}
+
+if (startTime != null) {
+  const PerformanceLogger = require('PerformanceLogger');
+  PerformanceLogger.markPoint('InitializeCoreStartTime', startTime);
 }
