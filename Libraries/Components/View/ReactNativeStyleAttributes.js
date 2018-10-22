@@ -4,29 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
+ * @format strict-local
  * @flow
  */
 
 'use strict';
 
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const keyMirror = require('fbjs/lib/keyMirror');
 const processColor = require('processColor');
 const processTransform = require('processTransform');
 const sizesDiffer = require('sizesDiffer');
 
-const ReactNativeStyleAttributes = {
-  ...keyMirror(ViewStylePropTypes),
-  ...keyMirror(TextStylePropTypes),
-  ...keyMirror(ImageStylePropTypes),
-};
+const ReactNativeStyleAttributes = {};
+
+for (const attributeName of Object.keys({
+  ...DeprecatedViewStylePropTypes,
+  ...TextStylePropTypes,
+  ...DeprecatedImageStylePropTypes,
+})) {
+  ReactNativeStyleAttributes[attributeName] = true;
+}
 
 ReactNativeStyleAttributes.transform = {process: processTransform};
 ReactNativeStyleAttributes.shadowOffset = {diff: sizesDiffer};

@@ -17,9 +17,9 @@ namespace react {
  * Unified layout constraints for measuring.
  */
 struct LayoutConstraints {
-  Size minimumSize {0, 0};
-  Size maximumSize {kFloatUndefined, kFloatUndefined};
-  LayoutDirection layoutDirection;
+  Size minimumSize{0, 0};
+  Size maximumSize{kFloatUndefined, kFloatUndefined};
+  LayoutDirection layoutDirection{LayoutDirection::Undefined};
 };
 
 } // namespace react

@@ -7,8 +7,8 @@
  * @format
  */
 
-const fs = require.requireActual('fs');
-const path = require.requireActual('path');
+const fs = jest.requireActual('fs');
+const path = jest.requireActual('path');
 
 const manifest = fs.readFileSync(
   path.join(__dirname, './files/AndroidManifest.xml'),

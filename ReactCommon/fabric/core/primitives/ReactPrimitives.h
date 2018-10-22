@@ -20,7 +20,8 @@ namespace react {
  * `Tag` and `InstanceHandle` are used to address React Native components.
  */
 using Tag = int32_t;
-using InstanceHandle = struct InstanceHandleDummyStruct {} *;
+using InstanceHandle = struct InstanceHandleDummyStruct {
+} *;
 
 /*
  * An id of a running Surface instance that is used to refer to the instance.

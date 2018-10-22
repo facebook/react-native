@@ -10,20 +10,22 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PlatformViewPropTypes = require('PlatformViewPropTypes');
 const PropTypes = require('prop-types');
-const StyleSheetPropType = require('StyleSheetPropType');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const {
-  AccessibilityComponentTypes,
-  AccessibilityTraits,
-  AccessibilityRoles,
-  AccessibilityStates,
-} = require('ViewAccessibility');
+  DeprecatedAccessibilityComponentTypes,
+  DeprecatedAccessibilityTraits,
+  DeprecatedAccessibilityRoles,
+  DeprecatedAccessibilityStates,
+} = require('DeprecatedViewAccessibility');
 
-const stylePropType = StyleSheetPropType(ViewStylePropTypes);
+const stylePropType = DeprecatedStyleSheetPropType(
+  DeprecatedViewStylePropTypes,
+);
 
 module.exports = {
   /**
@@ -75,17 +77,21 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
    */
-  accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+  accessibilityComponentType: PropTypes.oneOf(
+    DeprecatedAccessibilityComponentTypes,
+  ),
 
   /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
-  accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
+  accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
 
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-  accessibilityStates: PropTypes.arrayOf(PropTypes.oneOf(AccessibilityStates)),
+  accessibilityStates: PropTypes.arrayOf(
+    PropTypes.oneOf(DeprecatedAccessibilityStates),
+  ),
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
@@ -123,8 +129,8 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#accessibilitytraits
    */
   accessibilityTraits: PropTypes.oneOfType([
-    PropTypes.oneOf(AccessibilityTraits),
-    PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
+    PropTypes.oneOf(DeprecatedAccessibilityTraits),
+    PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
   ]),
 
   /**
@@ -316,7 +322,7 @@ module.exports = {
    *
    * See http://facebook.github.io/react-native/docs/view.html#hitslop
    */
-  hitSlop: EdgeInsetsPropType,
+  hitSlop: DeprecatedEdgeInsetsPropType,
 
   /**
    * Invoked on mount and layout changes with:

@@ -16,9 +16,8 @@ namespace react {
  * Event Queue that dispatches event in batches synchronizing them with
  * an Event Beat.
  */
-class BatchedEventQueue final: public EventQueue {
-
-public:
+class BatchedEventQueue final : public EventQueue {
+ public:
   using EventQueue::EventQueue;
 
   void enqueueEvent(const RawEvent &rawEvent) const override;

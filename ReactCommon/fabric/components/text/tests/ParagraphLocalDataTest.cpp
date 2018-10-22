@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
- #include <memory>
+#include <memory>
 
+#include <assert.h>
 #include <fabric/attributedstring/AttributedString.h>
 #include <fabric/attributedstring/TextAttributes.h>
 #include <fabric/attributedstring/primitives.h>
-#include <fabric/components/text/conversions.h>
 #include <fabric/components/text/ParagraphLocalData.h>
+#include <fabric/components/text/conversions.h>
 #include <gtest/gtest.h>
-#include <assert.h>
 
 namespace facebook {
 namespace react {
@@ -24,7 +24,8 @@ TEST(ParagraphLocalDataTest, testSomething) {
   fragment.string = "test";
 
   auto text = TextAttributes();
-  text.foregroundColor = {colorFromComponents({100/255.0, 153/255.0, 253/255.0, 1.0})};
+  text.foregroundColor = {
+      colorFromComponents({100 / 255.0, 153 / 255.0, 253 / 255.0, 1.0})};
   text.opacity = 0.5;
   text.fontStyle = FontStyle::Italic;
   text.fontWeight = FontWeight::Thin;
@@ -45,5 +46,5 @@ TEST(ParagraphLocalDataTest, testSomething) {
   assert(textAttribute["fontWeight"] == toString(*text.fontWeight));
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

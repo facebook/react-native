@@ -105,6 +105,16 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
+- (void)dealloc
+{
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
+  }
+}
+
 - (SCNetworkReachabilityRef)getReachabilityRef
 {
   SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(kCFAllocatorDefault, _host.UTF8String ?: "apple.com");
@@ -176,6 +186,12 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
+  }
   _firstTimeReachability = [self getReachabilityRef];
   _resolve = resolve;
 }

@@ -215,7 +215,7 @@ type Props = $ReadOnly<{|
 
 const ListView = createReactClass({
   displayName: 'ListView',
-  _rafId: (null: ?AnimationFrameID),
+  _rafIds: ([]: Array<AnimationFrameID>),
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
@@ -348,6 +348,7 @@ const ListView = createReactClass({
       offset: 0,
     };
 
+    this._rafIds = [];
     this._childFrames = [];
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
@@ -355,15 +356,14 @@ const ListView = createReactClass({
   },
 
   componentWillUnmount: function() {
-    if (this._rafId != null) {
-      cancelAnimationFrame(this._rafId);
-    }
+    this._rafIds.forEach(cancelAnimationFrame);
+    this._rafIds = [];
   },
 
   componentDidMount: function() {
     // do this in animation frame until componentDidMount actually runs after
     // the component is laid out
-    this._rafId = requestAnimationFrame(() => {
+    this._requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -391,7 +391,7 @@ const ListView = createReactClass({
   },
 
   componentDidUpdate: function() {
-    this._rafId = requestAnimationFrame(() => {
+    this._requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -541,6 +541,14 @@ const ListView = createReactClass({
   /**
    * Private methods
    */
+
+  _requestAnimationFrame: function(fn: () => void): void {
+    const rafId = requestAnimationFrame(() => {
+      this._rafIds = this._rafIds.filter(id => id !== rafId);
+      fn();
+    });
+    this._rafIds.push(rafId);
+  },
 
   _measureAndUpdateScrollProps: function() {
     const scrollComponent = this.getScrollResponder();

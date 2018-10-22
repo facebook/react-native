@@ -143,9 +143,7 @@ public class TextLayoutManager {
               new CustomTextTransformSpan(textAttributes.mTextTransform)));
         }
 
-        //TODO: add react tag as part of the fragments, react tag is used on Touch events
-        int reactTag = 1;
-
+        int reactTag = fragment.getInt("reactTag");
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
       }
     }

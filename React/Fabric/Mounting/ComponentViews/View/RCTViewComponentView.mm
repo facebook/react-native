@@ -20,6 +20,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView
 {
   UIColor *_backgroundColor;
+  CALayer *_borderLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -48,6 +49,10 @@ using namespace facebook::react;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+
+  if (_borderLayer) {
+    _borderLayer.frame = self.layer.bounds;
+  }
 
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
@@ -188,12 +193,46 @@ using namespace facebook::react;
 
   // `nativeId`
   if (oldViewProps.nativeId != newViewProps.nativeId) {
-    self.nativeId = RCTNSStringFromString(newViewProps.nativeId);
+    self.nativeId = RCTNSStringFromStringNilIfEmpty(newViewProps.nativeId);
   }
 
   // `accessible`
   if (oldViewProps.accessible != newViewProps.accessible) {
     self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
+  }
+
+  // `accessibilityLabel`
+  if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
+    self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
+  }
+
+  // `accessibilityHint`
+  if (oldViewProps.accessibilityHint != newViewProps.accessibilityHint) {
+    self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
+  }
+
+  // `accessibilityTraits`
+  if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
+    self.accessibilityElement.accessibilityTraits = RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+  }
+
+  // `accessibilityViewIsModal`
+  if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
+    self.accessibilityElement.accessibilityViewIsModal = newViewProps.accessibilityViewIsModal;
+  }
+
+  // `accessibilityElementsHidden`
+  if (oldViewProps.accessibilityElementsHidden != newViewProps.accessibilityElementsHidden) {
+    self.accessibilityElement.accessibilityElementsHidden = newViewProps.accessibilityElementsHidden;
+  }
+
+  // `accessibilityIgnoresInvertColors`
+  if (oldViewProps.accessibilityIgnoresInvertColors != newViewProps.accessibilityIgnoresInvertColors) {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    if (@available(iOS 11.0, *)) {
+      self.accessibilityIgnoresInvertColors = newViewProps.accessibilityIgnoresInvertColors;
+    }
+#endif
   }
 
   if (needsInvalidateLayer) {
@@ -346,8 +385,11 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     );
 
   if (useCoreAnimationBorderRendering) {
-    layer.contents = nil;
-    layer.needsDisplayOnBoundsChange = NO;
+    if (_borderLayer) {
+      [_borderLayer removeFromSuperlayer];
+      _borderLayer = nil;
+    }
+
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
     layer.borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
@@ -355,6 +397,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     _contentView.layer.masksToBounds = YES;
   } else {
+    if (!_borderLayer) {
+      _borderLayer = [[CALayer alloc] init];
+      _borderLayer.zPosition = -1024.0f;
+      _borderLayer.frame = layer.bounds;
+      _borderLayer.magnificationFilter = kCAFilterNearest;
+      [layer addSublayer:_borderLayer];
+    }
+
     layer.backgroundColor = nil;
     layer.borderWidth = 0;
     layer.borderColor = nil;
@@ -373,8 +423,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     );
 
     if (image == nil) {
-      layer.contents = nil;
-      layer.needsDisplayOnBoundsChange = NO;
+      _borderLayer.contents = nil;
     } else {
       CGSize imageSize = image.size;
       UIEdgeInsets imageCapInsets = image.capInsets;
@@ -383,16 +432,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
         CGSize {(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}
       };
 
-      layer.contents = (id)image.CGImage;
-      layer.contentsScale = image.scale;
-      layer.needsDisplayOnBoundsChange = YES;
-      layer.magnificationFilter = kCAFilterNearest;
+      _borderLayer.contents = (id)image.CGImage;
+      _borderLayer.contentsScale = image.scale;
 
       const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
-        layer.contentsCenter = contentsCenter;
+        _borderLayer.contentsCenter = contentsCenter;
       } else {
-        layer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
+        _borderLayer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
       }
     }
 
@@ -420,10 +467,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
-
-  // After updating `layer`'s parameters we have to redraw on top of it
-  // all custom content (calling `drawRect:` implemented in subclasses).
-  [layer setNeedsDisplay];
 }
 
 #pragma mark - Accessibility
@@ -431,6 +474,34 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 - (NSObject *)accessibilityElement
 {
   return self;
+}
+
+static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
+{
+  NSMutableString *result = [NSMutableString stringWithString:@""];
+  for (UIView *subview in view.subviews) {
+    NSString *label = subview.accessibilityLabel;
+    if (!label) {
+      label = RCTRecursiveAccessibilityLabel(subview);
+    }
+    if (label && label.length > 0) {
+      if (result.length > 0) {
+        [result appendString:@" "];
+      }
+      [result appendString:label];
+    }
+  }
+  return result;
+}
+
+- (NSString *)accessibilityLabel
+{
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
+  }
+
+  return RCTRecursiveAccessibilityLabel(self);
 }
 
 #pragma mark - Accessibility Events

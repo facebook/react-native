@@ -96,7 +96,6 @@ class MultiColumnExample extends React.PureComponent<
           renderItem={this._renderItemComponent}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
-          legacyImplementation={false}
         />
       </RNTesterPage>
     );

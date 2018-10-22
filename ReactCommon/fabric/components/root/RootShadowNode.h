@@ -29,14 +29,9 @@ extern const char RootComponentName[];
  * props which represent external layout constraints and context of the
  * shadow tree.
  */
-class RootShadowNode final:
-  public ConcreteViewShadowNode<
-    RootComponentName,
-    RootProps
-  > {
-
-public:
-
+class RootShadowNode final
+    : public ConcreteViewShadowNode<RootComponentName, RootProps> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   /*
@@ -44,8 +39,7 @@ public:
    */
   void layout();
 
-private:
-
+ private:
   using YogaLayoutableShadowNode::layout;
 };
 

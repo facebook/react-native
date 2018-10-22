@@ -9,7 +9,7 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
@@ -21,7 +21,8 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
+const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
+  .Constants;
 
 const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
@@ -91,7 +92,7 @@ const DrawerLayoutAndroid = createReactClass({
      * );
      * ```
      */
-    drawerBackgroundColor: ColorPropType,
+    drawerBackgroundColor: DeprecatedColorPropType,
     /**
      * Specifies the side of the screen from which the drawer will slide in.
      */
@@ -146,7 +147,7 @@ const DrawerLayoutAndroid = createReactClass({
      * status bar to allow it to open over the status bar. It will only have an
      * effect on API 21+.
      */
-    statusBarBackgroundColor: ColorPropType,
+    statusBarBackgroundColor: DeprecatedColorPropType,
   },
 
   mixins: [NativeMethodsMixin],
@@ -254,7 +255,7 @@ const DrawerLayoutAndroid = createReactClass({
   openDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.openDrawer,
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands.openDrawer,
       null,
     );
   },
@@ -265,7 +266,8 @@ const DrawerLayoutAndroid = createReactClass({
   closeDrawer: function() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands
+        .closeDrawer,
       null,
     );
   },

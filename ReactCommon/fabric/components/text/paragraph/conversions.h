@@ -8,9 +8,10 @@ namespace react {
 
 inline folly::dynamic toDynamic(const ParagraphLocalData &paragraphLocalData) {
   folly::dynamic newLocalData = folly::dynamic::object();
-  newLocalData["attributedString"] = toDynamic(paragraphLocalData.getAttributedString());
+  newLocalData["attributedString"] =
+      toDynamic(paragraphLocalData.getAttributedString());
   return newLocalData;
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

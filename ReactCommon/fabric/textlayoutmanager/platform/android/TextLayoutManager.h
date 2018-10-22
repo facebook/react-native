@@ -25,21 +25,19 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  * Cross platform facade for Android-specific TextLayoutManager.
  */
 class TextLayoutManager {
-
-public:
-
-  TextLayoutManager(const SharedContextContainer &contextContainer) : contextContainer_(contextContainer) {};
+ public:
+  TextLayoutManager(const SharedContextContainer &contextContainer)
+      : contextContainer_(contextContainer){};
   ~TextLayoutManager();
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
-    Tag reactTag,
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    LayoutConstraints layoutConstraints
-  ) const;
+      Tag reactTag,
+      AttributedString attributedString,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
@@ -47,8 +45,7 @@ public:
    */
   void *getNativeTextLayoutManager() const;
 
-private:
-
+ private:
   void *self_;
 
   SharedContextContainer contextContainer_;

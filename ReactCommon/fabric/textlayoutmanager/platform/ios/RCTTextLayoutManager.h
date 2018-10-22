@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/graphics/Geometry.h>
 #import <fabric/attributedstring/AttributedString.h>
 #import <fabric/attributedstring/ParagraphAttributes.h>
+#import <fabric/core/LayoutConstraints.h>
+#import <fabric/graphics/Geometry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,18 +19,27 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTTextLayoutManager : NSObject
 
-- (facebook::react::Size)measureWithAttributedString:(facebook::react::AttributedString)attributedString
-                                 paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                   layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+- (facebook::react::Size)
+    measureWithAttributedString:
+        (facebook::react::AttributedString)attributedString
+            paragraphAttributes:
+                (facebook::react::ParagraphAttributes)paragraphAttributes
+              layoutConstraints:
+                  (facebook::react::LayoutConstraints)layoutConstraints;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
-         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+         paragraphAttributes:
+             (facebook::react::ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame;
 
-- (facebook::react::SharedShadowNode)getParentShadowNodeWithAttributeString:(facebook::react::AttributedString)attributedString
-                                                        paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                                                      frame:(CGRect)frame
-                                                                    atPoint:(CGPoint)point;
+- (facebook::react::SharedShadowNode)
+    getParentShadowNodeWithAttributeString:
+        (facebook::react::AttributedString)attributedString
+                       paragraphAttributes:
+                           (facebook::react::ParagraphAttributes)
+                               paragraphAttributes
+                                     frame:(CGRect)frame
+                                   atPoint:(CGPoint)point;
 
 @end
 

@@ -91,11 +91,10 @@ polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
-  require('regenerator-runtime/runtime');
-  return global.regeneratorRuntime;
+
+  // regenerator-runtime/runtime exports the regeneratorRuntime object, so we
+  // can return it safely.
+  return require('regenerator-runtime/runtime');
 });
 
 // Set up timers
@@ -214,9 +213,6 @@ if (__DEV__) {
 
     // Set up inspector
     const JSInspector = require('JSInspector');
-    /* $FlowFixMe(>=0.56.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error found when Flow v0.56 was deployed. To see the error
-     * delete this comment and run Flow. */
     JSInspector.registerAgent(require('NetworkAgent'));
   }
 }

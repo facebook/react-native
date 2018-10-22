@@ -9,9 +9,9 @@
 
 namespace facebook {
 namespace react {
-  
+
 #pragma mark - Touches
-  
+
 static folly::dynamic touchPayload(const Touch &touch) {
   folly::dynamic object = folly::dynamic::object();
   object["locationX"] = touch.offsetPoint.x;
@@ -44,20 +44,28 @@ static folly::dynamic touchEventPayload(const TouchEvent &event) {
 }
 
 void TouchEventEmitter::onTouchStart(const TouchEvent &event) const {
-  dispatchEvent("touchStart", touchEventPayload(event), EventPriority::SynchronousUnbatched);
+  dispatchEvent(
+      "touchStart",
+      touchEventPayload(event),
+      EventPriority::SynchronousUnbatched);
 }
 
 void TouchEventEmitter::onTouchMove(const TouchEvent &event) const {
-  dispatchEvent("touchMove", touchEventPayload(event), EventPriority::SynchronousBatched);
+  dispatchEvent(
+      "touchMove", touchEventPayload(event), EventPriority::SynchronousBatched);
 }
 
 void TouchEventEmitter::onTouchEnd(const TouchEvent &event) const {
-  dispatchEvent("touchEnd", touchEventPayload(event), EventPriority::SynchronousBatched);
+  dispatchEvent(
+      "touchEnd", touchEventPayload(event), EventPriority::SynchronousBatched);
 }
 
 void TouchEventEmitter::onTouchCancel(const TouchEvent &event) const {
-  dispatchEvent("touchCancel", touchEventPayload(event), EventPriority::SynchronousBatched);
+  dispatchEvent(
+      "touchCancel",
+      touchEventPayload(event),
+      EventPriority::SynchronousBatched);
 }
-  
+
 } // namespace react
 } // namespace facebook

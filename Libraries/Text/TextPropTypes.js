@@ -10,13 +10,13 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
-const StyleSheetPropType = require('StyleSheetPropType');
+const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 
-const stylePropType = StyleSheetPropType(TextStylePropTypes);
+const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
 
 module.exports = {
   /**
@@ -62,7 +62,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#pressretentionoffset
    */
-  pressRetentionOffset: EdgeInsetsPropType,
+  pressRetentionOffset: DeprecatedEdgeInsetsPropType,
   /**
    * Lets the user select text.
    *
@@ -74,7 +74,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#selectioncolor
    */
-  selectionColor: ColorPropType,
+  selectionColor: DeprecatedColorPropType,
   /**
    * When `true`, no visual change is made when text is pressed down.
    *
