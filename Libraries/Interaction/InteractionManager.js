@@ -12,7 +12,6 @@
 
 const BatchedBridge = require('BatchedBridge');
 const EventEmitter = require('EventEmitter');
-const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
 const infoLog = require('infoLog');

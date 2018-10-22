@@ -330,6 +330,14 @@ module.exports = {
   },
 
   // Deprecated
+  get BackAndroid() {
+    invariant(
+      false,
+      'BackAndroid is deprecated and has been removed from this package. ' +
+        'Use BackHandler instead',
+    );
+  },
+
   get Navigator() {
     invariant(
       false,

@@ -33,6 +33,8 @@ class ImageRequest final {
    */
   class ImageNoLongerNeededException;
 
+  ImageRequest();
+
   /*
    * `ImageRequest` is constructed with `ImageSource` and
    * `ImageResponse` future which must be moved in inside the object.

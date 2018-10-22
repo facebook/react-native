@@ -10,7 +10,6 @@
 
 'use strict';
 
-const Map = require('Map');
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
