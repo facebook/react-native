@@ -114,7 +114,7 @@ function validateAndUpgrade() {
       'Your "package.json" file doesn\'t seem to have "react" as a dependency.\n' +
         '"react" was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
         'Therefore, it\'s necessary to include "react" in your project\'s dependencies.\n' +
-        'Please run "npm install --save react", then re-run "react-native upgrade".\n',
+        'Please run "npm install  react", then re-run "react-native upgrade".\n',
     );
     return;
   }
