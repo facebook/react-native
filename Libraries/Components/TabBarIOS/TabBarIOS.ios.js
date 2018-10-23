@@ -68,8 +68,21 @@ type Props = $ReadOnly<{|
   itemPositioning?: ?('fill' | 'center' | 'auto'),
 |}>;
 
+let showedDeprecationWarning = false;
+
 class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
+
+  componentDidMount() {
+    if (!showedDeprecationWarning) {
+      console.warn(
+        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
+          'Please use react-native-tab-view instead.',
+      );
+
+      showedDeprecationWarning = true;
+    }
+  }
 
   render() {
     return (
