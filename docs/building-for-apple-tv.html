@@ -151,20 +151,20 @@
 <ul>
 <li><p><em>General support for tvOS</em>: Apple TV specific changes in native code are all wrapped by the TARGET_OS_TV define. These include changes to suppress APIs that are not supported on tvOS (e.g. web views, sliders, switches, status bar, etc.), and changes to support user input from the TV remote or keyboard.</p></li>
 <li><p><em>Common codebase</em>: Since tvOS and iOS share most Objective-C and JavaScript code in common, most documentation for iOS applies equally to tvOS.</p></li>
-<li><p><em>Access to touchable controls</em>: When running on Apple TV, the native view class is <code>RCTTVView</code>, which has additional methods to make use of the tvOS focus engine. The <code>Touchable</code> mixin has code added to detect focus changes and use existing methods to style the components properly and initiate the proper actions when the view is selected using the TV remote, so <code>TouchableHighlight</code> and <code>TouchableOpacity</code> will &quot;just work&quot;. In particular:</p>
+<li><p><em>Access to touchable controls</em>: When running on Apple TV, the native view class is <code>RCTTVView</code>, which has additional methods to make use of the tvOS focus engine. The <code>Touchable</code> mixin has code added to detect focus changes and use existing methods to style the components properly and initiate the proper actions when the view is selected using the TV remote, so <code>TouchableWithoutFeedback</code>, <code>TouchableHighlight</code> and <code>TouchableOpacity</code> will &quot;just work&quot;. In particular:</p>
 <ul>
-<li><code>touchableHandleActivePressIn</code> will be executed when the touchable view goes into focus</li>
-<li><code>touchableHandleActivePressOut</code> will be executed when the touchable view goes out of focus</li>
-<li><code>touchableHandlePress</code> will be executed when the touchable view is actually selected by pressing the &quot;select&quot; button on the TV remote.</li>
+<li><code>onFocus</code> will be executed when the touchable view goes into focus</li>
+<li><code>onBlur</code> will be executed when the touchable view goes out of focus</li>
+<li><code>onPress</code> will be executed when the touchable view is actually selected by pressing the &quot;select&quot; button on the TV remote.</li>
 </ul></li>
 </ul>
 <p><block class="android" /></p>
 <ul>
-<li><p><em>Access to touchable controls</em>: When running on Android TV the Android framework will automatically apply a directional navigation scheme based on relative position of focusable elements in your views. The <code>Touchable</code> mixin has code added to detect focus changes and use existing methods to style the components properly and initiate the proper actions when the view is selected using the TV remote, so <code>TouchableHighlight</code>, <code>TouchableOpacity</code> and <code>TouchableNativeFeedback</code> will &quot;just work&quot;. In particular:</p>
+<li><p><em>Access to touchable controls</em>: When running on Android TV the Android framework will automatically apply a directional navigation scheme based on relative position of focusable elements in your views. The <code>Touchable</code> mixin has code added to detect focus changes and use existing methods to style the components properly and initiate the proper actions when the view is selected using the TV remote, so <code>TouchableWithoutFeedback</code>, <code>TouchableHighlight</code>, <code>TouchableOpacity</code> and <code>TouchableNativeFeedback</code> will &quot;just work&quot;. In particular:</p>
 <ul>
-<li><code>touchableHandleActivePressIn</code> will be executed when the touchable view goes into focus</li>
-<li><code>touchableHandleActivePressOut</code> will be executed when the touchable view goes out of focus</li>
-<li><code>touchableHandlePress</code> will be executed when the touchable view is actually selected by pressing the &quot;select&quot; button on the TV remote.</li>
+<li><code>onFocus</code> will be executed when the touchable view goes into focus</li>
+<li><code>onBlur</code> will be executed when the touchable view goes out of focus</li>
+<li><code>onPress</code> will be executed when the touchable view is actually selected by pressing the &quot;select&quot; button on the TV remote.</li>
 </ul></li>
 </ul>
 <p><block class="ios" /></p>
