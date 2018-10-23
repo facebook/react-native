@@ -16,7 +16,7 @@ const StyleSheet = require('StyleSheet');
 let showedDeprecationWarning = false;
 
 class DummyTab extends React.Component {
-  render() {
+  componentDidMount() {
     if (!showedDeprecationWarning) {
       console.warn(
         'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
@@ -25,7 +25,9 @@ class DummyTab extends React.Component {
 
       showedDeprecationWarning = true;
     }
+  }
 
+  render() {
     if (!this.props.selected) {
       return <View />;
     }

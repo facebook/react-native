@@ -73,7 +73,7 @@ let showedDeprecationWarning = false;
 class TabBarIOS extends React.Component<Props> {
   static Item = TabBarItemIOS;
 
-  render() {
+  componentDidMount() {
     if (!showedDeprecationWarning) {
       console.warn(
         'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
@@ -82,6 +82,9 @@ class TabBarIOS extends React.Component<Props> {
 
       showedDeprecationWarning = true;
     }
+  }
+
+  render() {
     return (
       <RCTTabBar
         style={[styles.tabGroup, this.props.style]}

@@ -17,7 +17,7 @@ const View = require('View');
 let showedDeprecationWarning = false;
 
 class DummyTabBarIOS extends React.Component<$FlowFixMeProps> {
-  render() {
+  componentDidMount() {
     if (!showedDeprecationWarning) {
       console.warn(
         'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
@@ -26,7 +26,9 @@ class DummyTabBarIOS extends React.Component<$FlowFixMeProps> {
 
       showedDeprecationWarning = true;
     }
+  }
 
+  render() {
     return (
       <View style={[this.props.style, styles.tabGroup]}>
         {this.props.children}

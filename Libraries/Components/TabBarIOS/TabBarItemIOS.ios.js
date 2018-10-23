@@ -122,7 +122,7 @@ class TabBarItemIOS extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  componentDidMount() {
     if (!showedDeprecationWarning) {
       console.warn(
         'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
@@ -131,7 +131,9 @@ class TabBarItemIOS extends React.Component<Props, State> {
 
       showedDeprecationWarning = true;
     }
-
+  }
+  
+  render() {
     const {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
