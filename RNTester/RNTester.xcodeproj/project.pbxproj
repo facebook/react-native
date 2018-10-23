@@ -135,6 +135,8 @@
 		E77B20F321C481F8007FDF6D /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
 		ED2970992150247000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2970982150247000B7C4FE /* JavaScriptCore.framework */; };
 		EDEBC856214C774100DD5AC8 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
+		E657CBCC217EA7BA004BA961 /* MockInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E657CBCA217EA7BA004BA961 /* MockInstance.cpp */; };
+		E657CBCE217EAEA0004BA961 /* MockInstanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -569,6 +571,9 @@
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 		ED2970982150247000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		E657CBCA217EA7BA004BA961 /* MockInstance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MockInstance.cpp; sourceTree = "<group>"; };
+		E657CBCB217EA7BA004BA961 /* MockInstance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MockInstance.hpp; sourceTree = "<group>"; };
+		E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockInstanceTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -824,6 +829,9 @@
 				3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
 				14D6D7011B220AE3001FB087 /* OCMock */,
+				E657CBCA217EA7BA004BA961 /* MockInstance.cpp */,
+				E657CBCB217EA7BA004BA961 /* MockInstance.hpp */,
+				E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */,
 			);
 			path = RNTesterUnitTests;
 			sourceTree = "<group>";
@@ -1687,8 +1695,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E657CBCE217EAEA0004BA961 /* MockInstanceTests.m in Sources */,
 				1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */,
 				13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */,
+				E657CBCC217EA7BA004BA961 /* MockInstance.cpp in Sources */,
 				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
 				C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.mm in Sources */,
@@ -1830,10 +1840,17 @@
 		004D28A61AAF61C70097A701 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					FOLLY_NO_CONFIG,
+					"FOLLY_USE_LIBCPP=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/RNTesterUnitTests",
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1853,6 +1870,9 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/RNTesterUnitTests",
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
