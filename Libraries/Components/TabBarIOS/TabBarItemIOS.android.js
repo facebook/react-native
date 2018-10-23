@@ -13,8 +13,19 @@ const React = require('React');
 const View = require('View');
 const StyleSheet = require('StyleSheet');
 
+let showedDeprecationWarning = false;
+
 class DummyTab extends React.Component {
   render() {
+    if (!showedDeprecationWarning) {
+      console.warn(
+        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
+          'Please use react-native-tab-view instead.',
+      );
+
+      showedDeprecationWarning = true;
+    }
+
     if (!this.props.selected) {
       return <View />;
     }
