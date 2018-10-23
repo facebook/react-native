@@ -18,17 +18,12 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
 
-type DefaultProps = {
-  values: $ReadOnlyArray<string>,
-  enabled: boolean,
-};
-
-type Props = $ReadOnly<{|
+type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
   /**
    * The labels for the control's segment buttons, in order.
    */
-  values?: ?$ReadOnlyArray<string>,
+  values: $ReadOnlyArray<string>,
   /**
    * The index in `props.values` of the segment to be (pre)selected.
    */
@@ -47,7 +42,7 @@ type Props = $ReadOnly<{|
    * If false the user won't be able to interact with the control.
    * Default value is true.
    */
-  enabled?: ?boolean,
+  enabled: boolean,
   /**
    * Accent color of the control.
    */
@@ -59,10 +54,15 @@ type Props = $ReadOnly<{|
   momentary?: ?boolean,
 |}>;
 
-const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
+type Props = $ReadOnly<{|
+  ...SegmentedControlIOSProps,
+  forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+|}>;
 
 type Event = Object;
-type NativeSegmentedControlIOS = Class<NativeComponent<Props>>;
+type NativeSegmentedControlIOS = Class<
+  NativeComponent<SegmentedControlIOSProps>,
+>;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -90,7 +90,7 @@ const RCTSegmentedControl = ((requireNativeComponent(
 ): any): NativeSegmentedControlIOS);
 
 class SegmentedControlIOS extends React.Component<Props> {
-  static defaultProps: DefaultProps = {
+  static defaultProps = {
     values: [],
     enabled: true,
   };
@@ -102,10 +102,11 @@ class SegmentedControlIOS extends React.Component<Props> {
   };
 
   render() {
+    const {forwardedRef, ...props} = this.props;
     return (
       <RCTSegmentedControl
-        {...this.props}
-        ref={SEGMENTED_CONTROL_REFERENCE}
+        {...props}
+        ref={forwardedRef}
         style={[styles.segmentedControl, this.props.style]}
         onChange={this._onChange}
       />
@@ -120,6 +121,13 @@ const styles = StyleSheet.create({
 });
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const SegmentedControlIOSWithRef = React.forwardRef(SegmentedControlIOS);
+const SegmentedControlIOSWithRef = React.forwardRef(
+  (
+    props: SegmentedControlIOSProps,
+    forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+  ) => {
+    return <SegmentedControlIOS {...props} forwardedRef={forwardedRef} />;
+  },
+);
 
 module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);
