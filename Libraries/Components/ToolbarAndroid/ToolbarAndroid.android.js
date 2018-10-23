@@ -97,11 +97,11 @@ type Props = $ReadOnly<{|
    * Callback that is called when an action is selected. The only argument that is passed to the
    * callback is the position of the action in the actions array.
    */
-  onActionSelected?: ?Function,
+  onActionSelected?: ?(ToolbarAndroidChangeEvent) => void,
   /**
    * Callback called when the icon is selected.
    */
-  onIconClicked?: ?Function,
+  onIconClicked?: ?() => void,
   /**
    * Sets the overflow icon.
    */
@@ -168,9 +168,11 @@ class ToolbarAndroid extends React.Component<Props> {
   };
 
   render() {
-    const nativeProps = {
-      ...this.props,
-    };
+    const {
+      onIconClicked,
+      onActionSelected,
+      ...nativeProps,
+    } = this.props;
     if (this.props.logo) {
       nativeProps.logo = resolveAssetSource(this.props.logo);
     }
