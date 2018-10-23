@@ -17,12 +17,17 @@ const RNTesterPage = require('RNTesterPage');
 
 type ProgressBarProps = React.ElementConfig<typeof ProgressBar>;
 
-type MovingBarProps = $ReadOnly<$Diff<ProgressBarProps, {
-  progress: $ElementType<ProgressBarProps, 'progress'>
-}>>;
+type MovingBarProps = $ReadOnly<
+  $Diff<
+    ProgressBarProps,
+    {
+      progress: $ElementType<ProgressBarProps, 'progress'>,
+    },
+  >,
+>;
 
 type MovingBarState = {
-  progress: number
+  progress: number,
 };
 
 class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
@@ -35,7 +40,7 @@ class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
   componentDidMount() {
     this._intervalID = setInterval(() => {
       const progress = (this.state.progress + 0.02) % 1;
-      this.setState({ progress });
+      this.setState({progress});
     }, 50);
   }
 
@@ -48,7 +53,7 @@ class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
   render() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
   }
-};
+}
 
 class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';
