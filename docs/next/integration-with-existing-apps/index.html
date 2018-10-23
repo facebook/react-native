@@ -546,7 +546,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
     }
 }
 </code></pre>
-<p>Finally, the <code>onActivityResult()</code> method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX.</p>
+<p>Finally, the <code>onActivityResult()</code> method (as shown in the code below) has to be overridden to handle the permission Accepted or Denied cases for consistent UX. Also, for integrating Native Modules which use <code>startActivityForResult</code>, we need to pass the result to the <code>onActivityResult</code> method of our <code>ReactInstanceManager</code> instance.</p>
 <pre><code class="hljs css language-java"><span class="hljs-meta">@Override</span>
 <span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onActivityResult</span><span class="hljs-params">(<span class="hljs-keyword">int</span> requestCode, <span class="hljs-keyword">int</span> resultCode, Intent data)</span> </span>{
     <span class="hljs-keyword">if</span> (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
@@ -556,6 +556,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'MyReactNativeApp'</span
             }
         }
     }
+    mReactInstanceManager.onActivityResult( <span class="hljs-keyword">this</span>, requestCode, resultCode, data );
 }
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="the-magic-reactrootview"></a><a href="#the-magic-reactrootview" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Magic: <code>ReactRootView</code></h4>
