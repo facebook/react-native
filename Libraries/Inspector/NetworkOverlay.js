@@ -46,45 +46,57 @@ type NetworkRequestInfo = {
   serverError?: Object,
 };
 
+type Props = $ReadOnly<{||}>;
+type State = {|
+  detailRowId: ?number,
+  requests: Array<NetworkRequestInfo>,
+|};
+
+function getStringByValue(value: any): string {
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  if (typeof value === 'string' && value.length > 500) {
+    return String(value)
+      .substr(0, 500)
+      .concat('\n***TRUNCATED TO 500 CHARACTERS***');
+  }
+  return value;
+}
+
+function getTypeShortName(type: any): string {
+  if (type === 'XMLHttpRequest') {
+    return 'XHR';
+  } else if (type === 'WebSocket') {
+    return 'WS';
+  }
+
+  return '';
+}
+
+function keyExtractor(request: NetworkRequestInfo): string {
+  return String(request.id);
+}
+
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component<
-  Object,
-  {
-    detailRowId: ?number,
-    requests: Array<NetworkRequestInfo>,
-  },
-> {
-  _requestsListView: ?FlatList<NetworkRequestInfo>;
-  _detailScrollView: ?ScrollView;
-  _captureRequestsListView: (listRef: ?FlatList<NetworkRequestInfo>) => void;
-  _captureDetailScrollView: (scrollRef: ?ScrollView) => void;
-  _renderItem: ({
-    item: NetworkRequestInfo,
-    index: number,
-  }) => ?React.Element<any>;
-  _renderItemDetail: (index: number) => React.Element<any>;
-  _closeButtonClicked: () => void;
+class NetworkOverlay extends React.Component<Props, State> {
+  _requestsListView: ?React.ElementRef<typeof FlatList>;
+  _detailScrollView: ?React.ElementRef<typeof ScrollView>;
+
   // Map of `socketId` -> `index in `this.state.requests`.
-  _socketIdMap: Object;
+  _socketIdMap = {};
   // Map of `xhr._index` -> `index in `this.state.requests`.
-  _xhrIdMap: {[key: number]: number};
+  _xhrIdMap: {[key: number]: number} = {};
 
-  constructor(props: Object) {
-    super(props);
-    this._captureRequestsListView = this._captureRequestsListView.bind(this);
-    this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
-    this._renderItem = this._renderItem.bind(this);
-
-    this._closeButtonClicked = this._closeButtonClicked.bind(this);
-    this._socketIdMap = {};
-    this._xhrIdMap = {};
-    this.state = {
-      detailRowId: null,
-      requests: [],
-    };
-  }
+  state = {
+    detailRowId: null,
+    requests: [],
+  };
 
   _enableXHRInterception(): void {
     if (XHRInterceptor.isInterceptorEnabled()) {
@@ -303,7 +315,7 @@ class NetworkOverlay extends React.Component<
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem({item, index}): ?React.Element<any> {
+  _renderItem = ({item, index}): ?React.Element<any> => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,
@@ -326,14 +338,14 @@ class NetworkOverlay extends React.Component<
             </View>
             <View style={methodCellViewStyle}>
               <Text style={styles.cellText} numberOfLines={1}>
-                {this._getTypeShortName(item.type)}
+                {getTypeShortName(item.type)}
               </Text>
             </View>
           </View>
         </View>
       </TouchableHighlight>
     );
-  }
+  };
 
   _renderItemDetail(id) {
     const requestItem = this.state.requests[id];
@@ -347,7 +359,7 @@ class NetworkOverlay extends React.Component<
             {key}
           </Text>
           <Text style={[styles.detailViewText, styles.detailValueCellView]}>
-            {this._getStringByValue(requestItem[key])}
+            {getStringByValue(requestItem[key])}
           </Text>
         </View>
       );
@@ -364,7 +376,7 @@ class NetworkOverlay extends React.Component<
         </TouchableHighlight>
         <ScrollView
           style={styles.detailScrollView}
-          ref={this._captureDetailScrollView}>
+          ref={scrollRef => (this._detailScrollView = scrollRef)}>
           {details}
         </ScrollView>
       </View>
@@ -377,49 +389,26 @@ class NetworkOverlay extends React.Component<
     }
   }
 
-  _captureRequestsListView(listRef: ?FlatList<NetworkRequestInfo>): void {
-    this._requestsListView = listRef;
-  }
-
   /**
    * Popup a scrollView to dynamically show detailed information of
    * the request, when pressing a row in the network flow listView.
    */
   _pressRow(rowId: number): void {
-    this.setState({detailRowId: rowId}, this._scrollDetailToTop());
+    this.setState({detailRowId: rowId}, this._scrollDetailToTop);
   }
 
-  _scrollDetailToTop(): void {
+  _scrollDetailToTop = (): void => {
     if (this._detailScrollView) {
       this._detailScrollView.scrollTo({
         y: 0,
         animated: false,
       });
     }
-  }
+  };
 
-  _captureDetailScrollView(scrollRef: ?ScrollView): void {
-    this._detailScrollView = scrollRef;
-  }
-
-  _closeButtonClicked() {
+  _closeButtonClicked = () => {
     this.setState({detailRowId: null});
-  }
-
-  _getStringByValue(value: any): string {
-    if (value === undefined) {
-      return 'undefined';
-    }
-    if (typeof value === 'object') {
-      return JSON.stringify(value);
-    }
-    if (typeof value === 'string' && value.length > 500) {
-      return String(value)
-        .substr(0, 500)
-        .concat('\n***TRUNCATED TO 500 CHARACTERS***');
-    }
-    return value;
-  }
+  };
 
   _getRequestIndexByXHRID(index: number): number {
     if (index === undefined) {
@@ -433,21 +422,7 @@ class NetworkOverlay extends React.Component<
     }
   }
 
-  _getTypeShortName(type: any): string {
-    if (type === 'XMLHttpRequest') {
-      return 'XHR';
-    } else if (type === 'WebSocket') {
-      return 'WS';
-    }
-
-    return '';
-  }
-
-  _keyExtractor(request: NetworkRequestInfo): string {
-    return String(request.id);
-  }
-
-  render() {
+  render(): React.Node {
     const {requests, detailRowId} = this.state;
 
     return (
@@ -471,11 +446,11 @@ class NetworkOverlay extends React.Component<
         </View>
 
         <FlatList
-          ref={this._captureRequestsListView}
+          ref={listRef => (this._requestsListView = listRef)}
           style={styles.listView}
           data={requests}
           renderItem={this._renderItem}
-          keyExtractor={this._keyExtractor}
+          keyExtractor={keyExtractor}
           extraData={this.state}
         />
       </View>
