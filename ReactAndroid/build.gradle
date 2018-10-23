@@ -86,6 +86,17 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
     eachFile {fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/")}
     includeEmptyDirs = false
+
+    // Patch for folly build break on gcc 4.9 and could be removed after build by clang
+    filesMatching('**/container/detail/F14Policy.h') {
+        filter(ReplaceTokens, tokens: [
+            'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
+            'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
+        ],
+        beginToken: '',
+        endToken: '')
+    }
+
     into "$thirdPartyNdkDir/folly"
 }
 
@@ -124,6 +135,14 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
         it.path = (it.name - '.in')
     }
     into "$thirdPartyNdkDir/glog"
+
+    doLast {
+        copy {
+            from fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files
+            includeEmptyDirs = false
+            into "$thirdPartyNdkDir/glog/exported/glog"
+        }
+    }
 }
 
 task downloadJSCHeaders(type: Download) {
