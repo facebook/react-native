@@ -15,16 +15,17 @@ const React = require('React');
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 
-type ProgressBarProps = React.ElementConfig<typeof ProgressBar>;
+import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
 
-type MovingBarProps = $ReadOnly<
-  $Diff<
-    ProgressBarProps,
+type MovingBarProps = $ReadOnly<{|
+  ...$Diff<
+    ProgressBarAndroidProps,
     {
-      progress: $ElementType<ProgressBarProps, 'progress'>,
+      progress: ?number,
     },
   >,
->;
+  indeterminate: false,
+|}>;
 
 type MovingBarState = {
   progress: number,
