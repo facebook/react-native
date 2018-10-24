@@ -58,6 +58,18 @@ remote_file(
     url = "mvn:com.facebook.fresco:imagepipeline:aar:1.11.0",
 )
 
+rn_android_prebuilt_aar(
+    name = "nativeimagefilters",
+    aar = ":nativeimagefilters-aar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+remote_file(
+    name = "nativeimagefilters-aar",
+    sha1 = "cea24f4b5afe89acd28c304eb63366de9d7cb2c5",
+    url = "mvn:com.facebook.fresco:nativeimagefilters:aar:1.11.0",
+)
+
 rn_prebuilt_jar(
     name = "bolts",
     binary_jar = ":download-bolts.jar",
