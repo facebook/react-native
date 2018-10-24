@@ -4,6 +4,9 @@ rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
     manifest = "AndroidManifest.xml",
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
     visibility = [
         "PUBLIC",
     ],

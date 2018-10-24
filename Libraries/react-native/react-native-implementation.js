@@ -195,9 +195,6 @@ module.exports = {
   get AsyncStorage() {
     return require('AsyncStorage');
   },
-  get BackAndroid() {
-    return require('BackAndroid');
-  }, // deprecated: use BackHandler instead
   get BackHandler() {
     return require('BackHandler');
   },
@@ -333,6 +330,14 @@ module.exports = {
   },
 
   // Deprecated
+  get BackAndroid() {
+    invariant(
+      false,
+      'BackAndroid is deprecated and has been removed from this package. ' +
+        'Use BackHandler instead',
+    );
+  },
+
   get Navigator() {
     invariant(
       false,

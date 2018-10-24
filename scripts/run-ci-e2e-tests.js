@@ -216,6 +216,7 @@ try {
             `"${scheme}"`,
             '-sdk',
             sdk,
+            '-UseModernBuildSystem=NO',
             'test',
           ].join(' ') +
             ' | ' +

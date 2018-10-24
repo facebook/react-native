@@ -116,13 +116,39 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
-  volatile private int mViewManagerConstantsCacheSize;
+  private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
 
+  @SuppressWarnings("deprecated")
   public UIManagerModule(
       ReactApplicationContext reactContext,
       ViewManagerResolver viewManagerResolver,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        viewManagerResolver,
+        new UIImplementationProvider(),
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  @SuppressWarnings("deprecated")
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagersList,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        viewManagersList,
+        new UIImplementationProvider(),
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  @Deprecated
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      ViewManagerResolver viewManagerResolver,
+      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -130,7 +156,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mUIImplementation =
-        new UIImplementation(
+        uiImplementationProvider.createUIImplementation(
             reactContext,
             viewManagerResolver,
             mEventDispatcher,
@@ -139,9 +165,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     reactContext.addLifecycleEventListener(this);
   }
 
+  @Deprecated
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagersList,
+      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -149,7 +177,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mUIImplementation =
-        new UIImplementation(
+        uiImplementationProvider.createUIImplementation(
             reactContext,
             viewManagersList,
             mEventDispatcher,
@@ -157,6 +185,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
     reactContext.addLifecycleEventListener(this);
   }
+
   /**
    * This method gives an access to the {@link UIImplementation} object that can be used to execute
    * operations on the view hierarchy.

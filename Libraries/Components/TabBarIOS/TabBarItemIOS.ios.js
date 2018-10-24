@@ -10,7 +10,6 @@
 
 'use strict';
 
-const Image = require('Image');
 const React = require('React');
 const StaticContainer = require('StaticContainer.react');
 const StyleSheet = require('StyleSheet');
@@ -104,6 +103,8 @@ type State = {|
   hasBeenSelected: boolean,
 |};
 
+let showedDeprecationWarning = false;
+
 class TabBarItemIOS extends React.Component<Props, State> {
   state = {
     hasBeenSelected: false,
@@ -121,6 +122,17 @@ class TabBarItemIOS extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount() {
+    if (!showedDeprecationWarning) {
+      console.warn(
+        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
+          'Please use react-native-tab-view instead.',
+      );
+
+      showedDeprecationWarning = true;
+    }
+  }
+  
   render() {
     const {style, children, ...props} = this.props;
 
