@@ -7,8 +7,6 @@
 
 #include "FabricUIManager.h"
 
-#include <glog/logging.h>
-
 #include <fabric/components/view/ViewComponentDescriptor.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/ViewShadowNode.h>
@@ -17,6 +15,7 @@
 #include <fabric/core/componentDescriptor.h>
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
+#include <folly/GLog.h>
 
 namespace facebook {
 namespace react {

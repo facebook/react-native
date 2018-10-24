@@ -9,7 +9,7 @@
 #include <vector>
 #include <time.h>
 
-#include <glog/logging.h>
+#include <folly/GLog.h>
 
 #include "MicroProfiler.h"
 

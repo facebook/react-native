@@ -6,9 +6,9 @@
 #include "NativeToJsBridge.h"
 
 #include <folly/json.h>
+#include <folly/GLog.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
-#include <glog/logging.h>
 
 #include "Instance.h"
 #include "JSBigString.h"

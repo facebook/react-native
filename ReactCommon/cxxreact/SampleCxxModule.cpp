@@ -6,8 +6,8 @@
 #include "SampleCxxModule.h"
 #include <cxxreact/JsArgumentHelpers.h>
 
+#include <folly/GLog.h>
 #include <folly/Memory.h>
-#include <glog/logging.h>
 
 #include <thread>
 

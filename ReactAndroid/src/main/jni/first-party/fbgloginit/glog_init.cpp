@@ -9,7 +9,7 @@
 #include <mutex>
 #include <stdexcept>
 
-#include <glog/logging.h>
+#include <folly/GLog.h>
 
 #ifdef __ANDROID__
 

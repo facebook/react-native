@@ -6,7 +6,7 @@
 #include <fb/CpuCapabilities.h>
 #include <cpu-features.h>
 #include <fb/Environment.h>
-#include <glog/logging.h>
+#include <folly/GLog.h>
 #include <jni/Registration.h>
 
 namespace facebook { namespace jni {

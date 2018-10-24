@@ -7,7 +7,7 @@
 #include "Instance.h"
 
 #include <iterator>
-#include <glog/logging.h>
+#include <folly/GLog.h>
 #include <folly/json.h>
 
 #include "JsArgumentHelpers.h"

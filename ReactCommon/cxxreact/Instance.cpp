@@ -16,11 +16,10 @@
 #include "SystraceSection.h"
 
 #include <cxxreact/JSIndexedRAMBundle.h>
+#include <folly/GLog.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
-
-#include <glog/logging.h>
 
 #include <condition_variable>
 #include <fstream>
