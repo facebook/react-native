@@ -133,7 +133,10 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
   &lt;Text&gt;First part and &lt;/Text&gt;
   &lt;Text&gt;second part&lt;/Text&gt;
 &lt;/Text&gt;
-// Text container: all the text flows as if it was one
+// Text container: the text will be inline if the space allowed it
+// |First part and second part|
+
+// otherwise, the text will flow as if it was one
 // |First part |
 // |and second |
 // |part       |
@@ -143,6 +146,10 @@ AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
   &lt;Text&gt;second part&lt;/Text&gt;
 &lt;/View&gt;
 // View container: each text is its own block
+// |First part and|
+// |second part   |
+
+// the will will flow in its own block
 // |First part |
 // |and        |
 // |second part|
