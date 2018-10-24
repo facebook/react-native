@@ -35,6 +35,8 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 #endif
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
+@property (nonatomic, copy) NSString *userScript;
+@property (nonatomic, assign) BOOL userScriptForMainFrameOnly;
 
 - (void)postMessage:(NSString *)message;
 - (void)injectJavaScript:(NSString *)script;

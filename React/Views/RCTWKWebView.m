@@ -79,6 +79,14 @@ static NSString *const MessageHanderName = @"ReactNative";
    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
 #endif
 
+    if (_userScript) {
+      WKUserScript *userScript = [[WKUserScript alloc] initWithSource:_userScript
+                                                        injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                                     forMainFrameOnly:_userScriptForMainFrameOnly];
+
+      [wkWebViewConfig.userContentController addUserScript:userScript];
+    }
+
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
     _webView.scrollView.delegate = self;
     _webView.UIDelegate = self;

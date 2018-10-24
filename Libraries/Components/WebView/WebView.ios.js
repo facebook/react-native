@@ -171,6 +171,18 @@ class WebView extends React.Component {
      * @platform ios
      */
     useWebKit: PropTypes.bool,
+    /**
+     * The script will be injected into the webpage
+     * after the document finishes loading.
+     * @platform ios
+     */
+    userScript: PropTypes.string,
+    /**
+     * A Boolean value indicating whether the script should be injected
+     * only into the main frame. The default value is `false`.
+     * @platform ios
+     */
+    userScriptForMainFrameOnly: PropTypes.bool,
 
     /**
      * Function that returns a view to show if there's an error.
@@ -547,6 +559,8 @@ class WebView extends React.Component {
           this.props.mediaPlaybackRequiresUserAction
         }
         dataDetectorTypes={this.props.dataDetectorTypes}
+        userScript={this.props.userScript}
+        userScriptForMainFrameOnly={this.props.userScriptForMainFrameOnly}
         {...nativeConfig.props}
       />
     );
