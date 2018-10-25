@@ -102,11 +102,11 @@ nodejs_not_found()
   exit 2
 }
 
-type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
+type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-$NODE_BINARY "$CLI_PATH" $BUNDLE_COMMAND \
+"$NODE_BINARY" "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
