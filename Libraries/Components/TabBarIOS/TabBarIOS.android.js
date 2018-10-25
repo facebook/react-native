@@ -15,8 +15,21 @@ const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
 const View = require('View');
 
+let showedDeprecationWarning = false;
+
 class DummyTabBarIOS extends React.Component<$FlowFixMeProps> {
   static Item = TabBarItemIOS;
+
+  componentDidMount() {
+    if (!showedDeprecationWarning) {
+      console.warn(
+        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
+          'Please use react-native-tab-view instead.',
+      );
+
+      showedDeprecationWarning = true;
+    }
+  }
 
   render() {
     return (
