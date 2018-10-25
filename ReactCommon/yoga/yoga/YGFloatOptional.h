@@ -9,12 +9,12 @@
 
 struct YGFloatOptional {
  private:
-  float value_;
-  bool isUndefined_;
+  float value_ = 0;
+  bool isUndefined_ = true;
 
  public:
   explicit YGFloatOptional(float value);
-  explicit YGFloatOptional() : value_(0), isUndefined_(true) {}
+  YGFloatOptional() = default;
 
   // Program will terminate if the value of an undefined is accessed. Please
   // make sure to check if the optional is defined before calling this function.
