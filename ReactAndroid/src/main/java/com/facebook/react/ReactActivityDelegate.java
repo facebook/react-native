@@ -105,7 +105,7 @@ public class ReactActivityDelegate {
   }
 
   protected void onDestroy() {
-    mReactDelegate.onHostDetroy();
+    mReactDelegate.onHostDestroy();
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
