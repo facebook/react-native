@@ -222,5 +222,6 @@ if (__DEV__) {
 
 if (startTime != null) {
   const PerformanceLogger = require('PerformanceLogger');
-  PerformanceLogger.markPoint('InitializeCoreStartTime', startTime);
+  PerformanceLogger.markPoint('initializeCore_start', startTime);
+  PerformanceLogger.markPoint('initializeCore_end');
 }
