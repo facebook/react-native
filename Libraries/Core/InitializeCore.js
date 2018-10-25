@@ -25,6 +25,9 @@
  */
 'use strict';
 
+const startTime =
+  global.nativePerformanceNow != null ? global.nativePerformanceNow() : null;
+
 const {polyfillObjectProperty, polyfillGlobal} = require('PolyfillFunctions');
 
 if (global.GLOBAL === undefined) {
@@ -91,8 +94,10 @@ polyfillGlobal('regeneratorRuntime', () => {
   // The require just sets up the global, so make sure when we first
   // invoke it the global does not exist
   delete global.regeneratorRuntime;
-  require('regenerator-runtime/runtime');
-  return global.regeneratorRuntime;
+
+  // regenerator-runtime/runtime exports the regeneratorRuntime object, so we
+  // can return it safely.
+  return require('regenerator-runtime/runtime');
 });
 
 // Set up timers
@@ -213,4 +218,9 @@ if (__DEV__) {
     const JSInspector = require('JSInspector');
     JSInspector.registerAgent(require('NetworkAgent'));
   }
+}
+
+if (startTime != null) {
+  const PerformanceLogger = require('PerformanceLogger');
+  PerformanceLogger.markPoint('InitializeCoreStartTime', startTime);
 }

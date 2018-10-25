@@ -22,6 +22,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
+        react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
         react_native_target("java/com/facebook/react/jstasks:jstasks"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),

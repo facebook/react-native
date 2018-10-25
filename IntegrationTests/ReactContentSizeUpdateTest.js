@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 
@@ -25,39 +24,36 @@ const reactViewHeight = 102;
 const newReactViewWidth = 201;
 const newReactViewHeight = 202;
 
-const ReactContentSizeUpdateTest = createReactClass({
-  displayName: 'ReactContentSizeUpdateTest',
-  _timeoutID: (null: ?TimeoutID),
-  _subscription: (null: ?EmitterSubscription),
+type Props = {||};
 
-  UNSAFE_componentWillMount: function() {
+type State = {|
+  height: number,
+  width: number,
+|};
+
+class ReactContentSizeUpdateTest extends React.Component<Props, State> {
+  _timeoutID: ?TimeoutID = null;
+  _subscription: ?EmitterSubscription = null;
+
+  state = {
+    height: reactViewHeight,
+    width: reactViewWidth,
+  };
+
+  UNSAFE_componentWillMount() {
     this._subscription = RCTNativeAppEventEmitter.addListener(
       'rootViewDidChangeIntrinsicSize',
       this.rootViewDidChangeIntrinsicSize,
     );
-  },
+  }
 
-  getInitialState: function() {
-    return {
-      height: reactViewHeight,
-      width: reactViewWidth,
-    };
-  },
-
-  updateViewSize: function() {
-    this.setState({
-      height: newReactViewHeight,
-      width: newReactViewWidth,
-    });
-  },
-
-  componentDidMount: function() {
+  componentDidMount() {
     this._timeoutID = setTimeout(() => {
       this.updateViewSize();
     }, 1000);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     if (this._timeoutID != null) {
       clearTimeout(this._timeoutID);
     }
@@ -65,24 +61,29 @@ const ReactContentSizeUpdateTest = createReactClass({
     if (this._subscription != null) {
       this._subscription.remove();
     }
-  },
+  }
 
-  rootViewDidChangeIntrinsicSize: function(intrinsicSize) {
+  updateViewSize() {
+    this.setState({
+      height: newReactViewHeight,
+      width: newReactViewWidth,
+    });
+  }
+
+  rootViewDidChangeIntrinsicSize = (intrinsicSize: State) => {
     if (
       intrinsicSize.height === newReactViewHeight &&
       intrinsicSize.width === newReactViewWidth
     ) {
       TestModule.markTestPassed(true);
     }
-  },
+  };
 
   render() {
     return (
       <View style={{height: this.state.height, width: this.state.width}} />
     );
-  },
-});
-
-ReactContentSizeUpdateTest.displayName = 'ReactContentSizeUpdateTest';
+  }
+}
 
 module.exports = ReactContentSizeUpdateTest;

@@ -15,7 +15,10 @@ const warning = require('fbjs/lib/warning');
 
 const VibrationIOS = {
   vibrate: function() {
-    warning('VibrationIOS is not supported on this platform!');
+    warning(
+      false,
+      'VibrationIOS is deprecated, and will be removed. Use Vibration instead.',
+    );
   },
 };
 

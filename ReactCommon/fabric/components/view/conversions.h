@@ -113,6 +113,17 @@ inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   return layoutMetrics;
 }
 
+inline YGDirection yogaDirectionFromLayoutDirection(LayoutDirection direction) {
+  switch (direction) {
+    case LayoutDirection::Undefined:
+      return YGDirectionInherit;
+    case LayoutDirection::LeftToRight:
+      return YGDirectionLTR;
+    case LayoutDirection::RightToLeft:
+      return YGDirectionRTL;
+  }
+}
+
 inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
   assert(value.isString());
   auto stringValue = value.asString();

@@ -53,6 +53,10 @@ class SharedColor {
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
+SharedColor clearColor();
+SharedColor blackColor();
+SharedColor whiteColor();
+
 } // namespace react
 } // namespace facebook
 

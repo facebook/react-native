@@ -15,12 +15,6 @@
 #import <React/RCTModuleMethod.h>
 #import <React/RCTRootView.h>
 
-@interface RCTJavaScriptContext : NSObject
-
-@property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
-
-@end
-
 @interface AllocationTestModule : NSObject<RCTBridgeModule, RCTInvalidating>
 
 @property (nonatomic, assign, getter=isValid) BOOL valid;
