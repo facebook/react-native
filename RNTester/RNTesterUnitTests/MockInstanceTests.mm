@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-//#import "MockInstance.hpp" //TODO: Fix "'conditional_variable' file not found @ Instance.h"
+#import "MockInstance.hpp"
 
 @interface MockInstanceTests : XCTestCase
 

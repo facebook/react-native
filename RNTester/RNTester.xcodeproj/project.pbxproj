@@ -136,7 +136,7 @@
 		ED2970992150247000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2970982150247000B7C4FE /* JavaScriptCore.framework */; };
 		EDEBC856214C774100DD5AC8 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
 		E657CBCC217EA7BA004BA961 /* MockInstance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E657CBCA217EA7BA004BA961 /* MockInstance.cpp */; };
-		E657CBCE217EAEA0004BA961 /* MockInstanceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */; };
+		E657CBCE217EAEA0004BA961 /* MockInstanceTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = E657CBCD217EAEA0004BA961 /* MockInstanceTests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -573,7 +573,7 @@
 		EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		E657CBCA217EA7BA004BA961 /* MockInstance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MockInstance.cpp; sourceTree = "<group>"; };
 		E657CBCB217EA7BA004BA961 /* MockInstance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MockInstance.hpp; sourceTree = "<group>"; };
-		E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockInstanceTests.m; sourceTree = "<group>"; };
+		E657CBCD217EAEA0004BA961 /* MockInstanceTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MockInstanceTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -831,7 +831,7 @@
 				14D6D7011B220AE3001FB087 /* OCMock */,
 				E657CBCA217EA7BA004BA961 /* MockInstance.cpp */,
 				E657CBCB217EA7BA004BA961 /* MockInstance.hpp */,
-				E657CBCD217EAEA0004BA961 /* MockInstanceTests.m */,
+				E657CBCD217EAEA0004BA961 /* MockInstanceTests.mm */,
 			);
 			path = RNTesterUnitTests;
 			sourceTree = "<group>";
@@ -1695,7 +1695,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E657CBCE217EAEA0004BA961 /* MockInstanceTests.m in Sources */,
+				E657CBCE217EAEA0004BA961 /* MockInstanceTests.mm in Sources */,
 				1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */,
 				13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */,
 				E657CBCC217EA7BA004BA961 /* MockInstance.cpp in Sources */,
