@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
 type CheckBoxType = Class<NativeComponent<Props>>;
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const CheckBoxWithRef = React.forwardRef((props, ref) => (
-  <CheckBox {...props} forwardedRef={ref} />
-));
+const CheckBoxWithRef = React.forwardRef(function CheckBoxWithRef(props, ref) {
+  return <CheckBox {...props} forwardedRef={ref} />;
+});
 
 module.exports = (CheckBoxWithRef: CheckBoxType);
