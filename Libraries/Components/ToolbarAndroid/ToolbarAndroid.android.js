@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
@@ -19,6 +20,7 @@ import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'ReactNative';
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -56,7 +58,9 @@ import type {ViewProps} from 'ViewPropTypes';
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
 
-type Action = $Readonly<{|
+const NativeToolbar = requireNativeComponent('ToolbarAndroid');
+
+type Action = $ReadOnly<{|
   title: string,
   icon?: ?ImageSource,
   show?: 'always' | 'ifRoom' | 'never',
@@ -69,7 +73,7 @@ type ToolbarAndroidChangeEvent = SyntheticEvent<
   |}>,
 >;
 
-type Props = $ReadOnly<{|
+type ToolbarAndroidProps = $ReadOnly<{|
   ...ViewProps,
   /**
    * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
@@ -97,7 +101,7 @@ type Props = $ReadOnly<{|
    * Callback that is called when an action is selected. The only argument that is passed to the
    * callback is the position of the action in the actions array.
    */
-  onActionSelected?: ?(ToolbarAndroidChangeEvent) => void,
+  onActionSelected?: ?(postition: number) => void,
   /**
    * Callback called when the icon is selected.
    */
@@ -105,7 +109,7 @@ type Props = $ReadOnly<{|
   /**
    * Sets the overflow icon.
    */
-  overflowIcon?: ?optionalImageSource,
+  overflowIcon?: ?ImageSource,
   /**
    * Sets the toolbar subtitle.
    */
@@ -157,6 +161,11 @@ type Props = $ReadOnly<{|
   testID?: ?string,
 |}>;
 
+type Props = $ReadOnly<{|
+  ...ToolbarAndroidProps,
+  forwardedRef: ?React.Ref<'ToolbarAndroid'>,
+|}>;
+
 class ToolbarAndroid extends React.Component<Props> {
   _onSelect = (event: ToolbarAndroidChangeEvent) => {
     const position = event.nativeEvent.position;
@@ -171,8 +180,10 @@ class ToolbarAndroid extends React.Component<Props> {
     const {
       onIconClicked,
       onActionSelected,
-      ...nativeProps,
+      forwardedRef,
+      ...otherProps
     } = this.props;
+    const nativeProps = {...otherProps};
     if (this.props.logo) {
       nativeProps.logo = resolveAssetSource(this.props.logo);
     }
@@ -198,13 +209,27 @@ class ToolbarAndroid extends React.Component<Props> {
         }
         nativeActions.push(action);
       }
+      // $FlowFixMe - Cannot assign nativeActions to nativeProps.nativeActions
       nativeProps.nativeActions = nativeActions;
     }
 
-    return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
+    return (
+      <NativeToolbar
+        onSelect={this._onSelect}
+        {...nativeProps}
+        ref={forwardedRef}
+      />
+    );
   }
 }
 
-const NativeToolbar = requireNativeComponent('ToolbarAndroid');
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const ToolbarAndroidToExport = React.forwardRef(
+  (props: ToolbarAndroidProps, forwardedRef: ?React.Ref<'ToolbarAndroid'>) => {
+    return <ToolbarAndroid {...props} forwardedRef={forwardedRef} />;
+  },
+);
 
-module.exports = ToolbarAndroid;
+module.exports = (ToolbarAndroidToExport: Class<
+  NativeComponent<ToolbarAndroidProps>,
+>);
