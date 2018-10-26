@@ -218,7 +218,7 @@
     "eslint-plugin-react": "7.8.2",
     "eslint-plugin-react-native": "3.5.0",
     "flow-bin": "^0.84.0",
-    "jest": "23.4.1",
+    "jest": "24.0.0-alpha.2",
     "jest-junit": "5.1.0",
     "prettier": "1.13.6",
     "react": "16.6.0-alpha.8af6728",
