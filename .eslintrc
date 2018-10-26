@@ -65,6 +65,7 @@
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger
+    "no-dupe-class-members": 2,      // Disallow duplicate name in class members
     "no-dupe-keys": 2,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block

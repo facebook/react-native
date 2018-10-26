@@ -82,13 +82,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
     name = NSStringFromClass(cls);
   }
 
-  if ([name hasPrefix:@"RK"]) {
-    name = [name substringFromIndex:2];
-  } else if ([name hasPrefix:@"RCT"]) {
-    name = [name substringFromIndex:3];
-  }
-
-  return name;
+  return RCTDropReactPrefixes(name);
 }
 
 static BOOL jsiNativeModuleEnabled = NO;
