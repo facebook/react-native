@@ -5,10 +5,11 @@ Learn once, write anywhere: Build mobile apps with React.
 See the official [React Native website](https://facebook.github.io/react-native/) for an introduction to React Native.
 
 - [Requirements](#requirements)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Upgrading](#upgrading)
-- [Contributing](#contributing)
+- [Getting Started](#building-your-first-react-native-app)
+- [Documentation](#full-documentation)
+- [Upgrading](https://facebook.github.io/react-native/docs/upgrading)
+- [Contributing](#join-the-react-native-community)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
 - [License](#license)
 
 ---
@@ -49,7 +50,7 @@ The React Native documentation only discusses the components, APIs, and topics s
 * Twitter: https://twitter.com/reactnative
 * Discussion: https://discuss.reactjs.org/
 
-See the CONTRIBUTING file for how to help out.
+See the [CONTRIBUTING](./CONTRIBUTING.md) file for how to help out.
 
 ## License
 

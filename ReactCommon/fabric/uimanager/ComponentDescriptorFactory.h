@@ -24,9 +24,10 @@ namespace react {
  * should register its specific set of supported components.
  */
 class ComponentDescriptorFactory {
-
-public:
-  static SharedComponentDescriptorRegistry buildRegistry(const SharedEventDispatcher &eventDispatcher, const SharedContextContainer &contextContainer);
+ public:
+  static SharedComponentDescriptorRegistry buildRegistry(
+      const SharedEventDispatcher &eventDispatcher,
+      const SharedContextContainer &contextContainer);
 };
 
 } // namespace react

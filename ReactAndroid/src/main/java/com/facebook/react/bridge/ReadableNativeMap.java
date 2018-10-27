@@ -7,13 +7,12 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-
+import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import com.facebook.infer.annotation.Assertions;
 import javax.annotation.Nullable;
 
 /**
@@ -33,10 +32,9 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   private @Nullable String[] mKeys;
   private @Nullable HashMap<String,Object> mLocalMap;
   private @Nullable HashMap<String,ReadableType> mLocalTypeMap;
-  private static boolean mUseNativeAccessor;
   private static int mJniCallCounter;
   public static void setUseNativeAccessor(boolean useNativeAccessor) {
-    mUseNativeAccessor = useNativeAccessor;
+    ReactFeatureFlags.useMapNativeAccessor = useNativeAccessor;
   }
   public static int getJNIPassCounter() {
     return mJniCallCounter;
@@ -94,7 +92,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public boolean hasKey(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return hasKeyNative(name);
     }
@@ -104,7 +102,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public boolean isNull(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return isNullNative(name);
     }
@@ -151,7 +149,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public boolean getBoolean(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getBooleanNative(name);
     }
@@ -161,7 +159,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public double getDouble(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getDoubleNative(name);
     }
@@ -171,7 +169,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public int getInt(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getIntNative(name);
     }
@@ -183,7 +181,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public @Nullable String getString(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getStringNative(name);
     }
@@ -193,7 +191,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public @Nullable ReadableArray getArray(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getArrayNative(name);
     }
@@ -203,7 +201,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public @Nullable ReadableNativeMap getMap(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getMapNative(name);
     }
@@ -213,7 +211,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public ReadableType getType(String name) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       mJniCallCounter++;
       return getTypeNative(name);
     }
@@ -236,7 +234,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public HashMap<String, Object> toHashMap() {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useMapNativeAccessor) {
       ReadableMapKeySetIterator iterator = keySetIterator();
       HashMap<String, Object> hashMap = new HashMap<>();
 

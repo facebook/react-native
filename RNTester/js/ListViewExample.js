@@ -10,34 +10,45 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {Image, ListView, TouchableHighlight, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {
+  Image,
+  ListView,
+  TouchableHighlight,
+  StyleSheet,
+  Text,
+  View,
+} = ReactNative;
+const ListViewDataSource = require('ListViewDataSource');
+const RNTesterPage = require('./RNTesterPage');
 
-var RNTesterPage = require('./RNTesterPage');
+import type {RNTesterProps} from 'RNTesterTypes';
 
-var ListViewSimpleExample = createReactClass({
-  displayName: 'ListViewSimpleExample',
-  statics: {
-    title: '<ListView>',
-    description: 'Performant, scrollable list of data.',
-  },
+type State = {|
+  dataSource: ListViewDataSource,
+|};
 
-  getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return {
-      dataSource: ds.cloneWithRows(this._genRows({})),
-    };
-  },
+class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
+  static title = '<ListView>';
+  static description = 'Performant, scrollable list of data.';
 
-  _pressData: ({}: {[key: number]: boolean}),
+  state = {
+    dataSource: this.getInitialDataSource(),
+  };
 
-  UNSAFE_componentWillMount: function() {
+  _pressData: {[key: number]: boolean} = {};
+
+  getInitialDataSource() {
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return ds.cloneWithRows(this._genRows({}));
+  }
+
+  UNSAFE_componentWillMount() {
     this._pressData = {};
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<ListView>'}
@@ -50,14 +61,14 @@ var ListViewSimpleExample = createReactClass({
         />
       </RNTesterPage>
     );
-  },
+  }
 
-  _renderRow: function(
+  _renderRow = (
     rowData: string,
     sectionID: number,
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
-  ) {
+  ) => {
     var rowHash = Math.abs(hashCode(rowData));
     var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
@@ -76,27 +87,27 @@ var ListViewSimpleExample = createReactClass({
         </View>
       </TouchableHighlight>
     );
-  },
+  };
 
-  _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
+  _genRows(pressData: {[key: number]: boolean}): Array<string> {
     var dataBlob = [];
     for (var ii = 0; ii < 100; ii++) {
       var pressedText = pressData[ii] ? ' (pressed)' : '';
       dataBlob.push('Row ' + ii + pressedText);
     }
     return dataBlob;
-  },
+  }
 
-  _pressRow: function(rowID: number) {
+  _pressRow = (rowID: number) => {
     this._pressData[rowID] = !this._pressData[rowID];
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(
         this._genRows(this._pressData),
       ),
     });
-  },
+  };
 
-  _renderSeparator: function(
+  _renderSeparator(
     sectionID: number,
     rowID: number,
     adjacentRowHighlighted: boolean,
@@ -110,8 +121,8 @@ var ListViewSimpleExample = createReactClass({
         }}
       />
     );
-  },
-});
+  }
+}
 
 var THUMB_URLS = [
   require('./Thumbnails/like.png'),

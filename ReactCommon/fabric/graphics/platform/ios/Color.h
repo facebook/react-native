@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <fabric/graphics/Float.h>
-
+#include <CoreGraphics/CoreGraphics.h>
 #include <fabric/graphics/ColorComponents.h>
+#include <fabric/graphics/Float.h>
 
 namespace facebook {
 namespace react {
@@ -21,6 +21,10 @@ using SharedColor = std::shared_ptr<Color>;
 
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
+
+SharedColor clearColor();
+SharedColor blackColor();
+SharedColor whiteColor();
 
 } // namespace react
 } // namespace facebook

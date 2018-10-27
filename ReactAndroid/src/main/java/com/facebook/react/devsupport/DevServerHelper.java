@@ -10,6 +10,7 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -137,7 +138,7 @@ public class DevServerHelper {
       .build();
     mBundleDownloader = new BundleDownloader(mClient);
 
-    mRestartOnChangePollingHandler = new Handler();
+    mRestartOnChangePollingHandler = new Handler(Looper.getMainLooper());
     mPackageName = packageName;
   }
 

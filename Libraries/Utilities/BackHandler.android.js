@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
@@ -16,6 +17,7 @@ const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
 type BackPressEventName = $Enum<{
   backPress: string,
+  hardwareBackPress: string,
 }>;
 
 const _backPressSubscriptions = [];
@@ -61,7 +63,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * ```
  */
 const BackHandler = {
-  exitApp: function() {
+  exitApp: function(): void {
     DeviceEventManager.invokeDefaultBackPressHandler();
   },
 
@@ -79,7 +81,7 @@ const BackHandler = {
       _backPressSubscriptions.push(handler);
     }
     return {
-      remove: () => BackHandler.removeEventListener(eventName, handler),
+      remove: (): void => BackHandler.removeEventListener(eventName, handler),
     };
   },
 

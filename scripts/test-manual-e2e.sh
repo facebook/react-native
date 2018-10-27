@@ -8,16 +8,16 @@ BLUE="\033[0;35m"
 ENDCOLOR="\033[0m"
 
 error() {
-    echo -e $RED"$@"$ENDCOLOR
+    echo -e "$RED""$*""$ENDCOLOR"
     exit 1
 }
 
 success() {
-    echo -e $GREEN"$@"$ENDCOLOR
+    echo -e "$GREEN""$*""$ENDCOLOR"
 }
 
 info() {
-    echo -e $BLUE"$@"$ENDCOLOR
+    echo -e "$BLUE""$*""$ENDCOLOR"
 }
 
 PACKAGE_VERSION=$(cat package.json \

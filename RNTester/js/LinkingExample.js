@@ -9,17 +9,22 @@
 
 'use strict';
 
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {Linking, StyleSheet, Text, TouchableOpacity, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
+const React = require('react');
+const {
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} = require('react-native');
 
-class OpenURLButton extends React.Component {
-  static propTypes = {
-    url: PropTypes.string,
-  };
+const RNTesterBlock = require('./RNTesterBlock');
 
+type Props = $ReadOnly<{|
+  url?: ?string,
+|}>;
+
+class OpenURLButton extends React.Component<Props> {
   handleClick = () => {
     Linking.canOpenURL(this.props.url).then(supported => {
       if (supported) {
@@ -59,7 +64,7 @@ class IntentAndroidExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',

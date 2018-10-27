@@ -20,23 +20,18 @@ extern const char ScrollViewComponentName[];
 /*
  * `ShadowNode` for <ScrollView> component.
  */
-class ScrollViewShadowNode final:
-  public ConcreteViewShadowNode<
-      ScrollViewComponentName,
-      ScrollViewProps,
-      ScrollViewEventEmitter
-    > {
-
-public:
-
+class ScrollViewShadowNode final : public ConcreteViewShadowNode<
+                                       ScrollViewComponentName,
+                                       ScrollViewProps,
+                                       ScrollViewEventEmitter> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
 
-private:
-
+ private:
   void updateLocalData();
 };
 

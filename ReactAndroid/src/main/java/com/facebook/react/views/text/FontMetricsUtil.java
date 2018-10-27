@@ -17,30 +17,38 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 public class FontMetricsUtil {
+
+  private static final String CAP_HEIGHT_MEASUREMENT_TEXT = "T";
+  private static final String X_HEIGHT_MEASUREMENT_TEXT = "x";
+  private static final float AMPLIFICATION_FACTOR = 100;
+
   public static WritableArray getFontMetrics(CharSequence text, Layout layout, TextPaint paint, Context context) {
     DisplayMetrics dm = context.getResources().getDisplayMetrics();
     WritableArray lines = Arguments.createArray();
+    // To calculate xHeight and capHeight we have to render an "x" and "T" and manually measure their height.
+    // In order to get more precision than Android offers, we blow up the text size by 100 and measure it.
+    // Luckily, text size affects rendering linearly, so we can do this trick.
+    TextPaint paintCopy = new TextPaint(paint);
+    paintCopy.setTextSize(paintCopy.getTextSize() * AMPLIFICATION_FACTOR);
+    Rect capHeightBounds = new Rect();
+    paintCopy.getTextBounds(CAP_HEIGHT_MEASUREMENT_TEXT, 0, CAP_HEIGHT_MEASUREMENT_TEXT.length(), capHeightBounds);
+    double capHeight = capHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
+    Rect xHeightBounds = new Rect();
+    paintCopy.getTextBounds(X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length(), xHeightBounds);
+    double xHeight = xHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
     for (int i = 0; i < layout.getLineCount(); i++) {
       Rect bounds = new Rect();
       layout.getLineBounds(i, bounds);
-
       WritableMap line = Arguments.createMap();
-      TextPaint paintCopy = new TextPaint(paint);
-      paintCopy.setTextSize(paintCopy.getTextSize() * 100);
-      Rect capHeightBounds = new Rect();
-      paintCopy.getTextBounds("T", 0, 1, capHeightBounds);
-      Rect xHeightBounds = new Rect();
-      paintCopy.getTextBounds("x", 0, 1, xHeightBounds);
-      line.putDouble("x", bounds.left / dm.density);
+      line.putDouble("x", layout.getLineLeft(i) / dm.density);
       line.putDouble("y", bounds.top / dm.density);
       line.putDouble("width", layout.getLineWidth(i) / dm.density);
       line.putDouble("height", bounds.height() / dm.density);
       line.putDouble("descender", layout.getLineDescent(i) / dm.density);
       line.putDouble("ascender", -layout.getLineAscent(i) / dm.density);
       line.putDouble("baseline", layout.getLineBaseline(i) / dm.density);
-      line.putDouble(
-          "capHeight", capHeightBounds.height() / 100 * paint.getTextSize() / dm.density);
-      line.putDouble("xHeight", xHeightBounds.height() / 100 * paint.getTextSize() / dm.density);
+      line.putDouble("capHeight", capHeight);
+      line.putDouble("xHeight", xHeight);
       line.putString(
           "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
       lines.pushMap(line);

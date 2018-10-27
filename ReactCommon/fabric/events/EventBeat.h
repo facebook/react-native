@@ -15,15 +15,15 @@ namespace facebook {
 namespace react {
 
 /*
- * Event Beat serves two interleaving purposes: synchronization of event queues and
- * ensuring that event dispatching happens on propper threads.
+ * Event Beat serves two interleaving purposes: synchronization of event queues
+ * and ensuring that event dispatching happens on propper threads.
  */
 class EventBeat {
-
-public:
+ public:
   virtual ~EventBeat() = default;
 
   using BeatCallback = std::function<void()>;
+  using FailCallback = std::function<void()>;
 
   /*
    * Communicates to the Beat that a consumer is waiting for the coming beat.
@@ -44,12 +44,20 @@ public:
   virtual void induce() const;
 
   /*
-   * Sets a callback function.
+   * Sets the beat callback function.
    * The callback is must be called on the proper thread.
    */
   void setBeatCallback(const BeatCallback &beatCallback);
 
-protected:
+  /*
+   * Sets the fail callback function.
+   * Called in case if the beat cannot be performed anymore because of
+   * some external circumstances (e.g. execution thread is beling destructed).
+   * The callback can be called on any thread.
+   */
+  void setFailCallback(const FailCallback &failCallback);
+
+ protected:
   /*
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
@@ -57,7 +65,8 @@ protected:
   void beat() const;
 
   BeatCallback beatCallback_;
-  mutable std::atomic<bool> isRequested_ {false};
+  FailCallback failCallback_;
+  mutable std::atomic<bool> isRequested_{false};
 };
 
 using EventBeatFactory = std::function<std::unique_ptr<EventBeat>()>;

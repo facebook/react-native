@@ -43,10 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
-
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties;
@@ -66,6 +62,22 @@ NS_ASSUME_NONNULL_BEGIN
  * This method must be called only from the main queue.
  */
 - (RCTSurfaceView *)view;
+
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * A Surface object can be stopped and then restarted.
+ * The starting process includes initializing all underlying React Native
+ * infrastructure and running React app.
+ * Just initialized Surface object starts automatically, there is no need
+ * to call `start` explicitly. Surface also stops itself on deallocation
+ * automatically.
+ * Returns YES in case of success. Returns NO if the Surface is already
+ * started or stopped.
+ */
+- (BOOL)start;
+- (BOOL)stop;
 
 #pragma mark - Layout: Setting the size constrains
 
@@ -120,11 +132,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTFabricSurface (Internal)
 
-- (void)_setStage:(RCTSurfaceStage)stage;
+/**
+ * Sets and clears given stage flags (bitmask).
+ * Returns `YES` if the actual state was changed.
+ */
+- (BOOL)_setStage:(RCTSurfaceStage)stage;
+- (BOOL)_unsetStage:(RCTSurfaceStage)stage;
 
 @end
 
 @interface RCTFabricSurface (Deprecated)
+
+/**
+ * Deprecated. Use `initWithSurfacePresenter:moduleName:initialProperties` instead.
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Deprecated. Use `rootTag` instead.

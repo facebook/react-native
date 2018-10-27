@@ -9,7 +9,6 @@
 #include <fb/glog_init.h>
 #include <fb/log.h>
 
-#include "AndroidJSCFactory.h"
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
@@ -29,27 +28,6 @@ namespace facebook {
 namespace react {
 
 namespace {
-
-// TODO: can we avoid these wrapper classes, and instead specialize the logic in CatalystInstanceImpl
-class JSCJavaScriptExecutorHolder : public HybridClass<JSCJavaScriptExecutorHolder,
-                                                       JavaScriptExecutorHolder> {
- public:
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JSCJavaScriptExecutor;";
-
-  static local_ref<jhybriddata> initHybrid(alias_ref<jclass>, ReadableNativeMap* jscConfig) {
-    return makeCxxInstance(makeAndroidJSCExecutorFactory(jscConfig->consume()));
-  }
-
-  static void registerNatives() {
-    registerHybrid({
-      makeNativeMethod("initHybrid", JSCJavaScriptExecutorHolder::initHybrid),
-    });
-  }
-
- private:
-  friend HybridBase;
-  using HybridBase::HybridBase;
-};
 
 struct JavaJSExecutor : public JavaClass<JavaJSExecutor> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/JavaJSExecutor;";
@@ -83,7 +61,6 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutor
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     gloginit::initialize();
-    JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();

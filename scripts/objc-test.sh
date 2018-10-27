@@ -83,6 +83,7 @@ xcodebuild \
   -scheme $SCHEME \
   -sdk $SDK \
   -destination "$DESTINATION" \
+  -UseModernBuildSystem=NO \
   build test \
   | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml"
 
@@ -93,6 +94,7 @@ xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme $SCHEME \
   -sdk $SDK \
+  -UseModernBuildSystem=NO \
   build
 
 fi

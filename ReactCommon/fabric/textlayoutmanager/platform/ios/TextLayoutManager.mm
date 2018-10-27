@@ -12,7 +12,8 @@
 namespace facebook {
 namespace react {
 
-TextLayoutManager::TextLayoutManager(const SharedContextContainer &contextContainer) {
+TextLayoutManager::TextLayoutManager(
+    const SharedContextContainer &contextContainer) {
   self_ = (__bridge_retained void *)[RCTTextLayoutManager new];
 }
 
@@ -26,12 +27,12 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
-  Tag reactTag,
-  AttributedString attributedString,
-  ParagraphAttributes paragraphAttributes,
-  LayoutConstraints layoutConstraints
-) const {
-  RCTTextLayoutManager *textLayoutManager = (__bridge RCTTextLayoutManager *)self_;
+    Tag reactTag,
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  RCTTextLayoutManager *textLayoutManager =
+      (__bridge RCTTextLayoutManager *)self_;
   return [textLayoutManager measureWithAttributedString:attributedString
                                     paragraphAttributes:paragraphAttributes
                                       layoutConstraints:layoutConstraints];

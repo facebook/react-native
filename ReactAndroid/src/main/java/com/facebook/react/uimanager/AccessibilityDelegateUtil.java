@@ -29,30 +29,48 @@ public class AccessibilityDelegateUtil {
    */
 
   public enum AccessibilityRole {
-    NONE(null),
-    BUTTON("android.widget.Button"),
-    LINK("android.widget.ViewGroup"),
-    SEARCH("android.widget.EditText"),
-    IMAGE("android.widget.ImageView"),
-    IMAGEBUTTON("android.widget.ImageView"),
-    KEYBOARDKEY("android.inputmethodservice.Keyboard$Key"),
-    TEXT("android.widget.ViewGroup"),
-    ADJUSTABLE("android.widget.SeekBar"),
-    SUMMARY("android.widget.ViewGroup"),
-    HEADER("android.widget.ViewGroup");
+    NONE,
+    BUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER;
 
-    @Nullable private final String mValue;
-
-    AccessibilityRole(String type) {
-      mValue = type;
+    public static String getValue(AccessibilityRole role) {
+      switch (role) {
+        case NONE:
+          return null;
+        case BUTTON:
+          return "android.widget.Button";
+        case LINK:
+          return "android.widget.ViewGroup";
+        case SEARCH:
+          return "android.widget.EditText";
+        case IMAGE:
+          return "android.widget.ImageView";
+        case IMAGEBUTTON:
+          return "android.widget.ImageView";
+        case KEYBOARDKEY:
+          return "android.inputmethodservice.Keyboard$Key";
+        case TEXT:
+          return "android.widget.ViewGroup";
+        case ADJUSTABLE:
+          return "android.widget.SeekBar";
+        case SUMMARY:
+          return "android.widget.ViewGroup";
+        case HEADER:
+          return "android.widget.ViewGroup";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
     }
 
-    @Nullable
-    public String getValue() {
-      return mValue;
-    }
-
-    public static AccessibilityRole fromValue(String value) {
+    public static AccessibilityRole fromValue(@Nullable String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
         if (role.name().equalsIgnoreCase(value)) {
           return role;
@@ -67,9 +85,12 @@ public class AccessibilityDelegateUtil {
   }
 
   public static void setDelegate(final View view) {
+    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+    final AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
-    if (!ViewCompat.hasAccessibilityDelegate(view)) {
+    if (!ViewCompat.hasAccessibilityDelegate(view) &&
+      (accessibilityHint != null || accessibilityRole != null)) {
       ViewCompat.setAccessibilityDelegate(
         view,
         new AccessibilityDelegateCompat() {
@@ -77,11 +98,6 @@ public class AccessibilityDelegateUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-            AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
-            if (accessibilityRole == null) {
-              accessibilityRole = AccessibilityRole.NONE;
-            }
             setRole(info, accessibilityRole, view.getContext());
             if (!(accessibilityHint == null)) {
               String contentDescription=(String)info.getContentDescription();
@@ -103,8 +119,11 @@ public class AccessibilityDelegateUtil {
 
   //TODO: Eventually support for other languages on talkback
 
-  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role, final Context context) {
-    nodeInfo.setClassName(role.getValue());
+  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
+    if (role == null) {
+      role = AccessibilityRole.NONE;
+    }
+    nodeInfo.setClassName(AccessibilityRole.getValue(role));
     if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
       if (role.equals(AccessibilityRole.LINK)) {
         nodeInfo.setRoleDescription(context.getString(R.string.link_description));
