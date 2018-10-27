@@ -69,8 +69,22 @@ rn_xplat_cxx_library(
     exported_headers = [
         "JSCRuntime.h",
     ],
-    cxx_deps = [
-        "xplat//jsc:jsc",
+    cxx_exported_platform_linker_flags = [
+        (
+            "macosx-x86_64",
+            [
+                "-framework",
+                "JavaScriptCore",
+            ],
+        ),
+    ],
+    cxx_platform_deps = [
+        (
+            "^(linux|gcc|platform)",
+            [
+                "xplat//jsc:jsc",
+            ],
+        ),
     ],
     fbandroid_compiler_flags = [
         "-fexceptions",
