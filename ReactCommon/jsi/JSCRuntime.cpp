@@ -72,8 +72,6 @@ class JSCRuntime : public jsi::Runtime {
 #else
     JSCStringValue(JSStringRef str);
 #endif
-    ~JSCStringValue();
-
     void invalidate() override;
 
     JSStringRef str_;
@@ -97,9 +95,9 @@ class JSCRuntime : public jsi::Runtime {
         detail::ProtectionQueue& pq,
         JSObjectRef obj);
 #endif
-    ~JSCObjectValue();
 
     void invalidate() override;
+    void unprotect();
 
     JSGlobalContextRef ctx_;
     JSObjectRef obj_;
@@ -300,7 +298,8 @@ namespace detail {
 class ProtectionQueue {
  public:
   ProtectionQueue()
-      : shuttingDown_(false)
+      : ctxInvalid_(false)
+      , shuttingDown_(false)
 #ifndef NDEBUG
         ,
         didShutdown_ {
@@ -309,9 +308,15 @@ class ProtectionQueue {
 #endif
   , unprotectorThread_(&ProtectionQueue::unprotectThread, this) {}
 
+  void setContextInvalid() {
+    std::lock_guard<std::mutex> locker(mutex_);
+    ctxInvalid_ = true;
+  }
+
   void shutdown() {
     {
       std::lock_guard<std::mutex> locker(mutex_);
+      assert(ctxInvalid_);
       shuttingDown_ = true;
       notEmpty_.notify_one();
     }
@@ -349,7 +354,10 @@ class ProtectionQueue {
         // that may make another GC pass, which could call another finalizer
         // and thus attempt to push to this queue then, and deadlock.
         locker.unlock();
-        delete value;
+        if (ctxInvalid_) {
+          value->ctx_ = nullptr;
+        }
+        value->unprotect();
         locker.lock();
       }
     }
@@ -363,10 +371,12 @@ class ProtectionQueue {
   std::condition_variable notEmpty_;
   // The actual underlying queue
   std::queue<JSCRuntime::JSCObjectValue*> queue_;
+  // A flag which is set before shutting down JSC
+  bool ctxInvalid_;
   // A flag dictating whether or not we need to stop all execution
   bool shuttingDown_;
 #ifndef NDEBUG
-  std::atomic<bool> didShutdown_;
+  bool didShutdown_;
 #endif
   // The thread that dequeues and processes the queue. Note this is the last
   // member on purpose so the thread starts up after all state has been
@@ -392,6 +402,17 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 }
 
 JSCRuntime::~JSCRuntime() {
+  // On shutting down and cleaning up: when JSC is actually torn down,
+  // it calls JSC::Heap::lastChanceToFinalize internally which
+  // finalizes anything left over.  But at this point,
+  // JSUnprotectValue() can no longer be called.  So there's a
+  // multiphase shutdown here.  We tell the protection queue that the
+  // VM is invalid, which causes it not to call JSUnprotectValue.  but
+  // it will decrement its counters, if !NDEBUG.  Then we shut down
+  // the VM, which will clean everything up.  Finally, we shut down
+  // the queue itself.
+  protectionQueue_->setContextInvalid();
+  JSGlobalContextRelease(ctx_);
   protectionQueue_->shutdown();
 #ifndef NDEBUG
   assert(
@@ -399,7 +420,6 @@ JSCRuntime::~JSCRuntime() {
   assert(
       stringCounter_ == 0 && "JSCRuntime destroyed with a dangling API string");
 #endif
-  JSGlobalContextRelease(ctx_);
 }
 
 void JSCRuntime::evaluateJavaScript(
@@ -453,27 +473,21 @@ JSCRuntime::JSCStringValue::JSCStringValue(JSStringRef str)
 #endif
 
 void JSCRuntime::JSCStringValue::invalidate() {
-  // JSI needs to be flexible enough to allow Runtime to act as a root in
-  // hermes' case and just an interface in JSC's case. In hermes the
-  // objects/strings must be tracked in a list so that they can be marked
-  // on a GC sweep, while for JSC we want to immediately JSStringRelease once a
-  // String is released, and queue a JSObjectRef to unprotected (see comment
-  // on ProtectionQueue::unprotectThread above).
+  // We want to immediately JSStringRelease once a String is released,
+  // and queue a JSObjectRef to unprotected (see comment on
+  // ProtectionQueue::unprotectThread above).
   //
-  // In JSC's case these JSC{String,Object}Value objects are implicitly owned
-  // by the {String,Object} objects, thus when a String/Object is destructed
-  // the JSC{String,Object}Value should be released (again this has the caveat
-  // that objects must be unprotected on a separate thread).
-  //
-  // Angery reaccs only
-  delete this;
-}
-
-JSCRuntime::JSCStringValue::~JSCStringValue() {
+  // These JSC{String,Object}Value objects are implicitly owned by the
+  // {String,Object} objects, thus when a String/Object is destructed
+  // the JSC{String,Object}Value should be released (again this has
+  // the caveat that objects must be unprotected on a separate
+  // thread).
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
   JSStringRelease(str_);
+  // Angery reaccs only
+  delete this;
 }
 
 JSCRuntime::JSCObjectValue::JSCObjectValue(
@@ -505,11 +519,14 @@ void JSCRuntime::JSCObjectValue::invalidate() {
   protectionQueue_.push(this);
 }
 
-JSCRuntime::JSCObjectValue::~JSCObjectValue() {
+void JSCRuntime::JSCObjectValue::unprotect() {
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
-  JSValueUnprotect(ctx_, obj_);
+  if (ctx_) {
+    JSValueUnprotect(ctx_, obj_);
+  }
+  delete this;
 }
 
 jsi::Runtime::PointerValue* JSCRuntime::cloneString(
