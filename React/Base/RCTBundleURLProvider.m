@@ -58,17 +58,22 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   [self settingsUpdated];
 }
 
-static NSURL *serverRootWithHost(NSString *host)
+static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
+  if([hostPort rangeOfString:@":"].location != NSNotFound){
+    return [NSURL URLWithString:
+            [NSString stringWithFormat:@"http://%@/",
+             hostPort]];
+  }
   return [NSURL URLWithString:
           [NSString stringWithFormat:@"http://%@:%lu/",
-           host, (unsigned long)kRCTBundleURLProviderDefaultPort]];
+           hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
 #if RCT_DEV
 - (BOOL)isPackagerRunning:(NSString *)host
 {
-  NSURL *url = [serverRootWithHost(host) URLByAppendingPathComponent:@"status"];
+  NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   NSURLResponse *response;
   NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:NULL];
@@ -167,7 +172,7 @@ static NSURL *serverRootWithHost(NSString *host)
                          packagerHost:(NSString *)packagerHost
                                 query:(NSString *)query
 {
-  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHost(packagerHost) resolvingAgainstBaseURL:NO];
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost) resolvingAgainstBaseURL:NO];
   components.path = path;
   if (query != nil) {
     components.query = query;
