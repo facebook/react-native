@@ -4,16 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
 const StatusBar = require('StatusBar');
@@ -24,14 +21,126 @@ const View = require('View');
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
 
-const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const requireNativeComponent = require('requireNativeComponent');
 
-const RK_DRAWER_REF = 'drawerlayout';
-const INNERVIEW_REF = 'innerView';
-
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
+
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
+
+type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
+
+type DrawerStateEvent = SyntheticEvent<
+  $ReadOnly<{|
+    drawerState: number,
+  |}>,
+>;
+
+type DrawerSlideEvent = SyntheticEvent<
+  $ReadOnly<{|
+    offset: number,
+  |}>,
+>;
+
+type Props = $ReadOnly<{|
+  /**
+   * Determines whether the keyboard gets dismissed in response to a drag.
+   *   - 'none' (the default), drags do not dismiss the keyboard.
+   *   - 'on-drag', the keyboard is dismissed when a drag begins.
+   */
+  keyboardDismissMode?: ?('none' | 'on-drag'),
+
+  /**
+   * Specifies the background color of the drawer. The default value is white.
+   * If you want to set the opacity of the drawer, use rgba. Example:
+   *
+   * ```
+   * return (
+   *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+   *   </DrawerLayoutAndroid>
+   * );
+   * ```
+   */
+  drawerBackgroundColor: ColorValue,
+
+  /**
+   * Specifies the side of the screen from which the drawer will slide in.
+   */
+  drawerPosition: ?number,
+
+  /**
+   * Specifies the width of the drawer, more precisely the width of the view that be pulled in
+   * from the edge of the window.
+   */
+  drawerWidth?: ?number,
+
+  /**
+   * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+   * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
+   * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+   * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
+   * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+   */
+  drawerLockMode?: ?('unlocked' | 'locked-closed' | 'locked-open'),
+
+  /**
+   * Function called whenever there is an interaction with the navigation view.
+   */
+  onDrawerSlide?: ?(event: DrawerSlideEvent) => mixed,
+
+  /**
+   * Function called when the drawer state has changed. The drawer can be in 3 states:
+   * - Idle, meaning there is no interaction with the navigation view happening at the time
+   * - Dragging, meaning there is currently an interaction with the navigation view
+   * - Settling, meaning that there was an interaction with the navigation view, and the
+   * navigation view is now finishing its closing or opening animation
+   */
+  onDrawerStateChanged?: ?(state: DrawerStates) => mixed,
+
+  /**
+   * Function called whenever the navigation view has been opened.
+   */
+  onDrawerOpen?: ?() => mixed,
+
+  /**
+   * Function called whenever the navigation view has been closed.
+   */
+  onDrawerClose?: ?() => mixed,
+
+  /**
+   * The navigation view that will be rendered to the side of the screen and can be pulled in.
+   */
+  renderNavigationView: () => React.Element<any>,
+
+  /**
+   * Make the drawer take the entire screen and draw the background of the
+   * status bar to allow it to open over the status bar. It will only have an
+   * effect on API 21+.
+   */
+  statusBarBackgroundColor?: ?ColorValue,
+
+  children?: React.Node,
+  style?: ?ViewStyleProp,
+|}>;
+
+type NativeProps = $ReadOnly<{|
+  ...$Diff<
+    Props,
+    $ReadOnly<{onDrawerStateChanged?: ?(state: DrawerStates) => mixed}>,
+  >,
+  onDrawerStateChanged?: ?(state: DrawerStateEvent) => mixed,
+|}>;
+
+type State = {|
+  statusBarBackgroundColor: ColorValue,
+|};
+
+// The View that contains both the actual drawer and the main view
+const AndroidDrawerLayout = ((requireNativeComponent(
+  'AndroidDrawerLayout',
+): any): Class<ReactNative.NativeComponent<NativeProps>>);
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The
@@ -64,109 +173,28 @@ const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
  * },
  * ```
  */
-const DrawerLayoutAndroid = createReactClass({
-  displayName: 'DrawerLayoutAndroid',
-  statics: {
-    positions: DrawerConsts.DrawerPosition,
-  },
+class DrawerLayoutAndroid extends React.Component<Props, State> {
+  static positions = DrawerConsts.DrawerPosition;
+  static defaultProps = {
+    drawerBackgroundColor: 'white',
+  };
 
-  propTypes: {
-    ...DeprecatedViewPropTypes,
-    /**
-     * Determines whether the keyboard gets dismissed in response to a drag.
-     *   - 'none' (the default), drags do not dismiss the keyboard.
-     *   - 'on-drag', the keyboard is dismissed when a drag begins.
-     */
-    keyboardDismissMode: PropTypes.oneOf([
-      'none', // default
-      'on-drag',
-    ]),
-    /**
-     * Specifies the background color of the drawer. The default value is white.
-     * If you want to set the opacity of the drawer, use rgba. Example:
-     *
-     * ```
-     * return (
-     *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
-     *   </DrawerLayoutAndroid>
-     * );
-     * ```
-     */
-    drawerBackgroundColor: DeprecatedColorPropType,
-    /**
-     * Specifies the side of the screen from which the drawer will slide in.
-     */
-    drawerPosition: PropTypes.oneOf([
-      DrawerConsts.DrawerPosition.Left,
-      DrawerConsts.DrawerPosition.Right,
-    ]),
-    /**
-     * Specifies the width of the drawer, more precisely the width of the view that be pulled in
-     * from the edge of the window.
-     */
-    drawerWidth: PropTypes.number,
-    /**
-     * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
-     * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
-     * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
-     * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
-     * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
-     */
-    drawerLockMode: PropTypes.oneOf([
-      'unlocked',
-      'locked-closed',
-      'locked-open',
-    ]),
-    /**
-     * Function called whenever there is an interaction with the navigation view.
-     */
-    onDrawerSlide: PropTypes.func,
-    /**
-     * Function called when the drawer state has changed. The drawer can be in 3 states:
-     * - idle, meaning there is no interaction with the navigation view happening at the time
-     * - dragging, meaning there is currently an interaction with the navigation view
-     * - settling, meaning that there was an interaction with the navigation view, and the
-     * navigation view is now finishing its closing or opening animation
-     */
-    onDrawerStateChanged: PropTypes.func,
-    /**
-     * Function called whenever the navigation view has been opened.
-     */
-    onDrawerOpen: PropTypes.func,
-    /**
-     * Function called whenever the navigation view has been closed.
-     */
-    onDrawerClose: PropTypes.func,
-    /**
-     * The navigation view that will be rendered to the side of the screen and can be pulled in.
-     */
-    renderNavigationView: PropTypes.func.isRequired,
+  nativeRef = React.createRef<
+    Class<ReactNative.NativeComponent<NativeProps>>,
+  >();
+  _innerViewRef: ?React.ElementRef<typeof View> = null;
 
-    /**
-     * Make the drawer take the entire screen and draw the background of the
-     * status bar to allow it to open over the status bar. It will only have an
-     * effect on API 21+.
-     */
-    statusBarBackgroundColor: DeprecatedColorPropType,
-  },
+  state = {statusBarBackgroundColor: null};
 
-  mixins: [NativeMethodsMixin],
+  getInnerViewNode() {
+    // The original version of the component had this, but View doesn't seem to have
+    // the `getInnerViewNode` method.
+    // $FlowFixMe
+    return this._innerViewRef.getInnerViewNode();
+  }
 
-  getDefaultProps: function(): Object {
-    return {
-      drawerBackgroundColor: 'white',
-    };
-  },
-
-  getInitialState: function() {
-    return {statusBarBackgroundColor: undefined};
-  },
-
-  getInnerViewNode: function() {
-    return this.refs[INNERVIEW_REF].getInnerViewNode();
-  },
-
-  render: function() {
+  render() {
+    const {onDrawerStateChanged, ...props} = this.props;
     const drawStatusBar =
       Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     const drawerViewWrapper = (
@@ -184,7 +212,12 @@ const DrawerLayoutAndroid = createReactClass({
       </View>
     );
     const childrenWrapper = (
-      <View ref={INNERVIEW_REF} style={styles.mainSubview} collapsable={false}>
+      <View
+        ref={ref => {
+          this._innerViewRef = ref;
+        }}
+        style={styles.mainSubview}
+        collapsable={false}>
         {drawStatusBar && (
           <StatusBar
             translucent
@@ -204,8 +237,8 @@ const DrawerLayoutAndroid = createReactClass({
     );
     return (
       <AndroidDrawerLayout
-        {...this.props}
-        ref={RK_DRAWER_REF}
+        {...props}
+        ref={this.nativeRef}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}
@@ -218,59 +251,60 @@ const DrawerLayoutAndroid = createReactClass({
         {drawerViewWrapper}
       </AndroidDrawerLayout>
     );
-  },
+  }
 
-  _onDrawerSlide: function(event) {
+  _onDrawerSlide = (event: DrawerSlideEvent) => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
     }
     if (this.props.keyboardDismissMode === 'on-drag') {
       dismissKeyboard();
     }
-  },
+  };
 
-  _onDrawerOpen: function() {
+  _onDrawerOpen = () => {
     if (this.props.onDrawerOpen) {
       this.props.onDrawerOpen();
     }
-  },
+  };
 
-  _onDrawerClose: function() {
+  _onDrawerClose = () => {
     if (this.props.onDrawerClose) {
       this.props.onDrawerClose();
     }
-  },
+  };
 
-  _onDrawerStateChanged: function(event) {
+  _onDrawerStateChanged = (event: DrawerStateEvent) => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(
         DRAWER_STATES[event.nativeEvent.drawerState],
       );
     }
-  },
+  };
 
   /**
    * Opens the drawer.
    */
-  openDrawer: function() {
+  openDrawer() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
       UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands.openDrawer,
       null,
     );
-  },
+  }
 
   /**
    * Closes the drawer.
    */
-  closeDrawer: function() {
+  closeDrawer() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
       UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands
         .closeDrawer,
       null,
     );
-  },
+  }
+
   /**
    * Closing and opening example
    * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
@@ -287,10 +321,10 @@ const DrawerLayoutAndroid = createReactClass({
    *   )
    * }
    */
-  _getDrawerLayoutHandle: function() {
-    return ReactNative.findNodeHandle(this.refs[RK_DRAWER_REF]);
-  },
-});
+  _getDrawerLayoutHandle() {
+    return ReactNative.findNodeHandle(this.nativeRef.current);
+  }
+}
 
 const styles = StyleSheet.create({
   base: {
@@ -321,8 +355,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.251)',
   },
 });
-
-// The View that contains both the actual drawer and the main view
-const AndroidDrawerLayout = requireNativeComponent('AndroidDrawerLayout');
 
 module.exports = DrawerLayoutAndroid;
