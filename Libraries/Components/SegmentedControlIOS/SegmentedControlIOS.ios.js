@@ -15,8 +15,16 @@ const StyleSheet = require('StyleSheet');
 
 const requireNativeComponent = require('requireNativeComponent');
 
+import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
+
+type Event = SyntheticEvent<
+  $ReadOnly<{|
+    value: number,
+    selectedSegmentIndex: number,
+  |}>,
+>;
 
 type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
@@ -32,17 +40,17 @@ type SegmentedControlIOSProps = $ReadOnly<{|
    * Callback that is called when the user taps a segment;
    * passes the segment's value as an argument
    */
-  onValueChange?: ?Function,
+  onValueChange?: ?(value: number) => mixed,
   /**
    * Callback that is called when the user taps a segment;
    * passes the event as an argument
    */
-  onChange?: ?Function,
+  onChange?: ?(event: Event) => mixed,
   /**
    * If false the user won't be able to interact with the control.
    * Default value is true.
    */
-  enabled: boolean,
+  enabled?: boolean,
   /**
    * Accent color of the control.
    */
@@ -59,7 +67,6 @@ type Props = $ReadOnly<{|
   forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
 |}>;
 
-type Event = Object;
 type NativeSegmentedControlIOS = Class<
   NativeComponent<SegmentedControlIOSProps>,
 >;
