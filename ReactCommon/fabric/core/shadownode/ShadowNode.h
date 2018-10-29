@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/core/Sealable.h>
-#include <fabric/events/EventEmitter.h>
 #include <fabric/debug/DebugStringConvertible.h>
+#include <fabric/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {
@@ -27,21 +27,18 @@ class ShadowNode;
 
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
-using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
+using SharedShadowNodeList = std::vector<SharedShadowNode>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
 using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
-  const ShadowNode &sourceShadowNode,
-  const ShadowNodeFragment &fragment
-)>;
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment)>;
 
-class ShadowNode:
-  public virtual Sealable,
-  public virtual DebugStringConvertible,
-  public std::enable_shared_from_this<ShadowNode> {
-
-public:
+class ShadowNode : public virtual Sealable,
+                   public virtual DebugStringConvertible,
+                   public std::enable_shared_from_this<ShadowNode> {
+ public:
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
 #pragma mark - Constructors
@@ -50,18 +47,16 @@ public:
    * Creates a Shadow Node based on fields specified in a `fragment`.
    */
   ShadowNode(
-    const ShadowNodeFragment &fragment,
-    const ShadowNodeCloneFunction &cloneFunction
-  );
+      const ShadowNodeFragment &fragment,
+      const ShadowNodeCloneFunction &cloneFunction);
 
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
    * applying fields from given `fragment`.
    */
   ShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment
-  );
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment);
 
   virtual ~ShadowNode() = default;
 
@@ -94,7 +89,10 @@ public:
 #pragma mark - Mutating Methods
 
   void appendChild(const SharedShadowNode &child);
-  void replaceChild(const SharedShadowNode &oldChild, const SharedShadowNode &newChild, int suggestedIndex = -1);
+  void replaceChild(
+      const SharedShadowNode &oldChild,
+      const SharedShadowNode &newChild,
+      int suggestedIndex = -1);
   void clearSourceNode();
 
   /*
@@ -112,7 +110,7 @@ public:
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
 
-protected:
+ protected:
   Tag tag_;
   Tag rootTag_;
   SharedProps props_;
@@ -120,8 +118,7 @@ protected:
   SharedShadowNodeSharedList children_;
   SharedLocalData localData_;
 
-private:
-
+ private:
   /*
    * Clones the list of children (and creates a new `shared_ptr` to it) if
    * `childrenAreShared_` flag is `true`.

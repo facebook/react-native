@@ -11,10 +11,8 @@
 namespace facebook {
 namespace react {
 
-class ImageEventEmitter:
-  public ViewEventEmitter {
-
-public:
+class ImageEventEmitter : public ViewEventEmitter {
+ public:
   using ViewEventEmitter::ViewEventEmitter;
 
   void onLoadStart() const;

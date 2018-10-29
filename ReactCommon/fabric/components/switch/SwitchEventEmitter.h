@@ -11,11 +11,8 @@
 namespace facebook {
 namespace react {
 
-class SwitchEventEmitter:
-  public ViewEventEmitter {
-
-public:
-
+class SwitchEventEmitter : public ViewEventEmitter {
+ public:
   using ViewEventEmitter::ViewEventEmitter;
 
   void onChange(const bool &value) const;

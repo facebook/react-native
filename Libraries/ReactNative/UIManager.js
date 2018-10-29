@@ -37,6 +37,7 @@ UIManager.takeSnapshot = function() {
       'Use ReactNative.takeSnapshot instead.',
   );
 };
+const triedLoadingConfig = new Set();
 UIManager.getViewManagerConfig = function(viewManagerName: string) {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
@@ -51,8 +52,66 @@ UIManager.getViewManagerConfig = function(viewManagerName: string) {
     }
   }
 
+  const config = viewManagerConfigs[viewManagerName];
+  if (config) {
+    return config;
+  }
+
+  // If we're in the Chrome Debugger, let's not even try calling the sync
+  // method.
+  if (__DEV__) {
+    if (!global.nativeCallSyncHook) {
+      return config;
+    }
+  }
+
+  if (UIManager.lazilyLoadView && !triedLoadingConfig.has(viewManagerName)) {
+    const result = UIManager.lazilyLoadView(viewManagerName);
+    triedLoadingConfig.add(viewManagerName);
+    if (result.viewConfig) {
+      UIManager[viewManagerName] = result.viewConfig;
+      lazifyViewManagerConfig(viewManagerName);
+    }
+  }
+
   return viewManagerConfigs[viewManagerName];
 };
+
+function lazifyViewManagerConfig(viewName) {
+  const viewConfig = UIManager[viewName];
+  if (viewConfig.Manager) {
+    viewManagerConfigs[viewName] = viewConfig;
+    defineLazyObjectProperty(viewConfig, 'Constants', {
+      get: () => {
+        const viewManager = NativeModules[viewConfig.Manager];
+        const constants = {};
+        viewManager &&
+          Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value !== 'function') {
+              constants[key] = value;
+            }
+          });
+        return constants;
+      },
+    });
+    defineLazyObjectProperty(viewConfig, 'Commands', {
+      get: () => {
+        const viewManager = NativeModules[viewConfig.Manager];
+        const commands = {};
+        let index = 0;
+        viewManager &&
+          Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value === 'function') {
+              commands[key] = index++;
+            }
+          });
+        return commands;
+      },
+    });
+  }
+}
 
 /**
  * Copies the ViewManager constants and commands into UIManager. This is
@@ -61,39 +120,7 @@ UIManager.getViewManagerConfig = function(viewManagerName: string) {
  */
 if (Platform.OS === 'ios') {
   Object.keys(UIManager).forEach(viewName => {
-    const viewConfig = UIManager[viewName];
-    if (viewConfig.Manager) {
-      viewManagerConfigs[viewName] = viewConfig;
-      defineLazyObjectProperty(viewConfig, 'Constants', {
-        get: () => {
-          const viewManager = NativeModules[viewConfig.Manager];
-          const constants = {};
-          viewManager &&
-            Object.keys(viewManager).forEach(key => {
-              const value = viewManager[key];
-              if (typeof value !== 'function') {
-                constants[key] = value;
-              }
-            });
-          return constants;
-        },
-      });
-      defineLazyObjectProperty(viewConfig, 'Commands', {
-        get: () => {
-          const viewManager = NativeModules[viewConfig.Manager];
-          const commands = {};
-          let index = 0;
-          viewManager &&
-            Object.keys(viewManager).forEach(key => {
-              const value = viewManager[key];
-              if (typeof value === 'function') {
-                commands[key] = index++;
-              }
-            });
-          return commands;
-        },
-      });
-    }
+    lazifyViewManagerConfig(viewName);
   });
 } else if (UIManager.ViewManagerNames) {
   // We want to add all the view managers to the UIManager.
@@ -133,7 +160,7 @@ if (__DEV__) {
         get: () => {
           console.warn(
             `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
-              `is no longer supported. Use UIManager.getViewManager('${viewManagerName}') instead.`,
+              `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
           return UIManager.getViewManagerConfig(viewManagerName);
         },

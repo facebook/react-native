@@ -20,14 +20,13 @@ namespace react {
  * that can have text attributes (such as Text and Paragraph).
  */
 class BaseTextProps {
-public:
-
+ public:
   BaseTextProps() = default;
   BaseTextProps(const BaseTextProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const TextAttributes textAttributes {};
+  const TextAttributes textAttributes{};
 
 #pragma mark - DebugStringConvertible (partially)
 

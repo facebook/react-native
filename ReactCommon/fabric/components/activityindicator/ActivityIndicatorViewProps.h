@@ -13,19 +13,20 @@ namespace facebook {
 namespace react {
 
 // TODO (T28334063): Consider for codegen.
-class ActivityIndicatorViewProps final:
-  public ViewProps {
-
-public:
+class ActivityIndicatorViewProps final : public ViewProps {
+ public:
   ActivityIndicatorViewProps() = default;
-  ActivityIndicatorViewProps(const ActivityIndicatorViewProps &sourceProps, const RawProps &rawProps);
+  ActivityIndicatorViewProps(
+      const ActivityIndicatorViewProps &sourceProps,
+      const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const bool animating {true};
-  const SharedColor color {colorFromComponents({153/255.0, 153/255.0, 153/255.0, 1.0})}; // #999999
-  const bool hidesWhenStopped {true};
-  const ActivityIndicatorViewSize size {ActivityIndicatorViewSize::Small};
+  const bool animating{true};
+  const SharedColor color{colorFromComponents(
+      {153 / 255.0, 153 / 255.0, 153 / 255.0, 1.0})}; // #999999
+  const bool hidesWhenStopped{true};
+  const ActivityIndicatorViewSize size{ActivityIndicatorViewSize::Small};
 };
 
 } // namespace react

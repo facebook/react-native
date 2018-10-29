@@ -19,12 +19,13 @@ const char ScrollViewComponentName[] = "ScrollView";
 void ScrollViewShadowNode::updateLocalData() {
   ensureUnsealed();
 
-  auto contentBoundingRect = Rect {};
+  auto contentBoundingRect = Rect{};
   for (const auto &childNode : getLayoutableChildNodes()) {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }
 
-  const auto &localData = std::make_shared<const ScrollViewLocalData>(contentBoundingRect);
+  const auto &localData =
+      std::make_shared<const ScrollViewLocalData>(contentBoundingRect);
   setLocalData(localData);
 }
 

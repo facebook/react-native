@@ -34,19 +34,18 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
 }
 
 EventEmitter::EventEmitter(
-  SharedEventTarget eventTarget,
-  Tag tag,
-  WeakEventDispatcher eventDispatcher
-):
-  eventTarget_(std::move(eventTarget)),
-  tag_(tag),
-  eventDispatcher_(std::move(eventDispatcher)) {}
+    SharedEventTarget eventTarget,
+    Tag tag,
+    WeakEventDispatcher eventDispatcher)
+    : eventTarget_(std::move(eventTarget)),
+      weakEventTarget_({}),
+      tag_(tag),
+      eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventPriority &priority
-) const {
+    const std::string &type,
+    const folly::dynamic &payload,
+    const EventPriority &priority) const {
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
@@ -58,13 +57,8 @@ void EventEmitter::dispatchEvent(
   extendedPayload.merge_patch(payload);
 
   eventDispatcher->dispatchEvent(
-    RawEvent(
-      normalizeEventType(type),
-      extendedPayload,
-      eventTarget_
-    ),
-    priority
-  );
+      RawEvent(normalizeEventType(type), extendedPayload, eventTarget_),
+      priority);
 }
 
 void EventEmitter::setEnabled(bool enabled) const {
@@ -73,7 +67,11 @@ void EventEmitter::setEnabled(bool enabled) const {
     return;
   }
 
-  if (!enabled) {
+  if (enabled) {
+    eventTarget_ = weakEventTarget_.lock();
+    weakEventTarget_.reset();
+  } else {
+    weakEventTarget_ = eventTarget_;
     eventTarget_.reset();
   }
 }

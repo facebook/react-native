@@ -20,7 +20,7 @@
 		3DBE0D821F3B1B0C0099AA32 /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DBE0D131F3B185A0099AA32 /* fishhook.h */; };
 		A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
 		A12E9E2F1E5DEC550029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
-		E7F7E93A216628A400A9A5B3 /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */; };
+		ED297176215062BA00B7C4FE /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,7 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7F7E93A216628A400A9A5B3 /* libfishhook-tvOS.a in Frameworks */,
+				ED297176215062BA00B7C4FE /* libfishhook-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

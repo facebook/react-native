@@ -12,16 +12,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
+NSString *const RCTAttributedStringIsHighlightedAttributeName =
+    @"IsHighlighted";
 NSString *const RCTAttributedStringParentShadowNode = @"ParentShadowNode";
 
 /**
  * Constructs ready-to-render `NSAttributedString` by given `AttributedString`.
  */
-NSAttributedString *RCTNSAttributedStringFromAttributedString(const facebook::react::AttributedString &attributedString);
+NSAttributedString *RCTNSAttributedStringFromAttributedString(
+    const facebook::react::AttributedString &attributedString);
 
 @interface RCTSharedShadowNodeWrapper : NSObject
-@property (nonatomic, assign) facebook::react::SharedShadowNode node;
+@property(nonatomic, assign) facebook::react::SharedShadowNode node;
 @end
 
 NS_ASSUME_NONNULL_END

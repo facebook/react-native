@@ -10,8 +10,8 @@
 
 #include <fabric/events/EventBeat.h>
 #include <fabric/events/EventQueue.h>
-#include <fabric/events/primitives.h>
 #include <fabric/events/RawEvent.h>
+#include <fabric/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -25,23 +25,18 @@ using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
  * Particular `EventEmitter` clases use this for sending events.
  */
 class EventDispatcher {
-
-public:
+ public:
   EventDispatcher(
-    const EventPipe &eventPipe,
-    const EventBeatFactory &synchonousEventBeatFactory,
-    const EventBeatFactory &asynchonousEventBeatFactory
-  );
+      const EventPipe &eventPipe,
+      const EventBeatFactory &synchonousEventBeatFactory,
+      const EventBeatFactory &asynchonousEventBeatFactory);
 
   /*
    * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  void dispatchEvent(
-    const RawEvent &rawEvent,
-    EventPriority priority
-  ) const;
+  void dispatchEvent(const RawEvent &rawEvent, EventPriority priority) const;
 
-private:
+ private:
   std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
 };
 

@@ -16,7 +16,6 @@ const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
-const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
@@ -133,7 +132,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
-  mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,

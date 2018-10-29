@@ -14,10 +14,17 @@ var React = require('react');
 var ReactNative = require('react-native');
 var {Image, StyleSheet, View, ScrollView} = ReactNative;
 
-class AssetScaledImageExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+import type {PhotoIdentifier} from 'CameraRoll';
+
+type Props = $ReadOnly<{|
+  asset: PhotoIdentifier,
+|}>;
+
+type State = {|
+  asset: PhotoIdentifier,
+|};
+
+class AssetScaledImageExample extends React.Component<Props, State> {
   state = {
     asset: this.props.asset,
   };

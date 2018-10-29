@@ -11,10 +11,10 @@ namespace facebook {
 namespace react {
 
 struct ColorComponents {
-  float red {0};
-  float green {0};
-  float blue {0};
-  float alpha {0};
+  float red{0};
+  float green{0};
+  float blue{0};
+  float alpha{0};
 };
 
 } // namespace react

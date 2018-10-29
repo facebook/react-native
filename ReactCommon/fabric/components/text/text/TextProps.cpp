@@ -10,8 +10,8 @@
 namespace facebook {
 namespace react {
 
-TextProps::TextProps(const TextProps &sourceProps, const RawProps &rawProps):
-  BaseTextProps::BaseTextProps(sourceProps, rawProps) {};
+TextProps::TextProps(const TextProps &sourceProps, const RawProps &rawProps)
+    : BaseTextProps::BaseTextProps(sourceProps, rawProps){};
 
 #pragma mark - DebugStringConvertible
 

@@ -21,10 +21,6 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const emptyObject = require('fbjs/lib/emptyObject');
 const invariant = require('fbjs/lib/invariant');
 
 export type ReactRenderer = {
@@ -131,7 +127,7 @@ class Inspector extends React.Component<
           hierarchy: [],
           inspected: {
             frame: {left, top, width, height},
-            style: props ? props.style : emptyObject,
+            style: props ? props.style : {},
           },
         });
       });

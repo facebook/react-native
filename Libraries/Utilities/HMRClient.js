@@ -27,6 +27,9 @@ const HMRClient = {
     // Moving to top gives errors due to NativeModules not being initialized
     const HMRLoadingView = require('HMRLoadingView');
 
+    /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.84 was deployed. To see the error, delete this
+     * comment and run Flow. */
     const wsHostPort = port !== null && port !== '' ? `${host}:${port}` : host;
 
     bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');

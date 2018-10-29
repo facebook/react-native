@@ -10,11 +10,12 @@
 
 #include <fabric/core/ComponentDescriptor.h>
 #include <fabric/core/LayoutConstraints.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/ContextContainer.h>
 #include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/UIManagerDelegate.h>
 #include <fabric/uimanager/ShadowTree.h>
 #include <fabric/uimanager/ShadowTreeDelegate.h>
+#include <fabric/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
 namespace react {
@@ -24,35 +25,38 @@ class FabricUIManager;
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final:
-  public UIManagerDelegate,
-  public ShadowTreeDelegate {
-
-public:
+class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+ public:
   Scheduler(const SharedContextContainer &contextContainer);
   ~Scheduler();
 
 #pragma mark - Surface Management
 
   void startSurface(
-    SurfaceId surfaceId,
-    const std::string &moduleName,
-    const folly::dynamic &initialProps
-  ) const;
+      SurfaceId surfaceId,
+      const std::string &moduleName,
+      const folly::dynamic &initialProps,
+      const LayoutConstraints &layoutConstraints = {},
+      const LayoutContext &layoutContext = {});
 
   void stopSurface(SurfaceId surfaceId) const;
 
   Size measureSurface(
-    SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext
-  ) const;
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
+  /*
+   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
+   * The user interface will be relaid out as a result. The operation will be
+   * performed synchronously (including mounting) if the method is called
+   * on the main thread.
+   * Can be called from any thread.
+   */
   void constraintSurfaceLayout(
-    SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext
-  ) const;
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
 #pragma mark - Delegate
 
@@ -66,12 +70,17 @@ public:
 
 #pragma mark - UIManagerDelegate
 
-  void uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) override;
-  void uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) override;
+  void uiManagerDidFinishTransaction(
+      Tag rootTag,
+      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+  void uiManagerDidCreateShadowNode(
+      const SharedShadowNode &shadowNode) override;
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const ShadowTree &shadowTree, const ShadowViewMutationList &mutations) const override;
+  void shadowTreeDidCommit(
+      const ShadowTree &shadowTree,
+      const ShadowViewMutationList &mutations) const override;
 
 #pragma mark - Deprecated
 
@@ -80,13 +89,18 @@ public:
    */
   std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
 
-private:
+ private:
   SchedulerDelegate *delegate_;
   std::shared_ptr<FabricUIManager> uiManager_;
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable std::mutex mutex_;
-  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>> shadowTreeRegistry_; // Protected by `mutex_`.
+  mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
+      shadowTreeRegistry_; // Protected by `mutex_`.
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
+
+  void uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes);
+
 };
 
 } // namespace react

@@ -18,11 +18,9 @@ extern const char ActivityIndicatorViewComponentName[];
 /*
  * `ShadowNode` for <ActivityIndicatorView> component.
  */
-using ActivityIndicatorViewShadowNode =
-  ConcreteViewShadowNode<
+using ActivityIndicatorViewShadowNode = ConcreteViewShadowNode<
     ActivityIndicatorViewComponentName,
-    ActivityIndicatorViewProps
-  >;
+    ActivityIndicatorViewProps>;
 
 } // namespace react
 } // namespace facebook

@@ -60,11 +60,15 @@ private:
 - (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName
                      initailProps:(NSDictionary *)initialProps
+                layoutConstraints:(LayoutConstraints)layoutConstraints
+                    layoutContext:(LayoutContext)layoutContext;
 {
   _scheduler->startSurface(
     surfaceId,
     RCTStringFromNSString(moduleName),
-    convertIdToFollyDynamic(initialProps)
+    convertIdToFollyDynamic(initialProps),
+    layoutConstraints,
+    layoutContext
   );
 }
 

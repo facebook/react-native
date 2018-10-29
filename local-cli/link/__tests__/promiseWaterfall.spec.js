@@ -10,35 +10,38 @@
 
 'use strict';
 
-const sinon = require('sinon');
 const promiseWaterfall = require('../promiseWaterfall');
 
 describe('promiseWaterfall', () => {
-  it('should run promises in a sequence', done => {
-    const tasks = [sinon.stub(), sinon.stub()];
+  it('should run promises in a sequence', async () => {
+    const tasks = [jest.fn(), jest.fn()];
 
-    promiseWaterfall(tasks).then(() => {
-      expect(tasks[0].calledBefore(tasks[1])).toBeTruthy();
-      done();
-    });
+    await promiseWaterfall(tasks);
+
+    // Check that tasks[0] is executed before tasks[1].
+    expect(tasks[0].mock.invocationCallOrder[0]).toBeLessThan(
+      tasks[1].mock.invocationCallOrder[0],
+    );
   });
 
-  it('should resolve with last promise value', done => {
-    const tasks = [sinon.stub().returns(1), sinon.stub().returns(2)];
+  it('should resolve with last promise value', async () => {
+    const tasks = [jest.fn().mockReturnValue(1), jest.fn().mockReturnValue(2)];
 
-    promiseWaterfall(tasks).then(value => {
-      expect(value).toEqual(2);
-      done();
-    });
+    expect(await promiseWaterfall(tasks)).toEqual(2);
   });
 
   it('should stop the sequence when one of promises is rejected', done => {
     const error = new Error();
-    const tasks = [sinon.stub().throws(error), sinon.stub().returns(2)];
+    const tasks = [
+      jest.fn().mockImplementation(() => {
+        throw error;
+      }),
+      jest.fn().mockReturnValue(2),
+    ];
 
     promiseWaterfall(tasks).catch(err => {
       expect(err).toEqual(error);
-      expect(tasks[1].callCount).toEqual(0);
+      expect(tasks[1].mock.calls.length).toEqual(0);
       done();
     });
   });

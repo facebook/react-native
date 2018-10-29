@@ -11,7 +11,8 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 public interface FabricBinding {
 
   // TODO: T31905686 change types of UIManager and EventBeatManager when moving to OSS
-  void installFabric(
+  void register(
       JavaScriptContextHolder jsContext, FabricBinder fabricBinder, Object eventBeatManager);
 
+  void unregister();
 }

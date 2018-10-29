@@ -12,8 +12,8 @@
 #include <vector>
 
 #include <fabric/events/EventBeat.h>
-#include <fabric/events/primitives.h>
 #include <fabric/events/RawEvent.h>
+#include <fabric/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -23,8 +23,7 @@ namespace react {
  * using given Event Pipe.
  */
 class EventQueue {
-
-public:
+ public:
   EventQueue(EventPipe eventPipe, std::unique_ptr<EventBeat> eventBeat);
   virtual ~EventQueue() = default;
 
@@ -34,13 +33,13 @@ public:
    */
   virtual void enqueueEvent(const RawEvent &rawEvent) const;
 
-protected:
-
+ protected:
   void onBeat() const;
 
   const EventPipe eventPipe_;
   const std::unique_ptr<EventBeat> eventBeat_;
-  mutable std::vector<RawEvent> queue_; // Thread-safe, protected by `queueMutex_`.
+  mutable std::vector<RawEvent>
+      queue_; // Thread-safe, protected by `queueMutex_`.
   mutable std::mutex queueMutex_;
 };
 

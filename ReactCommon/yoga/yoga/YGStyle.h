@@ -10,34 +10,52 @@
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
+constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
+
+constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
+
+constexpr std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
+    {kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined,
+     kYGValueUndefined}};
+
+constexpr std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
+    {kYGValueUndefined, kYGValueUndefined}};
+
 struct YGStyle {
   using Dimensions = std::array<YGValue, 2>;
 
-  YGDirection direction;
-  YGFlexDirection flexDirection;
-  YGJustify justifyContent;
-  YGAlign alignContent;
-  YGAlign alignItems;
-  YGAlign alignSelf;
-  YGPositionType positionType;
-  YGWrap flexWrap;
-  YGOverflow overflow;
-  YGDisplay display;
-  YGFloatOptional flex;
-  YGFloatOptional flexGrow;
-  YGFloatOptional flexShrink;
-  YGValue flexBasis;
-  std::array<YGValue, YGEdgeCount> margin;
-  std::array<YGValue, YGEdgeCount> position;
-  std::array<YGValue, YGEdgeCount> padding;
-  std::array<YGValue, YGEdgeCount> border;
-  Dimensions dimensions;
-  Dimensions minDimensions;
-  Dimensions maxDimensions;
+  YGDirection direction = YGDirectionInherit;
+  YGFlexDirection flexDirection = YGFlexDirectionColumn;
+  YGJustify justifyContent = YGJustifyFlexStart;
+  YGAlign alignContent = YGAlignFlexStart;
+  YGAlign alignItems = YGAlignStretch;
+  YGAlign alignSelf = YGAlignAuto;
+  YGPositionType positionType = YGPositionTypeRelative;
+  YGWrap flexWrap = YGWrapNoWrap;
+  YGOverflow overflow = YGOverflowVisible;
+  YGDisplay display = YGDisplayFlex;
+  YGFloatOptional flex = {};
+  YGFloatOptional flexGrow = {};
+  YGFloatOptional flexShrink = {};
+  YGValue flexBasis = kYGValueAuto;
+  std::array<YGValue, YGEdgeCount> margin = kYGDefaultEdgeValuesUnit;
+  std::array<YGValue, YGEdgeCount> position = kYGDefaultEdgeValuesUnit;
+  std::array<YGValue, YGEdgeCount> padding = kYGDefaultEdgeValuesUnit;
+  std::array<YGValue, YGEdgeCount> border = kYGDefaultEdgeValuesUnit;
+  Dimensions dimensions = {{kYGValueAuto, kYGValueAuto}};
+  Dimensions minDimensions = kYGDefaultDimensionValuesUnit;
+  Dimensions maxDimensions = kYGDefaultDimensionValuesUnit;
   // Yoga specific properties, not compatible with flexbox specification
-  YGFloatOptional aspectRatio;
+  YGFloatOptional aspectRatio = {};
 
-  YGStyle();
+  YGStyle() = default;
   bool operator==(const YGStyle& style);
 
   bool operator!=(YGStyle style) {
