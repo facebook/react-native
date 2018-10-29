@@ -55,6 +55,11 @@ class Button extends React.Component<{
   onPress: () => any,
   color?: ?string,
   hasTVPreferredFocus?: ?boolean,
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
   accessibilityLabel?: ?string,
   disabled?: ?boolean,
   testID?: ?string,
@@ -81,6 +86,26 @@ class Button extends React.Component<{
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
+     * TV next focus down (see documentation for the View component).
+     */
+    nextFocusDown: PropTypes.number,
+    /**
+     * TV next focus forward (see documentation for the View component).
+     */
+    nextFocusForward: PropTypes.number,
+    /**
+     * TV next focus left (see documentation for the View component).
+     */
+    nextFocusLeft: PropTypes.number,
+    /**
+     * TV next focus right (see documentation for the View component).
+     */
+    nextFocusRight: PropTypes.number,
+    /**
+     * TV next focus up (see documentation for the View component).
+     */
+    nextFocusUp: PropTypes.number,
+    /**
      * Handler to be called when the user taps the button
      */
     onPress: PropTypes.func.isRequired,
@@ -97,6 +122,11 @@ class Button extends React.Component<{
       onPress,
       title,
       hasTVPreferredFocus,
+      nextFocusDown,
+      nextFocusForward,
+      nextFocusLeft,
+      nextFocusRight,
+      nextFocusUp,
       disabled,
       testID,
     } = this.props;
@@ -129,6 +159,11 @@ class Button extends React.Component<{
         accessibilityRole="button"
         accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
+        nextFocusDown={nextFocusDown}
+        nextFocusForward={nextFocusForward}
+        nextFocusLeft={nextFocusLeft}
+        nextFocusRight={nextFocusRight}
+        nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>

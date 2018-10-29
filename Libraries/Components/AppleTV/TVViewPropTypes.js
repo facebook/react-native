@@ -27,6 +27,41 @@ const TVViewPropTypes = {
   hasTVPreferredFocus: PropTypes.bool,
 
   /**
+   * *(Android TV only)* May be used to define next focus on down press.
+   *
+   * @platform android
+   */
+  nextFocusDown: PropTypes.number,
+
+  /**
+   * *(Android TV only)* May be used to define next focus on forward press.
+   *
+   * @platform android
+   */
+  nextFocusForward: PropTypes.number,
+
+  /**
+   * *(Android TV only)* May be used to define next focus on left press.
+   *
+   * @platform android
+   */
+  nextFocusLeft: PropTypes.number,
+
+  /**
+   * *(Android TV only)* May be used to define next focus on right press.
+   *
+   * @platform android
+   */
+  nextFocusRight: PropTypes.number,
+
+  /**
+   * *(Android TV only)* May be used to define next focus on up press.
+   *
+   * @platform android
+   */
+  nextFocusUp: PropTypes.number,
+
+  /**
    * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
    *
    * enabled: If true, parallax effects are enabled.  Defaults to true.
@@ -74,6 +109,11 @@ const TVViewPropTypes = {
 export type TVViewProps = $ReadOnly<{|
   isTVSelectable?: boolean,
   hasTVPreferredFocus?: boolean,
+  nextFocusDown?: number,
+  nextFocusForward?: number,
+  nextFocusLeft?: number,
+  nextFocusRight?: number,
+  nextFocusUp?: number,
   tvParallaxProperties?: Object,
   tvParallaxShiftDistanceX?: number,
   tvParallaxShiftDistanceY?: number,
