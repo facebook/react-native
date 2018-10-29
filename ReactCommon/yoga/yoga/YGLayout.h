@@ -9,33 +9,36 @@
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
-struct YGLayout {
-  std::array<float, 4> position;
-  std::array<float, 2> dimensions;
-  std::array<float, 6> margin;
-  std::array<float, 6> border;
-  std::array<float, 6> padding;
-  YGDirection direction;
+constexpr std::array<float, 2> kYGDefaultDimensionValues = {
+    {YGUndefined, YGUndefined}};
 
-  uint32_t computedFlexBasisGeneration;
-  YGFloatOptional computedFlexBasis;
-  bool hadOverflow;
+struct YGLayout {
+  std::array<float, 4> position = {};
+  std::array<float, 2> dimensions = kYGDefaultDimensionValues;
+  std::array<float, 6> margin = {};
+  std::array<float, 6> border = {};
+  std::array<float, 6> padding = {};
+  YGDirection direction = YGDirectionInherit;
+
+  uint32_t computedFlexBasisGeneration = 0;
+  YGFloatOptional computedFlexBasis = {};
+  bool hadOverflow = false;
 
   // Instead of recomputing the entire layout every single time, we
   // cache some information to break early when nothing changed
-  uint32_t generationCount;
-  YGDirection lastOwnerDirection;
+  uint32_t generationCount = 0;
+  YGDirection lastOwnerDirection = (YGDirection)-1;
 
-  uint32_t nextCachedMeasurementsIndex;
+  uint32_t nextCachedMeasurementsIndex = 0;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>
-      cachedMeasurements;
-  std::array<float, 2> measuredDimensions;
+      cachedMeasurements = {};
+  std::array<float, 2> measuredDimensions = kYGDefaultDimensionValues;
 
-  YGCachedMeasurement cachedLayout;
-  bool didUseLegacyFlag;
-  bool doesLegacyStretchFlagAffectsLayout;
+  YGCachedMeasurement cachedLayout = YGCachedMeasurement();
+  bool didUseLegacyFlag = false;
+  bool doesLegacyStretchFlagAffectsLayout = false;
 
-  YGLayout();
+  YGLayout() = default;
 
   bool operator==(YGLayout layout) const;
   bool operator!=(YGLayout layout) const {
