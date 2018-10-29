@@ -31,7 +31,7 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   /**
    * The labels for the control's segment buttons, in order.
    */
-  values: $ReadOnlyArray<string>,
+  values?: $ReadOnlyArray<string>,
   /**
    * The index in `props.values` of the segment to be (pre)selected.
    */
