@@ -17,6 +17,7 @@ const StatusBar = require('StatusBar');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
+const nullthrows = require('nullthrows');
 
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
@@ -29,6 +30,11 @@ const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
+import type {
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from 'ReactNativeTypes';
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
@@ -179,19 +185,11 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     drawerBackgroundColor: 'white',
   };
 
-  nativeRef = React.createRef<
+  _nativeRef = React.createRef<
     Class<ReactNative.NativeComponent<NativeProps>>,
   >();
-  _innerViewRef: ?React.ElementRef<typeof View> = null;
 
   state = {statusBarBackgroundColor: null};
-
-  getInnerViewNode() {
-    // The original version of the component had this, but View doesn't seem to have
-    // the `getInnerViewNode` method.
-    // $FlowFixMe
-    return this._innerViewRef.getInnerViewNode();
-  }
 
   render() {
     const {onDrawerStateChanged, ...props} = this.props;
@@ -212,12 +210,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       </View>
     );
     const childrenWrapper = (
-      <View
-        ref={ref => {
-          this._innerViewRef = ref;
-        }}
-        style={styles.mainSubview}
-        collapsable={false}>
+      <View style={styles.mainSubview} collapsable={false}>
         {drawStatusBar && (
           <StatusBar
             translucent
@@ -238,7 +231,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return (
       <AndroidDrawerLayout
         {...props}
-        ref={this.nativeRef}
+        ref={this._nativeRef}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
         drawerLockMode={this.props.drawerLockMode}
@@ -322,7 +315,42 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    * }
    */
   _getDrawerLayoutHandle() {
-    return ReactNative.findNodeHandle(this.nativeRef.current);
+    return ReactNative.findNodeHandle(this._nativeRef.current);
+  }
+
+  /**
+   * Native methods
+   */
+  blur() {
+    nullthrows(this._nativeRef.current).blur();
+  }
+
+  focus() {
+    nullthrows(this._nativeRef.current).focus();
+  }
+
+  measure(callback: MeasureOnSuccessCallback) {
+    nullthrows(this._nativeRef.current).measure(callback);
+  }
+
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
+    nullthrows(this._nativeRef.current).measureInWindow(callback);
+  }
+
+  measureLayout(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void,
+  ) {
+    nullthrows(this._nativeRef.current).measureLayout(
+      relativeToNativeNode,
+      onSuccess,
+      onFail,
+    );
+  }
+
+  setNativeProps(nativeProps: Object) {
+    nullthrows(this._nativeRef.current).setNativeProps(nativeProps);
   }
 }
 
