@@ -10,6 +10,7 @@
 #include <memory>
 
 #include <folly/dynamic.h>
+#include <jsi/jsi.h>
 
 #include <fabric/core/ShadowNode.h>
 #include <fabric/events/EventBeatBasedExecutor.h>
@@ -21,6 +22,9 @@ namespace react {
 
 class FabricUIManager;
 using UIManager = FabricUIManager;
+
+using RuntimeExecutor = std::function<void(
+    std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
 
 /*
  * Particular implementations of those functions should capture references to
