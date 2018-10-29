@@ -365,7 +365,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     public void onMessage(String message) {
-      dispatchEvent(this, new TopMessageEvent(this.getId(), message));
+      ReactWebViewClient client = getReactWebViewClient()
+      if (client != null) {
+        WritableMap eventData = client.createWebViewEvent(this, this.getUrl());
+        eventData.putString("data", message);
+        dispatchEvent(this, new TopMessageEvent(this.getId(), eventData));
+      }
     }
 
     protected void cleanupCallbacksAndDestroy() {
