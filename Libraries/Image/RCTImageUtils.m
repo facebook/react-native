@@ -55,6 +55,9 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
     // Assume we require the largest size available
     return (CGRect){CGPointZero, sourceSize};
+  } else if (CGSizeEqualToSize(sourceSize, CGSizeZero)) {
+    // Assume we require the destination size
+    return (CGRect){CGPointZero, destSize};
   }
 
   CGFloat aspect = sourceSize.width / sourceSize.height;
