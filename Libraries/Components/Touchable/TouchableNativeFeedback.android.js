@@ -90,6 +90,31 @@ const TouchableNativeFeedback = createReactClass({
     hasTVPreferredFocus: PropTypes.bool,
 
     /**
+     * TV next focus down (see documentation for the View component).
+     */
+    nextFocusDown: PropTypes.number,
+
+    /**
+     * TV next focus forward (see documentation for the View component).
+     */
+    nextFocusForward: PropTypes.number,
+
+    /**
+     * TV next focus left (see documentation for the View component).
+     */
+    nextFocusLeft: PropTypes.number,
+
+    /**
+     * TV next focus right (see documentation for the View component).
+     */
+    nextFocusRight: PropTypes.number,
+
+    /**
+     * TV next focus up (see documentation for the View component).
+     */
+    nextFocusUp: PropTypes.number,
+
+    /**
      * Set to true to add the ripple effect to the foreground of the view, instead of the
      * background. This is useful if one of your child views has a background of its own, or you're
      * e.g. displaying images, and you don't want the ripple to be covered by them.
@@ -277,6 +302,11 @@ const TouchableNativeFeedback = createReactClass({
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       isTVSelectable: true,
+      nextFocusDown: this.props.nextFocusDown,
+      nextFocusForward: this.props.nextFocusForward,
+      nextFocusLeft: this.props.nextFocusLeft,
+      nextFocusRight: this.props.nextFocusRight,
+      nextFocusUp: this.props.nextFocusUp,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
