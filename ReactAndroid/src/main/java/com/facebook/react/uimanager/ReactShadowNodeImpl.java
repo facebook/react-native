@@ -13,6 +13,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
@@ -226,13 +227,21 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     if (mYogaNode != null && !isYogaLeafNode()) {
       YogaNode childYogaNode = child.mYogaNode;
       if (childYogaNode == null) {
-        throw new RuntimeException(
-            "Cannot add a child that doesn't have a YogaNode to a parent without a measure "
-                + "function! (Trying to add a '"
-                + child.toString()
-                + "' to a '"
-                + toString()
-                + "')");
+
+        if (child instanceof ReactRawTextShadowNode) {
+          throw new RuntimeException(
+              "Raw text cannot be used outside of a <Text> tag. Not rendering string: '"
+                  + ((ReactRawTextShadowNode) child).getText()
+                  + "'");
+        } else {
+          throw new RuntimeException(
+              "Cannot add a child that doesn't have a YogaNode to a parent without a measure "
+                  + "function! (Trying to add a '"
+                  + child.toString()
+                  + "' to a '"
+                  + toString()
+                  + "')");
+        }
       }
       mYogaNode.addChildAt(childYogaNode, i);
     }
