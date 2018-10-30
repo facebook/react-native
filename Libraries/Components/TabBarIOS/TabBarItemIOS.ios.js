@@ -132,7 +132,7 @@ class TabBarItemIOS extends React.Component<Props, State> {
       showedDeprecationWarning = true;
     }
   }
-  
+
   render() {
     const {style, children, ...props} = this.props;
 

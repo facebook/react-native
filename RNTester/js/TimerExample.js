@@ -10,11 +10,11 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
-var RNTesterButton = require('./RNTesterButton');
-var performanceNow = require('fbjs/lib/performanceNow');
+const React = require('react');
+const ReactNative = require('react-native');
+const {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
+const RNTesterButton = require('./RNTesterButton');
+const performanceNow = require('fbjs/lib/performanceNow');
 
 function burnCPU(milliseconds) {
   const start = performanceNow();
@@ -153,7 +153,8 @@ class TimerTester extends React.Component<TimerTesterProps> {
   _timerFn: ?() => any = null;
 
   render() {
-    var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
+    const args =
+      'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
       <RNTesterButton onPress={this._run}>
         Measure: {this.props.type}({args}) - {this._ii || 0}
@@ -185,7 +186,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
 
   _run = () => {
     if (!this._start) {
-      var d = new Date();
+      const d = new Date();
       this._start = d.getTime();
       this._iters = 100;
       this._ii = 0;
@@ -214,9 +215,9 @@ class TimerTester extends React.Component<TimerTesterProps> {
       }
     }
     if (this._ii >= this._iters && this._intervalId == null) {
-      var d = new Date();
-      var e = d.getTime() - this._start;
-      var msg =
+      const d = new Date();
+      const e = d.getTime() - this._start;
+      const msg =
         'Finished ' +
         this._ii +
         ' ' +

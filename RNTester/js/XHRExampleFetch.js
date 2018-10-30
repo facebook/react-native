@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -44,11 +44,11 @@ class XHRExampleFetch extends React.Component<any, any> {
       return null;
     }
 
-    var responseHeaders = [];
-    var keys = Object.keys(this.responseHeaders.map);
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var value = this.responseHeaders.get(key);
+    const responseHeaders = [];
+    const keys = Object.keys(this.responseHeaders.map);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = this.responseHeaders.get(key);
       responseHeaders.push(
         <Text>
           {key}: {value}
@@ -59,21 +59,21 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 
   render() {
-    var responseURL = this.responseURL ? (
+    const responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>
         <Text>{this.responseURL}</Text>
       </View>
     ) : null;
 
-    var responseHeaders = this.responseHeaders ? (
+    const responseHeaders = this.responseHeaders ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response headers:</Text>
         {this._renderHeaders()}
       </View>
     ) : null;
 
-    var response = this.state.responseText ? (
+    const response = this.state.responseText ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response:</Text>
         <TextInput
@@ -104,7 +104,7 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderRadius: 3,

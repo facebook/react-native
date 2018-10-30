@@ -93,7 +93,7 @@ class NetworkImageCallbackExample extends React.Component<
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
                   Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    var result = map.get(IMAGE_PREFETCH_URL);
+                    const result = map.get(IMAGE_PREFETCH_URL);
                     if (result) {
                       this._loadEventFired(
                         `✔ queryCache "${result}" (+${new Date() -
@@ -172,7 +172,7 @@ class NetworkImageExample extends React.Component<
   };
 
   render() {
-    var loader = this.state.loading ? (
+    const loader = this.state.loading ? (
       <View style={styles.progress}>
         <Text>{this.state.progress}%</Text>
         <ActivityIndicator style={{marginLeft: 5}} />
@@ -891,14 +891,14 @@ exports.examples = [
   },
 ];
 
-var fullImage = {
+const fullImage = {
   uri: 'https://facebook.github.io/react-native/img/opengraph.png',
 };
-var smallImage = {
+const smallImage = {
   uri: 'https://facebook.github.io/react-native/img/favicon.png',
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     width: 38,
     height: 38,
