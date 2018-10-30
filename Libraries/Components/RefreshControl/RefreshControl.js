@@ -20,15 +20,16 @@ const nullthrows = require('nullthrows');
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
+let RefreshLayoutConsts;
 if (Platform.OS === 'android') {
   const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
   );
-  var RefreshLayoutConsts = AndroidSwipeRefreshLayout
+  RefreshLayoutConsts = AndroidSwipeRefreshLayout
     ? AndroidSwipeRefreshLayout.Constants
     : {SIZE: {}};
 } else {
-  var RefreshLayoutConsts = {SIZE: {}};
+  RefreshLayoutConsts = {SIZE: {}};
 }
 type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
 
