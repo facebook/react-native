@@ -147,7 +147,20 @@
 </thead>
 <tbody>
 <tr><td>permission</td><td>string</td><td>Yes</td><td>The permission to request.</td></tr>
-<tr><td>rationale</td><td>object</td><td>No</td><td>Object with a <code>title</code> and <code>message</code>.</td></tr>
+<tr><td>rationale</td><td>object</td><td>No</td><td>See <code>rationale</code> below.</td></tr>
+</tbody>
+</table>
+<p><strong>Rationale:</strong></p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>title</td><td>string</td><td>Yes</td><td>The title of the dialog.</td></tr>
+<tr><td>message</td><td>string</td><td>Yes</td><td>The message of the dialog.</td></tr>
+<tr><td>buttonPositive</td><td>string</td><td>Yes</td><td>The text of the positive button.</td></tr>
+<tr><td>buttonNegative</td><td>string</td><td>No</td><td>The text of the negative button.</td></tr>
+<tr><td>buttonNeutral</td><td>string</td><td>No</td><td>The text of the neutral button.</td></tr>
 </tbody>
 </table>
 <hr>
