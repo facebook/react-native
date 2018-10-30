@@ -44,7 +44,7 @@ class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   inputText = '';
 
   handleTextInputChange = event => {
-    const url = event.nativeEvent.text;
+    let url = event.nativeEvent.text;
     if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;
     }

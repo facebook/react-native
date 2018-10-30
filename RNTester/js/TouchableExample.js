@@ -169,7 +169,7 @@ class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    const textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
     } else if (this.state.timesPressed > 0) {
@@ -203,7 +203,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    const textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
     } else if (this.state.timesPressed > 0) {
@@ -346,7 +346,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    const log = '';
+    let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
     } else if (this.state.timesPressed > 0) {

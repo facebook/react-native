@@ -118,7 +118,7 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   };
 
   render() {
-    const image = null;
+    let image = null;
     if (this.state.randomPhoto) {
       image = (
         <Image source={this.state.randomPhoto} style={styles.randomPhoto} />
@@ -143,14 +143,12 @@ class XHRExampleFormData extends React.Component<Object, Object> {
         />
       </View>
     ));
-    const uploadButtonLabel = this.state.isUploading
-      ? 'Uploading...'
-      : 'Upload';
+    let uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
     const uploadProgress = this.state.uploadProgress;
     if (uploadProgress !== null) {
       uploadButtonLabel += ' ' + Math.round(uploadProgress * 100) + '%';
     }
-    const uploadButton = (
+    let uploadButton = (
       <View style={styles.uploadButtonBox}>
         <Text style={styles.uploadButtonLabel}>{uploadButtonLabel}</Text>
       </View>
