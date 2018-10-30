@@ -9,14 +9,14 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Alert, StyleSheet, Text, TouchableHighlight, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Alert, StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
+const RNTesterBlock = require('./RNTesterBlock');
 
 // corporate ipsum > lorem ipsum
-var alertMessage =
+const alertMessage =
   'Credibly reintermediate next-generation potentialities after goal-oriented ' +
   'catalysts for change. Dynamically revolutionize.';
 
@@ -134,7 +134,7 @@ class AlertExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,
