@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, Easing, StyleSheet, Text, View} = ReactNative;
-var RNTesterButton = require('./RNTesterButton');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
+const RNTesterButton = require('./RNTesterButton');
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
@@ -158,7 +158,7 @@ exports.examples = [
         <View>
           <RNTesterButton
             onPress={() => {
-              var timing = Animated.timing;
+              const timing = Animated.timing;
               Animated.sequence([
                 // One after the other
                 timing(this.anims[0], {
@@ -285,7 +285,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   content: {
     backgroundColor: 'deepskyblue',
     borderWidth: 1,

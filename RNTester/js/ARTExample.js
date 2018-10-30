@@ -10,13 +10,13 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {ART, Platform, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {ART, Platform, View} = ReactNative;
 
 const {Surface, Path, Group, Transform, Shape} = ART;
 
-var scale = Platform.isTV ? 4 : 1;
+const scale = Platform.isTV ? 4 : 1;
 
 class ARTExample extends React.Component<{}> {
   render() {
