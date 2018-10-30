@@ -91,7 +91,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var curStyle = {
+    const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
     };
@@ -239,8 +239,8 @@ class AdjustingFontSize extends React.Component<
 
 class TextBaseLineLayoutExample extends React.Component<*, *> {
   render() {
-    var texts = [];
-    for (var i = 9; i >= 0; i--) {
+    const texts = [];
+    for (let i = 9; i >= 0; i--) {
       texts.push(
         <Text key={i} style={{fontSize: 8 + i * 5, backgroundColor: '#eee'}}>
           {i}
