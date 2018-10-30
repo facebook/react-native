@@ -10,16 +10,16 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
-var nativeImageSource = require('nativeImageSource');
-var {StyleSheet, Text, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const nativeImageSource = require('nativeImageSource');
+const {StyleSheet, Text, View} = ReactNative;
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-var Switch = require('Switch');
-var ToolbarAndroid = require('ToolbarAndroid');
+const Switch = require('Switch');
+const ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<ToolbarAndroid>';
@@ -141,7 +141,7 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-var toolbarActions = [
+const toolbarActions = [
   {
     title: 'Create',
     icon: nativeImageSource({
@@ -163,7 +163,7 @@ var toolbarActions = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,
