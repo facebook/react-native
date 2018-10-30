@@ -39,7 +39,7 @@ function rowHasChanged<T>(r1: Array<T>, r2: Array<T>): boolean {
     return true;
   }
 
-  for (var i = 0; i < r1.length; i++) {
+  for (let i = 0; i < r1.length; i++) {
     if (r1[i] !== r2[i]) {
       return true;
     }
