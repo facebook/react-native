@@ -1565,8 +1565,12 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     return @{};
   }
 
-  NSString *moduleName = [name stringByAppendingString:@"Manager"];
+  NSString *moduleName = name;
   BOOL result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  if (!result) {
+    moduleName = [name stringByAppendingString:@"Manager"];
+    result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  }
   if (!result) {
     return @{};
   }
