@@ -21,7 +21,7 @@ const {
   Slider,
 } = ReactNative;
 
-var AnimatedSlider = Animated.createAnimatedComponent(Slider);
+const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
 class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {

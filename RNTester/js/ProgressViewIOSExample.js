@@ -37,13 +37,13 @@ class ProgressViewExample extends React.Component<Props, State> {
   }
 
   updateProgress = () => {
-    var progress = this.state.progress + 0.01;
+    const progress = this.state.progress + 0.01;
     this.setState({progress});
     this._rafId = requestAnimationFrame(() => this.updateProgress());
   };
 
   getProgress = offset => {
-    var progress = this.state.progress + offset;
+    const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
   };
 
@@ -92,7 +92,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     marginTop: -20,
     backgroundColor: 'transparent',

@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AlertIOS,
   PushNotificationIOS,
   StyleSheet,
@@ -192,7 +192,7 @@ class NotificationPermissionExample extends React.Component<
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     padding: 10,
     alignItems: 'center',
