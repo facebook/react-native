@@ -103,7 +103,7 @@ class SwipeableFlatListExample extends React.Component<RNTesterProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
