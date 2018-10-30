@@ -10,11 +10,11 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, StyleSheet, Text, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, StyleSheet, Text, View} = ReactNative;
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 const TextLegend = require('./Shared/TextLegend');
 
 class Entity extends React.Component<$FlowFixMeProps> {
@@ -43,7 +43,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var curStyle = {
+    const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
     };
@@ -590,7 +590,7 @@ class TextExample extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,
     backgroundColor: 'rgba(100, 100, 100, 0.3)',
