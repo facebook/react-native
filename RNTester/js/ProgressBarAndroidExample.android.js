@@ -10,13 +10,13 @@
 
 'use strict';
 
-var ProgressBar = require('ProgressBarAndroid');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const ProgressBar = require('ProgressBarAndroid');
+const React = require('React');
+const createReactClass = require('create-react-class');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
-var MovingBar = createReactClass({
+const MovingBar = createReactClass({
   displayName: 'MovingBar',
   _intervalID: (null: ?IntervalID),
 
@@ -28,7 +28,7 @@ var MovingBar = createReactClass({
 
   componentDidMount: function() {
     this._intervalID = setInterval(() => {
-      var progress = (this.state.progress + 0.02) % 1;
+      const progress = (this.state.progress + 0.02) % 1;
       this.setState({progress: progress});
     }, 50);
   },
