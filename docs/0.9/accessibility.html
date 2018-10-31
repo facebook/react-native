@@ -49,10 +49,10 @@
 <p>In the above example, we can't get accessibility focus separately on 'text one' and 'text two'. Instead we get focus on a parent view with 'accessible' property.</p>
 <h4><a class="anchor" aria-hidden="true" id="accessibilitylabel-ios-android"></a><a href="#accessibilitylabel-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityLabel (iOS, Android)</h4>
 <p>When a view is marked as accessible, it is a good practice to set an accessibilityLabel on the view, so that people who use VoiceOver know what element they have selected. VoiceOver will read this string when a user selects the associated element.</p>
-<p>To use, set the <code>accessibilityLabel</code> property to a custom string on your View:</p>
+<p>To use, set the <code>accessibilityLabel</code> property to a custom string on your View, Text or Touchable:</p>
 <pre><code class="hljs css language-javascript">&lt;TouchableOpacity
   accessible={true}
-  accessibilityLabel={'Tap me!'}
+  accessibilityLabel="Tap me!"
   onPress={this._onPress}&gt;
   &lt;View style={styles.button}&gt;
     &lt;Text style={styles.buttonText}&gt;Press me!&lt;/Text&gt;
@@ -60,7 +60,55 @@
 &lt;/TouchableOpacity&gt;
 </code></pre>
 <p>In the above example, the <code>accessibilityLabel</code> on the TouchableOpacity element would default to &quot;Press me!&quot;. The label is constructed by concatenating all Text node children separated by spaces.</p>
+<h4><a class="anchor" aria-hidden="true" id="accessibilityhint-ios-android"></a><a href="#accessibilityhint-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityHint (iOS, Android)</h4>
+<p>An accessibility hint helps users understand what will happen when they perform an action on the accessibility element when that result is not obvious from the accessibility label.</p>
+<p>To use, set the <code>accessibilityHint</code> property to a custom string on your View, Text or Touchable:</p>
+<pre><code class="hljs css language-javascript">&lt;TouchableOpacity
+  accessible={true}
+  accessibilityLabel="Go back"
+  accessibilityHint="Navigates to the previous screen"
+  onPress={this._onPress}&gt;
+  &lt;View style={styles.button}&gt;
+    &lt;Text style={styles.buttonText}&gt;Back&lt;/Text&gt;
+  &lt;/View&gt;
+&lt;/TouchableOpacity&gt;
+</code></pre>
+<p>iOS In the above example, VoiceOver will read the hint after the label, if the user has hints enabled in the device's VoiceOver settings. Read more about guidelines for accessibilityHint in the <a href="https://developer.apple.com/documentation/objectivec/nsobject/1615093-accessibilityhint">iOS Developer Docs</a></p>
+<p>Android In the above example, Talkback will read the hint after the label. At this time, hints cannot be turned off on Android.</p>
+<h4><a class="anchor" aria-hidden="true" id="accessibilityignoresinvertcolorsios"></a><a href="#accessibilityignoresinvertcolorsios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityIgnoresInvertColors(iOS)</h4>
+<p>Inverting screen colors is an Accessibility feature that makes the iPhone and iPad easier on the eyes for some people with a sensitivity to brightness, easier to distinguish for some people with color blindness, and easier to make out for some people with low vision. However, sometimes you have views such as photos that you don't want to be inverted. In this case, you can set this property to be false so that these specific views won't have their colors inverted.</p>
+<h4><a class="anchor" aria-hidden="true" id="accessibilityrole-ios-android"></a><a href="#accessibilityrole-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityRole (iOS, Android)</h4>
+<blockquote>
+<p><strong>Note:</strong> Accessibility Role and Accessibility States are meant to be a cross-platform solution to replace <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>, which will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</p>
+</blockquote>
+<p>Accessibility Role tells a person using either VoiceOver on iOS or TalkBack on Android the type of element that is focused on. To use, set the <code>accessibilityRole</code> property to one of the following strings:</p>
+<ul>
+<li><strong>none</strong> Used when the element has no role.</li>
+<li><strong>button</strong> Used when the element should be treated as a button.</li>
+<li><strong>link</strong> Used when the element should be treated as a link.</li>
+<li><strong>search</strong> Used when the text field element should also be treated as a search field.</li>
+<li><strong>image</strong> Used when the element should be treated as an image. Can be combined with button or link, for example.</li>
+<li><strong>keyboardkey</strong> Used when the element acts as a keyboard key.</li>
+<li><strong>text</strong> Used when the element should be treated as static text that cannot change.</li>
+<li><strong>adjustable</strong> Used when an element can be &quot;adjusted&quot; (e.g. a slider).</li>
+<li><strong>imagebutton</strong> Used when the element should be treated as a button and is also an image.</li>
+<li><strong>header</strong> Used when an element acts as a header for a content section (e.g. the title of a navigation bar).</li>
+<li><strong>summary</strong> Used when an element can be used to provide a quick summary of current conditions in the app when the app first launches.</li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="accessibilitystate-ios-android"></a><a href="#accessibilitystate-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityState (iOS, Android)</h4>
+<blockquote>
+<p><strong>Note:</strong> &gt; <code>accessibilityRole</code> and <code>accessibilityStates</code> are meant to be a cross-platform solution to replace <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>, which will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</p>
+</blockquote>
+<p>Accessibility State tells a person using either VoiceOver on iOS or TalkBack on Android the state of the element currently focused on. The state of the element can be set either to <code>selected</code> or <code>disabled</code> or both:</p>
+<ul>
+<li><strong>selected</strong> Used when the element is in a selected state. For example, a button is selected.</li>
+<li><strong>disabled</strong> Used when the element is disabled and cannot be interacted with.</li>
+</ul>
+<p>To use, set the <code>accessibilityState</code> to an array containing either <code>selected</code>, <code>disabled</code>, or both.</p>
 <h4><a class="anchor" aria-hidden="true" id="accessibilitytraits-ios"></a><a href="#accessibilitytraits-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityTraits (iOS)</h4>
+<blockquote>
+<p><strong>Note:</strong> <code>accessibilityTraits</code> will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</p>
+</blockquote>
 <p>Accessibility traits tell a person using VoiceOver what kind of element they have selected. Is this element a label? A button? A header? These questions are answered by <code>accessibilityTraits</code>.</p>
 <p>To use, set the <code>accessibilityTraits</code> property to one of (or an array of) accessibility trait strings:</p>
 <ul>
@@ -93,6 +141,9 @@
 <h4><a class="anchor" aria-hidden="true" id="onmagictap-ios"></a><a href="#onmagictap-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onMagicTap (iOS)</h4>
 <p>Assign this property to a custom function which will be called when someone performs the &quot;magic tap&quot; gesture, which is a double-tap with two fingers. A magic tap function should perform the most relevant action a user could take on a component. In the Phone app on iPhone, a magic tap answers a phone call, or ends the current one. If the selected element does not have an <code>onMagicTap</code> function, the system will traverse up the view hierarchy until it finds a view that does.</p>
 <h4><a class="anchor" aria-hidden="true" id="accessibilitycomponenttype-android"></a><a href="#accessibilitycomponenttype-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityComponentType (Android)</h4>
+<blockquote>
+<p><strong>Note:</strong> &gt; <code>accessibilityComponentType</code> will soon be deprecated. When possible, use <code>accessibilityRole</code> and <code>accessibilityStates</code> instead of <code>accessibilityTraits</code> and <code>accessibilityComponentType</code>.</p>
+</blockquote>
 <p>In some cases, we also want to alert the end user of the type of selected component (i.e., that it is a “button”). If we were using native buttons, this would work automatically. Since we are using javascript, we need to provide a bit more context for TalkBack. To do so, you must specify the ‘accessibilityComponentType’ property for any UI component. We support 'none', ‘button’, ‘radiobutton_checked’ and ‘radiobutton_unchecked’.</p>
 <pre><code class="hljs css language-javascript">&lt;TouchableWithoutFeedback accessibilityComponentType=”button”
   onPress={this._onPress}&gt;
@@ -155,7 +206,7 @@ _onPress: <span class="hljs-function"><span class="hljs-keyword">function</span>
 }
 
 &lt;CustomRadioButton
-  accessibleComponentType={<span class="hljs-keyword">this</span>.state.radioButton}
+  accessibilityComponentType={<span class="hljs-keyword">this</span>.state.radioButton}
   onPress={<span class="hljs-keyword">this</span>._onPress}/&gt;
 </code></pre>
 <p>In the above example we've created a custom radio button that now behaves like a native one. More specifically, TalkBack now correctly announces changes to the radio button selection.</p>

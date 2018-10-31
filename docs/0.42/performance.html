@@ -185,10 +185,10 @@
 <p><img src="/react-native/docs/assets/SystraceBadCreateUI.png" alt="Creating Views"></p>
 <p>Notice that first the JS thread thinks for a bit, then you see some work done on the native modules thread, followed by an expensive traversal on the UI thread.</p>
 <p>There isn't an easy way to mitigate this unless you're able to postpone creating new UI until after the interaction, or you are able to simplify the UI you're creating. The react native team is working on an infrastructure level solution for this that will allow new UI to be created and configured off the main thread, allowing the interaction to continue smoothly.</p>
-<h2><a class="anchor" aria-hidden="true" id="unbundling-inline-requires"></a><a href="#unbundling-inline-requires" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Unbundling + inline requires</h2>
-<p>If you have a large app you may want to consider unbundling and using inline requires. This is useful for apps that have a large number of screens which may not ever be opened during a typical usage of the app. Generally it is useful to apps that have large amounts of code that are not needed for a while after startup. For instance the app includes complicated profile screens or lesser used features, but most sessions only involve visiting the main screen of the app for updates. We can optimize the loading of the bundle by using the unbundle feature of the packager and requiring those features and screens inline (when they are actually used).</p>
+<h2><a class="anchor" aria-hidden="true" id="ram-bundles-inline-requires"></a><a href="#ram-bundles-inline-requires" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>RAM bundles + inline requires</h2>
+<p>If you have a large app you may want to consider the Random Access Modules (RAM) bundle format, and using inline requires. This is useful for apps that have a large number of screens which may not ever be opened during a typical usage of the app. Generally it is useful to apps that have large amounts of code that are not needed for a while after startup. For instance the app includes complicated profile screens or lesser used features, but most sessions only involve visiting the main screen of the app for updates. We can optimize the loading of the bundle by using the RAM format and requiring those features and screens inline (when they are actually used).</p>
 <h3><a class="anchor" aria-hidden="true" id="loading-javascript"></a><a href="#loading-javascript" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Loading JavaScript</h3>
-<p>Before react-native can execute JS code, that code must be loaded into memory and parsed. With a standard bundle if you load a 50mb bundle, all 50mb must be loaded and parsed before any of it can be executed. The optimization behind unbundling is that you can load only the portion of the 50mb that you actually need at startup, and progressively load more of the bundle as those sections are needed.</p>
+<p>Before react-native can execute JS code, that code must be loaded into memory and parsed. With a standard bundle if you load a 50mb bundle, all 50mb must be loaded and parsed before any of it can be executed. The optimization behind RAM bundles is that you can load only the portion of the 50mb that you actually need at startup, and progressively load more of the bundle as those sections are needed.</p>
 <h3><a class="anchor" aria-hidden="true" id="inline-requires"></a><a href="#inline-requires" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Inline Requires</h3>
 <p>Inline requires delay the requiring of a module or file until that file is actually needed. A basic example would look like this:</p>
 <h4><a class="anchor" aria-hidden="true" id="veryexpensivejs"></a><a href="#veryexpensivejs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>VeryExpensive.js</h4>
@@ -237,48 +237,50 @@ export <span class="hljs-keyword">default</span> <span class="hljs-class"><span 
   }
 }
 </code></pre>
-<p>Even without unbundling inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time.</p>
-<h3><a class="anchor" aria-hidden="true" id="enable-unbundling"></a><a href="#enable-unbundling" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enable Unbundling</h3>
-<p>On iOS unbundling will create a single indexed file that react native will load one module at a time. On Android, by default it will create a set of files for each module. You can force Android to create a single file, like iOS, but using multiple files can be more performant and requires less memory.</p>
-<p>Enable unbundling in Xcode by editing the build phase &quot;Bundle React Native code and images&quot;. Before <code>../node_modules/react-native/packager/react-native-xcode.sh</code> add <code>export BUNDLE_COMMAND=&quot;unbundle&quot;</code>:</p>
-<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"unbundle"</span>
+<p>Even without the RAM format, inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time.</p>
+<h3><a class="anchor" aria-hidden="true" id="enable-the-ram-format"></a><a href="#enable-the-ram-format" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Enable the RAM format</h3>
+<p>On iOS using the RAM format will create a single indexed file that react native will load one module at a time. On Android, by default it will create a set of files for each module. You can force Android to create a single file, like iOS, but using multiple files can be more performant and requires less memory.</p>
+<p>Enable the RAM format in Xcode by editing the build phase &quot;Bundle React Native code and images&quot;. Before <code>../node_modules/react-native/scripts/react-native-xcode.sh</code> add <code>export BUNDLE_COMMAND=&quot;ram-bundle&quot;</code>:</p>
+<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"ram-bundle"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">NODE_BINARY</span>=node
-<span class="hljs-built_in">..</span>/node_modules/react-native/packager/react-native-xcode.sh
+<span class="hljs-built_in">..</span>/node_modules/react-native/scripts/react-native-xcode.sh
 </code></pre>
-<p>On Android enable unbundling by editing your android/app/build.gradle file. Before the line <code>apply from: &quot;../../node_modules/react-native/react.gradle&quot;</code> add or amend the <code>project.ext.react</code> block:</p>
+<p>On Android enable the RAM format by editing your <code>android/app/build.gradle</code> file. Before the line <code>apply from: &quot;../../node_modules/react-native/react.gradle&quot;</code> add or amend the <code>project.ext.react</code> block:</p>
 <pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
-  bundleCommand: <span class="hljs-string">"unbundle"</span>,
+  bundleCommand: <span class="hljs-string">"ram-bundle"</span>,
 ]
 </code></pre>
 <p>Use the following lines on Android if you want to use a single indexed file:</p>
 <pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
-  bundleCommand: <span class="hljs-string">"unbundle"</span>,
-  extraPackagerArgs: [<span class="hljs-string">"--indexed-unbundle"</span>]
+  bundleCommand: <span class="hljs-string">"ram-bundle"</span>,
+  extraPackagerArgs: [<span class="hljs-string">"--indexed-ram-bundle"</span>]
 ]
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="configure-preloading-and-inline-requires"></a><a href="#configure-preloading-and-inline-requires" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configure Preloading and Inline Requires</h3>
-<p>Now that we have unbundled our code, there is overhead for calling require. require now needs to send a message over the bridge when it encounters a module it has not loaded yet. This will impact startup the most, because that is where the largest number of require calls are likely to take place while the app loads the initial module. Luckily we can configure a portion of the modules to be preloaded. In order to do this, you will need to implement some form of inline require.</p>
+<p>Now that we have a RAM bundle, there is overhead for calling <code>require</code>. <code>require</code> now needs to send a message over the bridge when it encounters a module it has not loaded yet. This will impact startup the most, because that is where the largest number of require calls are likely to take place while the app loads the initial module. Luckily we can configure a portion of the modules to be preloaded. In order to do this, you will need to implement some form of inline require.</p>
 <h3><a class="anchor" aria-hidden="true" id="adding-a-packager-config-file"></a><a href="#adding-a-packager-config-file" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a packager config file</h3>
 <p>Create a folder in your project called packager, and create a single file named config.js. Add the following:</p>
 <pre><code class="hljs">const<span class="hljs-built_in"> config </span>= {
-  getTransformOptions: () =&gt; {
-    return {
-      transform: { inlineRequires: <span class="hljs-literal">true</span> },
-    };
+  transformer: {
+    getTransformOptions: () =&gt; {
+      return {
+        transform: { inlineRequires: <span class="hljs-literal">true</span> },
+      };
+    },
   },
 };
 
 module.exports =<span class="hljs-built_in"> config;
 </span></code></pre>
 <p>In Xcode, in the build phase, include <code>export BUNDLE_CONFIG=&quot;packager/config.js&quot;</code>.</p>
-<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"unbundle"</span>
+<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"ram-bundle"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_CONFIG</span>=<span class="hljs-string">"packager/config.js"</span>
 <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">NODE_BINARY</span>=node
-<span class="hljs-built_in">..</span>/node_modules/react-native/packager/react-native-xcode.sh
+<span class="hljs-built_in">..</span>/node_modules/react-native/scripts/react-native-xcode.sh
 </code></pre>
 <p>Edit your android/app/build.gradle file to include <code>bundleConfig: &quot;packager/config.js&quot;,</code>.</p>
 <pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
-  bundleCommand: <span class="hljs-string">"unbundle"</span>,
+  bundleCommand: <span class="hljs-string">"ram-bundle"</span>,
   bundleConfig: <span class="hljs-string">"packager/config.js"</span>
 ]
 </code></pre>
@@ -304,7 +306,7 @@ module.exports =<span class="hljs-built_in"> config;
   waitingModuleNames.length
 );
 
-<span class="hljs-comment">// grab this text blob, and put it in a file named packager/moduleNames.js</span>
+<span class="hljs-comment">// grab this text blob, and put it in a file named packager/modulePaths.js</span>
 <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`module.exports = <span class="hljs-subst">${<span class="hljs-built_in">JSON</span>.stringify(loadedModuleNames.sort())}</span>;`</span>);
 </code></pre>
 <p>When you run your app, you can look in the console and see how many modules have been loaded, and how many are waiting. You may want to read the moduleNames and see if there are any surprises. Note that inline requires are invoked the first time the imports are referenced. You may need to investigate and refactor to ensure only the modules you want are loaded on startup. Note that you can change the Systrace object on require to help debug problematic requires.</p>
@@ -314,84 +316,38 @@ module.exports =<span class="hljs-built_in"> config;
   }
 }
 </code></pre>
-<p>Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named packager/moduleNames.js.</p>
-<h3><a class="anchor" aria-hidden="true" id="transforming-to-module-paths"></a><a href="#transforming-to-module-paths" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Transforming to Module Paths</h3>
-<p>The loaded module names get us part of the way there, but we actually need absolute module paths, so the next script will set that up. Add <code>packager/generateModulePaths.js</code> to your project with the following:</p>
-<pre><code class="hljs"><span class="hljs-comment">// @flow</span>
-<span class="hljs-comment">/* eslint-disable no-console */</span>
-<span class="hljs-keyword">const</span> execSync = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>).execSync;
-<span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
-<span class="hljs-keyword">const</span> moduleNames = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./moduleNames'</span>);
-
-<span class="hljs-keyword">const</span> pjson = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../package.json'</span>);
-<span class="hljs-keyword">const</span> localPrefix = <span class="hljs-string">`<span class="hljs-subst">${pjson.name}</span>/`</span>;
-
-<span class="hljs-keyword">const</span> modulePaths = moduleNames.map(<span class="hljs-function"><span class="hljs-params">moduleName</span> =&gt;</span> {
-  <span class="hljs-keyword">if</span> (moduleName.startsWith(localPrefix)) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">`./<span class="hljs-subst">${moduleName.substring(localPrefix.length)}</span>`</span>;
-  }
-  <span class="hljs-keyword">if</span> (moduleName.endsWith(<span class="hljs-string">'.js'</span>)) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">`./node_modules/<span class="hljs-subst">${moduleName}</span>`</span>;
-  }
-  <span class="hljs-keyword">try</span> {
-    <span class="hljs-keyword">const</span> result = execSync(
-      <span class="hljs-string">`grep "@providesModule <span class="hljs-subst">${moduleName}</span>" $(find . -name <span class="hljs-subst">${moduleName}</span>\\\\.js) -l`</span>
-    )
-      .toString()
-      .trim()
-      .split(<span class="hljs-string">'\n'</span>)[<span class="hljs-number">0</span>];
-    <span class="hljs-keyword">if</span> (result != <span class="hljs-literal">null</span>) {
-      <span class="hljs-keyword">return</span> result;
-    }
-  } <span class="hljs-keyword">catch</span> (e) {
-    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
-  }
-  <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
-});
-
-<span class="hljs-keyword">const</span> paths = modulePaths
-  .filter(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> path != <span class="hljs-literal">null</span>)
-  .map(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> <span class="hljs-string">`'<span class="hljs-subst">${path}</span>'`</span>)
-  .join(<span class="hljs-string">',\n'</span>);
-
-<span class="hljs-keyword">const</span> fileData = <span class="hljs-string">`module.exports = [<span class="hljs-subst">${paths}</span>];`</span>;
-
-fs.writeFile(<span class="hljs-string">'./packager/modulePaths.js'</span>, fileData, <span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> {
-  <span class="hljs-keyword">if</span> (err) {
-    <span class="hljs-built_in">console</span>.log(err);
-  }
-
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Done'</span>);
-});
-</code></pre>
-<p>You can run via <code>node packager/generateModulePaths.js</code>.</p>
-<p>This script attempts to map from the module names to module paths. Its not foolproof though, for instance, it ignores platform specific files (*ios.js, and *.android.js). However based on initial testing, it handles 95% of cases. When it runs, after some time it should complete and output a file named <code>packager/modulePaths.js</code>. It should contain paths to module files that are relative to your projects root. You can commit modulePaths.js to your repo so it is transportable.</p>
+<p>Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named <code>packager/modulePaths.js</code>.</p>
 <h3><a class="anchor" aria-hidden="true" id="updating-the-configjs"></a><a href="#updating-the-configjs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Updating the config.js</h3>
 <p>Returning to packager/config.js we should update it to use our newly generated modulePaths.js file.</p>
 <pre><code class="hljs"><span class="hljs-keyword">const</span> modulePaths = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./modulePaths'</span>);
 <span class="hljs-keyword">const</span> resolve = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>).resolve;
 <span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 
+<span class="hljs-comment">// Update the following line if the root folder of your app is somewhere else.</span>
+<span class="hljs-keyword">const</span> ROOT_FOLDER = path.resolve(__dirname, <span class="hljs-string">'..'</span>);
+
 <span class="hljs-keyword">const</span> config = {
-  <span class="hljs-attr">getTransformOptions</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">const</span> moduleMap = {};
-    modulePaths.forEach(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> {
-      <span class="hljs-keyword">if</span> (fs.existsSync(path)) {
-        moduleMap[resolve(path)] = <span class="hljs-literal">true</span>;
-      }
-    });
-    <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">preloadedModules</span>: moduleMap,
-      <span class="hljs-attr">transform</span>: { <span class="hljs-attr">inlineRequires</span>: { <span class="hljs-attr">blacklist</span>: moduleMap } },
-    };
+  <span class="hljs-attr">transformer</span>: {
+    <span class="hljs-attr">getTransformOptions</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> moduleMap = {};
+      modulePaths.forEach(<span class="hljs-function"><span class="hljs-params">path</span> =&gt;</span> {
+        <span class="hljs-keyword">if</span> (fs.existsSync(path)) {
+          moduleMap[resolve(path)] = <span class="hljs-literal">true</span>;
+        }
+      });
+      <span class="hljs-keyword">return</span> {
+        <span class="hljs-attr">preloadedModules</span>: moduleMap,
+        <span class="hljs-attr">transform</span>: { <span class="hljs-attr">inlineRequires</span>: { <span class="hljs-attr">blacklist</span>: moduleMap } },
+      };
+    },
   },
 };
 
 <span class="hljs-built_in">module</span>.exports = config;
 </code></pre>
-<p>The preloadedModules entry in the config indicates which modules should be marked as preloaded by the unbundler. When the bundle is loaded, those modules are immediately loaded, before any requires have even executed. The blacklist entry indicates that those modules should not be required inline. Because they are preloaded, there is no performance benefit from using an inline require. In fact the javascript spends extra time resolving the inline require every time the imports are referenced.</p>
+<p>The <code>preloadedModules</code> entry in the config indicates which modules should be marked as preloaded when building a RAM bundle. When the bundle is loaded, those modules are immediately loaded, before any requires have even executed. The blacklist entry indicates that those modules should not be required inline. Because they are preloaded, there is no performance benefit from using an inline require. In fact the javascript spends extra time resolving the inline require every time the imports are referenced.</p>
 <h3><a class="anchor" aria-hidden="true" id="test-and-measure-improvements"></a><a href="#test-and-measure-improvements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Test and Measure Improvements</h3>
-<p>You should now be ready to build your app using unbundling and inline requires. Make sure you measure the before and after startup times.</p>
+<p>You should now be ready to build your app using the RAM format and inline requires. Make sure you measure the before and after startup times.</p>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/0.42/debugging">← Debugging</a><a class="docs-next button" href="/react-native/docs/0.42/gesture-responder-system">Gesture Responder System →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
               var search = docsearch({

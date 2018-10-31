@@ -137,7 +137,13 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 }
 </code></pre>
 <p>The package needs to be provided in the <code>getPackages</code> method of the <code>MainApplication.java</code> file. This file exists under the android folder in your react-native application directory. The path to this file is: <code>android/app/src/main/java/com/your-app-name/MainApplication.java</code>.</p>
-<pre><code class="hljs css language-java"><span class="hljs-function"><span class="hljs-keyword">protected</span> List&lt;ReactPackage&gt; <span class="hljs-title">getPackages</span><span class="hljs-params">()</span> </span>{
+<pre><code class="hljs css language-java"><span class="hljs-comment">// MainApplication.java</span>
+
+...
+<span class="hljs-keyword">import</span> com.your-app-name.CustomToastPackage; <span class="hljs-comment">// &lt;-- Add this line with your package name.</span>
+...
+
+<span class="hljs-function"><span class="hljs-keyword">protected</span> List&lt;ReactPackage&gt; <span class="hljs-title">getPackages</span><span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">return</span> Arrays.&lt;ReactPackage&gt;asList(
             <span class="hljs-keyword">new</span> MainReactPackage(),
             <span class="hljs-keyword">new</span> CustomToastPackage()); <span class="hljs-comment">// &lt;-- Add this line with your package name.</span>

@@ -38,13 +38,22 @@
 <p>You can generate a private signing key using <code>keytool</code>. On Windows <code>keytool</code> must be run from <code>C:\Program Files\Java\jdkx.x.x_x\bin</code>.</p>
 <pre><code class="hljs">$ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
 </code></pre>
-<p>This command prompts you for passwords for the keystore and key, and to provide the Distinguished Name fields for your key. It then generates the keystore as a file called <code>my-release-key.keystore</code>.</p>
+<p>This command prompts you for passwords for the keystore and key and for the Distinguished Name fields for your key. It then generates the keystore as a file called <code>my-release-key.keystore</code>.</p>
 <p>The keystore contains a single key, valid for 10000 days. The alias is a name that you will use later when signing your app, so remember to take note of the alias.</p>
-<p>On Mac if you not sure where is your jdk bin folder is then perform the following command to find it, <code>$ /usr/libexec/java_home</code> it will output the directroy of jdk which looks like this, <code>/Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home</code> then navigate to that directory by the following command, <code>$ cd /Library/Java/JavaVirtualMachines/jdk1.8.0_161.jdk/Contents/Home/</code> Now you can perform the keytool command with sudo permission as shown below, <code>$ sudo keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000</code> <em>Note: Remember to keep your keystore file private and never commit it to version control.</em></p>
+<p>On Mac, if you're not sure where your jdk bin folder is, then perform the following command to find it:</p>
+<pre><code class="hljs">$ /usr/libexec/java_home
+</code></pre>
+<p>It will output the directory of the jdk, which will look something like this:</p>
+<pre><code class="hljs">/Library/Java/JavaVirtualMachines/jdkX.X.X_XXX.jdk/Contents/Home
+</code></pre>
+<p>Navigate to that directory by using the command <code>$ cd /your/jdk/path</code> and use the keytool command with sudo permission as shown below.</p>
+<pre><code class="hljs">$ sudo keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+</code></pre>
+<p><em>Note: Remember to keep your keystore file private and never commit it to version control.</em></p>
 <h3><a class="anchor" aria-hidden="true" id="setting-up-gradle-variables"></a><a href="#setting-up-gradle-variables" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Setting up gradle variables</h3>
 <ol>
 <li>Place the <code>my-release-key.keystore</code> file under the <code>android/app</code> directory in your project folder.</li>
-<li>Edit the file <code>~/.gradle/gradle.properties</code> or <code>android/gradle.properties</code> and add the following (replace <code>*****</code> with the correct keystore password, alias and key password),</li>
+<li>Edit the file <code>~/.gradle/gradle.properties</code> or <code>android/gradle.properties</code>, and add the following (replace <code>*****</code> with the correct keystore password, alias and key password),</li>
 </ol>
 <pre><code class="hljs"><span class="hljs-attr">MYAPP_RELEASE_STORE_FILE</span>=my-release-key.keystore
 <span class="hljs-attr">MYAPP_RELEASE_KEY_ALIAS</span>=my-key-alias
@@ -58,9 +67,9 @@
 <blockquote>
 <p>Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords.</p>
 </blockquote>
-<p><em>Note about security: If you are not keen on storing your passwords in plaintext and you are running OSX, you can also <a href="https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/">store your credentials in the Keychain Access app</a>. Then you can skip the two last rows in <code>~/.gradle/gradle.properties</code>.</em></p>
+<p><em>Note about security: If you are not keen on storing your passwords in plaintext, and you are running OSX, you can also <a href="https://pilloxa.gitlab.io/posts/safer-passwords-in-gradle/">store your credentials in the Keychain Access app</a>. Then you can skip the two last rows in <code>~/.gradle/gradle.properties</code>.</em></p>
 <h3><a class="anchor" aria-hidden="true" id="adding-signing-config-to-your-app-s-gradle-config"></a><a href="#adding-signing-config-to-your-app-s-gradle-config" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding signing config to your app's gradle config</h3>
-<p>Edit the file <code>android/app/build.gradle</code> in your project folder and add the signing config,</p>
+<p>Edit the file <code>android/app/build.gradle</code> in your project folder, and add the signing config,</p>
 <pre><code class="hljs css language-gradle">...
 android {
     ...
@@ -91,7 +100,7 @@ $ ./gradlew assembleRelease
 </code></pre>
 <p>Gradle's <code>assembleRelease</code> will bundle all the JavaScript needed to run your app into the APK. If you need to change the way the JavaScript bundle and/or drawable resources are bundled (e.g. if you changed the default file/folder names or the general structure of the project), have a look at <code>android/app/build.gradle</code> to see how you can update it to reflect these changes.</p>
 <blockquote>
-<p>Note: Make sure gradle.properties does not include <em>org.gradle.configureondemand=true</em> as that will make release build skip bundling JS and assets into the APK.</p>
+<p>Note: Make sure gradle.properties does not include <em>org.gradle.configureondemand=true</em> as that will make the release build skip bundling JS and assets into the APK.</p>
 </blockquote>
 <p>The generated APK can be found under <code>android/app/build/outputs/apk/app-release.apk</code>, and is ready to be distributed.</p>
 <h3><a class="anchor" aria-hidden="true" id="testing-the-release-build-of-your-app"></a><a href="#testing-the-release-build-of-your-app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Testing the release build of your app</h3>
@@ -99,14 +108,17 @@ $ ./gradlew assembleRelease
 <pre><code class="hljs css language-sh">$ react-native run-android --variant=release
 </code></pre>
 <p>Note that <code>--variant=release</code> is only available if you've set up signing as described above.</p>
-<p>You can kill any running packager instances, all your framework and JavaScript code is bundled in the APK's assets.</p>
+<p>You can kill any running packager instances, since all your framework and JavaScript code is bundled in the APK's assets.</p>
 <h3><a class="anchor" aria-hidden="true" id="split-apks-by-abi-to-reduce-file-size"></a><a href="#split-apks-by-abi-to-reduce-file-size" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Split APKs by ABI to reduce file size</h3>
 <p>By default, the generated APK has the native code for both x86 and ARMv7a CPU architectures. This makes it easier to share APKs that run on almost all Android devices. However, this has the downside that there will be some unused native code on any device, leading to unnecessarily bigger APKs.</p>
 <p>You can create an APK for each CPU by changing the following line in android/app/build.gradle:</p>
-<pre><code class="hljs css language-diff"><span class="hljs-deletion">- def enableSeparateBuildPerCPUArchitecture = false</span>
+<pre><code class="hljs css language-diff"><span class="hljs-deletion">- ndk {</span>
+<span class="hljs-deletion">-   abiFilters "armeabi-v7a", "x86"</span>
+<span class="hljs-deletion">- }</span>
+<span class="hljs-deletion">- def enableSeparateBuildPerCPUArchitecture = false</span>
 <span class="hljs-addition">+ def enableSeparateBuildPerCPUArchitecture = true</span>
 </code></pre>
-<p>Upload both these files to markets which support device targetting, such as <a href="https://developer.android.com/google/play/publishing/multiple-apks.html">Google Play</a> and <a href="https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html">Amazon AppStore</a> and the users will automatically get the appropriate APK. If you want to upload to other markets such as <a href="https://www.apkfiles.com/">APKFiles</a>, which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.</p>
+<p>Upload both these files to markets which support device targetting, such as <a href="https://developer.android.com/google/play/publishing/multiple-apks.html">Google Play</a> and <a href="https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html">Amazon AppStore</a>, and the users will automatically get the appropriate APK. If you want to upload to other markets, such as <a href="https://www.apkfiles.com/">APKFiles</a>, which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.</p>
 <pre><code class="hljs css language-diff"><span class="hljs-deletion">- universalApk false  // If true, also generate a universal APK</span>
 <span class="hljs-addition">+ universalApk true  // If true, also generate a universal APK</span>
 </code></pre>

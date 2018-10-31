@@ -46,6 +46,46 @@
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="parameters"></a><a href="#parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Parameters</h3>
 <p>The command name identifies the parameters that a command would expect. When the command parameter is surrounded by greater-than, less-than symbols <code>&lt; &gt;</code>, this indicates that the parameter is expected. When a parameter is surrounded by brackets <code>[ ]</code>, this indicates that the parameter is optional.</p>
+<h3><a class="anchor" aria-hidden="true" id="getting-a-list-of-all-cli-commands"></a><a href="#getting-a-list-of-all-cli-commands" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting a list of all CLI commands</h3>
+<p>Running <code>react-native --help</code> from inside a React Native project will list all of your current commands. Here is an example from version <code>0.56</code>:</p>
+<pre><code class="hljs css language-sh">  Usage: react-native [options] [<span class="hljs-built_in">command</span>]
+
+  Options:
+
+    -V, --version                      output the version number
+    -h, --<span class="hljs-built_in">help</span>                         output usage information
+
+  Commands:
+
+    start [options]                    starts the webserver
+    run-ios [options]                  builds your app and starts it on iOS simulator
+    run-android [options]              builds your app and starts it on a connected Android emulator or device
+    new-library [options]              generates a native library bridge
+    bundle [options]                   builds the javascript bundle <span class="hljs-keyword">for</span> offline use
+    unbundle [options]                 builds javascript as <span class="hljs-string">"unbundle"</span> <span class="hljs-keyword">for</span> offline use
+    eject [options]                    Re-create the iOS and Android folders and native code
+    link [options] [packageName]       links all native dependencies (updates native build files)
+    unlink [options] &lt;packageName&gt;     unlink native dependency
+    install [options] &lt;packageName&gt;    install and link native dependencies
+    uninstall [options] &lt;packageName&gt;  uninstall and unlink native dependencies
+    upgrade [options]                  upgrade your app<span class="hljs-string">'s template files to the latest version; run this after updating the react-native version in your package.json and running npm install
+    log-android [options]              starts adb logcat
+    log-ios [options]                  starts iOS device syslog tail
+    dependencies [options]             lists dependencies
+    info [options]                     Get relevant version info about OS, toolchain and libraries
+</span></code></pre>
+<h3><a class="anchor" aria-hidden="true" id="cli-configs"></a><a href="#cli-configs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>CLI Configs</h3>
+<p>When using <code>react-native start</code>, its platform derivatives, and <code>react-native bundle</code> you can use a file to define the CLI options used by React Native by default. If you create a file <code>rn-cli.config.js</code> in the root of your project, it will be evaluated and options for the commands will come from there.</p>
+<p>You can see the options for the CLI config file inside the <a href="https://github.com/facebook/metro/blob/master/packages/metro/src/Config.js">source code for Metro here</a>, and here is a common <code>rn-cli.config.js</code> used for supporting TypeScript in React Native projects:</p>
+<pre><code class="hljs css language-js"><span class="hljs-built_in">module</span>.exports = {
+  getTransformModulePath() {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">require</span>.resolve(<span class="hljs-string">'react-native-typescript-transformer'</span>);
+  },
+  getSourceExts() {
+    <span class="hljs-keyword">return</span> [<span class="hljs-string">'ts'</span>, <span class="hljs-string">'tsx'</span>];
+  },
+};
+</code></pre>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/0.13/building-from-source">← Building React Native from source</a><a class="docs-next button" href="/react-native/docs/0.13/datepickerios">DatePickerIOS →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/react-native/" class="nav-home"><img src="/react-native/img/header_logo.png" alt="React Native" width="66" height="58"/></a><div><h5><a href="/react-native/docs/getting-started.html">Docs</a></h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5><a href="/react-native/help.html">Community</a></h5><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Stack Overflow</a><a href="https://discuss.reactjs.org" target="_blank">Discussion Forum</a><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">Reactiflux Chat</a></div><div><h5>More</h5><a href="/react-native/blog">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
                 </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
               var search = docsearch({
