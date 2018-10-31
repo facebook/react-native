@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # React Native Base Android Development Environment
 #
 # This image provides a base Android development environment for React Native,
