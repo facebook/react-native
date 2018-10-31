@@ -26,6 +26,7 @@ ARG NODE_VERSION=8.10.0
 ARG WATCHMAN_VERSION=4.9.0
 
 # set default environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV ADB_INSTALL_TIMEOUT=10
 ENV PATH=${PATH}:/opt/buck/bin/
 ENV ANDROID_HOME=/opt/android
@@ -68,11 +69,13 @@ RUN mkdir /opt/ndk && \
   rm ndk.zip
 
 # Add android SDK tools
+RUN yes | sdkmanager --licenses && sdkmanager --update
 RUN sdkmanager "system-images;android-19;google_apis;armeabi-v7a" \
+    "platform-tools" \
     "platforms;android-$ANDROID_BUILD_VERSION" \
     "build-tools;$ANDROID_TOOLS_VERSION" \
     "add-ons;addon-google_apis-google-23" \
     "extras;android;m2repository"
 
 # clean up unnecessary directories
-RUN rm -rf /opt/android/system-images/android-19/default/x86
+RUN rm -rf /opt/android/.android
