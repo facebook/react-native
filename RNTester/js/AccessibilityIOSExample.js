@@ -26,6 +26,11 @@ class AccessibilityIOSExample extends React.Component<{}> {
         <View onMagicTap={() => alert('onMagicTap success')} accessible={true}>
           <Text>Accessibility magic tap example</Text>
         </View>
+        <View
+          onAccessibilityEscape={() => alert('onAccessibilityEscape success')}
+          accessible={true}>
+          <Text>Accessibility escape example</Text>
+        </View>
         <View accessibilityLabel="Some announcement" accessible={true}>
           <Text>Accessibility label example</Text>
         </View>

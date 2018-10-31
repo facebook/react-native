@@ -24,6 +24,10 @@ void ViewEventEmitter::onAccessibilityMagicTap() const {
   dispatchEvent("magicTap");
 }
 
+void ViewEventEmitter::onAccessibilityEscape() const {
+  dispatchEvent("accessibilityEscape");
+}
+
 #pragma mark - Layout
 
 void ViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {

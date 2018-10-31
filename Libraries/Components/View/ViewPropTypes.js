@@ -62,6 +62,14 @@ type DirectEventProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
   onMagicTap?: ?Function,
+
+  /**
+   * When `accessible` is `true`, the system will invoke this function when the
+   * user performs the escape gesture.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
+   */
+  onAccessibilityEscape?: ?Function,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|

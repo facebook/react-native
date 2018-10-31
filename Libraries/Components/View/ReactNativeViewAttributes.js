@@ -34,6 +34,7 @@ ReactNativeViewAttributes.UIView = {
   onAccessibilityAction: true,
   onAccessibilityTap: true,
   onMagicTap: true,
+  onAccessibilityEscape: true,
   collapsable: true,
   needsOffscreenAlphaCompositing: true,
   style: ReactNativeStyleAttributes,
