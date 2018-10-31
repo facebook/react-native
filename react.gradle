@@ -132,7 +132,7 @@ afterEvaluate {
                 }
 
                 // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${targetPath}/merge${targetName}Assets/out") {
+                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
                     from jsBundleDir
                 }
             }
