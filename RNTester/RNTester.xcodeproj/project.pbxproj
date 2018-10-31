@@ -1849,7 +1849,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/RNTesterUnitTests",
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
@@ -1871,7 +1871,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/RNTesterUnitTests",
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
