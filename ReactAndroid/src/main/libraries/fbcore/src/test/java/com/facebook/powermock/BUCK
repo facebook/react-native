@@ -1,3 +1,4 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
@@ -25,7 +26,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-core.jar",
     sha1 = "ea04e79244e19dcf0c3ccf6863c5b028b4b58c9c",
     url = "mvn:org.powermock:powermock-core:jar:1.6.2",
@@ -37,7 +38,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-api-mockito.jar",
     sha1 = "c213230ae20a7b422f3d622a261d0e3427d2464c",
     url = "mvn:org.powermock:powermock-api-mockito:jar:1.6.2",
@@ -49,7 +50,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-api-support.jar",
     sha1 = "93b21413b4ee99b7bc0dd34e1416fdca96866aaf",
     url = "mvn:org.powermock:powermock-api-support:jar:1.6.2",
@@ -61,7 +62,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-module-junit4-rule.jar",
     sha1 = "4847638c5729b9f203e21144b0bdb5d34d888473",
     url = "mvn:org.powermock:powermock-module-junit4-rule:jar:1.6.2",
@@ -73,7 +74,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-classloading-xstream.jar",
     sha1 = "3ced31cd7024fe365b9f3c8082d22c02434577da",
     url = "mvn:org.powermock:powermock-classloading-xstream:jar:1.6.2",
@@ -85,7 +86,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-classloading-base.jar",
     sha1 = "c8bfc10731a02d3b241892cf2c334a754d473ca7",
     url = "mvn:org.powermock:powermock-classloading-base:jar:1.6.2",
@@ -97,7 +98,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-xstream.jar",
     sha1 = "97e5013f391487cce4de6b0eebcde21549e91872",
     url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.2",
@@ -109,7 +110,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-powermock-reflect.jar",
     sha1 = "1af1bbd1207c3ecdcf64973e6f9d57dcd17cc145",
     url = "mvn:org.powermock:powermock-reflect:jar:1.6.2",
@@ -121,7 +122,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-javassist.jar",
     sha1 = "a9cbcdfb7e9f86fbc74d3afae65f2248bfbf82a0",
     url = "mvn:org.javassist:javassist:jar:3.20.0-GA",
@@ -133,7 +134,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-mockito-all.jar",
     sha1 = "539df70269cc254a58cccc5d8e43286b4a73bf30",
     url = "mvn:org.mockito:mockito-all:jar:1.10.19",
@@ -145,7 +146,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-xmlpull.jar",
     sha1 = "2b8e230d2ab644e4ecaa94db7cdedbc40c805dfa",
     url = "mvn:xmlpull:xmlpull:jar:1.1.3.1",
@@ -157,7 +158,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-xpp3.jar",
     sha1 = "19d4e90b43059058f6e056f794f0ea4030d60b86",
     url = "mvn:xpp3:xpp3_min:jar:1.1.4c",

@@ -1,22 +1,24 @@
-prebuilt_jar(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_jar(
     name = "okhttp3",
     binary_jar = ":okhttp3-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "okhttp3-binary.jar",
     sha1 = "75966e05a49046ca2ae734e5626f28837a8d1e82",
     url = "mvn:com.squareup.okhttp3:okhttp:jar:3.11.0",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "okhttp3-urlconnection",
     binary_jar = ":okhttp3-urlconnection-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "okhttp3-urlconnection-binary.jar",
     sha1 = "54ec442e9c0fac51265110cf0cb44dfe5ad1ea05",
     url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.11.0",

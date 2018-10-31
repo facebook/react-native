@@ -1,3 +1,4 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 rn_android_library(
@@ -17,7 +18,7 @@ rn_android_library(
 )
 
 # a fake genrule so that BUCK files in react native are preseable in fbsource
-genrule(
+fb_native.genrule(
     name = "appcompat-res-cmd",
     out = ".",
     bash = "ls",
