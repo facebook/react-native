@@ -45,3 +45,7 @@ declare class Promise<+R> {
 
   static cast<T>(object?: T): Promise<T>;
 }
+
+declare module 'Promise' {
+  declare module.exports: typeof Promise;
+}

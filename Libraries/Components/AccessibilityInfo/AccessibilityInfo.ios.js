@@ -44,7 +44,7 @@ const AccessibilityInfo = {
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#fetch
    */
-  fetch: function(): Promise {
+  fetch: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
     });
