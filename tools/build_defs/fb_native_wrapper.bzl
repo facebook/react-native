@@ -3,6 +3,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# NOTE: Certain values are commented out due to the open source build using a
+# buck version from July 2018, while this list was generated with a version
+# October 2018.
+#
+# At some point the OSS build will start using these ruletypes, at which point
+# this will be safe to uncomment.
+
 fb_native = struct(
     android_aar = native.android_aar,
     android_app_modularity = native.android_app_modularity,
@@ -26,8 +33,8 @@ fb_native = struct(
     cgo_library = native.cgo_library,
     command_alias = native.command_alias,
     config_setting = native.config_setting,
-    constraint_setting = native.constraint_setting,
-    constraint_value = native.constraint_value,
+    # constraint_setting = native.constraint_setting,
+    # constraint_value = native.constraint_value,
     core_data_model = native.core_data_model,
     csharp_library = native.csharp_library,
     cxx_binary = native.cxx_binary,
@@ -74,7 +81,7 @@ fb_native = struct(
     ndk_library = native.ndk_library,
     ocaml_binary = native.ocaml_binary,
     ocaml_library = native.ocaml_library,
-    platform = native.platform,
+    # platform = native.platform,
     prebuilt_apple_framework = native.prebuilt_apple_framework,
     prebuilt_cxx_library = native.prebuilt_cxx_library,
     prebuilt_cxx_library_group = native.prebuilt_cxx_library_group,
