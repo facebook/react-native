@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, StyleSheet, Text, View} = ReactNative;
 
 class Flip extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -76,7 +76,7 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     height: 500,
   },

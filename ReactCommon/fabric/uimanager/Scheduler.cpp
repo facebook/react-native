@@ -5,9 +5,12 @@
 
 #include "Scheduler.h"
 
+#include <jsi/jsi.h>
+
 #include <fabric/core/LayoutContext.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/uimanager/JSIFabricUIManager.h>
 #include <fabric/uimanager/TemplateRenderer.h>
 
 #include "ComponentDescriptorFactory.h"
@@ -23,12 +26,17 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
   const auto synchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("synchronous");
 
+  const auto runtimeExecutor =
+      contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
+
   uiManager_ = std::make_shared<FabricUIManager>(
       std::make_unique<EventBeatBasedExecutor>(asynchronousEventBeatFactory()),
-      contextContainer->getInstance<std::function<UIManagerInstaller>>(
-          "uimanager-installer"),
-      contextContainer->getInstance<std::function<UIManagerUninstaller>>(
-          "uimanager-uninstaller"));
+      [](UIManager &uiManager) { /* Not implemented. */ },
+      []() { /* Not implemented. */ });
+
+  runtimeExecutor([this](jsi::Runtime &runtime) {
+    JSIInstallFabricUIManager(runtime, *uiManager_);
+  });
 
   auto eventDispatcher = std::make_shared<EventDispatcher>(
       std::bind(
@@ -42,6 +50,7 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
 
   componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
     eventDispatcher, contextContainer);
+
   uiManager_->setComponentDescriptorRegistry(
     componentDescriptorRegistry_
   );

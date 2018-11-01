@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Platform, Switch, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Switch, Text, View} = ReactNative;
 
 class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -125,7 +125,7 @@ class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var examples = [
+const examples = [
   {
     title: 'Switches can be set to true or false',
     render(): React.Element<any> {

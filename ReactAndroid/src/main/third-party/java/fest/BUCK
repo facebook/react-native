@@ -1,3 +1,4 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
@@ -15,7 +16,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fest-binary.jar",
     sha1 = "cb7c91cf614901928ae405f19d9bcdedf82781db",
     url = "mvn:org.easytesting:fest-assert-core:jar:2.0M10",
@@ -27,7 +28,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fest-util-binary.jar",
     sha1 = "c4a8d7305b23b8d043be12c979813b096df11f44",
     url = "mvn:org.easytesting:fest-util:jar:1.2.5",

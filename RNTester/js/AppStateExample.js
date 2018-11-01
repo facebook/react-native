@@ -39,7 +39,7 @@ class AppStateSubscription extends React.Component<
   };
 
   _handleAppStateChange = appState => {
-    var previousAppStates = this.state.previousAppStates.slice();
+    const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({
       appState,

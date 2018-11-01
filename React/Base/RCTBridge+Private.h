@@ -144,6 +144,8 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTCxxBridge : RCTBridge
 
+@property (nonatomic) void *runtime;
+
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end

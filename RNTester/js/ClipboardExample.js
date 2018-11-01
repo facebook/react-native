@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Clipboard, View, Text} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Clipboard, View, Text} = ReactNative;
 
 class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -22,7 +22,7 @@ class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   _setClipboardContent = async () => {
     Clipboard.setString('Hello World');
     try {
-      var content = await Clipboard.getString();
+      const content = await Clipboard.getString();
       this.setState({content});
     } catch (e) {
       this.setState({content: e.message});

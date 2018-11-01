@@ -70,6 +70,13 @@ async function runServer(args: Args, config: ConfigT) {
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 
+  if (args.sourceExts !== config.resolver.sourceExts) {
+    // $FlowFixMe Metro configuration is immutable.
+    config.resolver.sourceExts = args.sourceExts.concat(
+      config.resolver.sourceExts,
+    );
+  }
+
   const serverInstance = await Metro.runServer(config, {
     host: args.host,
     secure: args.https,

@@ -277,6 +277,7 @@ const Text = (
 };
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const TextToExport = React.forwardRef(Text);
+TextToExport.displayName = 'Text';
 
 // TODO: Deprecate this.
 TextToExport.propTypes = DeprecatedTextPropTypes;

@@ -126,7 +126,7 @@ class PanResponderExample extends React.Component<Props> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
