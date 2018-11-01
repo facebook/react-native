@@ -30,7 +30,7 @@ describe('Sanity', () => {
     await element(by.text('OK')).tap();
   });
 
-  it('Two buttons with JustifyContent:\'space-between\' should be tappable', async () => {
+  it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
     await element(by.label('This looks great!')).tap();
     await expect(element(by.text('Left has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
