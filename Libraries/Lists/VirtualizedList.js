@@ -643,7 +643,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
-    const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
+    const {data, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     return {

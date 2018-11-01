@@ -92,12 +92,11 @@ export type Props = {
   name: string,
   children: React.Node,
 };
-type DefaultProps = {
-  name: string,
-};
+
 type State = {
   doIncrementalRender: boolean,
 };
+
 class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;

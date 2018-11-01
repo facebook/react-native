@@ -10,8 +10,6 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
-
 import type React from 'React';
 
 type Args = $ReadOnly<{|
