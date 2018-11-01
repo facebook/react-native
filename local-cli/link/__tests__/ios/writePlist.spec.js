@@ -49,7 +49,7 @@ describe('ios::writePlist', () => {
 
   it('should write a `.plist` file', () => {
     plistPath = '/Basic/Info.plist';
-    const result = writePlist(project, '/', plist);
+    writePlist(project, '/', plist);
     const infoPlist = readFileSync(infoPlistPath).toString();
     expect(fs.writeFileSync).toHaveBeenCalledWith(plistPath, infoPlist);
   });

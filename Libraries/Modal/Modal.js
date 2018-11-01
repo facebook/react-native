@@ -20,7 +20,6 @@ const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
 const RCTModalHostView = requireNativeComponent('RCTModalHostView');

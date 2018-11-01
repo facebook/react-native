@@ -14,7 +14,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {ART, Platform, View} = ReactNative;
 
-const {Surface, Path, Group, Transform, Shape} = ART;
+const {Surface, Path, Group, Shape} = ART;
 
 const scale = Platform.isTV ? 4 : 1;
 

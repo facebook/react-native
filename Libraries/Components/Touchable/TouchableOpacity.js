@@ -247,7 +247,7 @@ const TouchableOpacity = ((createReactClass({
 
   _getChildStyleOpacityWithDefault: function() {
     const childStyle = flattenStyle(this.props.style) || {};
-    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+    return childStyle.opacity == null ? 1 : childStyle.opacity;
   },
 
   render: function() {

@@ -17,7 +17,7 @@ const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const NativeModules = require('NativeModules');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 const TextAncestor = require('TextAncestor');
 
