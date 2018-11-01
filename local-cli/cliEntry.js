@@ -60,7 +60,7 @@ function printHelpInformation() {
   let output = [
     '',
     chalk.bold(chalk.cyan(`  react-native ${cmdName} ${this.usage()}`)),
-    `  ${this._description}`,
+    this._description ? `  ${this._description}` : '',
     '',
     ...sourceInformation,
     `  ${chalk.bold('Options:')}`,
