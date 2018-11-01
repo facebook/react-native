@@ -608,9 +608,9 @@ babelHelpers.iterableToArray = _iterableToArray;
 // ### asyncToGenerator ###
 
 function _asyncToGenerator(fn) {
-  return function () {
+  return function() {
     var gen = fn.apply(this, arguments);
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       function step(key, arg) {
         try {
           var info = gen[key](arg);
@@ -623,17 +623,20 @@ function _asyncToGenerator(fn) {
         if (info.done) {
           resolve(value);
         } else {
-          return Promise.resolve(value).then(function (value) {
-            step('next', value);
-          }, function (err) {
-            step('throw', err);
-          });
+          return Promise.resolve(value).then(
+            function(value) {
+              step('next', value);
+            },
+            function(err) {
+              step('throw', err);
+            },
+          );
         }
       }
 
       return step('next');
     });
   };
-};
+}
 
 babelHelpers.asyncToGenerator = _asyncToGenerator;
