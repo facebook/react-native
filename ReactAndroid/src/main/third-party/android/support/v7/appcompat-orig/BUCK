@@ -1,3 +1,4 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
@@ -37,25 +38,25 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-genrule(
+fb_native.genrule(
     name = "classes-unpacker-cmd",
     out = "classes.jar",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT",
 )
 
-genrule(
+fb_native.genrule(
     name = "res-unpacker-cmd",
     out = "res",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT",
     visibility = ["//ReactAndroid/..."],
 )
 
-python_binary(
+fb_native.python_binary(
     name = "aar-unpacker",
     main = "aar-unpacker.py",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "appcompat-binary-aar",
     sha1 = "22b1ef4ff9ef1a3513c18eb132d597eac6ef1a86",
     url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
