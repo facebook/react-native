@@ -123,7 +123,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   picker: {
     width: 100,
   },

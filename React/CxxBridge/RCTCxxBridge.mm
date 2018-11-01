@@ -57,6 +57,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 typedef void (^RCTPendingCall)();
 
 using namespace facebook::jsc;
+using namespace facebook::jsi;
 using namespace facebook::react;
 
 /**
@@ -1227,6 +1228,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (BOOL)isBatchActive
 {
   return _wasBatchActive;
+}
+
+- (void *)runtime
+{
+  if (!_reactInstance) {
+    return nullptr;
+  }
+
+  return _reactInstance->getJavaScriptContext();
 }
 
 @end

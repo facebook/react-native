@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, StyleSheet, View, ScrollView} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, StyleSheet, View, ScrollView} = ReactNative;
 
 import type {PhotoIdentifier} from 'CameraRoll';
 
@@ -30,7 +30,7 @@ class AssetScaledImageExample extends React.Component<Props, State> {
   };
 
   render() {
-    var image = this.state.asset.node.image;
+    const image = this.state.asset.node.image;
     return (
       <ScrollView>
         <View style={styles.row}>
@@ -50,7 +50,7 @@ class AssetScaledImageExample extends React.Component<Props, State> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     padding: 5,
     flex: 1,

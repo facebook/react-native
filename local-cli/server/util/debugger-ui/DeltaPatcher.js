@@ -27,10 +27,10 @@
   class DeltaPatcher {
     constructor() {
       this._lastBundle = {
-        pre: new Map(),
-        post: new Map(),
+        revisionId: undefined,
+        pre: '',
+        post: '',
         modules: new Map(),
-        id: undefined,
       };
       this._initialized = false;
       this._lastNumModifiedFiles = 0;
@@ -51,44 +51,41 @@
     /**
      * Applies a Delta Bundle to the current bundle.
      */
-    applyDelta(deltaBundle) {
-      // Make sure that the first received delta is a fresh one.
-      if (!this._initialized && !deltaBundle.reset) {
+    applyDelta(bundle) {
+      // Make sure that the first received bundle is a base.
+      if (!this._initialized && !bundle.base) {
         throw new Error(
-          'DeltaPatcher should receive a fresh Delta when being initialized',
+          'DeltaPatcher should receive a base Bundle when being initialized',
         );
       }
 
       this._initialized = true;
 
-      // Reset the current delta when we receive a fresh delta.
-      if (deltaBundle.reset) {
+      // Reset the current bundle when we receive a base bundle.
+      if (bundle.base) {
         this._lastBundle = {
-          pre: new Map(),
-          post: new Map(),
+          revisionId: undefined,
+          pre: bundle.pre,
+          post: bundle.post,
           modules: new Map(),
-          id: undefined,
         };
       }
 
-      this._lastNumModifiedFiles =
-        deltaBundle.pre.size + deltaBundle.post.size + deltaBundle.delta.size;
+      this._lastNumModifiedFiles = bundle.modules.size;
 
       if (this._lastNumModifiedFiles > 0) {
         this._lastModifiedDate = new Date();
       }
 
-      this._patchMap(this._lastBundle.pre, deltaBundle.pre);
-      this._patchMap(this._lastBundle.post, deltaBundle.post);
-      this._patchMap(this._lastBundle.modules, deltaBundle.delta);
+      this._patchMap(this._lastBundle.modules, bundle.modules);
 
-      this._lastBundle.id = deltaBundle.id;
+      this._lastBundle.revisionId = bundle.revisionId;
 
       return this;
     }
 
-    getLastBundleId() {
-      return this._lastBundle.id;
+    getLastRevisionId() {
+      return this._lastBundle.revisionId;
     }
 
     /**
@@ -107,9 +104,9 @@
 
     getAllModules() {
       return [].concat(
-        Array.from(this._lastBundle.pre.values()),
+        this._lastBundle.pre,
         Array.from(this._lastBundle.modules.values()),
-        Array.from(this._lastBundle.post.values()),
+        this._lastBundle.post,
       );
     }
 

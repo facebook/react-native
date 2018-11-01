@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 APP_BUILD_SCRIPT := Android.mk
 
 APP_ABI := armeabi-v7a x86 arm64-v8a x86_64

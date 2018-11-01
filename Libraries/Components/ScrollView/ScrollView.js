@@ -397,7 +397,9 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  // $FlowFixMe(site=react_native_fb) Issues found when typing ScrollView
+  /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.84 was deployed. To see the error, delete this comment
+   * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).

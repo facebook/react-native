@@ -10,15 +10,15 @@
 #include "Yoga.h"
 
 struct YGConfig {
-  std::array<bool, YGExperimentalFeatureCount> experimentalFeatures;
-  bool useWebDefaults;
-  bool useLegacyStretchBehaviour;
-  bool shouldDiffLayoutWithoutLegacyStretchBehaviour;
-  float pointScaleFactor;
+  std::array<bool, YGExperimentalFeatureCount> experimentalFeatures = {};
+  bool useWebDefaults = false;
+  bool useLegacyStretchBehaviour = false;
+  bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
+  float pointScaleFactor = 1.0f;
   YGLogger logger;
-  YGCloneNodeFunc cloneNodeCallback;
-  void* context;
-  bool printTree;
+  YGCloneNodeFunc cloneNodeCallback = nullptr;
+  void* context = nullptr;
+  bool printTree = false;
 
   YGConfig(YGLogger logger);
 };

@@ -10,17 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
-var {
-  Platform,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TVEventHandler,
-} = ReactNative;
+const {Platform, View, Text, TouchableOpacity, TVEventHandler} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'TVEventHandler example';

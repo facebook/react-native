@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.bridge;
 
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
@@ -26,7 +33,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   /**
    * Dispatches the commandId received by parameter to the view associated with the reactTag.
    * The command will be processed in the UIThread.
-   * 
+   *
    * @param reactTag {@link int} that identifies the view that will receive this command
    * @param commandId {@link int} command id
    * @param commandArgs {@link ReadableArray} parameters associated with the command

@@ -1565,13 +1565,25 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     return @{};
   }
 
-  NSString *moduleName = [name stringByAppendingString:@"Manager"];
+  NSString *moduleName = name;
   BOOL result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  if (!result) {
+    moduleName = [name stringByAppendingString:@"Manager"];
+    result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  }
   if (!result) {
     return @{};
   }
 
   id module = [self.bridge moduleForName:moduleName];
+  if (module == nil) {
+    // There is all sorts of code in this codebase that drops prefixes.
+    //
+    // If we didn't find a module, it's possible because it's stored under a key
+    // which had RCT Prefixes stripped. Lets check one more time...
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
+  }
+
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
   _componentDataByName[componentData.name] = componentData;
   NSMutableDictionary *directEvents = [NSMutableDictionary new];
