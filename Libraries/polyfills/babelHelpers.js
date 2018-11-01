@@ -624,8 +624,8 @@ function _asyncToGenerator(fn) {
           resolve(value);
         } else {
           return Promise.resolve(value).then(
-            function(value) {
-              step('next', value);
+            function(val) {
+              step('next', val);
             },
             function(err) {
               step('throw', err);
