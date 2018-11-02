@@ -7,7 +7,9 @@
 //
 
 #import <XCTest/XCTest.h>
+
 #import "MockInstance.hpp"
+#import "SampleCxxModule.hpp"
 
 @interface MockInstanceTests : XCTestCase
 
@@ -28,6 +30,11 @@
 - (void)testExample {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
+
+  std::shared_ptr<MockInstance> instance = std::make_shared<MockInstance>();
+  std::unique_ptr<SampleCxxModule> module = std::make_unique<SampleCxxModule>();
+  
+  module->setInstance(instance);
 }
 
 - (void)testPerformanceExample {
