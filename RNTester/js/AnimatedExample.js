@@ -59,6 +59,9 @@ exports.examples = [
         }
       }
       class FadeInExample extends React.Component<$FlowFixMeProps, any> {
+        /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.85 was deployed. To see the error, delete
+         * this comment and run Flow. */
         constructor(props) {
           super(props);
           this.state = {
