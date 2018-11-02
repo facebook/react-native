@@ -262,9 +262,9 @@ let Image = (
 Image = React.forwardRef(Image);
 
 /**
- * Retrieve the width and height (in pixels) of an image prior to displaying it. 
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image#getsize
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
 Image.getSize = getSize;
 
