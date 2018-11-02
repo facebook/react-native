@@ -119,10 +119,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  singleLine: {
-    fontSize: 16,
-    padding: 4,
-  },
   text: {
     margin: 10,
   },

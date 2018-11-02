@@ -223,13 +223,6 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingHorizontal: 8,
   },
-  rowText: {
-    color: '#888888',
-  },
-  thumbText: {
-    fontSize: 20,
-    color: '#888888',
-  },
   buttonContents: {
     flexDirection: 'row',
     justifyContent: 'center',
