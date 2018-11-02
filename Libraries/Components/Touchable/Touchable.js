@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const BoundingDimensions = require('BoundingDimensions');
 const Platform = require('Platform');
 const Position = require('Position');

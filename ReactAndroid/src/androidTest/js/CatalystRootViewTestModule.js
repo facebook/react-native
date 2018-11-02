@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 var React = require('React');
 var Recording = require('NativeModules').Recording;
 var View = require('View');

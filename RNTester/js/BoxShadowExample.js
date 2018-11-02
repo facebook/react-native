@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const React = require('react');
 const ReactNative = require('react-native');
 const {Image, StyleSheet, View} = ReactNative;

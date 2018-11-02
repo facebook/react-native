@@ -8,6 +8,7 @@
  */
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-env browser */
 
 const React = require('react');

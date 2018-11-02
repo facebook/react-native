@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const Platform = require('Platform');
 const React = require('react');
 const ReactNative = require('react-native');

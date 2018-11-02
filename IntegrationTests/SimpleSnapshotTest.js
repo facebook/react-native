@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const React = require('react');
 const ReactNative = require('react-native');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error

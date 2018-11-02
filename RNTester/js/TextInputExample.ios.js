@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
 const React = require('react');

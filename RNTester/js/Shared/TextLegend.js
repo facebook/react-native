@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 const React = require('React');
 const {Picker, Text, View} = require('react-native');
 

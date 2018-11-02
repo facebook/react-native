@@ -7,7 +7,10 @@
  * @flow
  * @format
  */
+
 'use strict';
+
+/* eslint-disable react-native/no-inline-styles */
 
 const Batchinator = require('Batchinator');
 const FillRateHelper = require('FillRateHelper');

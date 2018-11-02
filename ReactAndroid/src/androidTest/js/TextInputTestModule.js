@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-disable react-native/no-inline-styles */
+
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
