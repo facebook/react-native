@@ -706,9 +706,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
 {
-  NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
-  if (_reactInstance) {
-    _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
+  @synchronized (self) {
+    NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+    if (_reactInstance) {
+      _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
+    }
   }
 }
 
