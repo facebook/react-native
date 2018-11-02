@@ -35,14 +35,13 @@ map<string, dynamic> SampleCxxModule::getConstants()
 
 vector<SampleCxxModule::Method> SampleCxxModule::getMethods()
 {
-  std::weak_ptr<facebook::react::Instance> instance = this->getInstance();
-  
   return
   {
-    Method("foo", [instance = this->getInstance().lock()](dynamic args)
+    Method("sum", [instance = this->getInstance().lock()](dynamic args)
      {
+       auto sum = jsArgAsInt(args, 0) + jsArgAsInt(args, 1);
        if (instance)
-         instance->callJSFunction("RCTDeviceEventEmitter", "emit", dynamic::array(jsArgAsInt(args, 0)));
+         instance->callJSFunction("MockedModule", "mockedMethod", dynamic::array(jsArgAsInt(args, 0), sum));
      })
   };
 }

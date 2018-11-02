@@ -11,6 +11,10 @@
 #import "MockInstance.hpp"
 #import "SampleCxxModule.hpp"
 
+using folly::dynamic;
+using std::map;
+using std::vector;
+
 @interface MockInstanceTests : XCTestCase
 
 @end
@@ -27,21 +31,21 @@
     [super tearDown];
 }
 
-- (void)testExample {
+- (void)testMockCallJSFunction {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
 
-  std::shared_ptr<MockInstance> instance = std::make_shared<MockInstance>();
-  std::unique_ptr<SampleCxxModule> module = std::make_unique<SampleCxxModule>();
-  
-  module->setInstance(instance);
-}
+  auto cache = std::make_shared<map<int64_t, int64_t>>();
+  auto instance = std::make_shared<MockInstance>(cache);
+  auto module = std::make_unique<SampleCxxModule>();
 
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+  module->setInstance(instance);
+  
+  auto sumMethod = module->getMethods()[0]; // First method: 'sum'.
+  sumMethod.func(dynamic::array(2, 3), [](vector<dynamic>){}, [](vector<dynamic>){});
+  
+  auto result = cache->at(2);
+  XCTAssert(result == 2 + 3);
 }
 
 @end

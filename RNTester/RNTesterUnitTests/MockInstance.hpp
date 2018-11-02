@@ -19,6 +19,8 @@
 
 class MockInstance : public facebook::react::Instance {
 private:
+  std::shared_ptr<std::map<std::int64_t, std::int64_t>> sumCache_;
+  
   void loadApplication(std::unique_ptr<facebook::react::RAMBundleRegistry> bundleRegistry,
                                std::unique_ptr<const facebook::react::JSBigString> startupScript,
                                std::string startupScriptSourceURL) override;
@@ -27,6 +29,8 @@ private:
                                    std::string startupScriptSourceURL) override;
 
 public:
+  MockInstance(std::shared_ptr<std::map<std::int64_t, std::int64_t>> sumCache);
+  
    void initializeBridge(std::unique_ptr<facebook::react::InstanceCallback> callback,
                                 std::shared_ptr<facebook::react::JSExecutorFactory> jsef,
                                 std::shared_ptr<facebook::react::MessageQueueThread> jsQueue,
