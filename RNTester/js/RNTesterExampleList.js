@@ -75,7 +75,18 @@ const renderSectionHeader = ({section}) => (
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filterText = this.props.persister.state.filter;
-    const filterRegex = new RegExp(String(filterText), 'i');
+    let filterRegex = /.*/;
+
+    try {
+      filterRegex = new RegExp(String(filterText), 'i');
+    } catch (error) {
+      console.warn(
+        'Failed to create RegExp: %s\n%s',
+        filterText,
+        error.message,
+      );
+    }
+
     const filter = example =>
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this
@@ -111,7 +122,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
-          legacyImplementation={false}
           renderSectionHeader={renderSectionHeader}
         />
       </View>

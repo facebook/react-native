@@ -10,17 +10,15 @@
 
 'use strict';
 
-var ProgressBar = require('ProgressBarAndroid');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const ProgressBar = require('ProgressBarAndroid');
+const React = require('React');
+const createReactClass = require('create-react-class');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
-var TimerMixin = require('react-timer-mixin');
-
-var MovingBar = createReactClass({
+const MovingBar = createReactClass({
   displayName: 'MovingBar',
-  mixins: [TimerMixin],
+  _intervalID: (null: ?IntervalID),
 
   getInitialState: function() {
     return {
@@ -29,10 +27,16 @@ var MovingBar = createReactClass({
   },
 
   componentDidMount: function() {
-    this.setInterval(() => {
-      var progress = (this.state.progress + 0.02) % 1;
+    this._intervalID = setInterval(() => {
+      const progress = (this.state.progress + 0.02) % 1;
       this.setState({progress: progress});
     }, 50);
+  },
+
+  componentWillUnmount: function() {
+    if (this._intervalID != null) {
+      clearInterval(this._intervalID);
+    }
   },
 
   render: function() {

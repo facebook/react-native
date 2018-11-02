@@ -14,7 +14,6 @@ const difference = require('lodash').difference;
 const isEmpty = require('lodash').isEmpty;
 
 const getGroup = require('./getGroup');
-const getProducts = require('./getProducts');
 const getTargets = require('./getTargets');
 const getHeadersInFolder = require('./getHeadersInFolder');
 const getHeaderSearchPath = require('./getHeaderSearchPath');

@@ -37,13 +37,6 @@ public abstract class ARTVirtualNode extends ReactShadowNodeImpl {
     mScale = DisplayMetricsHolder.getWindowDisplayMetrics().density;
   }
 
-  protected ARTVirtualNode(ARTVirtualNode artVirtualNode) {
-    super(artVirtualNode);
-    mScale = artVirtualNode.mScale;
-    mOpacity = artVirtualNode.mOpacity;
-    mMatrix = new Matrix(artVirtualNode.mMatrix);
-  }
-
   @Override
   public boolean isVirtual() {
     return true;

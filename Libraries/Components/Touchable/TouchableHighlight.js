@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
@@ -164,7 +164,7 @@ const TouchableHighlight = ((createReactClass({
      * The color of the underlay that will show through when the touch is
      * active.
      */
-    underlayColor: ColorPropType,
+    underlayColor: DeprecatedColorPropType,
     /**
      * Style to apply to the container/underlay. Most commonly used to make sure
      * rounded corners match the wrapped component.

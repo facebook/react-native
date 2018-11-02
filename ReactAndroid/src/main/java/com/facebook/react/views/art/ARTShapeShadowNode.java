@@ -60,22 +60,6 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
 
   public ARTShapeShadowNode() { }
 
-  public ARTShapeShadowNode(ARTShapeShadowNode node) {
-    super(node);
-    mPath = new Path(node.mPath);
-    mStrokeColor = copyArray(node.mStrokeColor);
-    mBrushData = copyArray(node.mBrushData);
-    mStrokeDash = copyArray(node.mStrokeDash);
-    mStrokeWidth = node.mStrokeWidth;
-    mStrokeCap = node.mStrokeCap;
-    mStrokeJoin = node.mStrokeJoin;
-  }
-
-  @Override
-  protected ARTShapeShadowNode copy() {
-    return new ARTShapeShadowNode(this);
-  }
-
   @ReactProp(name = "d")
   public void setShapePath(@Nullable ReadableArray shapePath) {
     float[] pathData = PropHelper.toFloatArray(shapePath);

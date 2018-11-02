@@ -90,14 +90,13 @@ export type Props = {
    * Tags instances and associated tasks for easier debugging.
    */
   name: string,
-  children?: any,
+  children: React.Node,
 };
-type DefaultProps = {
-  name: string,
-};
+
 type State = {
   doIncrementalRender: boolean,
 };
+
 class Incremental extends React.Component<Props, State> {
   props: Props;
   state: State;

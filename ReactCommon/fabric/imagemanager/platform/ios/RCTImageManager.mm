@@ -16,13 +16,11 @@
 
 using namespace facebook::react;
 
-@implementation RCTImageManager
-{
+@implementation RCTImageManager {
   RCTImageLoader *_imageLoader;
 }
 
-- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader
-{
+- (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader {
   if (self = [super init]) {
     _imageLoader = imageLoader;
   }
@@ -30,14 +28,14 @@ using namespace facebook::react;
   return self;
 }
 
-- (ImageRequest)requestImage:(const ImageSource &)imageSource
-{
+- (ImageRequest)requestImage:(const ImageSource &)imageSource {
   __block auto promise = folly::Promise<ImageResponse>();
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
   auto completionBlock = ^(NSError *error, UIImage *image) {
-    auto imageResponse = ImageResponse(std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
+    auto imageResponse = ImageResponse(
+        std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
     promise.setValue(std::move(imageResponse));
   };
 
@@ -48,19 +46,23 @@ using namespace facebook::react;
   };
 
   RCTImageLoaderCancellationBlock cancellationBlock =
-    [_imageLoader loadImageWithURLRequest:request
-                                     size:CGSizeMake(imageSource.size.width, imageSource.size.height)
-                                    scale:imageSource.scale
-                                  clipped:YES
-                               resizeMode:RCTResizeModeStretch
-                            progressBlock:nil
-                         partialLoadBlock:nil
-                          completionBlock:completionBlock];
+      [_imageLoader loadImageWithURLRequest:request
+                                       size:CGSizeMake(
+                                                imageSource.size.width,
+                                                imageSource.size.height)
+                                      scale:imageSource.scale
+                                    clipped:YES
+                                 resizeMode:RCTResizeModeStretch
+                              progressBlock:nil
+                           partialLoadBlock:nil
+                            completionBlock:completionBlock];
 
-  promise.setInterruptHandler([cancellationBlock, interruptBlock](const folly::exception_wrapper &exceptionWrapper) {
-    cancellationBlock();
-    interruptBlock(exceptionWrapper);
-  });
+  promise.setInterruptHandler(
+      [cancellationBlock,
+       interruptBlock](const folly::exception_wrapper &exceptionWrapper) {
+        cancellationBlock();
+        interruptBlock(exceptionWrapper);
+      });
 
   return ImageRequest(imageSource, promise.getFuture());
 }

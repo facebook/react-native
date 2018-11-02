@@ -62,12 +62,12 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
       Alert.alert('Upload failed', 'No response payload.');
       return;
     }
-    var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+    const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
     if (index === -1) {
       Alert.alert('Upload failed', 'Invalid response payload.');
       return;
     }
-    var url = xhr.responseText.slice(index).split('\n')[0];
+    const url = xhr.responseText.slice(index).split('\n')[0];
     console.log('Upload successful: ' + url);
     Linking.openURL(url);
   }
@@ -77,7 +77,7 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
   };
 
   _upload = () => {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     xhr.setRequestHeader('Content-Type', 'text/plain');

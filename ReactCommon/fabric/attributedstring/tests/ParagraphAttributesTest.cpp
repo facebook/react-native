@@ -7,15 +7,14 @@
 
 #include <memory>
 
+#include <assert.h>
 #include <fabric/attributedstring/ParagraphAttributes.h>
 #include <fabric/attributedstring/conversions.h>
 #include <fabric/attributedstring/primitives.h>
 #include <gtest/gtest.h>
-#include <assert.h>
 
 namespace facebook {
 namespace react {
-
 
 TEST(ParagraphAttributesTest, testToDynamic) {
   auto paragraphAttributes = ParagraphAttributes();
@@ -26,12 +25,17 @@ TEST(ParagraphAttributesTest, testToDynamic) {
   paragraphAttributes.maximumFontSize = 20;
 
   auto result = toDynamic(paragraphAttributes);
-  assert(result["maximumNumberOfLines"] == paragraphAttributes.maximumNumberOfLines);
-  assert(result["adjustsFontSizeToFit"] == paragraphAttributes.adjustsFontSizeToFit);
-  assert(result["ellipsizeMode"] == toString(paragraphAttributes.ellipsizeMode));
+  assert(
+      result["maximumNumberOfLines"] ==
+      paragraphAttributes.maximumNumberOfLines);
+  assert(
+      result["adjustsFontSizeToFit"] ==
+      paragraphAttributes.adjustsFontSizeToFit);
+  assert(
+      result["ellipsizeMode"] == toString(paragraphAttributes.ellipsizeMode));
   assert(result["minimumFontSize"] == paragraphAttributes.minimumFontSize);
   assert(result["maximumFontSize"] == paragraphAttributes.maximumFontSize);
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

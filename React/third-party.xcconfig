@@ -2,9 +2,11 @@
 //  folly.xcconfig
 //  CxxReact
 //
-//  Created by Marc Horowitz on 1/12/17.
-//  Copyright © 2017 Facebook. All rights reserved.
+//  Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 //
 
-HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_63_0 $(SRCROOT)/../third-party/folly-2016.10.31.00 $(SRCROOT)/../third-party/glog-0.3.5/src
+HEADER_SEARCH_PATHS = $(SRCROOT)/../third-party/boost_1_63_0 $(SRCROOT)/../third-party/folly-2018.10.22.00 $(SRCROOT)/../third-party/glog-0.3.5/src
 OTHER_CFLAGS = -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1

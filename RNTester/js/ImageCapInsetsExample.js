@@ -10,11 +10,11 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
+const React = require('react');
+const ReactNative = require('react-native');
 
-var nativeImageSource = require('nativeImageSource');
-var {Image, StyleSheet, Text, View} = ReactNative;
+const nativeImageSource = require('nativeImageSource');
+const {Image, StyleSheet, Text, View} = ReactNative;
 
 class ImageCapInsetsExample extends React.Component<{}> {
   render() {
@@ -51,7 +51,7 @@ class ImageCapInsetsExample extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   background: {
     backgroundColor: '#F6F6F6',
     justifyContent: 'center',

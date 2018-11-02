@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
@@ -71,9 +71,9 @@ class LayoutEventExample extends React.Component<{}, State> {
   };
 
   render() {
-    var viewStyle = [styles.view, this.state.viewStyle];
-    var textLayout = this.state.textLayout || {width: '?', height: '?'};
-    var imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    const viewStyle = [styles.view, this.state.viewStyle];
+    const textLayout = this.state.textLayout || {width: '?', height: '?'};
+    const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
     return (
       <View style={this.state.containerStyle}>
         <Text>
@@ -113,7 +113,7 @@ class LayoutEventExample extends React.Component<{}, State> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     padding: 12,
     borderColor: 'black',

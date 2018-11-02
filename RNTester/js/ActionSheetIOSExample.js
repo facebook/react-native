@@ -10,13 +10,13 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {ActionSheetIOS, StyleSheet, takeSnapshot, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {ActionSheetIOS, StyleSheet, takeSnapshot, Text, View} = ReactNative;
 
-var BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
+const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
+const DESTRUCTIVE_INDEX = 3;
+const CANCEL_INDEX = 4;
 
 class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -108,7 +108,7 @@ class ShareActionSheetExample extends React.Component<
       },
       error => alert(error),
       (completed, method) => {
-        var text;
+        let text;
         if (completed) {
           text = `Shared via ${method}`;
         } else {
@@ -148,7 +148,7 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
           },
           error => alert(error),
           (completed, method) => {
-            var text;
+            let text;
             if (completed) {
               text = `Shared via ${method}`;
             } else {
@@ -162,7 +162,7 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',

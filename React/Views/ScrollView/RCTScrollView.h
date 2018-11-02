@@ -55,6 +55,7 @@
 // need to be coalesced before sending, for performance reasons.
 @property (nonatomic, copy) RCTDirectEventBlock onScrollBeginDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy) RCTDirectEventBlock onScrollToTop;
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;

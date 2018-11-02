@@ -20,21 +20,18 @@ class RootProps;
 
 using SharedRootProps = std::shared_ptr<const RootProps>;
 
-class RootProps final:
-  public ViewProps {
-
-public:
+class RootProps final : public ViewProps {
+ public:
   RootProps() = default;
   RootProps(
-    const RootProps &sourceProps,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext
-  );
+      const RootProps &sourceProps,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext);
 
 #pragma mark - Props
 
-  const LayoutConstraints layoutConstraints {};
-  const LayoutContext layoutContext {};
+  const LayoutConstraints layoutConstraints{};
+  const LayoutContext layoutContext{};
 };
 
 } // namespace react

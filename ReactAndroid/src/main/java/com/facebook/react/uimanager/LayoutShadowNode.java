@@ -75,16 +75,6 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     mTempYogaValue = new MutableYogaValue();
   }
 
-  protected LayoutShadowNode(LayoutShadowNode node) {
-    super(node);
-    mTempYogaValue = new MutableYogaValue(node.mTempYogaValue);
-  }
-
-  @Override
-  protected LayoutShadowNode copy() {
-    return new LayoutShadowNode(this);
-  }
-
   @ReactProp(name = ViewProps.WIDTH)
   public void setWidth(Dynamic width) {
     if (isVirtual()) {

@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Share';
@@ -103,7 +103,7 @@ class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

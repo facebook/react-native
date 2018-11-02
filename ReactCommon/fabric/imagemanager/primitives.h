@@ -16,24 +16,17 @@ namespace facebook {
 namespace react {
 
 class ImageSource {
+ public:
+  enum class Type { Invalid, Remote, Local };
 
-public:
-  enum class Type {
-    Invalid,
-    Remote,
-    Local
-  };
-
-  Type type {};
-  std::string uri {};
-  std::string bundle {};
-  Float scale {3};
-  Size size {0};
+  Type type{};
+  std::string uri{};
+  std::string bundle{};
+  Float scale{3};
+  Size size{0};
 
   bool operator==(const ImageSource &rhs) const {
-    return
-      std::tie(this->type, this->uri) ==
-      std::tie(rhs.type, rhs.uri);
+    return std::tie(this->type, this->uri) == std::tie(rhs.type, rhs.uri);
   }
 
   bool operator!=(const ImageSource &rhs) const {

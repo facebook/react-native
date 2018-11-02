@@ -7,20 +7,26 @@
 
 #pragma once
 
-#include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/ConcreteViewShadowNode.h>
+#include <fabric/components/view/ViewProps.h>
 
 namespace facebook {
 namespace react {
 
 extern const char ViewComponentName[];
 
-using ViewShadowNode =
-  ConcreteViewShadowNode<
-    ViewComponentName,
-    ViewProps,
-    ViewEventEmitter
-  >;
+/*
+ * `ShadowNode` for <View> component.
+ */
+class ViewShadowNode final : public ConcreteViewShadowNode<
+                                 ViewComponentName,
+                                 ViewProps,
+                                 ViewEventEmitter> {
+ public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  bool isLayoutOnly() const;
+};
 
 } // namespace react
 } // namespace facebook

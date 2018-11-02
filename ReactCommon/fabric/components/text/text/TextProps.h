@@ -16,17 +16,16 @@
 namespace facebook {
 namespace react {
 
-class TextProps:
-  public Props,
-  public BaseTextProps {
-
-public:
+class TextProps : public Props, public BaseTextProps {
+ public:
   TextProps() = default;
   TextProps(const TextProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace react

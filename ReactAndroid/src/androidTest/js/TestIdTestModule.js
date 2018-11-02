@@ -12,7 +12,6 @@
 var Image = require('Image');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var Switch = require('Switch');
 var Text = require('Text');
 var TextInput = require('TextInput');
 var TouchableBounce = require('TouchableBounce');

@@ -25,20 +25,18 @@ public class ReactAndroidHWInputDeviceHelper {
    * Contains a mapping between handled KeyEvents and the corresponding navigation event
    * that should be fired when the KeyEvent is received.
    */
-  private static final Map<Integer, String> KEY_EVENTS_ACTIONS = MapBuilder.of(
-    KeyEvent.KEYCODE_DPAD_CENTER,
-    "select",
-    KeyEvent.KEYCODE_ENTER,
-    "select",
-    KeyEvent.KEYCODE_SPACE,
-    "select",
-    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
-    "playPause",
-    KeyEvent.KEYCODE_MEDIA_REWIND,
-    "rewind",
-    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
-    "fastForward"
-  );
+  private static final Map<Integer, String> KEY_EVENTS_ACTIONS = MapBuilder.<Integer, String>builder()
+    .put(KeyEvent.KEYCODE_DPAD_CENTER, "select")
+    .put(KeyEvent.KEYCODE_ENTER, "select")
+    .put(KeyEvent.KEYCODE_SPACE, "select")
+    .put(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, "playPause")
+    .put(KeyEvent.KEYCODE_MEDIA_REWIND, "rewind")
+    .put(KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, "fastForward")
+    .put(KeyEvent.KEYCODE_DPAD_UP, "up")
+    .put(KeyEvent.KEYCODE_DPAD_RIGHT, "right")
+    .put(KeyEvent.KEYCODE_DPAD_DOWN, "down")
+    .put(KeyEvent.KEYCODE_DPAD_LEFT, "left")
+    .build();
 
   /**
    * We keep a reference to the last focused view id

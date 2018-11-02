@@ -10,7 +10,6 @@
 
 'use strict';
 
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const IncrementalGroup = require('IncrementalGroup');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -18,6 +17,7 @@ const View = require('View');
 
 import type {Context} from 'Incremental';
 import type {ViewStyleProp} from 'StyleSheet';
+import type {LayoutEvent} from 'CoreEventTypes';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -31,25 +31,19 @@ import type {ViewStyleProp} from 'StyleSheet';
  *
  * See Incremental.js for more info.
  */
-type Props = {
+type Props = $ReadOnly<{|
   name: string,
   disabled?: boolean,
-  onDone?: () => void,
-  onLayout?: (event: Object) => void,
+  onDone?: () => mixed,
+  onLayout?: (event: LayoutEvent) => mixed,
   style?: ViewStyleProp,
-  children?: any,
-};
+  children?: React.Node,
+|}>;
+
 class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 
-  static propTypes = {
-    name: PropTypes.string,
-    disabled: PropTypes.bool,
-    onDone: PropTypes.func,
-    onLayout: PropTypes.func,
-    style: DeprecatedViewPropTypes.style,
-  };
   static contextTypes = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,

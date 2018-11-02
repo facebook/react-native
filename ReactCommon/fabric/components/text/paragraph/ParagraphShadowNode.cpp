@@ -16,14 +16,18 @@ const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
-    cachedAttributedString_ =
-      BaseTextShadowNode::getAttributedString(getProps()->textAttributes, shared_from_this());
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getProps()->textAttributes);
+
+    cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
+        textAttributes, shared_from_this());
   }
 
   return cachedAttributedString_.value();
 }
 
-void ParagraphShadowNode::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
+void ParagraphShadowNode::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
 }
@@ -41,10 +45,10 @@ void ParagraphShadowNode::updateLocalData() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
-    getAttributedString(),
-    getProps()->paragraphAttributes,
-    layoutConstraints
-  );
+      getTag(),
+      getAttributedString(),
+      getProps()->paragraphAttributes,
+      layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

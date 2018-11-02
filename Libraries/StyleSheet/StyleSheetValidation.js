@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ImageStylePropTypes = require('ImageStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const invariant = require('fbjs/lib/invariant');
 
@@ -24,7 +24,7 @@ const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 class StyleSheetValidation {
   static validateStyleProp(prop: string, style: Object, caller: string) {
-    if (!__DEV__) {
+    if (!__DEV__ || global.__RCTProfileIsProfiling) {
       return;
     }
     if (allStylePropTypes[prop] === undefined) {
@@ -48,7 +48,7 @@ class StyleSheetValidation {
   }
 
   static validateStyle(name: string, styles: Object) {
-    if (!__DEV__) {
+    if (!__DEV__ || global.__RCTProfileIsProfiling) {
       return;
     }
     for (const prop in styles[name]) {
@@ -61,6 +61,9 @@ class StyleSheetValidation {
   }
 
   static addValidStylePropTypes(stylePropTypes) {
+    if (!__DEV__ || global.__RCTProfileIsProfiling) {
+      return;
+    }
     for (const key in stylePropTypes) {
       allStylePropTypes[key] = stylePropTypes[key];
     }
@@ -81,8 +84,10 @@ const styleError = function(message1, style, caller?, message2?) {
 
 const allStylePropTypes = {};
 
-StyleSheetValidation.addValidStylePropTypes(ImageStylePropTypes);
-StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);
-StyleSheetValidation.addValidStylePropTypes(ViewStylePropTypes);
+if (__DEV__ && !global.__RCTProfileIsProfiling) {
+  StyleSheetValidation.addValidStylePropTypes(DeprecatedImageStylePropTypes);
+  StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);
+  StyleSheetValidation.addValidStylePropTypes(DeprecatedViewStylePropTypes);
+}
 
 module.exports = StyleSheetValidation;

@@ -10,7 +10,6 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -29,8 +28,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsc.FabricJSCBinding;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
@@ -199,7 +196,7 @@ public class ReactAppTestActivity extends FragmentActivity
           throw new RuntimeException("Layout never occurred for component " + appKey, e);}
   }
 
-  public void loadBundle(ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
+  public void loadBundle(final ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
 
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
@@ -208,6 +205,9 @@ public class ReactAppTestActivity extends FragmentActivity
             .getReactInstanceManagerBuilder()
             .setApplication(getApplication())
             .setBundleAssetName(bundleName);
+    if (spec.getJavaScriptExecutorFactory() != null) {
+      builder.setJavaScriptExecutorFactory(spec.getJavaScriptExecutorFactory());
+    }
     if (!spec.getAlternativeReactPackagesForTest().isEmpty()) {
       builder.addPackages(spec.getAlternativeReactPackagesForTest());
     } else {
@@ -239,22 +239,13 @@ public class ReactAppTestActivity extends FragmentActivity
                       public JSIModuleProvider getJSIModuleProvider() {
                         return new JSIModuleProvider() {
                           @Override
-                          public FabricUIManager get() {
-                            List<ViewManager> viewManagers =
-                                mReactInstanceManager.getOrCreateViewManagers(
-                                    reactApplicationContext);
-                            EventDispatcher eventDispatcher =
-                                reactApplicationContext
-                                    .getNativeModule(UIManagerModule.class)
-                                    .getEventDispatcher();
-                            FabricUIManager fabricUIManager =
-                                new FabricUIManager(
-                                    reactApplicationContext,
-                                    new ViewManagerRegistry(viewManagers),
-                                    jsContext,
-                                    eventDispatcher);
-                            new FabricJSCBinding().installFabric(jsContext, fabricUIManager);
-                            return fabricUIManager;
+                          public UIManager get() {
+                            ViewManagerRegistry viewManagerRegistry =
+                              new ViewManagerRegistry(
+                                mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
+
+                            FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
+                            return factory != null ? factory.getFabricUIManager(reactApplicationContext, viewManagerRegistry, jsContext) : null;
                           }
                         };
                       }

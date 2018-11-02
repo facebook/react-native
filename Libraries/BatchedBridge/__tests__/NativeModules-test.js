@@ -10,12 +10,7 @@
 
 'use strict';
 
-jest
-  .enableAutomock()
-  .unmock('BatchedBridge')
-  .unmock('defineLazyObjectProperty')
-  .unmock('MessageQueue')
-  .unmock('NativeModules');
+jest.unmock('NativeModules');
 
 let BatchedBridge;
 let NativeModules;

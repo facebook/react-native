@@ -7,6 +7,7 @@
 
 package com.facebook.react.testing.idledetection;
 
+import android.view.Choreographer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +56,8 @@ public class ReactIdleDetectionUtil {
         new Runnable() {
           @Override
           public void run() {
-            ChoreographerCompat.getInstance().postFrameCallback(
+            final ChoreographerCompat choreographerCompat = ChoreographerCompat.getInstance();
+            choreographerCompat.postFrameCallback(
                 new ChoreographerCompat.FrameCallback() {
 
                   private int frameCount = 0;
@@ -66,7 +68,7 @@ public class ReactIdleDetectionUtil {
                     if (frameCount == waitFrameCount) {
                       latch.countDown();
                     } else {
-                      ChoreographerCompat.getInstance().postFrameCallback(this);
+                      choreographerCompat.postFrameCallback(this);
                     }
                   }
                 });

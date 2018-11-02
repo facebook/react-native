@@ -802,41 +802,46 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-    NSURL *requestURL = request.URL;
+  NSURL *requestURL = request.URL;
 
-    // If the data being loaded is a video, return NO
-    // Even better may be to implement this on the RCTImageURLLoader that would try to load it,
-    // but we'd have to run the logic both in RCTPhotoLibraryImageLoader and
-    // RCTAssetsLibraryRequestHandler. Once we drop iOS7 though, we'd drop
-    // RCTAssetsLibraryRequestHandler and can move it there.
-    static NSRegularExpression *videoRegex = nil;
-    if (!videoRegex) {
-      NSError *error = nil;
-      videoRegex = [NSRegularExpression regularExpressionWithPattern:@"(?:&|^)ext=MOV(?:&|$)"
-                                                             options:NSRegularExpressionCaseInsensitive
-                                                               error:&error];
-      if (error) {
-        RCTLogError(@"%@", error);
-      }
+  // If the data being loaded is a video, return NO
+  // Even better may be to implement this on the RCTImageURLLoader that would try to load it,
+  // but we'd have to run the logic both in RCTPhotoLibraryImageLoader and
+  // RCTAssetsLibraryRequestHandler. Once we drop iOS7 though, we'd drop
+  // RCTAssetsLibraryRequestHandler and can move it there.
+  static NSRegularExpression *videoRegex;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSError *error = nil;
+    videoRegex = [NSRegularExpression regularExpressionWithPattern:@"(?:&|^)ext=MOV(?:&|$)"
+                                                           options:NSRegularExpressionCaseInsensitive
+                                                             error:&error];
+    if (error) {
+      RCTLogError(@"%@", error);
     }
+  });
 
-    NSString *query = requestURL.query;
-    if (query != nil && [videoRegex firstMatchInString:query
-                                               options:0
-                                                 range:NSMakeRange(0, query.length)]) {
-      return NO;
-    }
-
-    for (id<RCTImageURLLoader> loader in _loaders) {
-        // Don't use RCTImageURLLoader protocol for modules that already conform to
-        // RCTURLRequestHandler as it's inefficient to decode an image and then
-        // convert it back into data
-        if (![loader conformsToProtocol:@protocol(RCTURLRequestHandler)] &&
-            [loader canLoadImageURL:requestURL]) {
-            return YES;
-        }
-    }
+  NSString *query = requestURL.query;
+  if (
+    query != nil &&
+    [videoRegex firstMatchInString:query
+                           options:0
+                             range:NSMakeRange(0, query.length)]
+  ) {
     return NO;
+  }
+
+  for (id<RCTImageURLLoader> loader in _loaders) {
+    // Don't use RCTImageURLLoader protocol for modules that already conform to
+    // RCTURLRequestHandler as it's inefficient to decode an image and then
+    // convert it back into data
+    if (![loader conformsToProtocol:@protocol(RCTURLRequestHandler)] &&
+      [loader canLoadImageURL:requestURL]) {
+      return YES;
+    }
+  }
+
+  return NO;
 }
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate

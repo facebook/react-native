@@ -11,10 +11,9 @@
 'use strict';
 
 const Platform = require('Platform');
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
 const TextLegend = require('./Shared/TextLegend');
 
 type TextAlignExampleRTLState = {|
@@ -92,7 +91,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var curStyle = {
+    const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
     };
@@ -122,12 +121,23 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var AdjustingFontSize = createReactClass({
-  displayName: 'AdjustingFontSize',
-  getInitialState: function() {
-    return {dynamicText: '', shouldRender: true};
-  },
-  reset: function() {
+type AdjustingFontSizeProps = $ReadOnly<{||}>;
+
+type AdjustingFontSizeState = {|
+  dynamicText: string,
+  shouldRender: boolean,
+|};
+
+class AdjustingFontSize extends React.Component<
+  AdjustingFontSizeProps,
+  AdjustingFontSizeState,
+> {
+  state = {
+    dynamicText: '',
+    shouldRender: true,
+  };
+
+  reset = () => {
     LayoutAnimation.easeInEaseOut();
     this.setState({
       shouldRender: false,
@@ -139,23 +149,26 @@ var AdjustingFontSize = createReactClass({
         shouldRender: true,
       });
     }, 300);
-  },
-  addText: function() {
+  };
+
+  addText = () => {
     this.setState({
       dynamicText:
         this.state.dynamicText +
         (Math.floor((Math.random() * 10) % 2) ? ' foo' : ' bar'),
     });
-  },
-  removeText: function() {
+  };
+
+  removeText = () => {
     this.setState({
       dynamicText: this.state.dynamicText.slice(
         0,
         this.state.dynamicText.length - 4,
       ),
     });
-  },
-  render: function() {
+  };
+
+  render() {
     if (!this.state.shouldRender) {
       return <View />;
     }
@@ -221,13 +234,13 @@ var AdjustingFontSize = createReactClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
 class TextBaseLineLayoutExample extends React.Component<*, *> {
   render() {
-    var texts = [];
-    for (var i = 9; i >= 0; i--) {
+    const texts = [];
+    for (let i = 9; i >= 0; i--) {
       texts.push(
         <Text key={i} style={{fontSize: 8 + i * 5, backgroundColor: '#eee'}}>
           {i}

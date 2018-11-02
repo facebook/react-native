@@ -7,16 +7,4 @@
  */
 #include "YGConfig.h"
 
-const std::array<bool, YGExperimentalFeatureCount>
-    kYGDefaultExperimentalFeatures = {{false}};
-
-YGConfig::YGConfig(YGLogger logger)
-    : experimentalFeatures(kYGDefaultExperimentalFeatures),
-      useWebDefaults(false),
-      useLegacyStretchBehaviour(false),
-      shouldDiffLayoutWithoutLegacyStretchBehaviour(false),
-      pointScaleFactor(1.0f),
-      logger(logger),
-      cloneNodeCallback(nullptr),
-      context(nullptr),
-      printTree(false) {}
+YGConfig::YGConfig(YGLogger logger) : logger(logger) {}
