@@ -169,7 +169,7 @@ Animated.spring(a, {
     }],
   }}
 </code></pre>
-<p><a href="/react-native/docs/0.9/animated#interpolate"><code>interpolate()</code></a> supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get an negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:</p>
+<p><a href="/react-native/docs/0.9/animated#interpolate"><code>interpolate()</code></a> supports multiple range segments as well, which is handy for defining dead zones and other handy tricks. For example, to get a negation relationship at -300 that goes to 0 at -100, then back up to 1 at 0, and then back down to zero at 100 followed by a dead-zone that remains at 0 for everything beyond that, you could do:</p>
 <pre><code class="hljs css language-javascript">value.interpolate({
   <span class="hljs-attr">inputRange</span>: [<span class="hljs-number">-300</span>, <span class="hljs-number">-100</span>, <span class="hljs-number">0</span>, <span class="hljs-number">100</span>, <span class="hljs-number">101</span>],
   <span class="hljs-attr">outputRange</span>: [<span class="hljs-number">300</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>],
@@ -256,7 +256,7 @@ Animated.timing(opacity, {
         },
       },
     ],
-    {useNativeDriver: true} // &lt;-- Add this
+    {useNativeDriver: true}, // &lt;-- Add this
   )}&gt;
   {content}
 &lt;/Animated.ScrollView&gt;

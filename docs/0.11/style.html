@@ -39,6 +39,17 @@
 <div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, StyleSheet, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">bigblue</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'blue'</span>,
+    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
+  },
+  <span class="hljs-attr">red</span>: {
+    <span class="hljs-attr">color</span>: <span class="hljs-string">'red'</span>,
+  },
+});
+
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LotsOfStyles</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
   render() {
     <span class="hljs-keyword">return</span> (
@@ -52,20 +63,9 @@
   }
 }
 
-<span class="hljs-keyword">const</span> styles = StyleSheet.create({
-  <span class="hljs-attr">bigblue</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'blue'</span>,
-    <span class="hljs-attr">fontWeight</span>: <span class="hljs-string">'bold'</span>,
-    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">30</span>,
-  },
-  <span class="hljs-attr">red</span>: {
-    <span class="hljs-attr">color</span>: <span class="hljs-string">'red'</span>,
-  },
-});
-
 <span class="hljs-comment">// skip this line if using Create React Native App</span>
 AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>, () =&gt; LotsOfStyles);
-</code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20LotsOfStyles%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.red%7D%3Ejust%20red%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.bigblue%7D%3Ejust%20bigblue%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%5Bstyles.bigblue%2C%20styles.red%5D%7D%3Ebigblue%2C%20then%20red%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%5Bstyles.red%2C%20styles.bigblue%5D%7D%3Ered%2C%20then%20bigblue%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20bigblue%3A%20%7B%0A%20%20%20%20color%3A%20'blue'%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20fontSize%3A%2030%2C%0A%20%20%7D%2C%0A%20%20red%3A%20%7B%0A%20%20%20%20color%3A%20'red'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20LotsOfStyles)%3B%0A" frame-border="0"></iframe></div>
+</code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20StyleSheet%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20bigblue%3A%20%7B%0A%20%20%20%20color%3A%20'blue'%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%20%20fontSize%3A%2030%2C%0A%20%20%7D%2C%0A%20%20red%3A%20%7B%0A%20%20%20%20color%3A%20'red'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0Aexport%20default%20class%20LotsOfStyles%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.red%7D%3Ejust%20red%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.bigblue%7D%3Ejust%20bigblue%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%5Bstyles.bigblue%2C%20styles.red%5D%7D%3Ebigblue%2C%20then%20red%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%5Bstyles.red%2C%20styles.bigblue%5D%7D%3Ered%2C%20then%20bigblue%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20LotsOfStyles)%3B%0A" frame-border="0"></iframe></div>
 
 <p>One common pattern is to make your component accept a <code>style</code> prop which in turn is used to style subcomponents. You can use this to make styles &quot;cascade&quot; the way they do in CSS.</p>
 <p>There are a lot more ways to customize text style. Check out the <a href="/react-native/docs/0.11/text">Text component reference</a> for a complete list.</p>

@@ -117,14 +117,14 @@ CalendarManager.addEvent(<span class="hljs-string">'Birthday Party'</span>, <spa
 <pre><code class="hljs css language-javascript">CalendarManager.addEvent(
   <span class="hljs-string">'Birthday Party'</span>,
   <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
-  date.getTime()
+  date.getTime(),
 ); <span class="hljs-comment">// passing date as number of milliseconds since Unix epoch</span>
 </code></pre>
 <p>or</p>
 <pre><code class="hljs css language-javascript">CalendarManager.addEvent(
   <span class="hljs-string">'Birthday Party'</span>,
   <span class="hljs-string">'4 Privet Drive, Surrey'</span>,
-  date.toISOString()
+  date.toISOString(),
 ); <span class="hljs-comment">// passing date as ISO-8601 string</span>
 </code></pre>
 <p>And both values would get converted correctly to the native <code>NSDate</code>. A bad value, like an <code>Array</code>, would generate a helpful &quot;RedBox&quot; error message.</p>

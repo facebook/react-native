@@ -126,7 +126,7 @@ var RNTMap = requireNativeComponent('RNTMap', MapView);
 
 module.exports = MapView;
 </span></code></pre>
-<p>Now we have a nicely documented wrapper component that is easy to work with. Note that we changed the second argument to <code>requireNativeComponent</code> from <code>null</code> to the new <code>MapView</code> wrapper component. This allows the infrastructure to verify that the propTypes match the native props to reduce the chances of mismatches between the ObjC and JS code.</p>
+<p>Now we have a nicely documented wrapper component that is easy to work with. Note that we changed <code>requireNativeComponent</code>'s second argument from <code>null</code> to the new <code>MapView</code> wrapper component. This allows the infrastructure to verify that the propTypes match the native props in order to reduce the chances of mismatches between the Objective-C and JavaScript code.</p>
 <p>Next, let's add the more complex <code>region</code> prop. We start by adding the native code:</p>
 <pre><code class="hljs css language-objectivec"><span class="hljs-comment">// RNTMapManager.m</span>
 RCT_CUSTOM_VIEW_PROPERTY(region, <span class="hljs-built_in">MKCoordinateRegion</span>, <span class="hljs-built_in">MKMapView</span>)
@@ -255,7 +255,7 @@ render() {
 
 <span class="hljs-keyword">@end</span>
 </code></pre>
-<p>Next, declare an event handler property on <code>RNTMapManager</code>, make it a delegate for all the views it exposes, and forward events to JS by calling the event handler block from the native view.</p>
+<p>Note that all <code>RCTBubblingEventBlock</code> must be prefixed with <code>on</code>. Next, declare an event handler property on <code>RNTMapManager</code>, make it a delegate for all the views it exposes, and forward events to JS by calling the event handler block from the native view.</p>
 <pre><code class="hljs css language-objectivec{9,17,31-48}"><span class="hljs-comment">// RNTMapManager.m</span>
 
 <span class="hljs-meta">#import <span class="hljs-meta-string">&lt;MapKit/MapKit.h&gt;</span></span>

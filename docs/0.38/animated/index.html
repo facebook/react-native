@@ -46,7 +46,7 @@
     Animated.timing(
       <span class="hljs-comment">// Uses easing functions</span>
       <span class="hljs-keyword">this</span>.state.fadeAnim, <span class="hljs-comment">// The value to drive</span>
-      {<span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>} <span class="hljs-comment">// Configuration</span>
+      {<span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>}, <span class="hljs-comment">// Configuration</span>
     ).start(); <span class="hljs-comment">// Don't forget start!</span>
   }
   render() {
@@ -276,7 +276,7 @@
       <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
         Animated.spring(
           <span class="hljs-keyword">this</span>.state.pan, <span class="hljs-comment">// Auto-multiplexed</span>
-          {<span class="hljs-attr">toValue</span>: {<span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>}} <span class="hljs-comment">// Back to zero</span>
+          {<span class="hljs-attr">toValue</span>: {<span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>}}, <span class="hljs-comment">// Back to zero</span>
         ).start();
       },
     });

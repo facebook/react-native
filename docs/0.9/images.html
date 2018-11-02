@@ -42,6 +42,7 @@
 <pre><code class="hljs">.
 ├── <span class="hljs-selector-tag">button</span><span class="hljs-selector-class">.js</span>
 └── <span class="hljs-selector-tag">img</span>
+    ├── check<span class="hljs-selector-class">.png</span>
     ├── check@<span class="hljs-number">2</span>x<span class="hljs-selector-class">.png</span>
     └── check@<span class="hljs-number">3</span>x<span class="hljs-selector-class">.png</span>
 </code></pre>
@@ -163,7 +164,7 @@ var icon = this.props.active
 <p>On the user side, this lets you annotate the object with useful attributes such as the dimension of the image in order to compute the size it's going to be displayed in. Feel free to use it as your data structure to store more information about your image.</p>
 <h2><a class="anchor" aria-hidden="true" id="background-image-via-nesting"></a><a href="#background-image-via-nesting" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Background Image via Nesting</h2>
 <p>A common feature request from developers familiar with the web is <code>background-image</code>. To handle this use case, you can use the <code>&lt;ImageBackground&gt;</code> component, which has the same props as <code>&lt;Image&gt;</code>, and add whatever children to it you would like to layer on top of it.</p>
-<p>You might not want to use <code>&lt;ImageBackground&gt;</code> in some cases, since the implementation is very simple. Refer to <code>&lt;ImageBackground&gt;</code>'s <a href="https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js">source code</a> for more insight, and create your own custom component when needed.</p>
+<p>You might not want to use <code>&lt;ImageBackground&gt;</code> in some cases, since the implementation is very simple. Refer to <code>&lt;ImageBackground&gt;</code>'s <a href="/react-native/docs/0.9/imagebackground">documentation</a> for more insight, and create your own custom component when needed.</p>
 <pre><code class="hljs css language-javascript"><span class="hljs-keyword">return</span> (
   <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">ImageBackground</span> <span class="hljs-attr">source</span>=<span class="hljs-string">{...}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> '<span class="hljs-attr">100</span>%', <span class="hljs-attr">height:</span> '<span class="hljs-attr">100</span>%'}}&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>Inside<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>

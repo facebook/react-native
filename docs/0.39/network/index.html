@@ -72,7 +72,7 @@
 <pre><code class="hljs css language-javascript"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getMoviesFromApi</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">await</span> fetch(
-      <span class="hljs-string">'https://facebook.github.io/react-native/movies.json'</span>
+      <span class="hljs-string">'https://facebook.github.io/react-native/movies.json'</span>,
     );
     <span class="hljs-keyword">let</span> responseJson = <span class="hljs-keyword">await</span> response.json();
     <span class="hljs-keyword">return</span> responseJson.movies;

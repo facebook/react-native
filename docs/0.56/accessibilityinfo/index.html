@@ -43,7 +43,7 @@
   componentDidMount() {
     AccessibilityInfo.addEventListener(
       <span class="hljs-string">'change'</span>,
-      <span class="hljs-keyword">this</span>._handleScreenReaderToggled
+      <span class="hljs-keyword">this</span>._handleScreenReaderToggled,
     );
     AccessibilityInfo.fetch().done(<span class="hljs-function">(<span class="hljs-params">isEnabled</span>) =&gt;</span> {
       <span class="hljs-keyword">this</span>.setState({
@@ -55,7 +55,7 @@
   componentWillUnmount() {
     AccessibilityInfo.removeEventListener(
       <span class="hljs-string">'change'</span>,
-      <span class="hljs-keyword">this</span>._handleScreenReaderToggled
+      <span class="hljs-keyword">this</span>._handleScreenReaderToggled,
     );
   }
 

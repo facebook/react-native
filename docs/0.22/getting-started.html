@@ -233,7 +233,7 @@ npm start
 <p><img src="/react-native/docs/assets/GettingStartedXcodeCommandLineTools.png" alt="Xcode Command Line Tools"></p>
 <p><block class="native mac linux android" /></p>
 <h3><a class="anchor" aria-hidden="true" id="java-development-kit"></a><a href="#java-development-kit" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Java Development Kit</h3>
-<p>React Native requires a recent version of the Java SE Development Kit (JDK). <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install Oracle JDK 8 or newer</a> if needed. You can also use <a href="http://openjdk.java.net/install/">OpenJDK 8 or newer</a> as an alternative.</p>
+<p>React Native requires a recent version of the Java SE Development Kit (JDK). <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install Oracle JDK 8</a> if needed. You can also use <a href="http://openjdk.java.net/install/">OpenJDK 8</a> as an alternative.</p>
 <p><block class="native mac linux windows android" /></p>
 <h3><a class="anchor" aria-hidden="true" id="android-development-environment"></a><a href="#android-development-environment" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Android development environment</h3>
 <p>Setting up your development environment can be somewhat tedious if you're new to Android development. If you're already familiar with Android development, there are a few things you may need to configure. In either case, please make sure to carefully follow the next few steps.</p>
@@ -270,28 +270,13 @@ npm start
 <blockquote>
 <p>The SDK Manager can also be found within the Android Studio &quot;Preferences&quot; dialog, under <strong>Appearance &amp; Behavior</strong> → <strong>System Settings</strong> → <strong>Android SDK</strong>.</p>
 </blockquote>
-<p>Select the &quot;SDK Platforms&quot; tab from within the SDK Manager, then check the box next to &quot;Show Package Details&quot; in the bottom right corner. Look for and expand the <code>Android 8.1 (Oreo)</code> entry, then make sure the following items are all checked:</p>
+<p>Select the &quot;SDK Platforms&quot; tab from within the SDK Manager, then check the box next to &quot;Show Package Details&quot; in the bottom right corner. Look for and expand the <code>Android 8.1 (Oreo)</code> entry, then make sure the following items are checked:</p>
 <ul>
 <li><code>Android SDK Platform 27</code></li>
-<li><code>Google APIs Intel x86 Atom_64 System Image</code></li>
+<li><code>Intel x86 Atom_64 System Image</code> or <code>Google APIs Intel x86 Atom System Image</code></li>
 </ul>
-<p><block class="native mac android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerMacOS.png" alt="Android SDK Manager"></p>
-<p><block class="native windows android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerWindows.png" alt="Android SDK Manager"></p>
-<p><block class="native windows mac linux android" /></p>
-<p>Next, select the &quot;SDK Tools&quot; tab and check the box next to &quot;Show Package Details&quot; here as well. Look for and expand the &quot;Android SDK Build-Tools&quot; entry, then make sure that <code>26.0.3</code> is selected.</p>
-<p><block class="native mac android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerSDKToolsMacOS.png" alt="Android SDK Manager - 26.0.3 Build Tools"></p>
-<p><block class="native windows android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerSDKToolsWindows.png" alt="Android SDK Manager - 26.0.3 Build Tools"></p>
-<p><block class="native windows mac linux android" /></p>
+<p>Next, select the &quot;SDK Tools&quot; tab and check the box next to &quot;Show Package Details&quot; here as well. Look for and expand the &quot;Android SDK Build-Tools&quot; entry, then make sure that <code>27.0.3</code> is selected.</p>
 <p>Finally, click &quot;Apply&quot; to download and install the Android SDK and related build tools.</p>
-<p><block class="native mac android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerInstallsMacOS.png" alt="Android SDK Manager - Installs"></p>
-<p><block class="native windows android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedAndroidSDKManagerInstallsWindows.png" alt="Android SDK Manager - Installs"></p>
-<p><block class="native mac windows linux android" /></p>
 <h4><a class="anchor" aria-hidden="true" id="3-configure-the-android-home-environment-variable"></a><a href="#3-configure-the-android-home-environment-variable" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>3. Configure the ANDROID_HOME environment variable</h4>
 <p>The React Native tools require some environment variables to be set up in order to build apps with native code.</p>
 <p><block class="native mac linux android" /></p>
@@ -353,29 +338,19 @@ npm start
 <h3><a class="anchor" aria-hidden="true" id="using-a-virtual-device"></a><a href="#using-a-virtual-device" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using a virtual device</h3>
 <p>If you use Android Studio to open <code>./AwesomeProject/android</code>, you can see the list of available Android Virtual Devices (AVDs) by opening the &quot;AVD Manager&quot; from within Android Studio. Look for an icon that looks like this:</p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidStudioAVD.png" alt="Android Studio AVD Manager"></p>
-<p>If you have just installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;.</p>
-<p><block class="native windows android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedCreateAVDWindows.png" alt="Android Studio AVD Manager"></p>
-<p><block class="native mac android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedCreateAVDMacOS.png" alt="Android Studio AVD Manager"></p>
-<p><block class="native mac windows linux android" /></p>
-<p>Select the &quot;x86 Images&quot; tab, then look for the <strong>Oreo</strong> API Level 26, x86_64 ABI image with a Android 8.0 (Google APIs) target.</p>
+<p>If you have just installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;, then select the <strong>Oreo</strong> API Level 27 image.</p>
 <p><block class="native linux android" /></p>
 <blockquote>
 <p>We recommend configuring <a href="https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux">VM acceleration</a> on your system to improve performance. Once you've followed those instructions, go back to the AVD Manager.</p>
 </blockquote>
 <p><block class="native windows android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedCreateAVDx86Windows.png" alt="Install HAXM"></p>
 <blockquote>
 <p>If you don't have HAXM installed, click on &quot;Install HAXM&quot; or follow <a href="https://github.com/intel/haxm/wiki/Installation-Instructions-on-Windows">these instructions</a> to set it up, then go back to the AVD Manager.</p>
 </blockquote>
-<p><img src="/react-native/docs/assets/GettingStartedAVDManagerWindows.png" alt="AVD List"></p>
 <p><block class="native mac android" /></p>
-<p><img src="/react-native/docs/assets/GettingStartedCreateAVDx86MacOS.png" alt="Install HAXM"></p>
 <blockquote>
 <p>If you don't have HAXM installed, follow <a href="https://github.com/intel/haxm/wiki/Installation-Instructions-on-macOS">these instructions</a> to set it up, then go back to the AVD Manager.</p>
 </blockquote>
-<p><img src="/react-native/docs/assets/GettingStartedAVDManagerMacOS.png" alt="AVD List"></p>
 <p><block class="native mac windows linux android" /></p>
 <p>Click &quot;Next&quot; then &quot;Finish&quot; to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it, then proceed to the next step.</p>
 <p><block class="native mac ios" /></p>

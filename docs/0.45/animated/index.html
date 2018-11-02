@@ -40,7 +40,7 @@
   <span class="hljs-keyword">this</span>.state.fadeAnim, <span class="hljs-comment">// The value to drive</span>
   {
     <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>, <span class="hljs-comment">// Animate to final value of 1</span>
-  }
+  },
 ).start(); <span class="hljs-comment">// Start the animation</span>
 </code></pre>
 <p>Refer to the <a href="/react-native/docs/0.45/animations#animated-api">Animations</a> guide to see additional examples of <code>Animated</code> in action.</p>
@@ -371,7 +371,7 @@
       <span class="hljs-attr">onPanResponderRelease</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
         Animated.spring(
           <span class="hljs-keyword">this</span>.state.pan, <span class="hljs-comment">// Auto-multiplexed</span>
-          {<span class="hljs-attr">toValue</span>: {<span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>}} <span class="hljs-comment">// Back to zero</span>
+          {<span class="hljs-attr">toValue</span>: {<span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>}}, <span class="hljs-comment">// Back to zero</span>
         ).start();
       },
     });

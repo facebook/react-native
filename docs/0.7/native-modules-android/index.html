@@ -204,7 +204,7 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
   },
   (x, y, width, height) =&gt; {
     <span class="hljs-built_in">console</span>.log(x + <span class="hljs-string">':'</span> + y + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
-  }
+  },
 );
 </code></pre>
 <p>A native module is supposed to invoke its callback only once. It can, however, store the callback and invoke it later.</p>
@@ -246,7 +246,7 @@ ToastExample.show(<span class="hljs-string">'Awesome'</span>, ToastExample.SHORT
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">var</span> {relativeX, relativeY, width, height} = <span class="hljs-keyword">await</span> UIManager.measureLayout(
       <span class="hljs-number">100</span>,
-      <span class="hljs-number">100</span>
+      <span class="hljs-number">100</span>,
     );
 
     <span class="hljs-built_in">console</span>.log(relativeX + <span class="hljs-string">':'</span> + relativeY + <span class="hljs-string">':'</span> + width + <span class="hljs-string">':'</span> + height);
