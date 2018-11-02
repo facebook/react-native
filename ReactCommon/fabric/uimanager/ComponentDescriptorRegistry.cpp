@@ -81,7 +81,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
 }
 
 static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
-  // TODO: Convert this to something smarter, probably returning `std::iterator`.
+  // TODO: Convert this to something smarter, probably returning
+  // `std::iterator`.
   RawProps result;
 
   if (object.isNull()) {
@@ -103,13 +104,12 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(Tag tag, const std::str
   const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);
 
-  SharedShadowNode shadowNode =
-    componentDescriptor->createShadowNode({
-      .tag = tag,
-      .rootTag = rootTag,
-      .eventEmitter = componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-      .props = componentDescriptor->cloneProps(nullptr, rawProps)
-    });
+  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
+      {.tag = tag,
+       .rootTag = rootTag,
+       .eventEmitter =
+           componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
+       .props = componentDescriptor->cloneProps(nullptr, rawProps)});
   return shadowNode;
 }
 
