@@ -123,8 +123,14 @@ void FabricUIManager::stopSurface(SurfaceId surfaceId) const {
   (*executor_)([this, surfaceId] { stopSurfaceFunction_(surfaceId); });
 }
 
-SharedShadowNode FabricUIManager::createNode(int tag, std::string viewName, int rootTag, folly::dynamic props, SharedEventTarget eventTarget) const {
-  SharedShadowNode shadowNode = componentDescriptorRegistry_->createNode(tag, viewName, rootTag, props, eventTarget);
+SharedShadowNode FabricUIManager::createNode(
+    int tag,
+    std::string viewName,
+    int rootTag,
+    folly::dynamic props,
+    SharedEventTarget eventTarget) const {
+  SharedShadowNode shadowNode = componentDescriptorRegistry_->createNode(
+      tag, viewName, rootTag, props, eventTarget);
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
   }
