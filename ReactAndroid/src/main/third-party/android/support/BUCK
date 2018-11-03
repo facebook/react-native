@@ -1,26 +1,317 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
-rn_android_library(
-    name = "support-v4",
-    visibility = ["PUBLIC"],
-    exported_deps = [
-        react_native_dep("third-party/android/support:support-v4"),
-    ],
-)
-
-rn_android_library(
-    name = "appcompat-v7",
-    visibility = ["PUBLIC"],
-    exported_deps = [
-        react_native_dep("third-party/android/support:support-v4"),
-    ],
-)
-
 # a fake genrule so that BUCK files in react native are preseable in fbsource
 fb_native.genrule(
     name = "appcompat-res-cmd",
     out = ".",
     bash = "ls",
     visibility = ["PUBLIC"],
+)
+
+fb_native.android_library(
+    name = "animated-vector-drawable",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":animated-vector-drawable-lib",
+        ":support-core-ui",
+        ":support-vector-drawable",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "animated-vector-drawable-lib",
+    aar = ":animated-vector-drawable-aar",
+)
+
+fb_native.android_library(
+    name = "appcompat-v7",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":animated-vector-drawable",
+        ":appcompat-v7-lib",
+        ":support-annotations",
+        ":support-core-utils",
+        ":support-fragment",
+        ":support-vector-drawable",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "appcompat-v7-lib",
+    aar = ":appcompat-v7-aar",
+)
+
+fb_native.prebuilt_jar(
+    name = "core-common",
+    binary_jar = ":core-common.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+
+fb_native.android_library(
+    name = "core-runtime",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":core-common",
+        ":core-runtime-lib",
+    ]
+)
+
+fb_native.android_prebuilt_aar(
+    name = "core-runtime-lib",
+    aar = ":core-runtime-aar",
+)
+
+fb_native.prebuilt_jar(
+    name = "lifecycle-common",
+    binary_jar = ":lifecycle-common.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+fb_native.android_library(
+    name = "lifecycle-runtime",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":core-common",
+        ":lifecycle-common",
+        ":lifecycle-runtime-lib",
+    ]
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-runtime-lib",
+    aar = ":lifecycle-runtime-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-viewmodel",
+    aar = ":lifecycle-viewmodel-aar",
+)
+
+fb_native.android_library(
+    name = "livedata-core",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":core-common",
+        ":core-runtime",
+        ":lifecycle-common",
+        ":livedata-core-lib"
+    ]
+)
+
+fb_native.android_prebuilt_aar(
+    name = "livedata-core-lib",
+    aar = ":livedata-core-aar",
+)
+
+fb_native.android_library(
+    name = "runtime",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":lifecycle-runtime",
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "support-annotations",
+    binary_jar = ":support-annotations.jar",
+    visibility = ["//ReactAndroid/..."],
+)
+
+fb_native.android_library(
+    name = "all-support-v4",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":support-compat",
+        ":support-media-compat",
+        ":support-core-utils",
+        ":support-core-ui",
+        ":support-fragment",
+    ],
+)
+
+fb_native.android_library(
+    name = "support-compat",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":lifecycle-runtime",
+        ":support-annotations",
+        ":support-compat-lib"
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-compat-lib",
+    aar = ":support-compat-aar",
+)
+
+fb_native.android_library(
+    name = "support-core-ui",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-ui-lib",
+        ":support-core-utils",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-core-ui-lib",
+    aar = ":support-core-ui-aar",
+)
+
+fb_native.android_library(
+    name = "support-core-utils",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-utils-lib",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-core-utils-lib",
+    aar = ":support-core-utils-aar",
+)
+
+fb_native.android_library(
+    name = "support-fragment",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":lifecycle-viewmodel",
+        ":livedata-core",
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-ui",
+        ":support-core-utils",
+        ":support-fragment-lib",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-fragment-lib",
+    aar = ":support-fragment-aar",
+)
+
+fb_native.android_library(
+    name = "support-media-compat",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-media-compat-lib",
+    aar = ":support-media-compat-aar",
+)
+
+fb_native.android_library(
+    name = "support-vector-drawable",
+    visibility = ["//ReactAndroid/..."],
+    exported_deps = [
+        ":support-annotations",
+        ":support-compat",
+        ":support-vector-drawable-lib",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-vector-drawable-lib",
+    aar = ":support-vector-drawable-aar",
+)
+
+# Remote files
+fb_native.remote_file(
+    name = "animated-vector-drawable-aar",
+    sha1 = "88c2fb880a3e8c902b8f247197509d489e8a3501",
+    url = "mvn:com.android.support:animated-vector-drawable:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "appcompat-v7-aar",
+    sha1 = "22b1ef4ff9ef1a3513c18eb132d597eac6ef1a86",
+    url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "core-common.jar",
+    sha1 = "e55b70d1f5620db124b3e85a7f4bdc7bd48d9f95",
+    url = "mvn:android.arch.core:common:jar:1.1.1",
+)
+
+fb_native.remote_file(
+    name = "core-runtime-aar",
+    sha1 = "a7e27caf787e14c0d8417be907f4a31f0306acb2",
+    url = "mvn:android.arch.core:runtime:aar:1.1.1",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-common.jar",
+    sha1 = "207a6efae6a3555e326de41f76bdadd9a239cbce",
+    url = "mvn:android.arch.lifecycle:common:jar:1.1.1",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-runtime-aar",
+    sha1 = "95428e5f6bf6875a6a1125d2157c3836a1a837f5",
+    url = "mvn:android.arch.lifecycle:runtime:aar:1.1.0",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-viewmodel-aar",
+    sha1 = "74ee369b874da61b5b81bebd7b8df0c2577309c8",
+    url = "mvn:android.arch.lifecycle:viewmodel:aar:1.1.0",
+)
+
+fb_native.remote_file(
+    name = "livedata-core-aar",
+    sha1 = "30ede25cb577323f039c2e3d72b3b56526a2b2e6",
+    url = "mvn:android.arch.lifecycle:livedata-core:aar:1.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-annotations.jar",
+    sha1 = "39ded76b5e1ce1c5b2688e1d25cdc20ecee32007",
+    url = "mvn:com.android.support:support-annotations:jar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-compat-aar",
+    sha1 = "a55ad550d0b84c7fec7ecca012690636062c0e64",
+    url = "mvn:com.android.support:support-compat:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-core-ui-aar",
+    sha1 = "f9acdb8a4c3a9fe883fd7fa5efd3f0426bb9dcda",
+    url = "mvn:com.android.support:support-core-ui:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-core-utils-aar",
+    sha1 = "b3a7a4040fda0c5138dbc8c477103b6723b9dbe6",
+    url = "mvn:com.android.support:support-core-utils:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-fragment-aar",
+    sha1 = "eb8053ebf038b7561c29e5e8964664fac05f375e",
+    url = "mvn:com.android.support:support-fragment:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-media-compat-aar",
+    sha1 = "10e309e2cc22ff4cab30bd5f573e4bb30be707ad",
+    url = "mvn:com.android.support:support-media-compat:aar:27.1.1",
+)
+
+fb_native.remote_file(
+    name = "support-vector-drawable-aar",
+    sha1 = "7ffbee6bc80535389f182e559aa279b81b372202",
+    url = "mvn:com.android.support:support-vector-drawable:aar:27.1.1",
 )
