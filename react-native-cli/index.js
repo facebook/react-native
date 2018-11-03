@@ -40,7 +40,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var chalk = require('chalk');
 var prompt = require('prompt');
@@ -193,17 +192,17 @@ function validateProjectName(name) {
  * @param options.npm If true, always use the npm command line client,
  *                       don't use yarn even if available.
  */
-function init(name, options) {
+function init(name, _options) {
   validateProjectName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, options);
+    createAfterConfirmation(name, _options);
   } else {
-    createProject(name, options);
+    createProject(name, _options);
   }
 }
 
-function createAfterConfirmation(name, options) {
+function createAfterConfirmation(name, _options) {
   prompt.start();
 
   var property = {
@@ -215,8 +214,13 @@ function createAfterConfirmation(name, options) {
   };
 
   prompt.get(property, function(err, result) {
+    if (err) {
+      console.log('Error initializing project');
+      return;
+    }
+
     if (result.yesno[0] === 'y') {
-      createProject(name, options);
+      createProject(name, _options);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -224,7 +228,7 @@ function createAfterConfirmation(name, options) {
   });
 }
 
-function createProject(name, options) {
+function createProject(name, _options) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -253,7 +257,7 @@ function createProject(name, options) {
   );
   process.chdir(root);
 
-  run(root, projectName, options);
+  run(root, projectName, _options);
 }
 
 function getInstallPackage(rnPackage) {
@@ -268,21 +272,21 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function run(root, projectName, options) {
-  var rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
-  var forceNpmClient = options.npm;
+function run(root, projectName, _options) {
+  var rnPackage = _options.version; // e.g. '0.38' or '/path/to/archive.tgz'
+  var forceNpmClient = _options.npm;
   var yarnVersion = !forceNpmClient && getYarnVersionIfAvailable();
   var installCommand;
-  if (options.installCommand) {
+  if (_options.installCommand) {
     // In CI environments it can be useful to provide a custom command,
     // to set up and use an offline mirror for installing dependencies, for example.
-    installCommand = options.installCommand;
+    installCommand = _options.installCommand;
   } else {
     if (yarnVersion) {
       console.log('Using yarn v' + yarnVersion);
       console.log('Installing ' + getInstallPackage(rnPackage) + '...');
       installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
-      if (options.verbose) {
+      if (_options.verbose) {
         installCommand += ' --verbose';
       }
     } else {
@@ -294,7 +298,7 @@ function run(root, projectName, options) {
       }
       installCommand =
         'npm install --save --save-exact ' + getInstallPackage(rnPackage);
-      if (options.verbose) {
+      if (_options.verbose) {
         installCommand += ' --verbose';
       }
     }
