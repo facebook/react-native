@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -32,18 +32,18 @@ type PickerItemProps = $ReadOnly<{|
    * The value to be passed to picker's `onValueChange` callback when
    * this item is selected. Can be a string or an integer.
    */
-  value?: any,
+  value?: ?(string | number),
 
   /**
    * Color of this item's text.
    * @platform android
    */
-  color?: ColorValue,
+  color?: ?ColorValue,
 
   /**
    * Used to locate the item in end-to-end tests.
    */
-  testID?: string,
+  testID?: ?string,
 |}>;
 
 /**
@@ -63,14 +63,14 @@ type PickerProps = $ReadOnly<{|
   /**
    * Value matching value of one of the items. Can be a string or an integer.
    */
-  selectedValue?: any,
+  selectedValue?: ?(string | number),
 
   /**
    * Callback for when an item is selected. This is called with the following parameters:
    *   - `itemValue`: the `value` prop of the item that was selected
    *   - `itemPosition`: the index of the selected item in this picker
    */
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  onValueChange?: ?(itemIndex: string, itemValue: string | number) => mixed,
 
   /**
    * If set to false, the picker will be disabled, i.e. the user will not be able to make a
@@ -112,7 +112,7 @@ type PickerProps = $ReadOnly<{|
  *
  *     <Picker
  *       selectedValue={this.state.language}
- *       onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
+ *       onValueChange={(itemIndex, itemValue) => this.setState({language: itemValue})}>
  *       <Picker.Item label="Java" value="java" />
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>
