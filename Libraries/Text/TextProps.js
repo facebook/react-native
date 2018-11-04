@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -106,12 +106,12 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#onpress
    */
   onPress?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?Function,
-  onResponderMove?: ?Function,
-  onResponderRelease?: ?Function,
-  onResponderTerminate?: ?Function,
-  onResponderTerminationRequest?: ?Function,
-  onStartShouldSetResponder?: ?Function,
+  onResponderGrant?: ?(event: SyntheticEvent<>, dispatchID: string) => void,
+  onResponderMove?: ?(event: SyntheticEvent<>) => void,
+  onResponderRelease?: ?(event: SyntheticEvent<>) => void,
+  onResponderTerminate?: ?(event: SyntheticEvent<>) => void,
+  onResponderTerminationRequest?: ?() => boolean,
+  onStartShouldSetResponder?: ?() => boolean,
   onTextLayout?: ?(event: TextLayoutEvent) => mixed,
 
   /**
