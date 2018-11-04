@@ -9,9 +9,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AccessibilityInfo,
   StyleSheet,
   Text,
@@ -20,10 +20,10 @@ var {
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-var importantForAccessibilityValues = [
+const importantForAccessibilityValues = [
   'auto',
   'yes',
   'no',
@@ -293,7 +293,7 @@ class AccessibilityAndroidExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   embedded: {
     backgroundColor: 'yellow',
     padding: 10,

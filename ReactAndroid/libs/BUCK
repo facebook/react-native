@@ -1,21 +1,23 @@
-android_prebuilt_aar(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.android_prebuilt_aar(
     name = "appcompat",
     aar = ":appcompat-binary-aar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "appcompat-binary-aar",
     sha1 = "22b1ef4ff9ef1a3513c18eb132d597eac6ef1a86",
     url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
 )
 
-android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "android-jsc",
     aar = ":android-jsc-aar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "android-jsc-aar",
     sha1 = "880cedd93f43e0fc841f01f2fa185a63d9230f85",
     url = "mvn:org.webkit:android-jsc:aar:r174650",

@@ -13,7 +13,7 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH) $(LOCAL_PATH)/.. $(LOCAL_PATH)/glog-0.3.5/src/
 
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/.. $(LOCAL_PATH)/glog-0.3.5/src/
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/exported
 
 LOCAL_CFLAGS += \
   -Wwrite-strings \

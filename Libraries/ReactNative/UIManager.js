@@ -147,7 +147,9 @@ if (Platform.OS === 'ios') {
   // we also tell Prepack that it has only partial knowledge of the UIManager,
   // so that any accesses to unknown properties along the global code will fail
   // when Prepack encounters them.
-  if (global.__makePartial) global.__makePartial(UIManager);
+  if (global.__makePartial) {
+    global.__makePartial(UIManager);
+  }
 }
 
 if (__DEV__) {

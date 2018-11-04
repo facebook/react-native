@@ -49,6 +49,7 @@ if (__DEV__) {
     };
     // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
     ViewToExport = React.forwardRef(View);
+    ViewToExport.displayName = 'View';
   }
 }
 

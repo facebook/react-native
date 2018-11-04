@@ -2,7 +2,7 @@
 
 exports[`YellowBoxCategory renders a single substitution 1`] = `
 Array [
-  <Component
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -10,21 +10,21 @@ Array [
     }
   >
     "A"
-  </Component>,
+  </Text>,
 ]
 `;
 
 exports[`YellowBoxCategory renders content with no substitutions 1`] = `
 Array [
-  <Component>
+  <Text>
     A
-  </Component>,
+  </Text>,
 ]
 `;
 
 exports[`YellowBoxCategory renders multiple substitutions 1`] = `
 Array [
-  <Component
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -32,11 +32,11 @@ Array [
     }
   >
     "A"
-  </Component>,
-  <Component>
+  </Text>,
+  <Text>
      
-  </Component>,
-  <Component
+  </Text>,
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -44,11 +44,11 @@ Array [
     }
   >
     "B"
-  </Component>,
-  <Component>
+  </Text>,
+  <Text>
      
-  </Component>,
-  <Component
+  </Text>,
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -56,16 +56,16 @@ Array [
     }
   >
     "C"
-  </Component>,
+  </Text>,
 ]
 `;
 
 exports[`YellowBoxCategory renders substitutions with leading content 1`] = `
 Array [
-  <Component>
+  <Text>
     !
-  </Component>,
-  <Component
+  </Text>,
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -73,13 +73,13 @@ Array [
     }
   >
     "A"
-  </Component>,
+  </Text>,
 ]
 `;
 
 exports[`YellowBoxCategory renders substitutions with trailing content 1`] = `
 Array [
-  <Component
+  <Text
     style={
       Object {
         "fontWeight": "bold",
@@ -87,9 +87,9 @@ Array [
     }
   >
     "A"
-  </Component>,
-  <Component>
+  </Text>,
+  <Text>
     !
-  </Component>,
+  </Text>,
 ]
 `;
