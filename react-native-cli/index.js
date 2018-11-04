@@ -216,7 +216,7 @@ function createAfterConfirmation(name, options) {
   prompt.get(property, function(err, result) {
     if (err) {
       console.log('Error initializing project');
-      return;
+      process.exit(1);
     }
 
     if (result.yesno[0] === 'y') {
