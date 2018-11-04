@@ -13,7 +13,7 @@ Changelog:
 ----------
 Help reviewers and the release process by writing your own changelog entry. When the change doesn't impact React Native developers, it may be ommitted from the changelog for brevity. See below for an example.
 
-[TYPE] [CATEGORY] - Message
+[CATEGORY] [TYPE] - Message
 
 <!--
 
@@ -38,8 +38,8 @@ Help reviewers and the release process by writing your own changelog entry. When
 
   EXAMPLES:
 
-  [Added] [General] - Add snapToOffsets prop to ScrollView component
-  [Fixed] [General] - Fix various issues in snapToInterval on ScrollView component
-  [Fixed] [iOS] - Fix crash in RCTImagePicker
+  [General] [Added] - Add snapToOffsets prop to ScrollView component
+  [General] [Fixed] - Fix various issues in snapToInterval on ScrollView component
+  [iOS] [Fixed] - Fix crash in RCTImagePicker
 
 -->
