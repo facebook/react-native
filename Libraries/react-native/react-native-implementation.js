@@ -11,10 +11,10 @@
 'use strict';
 
 const invariant = require('invariant');
+const warnMoved = require('warnMoved');
 
 let showedListViewDeprecation = false;
 let showedSwipeableListViewDeprecation = false;
-let showedWebWiewDeprecation = false;
 
 // Export React, plus some native additions.
 module.exports = {
@@ -165,15 +165,7 @@ module.exports = {
     return require('VirtualizedList');
   },
   get WebView() {
-    if (!showedWebWiewDeprecation) {
-      console.warn(
-        'WebView has been extracted from react-native core and will be removed in a future release. ' +
-          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-webview for more informations.',
-      );
-
-      showedWebWiewDeprecation = true;
-    }
+    warnMoved('WebView', 'react-native-webview');
     return require('WebView');
   },
 
