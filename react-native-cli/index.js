@@ -58,7 +58,7 @@ var semver = require('semver');
  *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
  */
 
-var options = require('minimist')(process.argv.slice(2));
+var args = require('minimist')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(process.cwd(), 'node_modules', 'react-native', 'cli.js');
@@ -73,7 +73,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-if (options._.length === 0 && (options.v || options.version)) {
+if (args._.length === 0 && (args.v || args.version)) {
   printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
 }
 
@@ -112,20 +112,20 @@ if (fs.existsSync(cliPath)) {
   cli = require(cliPath);
 }
 
-var commands = options._;
+var commands = args._;
 if (cli) {
   cli.run();
 } else {
-  if (options._.length === 0 && (options.h || options.help)) {
+  if (args._.length === 0 && (args.h || args.help)) {
     console.log(
       [
         '',
-        '  Usage: react-native [command] [options]',
+        '  Usage: react-native [command] [args]',
         '',
         '',
         '  Commands:',
         '',
-        '    init <ProjectName> [options]  generates a new project and installs its dependencies',
+        '    init <ProjectName> [args]  generates a new project and installs its dependencies',
         '',
         '  Options:',
         '',
@@ -151,7 +151,7 @@ if (cli) {
         console.error('Usage: react-native init <ProjectName> [--verbose]');
         process.exit(1);
       } else {
-        init(commands[1], options);
+        init(commands[1], args);
       }
       break;
     default:
@@ -192,17 +192,17 @@ function validateProjectName(name) {
  * @param options.npm If true, always use the npm command line client,
  *                       don't use yarn even if available.
  */
-function init(name, _options) {
+function init(name, options) {
   validateProjectName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, _options);
+    createAfterConfirmation(name, options);
   } else {
-    createProject(name, _options);
+    createProject(name, options);
   }
 }
 
-function createAfterConfirmation(name, _options) {
+function createAfterConfirmation(name, options) {
   prompt.start();
 
   var property = {
@@ -220,7 +220,7 @@ function createAfterConfirmation(name, _options) {
     }
 
     if (result.yesno[0] === 'y') {
-      createProject(name, _options);
+      createProject(name, options);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -228,7 +228,7 @@ function createAfterConfirmation(name, _options) {
   });
 }
 
-function createProject(name, _options) {
+function createProject(name, options) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -257,7 +257,7 @@ function createProject(name, _options) {
   );
   process.chdir(root);
 
-  run(root, projectName, _options);
+  run(root, projectName, options);
 }
 
 function getInstallPackage(rnPackage) {
@@ -272,21 +272,21 @@ function getInstallPackage(rnPackage) {
   return packageToInstall;
 }
 
-function run(root, projectName, _options) {
-  var rnPackage = _options.version; // e.g. '0.38' or '/path/to/archive.tgz'
-  var forceNpmClient = _options.npm;
+function run(root, projectName, options) {
+  var rnPackage = options.version; // e.g. '0.38' or '/path/to/archive.tgz'
+  var forceNpmClient = options.npm;
   var yarnVersion = !forceNpmClient && getYarnVersionIfAvailable();
   var installCommand;
-  if (_options.installCommand) {
+  if (options.installCommand) {
     // In CI environments it can be useful to provide a custom command,
     // to set up and use an offline mirror for installing dependencies, for example.
-    installCommand = _options.installCommand;
+    installCommand = options.installCommand;
   } else {
     if (yarnVersion) {
       console.log('Using yarn v' + yarnVersion);
       console.log('Installing ' + getInstallPackage(rnPackage) + '...');
       installCommand = 'yarn add ' + getInstallPackage(rnPackage) + ' --exact';
-      if (_options.verbose) {
+      if (options.verbose) {
         installCommand += ' --verbose';
       }
     } else {
@@ -298,7 +298,7 @@ function run(root, projectName, _options) {
       }
       installCommand =
         'npm install --save --save-exact ' + getInstallPackage(rnPackage);
-      if (_options.verbose) {
+      if (options.verbose) {
         installCommand += ' --verbose';
       }
     }
