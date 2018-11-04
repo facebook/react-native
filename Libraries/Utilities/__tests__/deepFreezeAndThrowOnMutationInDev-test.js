@@ -28,7 +28,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
 
   it('should not throw on object without prototype', () => {
     __DEV__ = true;
-    var o = Object.create(null);
+    const o = Object.create(null);
     o.key = 'Value';
     expect(() => deepFreezeAndThrowOnMutationInDev(o)).not.toThrow();
   });
@@ -134,7 +134,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     expect(o.key1.key2).toBe('newValue');
   });
 
-  it("shouldn't recurse infinitely", () => {
+  it('shouldn\'t recurse infinitely', () => {
     __DEV__ = true;
     const o = {};
     o.circular = o;
