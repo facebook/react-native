@@ -27,7 +27,7 @@ const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
-    timestamp: string | number,
+    timestamp: number,
   |}>,
 >;
 
