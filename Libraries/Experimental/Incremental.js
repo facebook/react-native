@@ -92,7 +92,6 @@ export type Props = {
   name: string,
   children: React.Node,
 };
-
 type State = {
   doIncrementalRender: boolean,
 };
