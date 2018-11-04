@@ -9,31 +9,37 @@ Test Plan:
 ----------
 Write your test plan here. If you changed any code, please provide us with clear instructions on how you verified your changes work. Bonus points for screenshots and videos!
 
-Release Notes:
---------------
-Help reviewers and the release process by writing your own release notes. See below for an example.
+Changelog:
+----------
+Help reviewers and the release process by writing your own changelog entry. When the change doesn't impact React Native developers, it may be ommitted from the changelog for brevity. See below for an example.
 
-[CATEGORY] [TYPE] [LOCATION] - Message
+[CATEGORY] [TYPE] - Message
 
 <!--
-  **INTERNAL and MINOR tagged notes will not be included in the next version's final release notes.**
 
-    CATEGORY
-  [----------]      TYPE
-  [ CLI      ] [-------------]    LOCATION
-  [ DOCS     ] [ BREAKING    ] [-------------]
-  [ GENERAL  ] [ BUGFIX      ] [ {Component} ]
-  [ INTERNAL ] [ ENHANCEMENT ] [ {Filename}  ]
-  [ IOS      ] [ FEATURE     ] [ {Directory} ]   |-----------|
-  [ ANDROID  ] [ MINOR       ] [ {Framework} ] - | {Message} |
-  [----------] [-------------] [-------------]   |-----------|
+  CATEGORY may be:
 
- EXAMPLES:
+  - [General]
+  - [iOS]
+  - [Android]
 
- [IOS] [BREAKING] [FlatList] - Change a thing that breaks other things
- [ANDROID] [BUGFIX] [TextInput] - Did a thing to TextInput
- [CLI] [FEATURE] [local-cli/info/info.js] - CLI easier to do things with
- [DOCS] [BUGFIX] [GettingStarted.md] - Accidentally a thing/word
- [GENERAL] [ENHANCEMENT] [Yoga] - Added new yoga thing/position
- [INTERNAL] [FEATURE] [./scripts] - Added thing to script that nobody will see
+  TYPE may be:
+
+  - [Added] for new features.
+  - [Changed] for changes in existing functionality.
+  - [Deprecated] for soon-to-be removed features.
+  - [Removed] for now removed features.
+  - [Fixed] for any bug fixes.
+  - [Security] in case of vulnerabilities.
+
+  For more detail, see https://keepachangelog.com/en/1.0.0/#how
+
+  MESSAGE may answer "what and why" on a feature level. Use this to briefly tell React Native users about notable changes.
+
+  EXAMPLES:
+
+  [General] [Added] - Add snapToOffsets prop to ScrollView component
+  [General] [Fixed] - Fix various issues in snapToInterval on ScrollView component
+  [iOS] [Fixed] - Fix crash in RCTImagePicker
+
 -->
