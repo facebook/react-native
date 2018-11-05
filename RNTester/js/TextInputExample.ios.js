@@ -490,9 +490,6 @@ class AutogrowingTextInputExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
-  page: {
-    paddingBottom: 300,
-  },
   default: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
@@ -519,13 +516,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
-  },
-  multilineChild: {
-    width: 50,
-    height: 40,
-    position: 'absolute',
-    right: 5,
-    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
