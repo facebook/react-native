@@ -55,7 +55,7 @@ SharedShadowNode ReactBytecodeInterpreter::runCommand(
           componentDescriptorRegistry[parentShadowNode];
       componentDescriptor->appendChild(parentShadowNode, nodes[tag]);
     }
-  } else if (opcode == "childSetNode") {
+  } else if (opcode == "returnRoot") {
     LOG(INFO)
         << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
     return nodes[command[1].asInt()];
@@ -138,9 +138,9 @@ SharedShadowNode ReactBytecodeInterpreter::buildShadowTree(
                  << folly::toJson(command) << "': '" << e.what() << "'";
     }
   }
-  LOG(ERROR) << "react ui template missing childSetNode command :(";
+  LOG(ERROR) << "react ui template missing returnRoot command :(";
   throw std::runtime_error(
-      "Missing childSetNode command in template content:\n" + content);
+      "Missing returnRoot command in template content:\n" + content);
   return SharedShadowNode{};
 }
 
