@@ -76,7 +76,7 @@ class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
 
-  _onSelectPermission = (permission: string) => {
+  _onSelectPermission = (permission: string | number) => {
     this.setState({
       permission: permission,
     });

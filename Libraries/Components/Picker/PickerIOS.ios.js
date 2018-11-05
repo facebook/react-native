@@ -62,7 +62,7 @@ type Props = $ReadOnly<{|
   children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
   itemStyle?: ?TextStyleProp,
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
-  onValueChange?: ?(itemValue: number | string, itemIndex: number) => mixed,
+  onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
   selectedValue: ?(number | string),
 |}>;
 

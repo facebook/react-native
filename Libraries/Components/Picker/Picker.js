@@ -70,7 +70,7 @@ type PickerProps = $ReadOnly<{|
    *   - `itemValue`: the `value` prop of the item that was selected
    *   - `itemIndex`: the index of the selected item in this picker
    */
-  onValueChange?: ?(itemValue: number | string, itemIndex: number) => mixed,
+  onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
 
   /**
    * If set to false, the picker will be disabled, i.e. the user will not be able to make a
