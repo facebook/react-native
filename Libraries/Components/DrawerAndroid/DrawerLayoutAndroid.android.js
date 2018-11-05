@@ -152,7 +152,7 @@ const DrawerLayoutAndroid = createReactClass({
 
   mixins: [NativeMethodsMixin],
 
-  getDefaultProps: function(): Object {
+  getDefaultProps: function(): {drawerBackgroundColor: string} {
     return {
       drawerBackgroundColor: 'white',
     };
