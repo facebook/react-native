@@ -40,11 +40,11 @@ class TimePickerAndroidExample extends React.Component {
     try {
       const {action, minute, hour} = await TimePickerAndroid.open(options);
       const newState = {};
-      if (action === TimePickerAndroid.getTimeSetAction) {
+      if (action === TimePickerAndroid.timeSetAction) {
         newState[stateKey + 'Text'] = _formatTime(hour, minute);
         newState[stateKey + 'Hour'] = hour;
         newState[stateKey + 'Minute'] = minute;
-      } else if (action === TimePickerAndroid.getDismissedAction) {
+      } else if (action === TimePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       }
       this.setState(newState);

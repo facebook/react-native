@@ -76,15 +76,11 @@ class TimePickerAndroid {
   /**
    * A time has been selected.
    */
-  static getTimeSetAction(): string {
-    return 'timeSetAction';
-  }
+  static timeSetAction = 'timeSetAction';
   /**
    * The dialog has been dismissed.
    */
-  static getDismissedAction(): string {
-    return 'dismissedAction';
-  }
+  static dismissedAction = 'dismissedAction';
 }
 
 module.exports = TimePickerAndroid;
