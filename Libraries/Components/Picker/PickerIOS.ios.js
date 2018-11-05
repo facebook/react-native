@@ -27,14 +27,14 @@ import type {TextStyleProp} from 'StyleSheet';
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
-    newValue: any,
+    newValue: number | string,
     newIndex: number,
   |}>,
 >;
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?any,
+  value: ?(number | string),
   textColor: ?number,
 |}>;
 
@@ -62,8 +62,8 @@ type Props = $ReadOnly<{|
   children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
   itemStyle?: ?TextStyleProp,
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
-  selectedValue: any,
+  onValueChange?: ?(itemValue: number | string, itemIndex: number) => mixed,
+  selectedValue: ?(number | string),
 |}>;
 
 type State = {|
@@ -73,7 +73,7 @@ type State = {|
 
 type ItemProps = $ReadOnly<{|
   label: ?Label,
-  value?: ?any,
+  value?: ?(number | string),
   color?: ?ColorValue,
 |}>;
 

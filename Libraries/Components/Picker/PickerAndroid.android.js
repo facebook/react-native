@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -37,7 +37,7 @@ type PickerAndroidProps = $ReadOnly<{|
   selectedValue?: any,
   enabled?: ?boolean,
   mode?: ?('dialog' | 'dropdown'),
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  onValueChange?: ?(itemValue: number | string, itemIndex: number) => mixed,
   prompt?: ?string,
   testID?: string,
 |}>;
