@@ -35,6 +35,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Process;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
@@ -45,6 +46,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -63,6 +65,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
@@ -1033,7 +1036,12 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
 
-    final int rootTag = uiManagerModule.addRootView(rootView);
+    @Nullable Bundle initialProperties = rootView.getAppProperties();
+    final int rootTag = uiManagerModule.addRootView(
+      rootView,
+      initialProperties == null ?
+            new WritableNativeMap() : Arguments.fromBundle(initialProperties),
+        rootView.getInitialUITemplate());
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(

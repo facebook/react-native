@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include <glog/logging.h>
+
 #include <fb/fbjni.h>
 #include <fb/glog_init.h>
 #include <fb/log.h>
@@ -61,6 +63,7 @@ class ProxyJavaScriptExecutorHolder : public HybridClass<ProxyJavaScriptExecutor
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     gloginit::initialize();
+    FLAGS_minloglevel = 0;
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
