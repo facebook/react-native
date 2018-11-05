@@ -51,7 +51,7 @@ type Item = $ReadOnly<{|
 type PickerAndroidState = {|
   initialSelectedIndex: number,
   selectedIndex: number,
-  items: Array<Item>,
+  items: $ReadOnlyArray<Item>,
 |};
 
 /**
