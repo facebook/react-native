@@ -9,19 +9,19 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var ScrollView = require('ScrollView');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-var ClippableView = requireNativeComponent('ClippableView');
+const ClippableView = requireNativeComponent('ClippableView');
 
 class ClippingSample1 extends React.Component {
   render() {
-    var styles = sample1Styles;
+    const styles = sample1Styles;
     return (
       <View>
         <ClippableView
@@ -54,7 +54,7 @@ class ClippingSample1 extends React.Component {
   }
 }
 
-var sample1Styles = StyleSheet.create({
+const sample1Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -90,7 +90,7 @@ var sample1Styles = StyleSheet.create({
 
 class ClippingSample2 extends React.Component {
   render() {
-    var styles = sample2Styles;
+    const styles = sample2Styles;
     return (
       <View>
         <ClippableView
@@ -124,7 +124,7 @@ class ClippingSample2 extends React.Component {
   }
 }
 
-var sample2Styles = StyleSheet.create({
+const sample2Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -164,12 +164,12 @@ var sample2Styles = StyleSheet.create({
 
 class UpdatingSample1 extends React.Component {
   render() {
-    var styles = updating1Styles;
-    var inner1Styles = [
+    const styles = updating1Styles;
+    const inner1Styles = [
       styles.inner1,
       {height: this.props.update1 ? 200 : 100},
     ];
-    var inner2Styles = [styles.inner2, {top: this.props.update2 ? 200 : 50}];
+    const inner2Styles = [styles.inner2, {top: this.props.update2 ? 200 : 50}];
     return (
       <View>
         <ClippableView
@@ -184,7 +184,7 @@ class UpdatingSample1 extends React.Component {
   }
 }
 
-var updating1Styles = StyleSheet.create({
+const updating1Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -210,8 +210,8 @@ var updating1Styles = StyleSheet.create({
 
 class UpdatingSample2 extends React.Component {
   render() {
-    var styles = updating2Styles;
-    var outerStyles = [styles.outer, {height: this.props.update ? 200 : 100}];
+    const styles = updating2Styles;
+    const outerStyles = [styles.outer, {height: this.props.update ? 200 : 100}];
     return (
       <View>
         <ClippableView
@@ -225,7 +225,7 @@ class UpdatingSample2 extends React.Component {
   }
 }
 
-var updating2Styles = StyleSheet.create({
+const updating2Styles = StyleSheet.create({
   outer: {
     width: 100,
     height: 100,
@@ -242,15 +242,15 @@ var updating2Styles = StyleSheet.create({
 
 class ScrollViewTest extends React.Component {
   render() {
-    var styles = scrollTestStyles;
-    var children = [];
-    for (var i = 0; i < 4; i++) {
+    const styles = scrollTestStyles;
+    const children = [];
+    for (let i = 0; i < 4; i++) {
       children[i] = (
         <ClippableView key={i} style={styles.row} clippableViewID={'' + i} />
       );
     }
-    for (var i = 4; i < 6; i++) {
-      var viewID = 'C' + (i - 4);
+    for (let i = 4; i < 6; i++) {
+      const viewID = 'C' + (i - 4);
       children[i] = (
         <ClippableView
           key={i}
@@ -274,7 +274,7 @@ class ScrollViewTest extends React.Component {
   }
 }
 
-var scrollTestStyles = StyleSheet.create({
+const scrollTestStyles = StyleSheet.create({
   scrollView: {
     width: 200,
     height: 300,
@@ -303,7 +303,7 @@ var scrollTestStyles = StyleSheet.create({
   },
 });
 
-var appInstance = null;
+let appInstance = null;
 
 class SubviewsClippingTestApp extends React.Component {
   state = {};
@@ -317,12 +317,12 @@ class SubviewsClippingTestApp extends React.Component {
   };
 
   render() {
-    var component = this.state.component;
+    const component = this.state.component;
     return <View>{component}</View>;
   }
 }
 
-var SubviewsClippingTestModule = {
+const SubviewsClippingTestModule = {
   App: SubviewsClippingTestApp,
   renderClippingSample1: function() {
     appInstance.setComponent(<ClippingSample1 />);

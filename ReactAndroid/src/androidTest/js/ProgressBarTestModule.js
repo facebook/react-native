@@ -9,12 +9,12 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var ProgressBar = require('ProgressBarAndroid');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const ProgressBar = require('ProgressBarAndroid');
+const View = require('View');
 
-var renderApplication = require('renderApplication');
+const renderApplication = require('renderApplication');
 
 class ProgressBarSampleApp extends React.Component {
   state = {};
@@ -37,7 +37,7 @@ class ProgressBarSampleApp extends React.Component {
   }
 }
 
-var ProgressBarTestModule = {
+const ProgressBarTestModule = {
   renderProgressBarApplication: function(rootTag) {
     renderApplication(ProgressBarSampleApp, {}, rootTag);
   },
