@@ -9,8 +9,8 @@
 
 'use strict';
 
-var React = require('React');
-var Image = require('Image');
+const React = require('React');
+const Image = require('Image');
 
 class ImageOverlayColorTestApp extends React.Component {
   render() {
