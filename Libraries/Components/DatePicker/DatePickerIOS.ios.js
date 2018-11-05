@@ -159,7 +159,11 @@ class DatePickerIOS extends React.Component<Props> {
                 ? props.initialDate.getTime()
                 : undefined
           }
-          locale={props.locale}
+          locale={
+            props.locale != null && props.locale !== ''
+              ? props.locale
+              : undefined
+          }
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }
