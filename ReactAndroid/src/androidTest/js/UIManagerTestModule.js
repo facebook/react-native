@@ -48,13 +48,6 @@ const FlexTestAppStyles = StyleSheet.create({
   child: {
     flex: 1,
   },
-  absolute: {
-    position: 'absolute',
-    top: 15,
-    left: 10,
-    width: 50,
-    height: 60,
-  },
   bgRed: {
     backgroundColor: '#ff0000',
   },
