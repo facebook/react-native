@@ -9,16 +9,16 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TextInput = require('TextInput');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextInput = require('TextInput');
+const View = require('View');
 
-var Recording = require('NativeModules').Recording;
+const Recording = require('NativeModules').Recording;
 
-var app;
+let app;
 
 class TokenizedTextExample extends React.Component {
   constructor(props) {
@@ -149,7 +149,7 @@ class TextInputTestApp extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     padding: 5,
     margin: 10,
@@ -168,7 +168,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var TextInputTestModule = {
+const TextInputTestModule = {
   TextInputTestApp,
   setValueRef: function(ref, value) {
     app.refs[ref].setNativeProps({
