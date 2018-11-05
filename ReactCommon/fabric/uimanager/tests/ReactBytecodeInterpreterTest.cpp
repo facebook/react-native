@@ -75,7 +75,7 @@ TEST(ReactBytecodeInterpreterTest, testSimpleBytecode) {
   auto bytecode = R"delim({"version":0.1,"commands":[
     ["createNode",2,"RCTView",-1,{"opacity": 0.5, "testId": "root"}],
     ["createNode",4,"RCTView",2,{"testId": "child"}],
-    ["childSetNode",2]
+    ["returnRoot",2]
   ]})delim";
 
   mockSimpleTestValue_ = true;
@@ -110,7 +110,7 @@ TEST(ReactBytecodeInterpreterTest, testConditionalBytecode) {
       [["createNode",4,"RCTView",2,{"testId": "cond_true"}]],
       [["createNode",4,"RCTView",2,{"testId": "cond_false"}]]
     ],
-    ["childSetNode",2]
+    ["returnRoot",2]
   ]})delim";
 
   mockSimpleTestValue_ = true;
