@@ -5,12 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const TimePickerModule = require('NativeModules').TimePickerAndroid;
+
+import type {SyntheticEvent} from 'CoreEventTypes';
 
 /**
  * Opens the standard Android time picker dialog.
@@ -32,6 +34,21 @@ const TimePickerModule = require('NativeModules').TimePickerAndroid;
  * }
  * ```
  */
+type Options = {
+  hour: number,
+  minute: number,
+  is24Hour: boolean,
+  mode: 'clock' | 'spinner' | 'default',
+};
+
+type TimePickerAndroidEvent = SyntheticEvent<
+  $ReadOnly<{|
+    action: string,
+    hour: number,
+    minute: number,
+  |}>,
+>;
+
 class TimePickerAndroid {
   /**
    * Opens the standard Android time picker dialog.
@@ -52,20 +69,20 @@ class TimePickerAndroid {
    * still be resolved with action being `TimePickerAndroid.dismissedAction` and all the other keys
    * being undefined. **Always** check whether the `action` before reading the values.
    */
-  static async open(options: Object): Promise<Object> {
+  static async open(options: Options): Promise<TimePickerAndroidEvent> {
     return TimePickerModule.open(options);
   }
 
   /**
    * A time has been selected.
    */
-  static get timeSetAction() {
+  static getTimeSetAction(): string {
     return 'timeSetAction';
   }
   /**
    * The dialog has been dismissed.
    */
-  static get dismissedAction() {
+  static getDismissedAction(): string {
     return 'dismissedAction';
   }
 }
