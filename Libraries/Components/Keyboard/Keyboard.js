@@ -158,7 +158,7 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   const {duration, easing} = event;
-  if (duration != null) {
+  if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
       duration: duration,
       update: {
