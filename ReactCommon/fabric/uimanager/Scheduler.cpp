@@ -11,7 +11,7 @@
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <fabric/uimanager/JSIFabricUIManager.h>
-#include <fabric/uimanager/ReactBytecodeInterpreter.h>
+#include <fabric/uimanager/UITemplateProcessor.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -85,7 +85,7 @@ void Scheduler::renderTemplateToSurface(
       return;
     }
     NativeModuleRegistry nMR;
-    auto tree = ReactBytecodeInterpreter::buildShadowTree(
+    auto tree = UITemplateProcessor::buildShadowTree(
         uiTemplate,
         surfaceId,
         folly::dynamic::object(),

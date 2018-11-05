@@ -8,7 +8,7 @@
 #include <exception>
 
 #include <fabric/uimanager/ComponentDescriptorFactory.h>
-#include <fabric/uimanager/ReactBytecodeInterpreter.h>
+#include <fabric/uimanager/UITemplateProcessor.h>
 #include <gtest/gtest.h>
 
 using namespace facebook::react;
@@ -66,7 +66,7 @@ NativeModuleRegistry buildNativeModuleRegistry() {
 } // namespace react
 } // namespace facebook
 
-TEST(ReactBytecodeInterpreterTest, testSimpleBytecode) {
+TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;
   auto componentDescriptorRegistry =
       ComponentDescriptorFactory::buildRegistry(nullptr, nullptr);
@@ -80,7 +80,7 @@ TEST(ReactBytecodeInterpreterTest, testSimpleBytecode) {
 
   mockSimpleTestValue_ = true;
 
-  auto root1 = ReactBytecodeInterpreter::buildShadowTree(
+  auto root1 = UITemplateProcessor::buildShadowTree(
       bytecode,
       surfaceId,
       folly::dynamic::object(),
@@ -97,7 +97,7 @@ TEST(ReactBytecodeInterpreterTest, testSimpleBytecode) {
   ASSERT_STREQ(child_props1->testId.c_str(), "child");
 }
 
-TEST(ReactBytecodeInterpreterTest, testConditionalBytecode) {
+TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto surfaceId = 11;
   auto componentDescriptorRegistry =
       ComponentDescriptorFactory::buildRegistry(nullptr, nullptr);
@@ -115,7 +115,7 @@ TEST(ReactBytecodeInterpreterTest, testConditionalBytecode) {
 
   mockSimpleTestValue_ = true;
 
-  auto root1 = ReactBytecodeInterpreter::buildShadowTree(
+  auto root1 = UITemplateProcessor::buildShadowTree(
       bytecode,
       surfaceId,
       folly::dynamic::object(),
@@ -132,7 +132,7 @@ TEST(ReactBytecodeInterpreterTest, testConditionalBytecode) {
 
   mockSimpleTestValue_ = false;
 
-  auto root2 = ReactBytecodeInterpreter::buildShadowTree(
+  auto root2 = UITemplateProcessor::buildShadowTree(
       bytecode,
       surfaceId,
       folly::dynamic::object(),

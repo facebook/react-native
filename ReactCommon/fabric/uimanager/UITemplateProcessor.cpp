@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ReactBytecodeInterpreter.h"
+#include "UITemplateProcessor.h"
 
 #include <fabric/components/view/ViewComponentDescriptor.h>
 #include <fabric/components/view/ViewProps.h>
@@ -32,7 +32,7 @@ struct RBCContext {
 };
 
 // TODO: use RBCContext instead of all the separate arguments.
-SharedShadowNode ReactBytecodeInterpreter::runCommand(
+SharedShadowNode UITemplateProcessor::runCommand(
     const folly::dynamic &command,
     Tag rootTag,
     std::vector<SharedShadowNode> &nodes,
@@ -97,14 +97,14 @@ SharedShadowNode ReactBytecodeInterpreter::runCommand(
   return nullptr;
 }
 
-SharedShadowNode ReactBytecodeInterpreter::buildShadowTree(
+SharedShadowNode UITemplateProcessor::buildShadowTree(
     const std::string &jsonStr,
     Tag rootTag,
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry) {
   LOG(INFO)
-      << "(strt) ReactBytecodeInterpreter inject hardcoded 'server rendered' view tree";
+      << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
 
   std::string content = jsonStr;
   for (const auto &param : params.items()) {

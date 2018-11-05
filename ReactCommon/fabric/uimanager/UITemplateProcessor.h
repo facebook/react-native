@@ -41,7 +41,7 @@ class NativeModuleRegistry {
   std::unordered_map<std::string, NativeModuleCallFn> modules_;
 };
 
-class ReactBytecodeInterpreter {
+class UITemplateProcessor {
  public:
   static SharedShadowNode buildShadowTree(
       const std::string &jsonStr,
