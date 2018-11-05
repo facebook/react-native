@@ -9,15 +9,15 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var RecordingModule = require('NativeModules')
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const RecordingModule = require('NativeModules')
   .SwipeRefreshLayoutRecordingModule;
-var ScrollView = require('ScrollView');
-var RefreshControl = require('RefreshControl');
-var Text = require('Text');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const ScrollView = require('ScrollView');
+const RefreshControl = require('RefreshControl');
+const Text = require('Text');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 
 class Row extends React.Component {
   state = {
@@ -39,7 +39,7 @@ class Row extends React.Component {
   };
 }
 
-var app = null;
+let app = null;
 
 class SwipeRefreshLayoutTestApp extends React.Component {
   state = {
@@ -51,8 +51,8 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   }
 
   render() {
-    var rows = [];
-    for (var i = 0; i < this.state.rows; i++) {
+    const rows = [];
+    for (let i = 0; i < this.state.rows; i++) {
       rows.push(<Row key={i} />);
     }
     return (
@@ -71,7 +71,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   }
 }
 
-var SwipeRefreshLayoutTestModule = {
+const SwipeRefreshLayoutTestModule = {
   SwipeRefreshLayoutTestApp,
   setRows: function(rows) {
     if (app != null) {
