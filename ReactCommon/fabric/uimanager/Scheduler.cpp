@@ -11,7 +11,7 @@
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <fabric/uimanager/JSIFabricUIManager.h>
-#include <fabric/uimanager/TemplateRenderer.h>
+#include <fabric/uimanager/ReactBytecodeInterpreter.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -73,21 +73,27 @@ void Scheduler::startSurface(
   auto shadowTree =
       std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
-  shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
-#ifndef ANDROID
+  LOG(INFO) << "initialProps in Scheduler::startSurface - type: " << initialProps.type() << initialProps.typeName() << initialProps;
 
   // TODO: Is this an ok place to do this?
-  auto serializedCommands = initialProps.find("serializedCommands");
-  if (serializedCommands != initialProps.items().end()) {
-    auto tree = TemplateRenderer::buildShadowTree(serializedCommands->second.asString(), surfaceId, folly::dynamic::object(), *componentDescriptorRegistry_);
-
-    uiManagerDidFinishTransactionWithoutLock(surfaceId, std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {tree}));
-    // TODO: hydrate rather than replace
-    uiManager_->startSurface(surfaceId, moduleName, initialProps);
-  } else {
-    uiManager_->startSurface(surfaceId, moduleName, initialProps);
+  if (initialProps.type() == folly::dynamic::OBJECT) {
+    auto serializedCommands = initialProps.find("serializedCommands");
+    if (serializedCommands != initialProps.items().end()) {
+      NativeModuleRegistry nMR;
+      auto tree = ReactBytecodeInterpreter::buildShadowTree(serializedCommands->second.asString(), surfaceId, folly::dynamic::object(), *componentDescriptorRegistry_, nMR);
+      shadowTree->complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {tree}));
+      shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
+      // TODO: hydrate rather than replace
+  #ifndef ANDROID
+      uiManager_->startSurface(surfaceId, moduleName, initialProps);
+  #endif
+      return;
+    }
   }
+  shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
+#ifndef ANDROID
+  uiManager_->startSurface(surfaceId, moduleName, initialProps);
 #endif
 }
 
@@ -130,16 +136,6 @@ void Scheduler::constraintSurfaceLayout(
   });
 }
 
-void Scheduler::uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  const auto iterator = shadowTreeRegistry_.find(rootTag);
-  if (iterator == shadowTreeRegistry_.end()) {
-    // This might happen during surface unmounting/deallocation process
-    // due to the asynchronous nature of JS calls.
-    return;
-  }
-  iterator->second->complete(rootChildNodes);
-}
-
 #pragma mark - Delegate
 
 void Scheduler::setDelegate(SchedulerDelegate *delegate) {
@@ -167,7 +163,13 @@ void Scheduler::uiManagerDidFinishTransaction(
     Tag rootTag,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   std::lock_guard<std::mutex> lock(mutex_);
-  uiManagerDidFinishTransactionWithoutLock(rootTag, rootChildNodes);
+  const auto iterator = shadowTreeRegistry_.find(rootTag);
+  if (iterator == shadowTreeRegistry_.end()) {
+    // This might happen during surface unmounting/deallocation process
+    // due to the asynchronous nature of JS calls.
+    return;
+  }
+  iterator->second->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

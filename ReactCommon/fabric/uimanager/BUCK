@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     fbobjc_tests = [
-        ":tests",
+        ":uimanagertests",
     ],
     force_static = True,
     macosx_tests_override = [],
@@ -67,7 +67,7 @@ rn_xplat_cxx_library(
 )
 
 fb_xplat_cxx_test(
-    name = "tests",
+    name = "uimanagertests",
     srcs = glob(["tests/**/*.cpp"]),
     headers = glob(["tests/**/*.h"]),
     compiler_flags = [
@@ -82,5 +82,11 @@ fb_xplat_cxx_test(
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",
         ":uimanager",
+        react_native_xplat_target("fabric/components/activityindicator:activityindicator"),
+        react_native_xplat_target("fabric/components/image:image"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("fabric/components/text:text"),
+        react_native_xplat_target("fabric/components/view:view"),
     ],
 )

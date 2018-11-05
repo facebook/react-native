@@ -30,7 +30,11 @@ class ComponentDescriptorRegistry {
   const SharedComponentDescriptor operator[](
       const ComponentName &componentName) const;
   SharedShadowNode createNode(
-    Tag tag, const std::string &viewName, Tag rootTag, const folly::dynamic &props, const SharedEventTarget &eventTarget) const;
+      Tag tag,
+      const std::string &viewName,
+      Tag rootTag,
+      const folly::dynamic &props,
+      const SharedEventTarget &eventTarget) const;
 
  private:
   std::unordered_map<ComponentHandle, SharedComponentDescriptor>
