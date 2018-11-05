@@ -49,11 +49,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
       asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
-    eventDispatcher, contextContainer);
-
-  uiManager_->setComponentDescriptorRegistry(
-    componentDescriptorRegistry_
-  );
+      eventDispatcher, contextContainer);
+  uiManager_->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   uiManager_->setDelegate(this);
 }
@@ -67,34 +64,43 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) {
+    const LayoutContext &layoutContext) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   auto shadowTree =
       std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
-
-  LOG(INFO) << "initialProps in Scheduler::startSurface - type: " << initialProps.type() << initialProps.typeName() << initialProps;
-
-  // TODO: Is this an ok place to do this?
-  if (initialProps.type() == folly::dynamic::OBJECT) {
-    auto serializedCommands = initialProps.find("serializedCommands");
-    if (serializedCommands != initialProps.items().end()) {
-      NativeModuleRegistry nMR;
-      auto tree = ReactBytecodeInterpreter::buildShadowTree(serializedCommands->second.asString(), surfaceId, folly::dynamic::object(), *componentDescriptorRegistry_, nMR);
-      shadowTree->complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {tree}));
-      shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
-      // TODO: hydrate rather than replace
-  #ifndef ANDROID
-      uiManager_->startSurface(surfaceId, moduleName, initialProps);
-  #endif
-      return;
-    }
-  }
   shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
+
 #ifndef ANDROID
   uiManager_->startSurface(surfaceId, moduleName, initialProps);
 #endif
+}
+
+void Scheduler::renderTemplateToSurface(
+    SurfaceId surfaceId,
+    const std::string &uiTemplate) {
+  try {
+    if (uiTemplate.size() == 0) {
+      return;
+    }
+    NativeModuleRegistry nMR;
+    auto tree = ReactBytecodeInterpreter::buildShadowTree(
+        uiTemplate,
+        surfaceId,
+        folly::dynamic::object(),
+        *componentDescriptorRegistry_,
+        nMR);
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
+    assert(shadowTree);
+    shadowTree->complete(
+        std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
+  } catch (const std::exception &e) {
+    LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
+               << "Scheduler::renderTemplateToSurface: " << e.what();
+  }
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {

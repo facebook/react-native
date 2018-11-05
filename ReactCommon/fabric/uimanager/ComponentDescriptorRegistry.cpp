@@ -99,7 +99,12 @@ static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
   return result;
 }
 
-SharedShadowNode ComponentDescriptorRegistry::createNode(Tag tag, const std::string &viewName, Tag rootTag, const folly::dynamic &props, const SharedEventTarget &eventTarget) const {
+SharedShadowNode ComponentDescriptorRegistry::createNode(
+    Tag tag,
+    const std::string &viewName,
+    Tag rootTag,
+    const folly::dynamic &props,
+    const SharedEventTarget &eventTarget) const {
   ComponentName componentName = componentNameByReactViewName(viewName);
   const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);

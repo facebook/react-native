@@ -37,7 +37,11 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const std::string &moduleName,
       const folly::dynamic &initialProps,
       const LayoutConstraints &layoutConstraints = {},
-      const LayoutContext &layoutContext = {});
+      const LayoutContext &layoutContext = {}) const;
+
+  void renderTemplateToSurface(
+      SurfaceId surfaceId,
+      const std::string &uiTemplate);
 
   void stopSurface(SurfaceId surfaceId) const;
 
@@ -99,8 +103,9 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
 
-  void uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes);
-
+  void uiManagerDidFinishTransactionWithoutLock(
+      Tag rootTag,
+      const SharedShadowNodeUnsharedList &rootChildNodes);
 };
 
 } // namespace react

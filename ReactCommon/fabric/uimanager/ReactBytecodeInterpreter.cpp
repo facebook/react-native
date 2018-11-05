@@ -7,8 +7,6 @@
 
 #include "ReactBytecodeInterpreter.h"
 
-#include <glog/logging.h>
-
 #include <fabric/components/view/ViewComponentDescriptor.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/ViewShadowNode.h>
@@ -18,9 +16,12 @@
 #include <fabric/debug/DebugStringConvertible.h>
 #include <fabric/debug/DebugStringConvertibleItem.h>
 #include <folly/json.h>
+#include <glog/logging.h>
 
 namespace facebook {
 namespace react {
+
+bool constexpr DEBUG_FLY = false;
 
 struct RBCContext {
   const Tag rootTag;
@@ -40,6 +41,7 @@ SharedShadowNode ReactBytecodeInterpreter::runCommand(
     const NativeModuleRegistry &nativeModuleRegistry) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
+  // TODO: change to integer codes and a switch statement
   if (opcode == "createNode") {
     int tag = command[1].asInt();
     const auto &type = command[2].asString();
@@ -55,7 +57,7 @@ SharedShadowNode ReactBytecodeInterpreter::runCommand(
     }
   } else if (opcode == "childSetNode") {
     LOG(INFO)
-        << "(stop) ReactBytecodeInterpreter inject serialized 'server rendered' view tree";
+        << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
     return nodes[command[1].asInt()];
   } else if (opcode == "loadNativeBool") {
     int registerNumber = command[1].asInt();
@@ -68,8 +70,7 @@ SharedShadowNode ReactBytecodeInterpreter::runCommand(
     if (conditionDynamic.isNull()) {
       // TODO: provide original command or command line?
       auto err = std::runtime_error(
-          "register " + command[1].asString() +
-          " wasn't loaded before access");
+          "register " + command[1].asString() + " wasn't loaded before access");
       throw err;
     } else if (conditionDynamic.type() != folly::dynamic::BOOL) {
       // TODO: provide original command or command line?
@@ -104,6 +105,7 @@ SharedShadowNode ReactBytecodeInterpreter::buildShadowTree(
     const NativeModuleRegistry &nativeModuleRegistry) {
   LOG(INFO)
       << "(strt) ReactBytecodeInterpreter inject hardcoded 'server rendered' view tree";
+
   std::string content = jsonStr;
   for (const auto &param : params.items()) {
     const auto &key = param.first.asString();
@@ -117,17 +119,26 @@ SharedShadowNode ReactBytecodeInterpreter::buildShadowTree(
   std::vector<SharedShadowNode> nodes(commands.size() * 2);
   std::vector<folly::dynamic> registers(32);
   for (const auto &command : commands) {
-    auto ret = runCommand(
-        command,
-        rootTag,
-        nodes,
-        registers,
-        componentDescriptorRegistry,
-        nativeModuleRegistry);
-    if (ret != nullptr) {
-      return ret;
+    try {
+      if (DEBUG_FLY) {
+        LOG(INFO) << "try to run command " << folly::toJson(command);
+      }
+      auto ret = runCommand(
+          command,
+          rootTag,
+          nodes,
+          registers,
+          componentDescriptorRegistry,
+          nativeModuleRegistry);
+      if (ret != nullptr) {
+        return ret;
+      }
+    } catch (const std::exception &e) {
+      LOG(ERROR) << "   >>> Exception <<<    running previous command '"
+                 << folly::toJson(command) << "': '" << e.what() << "'";
     }
   }
+  LOG(ERROR) << "react ui template missing childSetNode command :(";
   throw std::runtime_error(
       "Missing childSetNode command in template content:\n" + content);
   return SharedShadowNode{};
