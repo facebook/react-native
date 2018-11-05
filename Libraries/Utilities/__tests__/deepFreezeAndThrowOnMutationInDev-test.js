@@ -134,7 +134,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function() {
     expect(o.key1.key2).toBe('newValue');
   });
 
-  it('shouldn\'t recurse infinitely', () => {
+  it("shouldn't recurse infinitely", () => {
     __DEV__ = true;
     const o = {};
     o.circular = o;
