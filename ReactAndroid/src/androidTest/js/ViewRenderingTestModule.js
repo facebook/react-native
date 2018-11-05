@@ -9,14 +9,14 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
 
-var renderApplication = require('renderApplication');
+const renderApplication = require('renderApplication');
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     opacity: 0.75,
     backgroundColor: 'rgb(255, 0, 0)',
@@ -31,7 +31,7 @@ class ViewSampleApp extends React.Component {
   }
 }
 
-var updateMargins;
+let updateMargins;
 
 class MarginSampleApp extends React.Component {
   state = {margin: 10};
@@ -64,7 +64,7 @@ class BorderSampleApp extends React.Component {
 
 class TransformSampleApp extends React.Component {
   render() {
-    var style = {
+    const style = {
       transform: [
         {translateX: 20},
         {translateY: 25},
@@ -77,7 +77,7 @@ class TransformSampleApp extends React.Component {
   }
 }
 
-var ViewRenderingTestModule = {
+const ViewRenderingTestModule = {
   renderViewApplication: function(rootTag) {
     renderApplication(ViewSampleApp, {}, rootTag);
   },
