@@ -21,23 +21,27 @@
 static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
-                                     RCTResizeMode resizeMode, NSString *responseDate)
+                                     RCTResizeMode resizeMode)
 {
-  return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld|%@",
-          imageTag, size.width, size.height, scale, (long long)resizeMode, responseDate];
+  return [NSString stringWithFormat:@"%@|%g|%g|%g|%lld",
+          imageTag, size.width, size.height, scale, (long long)resizeMode];
 }
 
 @implementation RCTImageCache
 {
   NSOperationQueue *_imageDecodeQueue;
   NSCache *_decodedImageCache;
+  NSMutableDictionary *_cacheStaleTimes;
+
+  NSDateFormatter *_headerDateFormatter;
 }
 
 - (instancetype)init
 {
   _decodedImageCache = [NSCache new];
   _decodedImageCache.totalCostLimit = 5 * 1024 * 1024; // 5MB
-  
+  _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(clearCache)
                                                name:UIApplicationDidReceiveMemoryWarningNotification
@@ -58,6 +62,9 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 - (void)clearCache
 {
   [_decodedImageCache removeAllObjects];
+  @synchronized(_cacheStaleTimes) {
+    [_cacheStaleTimes removeAllObjects];
+  }
 }
 
 - (void)addImageToCache:(UIImage *)image
@@ -78,9 +85,19 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                     size:(CGSize)size
                    scale:(CGFloat)scale
               resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate
 {
-  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode, responseDate);
+  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
+  @synchronized(_cacheStaleTimes) {
+    id staleTime = _cacheStaleTimes[cacheKey];
+    if (staleTime) {
+      if ([[NSDate new] compare:(NSDate *)staleTime] == NSOrderedDescending) {
+        // cached image has expired, clear it out to make room for others
+        [_cacheStaleTimes removeObjectForKey:cacheKey];
+        [_decodedImageCache removeObjectForKey:cacheKey];
+        return nil;
+      }
+    }
+  }
   return [_decodedImageCache objectForKey:cacheKey];
 }
 
@@ -90,9 +107,44 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
            responseDate:(NSString *)responseDate
+           cacheControl:(NSString *)cacheControl
 {
-  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode, responseDate);
-  return [self addImageToCache:image forKey:cacheKey];
+  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
+  BOOL shouldCache = YES;
+  NSDate *staleTime;
+  NSArray<NSString *> *components = [cacheControl componentsSeparatedByString:@","];
+  for (NSString *component in components) {
+    if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] || [component hasSuffix:@"max-age=0"]) {
+      shouldCache = NO;
+      break;
+    } else {
+      NSRange range = [component rangeOfString:@"max-age="];
+      if (range.location != NSNotFound) {
+        NSInteger seconds = [[component substringFromIndex:range.location + range.length] integerValue];
+        NSDate *originalDate = [self dateWithHeaderString:responseDate];
+        staleTime = [originalDate dateByAddingTimeInterval:(NSTimeInterval)seconds];
+      }
+    }
+  }
+  if (shouldCache) {
+    if (staleTime) {
+      @synchronized(_cacheStaleTimes) {
+        _cacheStaleTimes[cacheKey] = staleTime;
+      }
+    }
+    return [self addImageToCache:image forKey:cacheKey];
+  }
+}
+
+- (NSDate *)dateWithHeaderString:(NSString *)headerDateString {
+  if (_headerDateFormatter == nil) {
+    _headerDateFormatter = [[NSDateFormatter alloc] init];
+    _headerDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    _headerDateFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
+    _headerDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+  }
+
+  return [_headerDateFormatter dateFromString:headerDateString];
 }
 
 @end
