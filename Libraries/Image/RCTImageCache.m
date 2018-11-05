@@ -18,7 +18,7 @@
 
 #import "RCTImageUtils.h"
 
-static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 1048576; // 1MB
+static const NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2097152; // 2 MB
 
 static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat scale,
                                      RCTResizeMode resizeMode)
@@ -39,7 +39,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 - (instancetype)init
 {
   _decodedImageCache = [NSCache new];
-  _decodedImageCache.totalCostLimit = 5 * 1024 * 1024; // 5MB
+  _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
   _cacheStaleTimes = [[NSMutableDictionary alloc] init];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
