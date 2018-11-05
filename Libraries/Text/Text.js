@@ -108,10 +108,12 @@ class TouchableText extends React.Component<Props, State> {
     responseHandlers: null,
   };
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): ?State {
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State,
+  ): $Shape<State> | null {
     return prevState.responseHandlers == null && isTouchable(nextProps)
       ? {
-          ...prevState,
           responseHandlers: prevState.createResponderHandlers(),
         }
       : null;
