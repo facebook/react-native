@@ -68,9 +68,9 @@ type PickerProps = $ReadOnly<{|
   /**
    * Callback for when an item is selected. This is called with the following parameters:
    *   - `itemValue`: the `value` prop of the item that was selected
-   *   - `itemPosition`: the index of the selected item in this picker
+   *   - `itemKey`: the key of the selected item in this picker
    */
-  onValueChange?: ?(itemIndex: string, itemValue: string | number) => mixed,
+  onValueChange?: ?(itemKey: string, itemValue: string | number) => mixed,
 
   /**
    * If set to false, the picker will be disabled, i.e. the user will not be able to make a
@@ -112,7 +112,7 @@ type PickerProps = $ReadOnly<{|
  *
  *     <Picker
  *       selectedValue={this.state.language}
- *       onValueChange={(itemIndex, itemValue) => this.setState({language: itemValue})}>
+ *       onValueChange={(itemKey, itemValue) => this.setState({language: itemValue})}>
  *       <Picker.Item label="Java" value="java" />
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>
