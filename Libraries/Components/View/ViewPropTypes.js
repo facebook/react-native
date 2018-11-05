@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {Layout, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -25,6 +25,13 @@ import type {
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
+type AccessibilityActionEvent = SyntheticEvent<
+  $ReadOnly<{|
+    action: string,
+    target: number,
+  |}>,
+>;
+
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -32,7 +39,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction?: ?Function,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -40,7 +47,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?Function,
+  onAccessibilityTap?: ?(event: SyntheticEvent<null>) => mixed,
 
   /**
    * Invoked on mount and layout changes with:
@@ -61,18 +68,42 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
-  onMagicTap?: ?Function,
+  onMagicTap?: ?(event: SyntheticEvent<null>) => mixed,
 |}>;
 
+type Touch = $ReadOnly<{|
+  locationX: number,
+  locationY: number,
+  pageX: number,
+  pageY: number,
+  screenX: number,
+  screenY: number,
+  identifier: number,
+  target: number,
+  timestamp: number,
+  force: number,
+|}>;
+
+type TouchEvent = SyntheticEvent<
+  $ReadOnly<{|
+    touches: $ReadOnlyArray<Touch>,
+    changedTouches: $ReadOnlyArray<Touch>,
+    targetTouches: $ReadOnlyArray<Touch>,
+  |}>,
+>;
+
+/**
+ * These events are only available in React Native Fabric
+ */
 type TouchEventProps = $ReadOnly<{|
-  onTouchCancel?: ?Function,
-  onTouchCancelCapture?: ?Function,
-  onTouchEnd?: ?Function,
-  onTouchEndCapture?: ?Function,
-  onTouchMove?: ?Function,
-  onTouchMoveCapture?: ?Function,
-  onTouchStart?: ?Function,
-  onTouchStartCapture?: ?Function,
+  onTouchCancel?: ?(event: TouchEvent) => mixed,
+  onTouchCancelCapture?: ?(event: TouchEvent) => mixed,
+  onTouchEnd?: ?(event: TouchEvent) => mixed,
+  onTouchEndCapture?: ?(event: TouchEvent) => mixed,
+  onTouchMove?: ?(event: TouchEvent) => mixed,
+  onTouchMoveCapture?: ?(event: TouchEvent) => mixed,
+  onTouchStart?: ?(event: TouchEvent) => mixed,
+  onTouchStartCapture?: ?(event: TouchEvent) => mixed,
 |}>;
 
 /**
@@ -90,7 +121,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder
    */
-  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponder?: ?(event: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -101,7 +132,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onMoveShouldsetrespondercapture
    */
-  onMoveShouldSetResponderCapture?: ?Function,
+  onMoveShouldSetResponderCapture?: ?(event: PressEvent) => boolean,
 
   /**
    * The View is now responding for touch events. This is the time to highlight
@@ -112,7 +143,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondergrant
    */
-  onResponderGrant?: ?Function,
+  onResponderGrant?: ?(event: PressEvent) => mixed,
 
   /**
    * The user is moving their finger.
@@ -122,7 +153,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondermove
    */
-  onResponderMove?: ?Function,
+  onResponderMove?: ?(event: PressEvent) => mixed,
 
   /**
    * Another responder is already active and will not release it to that `View`
@@ -133,7 +164,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderreject
    */
-  onResponderReject?: ?Function,
+  onResponderReject?: ?(event: PressEvent) => mixed,
 
   /**
    * Fired at the end of the touch.
@@ -143,10 +174,10 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderrelease
    */
-  onResponderRelease?: ?Function,
+  onResponderRelease?: ?(event: PressEvent) => mixed,
 
-  onResponderStart?: ?Function,
-  onResponderEnd?: ?Function,
+  onResponderStart?: ?(event: PressEvent) => mixed,
+  onResponderEnd?: ?(event: PressEvent) => mixed,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other
@@ -159,7 +190,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminate
    */
-  onResponderTerminate?: ?Function,
+  onResponderTerminate?: ?(event: PressEvent) => mixed,
 
   /**
    * Some other `View` wants to become responder and is asking this `View` to
@@ -170,7 +201,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminationrequest
    */
-  onResponderTerminationRequest?: ?Function,
+  onResponderTerminationRequest?: ?(event: PressEvent) => mixed,
 
   /**
    * Does this view want to become responder on the start of a touch?
@@ -180,7 +211,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetresponder
    */
-  onStartShouldSetResponder?: ?Function,
+  onStartShouldSetResponder?: ?(event: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -191,12 +222,25 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetrespondercapture
    */
-  onStartShouldSetResponderCapture?: ?Function,
+  onStartShouldSetResponderCapture?: ?(event: PressEvent) => boolean,
 |}>;
 
+type AndroidDrawableThemeAttr = $ReadOnly<{|
+  type: 'ThemeAttrAndroid',
+  attribute: string,
+|}>;
+
+type AndroidDrawableRipple = $ReadOnly<{|
+  type: 'RippleAndroid',
+  color?: ?number,
+  borderless?: ?boolean,
+|}>;
+
+type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
+
 type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?Object,
-  nativeForegroundAndroid?: ?Object,
+  nativeBackgroundAndroid?: ?AndroidDrawable,
+  nativeForegroundAndroid?: ?AndroidDrawable,
 
   /**
    * Whether this `View` should render itself (and all of its children) into a
