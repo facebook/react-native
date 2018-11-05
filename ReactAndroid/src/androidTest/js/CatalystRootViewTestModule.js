@@ -9,9 +9,9 @@
 
 'use strict';
 
-var React = require('React');
-var Recording = require('NativeModules').Recording;
-var View = require('View');
+const React = require('React');
+const Recording = require('NativeModules').Recording;
+const View = require('View');
 
 class CatalystRootViewTestApp extends React.Component {
   componentWillUnmount() {
