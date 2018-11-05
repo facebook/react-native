@@ -9,10 +9,10 @@
 
 'use strict';
 
-var React = require('React');
-var View = require('View');
+const React = require('React');
+const View = require('View');
 
-var RecordingModule = require('NativeModules').Recording;
+const RecordingModule = require('NativeModules').Recording;
 
 const LAYOUT_SPECS = [
   [10, 10, 100, 100],
@@ -31,7 +31,7 @@ class LayoutEventsTestApp extends React.Component {
   }
 
   handleOnLayout = e => {
-    var layout = e.nativeEvent.layout;
+    const layout = e.nativeEvent.layout;
     RecordingModule.record(
       layout.x + ',' + layout.y + '-' + layout.width + 'x' + layout.height,
     );
