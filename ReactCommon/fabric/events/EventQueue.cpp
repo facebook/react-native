@@ -35,7 +35,7 @@ void EventQueue::onBeat() const {
     }
 
     queue = std::move(queue_);
-    assert(queue_.size() == 0);
+    queue_.clear();
   }
 
   {
