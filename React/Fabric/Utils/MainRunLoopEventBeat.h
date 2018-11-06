@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/uimanager/primitives.h>
 #include <fabric/events/EventBeat.h>
 
 namespace facebook {

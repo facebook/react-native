@@ -2,6 +2,8 @@
 
 #include "JSIFabricUIManager.h"
 
+#include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/uimanager/primitives.h>
 #include <fabric/core/ShadowNode.h>
 #include <fabric/uimanager/FabricUIManager.h>
 #include <jsi/JSIDynamic.h>
@@ -11,39 +13,7 @@ namespace react {
 
 namespace {
 
-struct EventTargetWrapper : public EventTarget {
-  EventTargetWrapper(jsi::WeakObject instanceHandle)
-      : instanceHandle(std::move(instanceHandle)) {}
-
-  mutable jsi::WeakObject instanceHandle;
-};
-
-struct EventHandlerWrapper : public EventHandler {
-  EventHandlerWrapper(jsi::Function eventHandler)
-      : callback(std::move(eventHandler)) {}
-
-  jsi::Function callback;
-};
-
-struct ShadowNodeWrapper : public jsi::HostObject {
-  ShadowNodeWrapper(SharedShadowNode shadowNode)
-      : shadowNode(std::move(shadowNode)) {}
-
-  SharedShadowNode shadowNode;
-};
-
-struct ShadowNodeListWrapper : public jsi::HostObject {
-  ShadowNodeListWrapper(SharedShadowNodeUnsharedList shadowNodeList)
-      : shadowNodeList(shadowNodeList) {}
-
-  SharedShadowNodeUnsharedList shadowNodeList;
-};
-
-jsi::Value createNode(
-    const UIManager &uiManager,
-    jsi::Runtime &runtime,
-    const jsi::Value *arguments,
-    size_t count) {
+jsi::Value createNode(const UIManager &uiManager, jsi::Runtime &runtime, const jsi::Value *arguments, size_t count) {
   auto reactTag = (Tag)arguments[0].getNumber();
   auto viewName = arguments[1].getString(runtime).utf8(runtime);
   auto rootTag = (Tag)arguments[2].getNumber();

@@ -6,6 +6,7 @@
 #include "ComponentDescriptorRegistry.h"
 
 #include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -78,25 +79,6 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   }
 
   return viewName;
-}
-
-static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
-  // TODO: Convert this to something smarter, probably returning
-  // `std::iterator`.
-  RawProps result;
-
-  if (object.isNull()) {
-    return result;
-  }
-
-  assert(object.isObject());
-
-  for (const auto &pair : object.items()) {
-    assert(pair.first.isString());
-    result[pair.first.asString()] = pair.second;
-  }
-
-  return result;
 }
 
 SharedShadowNode ComponentDescriptorRegistry::createNode(
