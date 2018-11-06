@@ -93,6 +93,7 @@ void FabricUIManager::setStopSurfaceFunction(
 }
 
 void FabricUIManager::dispatchEventToTarget(
+    jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
     const folly::dynamic &payload) const {

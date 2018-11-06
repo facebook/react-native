@@ -44,7 +44,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
           uiManager_.get(),
           std::placeholders::_1,
           std::placeholders::_2,
-          std::placeholders::_3),
+          std::placeholders::_3,
+          std::placeholders::_4),
       synchronousEventBeatFactory,
       asynchronousEventBeatFactory);
 
