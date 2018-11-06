@@ -7,26 +7,28 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <cxxreact/MessageQueueThread.h>
+#include <fabric/uimanager/FabricUIManager.h>
 #include <fabric/events/EventBeat.h>
 
 namespace facebook {
 namespace react {
 
 /*
- * Event beat that associated with MessageQueueThread.
+ * Event beat associated with JavaScript runtime.
+ * The beat is called on `RuntimeExecutor`'s thread induced by the main thread
+ * event loop.
  */
-class MessageQueueEventBeat:
+class RuntimeEventBeat:
   public EventBeat {
 
 public:
-  MessageQueueEventBeat(const std::shared_ptr<MessageQueueThread> &messageQueueThread);
-  ~MessageQueueEventBeat();
+  RuntimeEventBeat(RuntimeExecutor runtimeExecutor);
+  ~RuntimeEventBeat();
 
   void induce() const override;
 
 private:
-  const std::shared_ptr<MessageQueueThread> messageQueueThread_;
+  const RuntimeExecutor runtimeExecutor_;
   CFRunLoopObserverRef mainRunLoopObserver_;
   mutable std::atomic<bool> isBusy_ {false};
 };
