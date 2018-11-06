@@ -15,14 +15,6 @@ const View = require('View');
 const StyleSheet = require('StyleSheet');
 
 const renderApplication = require('renderApplication');
-
-const styles = StyleSheet.create({
-  view: {
-    opacity: 0.75,
-    backgroundColor: 'rgb(255, 0, 0)',
-  },
-});
-
 class ViewSampleApp extends React.Component {
   state = {};
 
@@ -40,7 +32,7 @@ class MarginSampleApp extends React.Component {
     updateMargins = this.setState.bind(this, {margin: 15});
     return (
       <View
-        style={{margin: this.state.margin, marginLeft: 20}}
+        style={[{margin: this.state.margin}, styles.marginSample]}
         collapsable={false}
       />
     );
@@ -50,13 +42,8 @@ class MarginSampleApp extends React.Component {
 class BorderSampleApp extends React.Component {
   render() {
     return (
-      <View
-        style={{borderLeftWidth: 20, borderWidth: 5, backgroundColor: 'blue'}}
-        collapsable={false}>
-        <View
-          style={{backgroundColor: 'red', width: 20, height: 20}}
-          collapsable={false}
-        />
+      <View style={styles.borderSample} collapsable={false}>
+        <View style={styles.borderSampleContent} collapsable={false} />
       </View>
     );
   }
@@ -99,5 +86,25 @@ BatchedBridge.registerCallableModule(
   'ViewRenderingTestModule',
   ViewRenderingTestModule,
 );
+
+const styles = StyleSheet.create({
+  view: {
+    opacity: 0.75,
+    backgroundColor: 'rgb(255, 0, 0)',
+  },
+  borderSample: {
+    borderLeftWidth: 20,
+    borderWidth: 5,
+    backgroundColor: 'blue',
+  },
+  borderSampleContent: {
+    backgroundColor: 'red',
+    width: 20,
+    height: 20,
+  },
+  marginSample: {
+    marginLeft: 20,
+  },
+});
 
 module.exports = ViewRenderingTestModule;

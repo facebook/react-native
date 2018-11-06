@@ -11,6 +11,7 @@
 
 const React = require('React');
 const View = require('View');
+const StyleSheet = require('StyleSheet');
 
 const RecordingModule = require('NativeModules').Recording;
 
@@ -61,7 +62,7 @@ class LayoutEventsTestApp extends React.Component {
       <View
         onLayout={this.handleParentOnLayout}
         testID="parent"
-        style={{left: 0, top: 0, width: 500, height: 500}}>
+        style={styles.container}>
         <View
           onLayout={this.handleOnLayout}
           testID="container"
@@ -76,5 +77,14 @@ class LayoutEventsTestApp extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    left: 0,
+    top: 0,
+    width: 500,
+    height: 500,
+  },
+});
 
 module.exports = LayoutEventsTestApp;
