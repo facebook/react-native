@@ -117,7 +117,7 @@ type State = {
 type Event = $ReadOnly<{|
   target: number,
   nativeEvent: $ReadOnly<{|
-    velocity ?: $ReadOnly<{|
+    velocity?: $ReadOnly<{|
       y: number,
       x: number,
     |}>,
