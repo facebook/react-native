@@ -13,9 +13,9 @@
 using namespace facebook::react;
 
 using facebook::xplat::jsArgAsInt;
-using std::map;
+using std::vector;
 
-MockInstance::MockInstance(std::shared_ptr<map<int64_t, int64_t>> sumCache)
+MockInstance::MockInstance(std::shared_ptr<vector<int64_t>> sumCache)
 : sumCache_{sumCache}
 {
 }
@@ -77,7 +77,7 @@ bool MockInstance::isInspectable()
 void MockInstance::callJSFunction(std::string &&module, std::string &&method,
                     folly::dynamic &&params)
 {
-  sumCache_->insert({jsArgAsInt(params, 0), jsArgAsInt(params, 1)});
+  sumCache_->emplace_back(jsArgAsInt(params, 0));
 }
 
 void MockInstance::callJSCallback(uint64_t callbackId, folly::dynamic &&params)

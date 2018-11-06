@@ -12,7 +12,6 @@
 #import "SampleCxxModule.hpp"
 
 using folly::dynamic;
-using std::map;
 using std::vector;
 
 @interface MockInstanceTests : XCTestCase
@@ -32,20 +31,17 @@ using std::vector;
 }
 
 - (void)testMockCallJSFunction {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-
-  auto cache = std::make_shared<map<int64_t, int64_t>>();
+  auto cache = std::make_shared<vector<int64_t>>();
   auto instance = std::make_shared<MockInstance>(cache);
   auto module = std::make_unique<SampleCxxModule>();
 
   module->setInstance(instance);
   
   auto sumMethod = module->getMethods()[0]; // First method: 'sum'.
-  sumMethod.func(dynamic::array(2, 3), [](vector<dynamic>){}, [](vector<dynamic>){});
+  sumMethod.func(dynamic::array(2, 3), [](vector<dynamic>){}, [](vector<dynamic>){}); // 5
   
-  auto result = cache->at(2);
-  XCTAssert(result == 2 + 3);
+  int64_t result = cache->front();
+  XCTAssert(result == 5); // 2 + 3
 }
 
 @end

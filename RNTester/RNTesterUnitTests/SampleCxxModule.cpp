@@ -38,10 +38,13 @@ vector<SampleCxxModule::Method> SampleCxxModule::getMethods()
   return
   {
     Method("sum", [instance = this->getInstance().lock()](dynamic args)
-     {
-       auto sum = jsArgAsInt(args, 0) + jsArgAsInt(args, 1);
-       if (instance)
-         instance->callJSFunction("MockedModule", "mockedMethod", dynamic::array(jsArgAsInt(args, 0), sum));
-     })
+    {
+      int64_t sum = 0;
+      for(auto& val : args)
+        sum += val.getInt();
+
+      if (instance)
+        instance->callJSFunction("MockedModule", "mockedMethod", dynamic::array(sum));
+    })
   };
 }
