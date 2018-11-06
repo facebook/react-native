@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -24,6 +24,7 @@ const warning = require('fbjs/lib/warning');
 
 const {ScrollViewManager} = require('NativeModules');
 
+import type {PressEvent} from 'CoreEventTypes';
 import type EmitterSubscription from 'EmitterSubscription';
 
 /**
@@ -113,7 +114,16 @@ type State = {
   observedScrollSinceBecomingResponder: boolean,
   becameResponderWhileAnimating: boolean,
 };
-type Event = Object;
+type Event = $ReadOnly<{|
+  target: number,
+  nativeEvent: $ReadOnly<{|
+    velocity ?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
+    touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
+  |}>,
+|}>;
 
 const ScrollResponderMixin = {
   _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
