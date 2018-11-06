@@ -76,7 +76,7 @@ private:
 // buffer, and provides an accessor for writing to it.  This can be
 // used to construct a JSBigString in place, such as by reading from a
 // file.
-RN_EXPORT class JSBigBufferString : public JSBigString {
+class RN_EXPORT JSBigBufferString : public JSBigString {
 public:
   JSBigBufferString(size_t size)
   : m_data(new char[size + 1])

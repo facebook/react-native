@@ -14,7 +14,7 @@
 namespace facebook {
 namespace react {
 
-JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset = 0)
+JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
   : m_fd { -1 }
   , m_data { nullptr } {
   folly::checkUnixError(m_fd = dup(fd),
@@ -46,7 +46,7 @@ JSBigFileString::~JSBigFileString() {
 }
 
 
-const char *JSBigFileString::c_str() const override {
+const char *JSBigFileString::c_str() const {
   if (!m_data) {
     m_data =
       (const char *) mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
