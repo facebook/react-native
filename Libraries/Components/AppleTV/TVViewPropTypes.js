@@ -10,7 +10,7 @@
 
 'use strict';
 
-type TVParallaxPropertiesType = $ReadOnly<{|
+export type TVParallaxPropertiesType = $ReadOnly<{|
   /**
    * If true, parallax effects are enabled.  Defaults to true.
    */
