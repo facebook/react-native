@@ -59,6 +59,14 @@ const char *JSBigFileString::c_str() const {
   return m_data + m_pageOff;
 }
 
+size_t JSBigFileString::size() const {
+  return m_size - m_pageOff;
+}
+
+int JSBigFileString::fd() const {
+  return m_fd;
+}
+
 std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(const std::string& sourceURL) {
   int fd = ::open(sourceURL.c_str(), O_RDONLY);
   folly::checkUnixError(fd, "Could not open file", sourceURL);
