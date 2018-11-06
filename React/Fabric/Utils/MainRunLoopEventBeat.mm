@@ -11,8 +11,8 @@
 namespace facebook {
 namespace react {
 
-MainRunLoopEventBeat::MainRunLoopEventBeat(std::shared_ptr<MessageQueueThread> messageQueueThread):
-  messageQueueThread_(std::move(messageQueueThread)) {
+MainRunLoopEventBeat::MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor):
+  runtimeExecutor_(std::move(runtimeExecutor)) {
 
   mainRunLoopObserver_ =
     CFRunLoopObserverCreateWithHandler(
@@ -25,7 +25,7 @@ MainRunLoopEventBeat::MainRunLoopEventBeat(std::shared_ptr<MessageQueueThread> m
           return;
         }
 
-        this->blockMessageQueueAndThenBeat();
+        this->lockExecutorAndBeat();
       }
   );
 
@@ -45,11 +45,11 @@ void MainRunLoopEventBeat::induce() const {
   }
 
   RCTExecuteOnMainQueue(^{
-    this->blockMessageQueueAndThenBeat();
+    this->lockExecutorAndBeat();
   });
 }
 
-void MainRunLoopEventBeat::blockMessageQueueAndThenBeat() const {
+void MainRunLoopEventBeat::lockExecutorAndBeat() const {
   // Note: We need the third mutex to get back to the main thread before
   // the lambda is finished (because all mutexes are allocated on the stack).
 
@@ -61,7 +61,7 @@ void MainRunLoopEventBeat::blockMessageQueueAndThenBeat() const {
   mutex2.lock();
   mutex3.lock();
 
-  messageQueueThread_->runOnQueue([&]() {
+  runtimeExecutor_([&](jsi::Runtime &runtime) {
     mutex1.unlock();
     mutex2.lock();
     mutex3.unlock();
