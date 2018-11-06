@@ -419,7 +419,7 @@ const ScrollResponderMixin = {
    * Components can pass what node to use by defining a `getScrollableNode`
    * function otherwise `this` is used.
    */
-  scrollResponderGetScrollableNode: function(): any {
+  scrollResponderGetScrollableNode: function(): ?number {
     return this.getScrollableNode
       ? this.getScrollableNode()
       : ReactNative.findNodeHandle(this);
@@ -544,7 +544,7 @@ const ScrollResponderMixin = {
    *        down to make it meet the keyboard's top. Default is false.
    */
   scrollResponderScrollNativeHandleToKeyboard: function(
-    nodeHandle: any,
+    nodeHandle: number,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,
   ) {
