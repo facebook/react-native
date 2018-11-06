@@ -11,6 +11,7 @@
 
 const React = require('React');
 const Recording = require('NativeModules').Recording;
+const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 class CatalystRootViewTestApp extends React.Component {
@@ -19,9 +20,15 @@ class CatalystRootViewTestApp extends React.Component {
   }
 
   render() {
-    return <View collapsable={false} style={{alignSelf: 'stretch'}} />;
+    return <View collapsable={false} style={styles.container} />;
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignSelf: 'stretch',
+  },
+});
 
 module.exports = {
   CatalystRootViewTestApp: CatalystRootViewTestApp,
