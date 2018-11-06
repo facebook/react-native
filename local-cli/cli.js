@@ -9,4 +9,8 @@
 
 var cli = require('react-native-local-cli');
 
-cli.run();
+if (require.main === module) {
+  cli.run();
+}
+
+module.exports = cli;
