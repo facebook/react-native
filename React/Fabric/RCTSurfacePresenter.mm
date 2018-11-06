@@ -306,11 +306,6 @@ using namespace facebook::react;
 
 @implementation RCTSurfacePresenter (Deprecated)
 
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
-{
-  return _scheduler.uiManager_DO_NOT_USE;
-}
-
 - (RCTBridge *)bridge_DO_NOT_USE
 {
   return _bridge;
