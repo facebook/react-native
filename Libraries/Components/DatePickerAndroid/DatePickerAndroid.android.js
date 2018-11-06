@@ -19,7 +19,7 @@ type Options = $ReadOnly<{|
   mode?: ?('calender' | 'spinner' | 'default'),
 |}>;
 
-type DatePickerModuleOpen =
+type DatePickerOpenAction =
   | {|
       action: 'dateSetAction',
       year: number,
@@ -86,7 +86,7 @@ class DatePickerAndroid {
    * Note the native date picker dialog has some UI glitches on Android 4 and lower
    * when using the `minDate` and `maxDate` options.
    */
-  static async open(options: Options): Promise<DatePickerModuleOpen> {
+  static async open(options: Options): Promise<DatePickerOpenAction> {
     const optionsMs = options;
     if (optionsMs) {
       _toMillis(options, 'date');

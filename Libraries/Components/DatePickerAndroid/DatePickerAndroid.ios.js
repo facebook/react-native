@@ -17,22 +17,8 @@ type Options = $ReadOnly<{|
   mode?: ?('calender' | 'spinner' | 'default'),
 |}>;
 
-type DatePickerModuleOpen =
-  | {|
-      action: 'dateSetAction',
-      year: number,
-      month: number,
-      day: number,
-    |}
-  | {|
-      action: 'dismissedAction',
-      year: typeof undefined,
-      month: typeof undefined,
-      day: typeof undefined,
-    |};
-
 const DatePickerAndroid = {
-  async open(options: Options): Promise<DatePickerModuleOpen> {
+  async open(options: Options): Promise<void> {
     return Promise.reject({
       message: 'DatePickerAndroid is not supported on this platform.',
     });
