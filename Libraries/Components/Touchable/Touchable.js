@@ -14,6 +14,7 @@ const Platform = require('Platform');
 const Position = require('Position');
 const React = require('React');
 const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
 const TVEventHandler = require('TVEventHandler');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
@@ -858,17 +859,25 @@ const Touchable = {
     return (
       <View
         pointerEvents="none"
-        style={{
-          position: 'absolute',
-          borderColor: hexColor.slice(0, -2) + '55', // More opaque
-          borderWidth: 1,
-          borderStyle: 'dashed',
-          backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
-          ...debugHitSlopStyle,
-        }}
+        style={[
+          styles.debug,
+          {
+            borderColor: hexColor.slice(0, -2) + '55', // More opaque
+            backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
+            ...debugHitSlopStyle,
+          },
+        ]}
       />
     );
   },
 };
+
+const styles = StyleSheet.create({
+  debug: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
+});
 
 module.exports = Touchable;
