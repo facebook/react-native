@@ -81,6 +81,24 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
+const ComponentDescriptor &ComponentDescriptorRegistry::at(
+    ComponentName componentName) const {
+  auto unifiedComponentName = componentNameByReactViewName(componentName);
+
+  auto it = _registryByName.find(unifiedComponentName);
+  if (it == _registryByName.end()) {
+    throw std::invalid_argument(
+        ("Unable to find componentDescriptor for " + unifiedComponentName)
+            .c_str());
+  }
+  return *it->second;
+}
+
+const ComponentDescriptor &ComponentDescriptorRegistry::at(
+    ComponentHandle componentHandle) const {
+  return *_registryByHandle.at(componentHandle);
+}
+
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
     const std::string &viewName,

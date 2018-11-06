@@ -25,6 +25,9 @@ class ComponentDescriptorRegistry {
   void registerComponentDescriptor(
       SharedComponentDescriptor componentDescriptor);
 
+  const ComponentDescriptor &at(ComponentName componentName) const;
+  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
+
   const SharedComponentDescriptor operator[](
       const SharedShadowNode &shadowNode) const;
   const SharedComponentDescriptor operator[](
