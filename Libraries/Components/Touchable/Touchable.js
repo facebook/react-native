@@ -140,7 +140,7 @@ type State =
  * Quick lookup map for states that are considered to be "active"
  */
 
-const baseStatsConditions = {
+const baseStatesConditions = {
   NOT_RESPONDER: false,
   RESPONDER_INACTIVE_PRESS_IN: false,
   RESPONDER_INACTIVE_PRESS_OUT: false,
@@ -152,7 +152,7 @@ const baseStatsConditions = {
 };
 
 const IsActive = {
-  ...baseStatsConditions,
+  ...baseStatesConditions,
   RESPONDER_ACTIVE_PRESS_OUT: true,
   RESPONDER_ACTIVE_PRESS_IN: true,
 };
@@ -162,14 +162,14 @@ const IsActive = {
  * therefore eligible to result in a "selection" if the press stops.
  */
 const IsPressingIn = {
-  ...baseStatsConditions,
+  ...baseStatesConditions,
   RESPONDER_INACTIVE_PRESS_IN: true,
   RESPONDER_ACTIVE_PRESS_IN: true,
   RESPONDER_ACTIVE_LONG_PRESS_IN: true,
 };
 
 const IsLongPressingIn = {
-  ...baseStatsConditions,
+  ...baseStatesConditions,
   RESPONDER_ACTIVE_LONG_PRESS_IN: true,
 };
 
