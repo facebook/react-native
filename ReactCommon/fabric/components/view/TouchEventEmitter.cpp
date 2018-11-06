@@ -15,11 +15,11 @@ namespace react {
 static folly::dynamic touchPayload(const Touch &touch) {
   folly::dynamic object = folly::dynamic::object();
   object["locationX"] = touch.offsetPoint.x;
-  object["locationY"] = touch.offsetPoint.x;
+  object["locationY"] = touch.offsetPoint.y;
   object["pageX"] = touch.pagePoint.x;
-  object["pageY"] = touch.pagePoint.x;
+  object["pageY"] = touch.pagePoint.y;
   object["screenX"] = touch.screenPoint.x;
-  object["screenY"] = touch.screenPoint.x;
+  object["screenY"] = touch.screenPoint.y;
   object["identifier"] = touch.identifier;
   object["target"] = touch.target;
   object["timestamp"] = touch.timestamp * 1000;
