@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <jsi/jsi.h>
 #include <atomic>
 #include <functional>
 #include <memory>
@@ -22,7 +23,7 @@ class EventBeat {
  public:
   virtual ~EventBeat() = default;
 
-  using BeatCallback = std::function<void()>;
+  using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
   using FailCallback = std::function<void()>;
 
   /*
@@ -62,7 +63,7 @@ class EventBeat {
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
-  void beat() const;
+  void beat(jsi::Runtime &runtime) const;
 
   BeatCallback beatCallback_;
   FailCallback failCallback_;

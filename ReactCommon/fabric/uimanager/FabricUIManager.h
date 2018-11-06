@@ -85,6 +85,7 @@ class FabricUIManager {
 #pragma mark - Native-facing Interface
 
   void dispatchEventToTarget(
+      jsi::Runtime &runtime,
       const EventTarget *eventTarget,
       const std::string &type,
       const folly::dynamic &payload) const;

@@ -59,7 +59,7 @@ void RuntimeEventBeat::induce() const {
 
   isBusy_ = true;
   runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
-    this->beat();
+    this->beat(runtime);
     isBusy_ = false;
 #ifndef NDEBUG
     *wasExecuted = true;
