@@ -12,7 +12,7 @@
 
 const TimePickerModule = require('NativeModules').TimePickerAndroid;
 
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {Options, TimePickerAndroidEvent} from './TimePickerAndroidTypes';
 
 /**
  * Opens the standard Android time picker dialog.
@@ -34,21 +34,6 @@ import type {SyntheticEvent} from 'CoreEventTypes';
  * }
  * ```
  */
-type Options = {
-  hour: number,
-  minute: number,
-  is24Hour: boolean,
-  mode: 'clock' | 'spinner' | 'default',
-};
-
-type TimePickerAndroidEvent = SyntheticEvent<
-  $ReadOnly<{|
-    action: string,
-    hour: number,
-    minute: number,
-  |}>,
->;
-
 class TimePickerAndroid {
   /**
    * Opens the standard Android time picker dialog.
