@@ -14,6 +14,7 @@
 #include <folly/dynamic.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <cmath>
 
 namespace facebook {
 namespace react {
@@ -51,7 +52,7 @@ inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
 }
 
 inline YGValue yogaStyleValueFromFloat(const Float &value) {
-  if (isnan(value) || value == kFloatUndefined) {
+  if (std::isnan(value) || value == kFloatUndefined) {
     return YGValueUndefined;
   }
 
