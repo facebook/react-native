@@ -26,7 +26,6 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -397,8 +396,8 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.84 was deployed. To see the error, delete this comment
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
    * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**

@@ -12,7 +12,7 @@
 const DeprecatedImagePropType = require('DeprecatedImagePropType');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 
 const flattenStyle = require('flattenStyle');

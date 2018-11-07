@@ -28,6 +28,8 @@ struct LayoutContext;
  */
 class LayoutableShadowNode : public virtual Sealable {
  public:
+  virtual ~LayoutableShadowNode() noexcept = default;
+
   /*
    * Measures the node (and node content, propbably recursivly) with
    * given constrains and relying on possible layout.

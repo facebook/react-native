@@ -14,7 +14,7 @@ const BatchedBridge = require('BatchedBridge');
 const {assertEquals, assertTrue} = require('Asserts');
 const {TestModule} = require('NativeModules');
 
-var TestJavaToJSReturnValuesModule = {
+const TestJavaToJSReturnValuesModule = {
   callMethod: function(methodName, expectedType, expectedJSON) {
     const result = TestModule[methodName]();
     assertEquals(expectedType, typeof result);

@@ -10,17 +10,17 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, View} = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
 class Circle extends React.Component<$FlowFixMeProps> {
   render() {
-    var size = this.props.size || 20;
-    var backgroundColor = this.props.bgColor || '#527fe4';
+    const size = this.props.size || 20;
+    const backgroundColor = this.props.bgColor || '#527fe4';
     return (
       <View
         style={{
@@ -37,7 +37,7 @@ class Circle extends React.Component<$FlowFixMeProps> {
 
 class CircleBlock extends React.Component<$FlowFixMeProps> {
   render() {
-    var circleStyle = {
+    const circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
       borderWidth: 0.5,
@@ -56,7 +56,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
   static displayName = 'LayoutExample';
 
   render() {
-    var fiveColoredCircles = [
+    const fiveColoredCircles = [
       <Circle bgColor="#527fe4" key="blue" />,
       <Circle bgColor="#D443E3" key="violet" />,
       <Circle bgColor="#FF9049" key="orange" />,
@@ -186,7 +186,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   overlay: {
     backgroundColor: '#aaccff',
     borderRadius: 10,

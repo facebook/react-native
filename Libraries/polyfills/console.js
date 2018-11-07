@@ -9,7 +9,7 @@
  * @format
  */
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that

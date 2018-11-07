@@ -363,6 +363,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+      final T rootView) {
+        return addRootView(rootView, null, null);
+      }
+
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
@@ -374,7 +379,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
-      final T rootView) {
+      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();

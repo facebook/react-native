@@ -114,14 +114,10 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-  },
-  singleLine: {
-    fontSize: 16,
-    padding: 4,
   },
   text: {
     margin: 10,

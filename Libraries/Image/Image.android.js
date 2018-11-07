@@ -17,7 +17,7 @@ const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const NativeModules = require('NativeModules');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 const TextAncestor = require('TextAncestor');
 
@@ -262,10 +262,9 @@ let Image = (
 Image = React.forwardRef(Image);
 
 /**
- * Prefetches a remote image for later use by downloading it to the disk
- * cache
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
 Image.getSize = getSize;
 

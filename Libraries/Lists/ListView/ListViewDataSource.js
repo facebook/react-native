@@ -62,7 +62,7 @@ type ParamType = {
  *
  * ```
  * getInitialState: function() {
- *   var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+ *   const ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
  *   return {ds};
  * },
  * _onDataArrived(newData) {
@@ -356,7 +356,7 @@ class ListViewDataSource {
     const prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
     const prevRowsHash = {};
     for (let ii = 0; ii < prevRowIDs.length; ii++) {
-      var sectionID = prevSectionIDs[ii];
+      const sectionID = prevSectionIDs[ii];
       warning(
         !prevRowsHash[sectionID],
         'SectionID appears more than once: ' + sectionID,
@@ -370,7 +370,7 @@ class ListViewDataSource {
 
     let dirty;
     for (let sIndex = 0; sIndex < this.sectionIdentities.length; sIndex++) {
-      var sectionID = this.sectionIdentities[sIndex];
+      const sectionID = this.sectionIdentities[sIndex];
       // dirty if the sectionHeader is new or _sectionHasChanged is true
       dirty = !prevSectionsHash[sectionID];
       const sectionHeaderHasChanged = this._sectionHeaderHasChanged;

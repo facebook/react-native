@@ -108,10 +108,12 @@ class TouchableText extends React.Component<Props, State> {
     responseHandlers: null,
   };
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): ?State {
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State,
+  ): $Shape<State> | null {
     return prevState.responseHandlers == null && isTouchable(nextProps)
       ? {
-          ...prevState,
           responseHandlers: prevState.createResponderHandlers(),
         }
       : null;
@@ -277,6 +279,7 @@ const Text = (
 };
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const TextToExport = React.forwardRef(Text);
+TextToExport.displayName = 'Text';
 
 // TODO: Deprecate this.
 TextToExport.propTypes = DeprecatedTextPropTypes;

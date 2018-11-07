@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {AccessibilityInfo, Text, View, TouchableOpacity} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {AccessibilityInfo, Text, View, TouchableOpacity} = ReactNative;
 
 class AccessibilityIOSExample extends React.Component<{}> {
   render() {

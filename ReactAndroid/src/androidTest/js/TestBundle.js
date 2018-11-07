@@ -32,9 +32,9 @@ require('TextInputTestModule');
 require('TimePickerDialogTestModule');
 
 // Define catalyst test apps used in integration tests
-var AppRegistry = require('AppRegistry');
+const AppRegistry = require('AppRegistry');
 
-var apps = [
+const apps = [
   {
     appKey: 'CatalystRootViewTestApp',
     component: () =>

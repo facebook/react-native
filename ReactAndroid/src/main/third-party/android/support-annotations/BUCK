@@ -1,10 +1,12 @@
-prebuilt_jar(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_jar(
     name = "android-support-annotations",
     binary_jar = ":support-annotations-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "support-annotations-binary.jar",
     sha1 = "39ded76b5e1ce1c5b2688e1d25cdc20ecee32007",
     url = "mvn:com.android.support:support-annotations:jar:27.1.1",

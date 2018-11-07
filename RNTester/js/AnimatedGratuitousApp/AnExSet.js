@@ -10,20 +10,20 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, PanResponder, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, PanResponder, StyleSheet, Text, View} = ReactNative;
 
-var AnExBobble = require('./AnExBobble');
-var AnExChained = require('./AnExChained');
-var AnExScroll = require('./AnExScroll');
-var AnExTilt = require('./AnExTilt');
+const AnExBobble = require('./AnExBobble');
+const AnExChained = require('./AnExChained');
+const AnExScroll = require('./AnExScroll');
+const AnExTilt = require('./AnExTilt');
 
 class AnExSet extends React.Component<Object, any> {
   constructor(props: Object) {
     super(props);
     function randColor() {
-      var colors = [0, 1, 2].map(() => Math.floor(Math.random() * 150 + 100));
+      const colors = [0, 1, 2].map(() => Math.floor(Math.random() * 150 + 100));
       return 'rgb(' + colors.join(',') + ')';
     }
     this.state = {
@@ -32,7 +32,7 @@ class AnExSet extends React.Component<Object, any> {
     };
   }
   render(): React.Node {
-    var backgroundColor = this.props.openVal
+    const backgroundColor = this.props.openVal
       ? this.props.openVal.interpolate({
           inputRange: [0, 1],
           outputRange: [
@@ -41,7 +41,7 @@ class AnExSet extends React.Component<Object, any> {
           ],
         })
       : this.state.closeColor;
-    var panelWidth =
+    const panelWidth =
       (this.props.containerLayout && this.props.containerLayout.width) || 320;
     return (
       <View style={styles.container}>
@@ -98,7 +98,7 @@ class AnExSet extends React.Component<Object, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

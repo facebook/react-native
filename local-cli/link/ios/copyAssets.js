@@ -10,7 +10,6 @@
 const fs = require('fs-extra');
 const path = require('path');
 const xcode = require('xcode');
-const log = require('npmlog');
 const groupFilesByType = require('../groupFilesByType');
 const createGroupWithMessage = require('./createGroupWithMessage');
 const getPlist = require('./getPlist');

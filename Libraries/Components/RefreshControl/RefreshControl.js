@@ -20,15 +20,16 @@ const nullthrows = require('nullthrows');
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
+let RefreshLayoutConsts;
 if (Platform.OS === 'android') {
   const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
   );
-  var RefreshLayoutConsts = AndroidSwipeRefreshLayout
+  RefreshLayoutConsts = AndroidSwipeRefreshLayout
     ? AndroidSwipeRefreshLayout.Constants
     : {SIZE: {}};
 } else {
-  var RefreshLayoutConsts = {SIZE: {}};
+  RefreshLayoutConsts = {SIZE: {}};
 }
 type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
 
@@ -86,7 +87,7 @@ export type RefreshControlProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
 
   /**
    * Whether the view should be indicating an active refresh.
