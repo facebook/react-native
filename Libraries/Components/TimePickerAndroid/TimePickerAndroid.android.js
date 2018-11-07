@@ -61,11 +61,11 @@ class TimePickerAndroid {
   /**
    * A time has been selected.
    */
-  static timeSetAction = 'timeSetAction';
+  static +timeSetAction: string = 'timeSetAction';
   /**
    * The dialog has been dismissed.
    */
-  static dismissedAction = 'dismissedAction';
+  static +dismissedAction: string = 'dismissedAction';
 }
 
 module.exports = TimePickerAndroid;
