@@ -33,7 +33,6 @@
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
-      "local-cli/templates/",
       "RNTester/e2e"
     ],
     "haste": {
