@@ -23,8 +23,7 @@ const createReactClass = require('create-react-class');
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-
-type Event = Object;
+import type {PressEvent} from 'CoreEventTypes';
 
 type State = {
   animationID: ?number,
@@ -36,8 +35,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?Function,
-  onPressAnimationComplete?: ?Function,
+  onPressWithCompletion?: ?() => void,
+  onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
   releaseBounciness?: ?number,
@@ -95,7 +94,7 @@ const TouchableBounce = ((createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function,
+    callback?: ?() => void,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -109,17 +108,17 @@ const TouchableBounce = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -147,7 +146,7 @@ const TouchableBounce = ((createReactClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
-  touchableGetHitSlop: function(): ?Object {
+  touchableGetHitSlop: function(): ?EdgeInsetsProp {
     return this.props.hitSlop;
   },
 
