@@ -921,19 +921,15 @@ const Touchable = {
       (normalizedColor
         ? '00000000' + normalizedColor.toString(16).substr(-8)
         : '');
-    return (
-      <View
-        pointerEvents="none"
-        style={{
-          position: 'absolute',
-          borderColor: hexColor.slice(0, -2) + '55', // More opaque
-          borderWidth: 1,
-          borderStyle: 'dashed',
-          backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
-          ...debugHitSlopStyle,
-        }}
-      />
-    );
+    const styles = {
+      position: 'absolute',
+      borderColor: hexColor.slice(0, -2) + '55', // More opaque
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
+      ...debugHitSlopStyle,
+    };
+    return <View pointerEvents="none" style={styles} />;
   },
 };
 
