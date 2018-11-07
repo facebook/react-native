@@ -4755,7 +4755,7 @@ var Dispatcher = { readContext: readContext },
 invariant(
   null != tracing.__interactionsRef &&
     null != tracing.__interactionsRef.current,
-  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `schedule/tracing` module with `schedule/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
+  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
 );
 var isWorking = !1,
   nextUnitOfWork = null,
