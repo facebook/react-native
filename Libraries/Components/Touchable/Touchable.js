@@ -916,8 +916,12 @@ const Touchable = {
     for (const key in hitSlop) {
       debugHitSlopStyle[key] = -hitSlop[key];
     }
+    const normalizedColor = normalizeColor(color);
+    if (typeof normalizedColor !== 'number') {
+      return null;
+    }
     const hexColor =
-      '#' + ('00000000' + normalizeColor(color).toString(16)).substr(-8);
+      '#' + ('00000000' + normalizedColor.toString(16)).substr(-8);
     return (
       <View
         pointerEvents="none"
