@@ -243,7 +243,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (id)moduleForClass:(Class)moduleClass
 {
-  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  id module = [self.batchedBridge moduleForClass:moduleClass];
+  if (!module) {
+    module = [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  }
+  return module;
 }
 
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
