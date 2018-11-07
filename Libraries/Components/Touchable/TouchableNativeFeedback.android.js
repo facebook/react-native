@@ -14,7 +14,6 @@ const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
 const ReactNative = require('ReactNative');
-// $FlowFixMe
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
