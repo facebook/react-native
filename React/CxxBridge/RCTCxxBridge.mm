@@ -444,6 +444,21 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
+- (id)moduleForClass:(Class)moduleClass
+{
+  NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+  RCTModuleData *moduleData = _moduleDataByName[moduleName];
+  if (moduleData) {
+    return moduleData.instance;
+  }
+
+  // Module may not be loaded yet, so attempt to force load it here.
+  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)], @"Asking for a NativeModule that doesn't conform to RCTBridgeModule: %@", NSStringFromClass(moduleClass));
+  [self registerAdditionalModuleClasses:@[moduleClass]];
+
+  return _moduleDataByName[moduleName].instance;
+}
+
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistryUnlocked
 {
   if (!self.valid) {
