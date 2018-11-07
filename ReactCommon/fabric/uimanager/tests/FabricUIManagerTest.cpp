@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include <fabric/uimanager/FabricUIManager.h>
+#include <fabric/uimanager/UIManager.h>
 #include <gtest/gtest.h>
 
 using namespace facebook::react;
 
-TEST(FabricUIManagerTest, testSomething) {
+TEST(UIManagerTest, testSomething) {
   // TODO
 }

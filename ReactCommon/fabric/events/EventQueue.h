@@ -14,6 +14,7 @@
 #include <fabric/events/EventBeat.h>
 #include <fabric/events/RawEvent.h>
 #include <fabric/events/primitives.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -34,12 +35,12 @@ class EventQueue {
   virtual void enqueueEvent(const RawEvent &rawEvent) const;
 
  protected:
-  void onBeat() const;
+  void onBeat(jsi::Runtime &runtime) const;
 
   const EventPipe eventPipe_;
   const std::unique_ptr<EventBeat> eventBeat_;
-  mutable std::vector<RawEvent>
-      queue_; // Thread-safe, protected by `queueMutex_`.
+  // Thread-safe, protected by `queueMutex_`.
+  mutable std::vector<RawEvent> queue_;
   mutable std::mutex queueMutex_;
 };
 

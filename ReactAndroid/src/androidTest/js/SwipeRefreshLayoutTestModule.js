@@ -14,6 +14,7 @@ const React = require('React');
 const RecordingModule = require('NativeModules')
   .SwipeRefreshLayoutRecordingModule;
 const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
 const RefreshControl = require('RefreshControl');
 const Text = require('Text');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
@@ -57,10 +58,10 @@ class SwipeRefreshLayoutTestApp extends React.Component {
     }
     return (
       <ScrollView
-        style={{flex: 1}}
+        style={styles.container}
         refreshControl={
           <RefreshControl
-            style={{flex: 1}}
+            style={styles.content}
             refreshing={false}
             onRefresh={() => RecordingModule.onRefresh()}
           />
@@ -84,5 +85,14 @@ BatchedBridge.registerCallableModule(
   'SwipeRefreshLayoutTestModule',
   SwipeRefreshLayoutTestModule,
 );
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+});
 
 module.exports = SwipeRefreshLayoutTestModule;

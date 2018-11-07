@@ -97,12 +97,3 @@ private:
 }
 
 @end
-
-@implementation RCTScheduler (Deprecated)
-
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
-{
-  return _scheduler->getUIManager_DO_NOT_USE();
-}
-
-@end

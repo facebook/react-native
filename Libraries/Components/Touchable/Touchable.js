@@ -15,6 +15,7 @@ const Platform = require('Platform');
 const Position = require('Position');
 const React = require('React');
 const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
 const TVEventHandler = require('TVEventHandler');
 const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
@@ -915,22 +916,30 @@ const Touchable = {
     for (const key in hitSlop) {
       debugHitSlopStyle[key] = -hitSlop[key];
     }
-    const normalizedColor = normalizeColor(color);
     const hexColor =
-      '#' +
-      (normalizedColor
-        ? '00000000' + normalizedColor.toString(16).substr(-8)
-        : '');
-    const styles = {
-      position: 'absolute',
-      borderColor: hexColor.slice(0, -2) + '55', // More opaque
-      borderWidth: 1,
-      borderStyle: 'dashed',
-      backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
-      ...debugHitSlopStyle,
-    };
-    return <View pointerEvents="none" style={styles} />;
+      '#' + ('00000000' + normalizeColor(color).toString(16)).substr(-8);
+    return (
+      <View
+        pointerEvents="none"
+        style={[
+          styles.debug,
+          {
+            borderColor: hexColor.slice(0, -2) + '55', // More opaque
+            backgroundColor: hexColor.slice(0, -2) + '0F', // Less opaque
+            ...debugHitSlopStyle,
+          },
+        ]}
+      />
+    );
   },
 };
+
+const styles = StyleSheet.create({
+  debug: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
+});
 
 module.exports = Touchable;
