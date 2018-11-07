@@ -57,6 +57,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 typedef void (^RCTPendingCall)();
 
 using namespace facebook::jsc;
+using namespace facebook::jsi;
 using namespace facebook::react;
 
 /**
@@ -154,6 +155,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   BOOL _wasBatchActive;
   BOOL _didInvalidate;
+  BOOL _moduleRegistryCreated;
 
   NSMutableArray<RCTPendingCall> *_pendingCalls;
   std::atomic<NSInteger> _pendingCount;
@@ -168,6 +170,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   // JS thread management
   NSThread *_jsThread;
   std::shared_ptr<RCTMessageThread> _jsMessageThread;
+  std::mutex _moduleRegistryLock;
 
   // This is uniquely owned, but weak_ptr is used.
   std::shared_ptr<Instance> _reactInstance;
@@ -208,9 +211,9 @@ struct RCTInstanceCallback : public InstanceCallback {
      */
     _valid = YES;
     _loading = YES;
+    _moduleRegistryCreated = NO;
     _pendingCalls = [NSMutableArray new];
     _displayLink = [RCTDisplayLink new];
-
     _moduleDataByName = [NSMutableDictionary new];
     _moduleClassesByID = [NSMutableArray new];
     _moduleDataByID = [NSMutableArray new];
@@ -300,6 +303,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self registerExtraModules];
   // Initialize all native modules that cannot be loaded lazily
   (void)[self _initializeModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
+  [self registerExtraLazyModules];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
 
@@ -440,7 +444,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
 }
 
-- (std::shared_ptr<ModuleRegistry>)_buildModuleRegistry
+- (std::shared_ptr<ModuleRegistry>)_buildModuleRegistryUnlocked
 {
   if (!self.valid) {
     return {};
@@ -487,12 +491,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
 #endif
 
-    // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
-    _reactInstance->initializeBridge(
-      std::make_unique<RCTInstanceCallback>(self),
-      executorFactory,
-      _jsMessageThread,
-      [self _buildModuleRegistry]);
+    [self _initializeBridgeLocked:executorFactory];
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -504,6 +503,19 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+}
+
+- (void)_initializeBridgeLocked:(std::shared_ptr<JSExecutorFactory>)executorFactory
+{
+  std::lock_guard<std::mutex> guard(_moduleRegistryLock);
+
+  // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
+  _reactInstance->initializeBridge(
+                                   std::make_unique<RCTInstanceCallback>(self),
+                                   executorFactory,
+                                   _jsMessageThread,
+                                   [self _buildModuleRegistryUnlocked]);
+  _moduleRegistryCreated = YES;
 }
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
@@ -599,6 +611,57 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
+- (void)registerExtraLazyModules
+{
+#if RCT_DEBUG
+  // This is debug-only and only when Chrome is attached, since it expects all modules to be already
+  // available on start up. Otherwise, we can let the lazy module discovery to load them on demand.
+  Class executorClass = [_parentBridge executorClass];
+  if (executorClass && [NSStringFromClass(executorClass) isEqualToString:@"RCTWebSocketExecutor"]) {
+    NSDictionary<NSString *, Class> *moduleClasses = nil;
+    if ([self.delegate respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
+      moduleClasses = [self.delegate extraLazyModuleClassesForBridge:_parentBridge];
+    }
+
+    if (!moduleClasses) {
+      return;
+    }
+
+    // This logic is mostly copied from `registerModulesForClasses:`, but with one difference:
+    // we must use the names provided by the delegate method here.
+    for (NSString *moduleName in moduleClasses) {
+      Class moduleClass = moduleClasses[moduleName];
+      if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+        continue;
+      }
+
+      // Check for module name collisions
+      RCTModuleData *moduleData = _moduleDataByName[moduleName];
+      if (moduleData) {
+        if (moduleData.hasInstance) {
+          // Existing module was preregistered, so it takes precedence
+          continue;
+        } else if ([moduleClass new] == nil) {
+          // The new module returned nil from init, so use the old module
+          continue;
+        } else if ([moduleData.moduleClass new] != nil) {
+          // Both modules were non-nil, so it's unclear which should take precedence
+          RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
+                      "name '%@', but name was already registered by class %@",
+                      moduleClass, moduleName, moduleData.moduleClass);
+        }
+      }
+
+      moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass bridge:self];
+
+      _moduleDataByName[moduleName] = moduleData;
+      [_moduleClassesByID addObject:moduleClass];
+      [_moduleDataByID addObject:moduleData];
+    }
+  }
+#endif
+}
+
 - (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<id<RCTBridgeModule>> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
@@ -653,9 +716,13 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
 {
-  NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
-  if (_reactInstance) {
+  std::lock_guard<std::mutex> guard(_moduleRegistryLock);
+  if (_moduleRegistryCreated) {
+    NSArray<RCTModuleData *> *newModules = [self _initializeModules:modules withDispatchGroup:NULL lazilyDiscovered:YES];
+    assert(_reactInstance); // at this point you must have reactInstance as you already called reactInstance->initialzeBridge
     _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
+  } else {
+    [self registerModulesForClasses:modules];
   }
 }
 
@@ -1227,6 +1294,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (BOOL)isBatchActive
 {
   return _wasBatchActive;
+}
+
+- (void *)runtime
+{
+  if (!_reactInstance) {
+    return nullptr;
+  }
+
+  return _reactInstance->getJavaScriptContext();
 }
 
 @end

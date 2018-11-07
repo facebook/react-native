@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Slider, Text, StyleSheet, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Slider, Text, StyleSheet, View} = ReactNative;
 
 class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
@@ -68,11 +68,7 @@ class SlidingCompleteExample extends React.Component<
   }
 }
 
-var styles = StyleSheet.create({
-  slider: {
-    height: 10,
-    margin: 10,
-  },
+const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     textAlign: 'center',

@@ -12,9 +12,9 @@
 
 const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
-var React = require('react');
-var ReactNative = require('react-native');
-var {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -92,6 +92,9 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextInputAccessoryViewExample extends React.Component<{}, *> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Placeholder Text'};
@@ -121,14 +124,17 @@ class TextInputAccessoryViewExample extends React.Component<{}, *> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
   }
   render() {
-    var limit = 20;
-    var remainder = limit - this.state.text.length;
-    var remainderColor = remainder > 5 ? 'blue' : 'red';
+    const limit = 20;
+    const remainder = limit - this.state.text.length;
+    const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -153,6 +159,9 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -174,6 +183,9 @@ class RewriteExampleInvalidCharacters extends React.Component<
 }
 
 class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -195,6 +207,9 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
 }
 
 class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -216,6 +231,9 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -356,7 +374,7 @@ class SelectionExample extends React.Component<
   }
 
   getRandomPosition() {
-    var length = this.state.value.length;
+    const length = this.state.value.length;
     return Math.round(Math.random() * length);
   }
 
@@ -366,7 +384,7 @@ class SelectionExample extends React.Component<
   }
 
   selectRandom() {
-    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort(
+    const positions = [this.getRandomPosition(), this.getRandomPosition()].sort(
       (a, b) => a - b,
     );
     this.select(...positions);
@@ -381,7 +399,7 @@ class SelectionExample extends React.Component<
   }
 
   render() {
-    var length = this.state.value.length;
+    const length = this.state.value.length;
 
     return (
       <View>
@@ -436,7 +454,7 @@ class AutogrowingTextInputExample extends React.Component<
   }
 
   render() {
-    var {style, multiline, ...props} = this.props;
+    const {style, multiline, ...props} = this.props;
     return (
       <View>
         <Text>Width:</Text>
@@ -471,10 +489,7 @@ class AutogrowingTextInputExample extends React.Component<
   }
 }
 
-var styles = StyleSheet.create({
-  page: {
-    paddingBottom: 300,
-  },
+const styles = StyleSheet.create({
   default: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
@@ -501,13 +516,6 @@ var styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
-  },
-  multilineChild: {
-    width: 50,
-    height: 40,
-    position: 'absolute',
-    right: 5,
-    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -643,7 +651,7 @@ exports.examples = [
   {
     title: 'Keyboard types',
     render: function() {
-      var keyboardTypes = [
+      const keyboardTypes = [
         'default',
         'ascii-capable',
         'numbers-and-punctuation',
@@ -657,7 +665,7 @@ exports.examples = [
         'web-search',
         'numeric',
       ];
-      var examples = keyboardTypes.map(type => {
+      const examples = keyboardTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardType={type} style={styles.default} />
@@ -670,8 +678,8 @@ exports.examples = [
   {
     title: 'Keyboard appearance',
     render: function() {
-      var keyboardAppearance = ['default', 'light', 'dark'];
-      var examples = keyboardAppearance.map(type => {
+      const keyboardAppearance = ['default', 'light', 'dark'];
+      const examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardAppearance={type} style={styles.default} />
@@ -684,7 +692,7 @@ exports.examples = [
   {
     title: 'Return key types',
     render: function() {
-      var returnKeyTypes = [
+      const returnKeyTypes = [
         'default',
         'go',
         'google',
@@ -697,7 +705,7 @@ exports.examples = [
         'done',
         'emergency-call',
       ];
-      var examples = returnKeyTypes.map(type => {
+      const examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput returnKeyType={type} style={styles.default} />

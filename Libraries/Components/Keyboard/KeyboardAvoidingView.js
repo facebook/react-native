@@ -150,7 +150,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       children,
       contentContainerStyle,
       enabled,
-      keyboardVerticalOffset, // eslint-disable-line no-unused-vars
+      keyboardVerticalOffset,
       style,
       ...props
     } = this.props;

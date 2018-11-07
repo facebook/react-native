@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "MessageQueueEventBeat.h"
+#include "RuntimeEventBeat.h"
 
 namespace facebook {
 namespace react {
 
-MessageQueueEventBeat::MessageQueueEventBeat(const std::shared_ptr<MessageQueueThread> &messageQueueThread):
-  messageQueueThread_(messageQueueThread) {
+RuntimeEventBeat::RuntimeEventBeat(RuntimeExecutor runtimeExecutor):
+  runtimeExecutor_(std::move(runtimeExecutor)) {
 
   mainRunLoopObserver_ =
     CFRunLoopObserverCreateWithHandler(
@@ -31,12 +31,12 @@ MessageQueueEventBeat::MessageQueueEventBeat(const std::shared_ptr<MessageQueueT
   CFRunLoopAddObserver(CFRunLoopGetMain(), mainRunLoopObserver_, kCFRunLoopCommonModes);
 }
 
-MessageQueueEventBeat::~MessageQueueEventBeat() {
+RuntimeEventBeat::~RuntimeEventBeat() {
   CFRunLoopRemoveObserver(CFRunLoopGetMain(), mainRunLoopObserver_, kCFRunLoopCommonModes);
   CFRelease(mainRunLoopObserver_);
 }
 
-void MessageQueueEventBeat::induce() const {
+void RuntimeEventBeat::induce() const {
   if (!isRequested_ || isBusy_) {
     return;
   }
@@ -58,8 +58,8 @@ void MessageQueueEventBeat::induce() const {
 #endif
 
   isBusy_ = true;
-  messageQueueThread_->runOnQueue([=]() mutable {
-    this->beat();
+  runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
+    this->beat(runtime);
     isBusy_ = false;
 #ifndef NDEBUG
     *wasExecuted = true;

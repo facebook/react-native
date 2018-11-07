@@ -5,10 +5,13 @@
 
 #include "Scheduler.h"
 
+#include <jsi/jsi.h>
+
 #include <fabric/core/LayoutContext.h>
 #include <fabric/uimanager/ComponentDescriptorRegistry.h>
-#include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/uimanager/TemplateRenderer.h>
+#include <fabric/uimanager/UITemplateProcessor.h>
+#include <fabric/uimanager/UIManager.h>
+#include <fabric/uimanager/UIManagerBinding.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -23,34 +26,38 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
   const auto synchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("synchronous");
 
-  uiManager_ = std::make_shared<FabricUIManager>(
-      std::make_unique<EventBeatBasedExecutor>(asynchronousEventBeatFactory()),
-      contextContainer->getInstance<std::function<UIManagerInstaller>>(
-          "uimanager-installer"),
-      contextContainer->getInstance<std::function<UIManagerUninstaller>>(
-          "uimanager-uninstaller"));
+  runtimeExecutor_ =
+      contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
+
+  auto uiManager = std::make_unique<UIManager>();
+  auto &uiManagerRef = *uiManager;
+  uiManagerBinding_ =
+      std::make_shared<UIManagerBinding>(std::move(uiManager));
+
+  auto eventPipe = [uiManagerBinding = uiManagerBinding_.get()](
+                       jsi::Runtime &runtime,
+                       const EventTarget *eventTarget,
+                       const std::string &type,
+                       const folly::dynamic &payload) {
+    uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payload);
+  };
 
   auto eventDispatcher = std::make_shared<EventDispatcher>(
-      std::bind(
-          &FabricUIManager::dispatchEventToTarget,
-          uiManager_.get(),
-          std::placeholders::_1,
-          std::placeholders::_2,
-          std::placeholders::_3),
-      synchronousEventBeatFactory,
-      asynchronousEventBeatFactory);
+      eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
-    eventDispatcher, contextContainer);
-  uiManager_->setComponentDescriptorRegistry(
-    componentDescriptorRegistry_
-  );
+      eventDispatcher, contextContainer);
 
-  uiManager_->setDelegate(this);
+  uiManagerRef.setDelegate(this);
+  uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    UIManagerBinding::install(runtime, uiManagerBinding_);
+  });
 }
 
 Scheduler::~Scheduler() {
-  uiManager_->setDelegate(nullptr);
+  uiManagerBinding_->invalidate();
 }
 
 void Scheduler::startSurface(
@@ -58,7 +65,7 @@ void Scheduler::startSurface(
     const std::string &moduleName,
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) {
+    const LayoutContext &layoutContext) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   auto shadowTree =
@@ -67,36 +74,54 @@ void Scheduler::startSurface(
   shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
 #ifndef ANDROID
-
-  // TODO: Is this an ok place to do this?
-  auto serializedCommands = initialProps.find("serializedCommands");
-  if (serializedCommands != initialProps.items().end()) {
-    auto tree = TemplateRenderer::buildShadowTree(serializedCommands->second.asString(), surfaceId, folly::dynamic::object(), *componentDescriptorRegistry_);
-
-    uiManagerDidFinishTransactionWithoutLock(surfaceId, std::make_shared<SharedShadowNodeList>(SharedShadowNodeList {tree}));
-    // TODO: hydrate rather than replace
-    uiManager_->startSurface(surfaceId, moduleName, initialProps);
-  } else {
-    uiManager_->startSurface(surfaceId, moduleName, initialProps);
-  }
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    uiManagerBinding_->startSurface(
+        runtime, surfaceId, moduleName, initialProps);
+  });
 #endif
+}
+
+void Scheduler::renderTemplateToSurface(
+    SurfaceId surfaceId,
+    const std::string &uiTemplate) {
+  try {
+    if (uiTemplate.size() == 0) {
+      return;
+    }
+    NativeModuleRegistry nMR;
+    auto tree = UITemplateProcessor::buildShadowTree(
+        uiTemplate,
+        surfaceId,
+        folly::dynamic::object(),
+        *componentDescriptorRegistry_,
+        nMR);
+
+    std::lock_guard<std::mutex> lock(mutex_);
+    const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
+    assert(shadowTree);
+    shadowTree->complete(
+        std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
+  } catch (const std::exception &e) {
+    LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
+               << "Scheduler::renderTemplateToSurface: " << e.what();
+  }
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   std::lock_guard<std::mutex> lock(mutex_);
+  const auto &iterator = shadowTreeRegistry_.find(surfaceId);
+  auto &shadowTree = *iterator->second;
+  // As part of stopping the Surface, we have to commit an empty tree.
+  shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
+      ShadowNode::emptySharedShadowNodeSharedList()));
+  shadowTree.setDelegate(nullptr);
+  shadowTreeRegistry_.erase(iterator);
 
 #ifndef ANDROID
-  uiManager_->stopSurface(surfaceId);
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    uiManagerBinding_->stopSurface(runtime, surfaceId);
+  });
 #endif
-
-  const auto &iterator = shadowTreeRegistry_.find(surfaceId);
-  const auto &shadowTree = iterator->second;
-  assert(shadowTree);
-  // As part of stopping the Surface, we have to commit an empty tree.
-  shadowTree->complete(std::const_pointer_cast<SharedShadowNodeList>(
-      ShadowNode::emptySharedShadowNodeSharedList()));
-  shadowTree->setDelegate(nullptr);
-  shadowTreeRegistry_.erase(iterator);
 }
 
 Size Scheduler::measureSurface(
@@ -119,16 +144,6 @@ void Scheduler::constraintSurfaceLayout(
   shadowTree->synchronize([&]() {
     shadowTree->constraintLayout(layoutConstraints, layoutContext);
   });
-}
-
-void Scheduler::uiManagerDidFinishTransactionWithoutLock(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) {
-  const auto iterator = shadowTreeRegistry_.find(rootTag);
-  if (iterator == shadowTreeRegistry_.end()) {
-    // This might happen during surface unmounting/deallocation process
-    // due to the asynchronous nature of JS calls.
-    return;
-  }
-  iterator->second->complete(rootChildNodes);
 }
 
 #pragma mark - Delegate
@@ -158,7 +173,13 @@ void Scheduler::uiManagerDidFinishTransaction(
     Tag rootTag,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   std::lock_guard<std::mutex> lock(mutex_);
-  uiManagerDidFinishTransactionWithoutLock(rootTag, rootChildNodes);
+  const auto iterator = shadowTreeRegistry_.find(rootTag);
+  if (iterator == shadowTreeRegistry_.end()) {
+    // This might happen during surface unmounting/deallocation process
+    // due to the asynchronous nature of JS calls.
+    return;
+  }
+  iterator->second->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(
@@ -167,12 +188,6 @@ void Scheduler::uiManagerDidCreateShadowNode(
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
         shadowNode->getComponentName());
   }
-}
-
-#pragma mark - Deprecated
-
-std::shared_ptr<FabricUIManager> Scheduler::getUIManager_DO_NOT_USE() {
-  return uiManager_;
 }
 
 } // namespace react

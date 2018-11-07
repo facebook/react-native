@@ -132,20 +132,21 @@ class TabBarItemIOS extends React.Component<Props, State> {
       showedDeprecationWarning = true;
     }
   }
-  
+
   render() {
     const {style, children, ...props} = this.props;
 
     // if the tab has already been shown once, always continue to show it so we
     // preserve state between tab transitions
+    let tabContents;
     if (this.state.hasBeenSelected) {
-      var tabContents = (
+      tabContents = (
         <StaticContainer shouldUpdate={this.props.selected}>
           {children}
         </StaticContainer>
       );
     } else {
-      var tabContents = <View />;
+      tabContents = <View />;
     }
 
     return (

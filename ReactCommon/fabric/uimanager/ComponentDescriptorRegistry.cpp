@@ -6,6 +6,7 @@
 #include "ComponentDescriptorRegistry.h"
 
 #include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -80,36 +81,40 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-static const RawProps rawPropsFromDynamic(const folly::dynamic object) {
-  // TODO: Convert this to something smarter, probably returning `std::iterator`.
-  RawProps result;
+const ComponentDescriptor &ComponentDescriptorRegistry::at(
+    ComponentName componentName) const {
+  auto unifiedComponentName = componentNameByReactViewName(componentName);
 
-  if (object.isNull()) {
-    return result;
+  auto it = _registryByName.find(unifiedComponentName);
+  if (it == _registryByName.end()) {
+    throw std::invalid_argument(
+        ("Unable to find componentDescriptor for " + unifiedComponentName)
+            .c_str());
   }
-
-  assert(object.isObject());
-
-  for (const auto &pair : object.items()) {
-    assert(pair.first.isString());
-    result[pair.first.asString()] = pair.second;
-  }
-
-  return result;
+  return *it->second;
 }
 
-SharedShadowNode ComponentDescriptorRegistry::createNode(Tag tag, const std::string &viewName, Tag rootTag, const folly::dynamic &props, const SharedEventTarget &eventTarget) const {
+const ComponentDescriptor &ComponentDescriptorRegistry::at(
+    ComponentHandle componentHandle) const {
+  return *_registryByHandle.at(componentHandle);
+}
+
+SharedShadowNode ComponentDescriptorRegistry::createNode(
+    Tag tag,
+    const std::string &viewName,
+    Tag rootTag,
+    const folly::dynamic &props,
+    const SharedEventTarget &eventTarget) const {
   ComponentName componentName = componentNameByReactViewName(viewName);
   const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
   RawProps rawProps = rawPropsFromDynamic(props);
 
-  SharedShadowNode shadowNode =
-    componentDescriptor->createShadowNode({
-      .tag = tag,
-      .rootTag = rootTag,
-      .eventEmitter = componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-      .props = componentDescriptor->cloneProps(nullptr, rawProps)
-    });
+  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
+      {.tag = tag,
+       .rootTag = rootTag,
+       .eventEmitter =
+           componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
+       .props = componentDescriptor->cloneProps(nullptr, rawProps)});
   return shadowNode;
 }
 

@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   LayoutAnimation,
   ListView,
@@ -22,10 +22,10 @@ var {
   View,
 } = ReactNative;
 
-var NativeModules = require('NativeModules');
-var {UIManager} = NativeModules;
+const NativeModules = require('NativeModules');
+const {UIManager} = NativeModules;
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -39,8 +39,8 @@ var THUMB_URLS = [
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
 ];
-var NUM_SECTIONS = 100;
-var NUM_ROWS_PER_SECTION = 10;
+const NUM_SECTIONS = 100;
+const NUM_ROWS_PER_SECTION = 10;
 
 class Thumb extends React.Component<{}, $FlowFixMeState> {
   UNSAFE_componentWillMount() {
@@ -53,7 +53,7 @@ class Thumb extends React.Component<{}, $FlowFixMeState> {
   };
 
   _onPressThumb = () => {
-    var config =
+    const config =
       layoutAnimationConfigs[
         this.state.thumbIndex % layoutAnimationConfigs.length
       ];
@@ -94,31 +94,31 @@ class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
   // $FlowFixMe found when converting React.createClass to ES6
   constructor(props) {
     super(props);
-    var getSectionData = (dataBlob, sectionID) => {
+    const getSectionData = (dataBlob, sectionID) => {
       return dataBlob[sectionID];
     };
-    var getRowData = (dataBlob, sectionID, rowID) => {
+    const getRowData = (dataBlob, sectionID, rowID) => {
       return dataBlob[rowID];
     };
 
-    var dataSource = new ListView.DataSource({
+    const dataSource = new ListView.DataSource({
       getRowData: getRowData,
       getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
 
-    var dataBlob = {};
-    var sectionIDs = [];
-    var rowIDs = [];
-    for (var ii = 0; ii < NUM_SECTIONS; ii++) {
-      var sectionName = 'Section ' + ii;
+    const dataBlob = {};
+    const sectionIDs = [];
+    const rowIDs = [];
+    for (let ii = 0; ii < NUM_SECTIONS; ii++) {
+      const sectionName = 'Section ' + ii;
       sectionIDs.push(sectionName);
       dataBlob[sectionName] = sectionName;
       rowIDs[ii] = [];
 
-      for (var jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
-        var rowName = 'S' + ii + ', R' + jj;
+      for (let jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
+        const rowName = 'S' + ii + ', R' + jj;
         rowIDs[ii].push(rowName);
         dataBlob[rowName] = rowName;
       }
@@ -151,7 +151,7 @@ class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
   };
 
   renderHeader = () => {
-    var headerLikeText =
+    const headerLikeText =
       this.state.headerPressCount % 2 ? (
         <View>
           <Text style={styles.text}>1 Like</Text>
@@ -198,7 +198,7 @@ class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
   }
 
   _onPressHeader = () => {
-    var config =
+    const config =
       layoutAnimationConfigs[
         Math.floor(this.state.headerPressCount / 2) %
           layoutAnimationConfigs.length
@@ -208,7 +208,7 @@ class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
   };
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   listview: {
     backgroundColor: '#B0C4DE',
   },
@@ -222,13 +222,6 @@ var styles = StyleSheet.create({
   text: {
     color: 'white',
     paddingHorizontal: 8,
-  },
-  rowText: {
-    color: '#888888',
-  },
-  thumbText: {
-    fontSize: 20,
-    color: '#888888',
   },
   buttonContents: {
     flexDirection: 'row',
@@ -256,7 +249,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var animations = {
+const animations = {
   layout: {
     spring: {
       duration: 750,
@@ -284,7 +277,7 @@ var animations = {
   },
 };
 
-var layoutAnimationConfigs = [
+const layoutAnimationConfigs = [
   animations.layout.spring,
   animations.layout.easeInEaseOut,
 ];

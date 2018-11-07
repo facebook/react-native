@@ -1,4 +1,6 @@
-keystore(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.keystore(
     name = "debug",
     properties = "debug.keystore.properties",
     store = "debug.keystore",

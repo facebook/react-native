@@ -91,7 +91,6 @@
 		139D7F061E25DE1100323FB7 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE01E25DBDC00323FB7 /* utilities.cc */; };
 		139D7F071E25DE1100323FB7 /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE21E25DBDC00323FB7 /* vlog_is_on.cc */; };
 		139D7F091E25DE3700323FB7 /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7F081E25DE3700323FB7 /* demangle.cc */; };
-		139D84AF1E273B5600323FB7 /* Bits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849D1E273B5600323FB7 /* Bits.cpp */; };
 		139D84B01E273B5600323FB7 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849F1E273B5600323FB7 /* Conv.cpp */; };
 		139D84B11E273B5600323FB7 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A21E273B5600323FB7 /* dynamic.cpp */; };
 		139D84B31E273B5600323FB7 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
@@ -125,7 +124,6 @@
 		13E41EEB1C05CA0B00CD8DAC /* RCTProfileTrampoline-i386.S in Sources */ = {isa = PBXBuildFile; fileRef = 14BF717F1C04793D00C97D0C /* RCTProfileTrampoline-i386.S */; };
 		13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 13F17A841B8493E5007D4C75 /* RCTRedBox.m */; };
 		13F887581E2971D400C3C7A1 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
-		13F887591E2971D400C3C7A1 /* StringBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887531E2971C500C3C7A1 /* StringBase.cpp */; };
 		13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
 		13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887701E29726200C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
@@ -142,8 +140,6 @@
 		13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CC1E03699D0018521A /* ModuleRegistry.cpp */; };
 		13F887911E29726300C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
 		13F887931E29726300C3C7A1 /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */; };
-		13F8879F1E29741900C3C7A1 /* BitsFunctexcept.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */; };
-		13F887A21E2977FF00C3C7A1 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */; };
 		142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 142014171B32094000CC17BA /* RCTPerformanceLogger.m */; };
 		1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF811BCFF28A00208362 /* RCTProfile.m */; };
 		1450FF871BCFF28A00208362 /* RCTProfileTrampoline-arm.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */; };
@@ -391,13 +387,10 @@
 		3D383D1F1EBD27A8005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
 		3D383D201EBD27AF005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
 		3D383D251EBD27B6005632C8 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849F1E273B5600323FB7 /* Conv.cpp */; };
-		3D383D261EBD27B6005632C8 /* StringBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887531E2971C500C3C7A1 /* StringBase.cpp */; };
 		3D383D271EBD27B6005632C8 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDB1E25DBDC00323FB7 /* raw_logging.cc */; };
 		3D383D281EBD27B6005632C8 /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDC1E25DBDC00323FB7 /* signalhandler.cc */; };
 		3D383D291EBD27B6005632C8 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A21E273B5600323FB7 /* dynamic.cpp */; };
 		3D383D2A1EBD27B6005632C8 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE01E25DBDC00323FB7 /* utilities.cc */; };
-		3D383D2B1EBD27B6005632C8 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */; };
-		3D383D2C1EBD27B6005632C8 /* Bits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D849D1E273B5600323FB7 /* Bits.cpp */; };
 		3D383D2D1EBD27B6005632C8 /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDE1E25DBDC00323FB7 /* symbolize.cc */; };
 		3D383D2E1EBD27B6005632C8 /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EE21E25DBDC00323FB7 /* vlog_is_on.cc */; };
 		3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
@@ -405,7 +398,6 @@
 		3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887521E2971C500C3C7A1 /* Demangle.cpp */; };
 		3D383D331EBD27B6005632C8 /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7EDA1E25DBDC00323FB7 /* logging.cc */; };
 		3D383D341EBD27B6005632C8 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139D84A71E273B5600323FB7 /* json.cpp */; };
-		3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */; };
 		3D383D401EBD27B9005632C8 /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E391E25C5A300323FB7 /* bignum-dtoa.cc */; };
 		3D383D411EBD27B9005632C8 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E3B1E25C5A300323FB7 /* bignum.cc */; };
 		3D383D421EBD27B9005632C8 /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 139D7E3D1E25C5A300323FB7 /* cached-powers.cc */; };
@@ -1043,7 +1035,27 @@
 		66CD94B81F1045E700CB3C7C /* RCTMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 66CD94B01F1045E700CB3C7C /* RCTMaskedViewManager.m */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
+		83281384217EB70900574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
+		83281385217EB71200574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
+		83281387217EB73400574D55 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281386217EB73400574D55 /* String.cpp */; };
+		83281388217EB73400574D55 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281386217EB73400574D55 /* String.cpp */; };
+		8328138A217EB74C00574D55 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281389217EB74C00574D55 /* json_pointer.cpp */; };
+		8328138B217EB74C00574D55 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281389217EB74C00574D55 /* json_pointer.cpp */; };
+		8328138D217EB75C00574D55 /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8328138C217EB75C00574D55 /* ColdClass.cpp */; };
+		8328138E217EB75C00574D55 /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8328138C217EB75C00574D55 /* ColdClass.cpp */; };
+		83281390217EB76C00574D55 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8328138F217EB76B00574D55 /* Demangle.cpp */; };
+		83281391217EB76C00574D55 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8328138F217EB76B00574D55 /* Demangle.cpp */; };
+		83281393217EB77D00574D55 /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281392217EB77C00574D55 /* SpookyHashV2.cpp */; };
+		83281394217EB77D00574D55 /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281392217EB77C00574D55 /* SpookyHashV2.cpp */; };
+		83281396217EB79000574D55 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281395217EB78F00574D55 /* F14Table.cpp */; };
+		83281397217EB79000574D55 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281395217EB78F00574D55 /* F14Table.cpp */; };
+		83281399217EB79D00574D55 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281398217EB79D00574D55 /* ScopeGuard.cpp */; };
+		8328139A217EB79D00574D55 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281398217EB79D00574D55 /* ScopeGuard.cpp */; };
 		83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83392EB21B6634E10013B15F /* RCTModalHostViewController.m */; };
+		833D02BA217EBCFA00A23750 /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 833D02B9217EBCFA00A23750 /* Assume.cpp */; };
+		833D02BB217EBCFA00A23750 /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 833D02B9217EBCFA00A23750 /* Assume.cpp */; };
+		833D02BD217EBD2600A23750 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 833D02BC217EBD2600A23750 /* Format.cpp */; };
+		833D02BE217EBD2600A23750 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 833D02BC217EBD2600A23750 /* Format.cpp */; };
 		83A1FE8C1B62640A00BE0E65 /* RCTModalHostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8B1B62640A00BE0E65 /* RCTModalHostView.m */; };
 		83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8E1B62643A00BE0E65 /* RCTModalHostViewManager.m */; };
 		83CBBA511A601E3B00E9B192 /* RCTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 83CBBA4B1A601E3B00E9B192 /* RCTAssert.m */; };
@@ -1109,7 +1121,6 @@
 		ED296FC8214C9B5200B7C4FE /* jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
 		ED296FCB214C9B6C00B7C4FE /* libjsi-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED296FB6214C9A0900B7C4FE /* libjsi-tvOS.a */; };
 		ED29703E2150126E00B7C4FE /* AtomicIntrusiveLinkedList.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */; };
-		ED2970402150126E00B7C4FE /* Bits.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D849E1E273B5600323FB7 /* Bits.h */; };
 		ED2970422150126E00B7C4FE /* Conv.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84A01E273B5600323FB7 /* Conv.h */; };
 		ED2970432150126E00B7C4FE /* dynamic-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84A11E273B5600323FB7 /* dynamic-inl.h */; };
 		ED2970452150126E00B7C4FE /* dynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = 139D84A31E273B5600323FB7 /* dynamic.h */; };
@@ -1886,21 +1897,19 @@
 		139D7F141E25DEC900323FB7 /* raw_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = raw_logging.h; path = "../third-party/glog-0.3.5/src/glog/raw_logging.h"; sourceTree = SOURCE_ROOT; };
 		139D7F161E25DEC900323FB7 /* stl_logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stl_logging.h; path = "../third-party/glog-0.3.5/src/glog/stl_logging.h"; sourceTree = SOURCE_ROOT; };
 		139D7F181E25DEC900323FB7 /* vlog_is_on.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vlog_is_on.h; path = "../third-party/glog-0.3.5/src/glog/vlog_is_on.h"; sourceTree = SOURCE_ROOT; };
-		139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AtomicIntrusiveLinkedList.h; path = "../third-party/folly-2016.10.31.00/folly/AtomicIntrusiveLinkedList.h"; sourceTree = SOURCE_ROOT; };
-		139D849D1E273B5600323FB7 /* Bits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Bits.cpp; path = "../third-party/folly-2016.10.31.00/folly/Bits.cpp"; sourceTree = SOURCE_ROOT; };
-		139D849E1E273B5600323FB7 /* Bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bits.h; path = "../third-party/folly-2016.10.31.00/folly/Bits.h"; sourceTree = SOURCE_ROOT; };
-		139D849F1E273B5600323FB7 /* Conv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Conv.cpp; path = "../third-party/folly-2016.10.31.00/folly/Conv.cpp"; sourceTree = SOURCE_ROOT; };
-		139D84A01E273B5600323FB7 /* Conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Conv.h; path = "../third-party/folly-2016.10.31.00/folly/Conv.h"; sourceTree = SOURCE_ROOT; };
-		139D84A11E273B5600323FB7 /* dynamic-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "dynamic-inl.h"; path = "../third-party/folly-2016.10.31.00/folly/dynamic-inl.h"; sourceTree = SOURCE_ROOT; };
-		139D84A21E273B5600323FB7 /* dynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic.cpp; path = "../third-party/folly-2016.10.31.00/folly/dynamic.cpp"; sourceTree = SOURCE_ROOT; };
-		139D84A31E273B5600323FB7 /* dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic.h; path = "../third-party/folly-2016.10.31.00/folly/dynamic.h"; sourceTree = SOURCE_ROOT; };
-		139D84A41E273B5600323FB7 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = "../third-party/folly-2016.10.31.00/folly/Exception.h"; sourceTree = SOURCE_ROOT; };
-		139D84A71E273B5600323FB7 /* json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json.cpp; path = "../third-party/folly-2016.10.31.00/folly/json.cpp"; sourceTree = SOURCE_ROOT; };
-		139D84A81E273B5600323FB7 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = "../third-party/folly-2016.10.31.00/folly/json.h"; sourceTree = SOURCE_ROOT; };
-		139D84A91E273B5600323FB7 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = "../third-party/folly-2016.10.31.00/folly/Memory.h"; sourceTree = SOURCE_ROOT; };
-		139D84AA1E273B5600323FB7 /* MoveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MoveWrapper.h; path = "../third-party/folly-2016.10.31.00/folly/MoveWrapper.h"; sourceTree = SOURCE_ROOT; };
-		139D84AB1E273B5600323FB7 /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Optional.h; path = "../third-party/folly-2016.10.31.00/folly/Optional.h"; sourceTree = SOURCE_ROOT; };
-		139D84AC1E273B5600323FB7 /* ScopeGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopeGuard.h; path = "../third-party/folly-2016.10.31.00/folly/ScopeGuard.h"; sourceTree = SOURCE_ROOT; };
+		139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AtomicIntrusiveLinkedList.h; path = "../third-party/folly-2018.10.22.00/folly/AtomicIntrusiveLinkedList.h"; sourceTree = SOURCE_ROOT; };
+		139D849F1E273B5600323FB7 /* Conv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Conv.cpp; path = "../third-party/folly-2018.10.22.00/folly/Conv.cpp"; sourceTree = SOURCE_ROOT; };
+		139D84A01E273B5600323FB7 /* Conv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Conv.h; path = "../third-party/folly-2018.10.22.00/folly/Conv.h"; sourceTree = SOURCE_ROOT; };
+		139D84A11E273B5600323FB7 /* dynamic-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "dynamic-inl.h"; path = "../third-party/folly-2018.10.22.00/folly/dynamic-inl.h"; sourceTree = SOURCE_ROOT; };
+		139D84A21E273B5600323FB7 /* dynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = dynamic.cpp; path = "../third-party/folly-2018.10.22.00/folly/dynamic.cpp"; sourceTree = SOURCE_ROOT; };
+		139D84A31E273B5600323FB7 /* dynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dynamic.h; path = "../third-party/folly-2018.10.22.00/folly/dynamic.h"; sourceTree = SOURCE_ROOT; };
+		139D84A41E273B5600323FB7 /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Exception.h; path = "../third-party/folly-2018.10.22.00/folly/Exception.h"; sourceTree = SOURCE_ROOT; };
+		139D84A71E273B5600323FB7 /* json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json.cpp; path = "../third-party/folly-2018.10.22.00/folly/json.cpp"; sourceTree = SOURCE_ROOT; };
+		139D84A81E273B5600323FB7 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = "../third-party/folly-2018.10.22.00/folly/json.h"; sourceTree = SOURCE_ROOT; };
+		139D84A91E273B5600323FB7 /* Memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Memory.h; path = "../third-party/folly-2018.10.22.00/folly/Memory.h"; sourceTree = SOURCE_ROOT; };
+		139D84AA1E273B5600323FB7 /* MoveWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MoveWrapper.h; path = "../third-party/folly-2018.10.22.00/folly/MoveWrapper.h"; sourceTree = SOURCE_ROOT; };
+		139D84AB1E273B5600323FB7 /* Optional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Optional.h; path = "../third-party/folly-2018.10.22.00/folly/Optional.h"; sourceTree = SOURCE_ROOT; };
+		139D84AC1E273B5600323FB7 /* ScopeGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScopeGuard.h; path = "../third-party/folly-2018.10.22.00/folly/ScopeGuard.h"; sourceTree = SOURCE_ROOT; };
 		13A0C2851B74F71200B29F6F /* RCTDevLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevLoadingView.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		13A0C2861B74F71200B29F6F /* RCTDevLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevLoadingView.m; sourceTree = "<group>"; };
 		13A0C2871B74F71200B29F6F /* RCTDevMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTDevMenu.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1958,11 +1967,8 @@
 		13E067541A70F44B002CDEE1 /* UIView+React.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+React.m"; sourceTree = "<group>"; };
 		13F17A831B8493E5007D4C75 /* RCTRedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRedBox.h; sourceTree = "<group>"; };
 		13F17A841B8493E5007D4C75 /* RCTRedBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRedBox.m; sourceTree = "<group>"; };
-		13F887521E2971C500C3C7A1 /* Demangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Demangle.cpp; path = "../third-party/folly-2016.10.31.00/folly/Demangle.cpp"; sourceTree = SOURCE_ROOT; };
-		13F887531E2971C500C3C7A1 /* StringBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringBase.cpp; path = "../third-party/folly-2016.10.31.00/folly/StringBase.cpp"; sourceTree = SOURCE_ROOT; };
-		13F887541E2971C500C3C7A1 /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = "../third-party/folly-2016.10.31.00/folly/Unicode.cpp"; sourceTree = SOURCE_ROOT; };
-		13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BitsFunctexcept.cpp; path = "../third-party/folly-2016.10.31.00/folly/portability/BitsFunctexcept.cpp"; sourceTree = SOURCE_ROOT; };
-		13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MallocImpl.cpp; path = "../third-party/folly-2016.10.31.00/folly/detail/MallocImpl.cpp"; sourceTree = SOURCE_ROOT; };
+		13F887521E2971C500C3C7A1 /* Demangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Demangle.cpp; path = "../third-party/folly-2018.10.22.00/folly/Demangle.cpp"; sourceTree = SOURCE_ROOT; };
+		13F887541E2971C500C3C7A1 /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = "../third-party/folly-2018.10.22.00/folly/Unicode.cpp"; sourceTree = SOURCE_ROOT; };
 		14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		142014171B32094000CC17BA /* RCTPerformanceLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPerformanceLogger.m; sourceTree = "<group>"; };
 		142014181B32094000CC17BA /* RCTPerformanceLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPerformanceLogger.h; sourceTree = "<group>"; };
@@ -2161,8 +2167,18 @@
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
+		83281383217EB70800574D55 /* MallocImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MallocImpl.cpp; path = folly/memory/detail/MallocImpl.cpp; sourceTree = "<group>"; };
+		83281386217EB73400574D55 /* String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = String.cpp; path = folly/String.cpp; sourceTree = "<group>"; };
+		83281389217EB74C00574D55 /* json_pointer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json_pointer.cpp; path = folly/json_pointer.cpp; sourceTree = "<group>"; };
+		8328138C217EB75C00574D55 /* ColdClass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ColdClass.cpp; path = folly/lang/ColdClass.cpp; sourceTree = "<group>"; };
+		8328138F217EB76B00574D55 /* Demangle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Demangle.cpp; path = folly/detail/Demangle.cpp; sourceTree = "<group>"; };
+		83281392217EB77C00574D55 /* SpookyHashV2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpookyHashV2.cpp; path = folly/hash/SpookyHashV2.cpp; sourceTree = "<group>"; };
+		83281395217EB78F00574D55 /* F14Table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = F14Table.cpp; path = folly/container/detail/F14Table.cpp; sourceTree = "<group>"; };
+		83281398217EB79D00574D55 /* ScopeGuard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScopeGuard.cpp; path = folly/ScopeGuard.cpp; sourceTree = "<group>"; };
 		83392EB11B6634E10013B15F /* RCTModalHostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModalHostViewController.h; sourceTree = "<group>"; };
 		83392EB21B6634E10013B15F /* RCTModalHostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModalHostViewController.m; sourceTree = "<group>"; };
+		833D02B9217EBCFA00A23750 /* Assume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assume.cpp; path = folly/lang/Assume.cpp; sourceTree = "<group>"; };
+		833D02BC217EBD2600A23750 /* Format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Format.cpp; path = folly/Format.cpp; sourceTree = "<group>"; };
 		83A1FE8A1B62640A00BE0E65 /* RCTModalHostView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModalHostView.h; sourceTree = "<group>"; };
 		83A1FE8B1B62640A00BE0E65 /* RCTModalHostView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModalHostView.m; sourceTree = "<group>"; };
 		83A1FE8D1B62643A00BE0E65 /* RCTModalHostViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModalHostViewManager.h; sourceTree = "<group>"; };
@@ -2430,29 +2446,34 @@
 		139D849B1E2739EC00323FB7 /* folly */ = {
 			isa = PBXGroup;
 			children = (
-				13F887A01E2977D800C3C7A1 /* MallocImpl.cpp */,
-				13F8879C1E29740700C3C7A1 /* BitsFunctexcept.cpp */,
-				13F887521E2971C500C3C7A1 /* Demangle.cpp */,
-				13F887531E2971C500C3C7A1 /* StringBase.cpp */,
-				13F887541E2971C500C3C7A1 /* Unicode.cpp */,
+				833D02B9217EBCFA00A23750 /* Assume.cpp */,
 				139D849C1E273B5600323FB7 /* AtomicIntrusiveLinkedList.h */,
-				139D849D1E273B5600323FB7 /* Bits.cpp */,
-				139D849E1E273B5600323FB7 /* Bits.h */,
+				8328138C217EB75C00574D55 /* ColdClass.cpp */,
 				139D849F1E273B5600323FB7 /* Conv.cpp */,
 				139D84A01E273B5600323FB7 /* Conv.h */,
+				8328138F217EB76B00574D55 /* Demangle.cpp */,
+				13F887521E2971C500C3C7A1 /* Demangle.cpp */,
 				139D84A11E273B5600323FB7 /* dynamic-inl.h */,
 				139D84A21E273B5600323FB7 /* dynamic.cpp */,
 				139D84A31E273B5600323FB7 /* dynamic.h */,
 				139D84A41E273B5600323FB7 /* Exception.h */,
+				83281395217EB78F00574D55 /* F14Table.cpp */,
+				833D02BC217EBD2600A23750 /* Format.cpp */,
+				83281389217EB74C00574D55 /* json_pointer.cpp */,
 				139D84A71E273B5600323FB7 /* json.cpp */,
 				139D84A81E273B5600323FB7 /* json.h */,
+				83281383217EB70800574D55 /* MallocImpl.cpp */,
 				139D84A91E273B5600323FB7 /* Memory.h */,
 				139D84AA1E273B5600323FB7 /* MoveWrapper.h */,
 				139D84AB1E273B5600323FB7 /* Optional.h */,
+				83281398217EB79D00574D55 /* ScopeGuard.cpp */,
 				139D84AC1E273B5600323FB7 /* ScopeGuard.h */,
+				83281392217EB77C00574D55 /* SpookyHashV2.cpp */,
+				83281386217EB73400574D55 /* String.cpp */,
+				13F887541E2971C500C3C7A1 /* Unicode.cpp */,
 			);
 			name = folly;
-			path = "../third-party/folly-2016.10.31.00";
+			path = "../third-party/folly-2018.10.22.00";
 			sourceTree = "<group>";
 		};
 		13B07FE01A69315300A75B9A /* Modules */ = {
@@ -3549,7 +3570,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED29703E2150126E00B7C4FE /* AtomicIntrusiveLinkedList.h in Headers */,
-				ED2970402150126E00B7C4FE /* Bits.h in Headers */,
 				ED2970422150126E00B7C4FE /* Conv.h in Headers */,
 				ED2970432150126E00B7C4FE /* dynamic-inl.h in Headers */,
 				ED2970452150126E00B7C4FE /* dynamic.h in Headers */,
@@ -4003,26 +4023,26 @@
 				"../third-party/glog-0.3.5/src/glog/raw_logging.h",
 				"../third-party/glog-0.3.5/src/glog/stl_logging.h",
 				"../third-party/glog-0.3.5/src/glog/vlog_is_on.h",
-				"../third-party/folly-2016.10.31.00/folly/detail/MallocImpl.cpp",
-				"../third-party/folly-2016.10.31.00/folly/portability/BitsFunctexcept.cpp",
-				"../third-party/folly-2016.10.31.00/folly/Demangle.cpp",
-				"../third-party/folly-2016.10.31.00/folly/StringBase.cpp",
-				"../third-party/folly-2016.10.31.00/folly/Unicode.cpp",
-				"../third-party/folly-2016.10.31.00/folly/AtomicIntrusiveLinkedList.h",
-				"../third-party/folly-2016.10.31.00/folly/Bits.cpp",
-				"../third-party/folly-2016.10.31.00/folly/Bits.h",
-				"../third-party/folly-2016.10.31.00/folly/Conv.cpp",
-				"../third-party/folly-2016.10.31.00/folly/Conv.h",
-				"../third-party/folly-2016.10.31.00/folly/dynamic-inl.h",
-				"../third-party/folly-2016.10.31.00/folly/dynamic.cpp",
-				"../third-party/folly-2016.10.31.00/folly/dynamic.h",
-				"../third-party/folly-2016.10.31.00/folly/Exception.h",
-				"../third-party/folly-2016.10.31.00/folly/json.cpp",
-				"../third-party/folly-2016.10.31.00/folly/json.h",
-				"../third-party/folly-2016.10.31.00/folly/Memory.h",
-				"../third-party/folly-2016.10.31.00/folly/MoveWrapper.h",
-				"../third-party/folly-2016.10.31.00/folly/Optional.h",
-				"../third-party/folly-2016.10.31.00/folly/ScopeGuard.h",
+				"../third-party/folly-2018.10.22.00/folly/detail/MallocImpl.cpp",
+				"../third-party/folly-2018.10.22.00/folly/portability/BitsFunctexcept.cpp",
+				"../third-party/folly-2018.10.22.00/folly/Demangle.cpp",
+				"../third-party/folly-2018.10.22.00/folly/StringBase.cpp",
+				"../third-party/folly-2018.10.22.00/folly/Unicode.cpp",
+				"../third-party/folly-2018.10.22.00/folly/AtomicIntrusiveLinkedList.h",
+				"../third-party/folly-2018.10.22.00/folly/Bits.cpp",
+				"../third-party/folly-2018.10.22.00/folly/Bits.h",
+				"../third-party/folly-2018.10.22.00/folly/Conv.cpp",
+				"../third-party/folly-2018.10.22.00/folly/Conv.h",
+				"../third-party/folly-2018.10.22.00/folly/dynamic-inl.h",
+				"../third-party/folly-2018.10.22.00/folly/dynamic.cpp",
+				"../third-party/folly-2018.10.22.00/folly/dynamic.h",
+				"../third-party/folly-2018.10.22.00/folly/Exception.h",
+				"../third-party/folly-2018.10.22.00/folly/json.cpp",
+				"../third-party/folly-2018.10.22.00/folly/json.h",
+				"../third-party/folly-2018.10.22.00/folly/Memory.h",
+				"../third-party/folly-2018.10.22.00/folly/MoveWrapper.h",
+				"../third-party/folly-2018.10.22.00/folly/Optional.h",
+				"../third-party/folly-2018.10.22.00/folly/ScopeGuard.h",
 				"../third-party/double-conversion-1.1.6/src/bignum-dtoa.cc",
 				"../third-party/double-conversion-1.1.6/src/bignum-dtoa.h",
 				"../third-party/double-conversion-1.1.6/src/bignum.cc",
@@ -4113,21 +4133,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				139D84B01E273B5600323FB7 /* Conv.cpp in Sources */,
-				13F887591E2971D400C3C7A1 /* StringBase.cpp in Sources */,
 				139D7F031E25DE1100323FB7 /* raw_logging.cc in Sources */,
+				83281387217EB73400574D55 /* String.cpp in Sources */,
 				139D7F041E25DE1100323FB7 /* signalhandler.cc in Sources */,
+				833D02BD217EBD2600A23750 /* Format.cpp in Sources */,
+				83281390217EB76C00574D55 /* Demangle.cpp in Sources */,
+				833D02BA217EBCFA00A23750 /* Assume.cpp in Sources */,
 				139D84B11E273B5600323FB7 /* dynamic.cpp in Sources */,
 				139D7F061E25DE1100323FB7 /* utilities.cc in Sources */,
-				13F887A21E2977FF00C3C7A1 /* MallocImpl.cpp in Sources */,
-				139D84AF1E273B5600323FB7 /* Bits.cpp in Sources */,
+				8328138D217EB75C00574D55 /* ColdClass.cpp in Sources */,
 				139D7F051E25DE1100323FB7 /* symbolize.cc in Sources */,
 				139D7F071E25DE1100323FB7 /* vlog_is_on.cc in Sources */,
 				13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */,
 				139D7F091E25DE3700323FB7 /* demangle.cc in Sources */,
+				83281399217EB79D00574D55 /* ScopeGuard.cpp in Sources */,
+				83281393217EB77D00574D55 /* SpookyHashV2.cpp in Sources */,
 				13F887581E2971D400C3C7A1 /* Demangle.cpp in Sources */,
 				139D7F021E25DE1100323FB7 /* logging.cc in Sources */,
+				83281396217EB79000574D55 /* F14Table.cpp in Sources */,
+				83281384217EB70900574D55 /* MallocImpl.cpp in Sources */,
+				8328138A217EB74C00574D55 /* json_pointer.cpp in Sources */,
 				139D84B31E273B5600323FB7 /* json.cpp in Sources */,
-				13F8879F1E29741900C3C7A1 /* BitsFunctexcept.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4268,21 +4294,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				3D383D251EBD27B6005632C8 /* Conv.cpp in Sources */,
-				3D383D261EBD27B6005632C8 /* StringBase.cpp in Sources */,
 				3D383D271EBD27B6005632C8 /* raw_logging.cc in Sources */,
+				83281388217EB73400574D55 /* String.cpp in Sources */,
 				3D383D281EBD27B6005632C8 /* signalhandler.cc in Sources */,
+				833D02BE217EBD2600A23750 /* Format.cpp in Sources */,
+				83281391217EB76C00574D55 /* Demangle.cpp in Sources */,
+				833D02BB217EBCFA00A23750 /* Assume.cpp in Sources */,
 				3D383D291EBD27B6005632C8 /* dynamic.cpp in Sources */,
 				3D383D2A1EBD27B6005632C8 /* utilities.cc in Sources */,
-				3D383D2B1EBD27B6005632C8 /* MallocImpl.cpp in Sources */,
-				3D383D2C1EBD27B6005632C8 /* Bits.cpp in Sources */,
+				8328138E217EB75C00574D55 /* ColdClass.cpp in Sources */,
 				3D383D2D1EBD27B6005632C8 /* symbolize.cc in Sources */,
 				3D383D2E1EBD27B6005632C8 /* vlog_is_on.cc in Sources */,
 				3D383D2F1EBD27B6005632C8 /* Unicode.cpp in Sources */,
 				3D383D301EBD27B6005632C8 /* demangle.cc in Sources */,
+				8328139A217EB79D00574D55 /* ScopeGuard.cpp in Sources */,
+				83281394217EB77D00574D55 /* SpookyHashV2.cpp in Sources */,
 				3D383D311EBD27B6005632C8 /* Demangle.cpp in Sources */,
 				3D383D331EBD27B6005632C8 /* logging.cc in Sources */,
+				83281397217EB79000574D55 /* F14Table.cpp in Sources */,
+				83281385217EB71200574D55 /* MallocImpl.cpp in Sources */,
+				8328138B217EB74C00574D55 /* json_pointer.cpp in Sources */,
 				3D383D341EBD27B6005632C8 /* json.cpp in Sources */,
-				3D383D351EBD27B6005632C8 /* BitsFunctexcept.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4722,9 +4754,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/exported",
+				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4739,10 +4777,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/exported",
+				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4795,9 +4839,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/exported",
+				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "third-party";
@@ -4813,10 +4863,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
+					"$(SRCROOT)/../third-party/glog-0.3.5/exported",
+				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "third-party";
@@ -5236,7 +5292,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				OTHER_CFLAGS = (
@@ -5264,7 +5320,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				OTHER_CFLAGS = (
@@ -5292,7 +5348,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				OTHER_CFLAGS = (
@@ -5320,7 +5376,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2016.10.31.00",
+					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
 					"$(SRCROOT)/../third-party/glog-0.3.5/src",
 				);
 				OTHER_CFLAGS = (
