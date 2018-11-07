@@ -71,39 +71,21 @@ type DirectEventProps = $ReadOnly<{|
   onMagicTap?: ?(event: SyntheticEvent<null>) => mixed,
 |}>;
 
-type Touch = $ReadOnly<{|
-  locationX: number,
-  locationY: number,
-  pageX: number,
-  pageY: number,
-  screenX: number,
-  screenY: number,
-  identifier: number,
-  target: number,
-  timestamp: number,
-  force: number,
-|}>;
-
-type TouchEvent = SyntheticEvent<
-  $ReadOnly<{|
-    touches: $ReadOnlyArray<Touch>,
-    changedTouches: $ReadOnlyArray<Touch>,
-    targetTouches: $ReadOnlyArray<Touch>,
-  |}>,
->;
-
 /**
  * These events are only available in React Native Fabric
+ *
+ * These are an implementation of W3C Touch Events.
+ * See https://www.w3.org/TR/touch-events/ for more details.
  */
 type TouchEventProps = $ReadOnly<{|
-  onTouchCancel?: ?(event: TouchEvent) => mixed,
-  onTouchCancelCapture?: ?(event: TouchEvent) => mixed,
-  onTouchEnd?: ?(event: TouchEvent) => mixed,
-  onTouchEndCapture?: ?(event: TouchEvent) => mixed,
-  onTouchMove?: ?(event: TouchEvent) => mixed,
-  onTouchMoveCapture?: ?(event: TouchEvent) => mixed,
-  onTouchStart?: ?(event: TouchEvent) => mixed,
-  onTouchStartCapture?: ?(event: TouchEvent) => mixed,
+  onTouchCancel?: ?(event: PressEvent) => mixed,
+  onTouchCancelCapture?: ?(event: PressEvent) => mixed,
+  onTouchEnd?: ?(event: PressEvent) => mixed,
+  onTouchEndCapture?: ?(event: PressEvent) => mixed,
+  onTouchMove?: ?(event: PressEvent) => mixed,
+  onTouchMoveCapture?: ?(event: PressEvent) => mixed,
+  onTouchStart?: ?(event: PressEvent) => mixed,
+  onTouchStartCapture?: ?(event: PressEvent) => mixed,
 |}>;
 
 /**
