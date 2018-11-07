@@ -83,20 +83,20 @@ stdout: ${stdout}`),
   });
 }
 
-function parseJsonFile(path, useYarn) {
+function parseJsonFile(filePath, useYarn) {
   const installHint = useYarn
     ? 'Make sure you ran "yarn" and that you are inside a React Native project.'
     : 'Make sure you ran "npm install" and that you are inside a React Native project.';
   let fileContents;
   try {
-    fileContents = fs.readFileSync(path, 'utf8');
+    fileContents = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    throw new Error('Cannot find "' + path + '". ' + installHint);
+    throw new Error('Cannot find "' + filePath + '". ' + installHint);
   }
   try {
     return JSON.parse(fileContents);
   } catch (err) {
-    throw new Error('Cannot parse "' + path + '": ' + err.message);
+    throw new Error('Cannot parse "' + filePath + '": ' + err.message);
   }
 }
 
