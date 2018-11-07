@@ -25,7 +25,7 @@ const generate = require('@babel/generator').default;
 
 const nodeFiles = new RegExp(
   [
-    '/local-cli/',
+    '/react-native-local-cli/', // cli
     '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
   ].join('|'),
 );
