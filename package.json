@@ -142,9 +142,6 @@
     "build-ios-e2e": "detox build -c ios.sim.release",
     "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
   },
-  "bin": {
-    "react-native": "local-cli/wrong-react-native.js"
-  },
   "peerDependencies": {
     "react": "16.6.0-alpha.8af6728"
   },
