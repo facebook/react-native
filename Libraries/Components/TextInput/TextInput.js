@@ -161,7 +161,7 @@ class TextInput extends React.Component<Props> {
   };
 
   _inputRef: ?React.ElementRef<Class<TextInputType>> = null;
-  _lastNativeText: ?string = null;
+  _lastNativeText: ?Stringish = null;
   _lastNativeSelection: ?Selection = null;
   _rafId: ?AnimationFrameID = null;
 
