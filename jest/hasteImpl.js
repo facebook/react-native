@@ -58,7 +58,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.ts/.tsx/.js.flow suffix
-  [/^(.*)\.(js|ts|tsx)(\.flow)?$/, '$1'],
+  [/^(.*)\.((ts|tsx)|js(\.flow)?)$/, '$1'],
   // strip platform suffix
   [/^(.*)\.(android|ios|native)$/, '$1'],
   // strip plugin platform suffixes
