@@ -35,7 +35,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?() => void,
+  onPressWithCompletion?: ?(fn: () => void) => void,
   onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
