@@ -230,7 +230,7 @@ const AsyncStorage = {
       });
     }
 
-    const getRequest:Object = {
+    const getRequest: Object = {
       keys: keys,
       callback: callback,
       // do we need this?
@@ -332,18 +332,18 @@ if (!RCTAsyncStorage.multiMerge) {
   delete AsyncStorage.multiMerge;
 }
 
-function convertErrors(errs):?Array<?Error> {
+function convertErrors(errs): ?Array<?Error> {
   if (!errs) {
     return null;
   }
   return (Array.isArray(errs) ? errs : [errs]).map(e => convertError(e));
 }
 
-function convertError(error):?Error {
+function convertError(error): ?Error {
   if (!error) {
     return null;
   }
-  const out:Object = new Error(error.message);
+  const out: Object = new Error(error.message);
   out.key = error.key;
   return out;
 }

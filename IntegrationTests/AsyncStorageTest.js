@@ -108,7 +108,9 @@ function testRemoveItem() {
         expectAsyncNoError('testRemoveItem/getAllKeys', err);
         expectTrue(result !== null, 'should not be null');
         expectTrue(
-          Array.isArray(result) && result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
+          Array.isArray(result) &&
+            result.indexOf(KEY_1) >= 0 &&
+            result.indexOf(KEY_2) >= 0,
           'Missing KEY_1 or KEY_2 in ' + '(' + String(result) + ')',
         );
         updateMessage('testRemoveItem - add two items');
@@ -148,7 +150,11 @@ function testMerge() {
       AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
         expectAsyncNoError('testMerge/setItem', err3);
         expectTrue(result !== null, 'should not be null');
-        expectEqual(result && JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
+        expectEqual(
+          result && JSON.parse(result),
+          VAL_MERGE_EXPECT,
+          'testMerge',
+        );
         updateMessage('objects deeply merged\nDone!');
         runTestCase('multi set and get', testOptimizedMultiGet);
       });
