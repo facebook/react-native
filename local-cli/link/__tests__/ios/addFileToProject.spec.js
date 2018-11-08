@@ -24,13 +24,13 @@ describe('ios::addFileToProject', () => {
     project.parseSync();
   });
 
-  xit('should add file to a project', () => {
+  it('should add file to a project', () => {
+    const fileRef = addFileToProject(
+      project,
+      '../../__fixtures__/linearGradient.pbxproj',
+    ).fileRef;
     expect(
-      _.includes(
-        Object.keys(project.pbxFileReferenceSection()),
-        addFileToProject(project, '../../__fixtures__/linearGradient.pbxproj')
-          .fileRef,
-      ),
+      _.includes(Object.keys(project.pbxFileReferenceSection()), fileRef),
     ).toBeTruthy();
   });
 });
