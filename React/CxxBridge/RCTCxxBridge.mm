@@ -535,6 +535,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
 {
+  return [self _registerModulesForClasses:moduleClasses lazilyDiscovered:NO];
+}
+
+- (NSArray<RCTModuleData *> *)_registerModulesForClasses:(NSArray<Class> *)moduleClasses
+                                        lazilyDiscovered:(BOOL)lazilyDiscovered
+{
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                           @"-[RCTCxxBridge initModulesWithDispatchGroup:] autoexported moduleData", nil);
 
@@ -549,7 +555,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     // Check for module name collisions
     RCTModuleData *moduleData = _moduleDataByName[moduleName];
     if (moduleData) {
-      if (moduleData.hasInstance) {
+      if (moduleData.hasInstance || lazilyDiscovered) {
         // Existing module was preregistered, so it takes precedence
         continue;
       } else if ([moduleClass new] == nil) {
@@ -682,7 +688,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
   // Set up moduleData for automatically-exported modules
-  NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
+  NSArray<RCTModuleData *> *moduleDataById = [self _registerModulesForClasses:modules lazilyDiscovered:lazilyDiscovered];
 
   if (lazilyDiscovered) {
 #if RCT_DEBUG
