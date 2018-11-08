@@ -585,6 +585,8 @@ const TextInputWithRef = React.forwardRef((props, ref) => (
   <TextInput {...props} forwardedRef={ref} />
 ));
 
+TextInputWithRef.displayName = 'TextInput';
+
 const styles = StyleSheet.create({
   multilineInput: {
     // This default top inset makes RCTMultilineTextInputView seem as close as possible

@@ -37,7 +37,7 @@ jest
   .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text', MockNativeMethods))
-  .mock('TextInput', () => mockComponent('TextInput'))
+  .mock('TextInput', () => mockComponent('TextInput', MockNativeMethods))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View', MockNativeMethods))
   .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
