@@ -10,6 +10,7 @@ package com.facebook.yoga;
 import com.facebook.soloader.SoLoader;
 
 public class YogaJNI {
+  private static boolean isInitialized = false;
 
   // Known constants. 1-3 used in previous experiments. Do not reuse.
   public static int JNI_FAST_CALLS = 4;
@@ -19,12 +20,13 @@ public class YogaJNI {
 
   private static native void jni_bindNativeMethods(boolean useFastCall);
 
-  static boolean init() {
-    if (SoLoader.loadLibrary("yoga")) {
+  static synchronized boolean init() {
+    if (!isInitialized) {
+      isInitialized = true;
+      SoLoader.loadLibrary("yoga");
       jni_bindNativeMethods(useFastCall);
       return true;
     }
-
     return false;
   }
 }
