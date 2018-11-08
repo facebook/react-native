@@ -7,6 +7,14 @@
       "react-native"
     ]
   },
+  "moduleFileExtensions": [
+        "js",
+        "json",
+        "jsx",
+        "node",
+        "ts",
+        "tsx"
+      ],
   "moduleNameMapper": {
     "^React$": "<rootDir>/node_modules/react"
   },
@@ -14,11 +22,15 @@
     "<rootDir>/node_modules/react-native/Libraries/react-native/"
   ],
   "transform": {
-    "^.+\\.js$": "babel-jest",
+    "^.+\\.(js|ts|tsx)$": "babel-jest",
     "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/node_modules/react-native/jest/assetFileTransformer.js"
   },
   "transformIgnorePatterns": [
     "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"
+  ],
+  "testMatch": [
+    "**/__tests__/**/*.(js|ts|tsx)",
+    "**/?(*.)+(spec|test).(js|ts|tsx)"
   ],
   "setupFiles": [
     "<rootDir>/node_modules/react-native/jest/setup.js"
