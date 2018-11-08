@@ -24,7 +24,8 @@ const warning = require('fbjs/lib/warning');
 
 const {ScrollViewManager} = require('NativeModules');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent, ScrollEvent} from 'CoreEventTypes';
+import type {KeyboardEvent} from 'Keyboard';
 import type EmitterSubscription from 'EmitterSubscription';
 
 /**
@@ -114,16 +115,6 @@ type State = {
   observedScrollSinceBecomingResponder: boolean,
   becameResponderWhileAnimating: boolean,
 };
-type Event = $ReadOnly<{|
-  target: number,
-  nativeEvent: $ReadOnly<{|
-    velocity?: $ReadOnly<{|
-      y: number,
-      x: number,
-    |}>,
-    touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-  |}>,
-|}>;
 
 const ScrollResponderMixin = {
   _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
@@ -178,7 +169,9 @@ const ScrollResponderMixin = {
    *   true.
    *
    */
-  scrollResponderHandleStartShouldSetResponder: function(e: Event): boolean {
+  scrollResponderHandleStartShouldSetResponder: function(
+    e: PressEvent,
+  ): boolean {
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
 
     if (
@@ -203,7 +196,7 @@ const ScrollResponderMixin = {
    * Invoke this from an `onStartShouldSetResponderCapture` event.
    */
   scrollResponderHandleStartShouldSetResponderCapture: function(
-    e: Event,
+    e: PressEvent,
   ): boolean {
     // The scroll view should receive taps instead of its descendants if:
     // * it is already animating/decelerating
@@ -222,6 +215,7 @@ const ScrollResponderMixin = {
     if (
       keyboardNeverPersistTaps &&
       currentlyFocusedTextInput != null &&
+      e.target &&
       !TextInputState.isTextInput(e.target)
     ) {
       return true;
@@ -264,9 +258,9 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onTouchEnd` event.
    *
-   * @param {SyntheticEvent} e Event.
+   * @param {PressEvent} e Event.
    */
-  scrollResponderHandleTouchEnd: function(e: Event) {
+  scrollResponderHandleTouchEnd: function(e: PressEvent) {
     const nativeEvent = e.nativeEvent;
     this.state.isTouching = nativeEvent.touches.length !== 0;
     this.props.onTouchEnd && this.props.onTouchEnd(e);
@@ -275,9 +269,9 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onTouchCancel` event.
    *
-   * @param {SyntheticEvent} e Event.
+   * @param {PressEvent} e Event.
    */
-  scrollResponderHandleTouchCancel: function(e: Event) {
+  scrollResponderHandleTouchCancel: function(e: PressEvent) {
     this.state.isTouching = false;
     this.props.onTouchCancel && this.props.onTouchCancel(e);
   },
@@ -285,7 +279,7 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onResponderRelease` event.
    */
-  scrollResponderHandleResponderRelease: function(e: Event) {
+  scrollResponderHandleResponderRelease: function(e: PressEvent) {
     this.props.onResponderRelease && this.props.onResponderRelease(e);
 
     // By default scroll views will unfocus a textField
@@ -305,7 +299,7 @@ const ScrollResponderMixin = {
     }
   },
 
-  scrollResponderHandleScroll: function(e: Event) {
+  scrollResponderHandleScroll: function(e: ScrollEvent) {
     this.state.observedScrollSinceBecomingResponder = true;
     this.props.onScroll && this.props.onScroll(e);
   },
@@ -313,7 +307,7 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onResponderGrant` event.
    */
-  scrollResponderHandleResponderGrant: function(e: Event) {
+  scrollResponderHandleResponderGrant: function(e: ScrollEvent) {
     this.state.observedScrollSinceBecomingResponder = false;
     this.props.onResponderGrant && this.props.onResponderGrant(e);
     this.state.becameResponderWhileAnimating = this.scrollResponderIsAnimating();
@@ -326,7 +320,7 @@ const ScrollResponderMixin = {
    *
    * Invoke this from an `onScrollBeginDrag` event.
    */
-  scrollResponderHandleScrollBeginDrag: function(e: Event) {
+  scrollResponderHandleScrollBeginDrag: function(e: ScrollEvent) {
     FrameRateLogger.beginScroll(); // TODO: track all scrolls after implementing onScrollEndAnimation
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   },
@@ -334,7 +328,7 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onScrollEndDrag` event.
    */
-  scrollResponderHandleScrollEndDrag: function(e: Event) {
+  scrollResponderHandleScrollEndDrag: function(e: ScrollEvent) {
     const {velocity} = e.nativeEvent;
     // - If we are animating, then this is a "drag" that is stopping the scrollview and momentum end
     //   will fire.
@@ -353,7 +347,7 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onMomentumScrollBegin` event.
    */
-  scrollResponderHandleMomentumScrollBegin: function(e: Event) {
+  scrollResponderHandleMomentumScrollBegin: function(e: ScrollEvent) {
     this.state.lastMomentumScrollBeginTime = performanceNow();
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   },
@@ -361,7 +355,7 @@ const ScrollResponderMixin = {
   /**
    * Invoke this from an `onMomentumScrollEnd` event.
    */
-  scrollResponderHandleMomentumScrollEnd: function(e: Event) {
+  scrollResponderHandleMomentumScrollEnd: function(e: ScrollEvent) {
     FrameRateLogger.endScroll();
     this.state.lastMomentumScrollEndTime = performanceNow();
     this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(e);
@@ -376,9 +370,9 @@ const ScrollResponderMixin = {
    * responder). The `onResponderReject` won't fire in that case - it only
    * fires when a *current* responder rejects our request.
    *
-   * @param {SyntheticEvent} e Touch Start event.
+   * @param {PressEvent} e Touch Start event.
    */
-  scrollResponderHandleTouchStart: function(e: Event) {
+  scrollResponderHandleTouchStart: function(e: PressEvent) {
     this.state.isTouching = true;
     this.props.onTouchStart && this.props.onTouchStart(e);
   },
@@ -392,9 +386,9 @@ const ScrollResponderMixin = {
    * responder). The `onResponderReject` won't fire in that case - it only
    * fires when a *current* responder rejects our request.
    *
-   * @param {SyntheticEvent} e Touch Start event.
+   * @param {PressEvent} e Touch Start event.
    */
-  scrollResponderHandleTouchMove: function(e: Event) {
+  scrollResponderHandleTouchMove: function(e: PressEvent) {
     this.props.onTouchMove && this.props.onTouchMove(e);
   },
 
@@ -594,8 +588,8 @@ const ScrollResponderMixin = {
     this.preventNegativeScrollOffset = false;
   },
 
-  scrollResponderTextInputFocusError: function(e: Event) {
-    console.error('Error measuring text field: ', e);
+  scrollResponderTextInputFocusError: function(msg: string) {
+    console.error('Error measuring text field: ', msg);
   },
 
   /**
@@ -677,17 +671,17 @@ const ScrollResponderMixin = {
    * relevant to you. (For example, only if you receive these callbacks after
    * you had explicitly focused a node etc).
    */
-  scrollResponderKeyboardWillShow: function(e: Event) {
+  scrollResponderKeyboardWillShow: function(e: KeyboardEvent) {
     this.keyboardWillOpenTo = e;
     this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
   },
 
-  scrollResponderKeyboardWillHide: function(e: Event) {
+  scrollResponderKeyboardWillHide: function(e: KeyboardEvent) {
     this.keyboardWillOpenTo = null;
     this.props.onKeyboardWillHide && this.props.onKeyboardWillHide(e);
   },
 
-  scrollResponderKeyboardDidShow: function(e: Event) {
+  scrollResponderKeyboardDidShow: function(e: KeyboardEvent) {
     // TODO(7693961): The event for DidShow is not available on iOS yet.
     // Use the one from WillShow and do not assign.
     if (e) {
@@ -696,7 +690,7 @@ const ScrollResponderMixin = {
     this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
-  scrollResponderKeyboardDidHide: function(e: Event) {
+  scrollResponderKeyboardDidHide: function(e: KeyboardEvent) {
     this.keyboardWillOpenTo = null;
     this.props.onKeyboardDidHide && this.props.onKeyboardDidHide(e);
   },
