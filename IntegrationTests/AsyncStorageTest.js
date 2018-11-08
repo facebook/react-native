@@ -71,7 +71,8 @@ function testSetAndGet() {
     AsyncStorage.getItem(KEY_1, (err2, result) => {
       expectAsyncNoError('testSetAndGet/getItem', err2);
       expectEqual(result, VAL_1, 'testSetAndGet setItem');
-      updateMessage('get(key_1) correctly returned ' + result);
+      expectTrue(result !== null, 'should not be null');
+      updateMessage('get(key_1) correctly returned ' + String(result));
       runTestCase('should get null for missing key', testMissingGet);
     });
   });
@@ -81,7 +82,8 @@ function testMissingGet() {
   AsyncStorage.getItem(KEY_2, (err, result) => {
     expectAsyncNoError('testMissingGet/setItem', err);
     expectEqual(result, null, 'testMissingGet');
-    updateMessage('missing get(key_2) correctly returned ' + result);
+    expectTrue(result === null, 'should be null');
+    updateMessage('missing get(key_2) correctly returned ' + String(result));
     runTestCase('check set twice results in a single key', testSetTwice);
   });
 }
@@ -104,9 +106,10 @@ function testRemoveItem() {
     AsyncStorage.setItem(KEY_2, VAL_2, () => {
       AsyncStorage.getAllKeys((err, result) => {
         expectAsyncNoError('testRemoveItem/getAllKeys', err);
+        expectTrue(result !== null, 'should not be null');
         expectTrue(
-          result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
-          'Missing KEY_1 or KEY_2 in ' + '(' + result + ')',
+          Array.isArray(result) && result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
+          'Missing KEY_1 or KEY_2 in ' + '(' + String(result) + ')',
         );
         updateMessage('testRemoveItem - add two items');
         AsyncStorage.removeItem(KEY_1, err2 => {
@@ -122,9 +125,10 @@ function testRemoveItem() {
             updateMessage('key properly removed ');
             AsyncStorage.getAllKeys((err4, result3) => {
               expectAsyncNoError('testRemoveItem/getAllKeys', err4);
+              expectTrue(result3 !== null, 'should not be null');
               expectTrue(
-                result3.indexOf(KEY_1) === -1,
-                'Unexpected: KEY_1 present in ' + result3,
+                Array.isArray(result3) && result3.indexOf(KEY_1) === -1,
+                'Unexpected: KEY_1 present in ' + String(result3),
               );
               updateMessage('proper length returned.');
               runTestCase('should merge values', testMerge);
@@ -143,7 +147,8 @@ function testMerge() {
       expectAsyncNoError('testMerge/mergeItem', err2);
       AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
         expectAsyncNoError('testMerge/setItem', err3);
-        expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
+        expectTrue(result !== null, 'should not be null');
+        expectEqual(result && JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
         updateMessage('objects deeply merged\nDone!');
         runTestCase('multi set and get', testOptimizedMultiGet);
       });
