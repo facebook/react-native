@@ -58,7 +58,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
-  [/^(.*)\.js(\.flow)?$/, '$1'],
+  [/^(.*)\.(js|ts|tsx)(\.flow)?$/, '$1'],
   // strip platform suffix
   [/^(.*)\.(android|ios|native)$/, '$1'],
   // strip plugin platform suffixes
@@ -88,8 +88,13 @@ const haste = {
 };
 
 function isHastePath(filePath /*: string */) /*: boolean */ {
-  if (!filePath.endsWith('.js') && !filePath.endsWith('.js.flow')) {
-    return false;
+  if (
+    !filePath.endsWith('.js') &&
+    !filePath.endsWith('.js.flow') &&
+    !filePath.endsWith('.ts') &&
+    !filePath.endsWith('.tsx')
+  ) {
+    return false
   }
 
   const root = ROOTS.find(r => filePath.startsWith(r));
