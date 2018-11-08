@@ -2,9 +2,6 @@
 ; We fork some components by platform
 .*/*[.]android.js
 
-; Ignore templates for 'react-native init'
-.*/local-cli/templates/.*
-
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/bots/dangerfile.js
 
