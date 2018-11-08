@@ -63,13 +63,18 @@ private:
                 layoutConstraints:(LayoutConstraints)layoutConstraints
                     layoutContext:(LayoutContext)layoutContext;
 {
+  auto props = convertIdToFollyDynamic(initialProps);
   _scheduler->startSurface(
-    surfaceId,
-    RCTStringFromNSString(moduleName),
-    convertIdToFollyDynamic(initialProps),
-    layoutConstraints,
-    layoutContext
-  );
+      surfaceId,
+      RCTStringFromNSString(moduleName),
+      props,
+      layoutConstraints,
+      layoutContext);
+  _scheduler->renderTemplateToSurface(
+      surfaceId,
+      props.getDefault("navigationConfig")
+          .getDefault("initialUITemplate", "")
+          .getString());
 }
 
 - (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
@@ -89,15 +94,6 @@ private:
                                            surfaceId:(SurfaceId)surfaceId
 {
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
-}
-
-@end
-
-@implementation RCTScheduler (Deprecated)
-
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
-{
-  return _scheduler->getUIManager_DO_NOT_USE();
 }
 
 @end

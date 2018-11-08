@@ -9,11 +9,11 @@
 
 'use strict';
 
-var React = require('React');
-var Recording = require('NativeModules').Recording;
-var StyleSheet = require('StyleSheet');
-var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
-var View = require('View');
+const React = require('React');
+const Recording = require('NativeModules').Recording;
+const StyleSheet = require('StyleSheet');
+const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
+const View = require('View');
 
 class TouchTestApp extends React.Component {
   handleStartShouldSetResponder = e => {
@@ -57,7 +57,7 @@ class TouchTestApp extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

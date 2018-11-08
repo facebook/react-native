@@ -47,8 +47,8 @@ class Item extends React.Component<ItemProps, ItemState> {
 }
 
 const getInitialState = function() {
-  var data = [];
-  for (var i = 0; i < NUM_ITEMS; i++) {
+  const data = [];
+  for (let i = 0; i < NUM_ITEMS; i++) {
     data[i] = {text: 'Item ' + i + '!'};
   }
   return {
@@ -101,7 +101,7 @@ class ScrollViewTestApp extends React.Component<Props, State> {
 
   render() {
     scrollViewApp = this;
-    var children = this.state.data.map((item, index) => (
+    const children = this.state.data.map((item, index) => (
       <Item
         key={index}
         text={item.text}
@@ -135,7 +135,7 @@ class HorizontalScrollViewTestApp extends React.Component<Props, State> {
 
   render() {
     scrollViewApp = this;
-    var children = this.state.data.map((item, index) => (
+    const children = this.state.data.map((item, index) => (
       <Item
         key={index}
         text={item.text}
@@ -150,7 +150,7 @@ class HorizontalScrollViewTestApp extends React.Component<Props, State> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   item_container: {
     padding: 30,
     backgroundColor: '#ffffff',
@@ -162,7 +162,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var ScrollViewTestModule = {
+const ScrollViewTestModule = {
   ScrollViewTestApp: ScrollViewTestApp,
   HorizontalScrollViewTestApp: HorizontalScrollViewTestApp,
   scrollTo(destX: number, destY: number) {

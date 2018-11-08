@@ -53,11 +53,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
   attr: {
     fontSize: 10,
     color: '#ccc',

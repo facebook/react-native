@@ -31,7 +31,6 @@ struct ShadowNodeFragment {
   const SharedShadowNodeSharedList &children = nullSharedChildren();
   const SharedLocalData &localData = nullLocalData();
 
- private:
   static SharedProps &nullSharedProps();
   static SharedEventEmitter &nullSharedEventEmitter();
   static SharedShadowNodeSharedList &nullSharedChildren();

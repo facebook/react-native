@@ -26,7 +26,6 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {PressEvent} from 'CoreEventTypes';
