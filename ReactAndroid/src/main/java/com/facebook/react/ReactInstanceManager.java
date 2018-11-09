@@ -732,9 +732,8 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void detachRootView(ReactRootView rootView) {
     UiThreadUtil.assertOnUiThread();
-    if (mAttachedRootViews.contains(rootView)) {
+    if (mAttachedRootViews.remove(rootView)) {
       ReactContext currentContext = getCurrentReactContext();
-      mAttachedRootViews.remove(rootView);
       if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
         detachViewFromInstance(rootView, currentContext.getCatalystInstance());
       }
@@ -960,22 +959,22 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
     synchronized (mReactContextLock) {
       mCurrentReactContext = Assertions.assertNotNull(reactContext);
-      CatalystInstance catalystInstance =
-          Assertions.assertNotNull(reactContext.getCatalystInstance());
-
-      catalystInstance.initialize();
-      mDevSupportManager.onNewReactContextCreated(reactContext);
-      mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-      moveReactContextToCurrentLifecycleState();
-
-      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
-      synchronized (mAttachedRootViews) {
-        for (ReactRootView rootView : mAttachedRootViews) {
-          attachRootViewToInstance(rootView);
-        }
-      }
-      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
+    CatalystInstance catalystInstance =
+      Assertions.assertNotNull(reactContext.getCatalystInstance());
+
+    catalystInstance.initialize();
+    mDevSupportManager.onNewReactContextCreated(reactContext);
+    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
+    moveReactContextToCurrentLifecycleState();
+
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
+    synchronized (mAttachedRootViews) {
+      for (ReactRootView rootView : mAttachedRootViews) {
+        attachRootViewToInstance(rootView);
+      }
+    }
+    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
 
     ReactInstanceEventListener[] listeners =
       new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
