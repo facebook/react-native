@@ -64,6 +64,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "ScrollView";
   }
 
+  if (viewName == "RKShimmeringView") {
+    return "ShimmeringView";
+  }
+
   if (viewName == "AndroidProgressBar") {
     return "ActivityIndicatorView";
   }
