@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class ReactInstanceManagerTest {
 
+  private static final String TEST_MODULE = "ViewLayoutTestApp";
+
   private ReactInstanceManager mReactInstanceManager;
   private ReactRootView mReactRootView;
 
@@ -45,7 +47,25 @@ public class ReactInstanceManagerTest {
   @UiThreadTest
   public void testMountUnmount() {
     mReactInstanceManager.onHostResume(mActivityRule.getActivity());
-    mReactRootView.startReactApplication(mReactInstanceManager, "ViewLayoutTestApp");
+    mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
     mReactRootView.unmountReactApplication();
+  }
+
+  @Test
+  @UiThreadTest
+  public void testResume() throws InterruptedException {
+    mReactInstanceManager.onHostResume(mActivityRule.getActivity());
+    mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
+    Thread.sleep(1000);
+    mReactInstanceManager.onHostResume(mActivityRule.getActivity());
+  }
+
+  @Test
+  @UiThreadTest
+  public void testRecreateContext() throws InterruptedException {
+    mReactInstanceManager.onHostResume(mActivityRule.getActivity());
+    mReactInstanceManager.createReactContextInBackground();
+    Thread.sleep(1000);
+    mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
   }
 }

@@ -741,11 +741,13 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void detachRootView(ReactRootView rootView) {
     UiThreadUtil.assertOnUiThread();
-    if (mAttachedRootViews.contains(rootView)) {
-      ReactContext currentContext = getCurrentReactContext();
-      mAttachedRootViews.remove(rootView);
-      if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
-        detachViewFromInstance(rootView, currentContext.getCatalystInstance());
+    synchronized (mAttachedRootViews) {
+      if (mAttachedRootViews.contains(rootView)) {
+        ReactContext currentContext = getCurrentReactContext();
+        mAttachedRootViews.remove(rootView);
+        if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+          detachViewFromInstance(rootView, currentContext.getCatalystInstance());
+        }
       }
     }
   }
@@ -904,10 +906,12 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
-    synchronized (mReactContextLock) {
-      if (mCurrentReactContext != null) {
-        tearDownReactContext(mCurrentReactContext);
-        mCurrentReactContext = null;
+    synchronized (mAttachedRootViews) {
+      synchronized (mReactContextLock) {
+        if (mCurrentReactContext != null) {
+          tearDownReactContext(mCurrentReactContext);
+          mCurrentReactContext = null;
+        }
       }
     }
 
@@ -979,8 +983,11 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    synchronized (mReactContextLock) {
-      mCurrentReactContext = Assertions.assertNotNull(reactContext);
+    synchronized (mAttachedRootViews) {
+      synchronized (mReactContextLock) {
+        mCurrentReactContext = Assertions.assertNotNull(reactContext);
+      }
+
       CatalystInstance catalystInstance =
           Assertions.assertNotNull(reactContext.getCatalystInstance());
 
@@ -990,10 +997,8 @@ public class ReactInstanceManager {
       moveReactContextToCurrentLifecycleState();
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
-      synchronized (mAttachedRootViews) {
-        for (ReactRootView rootView : mAttachedRootViews) {
-          attachRootViewToInstance(rootView);
-        }
+      for (ReactRootView rootView : mAttachedRootViews) {
+        attachRootViewToInstance(rootView);
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
