@@ -246,7 +246,7 @@ exports.examples = [
           <Animated.Image
             source={require('./bunny.png')}
             style={[
-              {width: 70, height: 70},
+              styles.rotatingImage,
               {
                 transform: [
                   {
@@ -297,5 +297,9 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  rotatingImage: {
+    width: 70,
+    height: 70,
   },
 });
