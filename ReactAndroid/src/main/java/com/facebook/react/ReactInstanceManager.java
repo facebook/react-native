@@ -25,6 +25,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREA
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CHANGE_THREAD_PRIORITY;
 import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
@@ -1024,6 +1025,7 @@ public class ReactInstanceManager {
           @Override
           public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+            ReactMarker.logMarker(CHANGE_THREAD_PRIORITY, "js_default");
           }
         });
     reactContext.runOnNativeModulesQueueThread(
