@@ -38,8 +38,8 @@ const AsyncStorage = {
    */
   getItem: function(
     key: string,
-    callback?: ?(error: ?Error, result: ?string) => void,
-  ): Promise<any> {
+    callback?: ?(error: ?Error, result: string|null) => void,
+  ): Promise<string|null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
@@ -64,7 +64,7 @@ const AsyncStorage = {
     key: string,
     value: string,
     callback?: ?(error: ?Error) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet([[key, value]], function(errors) {
         const errs = convertErrors(errors);
@@ -86,7 +86,7 @@ const AsyncStorage = {
   removeItem: function(
     key: string,
     callback?: ?(error: ?Error) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove([key], function(errors) {
         const errs = convertErrors(errors);
@@ -112,7 +112,7 @@ const AsyncStorage = {
     key: string,
     value: string,
     callback?: ?(error: ?Error) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge([[key, value]], function(errors) {
         const errs = convertErrors(errors);
@@ -133,12 +133,13 @@ const AsyncStorage = {
    *
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#clear
    */
-  clear: function(callback?: ?(error: ?Error) => void): Promise<any> {
+  clear: function(callback?: ?(error: ?Error) => void): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.clear(function(error) {
-        callback && callback(convertError(error));
-        if (error && convertError(error)) {
-          reject(convertError(error));
+        const err = convertError(error);
+        callback && callback(err);
+        if (err) {
+          reject(err);
         } else {
           resolve(null);
         }
@@ -153,12 +154,13 @@ const AsyncStorage = {
    */
   getAllKeys: function(
     callback?: ?(error: ?Error, keys: ?Array<string>) => void,
-  ): Promise<any> {
+  ): Promise<?Array<string>> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.getAllKeys(function(error, keys) {
-        callback && callback(convertError(error), keys);
-        if (error) {
-          reject(convertError(error));
+        const err = convertError(error);
+        callback && callback(err, keys);
+        if (err) {
+          reject(err);
         } else {
           resolve(keys);
         }
@@ -222,7 +224,7 @@ const AsyncStorage = {
   multiGet: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
-  ): Promise<any> {
+  ): Promise<?Array<Array<string>>> {
     if (!this._immediate) {
       this._immediate = setImmediate(() => {
         this._immediate = null;
@@ -264,7 +266,7 @@ const AsyncStorage = {
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
     callback?: ?(errors: ?Array<?Error>) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
         const error = convertErrors(errors);
@@ -286,7 +288,7 @@ const AsyncStorage = {
   multiRemove: function(
     keys: Array<string>,
     callback?: ?(errors: ?Array<?Error>) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
         const error = convertErrors(errors);
@@ -311,7 +313,7 @@ const AsyncStorage = {
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
     callback?: ?(errors: ?Array<?Error>) => void,
-  ): Promise<any> {
+  ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
         const error = convertErrors(errors);
@@ -343,7 +345,8 @@ function convertError(error): ?Error {
   if (!error) {
     return null;
   }
-  const out: Object = new Error(error.message);
+  const out = new Error(error.message);
+  // $FlowFixMe: adding custom properties to error.
   out.key = error.key;
   return out;
 }
