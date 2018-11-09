@@ -1085,11 +1085,7 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
-        if (rootView.getUIManagerType() != FABRIC) {
-          // All the views created in surfaces that are managed by Fabric, are removed and deleted
-          // by the Mounting Layer.
-          rootView.removeAllViews();
-        }
+        rootView.removeAllViews();
         rootView.setId(View.NO_ID);
       }
     }
