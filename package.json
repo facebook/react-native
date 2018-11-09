@@ -109,7 +109,6 @@
     "setupBabel.js",
     "Libraries",
     "LICENSE",
-    "local-cli",
     "packager",
     "react.gradle",
     "React.podspec",
@@ -120,7 +119,7 @@
     "third-party-podspecs"
   ],
   "scripts": {
-    "start": "node ./local-cli/cli.js start",
+    "start": "react-native start",
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",
@@ -187,7 +186,7 @@
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
     "react-devtools-core": "^3.4.0",
-    "react-native-local-cli": "1.0.0-alpha.0",
+    "react-native-local-cli": "1.0.0-alpha.2",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
