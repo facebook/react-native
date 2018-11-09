@@ -63,23 +63,30 @@ void EventEmitter::dispatchEvent(
       priority);
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
-  bool alreadyEnabled = eventTarget_ != nullptr;
-  if (enabled == alreadyEnabled) {
+void EventEmitter::enable() const {
+  enableCounter_++;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::disable() const {
+  enableCounter_--;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::toggleEventTargetOwnership_() const {
+  bool shouldBeRetained = enableCounter_ > 0;
+  bool alreadyBeRetained = eventTarget_ != nullptr;
+  if (shouldBeRetained == alreadyBeRetained) {
     return;
   }
 
-  if (enabled) {
+  if (shouldBeRetained) {
     eventTarget_ = weakEventTarget_.lock();
     weakEventTarget_.reset();
   } else {
     weakEventTarget_ = eventTarget_;
     eventTarget_.reset();
   }
-}
-
-bool EventEmitter::getEnabled() const {
-  return eventTarget_ != nullptr;
 }
 
 } // namespace react
