@@ -1,6 +1,11 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
+
 #pragma once
 
-// packing uses a push/pop mechanic in msvc
+// Packing uses a push/pop mechanic in MSVC.
 #ifdef _MSC_VER
 # define RN_PACK_ATTR /**/
 # define RN_PACK_PUSH __pragma(pack(push, 1))
@@ -14,5 +19,3 @@
 # define RN_PACK_PUSH /**/
 # define RN_PACK_POP /**/
 #endif
-
-
