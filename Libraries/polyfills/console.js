@@ -405,7 +405,7 @@ function getNativeLogFunction(level) {
     } else {
       str = Array.prototype.map
         .call(arguments, function(arg) {
-          return inspect(arg, {depth: 10});
+          return inspect(arg, {depth: 2});
         })
         .join(', ');
     }
