@@ -1341,59 +1341,6 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
 }
 
-/**
- * Returns an array of computed offset layouts in a dictionary form. The layouts are of any React subviews
- * that are immediate descendants to the parent view found within a specified rect. The dictionary result
- * contains left, top, width, height and an index. The index specifies the position among the other subviews.
- * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
- * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
- */
-RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
-                  parentView:(nonnull NSNumber *)reactTag
-                  errorCallback:(__unused RCTResponseSenderBlock)errorCallback
-                  callback:(RCTResponseSenderBlock)callback)
-{
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  if (!shadowView) {
-    RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
-    return;
-  }
-  NSArray<RCTShadowView *> *childShadowViews = [shadowView reactSubviews];
-  NSMutableArray<NSDictionary *> *results =
-    [[NSMutableArray alloc] initWithCapacity:childShadowViews.count];
-
-  [childShadowViews enumerateObjectsUsingBlock:
-   ^(RCTShadowView *childShadowView, NSUInteger idx, __unused BOOL *stop) {
-    CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
-    if (CGRectIsNull(childLayout)) {
-      RCTLogError(@"View %@ (tag #%@) is not a descendant of %@ (tag #%@)",
-                  childShadowView, childShadowView.reactTag, shadowView, shadowView.reactTag);
-      return;
-    }
-
-    CGFloat leftOffset = childLayout.origin.x;
-    CGFloat topOffset = childLayout.origin.y;
-    CGFloat width = childLayout.size.width;
-    CGFloat height = childLayout.size.height;
-
-    if (leftOffset <= rect.origin.x + rect.size.width &&
-        leftOffset + width >= rect.origin.x &&
-        topOffset <= rect.origin.y + rect.size.height &&
-        topOffset + height >= rect.origin.y) {
-
-      // This view is within the layout rect
-      NSDictionary *result = @{@"index": @(idx),
-                               @"left": @(leftOffset),
-                               @"top": @(topOffset),
-                               @"width": @(width),
-                               @"height": @(height)};
-
-      [results addObject:result];
-    }
-  }];
-  callback(@[results]);
-}
-
 RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
