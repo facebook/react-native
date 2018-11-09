@@ -32,6 +32,7 @@ class SchedulerDelegate {
    * Called right after a new ShadowNode was created.
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
+      SurfaceId surfaceId,
       ComponentName componentName) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;

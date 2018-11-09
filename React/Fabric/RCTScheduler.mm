@@ -27,7 +27,7 @@ public:
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, ComponentName componentName) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
   }

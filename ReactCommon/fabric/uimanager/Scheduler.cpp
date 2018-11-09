@@ -186,7 +186,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
   if (delegate_) {
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getComponentName());
+        shadowNode->getRootTag(), shadowNode->getComponentName());
   }
 }
 
