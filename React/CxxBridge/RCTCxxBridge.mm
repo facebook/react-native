@@ -666,10 +666,8 @@ struct RCTInstanceCallback : public InstanceCallback {
           // The new module returned nil from init, so use the old module
           continue;
         } else if ([moduleData.moduleClass new] != nil) {
-          // Both modules were non-nil, so it's unclear which should take precedence
-          RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
-                      "name '%@', but name was already registered by class %@",
-                      moduleClass, moduleName, moduleData.moduleClass);
+          // Use existing module since it was already loaded but not yet instantiated.
+          continue;
         }
       }
 
