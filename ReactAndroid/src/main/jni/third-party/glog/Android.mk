@@ -23,7 +23,8 @@ LOCAL_CFLAGS += \
   -g \
   -O2 \
   -D_START_GOOGLE_NAMESPACE_="namespace google {" \
-  -D_END_GOOGLE_NAMESPACE_="}"
+  -D_END_GOOGLE_NAMESPACE_="}" \
+  -DHAVE_PREAD=1
 
 
 LOCAL_MODULE := glog

@@ -242,16 +242,22 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
+            '--jobs', project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
+    ignoreExitValue true
+    errorOutput new ByteArrayOutputStream()
     commandLine getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
+    doLast {
+        file(AAR_OUTPUT_URL).delete()
+        println "Deleted aar output dir at ${file(AAR_OUTPUT_URL)}"
+    }
 }
 
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
@@ -267,7 +273,6 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
