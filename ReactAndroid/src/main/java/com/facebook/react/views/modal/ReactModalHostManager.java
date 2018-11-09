@@ -24,7 +24,7 @@ import java.util.Map;
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
-  protected static final String REACT_CLASS = "RCTModalHostView";
+  public static final String REACT_CLASS = "RCTModalHostView";
 
   @Override
   public String getName() {
