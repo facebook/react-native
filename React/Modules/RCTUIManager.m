@@ -1530,6 +1530,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     // which had RCT Prefixes stripped. Lets check one more time...
     module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
   }
+  
+  if (!module) {
+    return @{};
+  }
 
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
   _componentDataByName[componentData.name] = componentData;
