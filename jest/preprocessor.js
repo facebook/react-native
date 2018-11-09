@@ -59,6 +59,7 @@ module.exports = {
         minify: false,
         platform: '',
         projectRoot: '',
+        publicPath: '/assets',
         retainLines: true,
         sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },
