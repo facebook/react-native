@@ -5,8 +5,8 @@
 
 #include "ComponentDescriptorRegistry.h"
 
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/uimanager/primitives.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {

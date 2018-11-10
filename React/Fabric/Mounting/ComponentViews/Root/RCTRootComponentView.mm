@@ -7,7 +7,7 @@
 
 #import "RCTRootComponentView.h"
 
-#import <fabric/components/root/RootProps.h>
+#import <react/components/root/RootProps.h>
 
 using namespace facebook::react;
 

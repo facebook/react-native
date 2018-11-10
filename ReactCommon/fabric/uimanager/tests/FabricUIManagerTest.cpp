@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include <fabric/uimanager/UIManager.h>
 #include <gtest/gtest.h>
+#include <react/uimanager/UIManager.h>
 
 using namespace facebook::react;
 

@@ -7,7 +7,7 @@
 
 #include "AttributedString.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {

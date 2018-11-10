@@ -9,9 +9,9 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/core/LayoutContext.h>
-#import <fabric/uimanager/ShadowViewMutation.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/core/LayoutContext.h>
+#import <react/uimanager/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

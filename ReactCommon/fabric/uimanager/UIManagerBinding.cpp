@@ -2,7 +2,7 @@
 
 #include "UIManagerBinding.h"
 
-#include <fabric/debug/SystraceSection.h>
+#include <react/debug/SystraceSection.h>
 
 #include <jsi/JSIDynamic.h>
 

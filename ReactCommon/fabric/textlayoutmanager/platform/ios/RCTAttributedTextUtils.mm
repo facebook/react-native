@@ -7,10 +7,10 @@
 
 #import "RCTAttributedTextUtils.h"
 
-#include <fabric/core/LayoutableShadowNode.h>
-#include <fabric/textlayoutmanager/RCTFontProperties.h>
-#include <fabric/textlayoutmanager/RCTFontUtils.h>
-#include <fabric/textlayoutmanager/RCTTextPrimitivesConversions.h>
+#include <react/core/LayoutableShadowNode.h>
+#include <react/textlayoutmanager/RCTFontProperties.h>
+#include <react/textlayoutmanager/RCTFontUtils.h>
+#include <react/textlayoutmanager/RCTTextPrimitivesConversions.h>
 
 @implementation RCTSharedShadowNodeWrapper
 @end

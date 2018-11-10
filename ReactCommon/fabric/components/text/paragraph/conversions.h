@@ -3,9 +3,9 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/components/text/ParagraphLocalData.h>
 #include <folly/dynamic.h>
+#include <react/attributedstring/conversions.h>
+#include <react/components/text/ParagraphLocalData.h>
 
 namespace facebook {
 namespace react {

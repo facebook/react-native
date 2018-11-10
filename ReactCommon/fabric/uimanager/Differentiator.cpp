@@ -5,7 +5,7 @@
 
 #include "Differentiator.h"
 
-#include <fabric/core/LayoutableShadowNode.h>
+#include <react/core/LayoutableShadowNode.h>
 #include "ShadowView.h"
 
 namespace facebook {

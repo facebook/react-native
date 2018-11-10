@@ -7,8 +7,8 @@
 
 #include "EventEmitter.h"
 
-#include <fabric/debug/SystraceSection.h>
 #include <folly/dynamic.h>
+#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
