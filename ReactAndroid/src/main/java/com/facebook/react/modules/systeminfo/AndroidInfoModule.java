@@ -15,6 +15,7 @@ import android.provider.Settings.Secure;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.HashMap;
@@ -76,7 +77,11 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
-    constants.put("androidID", Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID));
     return constants;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String getAndroidID(){
+    return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
   }
 }
