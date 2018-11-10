@@ -99,6 +99,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -134,8 +135,8 @@ public class ReactInstanceManager {
     void onReactContextInitialized(ReactContext context);
   }
 
-  private final List<ReactRootView> mAttachedRootViews = Collections.synchronizedList(
-    new ArrayList<ReactRootView>());
+  private final Set<ReactRootView> mAttachedRootViews = Collections.synchronizedSet(
+    new HashSet<ReactRootView>());
 
   private volatile LifecycleState mLifecycleState;
 
@@ -1037,8 +1038,7 @@ public class ReactInstanceManager {
         });
   }
 
-  private void attachRootViewToInstance(
-      final ReactRootView rootView) {
+  private void attachRootViewToInstance(final ReactRootView rootView) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
