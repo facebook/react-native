@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/graphics/conversions.h>
-#include <fabric/imagemanager/primitives.h>
 #include <folly/dynamic.h>
+#include <react/graphics/conversions.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {

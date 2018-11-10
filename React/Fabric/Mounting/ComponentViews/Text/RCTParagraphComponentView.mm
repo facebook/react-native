@@ -7,12 +7,12 @@
 
 #import "RCTParagraphComponentView.h"
 
-#import <fabric/components/text/ParagraphLocalData.h>
-#import <fabric/components/text/ParagraphProps.h>
-#import <fabric/core/LocalData.h>
-#import <fabric/graphics/Geometry.h>
-#import <fabric/textlayoutmanager/TextLayoutManager.h>
-#import <fabric/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/components/text/ParagraphLocalData.h>
+#import <react/components/text/ParagraphProps.h>
+#import <react/core/LocalData.h>
+#import <react/graphics/Geometry.h>
+#import <react/textlayoutmanager/TextLayoutManager.h>
+#import <react/textlayoutmanager/RCTTextLayoutManager.h>
 #import "RCTConversions.h"
 
 using namespace facebook::react;

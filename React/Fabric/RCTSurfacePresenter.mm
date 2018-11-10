@@ -24,10 +24,10 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTUtils.h>
-#import <fabric/core/LayoutContext.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/imagemanager/ImageManager.h>
-#import <fabric/uimanager/ContextContainer.h>
+#import <react/core/LayoutContext.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/imagemanager/ImageManager.h>
+#import <react/uimanager/ContextContainer.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"

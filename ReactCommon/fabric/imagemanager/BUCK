@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/imagemanager",
+        prefix = "react/imagemanager",
     ),
     fbandroid_headers = subdir_glob(
         [
@@ -61,7 +61,7 @@ rn_xplat_cxx_library(
             ("", "*.h"),
             ("platform/ios", "RCTImagePrimitivesConversions.h"),
         ],
-        prefix = "fabric/imagemanager",
+        prefix = "react/imagemanager",
     ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",

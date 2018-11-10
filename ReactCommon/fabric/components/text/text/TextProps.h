@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/components/text/BaseTextProps.h>
-#include <fabric/core/Props.h>
-#include <fabric/graphics/Color.h>
-#include <fabric/graphics/Geometry.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/components/text/BaseTextProps.h>
+#include <react/core/Props.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

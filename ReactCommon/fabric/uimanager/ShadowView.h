@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/LocalData.h>
-#include <fabric/core/Props.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/events/EventEmitter.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/LocalData.h>
+#include <react/core/Props.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
+#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {

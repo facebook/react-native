@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include <fabric/components/view/ViewEventEmitter.h>
-#include <fabric/events/EventEmitter.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
+#include <react/components/view/ViewEventEmitter.h>
+#include <react/events/EventEmitter.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

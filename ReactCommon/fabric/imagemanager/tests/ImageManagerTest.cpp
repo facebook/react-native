@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include <fabric/imagemanager/ImageManager.h>
+#include <react/imagemanager/ImageManager.h>
 
 using namespace facebook::react;
 

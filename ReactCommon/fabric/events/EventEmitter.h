@@ -9,9 +9,9 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/events/EventDispatcher.h>
-#include <fabric/events/primitives.h>
 #include <folly/dynamic.h>
+#include <react/events/EventDispatcher.h>
+#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {

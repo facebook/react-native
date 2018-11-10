@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/TextAttributes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

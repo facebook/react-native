@@ -12,9 +12,9 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

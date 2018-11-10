@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
