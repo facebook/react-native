@@ -14,6 +14,7 @@ import android.provider.Settings.Secure;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.HashMap;
@@ -69,7 +70,9 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("Serial", Build.SERIAL);
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
-    constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+    if (ReactBuildConfig.DEBUG) {
+      constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+    }
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
