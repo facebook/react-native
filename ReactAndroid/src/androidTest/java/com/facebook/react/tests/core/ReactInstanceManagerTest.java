@@ -6,6 +6,7 @@
 package com.facebook.react.tests.core;
 
 import android.app.Activity;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -14,6 +15,7 @@ import com.facebook.react.ReactRootView;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.ReactTestHelper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +45,19 @@ public class ReactInstanceManagerTest {
         .build();
   }
 
+  @After
+  public void tearDown() {
+    final ReactRootView reactRootView = mReactRootView;
+    final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
+    InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+      @Override
+      public void run() {
+        reactRootView.unmountReactApplication();
+        reactInstanceManager.destroy();
+      }
+    });
+  }
+
   @Test
   @UiThreadTest
   public void testMountUnmount() {
@@ -56,7 +71,6 @@ public class ReactInstanceManagerTest {
   public void testResume() throws InterruptedException {
     mReactInstanceManager.onHostResume(mActivityRule.getActivity());
     mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
-    Thread.sleep(1000);
     mReactInstanceManager.onHostResume(mActivityRule.getActivity());
   }
 
@@ -65,7 +79,14 @@ public class ReactInstanceManagerTest {
   public void testRecreateContext() throws InterruptedException {
     mReactInstanceManager.onHostResume(mActivityRule.getActivity());
     mReactInstanceManager.createReactContextInBackground();
-    Thread.sleep(1000);
     mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
+  }
+
+  @Test
+  @UiThreadTest
+  public void testMountTwice() {
+    mReactInstanceManager.onHostResume(mActivityRule.getActivity());
+    mReactRootView.startReactApplication(mReactInstanceManager, TEST_MODULE);
+    mReactInstanceManager.attachRootView(mReactRootView);
   }
 }
