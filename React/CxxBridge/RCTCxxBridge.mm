@@ -880,6 +880,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   _loading = NO;
   _valid = NO;
+  _moduleRegistryCreated = NO;
 
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self->_jsMessageThread) {
@@ -976,6 +977,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   _loading = NO;
   _valid = NO;
   _didInvalidate = YES;
+  _moduleRegistryCreated = NO;
 
   if ([RCTBridge currentBridge] == self) {
     [RCTBridge setCurrentBridge:nil];
