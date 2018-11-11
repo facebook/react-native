@@ -185,8 +185,15 @@ void Scheduler::uiManagerDidFinishTransaction(
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
   if (delegate_) {
+    auto layoutableShadowNode =
+        dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
+    auto isLayoutable = layoutableShadowNode != nullptr;
+
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(), shadowNode->getComponentName());
+        shadowNode->getRootTag(),
+        shadowNode->getComponentName(),
+        isLayoutable,
+        shadowNode->getComponentHandle());
   }
 }
 
