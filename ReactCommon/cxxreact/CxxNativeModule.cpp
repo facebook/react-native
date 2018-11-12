@@ -137,7 +137,7 @@ void CxxNativeModule::invoke(unsigned int reactMethodId, folly::dynamic&& params
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
   #else
-    RN_UNUSED(callId)
+    (void)(callId);
   #endif
     SystraceSection s(method.name.c_str());
     try {

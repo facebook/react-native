@@ -162,7 +162,7 @@ void NativeToJsBridge::callFunction(
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       #else
-      RN_UNUSED(systraceCookie)
+      (void)(systraceCookie);
       #endif
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
@@ -194,7 +194,7 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           systraceCookie);
       SystraceSection s("NativeToJsBridge::invokeCallback");
       #else
-      RN_UNUSED(systraceCookie)
+      (void)(systraceCookie);
       #endif
       executor->invokeCallback(callbackId, arguments);
     });

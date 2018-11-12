@@ -12,10 +12,6 @@
 
 #include <cxxreact/JSExecutor.h>
 
-#ifndef RN_UNUSED
-#define RN_UNUSED(x) (void)(x);
-#endif
-
 namespace folly {
 struct dynamic;
 }
