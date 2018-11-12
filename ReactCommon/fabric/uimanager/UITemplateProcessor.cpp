@@ -14,7 +14,7 @@
 #include <react/components/view/ViewShadowNode.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/core/componentDescriptor.h>
+#include <react/core/ComponentDescriptor.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/debug/DebugStringConvertibleItem.h>
 
