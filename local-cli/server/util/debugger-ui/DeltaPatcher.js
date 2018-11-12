@@ -63,23 +63,32 @@
 
       // Reset the current bundle when we receive a base bundle.
       if (bundle.base) {
+        this._lastNumModifiedFiles = bundle.modules.length;
+
         this._lastBundle = {
-          revisionId: undefined,
+          revisionId: bundle.revisionId,
           pre: bundle.pre,
           post: bundle.post,
-          modules: new Map(),
+          modules: new Map(bundle.modules),
         };
-      }
+      } else {
+        this._lastNumModifiedFiles =
+          bundle.modules.length + bundle.deleted.length;
 
-      this._lastNumModifiedFiles = bundle.modules.size;
+        this._lastBundle.revisionId = bundle.revisionId;
+
+        for (const [key, value] of bundle.modules) {
+          this._lastBundle.modules.set(key, value);
+        }
+
+        for (const id of bundle.deleted) {
+          this._lastBundle.modules.delete(id);
+        }
+      }
 
       if (this._lastNumModifiedFiles > 0) {
         this._lastModifiedDate = new Date();
       }
-
-      this._patchMap(this._lastBundle.modules, bundle.modules);
-
-      this._lastBundle.revisionId = bundle.revisionId;
 
       return this;
     }
@@ -104,20 +113,10 @@
 
     getAllModules() {
       return [].concat(
-        this._lastBundle.pre,
+        [this._lastBundle.pre],
         Array.from(this._lastBundle.modules.values()),
-        this._lastBundle.post,
+        [this._lastBundle.post],
       );
-    }
-
-    _patchMap(original, patch) {
-      for (const [key, value] of patch.entries()) {
-        if (value == null) {
-          original.delete(key);
-        } else {
-          original.set(key, value);
-        }
-      }
     }
   }
 
