@@ -14,11 +14,13 @@ const getPolyfills = require('../../rn-get-polyfills');
 const path = require('path');
 
 const {createBlacklist} = require('metro');
+/* $FlowFixMe(site=react_native_oss) */
 const {loadConfig} = require('metro-config');
 
 /**
  * Configuration file of the CLI.
  */
+/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 function getProjectRoot() {

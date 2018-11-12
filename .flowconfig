@@ -24,6 +24,7 @@
 
 ; Ignore metro
 .*/node_modules/metro/.*
+.*/node_modules/metro-config/.*
 
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')

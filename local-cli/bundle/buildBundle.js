@@ -20,6 +20,7 @@ const path = require('path');
 const saveAssets = require('./saveAssets');
 
 import type {RequestOptions, OutputOptions} from './types.flow';
+/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 async function buildBundle(

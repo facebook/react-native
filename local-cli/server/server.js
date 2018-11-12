@@ -13,6 +13,7 @@
 const runServer = require('./runServer');
 
 import type {RNConfig} from '../core';
+/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro-config/src/configTypes.flow';
 import type {Args as RunServerArgs} from './runServer';
 

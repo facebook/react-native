@@ -29,6 +29,7 @@ const minimist = require('minimist');
 const path = require('path');
 
 import type {CommandT} from '../commands';
+/* $FlowFixMe(site=react_native_oss) */
 import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
 export type RNConfig = {
