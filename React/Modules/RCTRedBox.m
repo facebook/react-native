@@ -47,7 +47,7 @@
 #else
         self.windowLevel = UIWindowLevelStatusBar - 1;
 #endif
-        self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
+        self.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         self.hidden = YES;
 
         UIViewController *rootController = [UIViewController new];
@@ -88,37 +88,40 @@
         dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
         dismissButton.accessibilityIdentifier = @"redbox-dismiss";
         dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        dismissButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         [dismissButton setTitle:dismissText forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
         reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         reloadButton.accessibilityIdentifier = @"redbox-reload";
         reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
-
+        reloadButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         [reloadButton setTitle:reloadText forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
         copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         copyButton.accessibilityIdentifier = @"redbox-copy";
         copyButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        copyButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         [copyButton setTitle:copyText forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *extraButton = [UIButton buttonWithType:UIButtonTypeCustom];
         extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         extraButton.accessibilityIdentifier = @"redbox-extra";
         extraButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        extraButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         [extraButton setTitle:extraText forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
@@ -254,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.textLabel.numberOfLines = 0;
         cell.detailTextLabel.textColor = [UIColor whiteColor];
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
 
@@ -267,11 +270,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-        cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
+        cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
         cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
         cell.textLabel.numberOfLines = 2;
-        cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
+        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.95 green:0.78 blue:0.78 alpha:1.0];
         cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
         cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         cell.backgroundColor = [UIColor clearColor];
