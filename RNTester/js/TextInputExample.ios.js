@@ -71,7 +71,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
               'onSelectionChange range: ' +
                 event.nativeEvent.selection.start +
                 ',' +
-                event.nativeEvent.selection.end,
+                (event.nativeEvent.selection.end || ''),
             )
           }
           onKeyPress={event => {
