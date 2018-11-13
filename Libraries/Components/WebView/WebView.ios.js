@@ -404,6 +404,7 @@ class WebView extends React.Component {
 
   static defaultProps = {
     originWhitelist: WebViewShared.defaultOriginWhitelist,
+    scalesPageToFit: true,
   };
 
   state = {
