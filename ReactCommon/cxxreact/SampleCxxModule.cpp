@@ -114,7 +114,7 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
         sample_->hello();
         return nullptr;
       }, SyncTag),
-    Method("addIfPositiveAsPromise", [this](dynamic args, Callback cb, Callback cbError) {
+    Method("addIfPositiveAsPromise", [](dynamic args, Callback cb, Callback cbError) {
         auto a = jsArgAsDouble(args, 0);
         auto b = jsArgAsDouble(args, 1);
         if (a < 0 || b < 0) {
@@ -123,7 +123,7 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
           cb({a + b});
         }
       }),
-    Method("addIfPositiveAsAsync", [this](dynamic args, Callback cb, Callback cbError) {
+    Method("addIfPositiveAsAsync", [](dynamic args, Callback cb, Callback cbError) {
         auto a = jsArgAsDouble(args, 0);
         auto b = jsArgAsDouble(args, 1);
         if (a < 0 || b < 0) {
