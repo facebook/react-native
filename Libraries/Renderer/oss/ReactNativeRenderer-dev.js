@@ -3885,7 +3885,7 @@ var createHiddenTextInstance = shim;
 function shim$1() {
   invariant(
     false,
-    "The current renderer does not support hyration. " +
+    "The current renderer does not support hydration. " +
       "This error is likely caused by a bug in React. " +
       "Please file an issue."
   );
@@ -4413,7 +4413,7 @@ function setCurrentPhase(lifeCyclePhase) {
 
 var debugRenderPhaseSideEffects = false;
 var debugRenderPhaseSideEffectsForStrictMode = false;
-var enableHooks = false;
+var enableHooks = true;
 var enableUserTimingAPI = true;
 var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 var warnAboutDeprecatedLifecycles = false;
@@ -11748,7 +11748,7 @@ function mountLazyComponent(
       break;
     }
     default: {
-      // This message intentionally doesn't metion ForwardRef or MemoComponent
+      // This message intentionally doesn't mention ForwardRef or MemoComponent
       // because the fact that it's a separate type of work is an
       // implementation detail.
       invariant(
@@ -12113,7 +12113,6 @@ function updateSuspenseComponent(
           currentPrimaryChildFragment.pendingProps,
           NoWork
         );
-        _primaryChildFragment.effectTag |= Placement;
 
         if ((workInProgress.mode & ConcurrentMode) === NoContext) {
           // Outside of concurrent mode, we commit the effects from the
@@ -12147,7 +12146,6 @@ function updateSuspenseComponent(
           _nextFallbackChildren,
           currentFallbackChildFragment.expirationTime
         ));
-        _fallbackChildFragment.effectTag |= Placement;
         child = _primaryChildFragment;
         _primaryChildFragment.childExpirationTime = NoWork;
         // Skip the primary children, and continue working on the
@@ -12177,6 +12175,7 @@ function updateSuspenseComponent(
       }
     } else {
       // The current tree has not already timed out. That means the primary
+      // children are not wrapped in a fragment fiber.
       var _currentPrimaryChild = current$$1.child;
       if (nextDidTimeout) {
         // Timed out. Wrap the children in a fragment fiber to keep them
@@ -12190,10 +12189,12 @@ function updateSuspenseComponent(
           NoWork,
           null
         );
-
-        _primaryChildFragment2.effectTag |= Placement;
         _primaryChildFragment2.child = _currentPrimaryChild;
-        _currentPrimaryChild.return = _primaryChildFragment2;
+
+        // Even though we're creating a new fiber, there are no new children,
+        // because we're reusing an already mounted tree. So we don't need to
+        // schedule a placement.
+        // primaryChildFragment.effectTag |= Placement;
 
         if ((workInProgress.mode & ConcurrentMode) === NoContext) {
           // Outside of concurrent mode, we commit the effects from the
@@ -13302,12 +13303,16 @@ function completeWork(current, workInProgress, renderExpirationTime) {
         // TODO: Would it be better to store the fallback fragment on
         var currentFallbackChild = current.child.sibling;
         if (currentFallbackChild !== null) {
-          reconcileChildFibers(
-            workInProgress,
-            currentFallbackChild,
-            null,
-            renderExpirationTime
-          );
+          // Deletions go at the beginning of the return fiber's effect list
+          var first = workInProgress.firstEffect;
+          if (first !== null) {
+            workInProgress.firstEffect = currentFallbackChild;
+            currentFallbackChild.nextEffect = first;
+          } else {
+            workInProgress.firstEffect = workInProgress.lastEffect = currentFallbackChild;
+            currentFallbackChild.nextEffect = null;
+          }
+          currentFallbackChild.effectTag = Deletion;
         }
       }
 
@@ -13940,6 +13945,15 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
         } else {
           unhideTextInstance(_instance3, node.memoizedProps);
         }
+      } else if (
+        node.tag === SuspenseComponent &&
+        node.memoizedState !== null
+      ) {
+        // Found a nested Suspense component that timed out. Skip over the
+        var fallbackChildFragment = node.child.sibling;
+        fallbackChildFragment.return = node;
+        node = fallbackChildFragment;
+        continue;
       } else if (node.child !== null) {
         node.child.return = node;
         node = node.child;
@@ -14673,20 +14687,10 @@ function throwException(
         if ((_workInProgress.mode & ConcurrentMode) === NoEffect) {
           _workInProgress.effectTag |= DidCapture;
 
-          // Unmount the source fiber's children
-          var nextChildren = null;
-          reconcileChildren(
-            sourceFiber.alternate,
-            sourceFiber,
-            nextChildren,
-            renderExpirationTime
-          );
-          sourceFiber.effectTag &= ~Incomplete;
-
           // We're going to commit this fiber even though it didn't complete.
           // But we shouldn't call any lifecycle methods or callbacks. Remove
           // all lifecycle effect tags.
-          sourceFiber.effectTag &= ~LifecycleEffectMask;
+          sourceFiber.effectTag &= ~(LifecycleEffectMask | Incomplete);
 
           if (sourceFiber.tag === ClassComponent) {
             var _current = sourceFiber.alternate;
@@ -14920,12 +14924,12 @@ var warnAboutInvalidUpdates = void 0;
 
 if (enableSchedulerTracing) {
   // Provide explicit error message when production+profiling bundle of e.g. react-dom
-  // is used with production (non-profiling) bundle of schedule/tracing
+  // is used with production (non-profiling) bundle of scheduler/tracing
   invariant(
     tracing.__interactionsRef != null &&
       tracing.__interactionsRef.current != null,
     "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) " +
-      "without also replacing the `schedule/tracing` module with `schedule/tracing-profiling`. " +
+      "without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. " +
       "Your bundler might have a setting for aliasing both modules. " +
       "Learn more at http://fb.me/react-profiling"
   );
@@ -16422,6 +16426,46 @@ function scheduleWorkToRoot(fiber, expirationTime) {
     }
   }
 
+  if (enableSchedulerTracing) {
+    if (root !== null) {
+      var interactions = tracing.__interactionsRef.current;
+      if (interactions.size > 0) {
+        var pendingInteractionMap = root.pendingInteractionMap;
+        var pendingInteractions = pendingInteractionMap.get(expirationTime);
+        if (pendingInteractions != null) {
+          interactions.forEach(function(interaction) {
+            if (!pendingInteractions.has(interaction)) {
+              // Update the pending async work count for previously unscheduled interaction.
+              interaction.__count++;
+            }
+
+            pendingInteractions.add(interaction);
+          });
+        } else {
+          pendingInteractionMap.set(expirationTime, new Set(interactions));
+
+          // Update the pending async work count for the current interactions.
+          interactions.forEach(function(interaction) {
+            interaction.__count++;
+          });
+        }
+
+        var subscriber = tracing.__subscriberRef.current;
+        if (subscriber !== null) {
+          var threadID = computeThreadID(
+            expirationTime,
+            root.interactionThreadID
+          );
+          subscriber.onWorkScheduled(interactions, threadID);
+        }
+      }
+    }
+  }
+  return root;
+}
+
+function scheduleWork(fiber, expirationTime) {
+  var root = scheduleWorkToRoot(fiber, expirationTime);
   if (root === null) {
     {
       switch (fiber.tag) {
@@ -16436,49 +16480,6 @@ function scheduleWorkToRoot(fiber, expirationTime) {
           break;
       }
     }
-    return null;
-  }
-
-  if (enableSchedulerTracing) {
-    var interactions = tracing.__interactionsRef.current;
-    if (interactions.size > 0) {
-      var pendingInteractionMap = root.pendingInteractionMap;
-      var pendingInteractions = pendingInteractionMap.get(expirationTime);
-      if (pendingInteractions != null) {
-        interactions.forEach(function(interaction) {
-          if (!pendingInteractions.has(interaction)) {
-            // Update the pending async work count for previously unscheduled interaction.
-            interaction.__count++;
-          }
-
-          pendingInteractions.add(interaction);
-        });
-      } else {
-        pendingInteractionMap.set(expirationTime, new Set(interactions));
-
-        // Update the pending async work count for the current interactions.
-        interactions.forEach(function(interaction) {
-          interaction.__count++;
-        });
-      }
-
-      var subscriber = tracing.__subscriberRef.current;
-      if (subscriber !== null) {
-        var threadID = computeThreadID(
-          expirationTime,
-          root.interactionThreadID
-        );
-        subscriber.onWorkScheduled(interactions, threadID);
-      }
-    }
-  }
-
-  return root;
-}
-
-function scheduleWork(fiber, expirationTime) {
-  var root = scheduleWorkToRoot(fiber, expirationTime);
-  if (root === null) {
     return;
   }
 
@@ -17380,7 +17381,7 @@ function createPortal(
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.6.1";
+var ReactVersion = "16.7.0-alpha.2";
 
 // Modules provided by RN:
 var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
