@@ -135,7 +135,7 @@ const tagFlag = releaseVersion.indexOf('-rc') === -1 ? '' : '--tag next';
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
 
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+if (exec(`npm publish --tag next ${tagFlag} ${otpFlag} --access=public`).code) {
   echo('Failed to publish package to npm');
   exit(1);
 } else {
