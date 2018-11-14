@@ -254,10 +254,10 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: {
+  selection: $ReadOnly<{|
     start: number,
     end?: number,
-  },
+  |}>,
   value: string,
 };
 
