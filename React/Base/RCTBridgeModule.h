@@ -324,9 +324,9 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 
 /**
  * Experimental.
- * A protocol to declare that a class supports JSI-bound NativeModule.
+ * A protocol to declare that a class supports TurboModule.
  * This may be removed in the future.
  */
-@protocol RCTJSINativeModule <NSObject>
+@protocol RCTTurboModule <NSObject>
 
 @end

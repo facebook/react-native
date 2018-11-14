@@ -86,7 +86,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 }
 
 static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+BOOL RCTTurboModuleEnabled(void)
 {
   return jsiNativeModuleEnabled;
 }
