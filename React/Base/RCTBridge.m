@@ -241,6 +241,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleForName:moduleName];
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
+}
+
 - (id)moduleForClass:(Class)moduleClass
 {
   id module = [self.batchedBridge moduleForClass:moduleClass];
