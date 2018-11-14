@@ -371,6 +371,17 @@ void jni_YGNodeRemoveChild(jlong nativePointer, jlong childPointer) {
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
 }
 
+void jni_YGNodeSetIsReferenceBaseline(
+    jlong nativePointer,
+    jboolean isReferenceBaseline) {
+  YGNodeSetIsReferenceBaseline(
+      _jlong2YGNodeRef(nativePointer), isReferenceBaseline);
+}
+
+jboolean jni_YGNodeIsReferenceBaseline(jlong nativePointer) {
+  return YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer));
+}
+
 void jni_YGNodeCalculateLayout(
     alias_ref<jclass>,
     jlong nativePointer,
@@ -666,6 +677,8 @@ jint jni_YGNodeGetInstanceCount() {
           YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),                 \
           YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),           \
           YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),                 \
+          YGMakeCriticalNativeMethod(jni_YGNodeSetIsReferenceBaseline),      \
+          YGMakeCriticalNativeMethod(jni_YGNodeIsReferenceBaseline),         \
           YGMakeNativeMethod(jni_YGNodeCalculateLayout),                     \
           YGMakeCriticalNativeMethod(jni_YGNodeMarkDirty),                   \
           YGMakeCriticalNativeMethod(                                        \

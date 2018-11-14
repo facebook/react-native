@@ -380,6 +380,14 @@ void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
 }
 
+void YGNodeSetIsReferenceBaseline(YGNodeRef node, bool isReferenceBaseline) {
+  node->setIsReferenceBaseline(isReferenceBaseline);
+}
+
+bool YGNodeIsReferenceBaseline(YGNodeRef node) {
+  return node->isReferenceBaseline();
+}
+
 void YGNodeInsertChild(
     const YGNodeRef node,
     const YGNodeRef child,
@@ -1138,7 +1146,8 @@ static float YGBaseline(const YGNodeRef node) {
     if (child->getStyle().positionType == YGPositionTypeAbsolute) {
       continue;
     }
-    if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
+    if (YGNodeAlignItem(node, child) == YGAlignBaseline ||
+        child->isReferenceBaseline()) {
       baselineChild = child;
       break;
     }
