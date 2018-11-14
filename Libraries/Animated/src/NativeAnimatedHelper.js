@@ -179,6 +179,7 @@ const TRANSFORM_WHITELIST = {
 const SUPPORTED_INTERPOLATION_PARAMS = {
   inputRange: true,
   outputRange: true,
+  easing: true,
   extrapolate: true,
   extrapolateRight: true,
   extrapolateLeft: true,
