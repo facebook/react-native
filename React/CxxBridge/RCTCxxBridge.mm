@@ -561,7 +561,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray *moduleClassesCopy = [moduleClasses copy];
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
   for (Class moduleClass in moduleClassesCopy) {
-    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+    if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
       continue;
     }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
@@ -666,7 +666,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     // we must use the names provided by the delegate method here.
     for (NSString *moduleName in moduleClasses) {
       Class moduleClass = moduleClasses[moduleName];
-      if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
         continue;
       }
 
