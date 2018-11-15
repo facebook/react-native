@@ -723,16 +723,8 @@ class WebView extends React.Component<Props, State> {
   }
 }
 
-const RCTWebView = requireNativeComponent(
-  'RCTWebView',
-  WebView,
-  WebView.extraNativeComponentConfig,
-);
-const RCTWKWebView = requireNativeComponent(
-  'RCTWKWebView',
-  WebView,
-  WebView.extraNativeComponentConfig,
-);
+const RCTWebView = requireNativeComponent('RCTWebView');
+const RCTWKWebView = requireNativeComponent('RCTWKWebView');
 
 const styles = StyleSheet.create({
   container: {
