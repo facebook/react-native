@@ -2,7 +2,8 @@
 
 #include "UIManager.h"
 
-#include <fabric/core/ShadowNodeFragment.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/debug/SystraceSection.h>
 
 namespace facebook {
 namespace react {
@@ -60,6 +61,7 @@ void UIManager::appendChild(
 void UIManager::completeSurface(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildren) const {
+  SystraceSection s("FabricUIManager::completeSurface");
   if (delegate_) {
     delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
   }

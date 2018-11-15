@@ -806,7 +806,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * @return the rootTag
    */
   public int resolveRootTagFromReactTag(int reactTag) {
-    return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+    return ViewUtil.isRootTag(reactTag)
+        ? reactTag
+        : mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
   /** Dirties the node associated with the given react tag */

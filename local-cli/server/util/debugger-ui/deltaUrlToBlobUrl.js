@@ -29,13 +29,7 @@
     const data = await fetch(deltaUrl + revisionId);
     const bundle = await data.json();
 
-    const deltaPatcher = client.applyDelta({
-      base: bundle.base,
-      revisionId: bundle.revisionId,
-      pre: bundle.pre,
-      post: bundle.post,
-      modules: new Map(bundle.modules),
-    });
+    const deltaPatcher = client.applyDelta(bundle);
 
     let cachedBundle = cachedBundleUrls.get(deltaUrl);
 

@@ -2,6 +2,8 @@
 
 #include "UIManagerBinding.h"
 
+#include <react/debug/SystraceSection.h>
+
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -69,6 +71,7 @@ void UIManagerBinding::dispatchEvent(
   auto eventTargetValue = jsi::Value::null();
 
   if (eventTarget) {
+    SystraceSection s("UIManagerBinding::JSIDispatchFabricEventToTarget");
     auto &eventTargetWrapper =
         static_cast<const EventTargetWrapper &>(*eventTarget);
     eventTargetValue = eventTargetWrapper.instanceHandle.lock(runtime);

@@ -7,11 +7,11 @@
 
 #include <jsi/jsi.h>
 
-#include <fabric/core/LayoutContext.h>
-#include <fabric/uimanager/ComponentDescriptorRegistry.h>
-#include <fabric/uimanager/UITemplateProcessor.h>
-#include <fabric/uimanager/UIManager.h>
-#include <fabric/uimanager/UIManagerBinding.h>
+#include <react/core/LayoutContext.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/UIManager.h>
+#include <react/uimanager/UIManagerBinding.h>
+#include <react/uimanager/UITemplateProcessor.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -185,8 +185,15 @@ void Scheduler::uiManagerDidFinishTransaction(
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
   if (delegate_) {
+    auto layoutableShadowNode =
+        dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
+    auto isLayoutable = layoutableShadowNode != nullptr;
+
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getComponentName());
+        shadowNode->getRootTag(),
+        shadowNode->getComponentName(),
+        isLayoutable,
+        shadowNode->getComponentHandle());
   }
 }
 

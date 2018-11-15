@@ -86,7 +86,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 }
 
 static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+BOOL RCTTurboModuleEnabled(void)
 {
   return jsiNativeModuleEnabled;
 }
@@ -239,6 +239,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (id)moduleForName:(NSString *)moduleName
 {
   return [self.batchedBridge moduleForName:moduleName];
+}
+
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
 }
 
 - (id)moduleForClass:(Class)moduleClass

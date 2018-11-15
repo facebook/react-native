@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include <fabric/components/text/ParagraphProps.h>
-#include <fabric/components/text/TextShadowNode.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/textlayoutmanager/TextLayoutManager.h>
 #include <folly/Optional.h>
+#include <react/components/text/ParagraphProps.h>
+#include <react/components/text/TextShadowNode.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/ShadowNode.h>
+#include <react/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {
 namespace react {

@@ -17,6 +17,7 @@ struct YGNode {
   void* context_ = nullptr;
   YGPrintFunc print_ = nullptr;
   bool hasNewLayout_ = true;
+  bool isReferenceBaseline_ = false;
   YGNodeType nodeType_ = YGNodeTypeDefault;
   YGMeasureFunc measure_ = nullptr;
   YGBaselineFunc baseline_ = nullptr;
@@ -91,6 +92,10 @@ struct YGNode {
 
   uint32_t getLineIndex() const {
     return lineIndex_;
+  }
+
+  bool isReferenceBaseline() {
+    return isReferenceBaseline_;
   }
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
@@ -209,6 +214,10 @@ struct YGNode {
 
   void setLineIndex(uint32_t lineIndex) {
     lineIndex_ = lineIndex;
+  }
+
+  void setIsReferenceBaseline(bool isReferenceBaseline) {
+    isReferenceBaseline_ = isReferenceBaseline;
   }
 
   void setOwner(YGNodeRef owner) {

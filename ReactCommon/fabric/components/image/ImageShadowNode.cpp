@@ -7,9 +7,9 @@
 
 #include <cstdlib>
 
-#include <fabric/components/image/ImageLocalData.h>
-#include <fabric/components/image/ImageShadowNode.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/image/ImageLocalData.h>
+#include <react/components/image/ImageShadowNode.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {

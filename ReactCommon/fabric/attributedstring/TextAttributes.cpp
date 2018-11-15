@@ -7,11 +7,12 @@
 
 #include "TextAttributes.h"
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/core/conversions.h>
-#include <fabric/graphics/conversions.h>
+#include <react/attributedstring/conversions.h>
+#include <react/core/conversions.h>
+#include <react/graphics/conversions.h>
+#include <cmath>
 
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -24,14 +25,15 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   backgroundColor = textAttributes.backgroundColor
       ? textAttributes.backgroundColor
       : backgroundColor;
-  opacity = !isnan(textAttributes.opacity) ? textAttributes.opacity : opacity;
+  opacity =
+      !std::isnan(textAttributes.opacity) ? textAttributes.opacity : opacity;
 
   // Font
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily
                                                   : fontFamily;
   fontSize =
-      !isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
-  fontSizeMultiplier = !isnan(textAttributes.fontSizeMultiplier)
+      !std::isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
+  fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
       ? textAttributes.fontSizeMultiplier
       : fontSizeMultiplier;
   fontWeight = textAttributes.fontWeight.hasValue() ? textAttributes.fontWeight
@@ -44,13 +46,14 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   allowFontScaling = textAttributes.allowFontScaling.hasValue()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
-  letterSpacing = !isnan(textAttributes.letterSpacing)
+  letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
 
   // Paragraph Styles
-  lineHeight = !isnan(textAttributes.lineHeight) ? textAttributes.lineHeight
-                                                 : lineHeight;
+  lineHeight = !std::isnan(textAttributes.lineHeight)
+      ? textAttributes.lineHeight
+      : lineHeight;
   alignment = textAttributes.alignment.hasValue() ? textAttributes.alignment
                                                   : alignment;
   baseWritingDirection = textAttributes.baseWritingDirection.hasValue()
@@ -76,7 +79,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textShadowOffset = textAttributes.textShadowOffset.hasValue()
       ? textAttributes.textShadowOffset.value()
       : textShadowOffset;
-  textShadowRadius = !isnan(textAttributes.textShadowRadius)
+  textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
       ? textAttributes.textShadowRadius
       : textShadowRadius;
   textShadowColor = textAttributes.textShadowColor

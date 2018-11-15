@@ -10,8 +10,8 @@
 #include <memory>
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <fabric/graphics/ColorComponents.h>
-#include <fabric/graphics/Float.h>
+#include <react/graphics/ColorComponents.h>
+#include <react/graphics/Float.h>
 
 namespace facebook {
 namespace react {
