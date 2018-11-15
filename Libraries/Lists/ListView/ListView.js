@@ -283,7 +283,7 @@ const ListView = createReactClass({
    *
    * See `ScrollView#scrollToEnd`.
    */
-  scrollToEnd: function(options?: ?{animated?: boolean}) {
+  scrollToEnd: function(options?: {animated?: boolean}) {
     if (this._scrollComponent) {
       if (this._scrollComponent.scrollToEnd) {
         this._scrollComponent.scrollToEnd(options);
