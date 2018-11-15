@@ -326,6 +326,8 @@ dependencies {
     api 'com.squareup.okio:okio:1.14.0'
     compile project(':android-jsc')
 
+    annotationProcessor project(':ReactAndroid-processor')
+
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
     testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"

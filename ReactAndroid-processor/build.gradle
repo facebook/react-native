@@ -1,0 +1,58 @@
+apply plugin: 'java'
+
+def reactRootDir = "$rootDir/ReactAndroid"
+
+task copyJavaFilesModule(type: Copy) {
+    from "$reactRootDir/src/main/java/com/facebook/react/module"
+    into "$projectDir/src/main/java/com/facebook/react/module"
+}
+
+task copyJavaFilesProguard(type: Copy) {
+    from "$reactRootDir/src/main/java/com/facebook/proguard/annotations"
+    into "$projectDir/src/main/java/com/facebook/proguard/annotations"
+}
+
+task copyJavaFilesBridge(type: Copy) {
+    // Should sync with INTERFACES in ReactAndroid/src/main/java/com/facebook/react/bridge/BUCK
+    def INTERFACES = [
+        "Dynamic.java",
+        "ReadableMap.java",
+        "ReadableMapKeySetIterator.java",
+        "WritableArray.java",
+        "WritableMap.java",
+        "NativeModule.java",
+        "JSInstance.java",
+        "ReadableArray.java",
+        "ReadableType.java",
+        "NativeArrayInterface.java",
+    ]
+
+    into "$projectDir/src/main/java/com/facebook/react/bridge"
+
+    INTERFACES.each {
+        from "$reactRootDir/src/main/java/com/facebook/react/bridge/$it"
+    }
+}
+
+task copyJavaFiles {
+    dependsOn copyJavaFilesModule
+    dependsOn copyJavaFilesProguard
+    dependsOn copyJavaFilesBridge
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/resources']
+        }
+    }
+}
+
+compileJava {
+    dependsOn copyJavaFiles
+}
+
+dependencies {
+    implementation 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+    implementation 'com.squareup:javapoet:1.11.1'
+}
