@@ -6,7 +6,7 @@
 
               ga('create', 'UA-41298772-2', 'auto');
               ga('send', 'pageview');
-            </script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.22</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.22/getting-started" target="_self">Docs</a></li><li class=""><a href="/react-native/en/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li class=""><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/flatlist.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">FlatList</h1></header><article><div><span><p>A performant interface for rendering simple, flat lists, supporting the most handy features:</p>
+            </script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/prism.css"/><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.22</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.22/getting-started" target="_self">Docs</a></li><li class=""><a href="/react-native/en/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li class=""><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/flatlist.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">FlatList</h1></header><article><div><span><p>A performant interface for rendering simple, flat lists, supporting the most handy features:</p>
 <ul>
 <li>Fully cross-platform.</li>
 <li>Optional horizontal mode.</li>
@@ -20,10 +20,10 @@
 </ul>
 <p>If you need section support, use <a href="/react-native/docs/0.22/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
 <p>Minimal Example:</p>
-<pre><code class="hljs css language-javascript">&lt;FlatList
-  data={[{<span class="hljs-attr">key</span>: <span class="hljs-string">'a'</span>}, {<span class="hljs-attr">key</span>: <span class="hljs-string">'b'</span>}]}
-  renderItem={({item}) =&gt; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{item.key}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span></span>}
-/&gt;
+<pre><code class="hljs css language-javascript"><span class="token operator">&lt;</span>FlatList
+  data<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token punctuation">{</span>key<span class="token punctuation">:</span> <span class="token string">'a'</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>key<span class="token punctuation">:</span> <span class="token string">'b'</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+  renderItem<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">{</span>item<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token operator">&lt;</span>Text<span class="token operator">></span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>key<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">></span><span class="token punctuation">}</span>
+<span class="token operator">/</span><span class="token operator">></span>
 </code></pre>
 <p>More complex, multi-select example demonstrating <code>PureComponent</code> usage for perf optimization and avoiding bugs.</p>
 <ul>
@@ -31,58 +31,58 @@
 <li>By passing <code>extraData={this.state}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the <code>state.selected</code> changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is also a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
 <li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys instead of the default <code>key</code> property.</li>
 </ul>
-<pre><code class="hljs css language-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyListItem</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">PureComponent</span> </span>{
-  _onPress = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-keyword">this</span>.props.onPressItem(<span class="hljs-keyword">this</span>.props.id);
-  };
+<pre><code class="hljs css language-javascript"><span class="token keyword">class</span> <span class="token class-name">MyListItem</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>PureComponent</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">_onPress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onPressItem</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  render() {
-    <span class="hljs-keyword">const</span> textColor = <span class="hljs-keyword">this</span>.props.selected ? <span class="hljs-string">'red'</span> : <span class="hljs-string">'black'</span>;
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span> <span class="hljs-attr">onPress</span>=<span class="hljs-string">{this._onPress}</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{color:</span> <span class="hljs-attr">textColor</span>}}&gt;</span>{this.props.title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
-    );
-  }
-}
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> textColor <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>selected <span class="token operator">?</span> <span class="token string">'red'</span> <span class="token punctuation">:</span> <span class="token string">'black'</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>TouchableOpacity onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPress<span class="token punctuation">}</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>View<span class="token operator">></span>
+          <span class="token operator">&lt;</span>Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>color<span class="token punctuation">:</span> textColor<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">></span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">></span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>TouchableOpacity<span class="token operator">></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MultiSelectList</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">PureComponent</span> </span>{
-  state = {<span class="hljs-attr">selected</span>: (<span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>(): <span class="hljs-built_in">Map</span>&lt;string, boolean&gt;)};
+<span class="token keyword">class</span> <span class="token class-name">MultiSelectList</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>PureComponent</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>selected<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> Map<span class="token operator">&lt;</span>string<span class="token punctuation">,</span> boolean<span class="token operator">></span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  _keyExtractor = <span class="hljs-function">(<span class="hljs-params">item, index</span>) =&gt;</span> item.id;
+  <span class="token function-variable function">_keyExtractor</span> <span class="token operator">=</span> <span class="token punctuation">(</span>item<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token operator">=></span> item<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
 
-  _onPressItem = <span class="hljs-function">(<span class="hljs-params">id: string</span>) =&gt;</span> {
-    <span class="hljs-comment">// updater functions are preferred for transactional updates</span>
-    <span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">state</span>) =&gt;</span> {
-      <span class="hljs-comment">// copy the map rather than modifying state.</span>
-      <span class="hljs-keyword">const</span> selected = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>(state.selected);
-      selected.set(id, !selected.get(id)); <span class="hljs-comment">// toggle</span>
-      <span class="hljs-keyword">return</span> {selected};
-    });
-  };
+  <span class="token function-variable function">_onPressItem</span> <span class="token operator">=</span> <span class="token punctuation">(</span>id<span class="token punctuation">:</span> string<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token comment">// updater functions are preferred for transactional updates</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token comment">// copy the map rather than modifying state.</span>
+      <span class="token keyword">const</span> selected <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>selected<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      selected<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> <span class="token operator">!</span>selected<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// toggle</span>
+      <span class="token keyword">return</span> <span class="token punctuation">{</span>selected<span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  _renderItem = <span class="hljs-function">(<span class="hljs-params">{item}</span>) =&gt;</span> (
-    &lt;MyListItem
-      id={item.id}
-      onPressItem={this._onPressItem}
-      selected={!!this.state.selected.get(item.id)}
-      title={item.title}
-    /&gt;
-  );
+  <span class="token function-variable function">_renderItem</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>item<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+    <span class="token operator">&lt;</span>MyListItem
+      id<span class="token operator">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>id<span class="token punctuation">}</span>
+      onPressItem<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPressItem<span class="token punctuation">}</span>
+      selected<span class="token operator">=</span><span class="token punctuation">{</span><span class="token operator">!</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>selected<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>item<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">}</span>
+      title<span class="token operator">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>title<span class="token punctuation">}</span>
+    <span class="token operator">/</span><span class="token operator">></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  render() {
-    return (
-      &lt;FlatList
-        data={this.props.data}
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-      /&gt;
-    );
-  }
-}
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>FlatList
+        data<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>data<span class="token punctuation">}</span>
+        extraData<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">}</span>
+        keyExtractor<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_keyExtractor<span class="token punctuation">}</span>
+        renderItem<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderItem<span class="token punctuation">}</span>
+      <span class="token operator">/</span><span class="token operator">></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>This is a convenience wrapper around <a href="/react-native/docs/0.22/virtualizedlist"><code>VirtualizedList</code></a>, and thus inherits its props (as well as those of <code>ScrollView</code>) that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
@@ -140,7 +140,7 @@
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="props-1"></a><a href="#props-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
 <h3><a class="anchor" aria-hidden="true" id="renderitem"></a><a href="#renderitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>renderItem</code></h3>
-<pre><code class="hljs css language-javascript">renderItem({ item: object, index: number, separators: { highlight: function, unhighlight: function, updateProps: function(select: string, newProps: object) } }): [element]
+<pre><code class="hljs css language-javascript"><span class="token function">renderItem</span><span class="token punctuation">(</span><span class="token punctuation">{</span> item<span class="token punctuation">:</span> object<span class="token punctuation">,</span> index<span class="token punctuation">:</span> number<span class="token punctuation">,</span> separators<span class="token punctuation">:</span> <span class="token punctuation">{</span> highlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">,</span> unhighlight<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">,</span> updateProps<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>select<span class="token punctuation">:</span> string<span class="token punctuation">,</span> newProps<span class="token punctuation">:</span> object<span class="token punctuation">)</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>element<span class="token punctuation">]</span>
 </code></pre>
 <p>Takes an item from <code>data</code> and renders it into the list.</p>
 <p>Provides additional metadata like <code>index</code> if you need it, as well as a more generic <code>separators.updateProps</code> function which let's you set whatever props you want to change the rendering of either the leading separator or trailing separator in case the more common <code>highlight</code> and <code>unhighlight</code> (which set the <code>highlighted: boolean</code> prop) are insufficient for your use case.</p>
@@ -153,23 +153,23 @@
 </tbody>
 </table>
 <p>Example usage:</p>
-<pre><code class="hljs css language-javascript">&lt;FlatList
-      ItemSeparatorComponent={Platform.OS !== <span class="hljs-string">'android'</span> &amp;&amp; <span class="hljs-function">(<span class="hljs-params">{highlighted}</span>) =&gt;</span> (
-        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{[style.separator,</span> <span class="hljs-attr">highlighted</span> &amp;&amp; {<span class="hljs-attr">marginLeft:</span> <span class="hljs-attr">0</span>}]} /&gt;</span>
-      )}
-      data={[{title: 'Title Text', key: 'item1'}]}
-      renderItem={({item, separators}) =&gt; (
-        <span class="hljs-tag">&lt;<span class="hljs-name">TouchableHighlight</span>
-          <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> this._onPress(item)}
-          onShowUnderlay={separators.highlight}
-          onHideUnderlay={separators.unhighlight}&gt;
-          <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{backgroundColor:</span> '<span class="hljs-attr">white</span>'}}&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">Text</span>&gt;</span>{item.title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableHighlight</span>&gt;</span>
-      )}
-    /&gt;
-</span></code></pre>
+<pre><code class="hljs css language-javascript"><span class="token operator">&lt;</span>FlatList
+      ItemSeparatorComponent<span class="token operator">=</span><span class="token punctuation">{</span>Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">!==</span> <span class="token string">'android'</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>highlighted<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+        <span class="token operator">&lt;</span>View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>style<span class="token punctuation">.</span>separator<span class="token punctuation">,</span> highlighted <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span>marginLeft<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">></span>
+      <span class="token punctuation">)</span><span class="token punctuation">}</span>
+      data<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token punctuation">{</span>title<span class="token punctuation">:</span> <span class="token string">'Title Text'</span><span class="token punctuation">,</span> key<span class="token punctuation">:</span> <span class="token string">'item1'</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span>
+      renderItem<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">{</span>item<span class="token punctuation">,</span> separators<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+        <span class="token operator">&lt;</span>TouchableHighlight
+          onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_onPress</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span><span class="token punctuation">}</span>
+          onShowUnderlay<span class="token operator">=</span><span class="token punctuation">{</span>separators<span class="token punctuation">.</span>highlight<span class="token punctuation">}</span>
+          onHideUnderlay<span class="token operator">=</span><span class="token punctuation">{</span>separators<span class="token punctuation">.</span>unhighlight<span class="token punctuation">}</span><span class="token operator">></span>
+          <span class="token operator">&lt;</span>View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>backgroundColor<span class="token punctuation">:</span> <span class="token string">'white'</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span>Text<span class="token operator">></span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">></span>
+          <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>TouchableHighlight<span class="token operator">></span>
+      <span class="token punctuation">)</span><span class="token punctuation">}</span>
+    <span class="token operator">/</span><span class="token operator">></span>
+</code></pre>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="data"></a><a href="#data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>data</code></h3>
 <p>For simplicity, data is just a plain array. If you want to use something else, like an immutable list, use the underlying <a href="/react-native/docs/0.22/virtualizedlist"><code>VirtualizedList</code></a> directly.</p>
@@ -249,12 +249,12 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getitemlayout"></a><a href="#getitemlayout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItemLayout</code></h3>
-<pre><code class="hljs css language-javascript">(data, index) =&gt; {<span class="hljs-attr">length</span>: number, <span class="hljs-attr">offset</span>: number, <span class="hljs-attr">index</span>: number}
+<pre><code class="hljs css language-javascript"><span class="token punctuation">(</span>data<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>length<span class="token punctuation">:</span> number<span class="token punctuation">,</span> offset<span class="token punctuation">:</span> number<span class="token punctuation">,</span> index<span class="token punctuation">:</span> number<span class="token punctuation">}</span>
 </code></pre>
 <p><code>getItemLayout</code> is an optional optimization that let us skip measurement of dynamic content if you know the height of items a priori. <code>getItemLayout</code> is the most efficient, and is easy to use if you have fixed height items, for example:</p>
-<pre><code class="hljs css language-javascript">  getItemLayout={(data, index) =&gt; (
-    {<span class="hljs-attr">length</span>: ITEM_HEIGHT, <span class="hljs-attr">offset</span>: ITEM_HEIGHT * index, index}
-  )}
+<pre><code class="hljs css language-javascript">  getItemLayout<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
+    <span class="token punctuation">{</span>length<span class="token punctuation">:</span> <span class="token constant">ITEM_HEIGHT</span><span class="token punctuation">,</span> offset<span class="token punctuation">:</span> <span class="token constant">ITEM_HEIGHT</span> <span class="token operator">*</span> index<span class="token punctuation">,</span> index<span class="token punctuation">}</span>
+  <span class="token punctuation">)</span><span class="token punctuation">}</span>
 </code></pre>
 <p>Adding <code>getItemLayout</code> can be a great performance boost for lists of several hundred items. Remember to include separator length (height or width) in your offset calculation if you specify <code>ItemSeparatorComponent</code>.</p>
 <table>
@@ -311,7 +311,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="keyextractor"></a><a href="#keyextractor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyExtractor</code></h3>
-<pre><code class="hljs css language-javascript">(item: object, <span class="hljs-attr">index</span>: number) =&gt; string;
+<pre><code class="hljs css language-javascript"><span class="token punctuation">(</span>item<span class="token punctuation">:</span> object<span class="token punctuation">,</span> index<span class="token punctuation">:</span> number<span class="token punctuation">)</span> <span class="token operator">=></span> string<span class="token punctuation">;</span>
 </code></pre>
 <p>Used to extract a unique key for a given item at the specified index. Key is used for caching and as the react key to track item re-ordering. The default extractor checks <code>item.key</code>, then falls back to using the index, like React does.</p>
 <table>
@@ -335,7 +335,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onendreached"></a><a href="#onendreached" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onEndReached</code></h3>
-<pre><code class="hljs css language-javascript">(info: {<span class="hljs-attr">distanceFromEnd</span>: number}) =&gt; <span class="hljs-keyword">void</span>
+<pre><code class="hljs css language-javascript"><span class="token punctuation">(</span>info<span class="token punctuation">:</span> <span class="token punctuation">{</span>distanceFromEnd<span class="token punctuation">:</span> number<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">void</span>
 </code></pre>
 <p>Called once when the scroll position gets within <code>onEndReachedThreshold</code> of the rendered content.</p>
 <table>
@@ -359,7 +359,7 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onrefresh"></a><a href="#onrefresh" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onRefresh</code></h3>
-<pre><code class="hljs css language-javascript">() =&gt; <span class="hljs-keyword">void</span>
+<pre><code class="hljs css language-javascript"><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">void</span>
 </code></pre>
 <p>If provided, a standard RefreshControl will be added for &quot;Pull to Refresh&quot; functionality. Make sure to also set the <code>refreshing</code> prop correctly.</p>
 <table>
@@ -372,10 +372,10 @@
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="onviewableitemschanged"></a><a href="#onviewableitemschanged" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onViewableItemsChanged</code></h3>
-<pre><code class="hljs css language-javascript">(info: {
-    <span class="hljs-attr">viewableItems</span>: array,
-    <span class="hljs-attr">changed</span>: array,
-  }) =&gt; <span class="hljs-keyword">void</span>
+<pre><code class="hljs css language-javascript"><span class="token punctuation">(</span>info<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    viewableItems<span class="token punctuation">:</span> array<span class="token punctuation">,</span>
+    changed<span class="token punctuation">:</span> array<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">void</span>
 </code></pre>
 <p>Called when the viewability of rows changes, as defined by the <code>viewabilityConfig</code> prop.</p>
 <table>
@@ -457,35 +457,35 @@
 </table>
 <h2><a class="anchor" aria-hidden="true" id="methods-1"></a><a href="#methods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="scrolltoend"></a><a href="#scrolltoend" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToEnd()</code></h3>
-<pre><code class="hljs css language-javascript">scrollToEnd(([params]: object));
+<pre><code class="hljs css language-javascript"><span class="token function">scrollToEnd</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">[</span>params<span class="token punctuation">]</span><span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Scrolls to the end of the content. May be janky without <code>getItemLayout</code> prop.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="scrolltoindex"></a><a href="#scrolltoindex" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToIndex()</code></h3>
-<pre><code class="hljs css language-javascript">scrollToIndex((params: object));
+<pre><code class="hljs css language-javascript"><span class="token function">scrollToIndex</span><span class="token punctuation">(</span><span class="token punctuation">(</span>params<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Scrolls to the item at the specified index such that it is positioned in the viewable area such that <code>viewPosition</code> 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle. <code>viewOffset</code> is a fixed number of pixels to offset the final target position.</p>
 <p>Note: cannot scroll to locations outside the render window without specifying the <code>getItemLayout</code> prop.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="scrolltoitem"></a><a href="#scrolltoitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToItem()</code></h3>
-<pre><code class="hljs css language-javascript">scrollToItem((params: object));
+<pre><code class="hljs css language-javascript"><span class="token function">scrollToItem</span><span class="token punctuation">(</span><span class="token punctuation">(</span>params<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Requires linear scan through data - use <code>scrollToIndex</code> instead if possible.</p>
 <p>Note: cannot scroll to locations outside the render window without specifying the <code>getItemLayout</code> prop.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="scrolltooffset"></a><a href="#scrolltooffset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToOffset()</code></h3>
-<pre><code class="hljs css language-javascript">scrollToOffset((params: object));
+<pre><code class="hljs css language-javascript"><span class="token function">scrollToOffset</span><span class="token punctuation">(</span><span class="token punctuation">(</span>params<span class="token punctuation">:</span> object<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Scroll to a specific content pixel offset in the list.</p>
 <p>Check out <a href="/react-native/docs/0.22/virtualizedlist#scrolltooffset">scrollToOffset</a> of VirtualizedList</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="recordinteraction"></a><a href="#recordinteraction" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>recordInteraction()</code></h3>
-<pre><code class="hljs css language-javascript">recordInteraction();
+<pre><code class="hljs css language-javascript"><span class="token function">recordInteraction</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Tells the list an interaction has occurred, which should trigger viewability calculations, e.g. if <code>waitForInteractions</code> is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="flashscrollindicators"></a><a href="#flashscrollindicators" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flashScrollIndicators()</code></h3>
-<pre><code class="hljs css language-javascript">flashScrollIndicators();
+<pre><code class="hljs css language-javascript"><span class="token function">flashScrollIndicators</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Displays the scroll indicators momentarily.</p>
 <h2><a class="anchor" aria-hidden="true" id="type-definitions-1"></a><a href="#type-definitions-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Type Definitions</h2>

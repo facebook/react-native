@@ -6,121 +6,121 @@
 
               ga('create', 'UA-41298772-2', 'auto');
               ga('send', 'pageview');
-            </script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.9</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.9/getting-started" target="_self">Docs</a></li><li class=""><a href="/react-native/en/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li class=""><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/asyncstorage.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">AsyncStorage</h1></header><article><div><span><p><code>AsyncStorage</code> is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.</p>
+            </script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><link rel="stylesheet" href="/react-native/css/prism.css"/><link rel="stylesheet" href="/react-native/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.png" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.9</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.9/getting-started" target="_self">Docs</a></li><li class=""><a href="/react-native/en/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li><li class=""><a href="https://reactjs.org/" target="_self">React</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/asyncstorage.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">AsyncStorage</h1></header><article><div><span><p><code>AsyncStorage</code> is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.</p>
 <p>It is recommended that you use an abstraction on top of <code>AsyncStorage</code> instead of <code>AsyncStorage</code> directly for anything more than light usage since it operates globally.</p>
 <p>On iOS, <code>AsyncStorage</code> is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, <code>AsyncStorage</code> will use either <a href="http://rocksdb.org/">RocksDB</a> or SQLite based on what is available.</p>
 <p>The <code>AsyncStorage</code> JavaScript code is a simple facade that provides a clear JavaScript API, real <code>Error</code> objects, and simple non-multi functions. Each method in the API returns a <code>Promise</code> object.</p>
 <p>Persisting data:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">await</span> AsyncStorage.setItem(<span class="hljs-string">'@MySuperStore:key'</span>, <span class="hljs-string">'I like to save it.'</span>);
-} <span class="hljs-keyword">catch</span> (error) {
-  <span class="hljs-comment">// Error saving data</span>
-}
+<pre><code class="hljs css language-javascript"><span class="token keyword">try</span> <span class="token punctuation">{</span>
+  <span class="token keyword">await</span> AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">'@MySuperStore:key'</span><span class="token punctuation">,</span> <span class="token string">'I like to save it.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Error saving data</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>Fetching data:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> AsyncStorage.getItem(<span class="hljs-string">'@MySuperStore:key'</span>);
-  <span class="hljs-keyword">if</span> (value !== <span class="hljs-literal">null</span>){
-    <span class="hljs-comment">// We have data!!</span>
-    <span class="hljs-built_in">console</span>.log(value);
-  }
-} <span class="hljs-keyword">catch</span> (error) {
-  <span class="hljs-comment">// Error retrieving data</span>
-}
+<pre><code class="hljs css language-javascript"><span class="token keyword">try</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> value <span class="token operator">=</span> <span class="token keyword">await</span> AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">'@MySuperStore:key'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>value <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// We have data!!</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// Error retrieving data</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>Merging data:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> UID123_object = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
-  <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">hair</span>: <span class="hljs-string">'brown'</span>, <span class="hljs-attr">eyes</span>: <span class="hljs-string">'brown'</span>},
-};
-<span class="hljs-comment">// You only need to define what will be added or updated</span>
-<span class="hljs-keyword">let</span> UID123_delta = {
-  <span class="hljs-attr">age</span>: <span class="hljs-number">31</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">eyes</span>: <span class="hljs-string">'blue'</span>, <span class="hljs-attr">shoe_size</span>: <span class="hljs-number">10</span>},
-};
+<pre><code class="hljs css language-javascript"><span class="token keyword">let</span> UID123_object <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> <span class="token string">'Chris'</span><span class="token punctuation">,</span>
+  age<span class="token punctuation">:</span> <span class="token number">30</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token comment">// You only need to define what will be added or updated</span>
+<span class="token keyword">let</span> UID123_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token punctuation">:</span> <span class="token number">31</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-AsyncStorage.setItem(<span class="hljs-string">'UID123'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID123_object), () =&gt; {
-  AsyncStorage.mergeItem(<span class="hljs-string">'UID123'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID123_delta), () =&gt; {
-    AsyncStorage.getItem(<span class="hljs-string">'UID123'</span>, (err, result) =&gt; {
-      <span class="hljs-built_in">console</span>.log(result);
-    });
-  });
-});
+AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_object<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  AsyncStorage<span class="token punctuation">.</span><span class="token function">mergeItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID123_delta<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span><span class="token string">'UID123'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> result<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// Console log result:</span>
-<span class="hljs-comment">// =&gt; {'name':'Chris','age':31,'traits':</span>
-<span class="hljs-comment">//    {'shoe_size':10,'hair':'brown','eyes':'blue'}}</span>
+<span class="token comment">// Console log result:</span>
+<span class="token comment">// => {'name':'Chris','age':31,'traits':</span>
+<span class="token comment">//    {'shoe_size':10,'hair':'brown','eyes':'blue'}}</span>
 </code></pre>
 <p>Multi merge example:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-comment">// first user, initial values</span>
-<span class="hljs-keyword">let</span> UID234_object = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">'Chris'</span>,
-  <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">hair</span>: <span class="hljs-string">'brown'</span>, <span class="hljs-attr">eyes</span>: <span class="hljs-string">'brown'</span>},
-};
+<pre><code class="hljs css language-javascript"><span class="token comment">// first user, initial values</span>
+<span class="token keyword">let</span> UID234_object <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> <span class="token string">'Chris'</span><span class="token punctuation">,</span>
+  age<span class="token punctuation">:</span> <span class="token number">30</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'brown'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// first user, delta values</span>
-<span class="hljs-keyword">let</span> UID234_delta = {
-  <span class="hljs-attr">age</span>: <span class="hljs-number">31</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">eyes</span>: <span class="hljs-string">'blue'</span>, <span class="hljs-attr">shoe_size</span>: <span class="hljs-number">10</span>},
-};
+<span class="token comment">// first user, delta values</span>
+<span class="token keyword">let</span> UID234_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token punctuation">:</span> <span class="token number">31</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">10</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// second user, initial values</span>
-<span class="hljs-keyword">let</span> UID345_object = {
-  <span class="hljs-attr">name</span>: <span class="hljs-string">'Marge'</span>,
-  <span class="hljs-attr">age</span>: <span class="hljs-number">25</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">hair</span>: <span class="hljs-string">'blonde'</span>, <span class="hljs-attr">eyes</span>: <span class="hljs-string">'blue'</span>},
-};
+<span class="token comment">// second user, initial values</span>
+<span class="token keyword">let</span> UID345_object <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token punctuation">:</span> <span class="token string">'Marge'</span><span class="token punctuation">,</span>
+  age<span class="token punctuation">:</span> <span class="token number">25</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>hair<span class="token punctuation">:</span> <span class="token string">'blonde'</span><span class="token punctuation">,</span> eyes<span class="token punctuation">:</span> <span class="token string">'blue'</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// second user, delta values</span>
-<span class="hljs-keyword">let</span> UID345_delta = {
-  <span class="hljs-attr">age</span>: <span class="hljs-number">26</span>,
-  <span class="hljs-attr">traits</span>: {<span class="hljs-attr">eyes</span>: <span class="hljs-string">'green'</span>, <span class="hljs-attr">shoe_size</span>: <span class="hljs-number">6</span>},
-};
+<span class="token comment">// second user, delta values</span>
+<span class="token keyword">let</span> UID345_delta <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token punctuation">:</span> <span class="token number">26</span><span class="token punctuation">,</span>
+  traits<span class="token punctuation">:</span> <span class="token punctuation">{</span>eyes<span class="token punctuation">:</span> <span class="token string">'green'</span><span class="token punctuation">,</span> shoe_size<span class="token punctuation">:</span> <span class="token number">6</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-<span class="hljs-keyword">let</span> multi_set_pairs = [
-  [<span class="hljs-string">'UID234'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID234_object)],
-  [<span class="hljs-string">'UID345'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID345_object)],
-];
-<span class="hljs-keyword">let</span> multi_merge_pairs = [
-  [<span class="hljs-string">'UID234'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID234_delta)],
-  [<span class="hljs-string">'UID345'</span>, <span class="hljs-built_in">JSON</span>.stringify(UID345_delta)],
-];
+<span class="token keyword">let</span> multi_set_pairs <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">[</span><span class="token string">'UID234'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID234_object<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_object<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> multi_merge_pairs <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">[</span><span class="token string">'UID234'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID234_delta<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">'UID345'</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>UID345_delta<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-AsyncStorage.multiSet(multi_set_pairs, (err) =&gt; {
-  AsyncStorage.multiMerge(multi_merge_pairs, (err) =&gt; {
-    AsyncStorage.multiGet([<span class="hljs-string">'UID234'</span>, <span class="hljs-string">'UID345'</span>], (err, stores) =&gt; {
-      stores.map(<span class="hljs-function">(<span class="hljs-params">result, i, store</span>) =&gt;</span> {
-        <span class="hljs-keyword">let</span> key = store[i][<span class="hljs-number">0</span>];
-        <span class="hljs-keyword">let</span> val = store[i][<span class="hljs-number">1</span>];
-        <span class="hljs-built_in">console</span>.log(key, val);
-      });
-    });
-  });
-});
+AsyncStorage<span class="token punctuation">.</span><span class="token function">multiSet</span><span class="token punctuation">(</span>multi_set_pairs<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  AsyncStorage<span class="token punctuation">.</span><span class="token function">multiMerge</span><span class="token punctuation">(</span>multi_merge_pairs<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    AsyncStorage<span class="token punctuation">.</span><span class="token function">multiGet</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'UID234'</span><span class="token punctuation">,</span> <span class="token string">'UID345'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> stores<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      stores<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> i<span class="token punctuation">,</span> store<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> key <span class="token operator">=</span> store<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">let</span> val <span class="token operator">=</span> store<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="hljs-comment">// Console log results:</span>
-<span class="hljs-comment">// =&gt; UID234 {"name":"Chris","age":31,"traits":{"shoe_size":10,"hair":"brown","eyes":"blue"}}</span>
-<span class="hljs-comment">// =&gt; UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}</span>
+<span class="token comment">// Console log results:</span>
+<span class="token comment">// => UID234 {"name":"Chris","age":31,"traits":{"shoe_size":10,"hair":"brown","eyes":"blue"}}</span>
+<span class="token comment">// => UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}</span>
 </code></pre>
 <p>Fetching multiple items:</p>
-<pre><code class="hljs css language-javascript">AsyncStorage.getAllKeys(<span class="hljs-function">(<span class="hljs-params">err, keys</span>) =&gt;</span> {
-  AsyncStorage.multiGet(keys, (err, stores) =&gt; {
-    stores.map(<span class="hljs-function">(<span class="hljs-params">result, i, store</span>) =&gt;</span> {
-      <span class="hljs-comment">// get at each store's key/value so you can work with it</span>
-      <span class="hljs-keyword">let</span> key = store[i][<span class="hljs-number">0</span>];
-      <span class="hljs-keyword">let</span> value = store[i][<span class="hljs-number">1</span>];
-    });
-  });
-});
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">getAllKeys</span><span class="token punctuation">(</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> keys<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  AsyncStorage<span class="token punctuation">.</span><span class="token function">multiGet</span><span class="token punctuation">(</span>keys<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> stores<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    stores<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> i<span class="token punctuation">,</span> store<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token comment">// get at each store's key/value so you can work with it</span>
+      <span class="token keyword">let</span> key <span class="token operator">=</span> store<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">let</span> value <span class="token operator">=</span> store<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Removing multiple items:</p>
-<pre><code class="hljs css language-javascript"><span class="hljs-keyword">let</span> keys = [<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>];
-AsyncStorage.multiRemove(keys, (err) =&gt; {
-  <span class="hljs-comment">// keys k1 &amp; k2 removed, if they existed</span>
-  <span class="hljs-comment">// do most stuff after removal (if you want)</span>
-});
+<pre><code class="hljs css language-javascript"><span class="token keyword">let</span> keys <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'k1'</span><span class="token punctuation">,</span> <span class="token string">'k2'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+AsyncStorage<span class="token punctuation">.</span><span class="token function">multiRemove</span><span class="token punctuation">(</span>keys<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token comment">// keys k1 &amp; k2 removed, if they existed</span>
+  <span class="token comment">// do most stuff after removal (if you want)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
@@ -144,7 +144,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods-1"></a><a href="#methods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
 <h3><a class="anchor" aria-hidden="true" id="getitem"></a><a href="#getitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getItem()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.getItem(key, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">getItem</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Fetches an item for a <code>key</code> and invokes a callback upon completion. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -159,7 +159,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="setitem"></a><a href="#setitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>setItem()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.setItem(key, value, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">setItem</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Sets the value for a <code>key</code> and invokes a callback upon completion.</p>
 <p>Returns a <code>Promise</code> object.</p>
@@ -176,7 +176,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="removeitem"></a><a href="#removeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeItem()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.removeItem(key, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">removeItem</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Removes an item for a <code>key</code> and invokes a callback upon completion. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -191,7 +191,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="mergeitem"></a><a href="#mergeitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>mergeItem()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.mergeItem(key, value, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">mergeItem</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Merges an existing <code>key</code> value with an input value, assuming both values are stringified JSON. Returns a <code>Promise</code> object.</p>
 <blockquote>
@@ -210,7 +210,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="clear"></a><a href="#clear" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>clear()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.clear([callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Erases <em>all</em> <code>AsyncStorage</code> for all clients, libraries, etc. You probably don't want to call this; use <code>removeItem</code> or <code>multiRemove</code> to clear only your app's keys. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -224,7 +224,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getallkeys"></a><a href="#getallkeys" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getAllKeys()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.getAllKeys([callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">getAllKeys</span><span class="token punctuation">(</span><span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Gets <em>all</em> keys known to your app; for all callers, libraries, etc. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -238,12 +238,12 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="flushgetrequests"></a><a href="#flushgetrequests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flushGetRequests()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.flushGetRequests();
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">flushGetRequests</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Flushes any pending requests using a single batch call to get the data.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiget"></a><a href="#multiget" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiGet()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.multiGet(keys, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">multiGet</span><span class="token punctuation">(</span>keys<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>This allows you to batch the fetching of items given an array of <code>key</code> inputs. Your callback will be invoked with an array of corresponding key-value pairs found:</p>
 <pre><code class="hljs">multiGet([<span class="hljs-string">'k1'</span>, <span class="hljs-string">'k2'</span>], cb) -&gt; cb([[<span class="hljs-string">'k1'</span>, <span class="hljs-string">'val1'</span>], [<span class="hljs-string">'k2'</span>, <span class="hljs-string">'val2'</span>]])
@@ -261,7 +261,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiset"></a><a href="#multiset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiSet()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.multiSet(keyValuePairs, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">multiSet</span><span class="token punctuation">(</span>keyValuePairs<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Use this as a batch operation for storing multiple key-value pairs. When the operation completes you'll get a single callback with any errors:</p>
 <pre><code class="hljs">multiSet([[<span class="hljs-string">'k1'</span>, <span class="hljs-string">'val1'</span>], [<span class="hljs-string">'k2'</span>, <span class="hljs-string">'val2'</span>]], cb);
@@ -279,7 +279,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multiremove"></a><a href="#multiremove" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiRemove()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.multiRemove(keys, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">multiRemove</span><span class="token punctuation">(</span>keys<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Call this to batch the deletion of all keys in the <code>keys</code> array. Returns a <code>Promise</code> object.</p>
 <p><strong>Parameters:</strong></p>
@@ -294,7 +294,7 @@ AsyncStorage.multiRemove(keys, (err) =&gt; {
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="multimerge"></a><a href="#multimerge" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>multiMerge()</code></h3>
-<pre><code class="hljs css language-javascript">AsyncStorage.multiMerge(keyValuePairs, [callback]);
+<pre><code class="hljs css language-javascript">AsyncStorage<span class="token punctuation">.</span><span class="token function">multiMerge</span><span class="token punctuation">(</span>keyValuePairs<span class="token punctuation">,</span> <span class="token punctuation">[</span>callback<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>Batch operation to merge in existing and new values for a given set of keys. This assumes that the values are stringified JSON. Returns a <code>Promise</code> object.</p>
 <p><strong>NOTE</strong>: This is not supported by all native implementations.</p>
