@@ -18,7 +18,7 @@ namespace react {
 
 static const char *errorPrefix = "Malformed calls from JS: ";
 
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::invalid_argument) {
+std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
   if (jsonData.isNull()) {
     return {};
   }
@@ -77,4 +77,3 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) throw(std::i
 }
 
 }}
-
