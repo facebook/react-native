@@ -305,7 +305,9 @@
 
       RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
       localLayoutMetrics.frame.origin = frame.origin; // Reinforcing a proper frame origin for the Shadow View.
-      localLayoutMetrics.isHiddenDueToClipping = viewIsTruncated;
+      if (viewIsTruncated) {
+        localLayoutMetrics.displayType = RCTDisplayTypeNone;
+      }
       [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];

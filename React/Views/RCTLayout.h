@@ -26,7 +26,6 @@ struct RCTLayoutMetrics {
   UIEdgeInsets borderWidth;
   RCTDisplayType displayType;
   UIUserInterfaceLayoutDirection layoutDirection;
-  BOOL isHiddenDueToClipping;
 };
 typedef struct CG_BOXABLE RCTLayoutMetrics RCTLayoutMetrics;
 
@@ -44,8 +43,7 @@ static inline BOOL RCTLayoutMetricsEqualToLayoutMetrics(RCTLayoutMetrics a, RCTL
     CGRectEqualToRect(a.contentFrame, b.contentFrame) &&
     UIEdgeInsetsEqualToEdgeInsets(a.borderWidth, b.borderWidth) &&
     a.displayType == b.displayType &&
-    a.layoutDirection == b.layoutDirection &&
-    a.isHiddenDueToClipping == b.isHiddenDueToClipping;
+    a.layoutDirection == b.layoutDirection;
 }
 
 RCT_EXTERN RCTLayoutMetrics RCTLayoutMetricsFromYogaNode(YGNodeRef yogaNode);
