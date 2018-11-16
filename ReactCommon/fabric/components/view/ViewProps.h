@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibilityProps.h>
-#include <fabric/components/view/YogaStylableProps.h>
+#include <fabric/components/view/accessibility/AccessibilityProps.h>
+#include <fabric/components/view/yoga/YogaStylableProps.h>
 #include <fabric/components/view/primitives.h>
 #include <fabric/core/Props.h>
 #include <fabric/graphics/Color.h>

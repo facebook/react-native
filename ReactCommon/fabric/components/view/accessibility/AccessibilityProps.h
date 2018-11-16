@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibilityPrimitives.h>
+#include <fabric/components/view/accessibility/AccessibilityPrimitives.h>
 #include <fabric/core/Props.h>
 #include <fabric/core/ReactPrimitives.h>
 #include <fabric/debug/DebugStringConvertible.h>
