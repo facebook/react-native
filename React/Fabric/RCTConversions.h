@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <fabric/components/view/primitives.h>
-#import <fabric/components/view/AccessibilityPrimitives.h>
+#import <fabric/components/view/accessibility/AccessibilityPrimitives.h>
 #import <fabric/graphics/Color.h>
 #import <fabric/graphics/Geometry.h>
 

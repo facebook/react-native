@@ -12,7 +12,7 @@
 
 #include <yoga/YGNode.h>
 
-#include <fabric/components/view/YogaStylableProps.h>
+#include <fabric/components/view/yoga/YogaStylableProps.h>
 #include <fabric/core/LayoutableShadowNode.h>
 #include <fabric/core/Sealable.h>
 #include <fabric/debug/DebugStringConvertible.h>
