@@ -11,7 +11,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <fabric/graphics/ColorComponents.h>
-#include <fabric/graphics/Float.h>
+#include <fabric/graphics/platform/ios/RNFloat.h>
 
 namespace facebook {
 namespace react {

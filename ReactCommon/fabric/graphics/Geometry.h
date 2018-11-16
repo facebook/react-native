@@ -9,7 +9,7 @@
 #include <functional>
 #include <tuple>
 
-#include <fabric/graphics/Float.h>
+#include <fabric/graphics/platform/ios/RNFloat.h>
 
 namespace facebook {
 namespace react {
