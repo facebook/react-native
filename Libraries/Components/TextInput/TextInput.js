@@ -168,6 +168,12 @@ class TextInput extends React.Component<Props> {
     underlineColorAndroid: 'transparent',
   };
 
+  static State = {
+    currentlyFocusedField: TextInputState.currentlyFocusedField,
+    focusTextInput: TextInputState.focusTextInput,
+    blurTextInput: TextInputState.blurTextInput,
+  };
+
   _inputRef: ?React.ElementRef<Class<TextInputType>> = null;
   _lastNativeText: ?Stringish = null;
   _lastNativeSelection: ?Selection = null;
