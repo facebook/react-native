@@ -42,6 +42,7 @@ Pod::Spec.new do |spec|
                         'folly/functional/*.h',
                         'folly/hash/*.h',
                         'folly/lang/*.h',
+                        'folly/futures/*.h',
                         'folly/memory/*.h',
                         'folly/memory/detail/*.h',
                         'folly/portability/*.h'
