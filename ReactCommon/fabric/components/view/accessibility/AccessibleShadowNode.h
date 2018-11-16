@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <fabric/components/view/AccessibilityProps.h>
+#include <fabric/components/view/accessibility/AccessibilityProps.h>
 #include <fabric/core/ShadowNode.h>
 
 namespace facebook {

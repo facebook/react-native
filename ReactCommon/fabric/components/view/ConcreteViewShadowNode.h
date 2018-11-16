@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibleShadowNode.h>
+#include <fabric/components/view/accessibility/AccessibleShadowNode.h>
 #include <fabric/components/view/ViewEventEmitter.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/components/view/YogaLayoutableShadowNode.h>
