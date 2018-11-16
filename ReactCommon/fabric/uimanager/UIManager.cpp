@@ -2,8 +2,8 @@
 
 #include "UIManager.h"
 
-#include <react/core/ShadowNodeFragment.h>
-#include <react/debug/SystraceSection.h>
+#include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/debug/SystraceSection.h>
 
 namespace facebook {
 namespace react {

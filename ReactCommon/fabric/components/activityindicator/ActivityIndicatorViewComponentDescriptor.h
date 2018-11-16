@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
-#include <react/core/ConcreteComponentDescriptor.h>
+#include <fabric/components/activityindicator/ActivityIndicatorViewShadowNode.h>
+#include <fabric/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {

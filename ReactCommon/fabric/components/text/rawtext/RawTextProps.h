@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <react/core/Props.h>
-#include <react/debug/DebugStringConvertible.h>
+#include <fabric/core/Props.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

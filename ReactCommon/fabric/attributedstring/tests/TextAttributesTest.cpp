@@ -9,10 +9,10 @@
 
 #include <assert.h>
 #include <gtest/gtest.h>
-#include <react/attributedstring/TextAttributes.h>
-#include <react/attributedstring/conversions.h>
-#include <react/attributedstring/primitives.h>
-#include <react/graphics/conversions.h>
+#include <fabric/attributedstring/TextAttributes.h>
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/attributedstring/primitives.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

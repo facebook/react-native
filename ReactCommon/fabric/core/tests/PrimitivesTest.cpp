@@ -8,7 +8,7 @@
 #include <exception>
 
 #include <gtest/gtest.h>
-#include <react/core/Sealable.h>
+#include <fabric/core/Sealable.h>
 
 using namespace facebook::react;
 

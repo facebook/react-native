@@ -7,8 +7,8 @@
 
 #include "TextLayoutManager.h"
 
-#include <react/attributedstring/conversions.h>
-#include <react/jni/ReadableNativeMap.h>
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/jni/ReadableNativeMap.h>
 
 using namespace facebook::jni;
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/events/EventQueue.h>
+#include <fabric/events/EventQueue.h>
 
 namespace facebook {
 namespace react {

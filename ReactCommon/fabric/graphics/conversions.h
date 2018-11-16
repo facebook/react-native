@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <react/graphics/Color.h>
-#include <react/graphics/Geometry.h>
+#include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

@@ -8,16 +8,16 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <react/attributedstring/AttributedString.h>
-#include <react/attributedstring/ParagraphAttributes.h>
-#include <react/attributedstring/TextAttributes.h>
-#include <react/attributedstring/conversions.h>
-#include <react/attributedstring/primitives.h>
-#include <react/core/LayoutableShadowNode.h>
-#include <react/core/ShadowNode.h>
-#include <react/core/conversions.h>
-#include <react/graphics/Geometry.h>
-#include <react/graphics/conversions.h>
+#include <fabric/attributedstring/AttributedString.h>
+#include <fabric/attributedstring/ParagraphAttributes.h>
+#include <fabric/attributedstring/TextAttributes.h>
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/attributedstring/primitives.h>
+#include <fabric/core/LayoutableShadowNode.h>
+#include <fabric/core/ShadowNode.h>
+#include <fabric/core/conversions.h>
+#include <fabric/graphics/Geometry.h>
+#include <fabric/graphics/conversions.h>
 #include <cmath>
 
 namespace facebook {

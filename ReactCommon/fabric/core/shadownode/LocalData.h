@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <react/core/Sealable.h>
-#include <react/debug/DebugStringConvertible.h>
+#include <fabric/core/Sealable.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

@@ -8,7 +8,7 @@
 #pragma once
 
 #include <folly/dynamic.h>
-#include <react/components/activityindicator/primitives.h>
+#include <fabric/components/activityindicator/primitives.h>
 
 namespace facebook {
 namespace react {

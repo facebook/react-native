@@ -5,7 +5,7 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/core/ShadowNode.h>
+#include <fabric/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {

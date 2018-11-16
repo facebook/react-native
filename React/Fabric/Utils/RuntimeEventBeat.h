@@ -7,8 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <react/uimanager/primitives.h>
-#include <react/events/EventBeat.h>
+#include <fabric/uimanager/primitives.h>
+#include <fabric/events/EventBeat.h>
 
 namespace facebook {
 namespace react {

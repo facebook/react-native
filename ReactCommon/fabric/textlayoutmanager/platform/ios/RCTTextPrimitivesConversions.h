@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include <react/textlayoutmanager/RCTFontProperties.h>
-#include <react/textlayoutmanager/RCTFontUtils.h>
+#include <fabric/textlayoutmanager/RCTFontProperties.h>
+#include <fabric/textlayoutmanager/RCTFontUtils.h>
 
 using namespace facebook::react;
 

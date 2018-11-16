@@ -5,7 +5,7 @@
 
 #include "ShadowView.h"
 
-#include <react/core/LayoutableShadowNode.h>
+#include <fabric/core/LayoutableShadowNode.h>
 
 namespace facebook {
 namespace react {

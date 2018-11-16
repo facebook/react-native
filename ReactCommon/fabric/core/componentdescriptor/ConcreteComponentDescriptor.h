@@ -10,11 +10,11 @@
 #include <functional>
 #include <memory>
 
-#include <react/core/ComponentDescriptor.h>
-#include <react/core/Props.h>
-#include <react/core/ShadowNode.h>
-#include <react/core/ShadowNodeFragment.h>
-#include <react/events/EventDispatcher.h>
+#include <fabric/core/ComponentDescriptor.h>
+#include <fabric/core/Props.h>
+#include <fabric/core/ShadowNode.h>
+#include <fabric/core/ShadowNodeFragment.h>
+#include <fabric/events/EventDispatcher.h>
 
 namespace facebook {
 namespace react {

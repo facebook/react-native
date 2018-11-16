@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/switch/SwitchProps.h>
-#include <react/core/propsConversions.h>
+#include <fabric/components/switch/SwitchProps.h>
+#include <fabric/core/propsConversions.h>
 
 namespace facebook {
 namespace react {

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <react/uimanager/ShadowViewMutation.h>
+#include <fabric/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {

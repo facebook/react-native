@@ -8,19 +8,19 @@
 #include <exception>
 
 #include <gtest/gtest.h>
-#include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/UITemplateProcessor.h>
+#include <fabric/uimanager/ComponentDescriptorFactory.h>
+#include <fabric/uimanager/UITemplateProcessor.h>
 
 using namespace facebook::react;
 
-#include <react/components/activityindicator/ActivityIndicatorViewComponentDescriptor.h>
-#include <react/components/image/ImageComponentDescriptor.h>
-#include <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#include <react/components/text/ParagraphComponentDescriptor.h>
-#include <react/components/text/RawTextComponentDescriptor.h>
-#include <react/components/text/TextComponentDescriptor.h>
-#include <react/components/view/ViewComponentDescriptor.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <fabric/components/activityindicator/ActivityIndicatorViewComponentDescriptor.h>
+#include <fabric/components/image/ImageComponentDescriptor.h>
+#include <fabric/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <fabric/components/text/ParagraphComponentDescriptor.h>
+#include <fabric/components/text/RawTextComponentDescriptor.h>
+#include <fabric/components/text/TextComponentDescriptor.h>
+#include <fabric/components/view/ViewComponentDescriptor.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
 
 namespace facebook {
 namespace react {

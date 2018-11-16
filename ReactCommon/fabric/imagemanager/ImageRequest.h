@@ -11,8 +11,8 @@
 
 #include <folly/futures/Future.h>
 #include <folly/futures/FutureSplitter.h>
-#include <react/imagemanager/ImageResponse.h>
-#include <react/imagemanager/primitives.h>
+#include <fabric/imagemanager/ImageResponse.h>
+#include <fabric/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {

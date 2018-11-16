@@ -9,7 +9,7 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <react/core/LayoutMetrics.h>
+#import <fabric/core/LayoutMetrics.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

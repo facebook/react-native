@@ -5,8 +5,8 @@
 
 #include "ShadowTree.h"
 
-#include <react/core/LayoutContext.h>
-#include <react/core/LayoutPrimitives.h>
+#include <fabric/core/LayoutContext.h>
+#include <fabric/core/LayoutPrimitives.h>
 
 #include "Differentiator.h"
 #include "ShadowTreeDelegate.h"

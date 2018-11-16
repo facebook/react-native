@@ -4,8 +4,8 @@
 // LICENSE file in the root directory of this source tree.
 
 #include <folly/dynamic.h>
-#include <react/attributedstring/conversions.h>
-#include <react/components/text/ParagraphLocalData.h>
+#include <fabric/attributedstring/conversions.h>
+#include <fabric/components/text/ParagraphLocalData.h>
 
 namespace facebook {
 namespace react {

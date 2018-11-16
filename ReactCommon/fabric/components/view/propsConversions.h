@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <react/components/view/conversions.h>
-#include <react/core/propsConversions.h>
+#include <fabric/components/view/conversions.h>
+#include <fabric/core/propsConversions.h>
 
 namespace facebook {
 namespace react {

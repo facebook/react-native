@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/Optional.h>
-#include <react/graphics/Color.h>
-#include <react/graphics/Geometry.h>
+#include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
 #include <array>
 #include <cmath>
 

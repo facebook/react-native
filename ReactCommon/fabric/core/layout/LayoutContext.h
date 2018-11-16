@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/graphics/Geometry.h>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

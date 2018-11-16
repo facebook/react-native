@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <react/components/view/AccessibilityPrimitives.h>
-#include <react/core/Props.h>
-#include <react/core/ReactPrimitives.h>
-#include <react/debug/DebugStringConvertible.h>
+#include <fabric/components/view/AccessibilityPrimitives.h>
+#include <fabric/core/Props.h>
+#include <fabric/core/ReactPrimitives.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

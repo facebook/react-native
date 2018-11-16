@@ -11,7 +11,7 @@
 #include <mutex>
 #include <vector>
 
-#include <react/events/EventBeat.h>
+#include <fabric/events/EventBeat.h>
 
 namespace facebook {
 namespace react {

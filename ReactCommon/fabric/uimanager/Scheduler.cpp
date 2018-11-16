@@ -7,11 +7,11 @@
 
 #include <jsi/jsi.h>
 
-#include <react/core/LayoutContext.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/UIManager.h>
-#include <react/uimanager/UIManagerBinding.h>
-#include <react/uimanager/UITemplateProcessor.h>
+#include <fabric/core/LayoutContext.h>
+#include <fabric/uimanager/ComponentDescriptorRegistry.h>
+#include <fabric/uimanager/UIManager.h>
+#include <fabric/uimanager/UIManagerBinding.h>
+#include <fabric/uimanager/UITemplateProcessor.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"

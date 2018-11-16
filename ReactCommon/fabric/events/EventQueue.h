@@ -12,9 +12,9 @@
 #include <vector>
 
 #include <jsi/jsi.h>
-#include <react/events/EventBeat.h>
-#include <react/events/RawEvent.h>
-#include <react/events/primitives.h>
+#include <fabric/events/EventBeat.h>
+#include <fabric/events/RawEvent.h>
+#include <fabric/events/primitives.h>
 
 namespace facebook {
 namespace react {

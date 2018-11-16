@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <react/core/ComponentDescriptor.h>
-#include <react/events/EventDispatcher.h>
-#include <react/uimanager/ContextContainer.h>
+#include <fabric/core/ComponentDescriptor.h>
+#include <fabric/events/EventDispatcher.h>
+#include <fabric/uimanager/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"
 

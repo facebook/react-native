@@ -4,8 +4,8 @@
 
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
-#include <react/uimanager/UIManager.h>
-#include <react/uimanager/primitives.h>
+#include <fabric/uimanager/UIManager.h>
+#include <fabric/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {

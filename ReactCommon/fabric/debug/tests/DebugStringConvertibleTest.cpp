@@ -8,7 +8,7 @@
 #include <memory>
 
 #include <gtest/gtest.h>
-#include <react/debug/DebugStringConvertibleItem.h>
+#include <fabric/debug/DebugStringConvertibleItem.h>
 
 using namespace facebook::react;
 

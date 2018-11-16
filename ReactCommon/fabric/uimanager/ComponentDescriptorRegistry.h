@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <react/core/ComponentDescriptor.h>
+#include <fabric/core/ComponentDescriptor.h>
 
 namespace facebook {
 namespace react {

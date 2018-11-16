@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include <react/debug/DebugStringConvertible.h>
+#include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

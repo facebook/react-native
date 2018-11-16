@@ -9,7 +9,7 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <react/core/Props.h>
+#import <fabric/core/Props.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

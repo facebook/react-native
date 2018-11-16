@@ -9,9 +9,9 @@
 
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
-#include <react/graphics/Color.h>
-#include <react/graphics/Geometry.h>
-#include <react/graphics/conversions.h>
+#include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
+#include <fabric/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

@@ -7,7 +7,7 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <react/components/activityindicator/ActivityIndicatorViewProps.h>
+#import <fabric/components/activityindicator/ActivityIndicatorViewProps.h>
 
 using namespace facebook::react;
 
