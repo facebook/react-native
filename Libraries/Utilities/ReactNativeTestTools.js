@@ -53,7 +53,10 @@ function byTextMatching(regex: RegExp): Predicate {
 
 function enter(instance: ReactTestInstance, text: string) {
   const input = instance.findByType(TextInput);
-  input.instance._onChange({nativeEvent: {text}});
+  const nativeEvent = {nativeEvent: {text}};
+
+  input.props.onChange && input.props.onChange(nativeEvent);
+  input.props.onChangeText && input.props.onChangeText(text);
 }
 
 // Returns null if there is no error, otherwise returns an error message string.
