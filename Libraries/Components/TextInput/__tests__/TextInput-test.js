@@ -12,11 +12,12 @@
 'use strict';
 
 const React = require('React');
+const ReactTestRenderer = require('react-test-renderer');
 const TextInput = require('TextInput');
 
 import Component from '@reactions/component';
 
-const {enter, renderWithStrictMode} = require('ReactNativeTestTools');
+const {enter} = require('ReactNativeTestTools');
 
 jest.unmock('TextInput');
 
@@ -28,7 +29,7 @@ describe('TextInput tests', () => {
   beforeEach(() => {
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
-    const renderTree = renderWithStrictMode(
+    const renderTree = ReactTestRenderer.create(
       <Component initialState={{text: initialValue}}>
         {({setState, state}) => (
           <TextInput
