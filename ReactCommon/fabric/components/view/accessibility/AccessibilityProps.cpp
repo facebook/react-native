@@ -7,7 +7,7 @@
 
 #include "AccessibilityProps.h"
 
-#include <fabric/components/view/accessibilityPropsConversions.h>
+#include <fabric/components/view/accessibility/accessibilityPropsConversions.h>
 #include <fabric/components/view/propsConversions.h>
 #include <fabric/core/propsConversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>

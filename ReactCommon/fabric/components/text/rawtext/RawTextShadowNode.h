@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/components/text/RawTextProps.h>
+#include <fabric/components/text/rawtext/RawTextProps.h>
 #include <fabric/core/ConcreteShadowNode.h>
 
 namespace facebook {

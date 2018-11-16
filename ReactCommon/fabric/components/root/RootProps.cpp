@@ -7,7 +7,7 @@
 
 #include "RootProps.h"
 
-#include <fabric/components/view/YogaLayoutableShadowNode.h>
+#include <fabric/components/view/yoga/YogaLayoutableShadowNode.h>
 #include <fabric/components/view/conversions.h>
 
 namespace facebook {

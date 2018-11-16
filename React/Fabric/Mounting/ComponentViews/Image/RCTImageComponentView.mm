@@ -12,7 +12,7 @@
 #import <fabric/components/image/ImageProps.h>
 #import <fabric/imagemanager/ImageRequest.h>
 #import <fabric/imagemanager/ImageResponse.h>
-#import <fabric/imagemanager/RCTImagePrimitivesConversions.h>
+#import <fabric/imagemanager/platform/ios/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "MainQueueExecutor.h"

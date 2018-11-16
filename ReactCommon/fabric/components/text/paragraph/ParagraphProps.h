@@ -11,7 +11,7 @@
 #include <memory>
 
 #include <fabric/attributedstring/ParagraphAttributes.h>
-#include <fabric/components/text/BaseTextProps.h>
+#include <fabric/components/text/basetext/BaseTextProps.h>
 #include <fabric/components/view/ViewProps.h>
 #include <fabric/core/Props.h>
 

@@ -7,7 +7,7 @@
 
 #include "ParagraphLocalData.h"
 
-#include <fabric/components/text/conversions.h>
+#include <fabric/components/text/paragraph/conversions.h>
 #include <fabric/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {

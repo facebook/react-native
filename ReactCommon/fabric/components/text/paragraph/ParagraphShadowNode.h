@@ -8,8 +8,8 @@
 #pragma once
 
 #include <folly/Optional.h>
-#include <fabric/components/text/ParagraphProps.h>
-#include <fabric/components/text/TextShadowNode.h>
+#include <fabric/components/text/paragraph/ParagraphProps.h>
+#include <fabric/components/text/text/TextShadowNode.h>
 #include <fabric/components/view/ConcreteViewShadowNode.h>
 #include <fabric/core/ConcreteShadowNode.h>
 #include <fabric/core/LayoutContext.h>

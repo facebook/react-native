@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/text/BaseTextShadowNode.h>
-#include <fabric/components/text/TextProps.h>
+#include <fabric/components/text/basetext/BaseTextShadowNode.h>
+#include <fabric/components/text/text/TextProps.h>
 #include <fabric/components/view/ViewEventEmitter.h>
 #include <fabric/core/ConcreteShadowNode.h>
 

@@ -5,7 +5,7 @@
 
 #include <folly/dynamic.h>
 #include <fabric/attributedstring/conversions.h>
-#include <fabric/components/text/ParagraphLocalData.h>
+#include <fabric/components/text/paragraph/ParagraphLocalData.h>
 
 namespace facebook {
 namespace react {
