@@ -1127,7 +1127,7 @@ const TextInput = createReactClass({
   _onChange: function(event: Event) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    if (this._inputRef) {
+    if (this._inputRef && this._inputRef.setNativeProps) {
       this._inputRef.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });
@@ -1188,7 +1188,11 @@ const TextInput = createReactClass({
       nativeProps.selection = this.props.selection;
     }
 
-    if (Object.keys(nativeProps).length > 0 && this._inputRef) {
+    if (
+      Object.keys(nativeProps).length > 0 &&
+      this._inputRef &&
+      this._inputRef.setNativeProps
+    ) {
       this._inputRef.setNativeProps(nativeProps);
     }
 

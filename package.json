@@ -206,6 +206,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "babel-generator": "^6.26.0",
