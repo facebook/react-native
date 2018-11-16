@@ -97,6 +97,7 @@ class ViewabilityHelper {
   computeViewableItems(
     itemCount: number,
     scrollOffset: number,
+    viewportOffset: number,
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     renderRange?: {first: number, last: number}, // Optional optimization to reduce the scan size
@@ -130,7 +131,7 @@ class ViewabilityHelper {
       if (!metrics) {
         continue;
       }
-      const top = metrics.offset - scrollOffset;
+      const top = metrics.offset - scrollOffset - viewportOffset;
       const bottom = top + metrics.length;
       if (top < viewportHeight && bottom > 0) {
         firstVisible = idx;
@@ -160,6 +161,7 @@ class ViewabilityHelper {
   onUpdate(
     itemCount: number,
     scrollOffset: number,
+    viewportOffset: number,
     viewportHeight: number,
     getFrameMetrics: (index: number) => ?{length: number, offset: number},
     createViewToken: (index: number, isViewable: boolean) => ViewToken,
@@ -181,6 +183,7 @@ class ViewabilityHelper {
       viewableIndices = this.computeViewableItems(
         itemCount,
         scrollOffset,
+        viewportOffset,
         viewportHeight,
         getFrameMetrics,
         renderRange,

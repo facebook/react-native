@@ -1014,6 +1014,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _viewportOffset: number = 0;
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1064,6 +1065,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _onCellLayout(e, cellKey, index) {
     const layout = e.nativeEvent.layout;
+    if (index === 0) {
+      this._viewportOffset = this._selectOffset(layout);
+    }
     const next = {
       offset: this._selectOffset(layout),
       length: this._selectLength(layout),
@@ -1606,6 +1610,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       tuple.viewabilityHelper.onUpdate(
         getItemCount(data),
         this._scrollMetrics.offset,
+        this._viewportOffset,
         this._scrollMetrics.visibleLength,
         this._getFrameMetrics,
         this._createViewToken,
