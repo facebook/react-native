@@ -94,7 +94,8 @@ Pod::Spec.new do |s|
     ss.dependency             "React/Core"
     ss.dependency             "React/fabric"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}"
+    ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}",
+                              "ReactCommon/fabric/**/*.{c,h,m,mm,S,cpp}"
     ss.exclude_files        = "**/tests/*"
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
