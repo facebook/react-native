@@ -41,11 +41,7 @@ class RNTesterPage extends React.Component<Props> {
     return (
       <View style={styles.container}>
         {title}
-        <ContentWrapper
-          style={styles.wrapper}
-          {...wrapperProps}
-          zoomScale={2}
-          onScrollBeginDrag={event => console.log(event.nativeEvent)}>
+        <ContentWrapper style={styles.wrapper} {...wrapperProps}>
           {this.props.children}
           {spacer}
         </ContentWrapper>
