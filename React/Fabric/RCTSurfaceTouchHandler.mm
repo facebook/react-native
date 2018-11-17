@@ -130,7 +130,7 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches) {
 template<typename PointerT>
 struct PointerHasher {
   constexpr std::size_t operator()(const PointerT &value) const {
-    return reinterpret_cast<size_t>(&value);
+    return reinterpret_cast<size_t>(value);
   }
 };
 
