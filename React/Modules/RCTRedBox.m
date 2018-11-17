@@ -56,6 +56,7 @@
         rootView.backgroundColor = [UIColor clearColor];
 
         const CGFloat buttonHeight = 60;
+        const CGFloat bottomSafeViewHeight = 27;
 
         CGRect detailsFrame = rootView.bounds;
         detailsFrame.size.height -= buttonHeight;
@@ -73,10 +74,10 @@
         [rootView addSubview:_stackTraceTableView];
 
 #if TARGET_OS_SIMULATOR
-        NSString *reloadText = @"Reload JS (\u2318R)";
-        NSString *dismissText = @"Dismiss (ESC)";
-        NSString *copyText = @"Copy (\u2325\u2318C)";
-        NSString *extraText = @"Extra Info (\u2318E)";
+        NSString *reloadText = @"Reload\n(\u2318R)";
+        NSString *dismissText = @"Dismiss\n(ESC)";
+        NSString *copyText = @"Copy\n(\u2325\u2318C)";
+        NSString *extraText = @"Extra Info\n(\u2318E)";
 #else
         NSString *reloadText = @"Reload JS";
         NSString *dismissText = @"Dismiss";
@@ -88,7 +89,9 @@
         dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
         dismissButton.accessibilityIdentifier = @"redbox-dismiss";
         dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        dismissButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
+        dismissButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        dismissButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        dismissButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [dismissButton setTitle:dismissText forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
@@ -98,7 +101,9 @@
         reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         reloadButton.accessibilityIdentifier = @"redbox-reload";
         reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        reloadButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
+        reloadButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        reloadButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        reloadButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [reloadButton setTitle:reloadText forState:UIControlStateNormal];
         [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
@@ -108,7 +113,9 @@
         copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         copyButton.accessibilityIdentifier = @"redbox-copy";
         copyButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        copyButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
+        copyButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        copyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        copyButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [copyButton setTitle:copyText forState:UIControlStateNormal];
         [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
@@ -118,24 +125,64 @@
         extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         extraButton.accessibilityIdentifier = @"redbox-extra";
         extraButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        extraButton.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
+        extraButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        extraButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        extraButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [extraButton setTitle:extraText forState:UIControlStateNormal];
         [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
-        dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        copyButton.frame = CGRectMake(buttonWidth * 2, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        extraButton.frame = CGRectMake(buttonWidth * 3, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
+        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - ([self isPhoneX] ? bottomSafeViewHeight : 0);
+
+        dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
+        reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
+        copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
+        extraButton.frame = CGRectMake(buttonWidth * 3, bottomButtonHeight, buttonWidth, buttonHeight);
+
+        UIView *topBorderDismissButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, dismissButton.frame.size.width, 1)];
+        topBorderDismissButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+        [dismissButton addSubview:topBorderDismissButton];
+
+        UIView *topBorderReloadButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, reloadButton.frame.size.width, 1)];
+        topBorderReloadButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+        [reloadButton addSubview:topBorderReloadButton];
+
+        UIView *topBorderCopyButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, copyButton.frame.size.width, 1)];
+        topBorderCopyButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+        [copyButton addSubview:topBorderCopyButton];
+
+        UIView *topBorderExtraButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, extraButton.frame.size.width, 1)];
+        topBorderExtraButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
+        [extraButton addSubview:topBorderExtraButton];
+
+        UIView *bottomSafeView = [UIView new];
+        bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - bottomSafeViewHeight, self.bounds.size.width, bottomSafeViewHeight);
 
         [rootView addSubview:dismissButton];
         [rootView addSubview:reloadButton];
         [rootView addSubview:copyButton];
         [rootView addSubview:extraButton];
+
+        if ([self isPhoneX]) {
+            [rootView addSubview:bottomSafeView];
+        }
     }
     return self;
+}
+
+- (BOOL)isPhoneX
+{
+    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
+    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
+    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
+    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
+
+    return CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
+        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) ||
+        CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
@@ -274,7 +321,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
         cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
         cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
         cell.textLabel.numberOfLines = 2;
-        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.95 green:0.78 blue:0.78 alpha:1.0];
+        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
         cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
         cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         cell.backgroundColor = [UIColor clearColor];

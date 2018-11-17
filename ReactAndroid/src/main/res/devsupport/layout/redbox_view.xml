@@ -53,7 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#D01926"
+        android:background="@drawable/redbox_top_border_background"
         >
         <Button
             android:id="@+id/rn_redbox_dismiss_button"
