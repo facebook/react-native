@@ -56,7 +56,7 @@ Size TextLayoutManager::measure(
   indices.resize(values->size());
   values->getRegion(0, values->size(), indices.data());
 
-  return {(float)indices[0], (float)indices[1]};
+  return {indices[0], indices[1]};
 }
 
 } // namespace react
