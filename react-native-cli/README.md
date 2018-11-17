@@ -2,75 +2,43 @@
 
 React Native is distributed as two npm packages, `react-native-cli` and `react-native`. The first one is a lightweight package that should be installed globally (`npm install -g react-native-cli`), while the second one contains the actual React Native framework code and is installed locally into your project when you run `react-native init`.
 
-Because `react-native init` calls `npm install react-native`, simply linking your local github clone into npm is not enough to test local changes.
+Because `react-native init` calls `npm install react-native`, simply linking your local Github clone into npm is not enough to test local changes.
 
-### Introducing Sinopia
+### Introducing Verdaccio
 
-[Sinopia] is an npm registry that runs on your local machine and allows you to publish packages to it. Everything else is proxied from `npmjs.com`. We'll set up sinopia for React Native CLI development. First, install it with:
+[Verdaccio](https://github.com/verdaccio/verdaccio) is an npm registry that runs on your local machine and allows you to publish packages to it. Everything else is proxied from `npmjs.com`. We'll set up Verdaccio for React Native CLI development. 
 
-    $ npm install -g sinopia
+Install with npm: `$ npm install -g verdaccio` or install with Yarn: `$ yarn global add verdaccio`
 
-Now you can run sinopia by simply doing:
+Run the following command to start Verdaccio to confirm that it was properly installed:
 
-    $ sinopia
+    $ verdaccio
 
-Running it for the first time creates a default config file. Open `~/.config/sinopia/config.yaml` and configure it like this (note the `max_body_size`):
 
-    storage: ./storage
+### (Optional) Enable web interface to browse Verdaccio packages
+Within a terminal window:
+```
+$ npm set registry http://localhost:4873/
+if you use HTTPS, add an appropriate CA information
+("null" means get CA list from OS)
+$ npm set ca null
+```
+Now you can navigate to http://localhost:4873/ where your local packages will be listed and can be searched.
 
-    auth:
-      htpasswd:
-        file: ./htpasswd
 
-    uplinks:
-      npmjs:
-        url: https://registry.npmjs.org/
+### Create new user
+Run the following command: `npm adduser --registry http://localhost:4873`
+This will prompt your for a username, password and email, which you'll need whenever you publish onto the Verdaccio server
 
-    packages:
-      'react-native':
-        allow_access: $all
-        allow_publish: $all
 
-      'react-native-cli':
-        allow_access: $all
-        allow_publish: $all
+### Publishing to Verdaccio
+`cd` into your local fork of `react-native` 
+Run `npm publish --registry http://localhost:4873` to publish your local version of React Native to Verdaccio
 
-      '**':
-        allow_access: $all
-        proxy: npmjs
+Now, all new projects initialzed with `react-native init ...` will use the local fork of React Native instead of the version you have installed on your machine. All projects created using the local fork of React Native will have version number 1000.0.0. Check the version of a React Native project by running `react-native -v` in the React Native project.
 
-      '*':
-        allow_access: $all
-        proxy: npmjs
+If you ever want to revert back to the non-development version of React Native (i.e. the version you're not hosting on Verdaccio), run `npm unpublish --force react-native` to remove React Native from Verdaccio. All React Native projects created now will be using the regular version.
 
-    logs:
-      - {type: stdout, format: pretty, level: http}
-
-    max_body_size: '50mb'
-
-Remember to restart sinopia afterwards.
-
-### Publishing to sinopia
-
-Now we need to publish the two React Native packages to our local registry. To do this, we configure npm to use the new registry, unpublish any existing packages and then publish the new ones:
-
-    react-native$ npm set registry http://localhost:4873/
-    react-native$ npm adduser --registry http://localhost:4873/
-    # Check that it worked:
-    react-native$ npm config list
-    react-native$ npm unpublish --force
-    react-native$ npm publish
-    react-native$ cd react-native-cli/
-    react-native-cli$ npm unpublish --force
-    react-native-cli$ npm publish
-
-### Running the local CLI
-
-Now that the packages are installed in sinopia, you can install the new `react-native-cli` package globally and when you use `react-native init`, it will install the new `react-native` package as well:
-
-    $ npm uninstall -g react-native-cli
-    $ npm install -g react-native-cli
-    $ react-native init AwesomeApp
 
 ## Testing changes
 
@@ -82,11 +50,11 @@ Project generation is also covered by e2e tests, which you can run with:
 
     $ ./scripts/e2e-test.sh
 
-These tests actually create a very similar setup to what is described above (using sinopia) and they also run iOS-specific tests, so you will need to run this on OSX and have [xctool] installed.
+These tests actually create a very similar setup to what is described above (using Verdaccio) and they also run iOS-specific tests, so you will need to run this on OSX and have [xctool] installed.
 
 Both of these types of tests also run on Travis both continuously and on pull requests.
 
-[sinopia]: https://www.npmjs.com/package/sinopia
+[verdaccio]: https://www.npmjs.com/package/verdaccio
 [xctool]: https://github.com/facebook/xctool
 
 ## Clean up
@@ -97,23 +65,7 @@ To unset the npm registry, do:
     # Check that it worked:
     $ npm config list
 
-## Troubleshooting
-
-##### Sinopia crashes with "Module version mismatch"
-
-This usually happens when you install a package using one version of Node and then change to a different version. This can happen when you update Node, or switch to a different version with nvm. Do:
-
-    $ npm uninstall -g sinopia
-    $ npm install -g sinopia
-
-After upgrading to Node 4 you might also need to reinstall npm. What worked for me was:
-
-    $ npm uninstall -g npm
-    $ nvm install npm
-
- See the [nvm guide](https://github.com/creationix/nvm#usage) for more info.
-
-### Alternative workflow
+## Alternative workflow
 
 If you don't want to install Sinopia you could still test changes done on the cli by creating a sample project and installing your checkout of `react-native` on that project instead of downloading it from npm. The simplest way to do this is by:
 
