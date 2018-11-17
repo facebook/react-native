@@ -196,14 +196,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_updateTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    UpdateActiveTouchWithUITouch(_activeTouches[touch], touch, _rootComponentView);
+    UpdateActiveTouchWithUITouch(_activeTouches.at(touch), touch, _rootComponentView);
   }
 }
 
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    const auto &activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches.at(touch);
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
