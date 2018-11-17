@@ -134,7 +134,7 @@
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
-        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - ([self isPhoneX] ? bottomSafeViewHeight : 0);
+        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - ([self isIPhoneX] ? bottomSafeViewHeight : 0);
 
         dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
         reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -166,14 +166,14 @@
         [rootView addSubview:copyButton];
         [rootView addSubview:extraButton];
 
-        if ([self isPhoneX]) {
+        if ([self isIPhoneX]) {
             [rootView addSubview:bottomSafeView];
         }
     }
     return self;
 }
 
-- (BOOL)isPhoneX
+- (BOOL)isIPhoneX
 {
     CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
     CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
