@@ -3938,6 +3938,11 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
+jsc-android@^236355.1.0:
+  version "236355.1.0"
+  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-236355.1.0.tgz#aba6330b9ff9c49632abe50bfc3e5def5c08af58"
+  integrity sha512-6W6KH19eHNjn6jQF9lgV8Www10iBgmUnLwDgmEmI7zQ+/apjz6seCaMQLTD16aXIer6cgGQa7RRavPskydJ2KA==
+
 jsdom@^11.5.1:
   version "11.12.0"
   resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-11.12.0.tgz#1a80d40ddd378a1de59656e9e6dc5a3ba8657bc8"
