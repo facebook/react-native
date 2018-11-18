@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -378,6 +378,14 @@ void YGConfigFree(const YGConfigRef config) {
 
 void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
+}
+
+void YGNodeSetIsReferenceBaseline(YGNodeRef node, bool isReferenceBaseline) {
+  node->setIsReferenceBaseline(isReferenceBaseline);
+}
+
+bool YGNodeIsReferenceBaseline(YGNodeRef node) {
+  return node->isReferenceBaseline();
 }
 
 void YGNodeInsertChild(
@@ -1138,7 +1146,8 @@ static float YGBaseline(const YGNodeRef node) {
     if (child->getStyle().positionType == YGPositionTypeAbsolute) {
       continue;
     }
-    if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
+    if (YGNodeAlignItem(node, child) == YGAlignBaseline ||
+        child->isReferenceBaseline()) {
       baselineChild = child;
       break;
     }
@@ -1850,7 +1859,9 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(
 }
 
 static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
-  memset(&(node->getLayout()), 0, sizeof(YGLayout));
+  node->getLayout() = {};
+  node->setLayoutDimension(0, 0);
+  node->setLayoutDimension(0, 1);
   node->setHasNewLayout(true);
   node->cloneChildrenIfNeeded();
   const uint32_t childCount = YGNodeGetChildCount(node);

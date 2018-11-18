@@ -38,7 +38,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   private static final int STYLE = android.R.attr.seekBarStyle;
 
-  private static final String REACT_CLASS = "RCTSlider";
+  public static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
       YogaMeasureFunction {

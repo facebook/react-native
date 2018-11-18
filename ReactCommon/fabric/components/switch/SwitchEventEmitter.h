@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include <fabric/components/view/ViewEventEmitter.h>
+#include <react/components/view/ViewEventEmitter.h>
 
 namespace facebook {
 namespace react {

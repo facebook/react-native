@@ -6,9 +6,9 @@
  */
 #pragma once
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/events/EventEmitter.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {

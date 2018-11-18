@@ -29,7 +29,7 @@ import com.facebook.react.uimanager.ViewProps;
 public class ReactProgressBarViewManager extends
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode> {
 
-  protected static final String REACT_CLASS = "AndroidProgressBar";
+  public static final String REACT_CLASS = "AndroidProgressBar";
 
   /* package */ static final String PROP_STYLE = "styleAttr";
   /* package */ static final String PROP_INDETERMINATE = "indeterminate";

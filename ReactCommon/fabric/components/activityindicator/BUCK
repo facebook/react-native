@@ -15,7 +15,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/components/activityindicator",
+        prefix = "react/components/activityindicator",
     ),
     compiler_flags = [
         "-fexceptions",

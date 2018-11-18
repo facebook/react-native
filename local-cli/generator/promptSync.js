@@ -43,7 +43,7 @@ function create() {
       process.stdin.setRawMode(true);
     }
 
-    var buf = new Buffer(3);
+    var buf = Buffer.from(3);
     var str = '',
       character,
       read;
@@ -62,7 +62,7 @@ function create() {
           insert = str.length;
           process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
           process.stdout.write('\u001b[' + (insert + ask.length + 1) + 'G');
-          buf = new Buffer(3);
+          buf = Buffer.from(3);
         }
         continue; // any other 3 character sequence is ignored
       }

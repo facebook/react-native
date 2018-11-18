@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/core/LayoutPrimitives.h>
+#include <react/core/LayoutPrimitives.h>
 
 namespace facebook {
 namespace react {

@@ -16,8 +16,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = "Vibration")
+@ReactModule(name = VibrationModule.NAME)
 public class VibrationModule extends ReactContextBaseJavaModule {
+
+  public static final String NAME = "Vibration";
 
   public VibrationModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -25,7 +27,7 @@ public class VibrationModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "Vibration";
+    return NAME;
   }
 
   @ReactMethod

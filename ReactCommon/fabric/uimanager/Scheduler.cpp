@@ -7,11 +7,11 @@
 
 #include <jsi/jsi.h>
 
-#include <fabric/core/LayoutContext.h>
-#include <fabric/uimanager/ComponentDescriptorRegistry.h>
-#include <fabric/uimanager/FabricUIManager.h>
-#include <fabric/uimanager/JSIFabricUIManager.h>
-#include <fabric/uimanager/UITemplateProcessor.h>
+#include <react/core/LayoutContext.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/UIManager.h>
+#include <react/uimanager/UIManagerBinding.h>
+#include <react/uimanager/UITemplateProcessor.h>
 
 #include "ComponentDescriptorFactory.h"
 #include "Differentiator.h"
@@ -26,37 +26,38 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
   const auto synchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("synchronous");
 
-  const auto runtimeExecutor =
+  runtimeExecutor_ =
       contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
 
-  uiManager_ = std::make_shared<FabricUIManager>(
-      std::make_unique<EventBeatBasedExecutor>(asynchronousEventBeatFactory()),
-      [](UIManager &uiManager) { /* Not implemented. */ },
-      []() { /* Not implemented. */ });
+  auto uiManager = std::make_unique<UIManager>();
+  auto &uiManagerRef = *uiManager;
+  uiManagerBinding_ =
+      std::make_shared<UIManagerBinding>(std::move(uiManager));
 
-  runtimeExecutor([this](jsi::Runtime &runtime) {
-    JSIInstallFabricUIManager(runtime, *uiManager_);
-  });
+  auto eventPipe = [uiManagerBinding = uiManagerBinding_.get()](
+                       jsi::Runtime &runtime,
+                       const EventTarget *eventTarget,
+                       const std::string &type,
+                       const folly::dynamic &payload) {
+    uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payload);
+  };
 
   auto eventDispatcher = std::make_shared<EventDispatcher>(
-      std::bind(
-          &FabricUIManager::dispatchEventToTarget,
-          uiManager_.get(),
-          std::placeholders::_1,
-          std::placeholders::_2,
-          std::placeholders::_3),
-      synchronousEventBeatFactory,
-      asynchronousEventBeatFactory);
+      eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
       eventDispatcher, contextContainer);
-  uiManager_->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
-  uiManager_->setDelegate(this);
+  uiManagerRef.setDelegate(this);
+  uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
+
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    UIManagerBinding::install(runtime, uiManagerBinding_);
+  });
 }
 
 Scheduler::~Scheduler() {
-  uiManager_->setDelegate(nullptr);
+  uiManagerBinding_->invalidate();
 }
 
 void Scheduler::startSurface(
@@ -73,7 +74,10 @@ void Scheduler::startSurface(
   shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
 #ifndef ANDROID
-  uiManager_->startSurface(surfaceId, moduleName, initialProps);
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    uiManagerBinding_->startSurface(
+        runtime, surfaceId, moduleName, initialProps);
+  });
 #endif
 }
 
@@ -105,19 +109,19 @@ void Scheduler::renderTemplateToSurface(
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   std::lock_guard<std::mutex> lock(mutex_);
+  const auto &iterator = shadowTreeRegistry_.find(surfaceId);
+  auto &shadowTree = *iterator->second;
+  // As part of stopping the Surface, we have to commit an empty tree.
+  shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
+      ShadowNode::emptySharedShadowNodeSharedList()));
+  shadowTree.setDelegate(nullptr);
+  shadowTreeRegistry_.erase(iterator);
 
 #ifndef ANDROID
-  uiManager_->stopSurface(surfaceId);
+  runtimeExecutor_([=](jsi::Runtime &runtime) {
+    uiManagerBinding_->stopSurface(runtime, surfaceId);
+  });
 #endif
-
-  const auto &iterator = shadowTreeRegistry_.find(surfaceId);
-  const auto &shadowTree = iterator->second;
-  assert(shadowTree);
-  // As part of stopping the Surface, we have to commit an empty tree.
-  shadowTree->complete(std::const_pointer_cast<SharedShadowNodeList>(
-      ShadowNode::emptySharedShadowNodeSharedList()));
-  shadowTree->setDelegate(nullptr);
-  shadowTreeRegistry_.erase(iterator);
 }
 
 Size Scheduler::measureSurface(
@@ -181,15 +185,16 @@ void Scheduler::uiManagerDidFinishTransaction(
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
   if (delegate_) {
+    auto layoutableShadowNode =
+        dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
+    auto isLayoutable = layoutableShadowNode != nullptr;
+
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getComponentName());
+        shadowNode->getRootTag(),
+        shadowNode->getComponentName(),
+        isLayoutable,
+        shadowNode->getComponentHandle());
   }
-}
-
-#pragma mark - Deprecated
-
-std::shared_ptr<FabricUIManager> Scheduler::getUIManager_DO_NOT_USE() {
-  return uiManager_;
 }
 
 } // namespace react

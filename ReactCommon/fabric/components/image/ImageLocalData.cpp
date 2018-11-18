@@ -7,8 +7,8 @@
 
 #include "ImageLocalData.h"
 
-#include <fabric/components/image/conversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/components/image/conversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {

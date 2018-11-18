@@ -8,19 +8,19 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/core/ComponentDescriptor.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/uimanager/ComponentDescriptorRegistry.h>
-#include <fabric/uimanager/ContextContainer.h>
-#include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/ShadowTree.h>
-#include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/uimanager/UIManagerDelegate.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/ContextContainer.h>
+#include <react/uimanager/SchedulerDelegate.h>
+#include <react/uimanager/ShadowTree.h>
+#include <react/uimanager/ShadowTreeDelegate.h>
+#include <react/uimanager/UIManagerBinding.h>
+#include <react/uimanager/UIManagerDelegate.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
-
-class FabricUIManager;
 
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
@@ -86,22 +86,16 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const ShadowTree &shadowTree,
       const ShadowViewMutationList &mutations) const override;
 
-#pragma mark - Deprecated
-
-  /*
-   * UIManager instance must be temporarily exposed for registration purposes.
-   */
-  std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
-
  private:
   SchedulerDelegate *delegate_;
-  std::shared_ptr<FabricUIManager> uiManager_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable std::mutex mutex_;
   mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       shadowTreeRegistry_; // Protected by `mutex_`.
   SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
+  RuntimeExecutor runtimeExecutor_;
+  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
 
   void uiManagerDidFinishTransactionWithoutLock(
       Tag rootTag,

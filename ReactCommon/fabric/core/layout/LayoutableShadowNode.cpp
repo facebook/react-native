@@ -7,11 +7,11 @@
 
 #include "LayoutableShadowNode.h"
 
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/conversions.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

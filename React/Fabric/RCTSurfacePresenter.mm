@@ -24,13 +24,13 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTUtils.h>
-#import <fabric/core/LayoutContext.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/imagemanager/ImageManager.h>
-#import <fabric/uimanager/ContextContainer.h>
+#import <react/core/LayoutContext.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/imagemanager/ImageManager.h>
+#import <react/uimanager/ContextContainer.h>
 
 #import "MainRunLoopEventBeat.h"
-#import "MessageQueueEventBeat.h"
+#import "RuntimeEventBeat.h"
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -165,12 +165,12 @@ using namespace facebook::react;
       });
     };
 
-  EventBeatFactory synchronousBeatFactory = [messageQueueThread]() {
-    return std::make_unique<MainRunLoopEventBeat>(messageQueueThread);
+  EventBeatFactory synchronousBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
   };
 
-  EventBeatFactory asynchronousBeatFactory = [messageQueueThread]() {
-    return std::make_unique<MessageQueueEventBeat>(messageQueueThread);
+  EventBeatFactory asynchronousBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
   };
 
   contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
@@ -305,11 +305,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTSurfacePresenter (Deprecated)
-
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
-{
-  return _scheduler.uiManager_DO_NOT_USE;
-}
 
 - (RCTBridge *)bridge_DO_NOT_USE
 {

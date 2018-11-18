@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/textlayoutmanager",
+        prefix = "react/textlayoutmanager",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -48,7 +48,7 @@ rn_xplat_cxx_library(
             ("", "*.h"),
             ("platform/android", "*.h"),
         ],
-        prefix = "fabric/textlayoutmanager",
+        prefix = "react/textlayoutmanager",
     ),
     fbandroid_headers = subdir_glob(
         [
@@ -73,7 +73,7 @@ rn_xplat_cxx_library(
         [
             ("platform/ios", "*.h"),
         ],
-        prefix = "fabric/textlayoutmanager",
+        prefix = "react/textlayoutmanager",
     ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",

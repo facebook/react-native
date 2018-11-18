@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
 #include <gtest/gtest.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/ShadowNode.h>
 
 #include "TestComponent.h"
 

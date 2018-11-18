@@ -9,9 +9,9 @@
 
 #include <string>
 
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {

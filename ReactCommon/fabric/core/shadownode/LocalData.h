@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
 #include <folly/dynamic.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

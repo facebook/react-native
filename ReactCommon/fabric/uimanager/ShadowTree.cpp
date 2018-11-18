@@ -5,8 +5,8 @@
 
 #include "ShadowTree.h"
 
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutPrimitives.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutPrimitives.h>
 
 #include "Differentiator.h"
 #include "ShadowTreeDelegate.h"
@@ -181,14 +181,14 @@ void ShadowTree::toggleEventEmitters(
   std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
 
   for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Delete) {
-      mutation.oldChildShadowView.eventEmitter->setEnabled(false);
+    if (mutation.type == ShadowViewMutation::Create) {
+      mutation.newChildShadowView.eventEmitter->enable();
     }
   }
 
   for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Create) {
-      mutation.newChildShadowView.eventEmitter->setEnabled(true);
+    if (mutation.type == ShadowViewMutation::Delete) {
+      mutation.oldChildShadowView.eventEmitter->disable();
     }
   }
 }

@@ -122,18 +122,18 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           ref="textInput4"
-          style={[styles.textInput, {color: '#00ff00'}]}
+          style={[styles.textInput, styles.textInputColor]}
           testID="textInput4"
         />
         <TextInput
           ref="textInput5"
-          style={[styles.textInput, {color: '#00ff00'}]}
+          style={[styles.textInput, styles.textInputColor]}
           defaultValue=""
           testID="textInput5"
         />
         <TextInput
           ref="textInput6"
-          style={[styles.textInput, {color: '#00ff00'}]}
+          style={[styles.textInput, styles.textInputColor]}
           defaultValue="Text"
           testID="textInput6"
         />
@@ -165,6 +165,9 @@ const styles = StyleSheet.create({
   hashtag: {
     color: 'blue',
     fontWeight: 'bold',
+  },
+  textInputColor: {
+    marginLeft: 20,
   },
 });
 
