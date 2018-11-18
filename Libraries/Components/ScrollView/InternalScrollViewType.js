@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 const ReactNative = require('ReactNative');
@@ -26,7 +26,7 @@ class InternalScrollViewType<Props> extends ReactNative.NativeComponent<Props> {
   scrollToEnd(options?: ?{animated?: boolean}) {}
   scrollWithoutAnimationTo(y: number = 0, x: number = 0) {}
 
-  getScrollResponder() {}
+  getScrollResponder(): any {}
   getScrollableNode(): ?number {}
   getInnerViewNode(): ?number {}
 
