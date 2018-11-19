@@ -5,5 +5,6 @@
 
 include ':ReactAndroid'
 include ':ReactAndroid-processor'
+project(':ReactAndroid-processor').projectDir = new File(rootProject.projectDir, 'ReactAndroid/processor')
 include ':RNTester:android:app'
 include ':android-jsc'
