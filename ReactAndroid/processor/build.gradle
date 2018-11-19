@@ -1,15 +1,16 @@
 apply plugin: 'java'
 
 def reactRootDir = "$rootDir/ReactAndroid"
+def clonedDir = "$projectDir/src/cloned"
 
 task copyJavaFilesModule(type: Copy) {
     from "$reactRootDir/src/main/java/com/facebook/react/module"
-    into "$projectDir/src/main/java/com/facebook/react/module"
+    into "$clonedDir/com/facebook/react/module"
 }
 
 task copyJavaFilesProguard(type: Copy) {
     from "$reactRootDir/src/main/java/com/facebook/proguard/annotations"
-    into "$projectDir/src/main/java/com/facebook/proguard/annotations"
+    into "$clonedDir/com/facebook/proguard/annotations"
 }
 
 task copyJavaFilesBridge(type: Copy) {
@@ -27,7 +28,7 @@ task copyJavaFilesBridge(type: Copy) {
         "NativeArrayInterface.java",
     ]
 
-    into "$projectDir/src/main/java/com/facebook/react/bridge"
+    into "$clonedDir/com/facebook/react/bridge"
 
     INTERFACES.each {
         from "$reactRootDir/src/main/java/com/facebook/react/bridge/$it"
@@ -42,6 +43,9 @@ task copyJavaFiles {
 
 sourceSets {
     main {
+        java {
+            srcDirs = ['src/cloned']
+        }
         resources {
             srcDirs = ['src/resources']
         }
@@ -50,6 +54,10 @@ sourceSets {
 
 compileJava {
     dependsOn copyJavaFiles
+}
+
+clean {
+    delete "$clonedDir"
 }
 
 dependencies {
