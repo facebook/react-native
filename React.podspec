@@ -96,7 +96,8 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}",
                               "ReactCommon/fabric/**/*.{c,h,m,mm,S,cpp}"
-    ss.exclude_files        = "**/tests/*"
+    ss.exclude_files        = "**/tests/*",
+                              "**/android/*"
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
