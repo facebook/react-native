@@ -85,14 +85,14 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL jsiNativeModuleEnabled = NO;
+static BOOL turboModuleEnabled = NO;
 BOOL RCTTurboModuleEnabled(void)
 {
-  return jsiNativeModuleEnabled;
+  return turboModuleEnabled;
 }
 
-void RCTEnableJSINativeModule(BOOL enabled) {
-  jsiNativeModuleEnabled = enabled;
+void RCTEnableTurboModule(BOOL enabled) {
+  turboModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
