@@ -18,8 +18,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nullable;
 
 /**
@@ -33,10 +32,10 @@ public class ReactContext extends ContextWrapper {
       "ReactContext#getJSModule should only happen once initialize() has been called on your " +
       "native module.";
 
-  private final Map<LifecycleEventListener, Void> mLifecycleEventListeners =
-      new WeakHashMap<>();
-  private final Map<ActivityEventListener, Void> mActivityEventListeners =
-      new WeakHashMap<>();
+  private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
+      new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
+      new CopyOnWriteArraySet<>();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -133,11 +132,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void addLifecycleEventListener(final LifecycleEventListener listener) {
-
-    synchronized (mLifecycleEventListeners) {
-      mLifecycleEventListeners.put(listener, null);
-    }
-
+    mLifecycleEventListeners.add(listener);
     if (hasActiveCatalystInstance()) {
       switch (mLifecycleState) {
         case BEFORE_CREATE:
@@ -148,10 +143,8 @@ public class ReactContext extends ContextWrapper {
               new Runnable() {
                 @Override
                 public void run() {
-                  synchronized (mLifecycleEventListeners) {
-                    if (!mLifecycleEventListeners.containsKey(listener)) {
-                      return;
-                    }
+                  if (!mLifecycleEventListeners.contains(listener)) {
+                    return;
                   }
                   try {
                     listener.onHostResume();
@@ -168,21 +161,15 @@ public class ReactContext extends ContextWrapper {
   }
 
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
-    synchronized (mLifecycleEventListeners) {
-      mLifecycleEventListeners.remove(listener);
-    }
+    mLifecycleEventListeners.remove(listener);
   }
 
   public void addActivityEventListener(ActivityEventListener listener) {
-    synchronized (mActivityEventListeners) {
-      mActivityEventListeners.put(listener, null);
-    }
+    mActivityEventListeners.add(listener);
   }
 
   public void removeActivityEventListener(ActivityEventListener listener) {
-    synchronized (mActivityEventListeners) {
-      mActivityEventListeners.remove(listener);
-    }
+    mActivityEventListeners.remove(listener);
   }
 
   /**
@@ -192,13 +179,11 @@ public class ReactContext extends ContextWrapper {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
-    synchronized (mLifecycleEventListeners) {
-      for (LifecycleEventListener listener : mLifecycleEventListeners.keySet()) {
-        try {
-          listener.onHostResume();
-        } catch (RuntimeException e) {
-          handleException(e);
-        }
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostResume();
+      } catch (RuntimeException e) {
+        handleException(e);
       }
     }
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
@@ -207,13 +192,11 @@ public class ReactContext extends ContextWrapper {
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
-    synchronized (mActivityEventListeners) {
-      for (ActivityEventListener listener : mActivityEventListeners.keySet()) {
-        try {
-          listener.onNewIntent(intent);
-        } catch (RuntimeException e) {
-          handleException(e);
-        }
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      try {
+        listener.onNewIntent(intent);
+      } catch (RuntimeException e) {
+        handleException(e);
       }
     }
   }
@@ -224,13 +207,11 @@ public class ReactContext extends ContextWrapper {
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
-    synchronized (mLifecycleEventListeners) {
-      for (LifecycleEventListener listener : mLifecycleEventListeners.keySet()) {
-        try {
-          listener.onHostPause();
-        } catch (RuntimeException e) {
-          handleException(e);
-        }
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostPause();
+      } catch (RuntimeException e) {
+        handleException(e);
       }
     }
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
@@ -242,13 +223,11 @@ public class ReactContext extends ContextWrapper {
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
-    synchronized (mLifecycleEventListeners) {
-      for (LifecycleEventListener listener : mLifecycleEventListeners.keySet()) {
-        try {
-          listener.onHostDestroy();
-        } catch (RuntimeException e) {
-          handleException(e);
-        }
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostDestroy();
+      } catch (RuntimeException e) {
+        handleException(e);
       }
     }
     mCurrentActivity = null;
@@ -269,13 +248,11 @@ public class ReactContext extends ContextWrapper {
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    synchronized (mActivityEventListeners) {
-      for (ActivityEventListener listener : mActivityEventListeners.keySet()) {
-        try {
-          listener.onActivityResult(activity, requestCode, resultCode, data);
-        } catch (RuntimeException e) {
-          handleException(e);
-        }
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      try {
+        listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
       }
     }
   }
