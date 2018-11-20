@@ -1202,7 +1202,6 @@ const TextInput = createReactClass({
   },
 
   _onBlur: function(event: Event) {
-    this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
