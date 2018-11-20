@@ -44,11 +44,6 @@
     initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
   }
 
-//  RCTFabricSurfaceHostingView *rootView = [[RCTFabricSurfaceHostingView alloc]
-//                                           initWithBridge:_bridge
-//                                           moduleName:@"RNTesterApp"
-//                                           initialProperties:initProps
-//                                           sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact];
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

@@ -176,6 +176,7 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
+  static JSObjectRef objectRef(const jsi::WeakObject& obj);
 
   // Factory methods for creating String/Object
   jsi::String createString(JSStringRef stringRef) const;
@@ -789,12 +790,13 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
 }
 
 jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
-  return make<jsi::WeakObject>(reinterpret_cast<Runtime::PointerValue*>(const_cast<jsi::Object*>(&obj)));
+  JSObjectRef objRef = objectRef(obj);
+  return make<jsi::WeakObject>(makeObjectValue(objRef));
 }
 
 jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
-  return jsi::Value(*this, make<jsi::Object>(reinterpret_cast<Runtime::PointerValue*>(const_cast<jsi::WeakObject*>(&obj))));
-  // throw std::logic_error("Not implemented");
+  JSObjectRef objRef = objectRef(obj);
+  return jsi::Value(createObject(objRef));
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1187,6 +1189,10 @@ JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
 }
 
 JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
+  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
+}
+
+JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 

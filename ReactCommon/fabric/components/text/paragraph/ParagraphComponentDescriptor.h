@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/components/text/ParagraphShadowNode.h>
+#include <fabric/components/text/paragraph/ParagraphShadowNode.h>
 #include <fabric/core/ConcreteComponentDescriptor.h>
 #include <fabric/textlayoutmanager/TextLayoutManager.h>
 #include <fabric/uimanager/ContextContainer.h>
