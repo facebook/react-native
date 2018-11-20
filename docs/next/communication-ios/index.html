@@ -72,6 +72,9 @@ AppRegistry<span class="token punctuation">.</span><span class="token function">
 rootView.appProperties = @{<span class="hljs-string">@"images"</span> : imageList};
 </code></pre>
 <p>It is fine to update properties anytime. However, updates have to be performed on the main thread. You use the getter on any thread.</p>
+<blockquote>
+<p><strong><em>Note:</em></strong> Currently, there is a known issue where setting appProperties during the bridge startup, the change can be lost. See <a href="https://github.com/facebook/react-native/issues/20115">https://github.com/facebook/react-native/issues/20115</a> for more information.</p>
+</blockquote>
 <p>There is no way to update only a few properties at a time. We suggest that you build it into your own wrapper instead.</p>
 <blockquote>
 <p><strong><em>Note:</em></strong> Currently, JS functions <code>componentWillReceiveProps</code> and <code>componentWillUpdateProps</code> of the top level RN component will not be called after a prop update. However, you can access the new props in <code>componentWillMount</code> function.</p>
