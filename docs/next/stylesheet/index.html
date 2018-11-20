@@ -121,7 +121,7 @@ StyleSheet<span class="token punctuation">.</span><span class="token function">f
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 StyleSheet<span class="token punctuation">.</span><span class="token function">flatten</span><span class="token punctuation">(</span>styles<span class="token punctuation">.</span>listItem<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment">// return { flex: 1, fontSize: 16, color: 'white' }</span>
+<span class="token comment">// returns { flex: 1, fontSize: 16, color: 'white' }</span>
 <span class="token comment">// Simply styles.listItem would return its ID (number)</span>
 </code></pre>
 <p>This method internally uses <code>StyleSheetRegistry.getStyleByID(style)</code> to resolve style objects represented by IDs. Thus, an array of style objects (instances of <code>StyleSheet.create()</code>), are individually resolved to, their respective objects, merged as one and then returned. This also explains the alternative use.</p>
