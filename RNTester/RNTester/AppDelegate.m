@@ -14,11 +14,17 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 
+#import <React/RCTFabricSurfaceHostingView.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+
 #if !TARGET_OS_TV
 #import <React/RCTPushNotificationManager.h>
 #endif
 
-@interface AppDelegate() <RCTBridgeDelegate>
+@interface AppDelegate() <RCTBridgeDelegate> {
+  RCTSurfacePresenter *_surfacePresenter;
+}
 
 @end
 
@@ -28,17 +34,22 @@
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
+  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge];
+  _bridge.surfacePresenter = _surfacePresenter;
 
   // Appetizer.io params check
-  NSDictionary *initProps = nil;
+  NSDictionary *initProps = @{};
   NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
   if (_routeUri) {
     initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
   }
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
-                                                   moduleName:@"RNTesterApp"
-                                            initialProperties:initProps];
+//  RCTFabricSurfaceHostingView *rootView = [[RCTFabricSurfaceHostingView alloc]
+//                                           initWithBridge:_bridge
+//                                           moduleName:@"RNTesterApp"
+//                                           initialProperties:initProps
+//                                           sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact];
+  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];

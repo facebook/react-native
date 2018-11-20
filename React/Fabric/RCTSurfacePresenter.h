@@ -6,7 +6,7 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <memory>
+//#import <memory>
 
 #import <React/RCTBridge.h>
 #import <React/RCTPrimitives.h>

@@ -49,6 +49,7 @@ using namespace facebook::react;
   RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
+  BOOL _initialized;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -70,6 +71,9 @@ using namespace facebook::react;
                                              selector:@selector(handleJavaScriptDidLoadNotification:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:_bridge];
+    _initialized = NO;
+    self._scheduler;
+    _batchedBridge = nil;
   }
 
   return self;
@@ -85,11 +89,13 @@ using namespace facebook::react;
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
+  if (!_initialized) return;
   [self _startSurface:surface];
 }
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
+  RCTAssert(_initialized, @"Not initialized");
   [self _stopSurface:surface];
   [_surfaceRegistry unregisterSurface:surface];
 }
@@ -97,6 +103,7 @@ using namespace facebook::react;
 - (void)setProps:(NSDictionary *)props
          surface:(RCTFabricSurface *)surface
 {
+  RCTAssert(_initialized, @"Not initialized");
   // This implementation is suboptimal indeed but still better than nothing for now.
   [self _stopSurface:surface];
   [self _startSurface:surface];
@@ -111,6 +118,7 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
+  if (!_initialized) return CGSizeZero;
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
   };
@@ -129,6 +137,7 @@ using namespace facebook::react;
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface
 {
+  if (!_initialized) return;
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
   };
@@ -294,6 +303,7 @@ using namespace facebook::react;
 
 - (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
 {
+  _initialized = YES;
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _batchedBridge) {
     _batchedBridge = bridge;

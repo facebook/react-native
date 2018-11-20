@@ -788,12 +788,13 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object&) {
-  throw std::logic_error("Not implemented");
+jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
+  return make<jsi::WeakObject>(reinterpret_cast<Runtime::PointerValue*>(const_cast<jsi::Object*>(&obj)));
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject&) {
-  throw std::logic_error("Not implemented");
+jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
+  return jsi::Value(*this, make<jsi::Object>(reinterpret_cast<Runtime::PointerValue*>(const_cast<jsi::WeakObject*>(&obj))));
+  // throw std::logic_error("Not implemented");
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
