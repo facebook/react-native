@@ -598,7 +598,6 @@ const ScrollView = createReactClass({
 
   componentWillUnmount: function() {
     this._scrollResponder.componentWillUnmount();
-
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
