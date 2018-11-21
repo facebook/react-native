@@ -14,27 +14,42 @@ export type TVParallaxPropertiesType = $ReadOnly<{|
   /**
    * If true, parallax effects are enabled.  Defaults to true.
    */
-  enabled: boolean,
+  enabled?: boolean,
 
   /**
    * Defaults to 2.0.
    */
-  shiftDistanceX: number,
+  shiftDistanceX?: number,
 
   /**
    * Defaults to 2.0.
    */
-  shiftDistanceY: number,
+  shiftDistanceY?: number,
 
   /**
    * Defaults to 0.05.
    */
-  tiltAngle: number,
+  tiltAngle?: number,
 
   /**
    * Defaults to 1.0
    */
-  magnification: number,
+  magnification?: number,
+
+  /**
+   * Defaults to 1.0
+   */
+  pressMagnification?: number,
+
+  /**
+   * Defaults to 0.3
+   */
+  pressDuration?: number,
+
+  /**
+   * Defaults to 0.3
+   */
+  pressDelay?: number,
 |}>;
 
 /**
