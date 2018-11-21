@@ -551,22 +551,33 @@ export type Props = $ReadOnly<{|
  */
 const ScrollView = createReactClass({
   displayName: 'ScrollView',
-  mixins: [ScrollResponder.Mixin],
-
+  _scrollResponder: {},
   _scrollAnimatedValue: (new AnimatedImplementation.Value(
     0,
   ): AnimatedImplementation.Value),
   _scrollAnimatedValueAttachment: (null: ?{detach: () => void}),
   _stickyHeaderRefs: (new Map(): Map<number, ScrollViewStickyHeader>),
   _headerLayoutYs: (new Map(): Map<string, number>),
+  _createScrollResponder: function() {
+    for (const key in ScrollResponder.Mixin) {
+      if (typeof ScrollResponder.Mixin[key] === 'function') {
+        this._scrollResponder[key] = ScrollResponder.Mixin[key].bind(
+          this._scrollResponder,
+        );
+      }
+    }
+    this._scrollResponder.props = this.props;
+    this._scrollResponder.state = ScrollResponder.Mixin.scrollResponderMixinGetInitialState();
+  },
   getInitialState: function() {
+    this._createScrollResponder();
     return {
-      ...this.scrollResponderMixinGetInitialState(),
       layoutHeight: null,
     };
   },
 
   UNSAFE_componentWillMount: function() {
+    this._scrollResponder.UNSAFE_componentWillMount();
     this._scrollAnimatedValue = new AnimatedImplementation.Value(
       this.props.contentOffset ? this.props.contentOffset.y : 0,
     );
@@ -586,6 +597,8 @@ const ScrollView = createReactClass({
   },
 
   componentWillUnmount: function() {
+    this._scrollResponder.componentWillUnmount();
+
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
@@ -593,16 +606,6 @@ const ScrollView = createReactClass({
 
   setNativeProps: function(props: Object) {
     this._scrollViewRef && this._scrollViewRef.setNativeProps(props);
-  },
-
-  /**
-   * Returns a reference to the underlying scroll responder, which supports
-   * operations like `scrollTo`. All ScrollView-like components should
-   * implement this method so that they can be composed while providing access
-   * to the underlying scroll responder's methods.
-   */
-  getScrollResponder: function(): ScrollView {
-    return this;
   },
 
   getScrollableNode: function(): any {
@@ -637,7 +640,7 @@ const ScrollView = createReactClass({
     } else {
       ({x, y, animated} = y || {});
     }
-    this.getScrollResponder().scrollResponderScrollTo({
+    this._scrollResponder.scrollResponderScrollTo({
       x: x || 0,
       y: y || 0,
       animated: animated !== false,
@@ -655,7 +658,7 @@ const ScrollView = createReactClass({
   scrollToEnd: function(options?: {animated?: boolean}) {
     // Default to true
     const animated = (options && options.animated) !== false;
-    this.getScrollResponder().scrollResponderScrollToEnd({
+    this._scrollResponder.scrollResponderScrollToEnd({
       animated: animated,
     });
   },
@@ -676,7 +679,7 @@ const ScrollView = createReactClass({
    * @platform ios
    */
   flashScrollIndicators: function() {
-    this.getScrollResponder().scrollResponderFlashScrollIndicators();
+    this._scrollResponder.scrollResponderFlashScrollIndicators();
   },
 
   _getKeyForIndex: function(index, childArray) {
@@ -753,12 +756,12 @@ const ScrollView = createReactClass({
     if (Platform.OS === 'android') {
       if (
         this.props.keyboardDismissMode === 'on-drag' &&
-        this.state.isTouching
+        this._scrollResponder.state.isTouching
       ) {
         dismissKeyboard();
       }
     }
-    this.scrollResponderHandleScroll(e);
+    this._scrollResponder.scrollResponderHandleScroll(e);
   },
 
   _handleLayout: function(e: Object) {
@@ -912,28 +915,35 @@ const ScrollView = createReactClass({
       // bubble up from TextInputs
       onContentSizeChange: null,
       onLayout: this._handleLayout,
-      onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
-      onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
-      onResponderGrant: this.scrollResponderHandleResponderGrant,
-      onResponderReject: this.scrollResponderHandleResponderReject,
-      onResponderRelease: this.scrollResponderHandleResponderRelease,
+      onMomentumScrollBegin: this._scrollResponder
+        .scrollResponderHandleMomentumScrollBegin,
+      onMomentumScrollEnd: this._scrollResponder
+        .scrollResponderHandleMomentumScrollEnd,
+      onResponderGrant: this._scrollResponder
+        .scrollResponderHandleResponderGrant,
+      onResponderReject: this._scrollResponder
+        .scrollResponderHandleResponderReject,
+      onResponderRelease: this._scrollResponder
+        .scrollResponderHandleResponderRelease,
       // $FlowFixMe
-      onResponderTerminate: this.scrollResponderHandleTerminate,
-      onResponderTerminationRequest: this
+      onResponderTerminate: this._scrollResponder
+        .scrollResponderHandleTerminate,
+      onResponderTerminationRequest: this._scrollResponder
         .scrollResponderHandleTerminationRequest,
-      onScroll: this._handleScroll,
-      onScrollBeginDrag: this.scrollResponderHandleScrollBeginDrag,
-      onScrollEndDrag: this.scrollResponderHandleScrollEndDrag,
-      onScrollShouldSetResponder: this
+      onScrollBeginDrag: this._scrollResponder
+        .scrollResponderHandleScrollBeginDrag,
+      onScrollEndDrag: this._scrollResponder.scrollResponderHandleScrollEndDrag,
+      onScrollShouldSetResponder: this._scrollResponder
         .scrollResponderHandleScrollShouldSetResponder,
-      onStartShouldSetResponder: this
+      onStartShouldSetResponder: this._scrollResponder
         .scrollResponderHandleStartShouldSetResponder,
-      onStartShouldSetResponderCapture: this
+      onStartShouldSetResponderCapture: this._scrollResponder
         .scrollResponderHandleStartShouldSetResponderCapture,
-      onTouchEnd: this.scrollResponderHandleTouchEnd,
-      onTouchMove: this.scrollResponderHandleTouchMove,
-      onTouchStart: this.scrollResponderHandleTouchStart,
-      onTouchCancel: this.scrollResponderHandleTouchCancel,
+      onTouchEnd: this._scrollResponder.scrollResponderHandleTouchEnd,
+      onTouchMove: this._scrollResponder.scrollResponderHandleTouchMove,
+      onTouchStart: this._scrollResponder.scrollResponderHandleTouchStart,
+      onTouchCancel: this._scrollResponder.scrollResponderHandleTouchCancel,
+      onScroll: this._handleScroll,
       scrollBarThumbImage: resolveAssetSource(this.props.scrollBarThumbImage),
       scrollEventThrottle: hasStickyHeaders
         ? 1
