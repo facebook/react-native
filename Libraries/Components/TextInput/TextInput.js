@@ -34,7 +34,7 @@ const warning = require('fbjs/lib/warning');
 import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, ScrollEvent} from 'CoreEventTypes';
 import type {PressEvent} from 'CoreEventTypes';
 
 let AndroidTextInput;
@@ -57,66 +57,69 @@ const onlyMultiline = {
   children: true,
 };
 
-type Range = $ReadOnly<{|
-  start: number,
-  end: number,
-|}>;
-type Selection = $ReadOnly<{|
-  start: number,
-  end?: number,
-|}>;
-type ContentSize = $ReadOnly<{|
-  width: number,
-  height: number,
-|}>;
-type ContentOffset = $ReadOnly<{|
-  x: number,
-  y: number,
-|}>;
-type ChangeEvent = SyntheticEvent<
+export type ChangeEvent = SyntheticEvent<
   $ReadOnly<{|
-    target: number,
     eventCount: number,
+    target: number,
     text: string,
   |}>,
 >;
-type TextInputEvent = SyntheticEvent<
+
+export type TextInputEvent = SyntheticEvent<
   $ReadOnly<{|
+    eventCount: number,
     previousText: string,
-    range: Range,
+    range: $ReadOnly<{|
+      start: number,
+      end: number,
+    |}>,
     target: number,
     text: string,
   |}>,
 >;
-type ContentSizeChangeEvent = SyntheticEvent<
+
+export type ContentSizeChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     target: number,
-    contentSize: ContentSize,
+    contentSize: $ReadOnly<{|
+      width: number,
+      height: number,
+    |}>,
   |}>,
 >;
-type ScrollEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-    contentOffset: ContentOffset,
-  |}>,
->;
+
 type TargetEvent = SyntheticEvent<
   $ReadOnly<{|
     target: number,
   |}>,
 >;
-type SelectionChangeEvent = SyntheticEvent<
+
+export type BlurEvent = TargetEvent;
+export type FocusEvent = TargetEvent;
+
+type Selection = $ReadOnly<{|
+  start: number,
+  end: number,
+|}>;
+
+export type SelectionChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     selection: Selection,
+    target: number,
   |}>,
 >;
-type KeyPressEvent = SyntheticEvent<
+
+export type KeyPressEvent = SyntheticEvent<
   $ReadOnly<{|
     key: string,
+    target?: ?number,
+    eventCount?: ?number,
   |}>,
 >;
-type EditingEvent = SyntheticEvent<
+
+export type EditingEvent = SyntheticEvent<
   $ReadOnly<{|
+    eventCount: number,
     text: string,
     target: number,
   |}>,
@@ -245,8 +248,8 @@ type Props = $ReadOnly<{|
   returnKeyType?: ?ReturnKeyType,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: TargetEvent) => void,
-  onFocus?: ?(e: TargetEvent) => void,
+  onBlur?: ?(e: BlurEvent) => void,
+  onFocus?: ?(e: FocusEvent) => void,
   onChange?: ?(e: ChangeEvent) => void,
   onChangeText?: ?(text: string) => void,
   onContentSizeChange?: ?(e: ContentSizeChangeEvent) => void,
@@ -1169,7 +1172,7 @@ const TextInput = createReactClass({
     );
   },
 
-  _onFocus: function(event: TargetEvent) {
+  _onFocus: function(event: FocusEvent) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1262,7 +1265,7 @@ const TextInput = createReactClass({
     }
   },
 
-  _onBlur: function(event: TargetEvent) {
+  _onBlur: function(event: BlurEvent) {
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
