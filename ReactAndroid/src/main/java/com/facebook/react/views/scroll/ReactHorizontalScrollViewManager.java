@@ -257,7 +257,7 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = "persistentScrollbar")
-  public void setPersistentScrollbar(ReactScrollView view, boolean value) {
+  public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
     view.setScrollbarFadingEnabled(!value);
   }
 }
