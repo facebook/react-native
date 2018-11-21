@@ -42,7 +42,7 @@ type IOSProps = $ReadOnly<{|
   tvParallaxProperties?: ?Object,
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...IOSProps,
 
