@@ -8,6 +8,7 @@
 package com.facebook.yoga;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class YogaConfig {
@@ -15,7 +16,7 @@ public class YogaConfig {
   public static int SPACING_TYPE = 1;
 
   static {
-      YogaJNI.init();
+    SoLoader.loadLibrary("yoga");
   }
 
   long mNativePointer;
