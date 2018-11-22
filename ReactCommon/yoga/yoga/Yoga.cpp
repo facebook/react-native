@@ -1220,7 +1220,7 @@ static inline bool YGNodeIsLayoutDimDefined(
 
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const YGNodeRef node,
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float value,
     const float axisSize) {
   YGFloatOptional min;
@@ -2423,10 +2423,10 @@ static void YGJustifyMainAxis(
     const YGNodeRef node,
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const uint32_t startOfLineIndex,
-    const YGFlexDirection& mainAxis,
-    const YGFlexDirection& crossAxis,
-    const YGMeasureMode& measureModeMainDim,
-    const YGMeasureMode& measureModeCrossDim,
+    const YGFlexDirection mainAxis,
+    const YGFlexDirection crossAxis,
+    const YGMeasureMode measureModeMainDim,
+    const YGMeasureMode measureModeCrossDim,
     const float mainAxisownerSize,
     const float ownerWidth,
     const float availableInnerMainDim,

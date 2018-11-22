@@ -12,7 +12,7 @@
 using namespace facebook;
 
 YGFloatOptional YGNode::getLeadingPosition(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
     const YGValue* leadingPosition =
@@ -31,7 +31,7 @@ YGFloatOptional YGNode::getLeadingPosition(
 }
 
 YGFloatOptional YGNode::getTrailingPosition(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
     const YGValue* trailingPosition =
@@ -49,7 +49,7 @@ YGFloatOptional YGNode::getTrailingPosition(
       : YGResolveValue(*trailingPosition, axisSize);
 }
 
-bool YGNode::isLeadingPositionDefined(const YGFlexDirection& axis) const {
+bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) const {
   return (YGFlexDirectionIsRow(axis) &&
           YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined)
                   ->unit != YGUnitUndefined) ||
@@ -57,7 +57,7 @@ bool YGNode::isLeadingPositionDefined(const YGFlexDirection& axis) const {
           ->unit != YGUnitUndefined;
 }
 
-bool YGNode::isTrailingPosDefined(const YGFlexDirection& axis) const {
+bool YGNode::isTrailingPosDefined(const YGFlexDirection axis) const {
   return (YGFlexDirectionIsRow(axis) &&
           YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined)
                   ->unit != YGUnitUndefined) ||
@@ -66,7 +66,7 @@ bool YGNode::isTrailingPosDefined(const YGFlexDirection& axis) const {
 }
 
 YGFloatOptional YGNode::getLeadingMargin(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
@@ -79,7 +79,7 @@ YGFloatOptional YGNode::getLeadingMargin(
 }
 
 YGFloatOptional YGNode::getTrailingMargin(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
@@ -92,7 +92,7 @@ YGFloatOptional YGNode::getTrailingMargin(
 }
 
 YGFloatOptional YGNode::getMarginForAxis(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
@@ -204,7 +204,7 @@ void YGNode::setLayoutDimension(float dimension, int index) {
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
 YGFloatOptional YGNode::relativePosition(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float axisSize) const {
   if (isLeadingPositionDefined(axis)) {
     return getLeadingPosition(axis, axisSize);
@@ -424,7 +424,7 @@ bool YGNode::isNodeFlexible() {
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
 
-float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
+float YGNode::getLeadingBorder(const YGFlexDirection axis) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.border[YGEdgeStart].unit != YGUnitUndefined &&
       !yoga::isUndefined(style_.border[YGEdgeStart].value) &&
@@ -437,7 +437,7 @@ float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
   return YGFloatMax(computedEdgeValue, 0.0f);
 }
 
-float YGNode::getTrailingBorder(const YGFlexDirection& flexDirection) const {
+float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) const {
   if (YGFlexDirectionIsRow(flexDirection) &&
       style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
       !yoga::isUndefined(style_.border[YGEdgeEnd].value) &&
@@ -452,7 +452,7 @@ float YGNode::getTrailingBorder(const YGFlexDirection& flexDirection) const {
 }
 
 YGFloatOptional YGNode::getLeadingPadding(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   const YGFloatOptional& paddingEdgeStart =
       YGResolveValue(style_.padding[YGEdgeStart], widthSize);
@@ -469,7 +469,7 @@ YGFloatOptional YGNode::getLeadingPadding(
 }
 
 YGFloatOptional YGNode::getTrailingPadding(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
@@ -486,14 +486,14 @@ YGFloatOptional YGNode::getTrailingPadding(
 }
 
 YGFloatOptional YGNode::getLeadingPaddingAndBorder(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   return getLeadingPadding(axis, widthSize) +
       YGFloatOptional(getLeadingBorder(axis));
 }
 
 YGFloatOptional YGNode::getTrailingPaddingAndBorder(
-    const YGFlexDirection& axis,
+    const YGFlexDirection axis,
     const float widthSize) const {
   return getTrailingPadding(axis, widthSize) +
       YGFloatOptional(getTrailingBorder(axis));
