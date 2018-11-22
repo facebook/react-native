@@ -22,9 +22,6 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')
 .*/node_modules/invariant/.*
@@ -102,3 +99,6 @@ untyped-type-import
 
 [version]
 ^0.85.0
+
+[untyped]
+.*/node_modules/metro/.*
