@@ -8,6 +8,7 @@
 package com.facebook.yoga;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
 public class YogaNode implements Cloneable {
 
   static {
-      YogaJNI.init();
+    SoLoader.loadLibrary("yoga");
   }
 
   /**
