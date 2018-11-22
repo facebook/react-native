@@ -23,7 +23,7 @@ class UIManagerDelegate {
    * The tree is not layed out and not sealed at this time.
    */
   virtual void uiManagerDidFinishTransaction(
-      Tag rootTag,
+      SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
 
   /*

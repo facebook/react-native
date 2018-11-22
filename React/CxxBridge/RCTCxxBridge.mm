@@ -439,6 +439,30 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[moduleName].instance;
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  if (!lazilyLoad) {
+    return [self moduleForName:moduleName];
+  }
+
+  RCTModuleData *moduleData = _moduleDataByName[moduleName];
+  if (moduleData) {
+    return moduleData.instance;
+  }
+
+  // Module may not be loaded yet, so attempt to force load it here.
+  const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
+    [self.delegate bridge:self didNotFindModule:moduleName];
+  if (result) {
+    // Try again.
+    moduleData = _moduleDataByName[moduleName];
+  } else {
+    RCTLogError(@"Unable to find module for %@", moduleName);
+  }
+
+  return moduleData.instance;
+}
+
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
@@ -446,17 +470,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForClass:(Class)moduleClass
 {
-  NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
-  RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (moduleData) {
-    return moduleData.instance;
-  }
-
-  // Module may not be loaded yet, so attempt to force load it here.
-  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)], @"Asking for a NativeModule that doesn't conform to RCTBridgeModule: %@", NSStringFromClass(moduleClass));
-  [self registerAdditionalModuleClasses:@[moduleClass]];
-
-  return _moduleDataByName[moduleName].instance;
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass) lazilyLoadIfNecessary:YES];
 }
 
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistryUnlocked
@@ -547,7 +561,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray *moduleClassesCopy = [moduleClasses copy];
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
   for (Class moduleClass in moduleClassesCopy) {
-    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+    if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
       continue;
     }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
@@ -652,7 +666,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     // we must use the names provided by the delegate method here.
     for (NSString *moduleName in moduleClasses) {
       Class moduleClass = moduleClasses[moduleName];
-      if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
         continue;
       }
 

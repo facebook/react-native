@@ -162,7 +162,7 @@ task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
     copy {
         from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
         from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
-        from 'src/main/jni/third-party/jsc/Android.mk'
+        from 'src/main/jni/third-party/jsc'
         include 'jni/**/*.so', '*.h', 'Android.mk'
         filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
         into "$thirdPartyNdkDir/jsc";
@@ -289,7 +289,7 @@ android {
 
     sourceSets.main {
         jni.srcDirs = []
-        jniLibs.srcDir "$buildDir/react-ndk/exported"
+        jniLibs.srcDirs = ["$buildDir/react-ndk/exported", 'src/main/jni/third-party/jsc/jni']
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal', 'src/main/res/views/uimanager']
         java {
             srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
@@ -324,7 +324,7 @@ dependencies {
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
     api 'com.squareup.okio:okio:1.14.0'
-    compile project(':android-jsc')
+    compile 'org.webkit:android-jsc:r174650'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

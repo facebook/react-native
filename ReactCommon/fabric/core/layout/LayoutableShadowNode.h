@@ -59,6 +59,12 @@ class LayoutableShadowNode : public virtual Sealable {
    */
   virtual bool isLayoutOnly() const;
 
+  /*
+   * Returns layout metrics relatively to the given ancestor node.
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      const LayoutableShadowNode &ancestorLayoutableShadowNode) const;
+
  protected:
   /*
    * Clean or Dirty layout state:
