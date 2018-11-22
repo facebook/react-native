@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Clipboard, View, Text} = ReactNative;
+const {Clipboard, View, Text, StyleSheet} = ReactNative;
 
 class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -32,10 +32,10 @@ class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Text onPress={this._setClipboardContent} style={{color: 'blue'}}>
+        <Text onPress={this._setClipboardContent} style={styles.label}>
           Tap to put "Hello World" in the clipboard
         </Text>
-        <Text style={{color: 'red', marginTop: 20}}>{this.state.content}</Text>
+        <Text style={styles.content}>{this.state.content}</Text>
       </View>
     );
   }
@@ -51,3 +51,13 @@ exports.examples = [
     },
   },
 ];
+
+const styles = StyleSheet.create({
+  label: {
+    color: 'blue',
+  },
+  content: {
+    color: 'red',
+    marginTop: 20,
+  },
+});

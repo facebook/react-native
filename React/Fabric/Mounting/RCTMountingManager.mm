@@ -7,7 +7,7 @@
 
 #import "RCTMountingManager.h"
 
-#import <fabric/core/LayoutableShadowNode.h>
+#import <react/core/LayoutableShadowNode.h>
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
 

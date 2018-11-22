@@ -9,9 +9,9 @@
 
 'use strict';
 
-var React = require('React');
-var RecordingModule = require('NativeModules').InitialPropsRecordingModule;
-var Text = require('Text');
+const React = require('React');
+const RecordingModule = require('NativeModules').InitialPropsRecordingModule;
+const Text = require('Text');
 
 class InitialPropsTestApp extends React.Component {
   componentDidMount() {

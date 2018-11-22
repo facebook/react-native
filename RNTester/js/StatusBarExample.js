@@ -518,11 +518,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     padding: 10,
   },
-  title: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontWeight: 'bold',
-  },
   modalButton: {
     marginTop: 10,
   },

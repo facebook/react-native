@@ -30,6 +30,23 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     shadowOffset: {width: 3, height: 3},
   },
+  shadowShaped: {
+    borderRadius: 50,
+  },
+  shadowImage: {
+    borderWidth: 0,
+    overflow: 'visible',
+  },
+  shadowChild: {
+    backgroundColor: 'transparent',
+  },
+  shadowChildBox: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    margin: 8,
+    backgroundColor: 'red',
+  },
 });
 
 exports.title = 'Box Shadow';
@@ -54,7 +71,7 @@ exports.examples = [
     title: 'Shaped shadow',
     description: 'borderRadius: 50',
     render() {
-      return <View style={[styles.box, styles.shadow1, {borderRadius: 50}]} />;
+      return <View style={[styles.box, styles.shadow1, styles.shadowShaped]} />;
     },
   },
   {
@@ -64,11 +81,7 @@ exports.examples = [
       return (
         <Image
           source={require('./hawk.png')}
-          style={[
-            styles.box,
-            styles.shadow1,
-            {borderWidth: 0, overflow: 'visible'},
-          ]}
+          style={[styles.box, styles.shadow1, styles.shadowImage]}
         />
       );
     },
@@ -79,24 +92,8 @@ exports.examples = [
       'For views without an opaque background color, shadow will be derived from the subviews.',
     render() {
       return (
-        <View
-          style={[
-            styles.box,
-            styles.shadow1,
-            {backgroundColor: 'transparent'},
-          ]}>
-          <View
-            style={[
-              styles.box,
-              {
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                margin: 8,
-                backgroundColor: 'red',
-              },
-            ]}
-          />
+        <View style={[styles.box, styles.shadow1, styles.shadowChild]}>
+          <View style={[styles.box, styles.shadowChildBox]} />
         </View>
       );
     },

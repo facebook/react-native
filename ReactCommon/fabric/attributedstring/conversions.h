@@ -7,17 +7,18 @@
 
 #pragma once
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/attributedstring/primitives.h>
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/ParagraphAttributes.h>
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/core/conversions.h>
-#include <fabric/core/LayoutableShadowNode.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/graphics/conversions.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/ParagraphAttributes.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/attributedstring/conversions.h>
+#include <react/attributedstring/primitives.h>
+#include <react/core/LayoutableShadowNode.h>
+#include <react/core/ShadowNode.h>
+#include <react/core/conversions.h>
+#include <react/graphics/Geometry.h>
+#include <react/graphics/conversions.h>
+#include <cmath>
 
 namespace facebook {
 namespace react {
@@ -388,22 +389,23 @@ inline folly::dynamic toDynamic(
 inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   auto _textAttributes = folly::dynamic::object();
   if (textAttributes.foregroundColor) {
-    _textAttributes("foregroundColor", toDynamic(textAttributes.foregroundColor));
+    _textAttributes(
+        "foregroundColor", toDynamic(textAttributes.foregroundColor));
   }
   if (textAttributes.backgroundColor) {
     _textAttributes(
         "backgroundColor", toDynamic(textAttributes.backgroundColor));
   }
-  if (!isnan(textAttributes.opacity)) {
+  if (!std::isnan(textAttributes.opacity)) {
     _textAttributes("opacity", textAttributes.opacity);
   }
   if (!textAttributes.fontFamily.empty()) {
     _textAttributes("fontFamily", textAttributes.fontFamily);
   }
-  if (!isnan(textAttributes.fontSize)) {
+  if (!std::isnan(textAttributes.fontSize)) {
     _textAttributes("fontSize", textAttributes.fontSize);
   }
-  if (!isnan(textAttributes.fontSizeMultiplier)) {
+  if (!std::isnan(textAttributes.fontSizeMultiplier)) {
     _textAttributes("fontSizeMultiplier", textAttributes.fontSizeMultiplier);
   }
   if (textAttributes.fontWeight.has_value()) {
@@ -418,10 +420,10 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (textAttributes.allowFontScaling.has_value()) {
     _textAttributes("allowFontScaling", *textAttributes.allowFontScaling);
   }
-  if (!isnan(textAttributes.letterSpacing)) {
+  if (!std::isnan(textAttributes.letterSpacing)) {
     _textAttributes("letterSpacing", textAttributes.letterSpacing);
   }
-  if (!isnan(textAttributes.lineHeight)) {
+  if (!std::isnan(textAttributes.lineHeight)) {
     _textAttributes("lineHeight", textAttributes.lineHeight);
   }
   if (textAttributes.alignment.has_value()) {
@@ -454,7 +456,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   // Shadow
   // textShadowOffset = textAttributes.textShadowOffset.has_value() ?
   // textAttributes.textShadowOffset.value() : textShadowOffset;
-  if (!isnan(textAttributes.textShadowRadius)) {
+  if (!std::isnan(textAttributes.textShadowRadius)) {
     _textAttributes("textShadowRadius", textAttributes.textShadowRadius);
   }
   if (textAttributes.textShadowColor) {

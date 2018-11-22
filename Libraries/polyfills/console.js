@@ -9,7 +9,7 @@
  * @format
  */
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that
@@ -555,6 +555,25 @@ if (global.nativeLoggingHook) {
         console[methodName] = function() {
           originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);
+        };
+      }
+    });
+
+    // The following methods are not supported by this polyfill but
+    // we still should pass them to original console if they are
+    // supported by it.
+    [
+      'assert',
+      'clear',
+      'dir',
+      'dirxml',
+      'groupCollapsed',
+      'profile',
+      'profileEnd',
+    ].forEach(methodName => {
+      if (typeof originalConsole[methodName] === 'function') {
+        console[methodName] = function() {
+          originalConsole[methodName](...arguments);
         };
       }
     });

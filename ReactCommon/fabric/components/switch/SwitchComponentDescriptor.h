@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/switch/SwitchShadowNode.h>
-#include <fabric/core/ConcreteComponentDescriptor.h>
+#include <react/components/switch/SwitchShadowNode.h>
+#include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {

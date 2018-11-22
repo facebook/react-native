@@ -7,8 +7,8 @@
 
 #include "Props.h"
 
-#include <fabric/core/propsConversions.h>
 #include <folly/dynamic.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {

@@ -9,8 +9,8 @@
 
 const getFirstProject = project => project.getFirstProject().firstProject;
 
-const findGroup = (group, name) =>
-  group.children.find(group => group.comment === name);
+const findGroup = (groups, name) =>
+  groups.children.find(group => group.comment === name);
 
 /**
  * Returns group from .xcodeproj if one exists, null otherwise
@@ -23,22 +23,22 @@ const findGroup = (group, name) =>
 module.exports = function getGroup(project, path) {
   const firstProject = getFirstProject(project);
 
-  var group = project.getPBXGroupByKey(firstProject.mainGroup);
+  let groups = project.getPBXGroupByKey(firstProject.mainGroup);
 
   if (!path) {
-    return group;
+    return groups;
   }
 
   for (var name of path.split('/')) {
-    var foundGroup = findGroup(group, name);
+    var foundGroup = findGroup(groups, name);
 
     if (foundGroup) {
-      group = project.getPBXGroupByKey(foundGroup.value);
+      groups = project.getPBXGroupByKey(foundGroup.value);
     } else {
-      group = null;
+      groups = null;
       break;
     }
   }
 
-  return group;
+  return groups;
 };

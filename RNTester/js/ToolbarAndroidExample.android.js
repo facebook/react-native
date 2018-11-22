@@ -61,8 +61,7 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
               height: 144,
             })}
             style={styles.toolbar}>
-            <View
-              style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={styles.switchWrapper}>
               <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={value => this.setState({toolbarSwitch: value})}
@@ -167,6 +166,11 @@ const styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,
+  },
+  switchWrapper: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

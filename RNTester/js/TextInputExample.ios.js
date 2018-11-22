@@ -14,7 +14,7 @@ const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
 const React = require('react');
 const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -71,7 +71,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
               'onSelectionChange range: ' +
                 event.nativeEvent.selection.start +
                 ',' +
-                event.nativeEvent.selection.end,
+                (event.nativeEvent.selection.end || ''),
             )
           }
           onKeyPress={event => {
@@ -92,6 +92,9 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextInputAccessoryViewExample extends React.Component<{}, *> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Placeholder Text'};
@@ -121,6 +124,9 @@ class TextInputAccessoryViewExample extends React.Component<{}, *> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -153,6 +159,9 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -174,6 +183,9 @@ class RewriteExampleInvalidCharacters extends React.Component<
 }
 
 class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -195,6 +207,9 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
 }
 
 class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -216,6 +231,9 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
+   * error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -330,10 +348,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
 }
 
 type SelectionExampleState = {
-  selection: {|
+  selection: $ReadOnly<{|
     start: number,
     end?: number,
-  |},
+  |}>,
   value: string,
 };
 
@@ -472,9 +490,6 @@ class AutogrowingTextInputExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
-  page: {
-    paddingBottom: 300,
-  },
   default: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
@@ -501,13 +516,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
-  },
-  multilineChild: {
-    width: 50,
-    height: 40,
-    position: 'absolute',
-    right: 5,
-    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -854,7 +862,9 @@ exports.examples = [
             returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
-            onSubmitEditing={event => alert(event.nativeEvent.text)}
+            onSubmitEditing={event =>
+              Alert.alert('Alert', event.nativeEvent.text)
+            }
           />
         </View>
       );

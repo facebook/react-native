@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/scrollview/ScrollViewShadowNode.h>
-#include <fabric/core/ConcreteComponentDescriptor.h>
+#include <react/components/scrollview/ScrollViewShadowNode.h>
+#include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {

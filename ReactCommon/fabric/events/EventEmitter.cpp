@@ -8,6 +8,7 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -46,6 +47,7 @@ void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
@@ -61,23 +63,30 @@ void EventEmitter::dispatchEvent(
       priority);
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
-  bool alreadyEnabled = eventTarget_ != nullptr;
-  if (enabled == alreadyEnabled) {
+void EventEmitter::enable() const {
+  enableCounter_++;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::disable() const {
+  enableCounter_--;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::toggleEventTargetOwnership_() const {
+  bool shouldBeRetained = enableCounter_ > 0;
+  bool alreadyBeRetained = eventTarget_ != nullptr;
+  if (shouldBeRetained == alreadyBeRetained) {
     return;
   }
 
-  if (enabled) {
+  if (shouldBeRetained) {
     eventTarget_ = weakEventTarget_.lock();
     weakEventTarget_.reset();
   } else {
     weakEventTarget_ = eventTarget_;
     eventTarget_.reset();
   }
-}
-
-bool EventEmitter::getEnabled() const {
-  return eventTarget_ != nullptr;
 }
 
 } // namespace react

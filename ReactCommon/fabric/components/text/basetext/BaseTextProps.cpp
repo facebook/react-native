@@ -7,10 +7,10 @@
 
 #include "BaseTextProps.h"
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/conversions.h>
+#include <react/attributedstring/conversions.h>
+#include <react/core/propsConversions.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

@@ -10,19 +10,16 @@
 const xcode = require('xcode');
 const fs = require('fs');
 const path = require('path');
-const log = require('npmlog');
 
 const addToHeaderSearchPaths = require('./addToHeaderSearchPaths');
 const getHeadersInFolder = require('./getHeadersInFolder');
 const getHeaderSearchPath = require('./getHeaderSearchPath');
-const getProducts = require('./getProducts');
 const getTargets = require('./getTargets');
 const createGroupWithMessage = require('./createGroupWithMessage');
 const addFileToProject = require('./addFileToProject');
 const addProjectToLibraries = require('./addProjectToLibraries');
 const addSharedLibraries = require('./addSharedLibraries');
 const isEmpty = require('lodash').isEmpty;
-const getGroup = require('./getGroup');
 
 /**
  * Register native module IOS adds given dependency to project by adding

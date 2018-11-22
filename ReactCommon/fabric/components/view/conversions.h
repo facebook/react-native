@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include <fabric/components/view/primitives.h>
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <react/components/view/primitives.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/graphics/Geometry.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <cmath>
 
 namespace facebook {
 namespace react {
@@ -51,7 +52,7 @@ inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
 }
 
 inline YGValue yogaStyleValueFromFloat(const Float &value) {
-  if (isnan(value) || value == kFloatUndefined) {
+  if (std::isnan(value) || value == kFloatUndefined) {
     return YGValueUndefined;
   }
 

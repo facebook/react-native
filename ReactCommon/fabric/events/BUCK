@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/events",
+        prefix = "react/events",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -55,6 +55,7 @@ rn_xplat_cxx_library(
         "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
+        "xplat//jsi:jsi",
         "xplat//third-party/glog:glog",
         react_native_xplat_target("fabric/debug:debug"),
     ],
@@ -71,7 +72,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID,APPLE),
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

@@ -7,8 +7,8 @@
 
 #import "RCTSwitchComponentView.h"
 
-#import <fabric/components/switch/SwitchEventEmitter.h>
-#import <fabric/components/switch/SwitchProps.h>
+#import <react/components/switch/SwitchEventEmitter.h>
+#import <react/components/switch/SwitchProps.h>
 
 using namespace facebook::react;
 

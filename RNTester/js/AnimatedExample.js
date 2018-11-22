@@ -59,6 +59,9 @@ exports.examples = [
         }
       }
       class FadeInExample extends React.Component<$FlowFixMeProps, any> {
+        /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.85 was deployed. To see the error, delete
+         * this comment and run Flow. */
         constructor(props) {
           super(props);
           this.state = {
@@ -243,7 +246,7 @@ exports.examples = [
           <Animated.Image
             source={require('./bunny.png')}
             style={[
-              {width: 70, height: 70},
+              styles.rotatingImage,
               {
                 transform: [
                   {
@@ -294,5 +297,9 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  rotatingImage: {
+    width: 70,
+    height: 70,
   },
 });

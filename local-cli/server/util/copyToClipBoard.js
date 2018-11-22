@@ -23,15 +23,15 @@ function copyToClipBoard(content) {
   switch (process.platform) {
     case 'darwin':
       var child = spawn('pbcopy', []);
-      child.stdin.end(new Buffer(content, 'utf8'));
+      child.stdin.end(Buffer.from(content, 'utf8'));
       return true;
     case 'win32':
       var child = spawn('clip', []);
-      child.stdin.end(new Buffer(content, 'utf8'));
+      child.stdin.end(Buffer.from(content, 'utf8'));
       return true;
     case 'linux':
       var child = spawn(xsel, ['--clipboard', '--input']);
-      child.stdin.end(new Buffer(content, 'utf8'));
+      child.stdin.end(Buffer.from(content, 'utf8'));
       return true;
     default:
       return false;

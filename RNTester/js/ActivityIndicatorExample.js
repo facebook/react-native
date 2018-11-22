@@ -25,6 +25,9 @@ class ToggleAnimatingActivityIndicator extends Component<
 > {
   _timer: Timer;
 
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
   constructor(props) {
     super(props);
     this.state = {
@@ -87,9 +90,7 @@ exports.examples = [
       return (
         <View>
           <ActivityIndicator style={[styles.centering]} />
-          <ActivityIndicator
-            style={[styles.centering, {backgroundColor: '#eeeeee'}]}
-          />
+          <ActivityIndicator style={[styles.centering, styles.gray]} />
         </View>
       );
     },

@@ -8,12 +8,12 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/components/root/RootShadowNode.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/uimanager/ShadowTreeDelegate.h>
-#include <fabric/uimanager/ShadowViewMutation.h>
+#include <react/components/root/RootShadowNode.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
+#include <react/uimanager/ShadowTreeDelegate.h>
+#include <react/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -77,6 +77,11 @@ class ShadowTree final {
    */
   bool complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
 
+  /*
+   * Returns a root shadow node that represents the last committed three.
+   */
+  SharedRootShadowNode getRootShadowNode() const;
+
 #pragma mark - Delegate
 
   /*
@@ -104,11 +109,6 @@ class ShadowTree final {
 
   void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
-
-  /*
-   * Return `rootShadowNodeMutex_` protected by `commitMutex_`.
-   */
-  SharedRootShadowNode getRootShadowNode() const;
 
   const SurfaceId surfaceId_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.

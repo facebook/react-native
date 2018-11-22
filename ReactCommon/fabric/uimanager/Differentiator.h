@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <fabric/core/ShadowNode.h>
-#include <fabric/uimanager/ShadowViewMutation.h>
+#include <react/core/ShadowNode.h>
+#include <react/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {

@@ -8,10 +8,10 @@
 #include <memory>
 
 #include <assert.h>
-#include <fabric/attributedstring/ParagraphAttributes.h>
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/attributedstring/primitives.h>
 #include <gtest/gtest.h>
+#include <react/attributedstring/ParagraphAttributes.h>
+#include <react/attributedstring/conversions.h>
+#include <react/attributedstring/primitives.h>
 
 namespace facebook {
 namespace react {
