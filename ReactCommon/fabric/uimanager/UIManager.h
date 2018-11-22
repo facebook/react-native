@@ -52,6 +52,15 @@ class UIManager {
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
+  /*
+   * Returns layout metrics of given `shadowNode` relative to
+   * `ancestorShadowNode` (relative to the root node in case if provided
+   * `ancestorShadowNode` is nullptr).
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      const ShadowNode &shadowNode,
+      const ShadowNode *ancestorShadowNode) const;
+
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
