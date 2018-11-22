@@ -92,14 +92,9 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   mutable std::mutex mutex_;
   mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       shadowTreeRegistry_; // Protected by `mutex_`.
-  SharedEventDispatcher eventDispatcher_;
   SharedContextContainer contextContainer_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;
-
-  void uiManagerDidFinishTransactionWithoutLock(
-      Tag rootTag,
-      const SharedShadowNodeUnsharedList &rootChildNodes);
 };
 
 } // namespace react
