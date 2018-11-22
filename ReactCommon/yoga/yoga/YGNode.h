@@ -34,7 +34,7 @@ struct YGNode {
 
   YGFloatOptional relativePosition(
       const YGFlexDirection& axis,
-      const float& axisSize) const;
+      const float axisSize) const;
 
  public:
   YGNode() = default;
@@ -139,35 +139,35 @@ struct YGNode {
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(
       const YGFlexDirection& axis,
-      const float& axisSize) const;
+      const float axisSize) const;
   bool isLeadingPositionDefined(const YGFlexDirection& axis) const;
   bool isTrailingPosDefined(const YGFlexDirection& axis) const;
   YGFloatOptional getTrailingPosition(
       const YGFlexDirection& axis,
-      const float& axisSize) const;
+      const float axisSize) const;
   YGFloatOptional getLeadingMargin(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   YGFloatOptional getTrailingMargin(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   float getLeadingBorder(const YGFlexDirection& flexDirection) const;
   float getTrailingBorder(const YGFlexDirection& flexDirection) const;
   YGFloatOptional getLeadingPadding(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   YGFloatOptional getTrailingPadding(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   YGFloatOptional getLeadingPaddingAndBorder(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   YGFloatOptional getTrailingPaddingAndBorder(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   YGFloatOptional getMarginForAxis(
       const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const float widthSize) const;
   // Setters
 
   void setContext(void* context) {
