@@ -1911,7 +1911,7 @@ static float YGNodeCalculateAvailableInnerDim(
   return availableInnerDim;
 }
 
-static void YGNodeComputeFlexBasisForChildren(
+static float YGNodeComputeFlexBasisForChildren(
     const YGNodeRef node,
     const float availableInnerWidth,
     const float availableInnerHeight,
@@ -1920,8 +1920,8 @@ static void YGNodeComputeFlexBasisForChildren(
     YGDirection direction,
     YGFlexDirection mainAxis,
     const YGConfigRef config,
-    bool performLayout,
-    float& totalOuterFlexBasis) {
+    bool performLayout) {
+  float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
   YGVector children = node->getChildren();
   YGMeasureMode measureModeMainDim =
@@ -1991,6 +1991,8 @@ static void YGNodeComputeFlexBasisForChildren(
         child->getLayout().computedFlexBasis +
         child->getMarginForAxis(mainAxis, availableInnerWidth));
   }
+
+  return totalOuterFlexBasis;
 }
 
 // This function assumes that all the children of node have their
@@ -2902,11 +2904,9 @@ static void YGNodelayoutImpl(
   const float availableInnerCrossDim =
       isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
-  float totalOuterFlexBasis = 0;
-
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
-  YGNodeComputeFlexBasisForChildren(
+  float totalOuterFlexBasis = YGNodeComputeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
@@ -2915,8 +2915,7 @@ static void YGNodelayoutImpl(
       direction,
       mainAxis,
       config,
-      performLayout,
-      totalOuterFlexBasis);
+      performLayout);
 
   const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
       ? false
