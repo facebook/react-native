@@ -67,6 +67,10 @@ void UIManager::completeSurface(
   }
 }
 
+void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
+  shadowTreeRegistry_ = shadowTreeRegistry;
+}
+
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
