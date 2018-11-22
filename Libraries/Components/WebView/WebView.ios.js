@@ -30,6 +30,7 @@ const RCTWebViewManager = require('NativeModules').WebViewManager;
 const RCTWKWebViewManager = require('NativeModules').WKWebViewManager;
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
 
 const BGWASH = 'rgba(255,255,255,0.8)';
 const RCT_WEBVIEW_REF = 'webview';
@@ -51,14 +52,74 @@ const NavigationType = keyMirror({
 
 const JSNavigationScheme = 'react-js-navigation';
 
-type ErrorEvent = {
-  domain: any,
-  code: any,
-  description: any,
-};
-
 type Event = Object;
-type SourceWithUri = {|
+
+type BaseNativeEvent = $ReadOnly<{|
+  url: string,
+  title: string,
+  loading: boolean,
+  canGoBack: boolean,
+  canGoForward: boolean,
+|}>;
+
+type LoadEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    jsEvaluationValue?: string,
+  |}>,
+>;
+
+type LoadEndEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    jsEvaluationValue?: string,
+    didFailProvisionalNavigation?: boolean,
+    domain?: string,
+    code?: number,
+    description?: string,
+  |}>,
+>;
+
+type NavigationTypeType =
+  | 'click'
+  | 'formsubmit'
+  | 'backforward'
+  | 'reload'
+  | 'formsubmit'
+  | 'other';
+
+type LoadStartEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    navigationType: NavigationTypeType,
+  |}>,
+>;
+
+type ErrorEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    didFailProvisionalNavigation: boolean,
+    domain: string,
+    code: number,
+    description: string,
+  |}>,
+>;
+
+type MessageEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    data: string,
+  |}>,
+>;
+
+type ShouldStartLoadWithRequestEvent = SyntheticEvent<
+  $ReadOnly<{|
+    ...BaseNativeEvent,
+    navigationType: NavigationTypeType,
+  |}>,
+>;
+
+type SourceWithUri = $ReadOnly<{|
   /**
    * The URI to load in the `WebView`. Can be a local or remote file.
    */
@@ -80,9 +141,9 @@ type SourceWithUri = {|
    * NOTE: On Android, this can only be used with POST requests.
    */
   body?: string,
-|};
+|}>;
 
-type SourceWithHtml = {|
+type SourceWithHtml = $ReadOnly<{|
   /**
    * A static HTML page to display in the WebView.
    */
@@ -91,7 +152,7 @@ type SourceWithHtml = {|
    * The base URL to be used for any relative links in the HTML.
    */
   baseUrl?: string,
-|};
+|}>;
 /**
  * Used internally by packager.
  */
@@ -163,27 +224,31 @@ type Props = $ReadOnly<{|
   /**
    * Function that returns a view to show if there's an error.
    */
-  renderError?: Function, // view to show if there's an error
+  renderError?: (
+    domain: string,
+    code: number,
+    description: string,
+  ) => React.Node, // view to show if there's an error
   /**
    * Function that returns a loading indicator.
    */
-  renderLoading?: Function,
+  renderLoading?: () => React.Node,
   /**
    * Function that is invoked when the `WebView` has finished loading.
    */
-  onLoad?: Function,
+  onLoad?: (event: LoadEvent) => void,
   /**
    * Function that is invoked when the `WebView` load succeeds or fails.
    */
-  onLoadEnd?: Function,
+  onLoadEnd?: (event: LoadEndEvent) => void,
   /**
    * Function that is invoked when the `WebView` starts loading.
    */
-  onLoadStart?: Function,
+  onLoadStart?: (event: LoadStartEvent) => void,
   /**
    * Function that is invoked when the `WebView` load fails.
    */
-  onError?: Function,
+  onError?: (event: ErrorEvent) => void,
   /**
    * Boolean value that determines whether the web view bounces
    * when it reaches the edge of the content. The default value is `true`.
@@ -228,7 +293,7 @@ type Props = $ReadOnly<{|
   /**
    * Function that is invoked when the `WebView` loading starts or ends.
    */
-  onNavigationStateChange?: Function,
+  onNavigationStateChange?: (event: Event) => void,
   /**
    * A function that is invoked when the webview calls `window.postMessage`.
    * Setting this property will inject a `postMessage` global into your
@@ -238,7 +303,7 @@ type Props = $ReadOnly<{|
    * available on the event object, `event.nativeEvent.data`. `data`
    * must be a string.
    */
-  onMessage?: Function,
+  onMessage?: (event: MessageEvent) => void,
   /**
    * Boolean value that forces the `WebView` to show the loading view
    * on the first load.
@@ -324,7 +389,9 @@ type Props = $ReadOnly<{|
    * to stop loading.
    * @platform ios
    */
-  onShouldStartLoadWithRequest?: Function,
+  onShouldStartLoadWithRequest?: (
+    event: ShouldStartLoadWithRequestEvent,
+  ) => boolean,
 
   /**
    * Boolean that determines whether HTML5 videos play inline or use the
@@ -356,7 +423,7 @@ type Props = $ReadOnly<{|
    * Function that accepts a string that will be passed to the WebView and
    * executed immediately as JavaScript.
    */
-  injectJavaScript?: Function,
+  injectJavaScript?: (script: string) => void,
 
   /**
    * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
