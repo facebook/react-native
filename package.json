@@ -173,6 +173,7 @@
     "lodash": "^4.17.5",
     "metro": "^0.49.1",
     "metro-babel-register": "^0.49.1",
+    "metro-config": "^0.49.1",
     "metro-core": "^0.49.1",
     "metro-memory-fs": "^0.49.1",
     "mime": "^1.3.4",
