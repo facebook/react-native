@@ -49,6 +49,7 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
       eventDispatcher, contextContainer);
 
   uiManagerRef.setDelegate(this);
+  uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
   uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
