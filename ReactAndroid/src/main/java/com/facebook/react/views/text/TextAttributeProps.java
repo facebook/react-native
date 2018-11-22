@@ -384,40 +384,33 @@ public class TextAttributeProps {
       : -1;
   }
 
-  //TODO T31905686 remove this from here and add support to RTL
+  //TODO remove this from here
   private YogaDirection getLayoutDirection() {
     return YogaDirection.LTR;
   }
 
   public float getBottomPadding() {
-    return getPaddingProp(ViewProps.PADDING_BOTTOM);
+    // TODO convert into constants
+    return getFloatProp("bottomPadding", 0f);
   }
 
   public float getLeftPadding() {
-    return getPaddingProp(ViewProps.PADDING_LEFT);
+    return getFloatProp("leftPadding", 0f);
   }
 
   public float getStartPadding() {
-    return getPaddingProp(ViewProps.PADDING_START);
+    return getFloatProp("startPadding", 0f);
   }
 
   public float getEndPadding() {
-    return getPaddingProp(ViewProps.PADDING_END);
+    return getFloatProp("endPadding", 0f);
   }
 
   public float getTopPadding() {
-    return getPaddingProp(ViewProps.PADDING_TOP);
+    return getFloatProp("topPadding", 0f);
   }
 
   public float getRightPadding() {
-    return getPaddingProp(ViewProps.PADDING_RIGHT);
-  }
-
-  private float getPaddingProp(String paddingType) {
-    if (mProps.hasKey(ViewProps.PADDING)) {
-      return PixelUtil.toPixelFromDIP(getFloatProp(ViewProps.PADDING, 0f));
-    }
-
-    return PixelUtil.toPixelFromDIP(getFloatProp(paddingType, 0f));
+    return getFloatProp("rightPadding", 0f);
   }
 }

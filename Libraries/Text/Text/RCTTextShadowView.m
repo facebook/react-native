@@ -290,9 +290,6 @@
         RCTRoundPixelValue(attachmentSize.width),
         RCTRoundPixelValue(attachmentSize.height)
       }};
-      
-      NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
-      BOOL viewIsTruncated = NSIntersectionRange(range, truncatedGlyphRange).length != 0;
 
       RCTLayoutContext localLayoutContext = layoutContext;
       localLayoutContext.absolutePosition.x += frame.origin.x;
@@ -303,11 +300,9 @@
                         layoutDirection:self.layoutMetrics.layoutDirection
                           layoutContext:localLayoutContext];
 
+      // Reinforcing a proper frame origin for the Shadow View.
       RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
-      localLayoutMetrics.frame.origin = frame.origin; // Reinforcing a proper frame origin for the Shadow View.
-      if (viewIsTruncated) {
-        localLayoutMetrics.displayType = RCTDisplayTypeNone;
-      }
+      localLayoutMetrics.frame.origin = frame.origin;
       [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];

@@ -27,10 +27,10 @@ import type {PressRetentionOffset, TextProps} from 'TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
   onStartShouldSetResponder: () => boolean,
-  onResponderGrant: (event: PressEvent, dispatchID: string) => void,
-  onResponderMove: (event: PressEvent) => void,
-  onResponderRelease: (event: PressEvent) => void,
-  onResponderTerminate: (event: PressEvent) => void,
+  onResponderGrant: (event: SyntheticEvent<>, dispatchID: string) => void,
+  onResponderMove: (event: SyntheticEvent<>) => void,
+  onResponderRelease: (event: SyntheticEvent<>) => void,
+  onResponderTerminate: (event: SyntheticEvent<>) => void,
   onResponderTerminationRequest: () => boolean,
 |}>;
 
@@ -93,12 +93,12 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
   touchableHandleResponderGrant: ?(
-    event: PressEvent,
+    event: SyntheticEvent<>,
     dispatchID: string,
   ) => void;
-  touchableHandleResponderMove: ?(event: PressEvent) => void;
-  touchableHandleResponderRelease: ?(event: PressEvent) => void;
-  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderMove: ?(event: SyntheticEvent<>) => void;
+  touchableHandleResponderRelease: ?(event: SyntheticEvent<>) => void;
+  touchableHandleResponderTerminate: ?(event: SyntheticEvent<>) => void;
   touchableHandleResponderTerminationRequest: ?() => boolean;
 
   state = {
@@ -173,25 +173,25 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
+      onResponderGrant: (event: SyntheticEvent<>, dispatchID: string): void => {
         nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
         if (this.props.onResponderGrant != null) {
           this.props.onResponderGrant.call(this, event, dispatchID);
         }
       },
-      onResponderMove: (event: PressEvent): void => {
+      onResponderMove: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderMove)(event);
         if (this.props.onResponderMove != null) {
           this.props.onResponderMove.call(this, event);
         }
       },
-      onResponderRelease: (event: PressEvent): void => {
+      onResponderRelease: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderRelease)(event);
         if (this.props.onResponderRelease != null) {
           this.props.onResponderRelease.call(this, event);
         }
       },
-      onResponderTerminate: (event: PressEvent): void => {
+      onResponderTerminate: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderTerminate)(event);
         if (this.props.onResponderTerminate != null) {
           this.props.onResponderTerminate.call(this, event);

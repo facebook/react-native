@@ -9,7 +9,6 @@ package com.facebook.react.uimanager;
 
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.View;
 import com.facebook.react.common.SingleThreadAsserter;
 
 /**
@@ -37,11 +36,6 @@ public class ShadowNodeRegistry {
 
   public void removeRootNode(int tag) {
     mThreadAsserter.assertNow();
-    if (tag == View.NO_ID) {
-      // This root node has already been removed (likely due to a threading issue caused by async js
-      // execution). Ignore this root removal.
-      return;
-    }
     if (!mRootTags.get(tag)) {
       throw new IllegalViewOperationException(
           "View with tag " + tag + " is not registered as a root view");

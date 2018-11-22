@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;

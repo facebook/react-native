@@ -85,14 +85,14 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL turboModuleEnabled = NO;
-BOOL RCTTurboModuleEnabled(void)
+static BOOL jsiNativeModuleEnabled = NO;
+BOOL RCTJSINativeModuleEnabled(void)
 {
-  return turboModuleEnabled;
+  return jsiNativeModuleEnabled;
 }
 
-void RCTEnableTurboModule(BOOL enabled) {
-  turboModuleEnabled = enabled;
+void RCTEnableJSINativeModule(BOOL enabled) {
+  jsiNativeModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
@@ -239,11 +239,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (id)moduleForName:(NSString *)moduleName
 {
   return [self.batchedBridge moduleForName:moduleName];
-}
-
-- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
-{
-  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
 }
 
 - (id)moduleForClass:(Class)moduleClass

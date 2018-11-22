@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
@@ -103,56 +103,13 @@ type Props = $ReadOnly<{|
   barStyle?: ?('default' | 'light-content' | 'dark-content'),
 |}>;
 
-type StackEntryProps = {|
-  /**
-   * The background color of the status bar.
-   *
-   * @platform android
-   */
-  backgroundColor: {|
-    value: ?string,
-    animated: ?boolean,
-  |},
-  /**
-   * Sets the color of the status bar text.
-   */
-  barStyle: {|
-    value: ?string,
-    animated: ?boolean,
-  |},
-  /**
-   * If the status bar is translucent.
-   * When translucent is set to true, the app will draw under the status bar.
-   * This is useful when using a semi transparent status bar color.
-   */
-  translucent: ?boolean,
-  /**
-   *
-   */
-  hidden: {|
-    value: ?boolean,
-    animated: boolean,
-    transition: ?('slide' | 'fade'),
-  |},
-  /**
-   * If the network activity indicator should be visible.
-   *
-   * @platform ios
-   */
-  networkActivityIndicatorVisible: ?boolean,
-|};
-
 /**
  * Merges the prop stack with the default values.
  */
 function mergePropsStack(
-  propsStack: $ReadOnlyArray<StackEntryProps>,
-  defaultValues: StackEntryProps,
-): StackEntryProps {
-  const init: StackEntryProps = {
-    ...defaultValues,
-  };
-
+  propsStack: Array<Object>,
+  defaultValues: Object,
+): Object {
   return propsStack.reduce((prev, cur) => {
     for (const prop in cur) {
       if (cur[prop] != null) {
@@ -160,31 +117,39 @@ function mergePropsStack(
       }
     }
     return prev;
-  }, init);
+  }, Object.assign({}, defaultValues));
 }
 
 /**
  * Returns an object to insert in the props stack from the props
  * and the transition/animation info.
  */
-function createStackEntry(props: Props): StackEntryProps {
+function createStackEntry(props: any): any {
   return {
-    backgroundColor: {
-      value: props.backgroundColor,
-      animated: props.animated,
-    },
-    barStyle: {
-      value: props.barStyle,
-      animated: props.animated,
-    },
-    translucent: props.translucent || false,
-    hidden: {
-      value: props.hidden,
-      animated: props.animated || false,
-      transition: props.showHideTransition,
-    },
-    networkActivityIndicatorVisible:
-      props.networkActivityIndicatorVisible || false,
+    backgroundColor:
+      props.backgroundColor != null
+        ? {
+            value: props.backgroundColor,
+            animated: props.animated,
+          }
+        : null,
+    barStyle:
+      props.barStyle != null
+        ? {
+            value: props.barStyle,
+            animated: props.animated,
+          }
+        : null,
+    translucent: props.translucent,
+    hidden:
+      props.hidden != null
+        ? {
+            value: props.hidden,
+            animated: props.animated,
+            transition: props.showHideTransition,
+          }
+        : null,
+    networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
   };
 }
 
@@ -228,9 +193,9 @@ function createStackEntry(props: Props): StackEntryProps {
  * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component<Props> {
-  static _propsStack: Array<StackEntryProps> = [];
+  static _propsStack = [];
 
-  static _defaultProps: StackEntryProps = createStackEntry({
+  static _defaultProps = createStackEntry({
     animated: false,
     showHideTransition: 'fade',
     backgroundColor: 'black',
@@ -265,9 +230,10 @@ class StatusBar extends React.Component<Props> {
    *    changing the status bar hidden property.
    */
   static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+    animation = animation || 'none';
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setHidden(hidden, animation || 'none');
+      StatusBarManager.setHidden(hidden, animation);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setHidden(hidden);
     }
@@ -279,9 +245,10 @@ class StatusBar extends React.Component<Props> {
    * @param animated Animate the style change.
    */
   static setBarStyle(style: StatusBarStyle, animated?: boolean) {
+    animated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setStyle(style, animated || false);
+      StatusBarManager.setStyle(style, animated);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setStyle(style);
     }
@@ -312,8 +279,9 @@ class StatusBar extends React.Component<Props> {
       console.warn('`setBackgroundColor` is only available on Android');
       return;
     }
+    animated = animated || false;
     StatusBar._defaultProps.backgroundColor.value = color;
-    StatusBarManager.setColor(processColor(color), animated || false);
+    StatusBarManager.setColor(processColor(color), animated);
   }
 
   /**

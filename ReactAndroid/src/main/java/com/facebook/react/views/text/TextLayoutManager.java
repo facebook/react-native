@@ -29,10 +29,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
-import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,9 +95,11 @@ public class TextLayoutManager {
               new CustomLetterSpacingSpan(textAttributes.mLetterSpacing)));
           }
         }
-        ops.add(
-          new SetSpanOperation(
-            start, end, new AbsoluteSizeSpan(textAttributes.mFontSize)));
+        if (textAttributes.mFontSize != UNSET) {
+          ops.add(
+            new SetSpanOperation(
+              start, end, new AbsoluteSizeSpan((int) (textAttributes.mFontSize))));
+        }
         if (textAttributes.mFontStyle != UNSET
           || textAttributes.mFontWeight != UNSET
           || textAttributes.mFontFamily != null) {
@@ -163,14 +163,23 @@ public class TextLayoutManager {
 
     buildSpannedFromShadowNode(context, fragments, sb, ops);
 
-// TODO T31905686: add support for inline Images
+    // TODO: add support for AllowScaling in C++
+//    if (textShadowNode.mFontSize == UNSET) {
+//      int defaultFontSize =
+//        textShadowNode.mAllowFontScaling
+//          ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+//          : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+//
+//      ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
+//    }
+//
 //    textShadowNode.mContainsImages = false;
 //    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images.
     int priority = 0;
     for (SetSpanOperation op : ops) {
-// TODO T31905686: add support for TextInlineImage in C++
+// TODO: add support for TextInlineImage in C++
 //      if (op.what instanceof TextInlineImageSpan) {
 //        int height = ((TextInlineImageSpan) op.what).getHeight();
 //        textShadowNode.mContainsImages = true;

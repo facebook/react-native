@@ -16,16 +16,6 @@
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 
-@interface RCTImagePickerController : UIImagePickerController
-
-@property (nonatomic, assign) BOOL unmirrorFrontFacingCamera;
-
-@end
-
-@implementation RCTImagePickerController
-
-@end
-
 @interface RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end
@@ -40,22 +30,6 @@
 RCT_EXPORT_MODULE(ImagePickerIOS);
 
 @synthesize bridge = _bridge;
-
-- (id)init
-{
-  if (self = [super init]) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(cameraChanged:)
-                                                 name:@"AVCaptureDeviceDidStartRunningNotification"
-                                               object:nil];
-  }
-  return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVCaptureDeviceDidStartRunningNotification" object:nil];
-}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -82,10 +56,9 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     return;
   }
 
-  RCTImagePickerController *imagePicker = [RCTImagePickerController new];
+  UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-  imagePicker.unmirrorFrontFacingCamera = [RCTConvert BOOL:config[@"unmirrorFrontFacingCamera"]];
 
   if ([RCTConvert BOOL:config[@"videoMode"]]) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
@@ -199,19 +172,6 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
     successCallback(args);
   } else {
     cancelCallback(@[]);
-  }
-}
-
-- (void)cameraChanged:(NSNotification *)notification
-{
-  for (UIImagePickerController *picker in _pickers) {
-    if ([picker isKindOfClass:[RCTImagePickerController class]]
-      && ((RCTImagePickerController *)picker).unmirrorFrontFacingCamera
-      && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
-      picker.cameraViewTransform = CGAffineTransformScale(CGAffineTransformIdentity, -1, 1);
-    } else {
-      picker.cameraViewTransform = CGAffineTransformIdentity;
-    }
   }
 }
 

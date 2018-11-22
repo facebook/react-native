@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
 
 const TimePickerModule = require('NativeModules').TimePickerAndroid;
-
-import type {
-  TimePickerOptions,
-  TimePickerResult,
-} from './TimePickerAndroidTypes';
 
 /**
  * Opens the standard Android time picker dialog.
@@ -57,18 +52,22 @@ class TimePickerAndroid {
    * still be resolved with action being `TimePickerAndroid.dismissedAction` and all the other keys
    * being undefined. **Always** check whether the `action` before reading the values.
    */
-  static async open(options: TimePickerOptions): Promise<TimePickerResult> {
+  static async open(options: Object): Promise<Object> {
     return TimePickerModule.open(options);
   }
 
   /**
    * A time has been selected.
    */
-  static +timeSetAction: 'timeSetAction' = 'timeSetAction';
+  static get timeSetAction() {
+    return 'timeSetAction';
+  }
   /**
    * The dialog has been dismissed.
    */
-  static +dismissedAction: 'dismissedAction' = 'dismissedAction';
+  static get dismissedAction() {
+    return 'dismissedAction';
+  }
 }
 
 module.exports = TimePickerAndroid;

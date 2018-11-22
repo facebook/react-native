@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
  * @format
  */
 
@@ -23,8 +22,6 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
 
-import type {PressEvent} from 'CoreEventTypes';
-
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
@@ -40,6 +37,8 @@ const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
+
+type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -168,7 +167,7 @@ const TouchableNativeFeedback = createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn: function(e: Event) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
     if (this.pressInLocation) {
@@ -179,16 +178,16 @@ const TouchableNativeFeedback = createReactClass({
     }
   },
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut: function(e: Event) {
     this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress: function(e: Event) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: PressEvent) {
+  touchableHandleLongPress: function(e: Event) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 

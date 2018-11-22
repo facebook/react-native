@@ -9,18 +9,18 @@ package com.facebook.react.views.text;
 
 import android.text.Layout;
 import android.text.Spannable;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import javax.annotation.Nullable;
+import com.facebook.yoga.YogaMeasureMode;
 
 /**
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
@@ -109,17 +109,18 @@ public class ReactTextViewManager
     ReadableNativeMap localData,
     ReadableNativeMap props,
     float width,
-    YogaMeasureMode widthMode,
+    int widthMode,
     float height,
-    YogaMeasureMode heightMode) {
+    int heightMode) {
 
+    // TODO: should widthMode and heightMode be a YogaMeasureMode?
     return TextLayoutManager.measureText(context,
       view,
       localData,
       props,
       width,
-      widthMode,
+      YogaMeasureMode.fromInt(widthMode),
       height,
-      heightMode);
+      YogaMeasureMode.fromInt(heightMode));
   }
 }

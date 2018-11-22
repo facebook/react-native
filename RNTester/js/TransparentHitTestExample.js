@@ -12,13 +12,13 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Text, View, TouchableOpacity, Alert} = ReactNative;
+const {Text, View, TouchableOpacity} = ReactNative;
 
 class TransparentHitTestExample extends React.Component<{}> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <TouchableOpacity onPress={() => Alert.alert('Alert', 'Hi!')}>
+        <TouchableOpacity onPress={() => alert('Hi!')}>
           <Text>HELLO!</Text>
         </TouchableOpacity>
 

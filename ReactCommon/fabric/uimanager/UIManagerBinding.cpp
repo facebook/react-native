@@ -90,7 +90,6 @@ void UIManagerBinding::dispatchEvent(
 }
 
 void UIManagerBinding::invalidate() const {
-  uiManager_->setShadowTreeRegistry(nullptr);
   uiManager_->setDelegate(nullptr);
 }
 

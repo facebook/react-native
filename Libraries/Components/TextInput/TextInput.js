@@ -34,8 +34,6 @@ const warning = require('fbjs/lib/warning');
 import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from 'CoreEventTypes';
-import type {PressEvent} from 'CoreEventTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -57,73 +55,11 @@ const onlyMultiline = {
   children: true,
 };
 
-export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    target: number,
-    text: string,
-  |}>,
->;
-
-export type TextInputEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    previousText: string,
-    range: $ReadOnly<{|
-      start: number,
-      end: number,
-    |}>,
-    target: number,
-    text: string,
-  |}>,
->;
-
-export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-    contentSize: $ReadOnly<{|
-      width: number,
-      height: number,
-    |}>,
-  |}>,
->;
-
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
-
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
-
-type Selection = $ReadOnly<{|
+type Event = Object;
+type Selection = {
   start: number,
-  end: number,
-|}>;
-
-export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    selection: Selection,
-    target: number,
-  |}>,
->;
-
-export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{|
-    key: string,
-    target?: ?number,
-    eventCount?: ?number,
-  |}>,
->;
-
-export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    text: string,
-    target: number,
-  |}>,
->;
+  end?: number,
+};
 
 const DataDetectorTypes = [
   'phoneNumber',
@@ -248,17 +184,17 @@ type Props = $ReadOnly<{|
   returnKeyType?: ?ReturnKeyType,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => void,
-  onFocus?: ?(e: FocusEvent) => void,
-  onChange?: ?(e: ChangeEvent) => void,
-  onChangeText?: ?(text: string) => void,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => void,
-  onTextInput?: ?(e: TextInputEvent) => void,
-  onEndEditing?: ?(e: EditingEvent) => void,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => void,
-  onSubmitEditing?: ?(e: EditingEvent) => void,
-  onKeyPress?: ?(e: KeyPressEvent) => void,
-  onScroll?: ?(e: ScrollEvent) => void,
+  onBlur?: ?Function,
+  onFocus?: ?Function,
+  onChange?: ?Function,
+  onChangeText?: ?Function,
+  onContentSizeChange?: ?Function,
+  onTextInput?: ?Function,
+  onEndEditing?: ?Function,
+  onSelectionChange?: ?Function,
+  onSubmitEditing?: ?Function,
+  onKeyPress?: ?Function,
+  onScroll?: ?Function,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   secureTextEntry?: ?boolean,
@@ -856,7 +792,7 @@ const TextInput = createReactClass({
       'oneTimeCode',
     ]),
   },
-  getDefaultProps() {
+  getDefaultProps(): Object {
     return {
       allowFontScaling: true,
       underlineColorAndroid: 'transparent',
@@ -1172,7 +1108,7 @@ const TextInput = createReactClass({
     );
   },
 
-  _onFocus: function(event: FocusEvent) {
+  _onFocus: function(event: Event) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1182,16 +1118,16 @@ const TextInput = createReactClass({
     }
   },
 
-  _onPress: function(event: PressEvent) {
+  _onPress: function(event: Event) {
     if (this.props.editable || this.props.editable === undefined) {
       this.focus();
     }
   },
 
-  _onChange: function(event: ChangeEvent) {
+  _onChange: function(event: Event) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    if (this._inputRef && this._inputRef.setNativeProps) {
+    if (this._inputRef) {
       this._inputRef.setNativeProps({
         mostRecentEventCount: event.nativeEvent.eventCount,
       });
@@ -1211,7 +1147,7 @@ const TextInput = createReactClass({
     this.forceUpdate();
   },
 
-  _onSelectionChange: function(event: SelectionChangeEvent) {
+  _onSelectionChange: function(event: Event) {
     this.props.onSelectionChange && this.props.onSelectionChange(event);
 
     if (!this._inputRef) {
@@ -1252,11 +1188,7 @@ const TextInput = createReactClass({
       nativeProps.selection = this.props.selection;
     }
 
-    if (
-      Object.keys(nativeProps).length > 0 &&
-      this._inputRef &&
-      this._inputRef.setNativeProps
-    ) {
+    if (Object.keys(nativeProps).length > 0 && this._inputRef) {
       this._inputRef.setNativeProps(nativeProps);
     }
 
@@ -1265,7 +1197,8 @@ const TextInput = createReactClass({
     }
   },
 
-  _onBlur: function(event: BlurEvent) {
+  _onBlur: function(event: Event) {
+    this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
@@ -1275,11 +1208,11 @@ const TextInput = createReactClass({
     }
   },
 
-  _onTextInput: function(event: TextInputEvent) {
+  _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
   },
 
-  _onScroll: function(event: ScrollEvent) {
+  _onScroll: function(event: Event) {
     this.props.onScroll && this.props.onScroll(event);
   },
 });

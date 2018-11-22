@@ -5,3 +5,4 @@
 
 include ':ReactAndroid'
 include ':RNTester:android:app'
+include ':android-jsc'
