@@ -91,7 +91,7 @@ bool YGFloatArrayEqual(
 }
 
 // This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
-float YGFloatSanitize(const float& val);
+float YGFloatSanitize(const float val);
 
 // This function unwraps optional and returns YGUndefined if not defined or
 // op.value otherwise

@@ -1221,8 +1221,8 @@ static inline bool YGNodeIsLayoutDimDefined(
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const YGNodeRef node,
     const YGFlexDirection& axis,
-    const float& value,
-    const float& axisSize) {
+    const float value,
+    const float axisSize) {
   YGFloatOptional min;
   YGFloatOptional max;
 
@@ -2422,17 +2422,17 @@ static void YGResolveFlexibleLength(
 static void YGJustifyMainAxis(
     const YGNodeRef node,
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
-    const uint32_t& startOfLineIndex,
+    const uint32_t startOfLineIndex,
     const YGFlexDirection& mainAxis,
     const YGFlexDirection& crossAxis,
     const YGMeasureMode& measureModeMainDim,
     const YGMeasureMode& measureModeCrossDim,
-    const float& mainAxisownerSize,
-    const float& ownerWidth,
-    const float& availableInnerMainDim,
-    const float& availableInnerCrossDim,
-    const float& availableInnerWidth,
-    const bool& performLayout) {
+    const float mainAxisownerSize,
+    const float ownerWidth,
+    const float availableInnerMainDim,
+    const float availableInnerCrossDim,
+    const float availableInnerWidth,
+    const bool performLayout) {
   const YGStyle& style = node->getStyle();
   const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
