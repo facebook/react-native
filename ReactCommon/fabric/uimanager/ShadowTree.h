@@ -77,6 +77,11 @@ class ShadowTree final {
    */
   bool complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
 
+  /*
+   * Returns a root shadow node that represents the last committed three.
+   */
+  SharedRootShadowNode getRootShadowNode() const;
+
 #pragma mark - Delegate
 
   /*
@@ -104,11 +109,6 @@ class ShadowTree final {
 
   void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
-
-  /*
-   * Return `rootShadowNodeMutex_` protected by `commitMutex_`.
-   */
-  SharedRootShadowNode getRootShadowNode() const;
 
   const SurfaceId surfaceId_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.

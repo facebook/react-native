@@ -14,7 +14,7 @@ const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
 const React = require('react');
 const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -71,7 +71,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
               'onSelectionChange range: ' +
                 event.nativeEvent.selection.start +
                 ',' +
-                event.nativeEvent.selection.end,
+                (event.nativeEvent.selection.end || ''),
             )
           }
           onKeyPress={event => {
@@ -348,10 +348,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
 }
 
 type SelectionExampleState = {
-  selection: {|
+  selection: $ReadOnly<{|
     start: number,
     end?: number,
-  |},
+  |}>,
   value: string,
 };
 
@@ -862,7 +862,9 @@ exports.examples = [
             returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
-            onSubmitEditing={event => alert(event.nativeEvent.text)}
+            onSubmitEditing={event =>
+              Alert.alert('Alert', event.nativeEvent.text)
+            }
           />
         </View>
       );

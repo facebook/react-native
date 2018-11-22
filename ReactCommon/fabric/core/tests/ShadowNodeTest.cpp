@@ -202,3 +202,78 @@ TEST(ShadowNodeTest, handleLocalData) {
   secondNode->sealRecursive();
   ASSERT_ANY_THROW(secondNode->setLocalData(localDataOver9000));
 }
+
+TEST(ShadowNodeTest, handleBacktracking) {
+  /*
+   * The structure:
+   * <A>
+   *  <AA/>
+   *  <AB>
+   *    <ABA/>
+   *    <ABB/>
+   *    <ABC/>
+   *  </AB>
+   *  <AC/>
+   * </A>
+   */
+
+  auto props = std::make_shared<const TestProps>();
+
+  auto nodeAA = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+
+  auto nodeABA = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+  auto nodeABB = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+  auto nodeABC = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+
+  auto nodeABChildren = std::make_shared<std::vector<SharedShadowNode>>(
+      std::vector<SharedShadowNode>{nodeABA, nodeABB, nodeABC});
+  auto nodeAB = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{.props = props, .children = nodeABChildren}, nullptr);
+
+  auto nodeAC = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+
+  auto nodeAChildren = std::make_shared<std::vector<SharedShadowNode>>(
+      std::vector<SharedShadowNode>{nodeAA, nodeAB, nodeAC});
+  auto nodeA = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{.props = props, .children = nodeAChildren}, nullptr);
+
+  auto nodeZ = std::make_shared<TestShadowNode>(
+      ShadowNodeFragment{
+          .props = props,
+          .children = ShadowNode::emptySharedShadowNodeSharedList()},
+      nullptr);
+
+  std::vector<std::reference_wrapper<const ShadowNode>> ancestors = {};
+
+  // Negative case:
+  auto success = nodeZ->constructAncestorPath(*nodeA, ancestors);
+  ASSERT_FALSE(success);
+  ASSERT_EQ(ancestors.size(), 0);
+
+  // Positive case:
+  success = nodeABC->constructAncestorPath(*nodeA, ancestors);
+  ASSERT_TRUE(success);
+  ASSERT_EQ(ancestors.size(), 2);
+  ASSERT_EQ(&ancestors[0].get(), nodeAB.get());
+  ASSERT_EQ(&ancestors[1].get(), nodeA.get());
+}
