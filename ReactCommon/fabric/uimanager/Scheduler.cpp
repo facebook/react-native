@@ -49,7 +49,6 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
       eventDispatcher, contextContainer);
 
   uiManagerRef.setDelegate(this);
-  uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
   uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -67,11 +66,12 @@ void Scheduler::startSurface(
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+
   auto shadowTree =
       std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
-
-  shadowTreeRegistry_.add(std::move(shadowTree));
+  shadowTreeRegistry_.emplace(surfaceId, std::move(shadowTree));
 
 #ifndef ANDROID
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -96,10 +96,11 @@ void Scheduler::renderTemplateToSurface(
         *componentDescriptorRegistry_,
         nMR);
 
-    shadowTreeRegistry_.get(surfaceId, [=](const ShadowTree &shadowTree) {
-      shadowTree.complete(
-          std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
-    });
+    std::lock_guard<std::mutex> lock(mutex_);
+    const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
+    assert(shadowTree);
+    shadowTree->complete(
+        std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
                << "Scheduler::renderTemplateToSurface: " << e.what();
@@ -107,14 +108,14 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
-  shadowTreeRegistry_.get(surfaceId, [](const ShadowTree &shadowTree) {
-    // As part of stopping the Surface, we have to commit an empty tree.
-    shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
-        ShadowNode::emptySharedShadowNodeSharedList()));
-  });
-
-  auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
-  shadowTree->setDelegate(nullptr);
+  std::lock_guard<std::mutex> lock(mutex_);
+  const auto &iterator = shadowTreeRegistry_.find(surfaceId);
+  auto &shadowTree = *iterator->second;
+  // As part of stopping the Surface, we have to commit an empty tree.
+  shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
+      ShadowNode::emptySharedShadowNodeSharedList()));
+  shadowTree.setDelegate(nullptr);
+  shadowTreeRegistry_.erase(iterator);
 
 #ifndef ANDROID
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -127,21 +128,21 @@ Size Scheduler::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
-  Size size;
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
-    size = shadowTree.measure(layoutConstraints, layoutContext);
-  });
-  return size;
+  std::lock_guard<std::mutex> lock(mutex_);
+  const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
+  assert(shadowTree);
+  return shadowTree->measure(layoutConstraints, layoutContext);
 }
 
 void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() {
-      shadowTree.constraintLayout(layoutConstraints, layoutContext);
-    });
+  std::lock_guard<std::mutex> lock(mutex_);
+  const auto &shadowTree = shadowTreeRegistry_.at(surfaceId);
+  assert(shadowTree);
+  shadowTree->synchronize([&]() {
+    shadowTree->constraintLayout(layoutConstraints, layoutContext);
   });
 }
 
@@ -169,11 +170,16 @@ void Scheduler::shadowTreeDidCommit(
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    SurfaceId surfaceId,
+    Tag rootTag,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.complete(rootChildNodes);
-  });
+  std::lock_guard<std::mutex> lock(mutex_);
+  const auto iterator = shadowTreeRegistry_.find(rootTag);
+  if (iterator == shadowTreeRegistry_.end()) {
+    // This might happen during surface unmounting/deallocation process
+    // due to the asynchronous nature of JS calls.
+    return;
+  }
+  iterator->second->complete(rootChildNodes);
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

@@ -67,14 +67,13 @@ public:
     std::string name;
 
     size_t callbacks;
-    bool isPromise;
     std::function<void(folly::dynamic, Callback, Callback)> func;
 
     std::function<folly::dynamic(folly::dynamic)> syncFunc;
 
     const char *getType() {
       assert(func || syncFunc);
-      return func ? (isPromise ? "promise" : "async") : "sync";
+      return func ? (callbacks == 2 ? "promise" : "async") : "sync";
     }
 
     // std::function/lambda ctors
@@ -83,36 +82,24 @@ public:
            std::function<void()>&& afunc)
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
       , func(std::bind(std::move(afunc))) {}
 
     Method(std::string aname,
            std::function<void(folly::dynamic)>&& afunc)
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(std::move(afunc), std::placeholders::_1)) {}
+      , func(std::bind(std::move(afunc), _1)) {}
 
     Method(std::string aname,
            std::function<void(folly::dynamic, Callback)>&& afunc)
       : name(std::move(aname))
       , callbacks(1)
-      , isPromise(false)
-      , func(std::bind(std::move(afunc), std::placeholders::_1, std::placeholders::_2)) {}
+      , func(std::bind(std::move(afunc), _1, _2)) {}
 
     Method(std::string aname,
            std::function<void(folly::dynamic, Callback, Callback)>&& afunc)
       : name(std::move(aname))
       , callbacks(2)
-      , isPromise(true)
-      , func(std::move(afunc)) {}
-
-    Method(std::string aname,
-           std::function<void(folly::dynamic, Callback, Callback)>&& afunc,
-           AsyncTagType)
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(false)
       , func(std::move(afunc)) {}
 
     // method pointer ctors
@@ -121,39 +108,25 @@ public:
     Method(std::string aname, T* t, void (T::*method)())
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
       , func(std::bind(method, t)) {}
 
     template <typename T>
     Method(std::string aname, T* t, void (T::*method)(folly::dynamic))
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1)) {}
+      , func(std::bind(method, t, _1)) {}
 
     template <typename T>
     Method(std::string aname, T* t, void (T::*method)(folly::dynamic, Callback))
       : name(std::move(aname))
       , callbacks(1)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2)) {}
+      , func(std::bind(method, t, _1, _2)) {}
 
     template <typename T>
     Method(std::string aname, T* t, void (T::*method)(folly::dynamic, Callback, Callback))
       : name(std::move(aname))
       , callbacks(2)
-      , isPromise(true)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {}
-
-    template <typename T>
-    Method(std::string aname,
-          T* t,
-          void (T::*method)(folly::dynamic, Callback, Callback),
-          AsyncTagType)
-      : name(std::move(aname))
-      , callbacks(2)
-      , isPromise(false)
-      , func(std::bind(method, t, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {}
+      , func(std::bind(method, t, _1, _2, _3)) {}
 
     // sync std::function/lambda ctors
 
@@ -166,7 +139,6 @@ public:
            SyncTagType)
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
       , syncFunc([afunc=std::move(afunc)] (const folly::dynamic&)
                  { return afunc(); })
     {}
@@ -176,7 +148,6 @@ public:
            SyncTagType)
       : name(std::move(aname))
       , callbacks(0)
-      , isPromise(false)
       , syncFunc(std::move(afunc))
       {}
   };

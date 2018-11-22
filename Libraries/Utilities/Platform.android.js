@@ -19,11 +19,8 @@ const Platform = {
     return constants && constants.Version;
   },
   get isTesting(): boolean {
-    if (__DEV__) {
-      const constants = NativeModules.PlatformConstants;
-      return constants && constants.isTesting;
-    }
-    return false;
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.isTesting;
   },
   get isTV(): boolean {
     const constants = NativeModules.PlatformConstants;

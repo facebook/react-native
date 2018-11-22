@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Facebook, Inc.
+ *  Copyright (c) 2018-present, Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -378,14 +378,6 @@ void YGConfigFree(const YGConfigRef config) {
 
 void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
-}
-
-void YGNodeSetIsReferenceBaseline(YGNodeRef node, bool isReferenceBaseline) {
-  node->setIsReferenceBaseline(isReferenceBaseline);
-}
-
-bool YGNodeIsReferenceBaseline(YGNodeRef node) {
-  return node->isReferenceBaseline();
 }
 
 void YGNodeInsertChild(
@@ -1146,8 +1138,7 @@ static float YGBaseline(const YGNodeRef node) {
     if (child->getStyle().positionType == YGPositionTypeAbsolute) {
       continue;
     }
-    if (YGNodeAlignItem(node, child) == YGAlignBaseline ||
-        child->isReferenceBaseline()) {
+    if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
       baselineChild = child;
       break;
     }
@@ -1220,9 +1211,9 @@ static inline bool YGNodeIsLayoutDimDefined(
 
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const YGNodeRef node,
-    const YGFlexDirection axis,
-    const float value,
-    const float axisSize) {
+    const YGFlexDirection& axis,
+    const float& value,
+    const float& axisSize) {
   YGFloatOptional min;
   YGFloatOptional max;
 
@@ -1911,7 +1902,7 @@ static float YGNodeCalculateAvailableInnerDim(
   return availableInnerDim;
 }
 
-static float YGNodeComputeFlexBasisForChildren(
+static void YGNodeComputeFlexBasisForChildren(
     const YGNodeRef node,
     const float availableInnerWidth,
     const float availableInnerHeight,
@@ -1920,8 +1911,8 @@ static float YGNodeComputeFlexBasisForChildren(
     YGDirection direction,
     YGFlexDirection mainAxis,
     const YGConfigRef config,
-    bool performLayout) {
-  float totalOuterFlexBasis = 0.0f;
+    bool performLayout,
+    float& totalOuterFlexBasis) {
   YGNodeRef singleFlexChild = nullptr;
   YGVector children = node->getChildren();
   YGMeasureMode measureModeMainDim =
@@ -1991,8 +1982,6 @@ static float YGNodeComputeFlexBasisForChildren(
         child->getLayout().computedFlexBasis +
         child->getMarginForAxis(mainAxis, availableInnerWidth));
   }
-
-  return totalOuterFlexBasis;
 }
 
 // This function assumes that all the children of node have their
@@ -2424,17 +2413,17 @@ static void YGResolveFlexibleLength(
 static void YGJustifyMainAxis(
     const YGNodeRef node,
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
-    const uint32_t startOfLineIndex,
-    const YGFlexDirection mainAxis,
-    const YGFlexDirection crossAxis,
-    const YGMeasureMode measureModeMainDim,
-    const YGMeasureMode measureModeCrossDim,
-    const float mainAxisownerSize,
-    const float ownerWidth,
-    const float availableInnerMainDim,
-    const float availableInnerCrossDim,
-    const float availableInnerWidth,
-    const bool performLayout) {
+    const uint32_t& startOfLineIndex,
+    const YGFlexDirection& mainAxis,
+    const YGFlexDirection& crossAxis,
+    const YGMeasureMode& measureModeMainDim,
+    const YGMeasureMode& measureModeCrossDim,
+    const float& mainAxisownerSize,
+    const float& ownerWidth,
+    const float& availableInnerMainDim,
+    const float& availableInnerCrossDim,
+    const float& availableInnerWidth,
+    const bool& performLayout) {
   const YGStyle& style = node->getStyle();
   const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
@@ -2904,9 +2893,11 @@ static void YGNodelayoutImpl(
   const float availableInnerCrossDim =
       isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
+  float totalOuterFlexBasis = 0;
+
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
-  float totalOuterFlexBasis = YGNodeComputeFlexBasisForChildren(
+  YGNodeComputeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
@@ -2915,7 +2906,8 @@ static void YGNodelayoutImpl(
       direction,
       mainAxis,
       config,
-      performLayout);
+      performLayout,
+      totalOuterFlexBasis);
 
   const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
       ? false

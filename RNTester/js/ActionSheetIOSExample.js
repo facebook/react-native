@@ -12,14 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {
-  ActionSheetIOS,
-  StyleSheet,
-  takeSnapshot,
-  Text,
-  View,
-  Alert,
-} = ReactNative;
+const {ActionSheetIOS, StyleSheet, takeSnapshot, Text, View} = ReactNative;
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
@@ -113,7 +106,7 @@ class ShareActionSheetExample extends React.Component<
         subject: 'a subject to go in the email heading',
         excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
       },
-      error => Alert.alert('Error', error),
+      error => alert(error),
       (completed, method) => {
         let text;
         if (completed) {
@@ -153,7 +146,7 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
           },
-          error => Alert.alert('Error', error),
+          error => alert(error),
           (completed, method) => {
             let text;
             if (completed) {
@@ -165,7 +158,7 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
           },
         );
       })
-      .catch(error => Alert.alert('Error', error));
+      .catch(error => alert(error));
   };
 }
 

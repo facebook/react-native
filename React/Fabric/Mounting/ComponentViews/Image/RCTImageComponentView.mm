@@ -73,7 +73,7 @@ using namespace facebook::react;
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
   assert(_imageLocalData);
   auto future = _imageLocalData->getImageRequest().getResponseFuture();
-  future.via(&MainQueueExecutor::instance()).thenValue([self](ImageResponse &&imageResponse) {
+  future.via(&MainQueueExecutor::instance()).then([self](ImageResponse &&imageResponse) {
     self.image = (__bridge UIImage *)imageResponse.getImage().get();
   });
 }

@@ -38,16 +38,10 @@ Size TextLayoutManager::measure(
       ReadableNativeMap::javaobject,
       ReadableNativeMap::javaobject,
       jint,
-      jint,
-      jint,
       jint)>("measure");
 
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
+  int width = (int)layoutConstraints.maximumSize.width;
+  int height = (int)layoutConstraints.maximumSize.height;
   local_ref<JString> componentName = make_jstring("RCTText");
   auto values = measure(
       fabricUIManager,
@@ -55,16 +49,14 @@ Size TextLayoutManager::measure(
       componentName.get(),
       ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString)).get(),
       ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes)).get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight);
+      width,
+      height);
 
   std::vector<float> indices;
   indices.resize(values->size());
   values->getRegion(0, values->size(), indices.data());
 
-  return {indices[0], indices[1]};
+  return {(float)indices[0], (float)indices[1]};
 }
 
 } // namespace react

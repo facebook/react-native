@@ -23,7 +23,8 @@ const createReactClass = require('create-react-class');
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-import type {PressEvent} from 'CoreEventTypes';
+
+type Event = Object;
 
 type State = {
   animationID: ?number,
@@ -35,8 +36,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?(fn: () => void) => void,
-  onPressAnimationComplete?: ?() => void,
+  onPressWithCompletion?: ?Function,
+  onPressAnimationComplete?: ?Function,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
   releaseBounciness?: ?number,
@@ -94,7 +95,7 @@ const TouchableBounce = ((createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?() => void,
+    callback?: ?Function,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -105,27 +106,20 @@ const TouchableBounce = ((createReactClass({
   },
 
   /**
-   * Triggers a bounce animation without invoking any callbacks.
-   */
-  bounce: function() {
-    this.bounceTo(0.93, 0.1, 0, () => this.bounceTo(1, 0.4, 0));
-  },
-
-  /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn: function(e: Event) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut: function(e: Event) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress: function(e: Event) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -153,7 +147,7 @@ const TouchableBounce = ((createReactClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
-  touchableGetHitSlop: function(): ?EdgeInsetsProp {
+  touchableGetHitSlop: function(): ?Object {
     return this.props.hitSlop;
   },
 

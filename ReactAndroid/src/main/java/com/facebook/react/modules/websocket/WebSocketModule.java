@@ -148,11 +148,6 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
           }
 
           @Override
-          public void onClosing(WebSocket websocket, int code, String reason) {
-            websocket.close(code, reason);
-          }
-
-          @Override
           public void onClosed(WebSocket webSocket, int code, String reason) {
             WritableMap params = Arguments.createMap();
             params.putInt("id", id);
