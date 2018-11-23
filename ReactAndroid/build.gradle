@@ -158,14 +158,16 @@ task downloadJSCHeaders(type: Download) {
 }
 
 // Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
-task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
-    copy {
-        from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
-        from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
-        from 'src/main/jni/third-party/jsc'
-        include 'jni/**/*.so', '*.h', 'Android.mk'
-        filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
-        into "$thirdPartyNdkDir/jsc";
+task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) {
+    doLast {
+        copy {
+            from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
+            from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
+            from 'src/main/jni/third-party/jsc'
+            include 'jni/**/*.so', '*.h', 'Android.mk'
+            filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
+            into "$thirdPartyNdkDir/jsc";
+        }
     }
 }
 
@@ -231,7 +233,7 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/react')
+    inputs.dir('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
