@@ -113,7 +113,7 @@ static JSValueRef nativeInjectHMRUpdate(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   String execJSString = Value(ctx, arguments[0]).toString();
-  String jsURL = Value(ctx, arguments[1]).toString();
+  String jsURL = argumentCount > 1 ? Value(ctx, arguments[1]).toString() : String();
   evaluateScript(ctx, execJSString, jsURL);
   return Value::makeUndefined(ctx);
 }
