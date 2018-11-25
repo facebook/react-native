@@ -6,6 +6,7 @@
  *
  */
 #pragma once
+#include "YGMarker.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
@@ -14,11 +15,12 @@ struct YGConfig {
   bool useWebDefaults = false;
   bool useLegacyStretchBehaviour = false;
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
+  bool printTree = false;
   float pointScaleFactor = 1.0f;
   YGLogger logger;
   YGCloneNodeFunc cloneNodeCallback = nullptr;
   void* context = nullptr;
-  bool printTree = false;
+  YGMarkerCallbacks markerCallbacks = {nullptr, nullptr};
 
   YGConfig(YGLogger logger);
 };
