@@ -48,7 +48,8 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           }
           onContentSizeChange={event =>
             this.updateText(
-              'onContentSizeChange size: ' + event.nativeEvent.contentSize,
+              'onContentSizeChange size: ' +
+                JSON.stringify(event.nativeEvent.contentSize),
             )
           }
           onEndEditing={event =>
@@ -253,10 +254,10 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: {
+  selection: $ReadOnly<{|
     start: number,
-    end: number,
-  },
+    end?: number,
+  |}>,
   value: string,
 };
 

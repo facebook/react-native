@@ -22,8 +22,10 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Intent module. Launch other activities or open URLs.
  */
-@ReactModule(name = "IntentAndroid")
+@ReactModule(name = IntentModule.NAME)
 public class IntentModule extends ReactContextBaseJavaModule {
+
+  public static final String NAME = "IntentAndroid";
 
   public IntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -31,7 +33,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "IntentAndroid";
+    return NAME;
   }
 
   /**

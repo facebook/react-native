@@ -90,9 +90,7 @@ exports.examples = [
       return (
         <View>
           <ActivityIndicator style={[styles.centering]} />
-          <ActivityIndicator
-            style={[styles.centering, {backgroundColor: '#eeeeee'}]}
-          />
+          <ActivityIndicator style={[styles.centering, styles.gray]} />
         </View>
       );
     },

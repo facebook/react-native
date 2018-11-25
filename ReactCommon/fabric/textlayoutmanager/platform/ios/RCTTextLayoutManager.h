@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/attributedstring/AttributedString.h>
-#import <fabric/attributedstring/ParagraphAttributes.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/graphics/Geometry.h>
+#import <react/attributedstring/AttributedString.h>
+#import <react/attributedstring/ParagraphAttributes.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/graphics/Geometry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -96,8 +96,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   render() {
     return (
       <View>
-        <Text style={{marginBottom: 10}}>
-          <Text style={{fontWeight: 'bold'}}>Prompt value:</Text>{' '}
+        <Text style={styles.promptValue}>
+          <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
           {this.state.promptValue}
         </Text>
 
@@ -188,5 +188,11 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#eeeeee',
     padding: 10,
+  },
+  promptValue: {
+    marginBottom: 10,
+  },
+  promptValueLabel: {
+    fontWeight: 'bold',
   },
 });

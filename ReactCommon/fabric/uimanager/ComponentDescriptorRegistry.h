@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <fabric/core/ComponentDescriptor.h>
+#include <react/core/ComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
@@ -24,6 +24,9 @@ class ComponentDescriptorRegistry {
  public:
   void registerComponentDescriptor(
       SharedComponentDescriptor componentDescriptor);
+
+  const ComponentDescriptor &at(ComponentName componentName) const;
+  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
 
   const SharedComponentDescriptor operator[](
       const SharedShadowNode &shadowNode) const;

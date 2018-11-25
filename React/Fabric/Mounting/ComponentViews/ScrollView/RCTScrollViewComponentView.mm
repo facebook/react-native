@@ -8,10 +8,10 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
-#import <fabric/components/scrollview/ScrollViewLocalData.h>
-#import <fabric/components/scrollview/ScrollViewProps.h>
-#import <fabric/components/scrollview/ScrollViewEventEmitter.h>
-#import <fabric/graphics/Geometry.h>
+#import <react/components/scrollview/ScrollViewLocalData.h>
+#import <react/components/scrollview/ScrollViewProps.h>
+#import <react/components/scrollview/ScrollViewEventEmitter.h>
+#import <react/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"

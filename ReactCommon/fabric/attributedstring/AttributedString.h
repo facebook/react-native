@@ -10,11 +10,11 @@
 #include <functional>
 #include <memory>
 
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/debug/DebugStringConvertible.h>
 #include <folly/Optional.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

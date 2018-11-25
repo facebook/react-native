@@ -7,11 +7,11 @@
 
 #include "ScrollViewProps.h"
 
-#include <fabric/components/scrollview/conversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
-#include <fabric/graphics/conversions.h>
+#include <react/components/scrollview/conversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
+#include <react/graphics/conversions.h>
 
-#include <fabric/core/propsConversions.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {

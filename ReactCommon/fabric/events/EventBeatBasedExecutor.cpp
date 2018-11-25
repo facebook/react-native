@@ -62,7 +62,7 @@ void EventBeatBasedExecutor::onBeat(bool success) const {
     }
 
     tasks = std::move(tasks_);
-    assert(tasks_.size() == 0);
+    tasks_.clear();
   }
 
   for (const auto task : tasks) {

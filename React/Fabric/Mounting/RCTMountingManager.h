@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/uimanager/ShadowView.h>
-#import <fabric/uimanager/ShadowViewMutation.h>
+#import <react/uimanager/ShadowView.h>
+#import <react/uimanager/ShadowViewMutation.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTMountingManagerDelegate.h>
 

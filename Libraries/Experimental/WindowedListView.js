@@ -777,11 +777,7 @@ class CellRenderer extends React.Component<CellProps> {
     if (DEBUG) {
       infoLog('render cell ' + this.props.rowIndex);
       const Text = require('Text');
-      debug = (
-        <Text style={{backgroundColor: 'lightblue'}}>
-          Row: {this.props.rowIndex}
-        </Text>
-      );
+      debug = <Text style={styles.debug}>Row: {this.props.rowIndex}</Text>;
     }
     const style = this._includeInLayoutLatch ? styles.include : styles.remove;
     return (
@@ -818,6 +814,9 @@ const styles = StyleSheet.create({
     left: removedXOffset,
     right: -removedXOffset,
     opacity: DEBUG ? 0.1 : 0,
+  },
+  debug: {
+    backgroundColor: 'lightblue',
   },
 });
 

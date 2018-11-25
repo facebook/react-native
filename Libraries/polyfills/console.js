@@ -558,6 +558,25 @@ if (global.nativeLoggingHook) {
         };
       }
     });
+
+    // The following methods are not supported by this polyfill but
+    // we still should pass them to original console if they are
+    // supported by it.
+    [
+      'assert',
+      'clear',
+      'dir',
+      'dirxml',
+      'groupCollapsed',
+      'profile',
+      'profileEnd',
+    ].forEach(methodName => {
+      if (typeof originalConsole[methodName] === 'function') {
+        console[methodName] = function() {
+          originalConsole[methodName](...arguments);
+        };
+      }
+    });
   }
 } else if (!global.console) {
   const log = global.print || function consoleLoggingStub() {};

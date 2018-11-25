@@ -7,8 +7,8 @@
 
 #import "RCTViewComponentView.h"
 
-#import <fabric/components/view/ViewProps.h>
-#import <fabric/components/view/ViewEventEmitter.h>
+#import <react/components/view/ViewProps.h>
+#import <react/components/view/ViewEventEmitter.h>
 #import <objc/runtime.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>

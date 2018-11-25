@@ -7,7 +7,7 @@
 
 #include "AttributedString.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {
@@ -73,7 +73,7 @@ std::string AttributedString::getString() const {
 }
 
 bool AttributedString::operator==(const AttributedString &rhs) const {
-  return fragments_ != rhs.fragments_;
+  return fragments_ == rhs.fragments_;
 }
 
 bool AttributedString::operator!=(const AttributedString &rhs) const {

@@ -9,9 +9,9 @@
 
 #include <limits>
 
-#include <fabric/attributedstring/primitives.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/graphics/Geometry.h>
+#include <react/attributedstring/primitives.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

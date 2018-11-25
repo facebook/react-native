@@ -109,7 +109,7 @@ class JSI_EXPORT HostObject {
 };
 
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
-/// this object is not thread-aware, but cannot be used safely from
+/// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
 /// ensuring that it is used safely.  This could mean using the
 /// Runtime from a single thread, using a mutex, doing all work on a
@@ -118,7 +118,14 @@ class JSI_EXPORT HostObject {
 /// argument.  Destructors (all but ~Scope), operators, or other methods
 /// which do not take Runtime& as an argument are safe to call from any
 /// thread, but it is still forbidden to make write operations on a single
-/// instance of any class from more than one thread.
+/// instance of any class from more than one thread.  In addition, to
+/// make shutdown safe, destruction of objects associated with the Runtime
+/// must be destroyed before the Runtime is destroyed, or from the
+/// destructor of a managed HostObject or HostFunction.  Informally, this
+/// means that the main source of unsafe behavior is to hold a jsi object
+/// in a non-Runtime-managed object, and not clean it up before the Runtime
+/// is shut down.  If your lifecycle is such that avoiding this is hard,
+/// you will probably need to do use your own locks.
 class Runtime {
  public:
   virtual ~Runtime();

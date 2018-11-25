@@ -25,8 +25,7 @@
  */
 'use strict';
 
-const startTime =
-  global.nativePerformanceNow != null ? global.nativePerformanceNow() : null;
+const start = Date.now();
 
 require('setUpGlobals');
 require('polyfillES6Collections');
@@ -45,8 +44,12 @@ if (__DEV__) {
   require('setUpDeveloperTools');
 }
 
-if (startTime != null) {
-  const PerformanceLogger = require('PerformanceLogger');
-  PerformanceLogger.markPoint('initializeCore_start', startTime);
-  PerformanceLogger.markPoint('initializeCore_end');
-}
+const PerformanceLogger = require('PerformanceLogger');
+// We could just call PerformanceLogger.markPoint at the top of the file,
+// but then we'd be excluding the time it took to require PerformanceLogger.
+// Instead, we just use Date.now and backdate the timestamp.
+PerformanceLogger.markPoint(
+  'initializeCore_start',
+  PerformanceLogger.currentTimestamp() - (Date.now() - start),
+);
+PerformanceLogger.markPoint('initializeCore_end');

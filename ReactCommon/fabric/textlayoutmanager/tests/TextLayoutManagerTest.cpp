@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include <fabric/textlayoutmanager/TextLayoutManager.h>
+#include <react/textlayoutmanager/TextLayoutManager.h>
 
 using namespace facebook::react;
 

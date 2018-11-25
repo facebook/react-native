@@ -9,10 +9,9 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/core/LayoutContext.h>
-#import <fabric/uimanager/FabricUIManager.h>
-#import <fabric/uimanager/ShadowViewMutation.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/core/LayoutContext.h>
+#import <react/uimanager/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,12 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                                        layoutContext:(facebook::react::LayoutContext)layoutContext
                                            surfaceId:(facebook::react::SurfaceId)surfaceId;
-
-@end
-
-@interface RCTScheduler (Deprecated)
-
-- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
 
 @end
 

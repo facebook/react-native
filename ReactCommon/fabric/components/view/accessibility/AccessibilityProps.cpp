@@ -7,10 +7,10 @@
 
 #include "AccessibilityProps.h"
 
-#include <fabric/components/view/accessibilityPropsConversions.h>
-#include <fabric/components/view/propsConversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/components/view/accessibilityPropsConversions.h>
+#include <react/components/view/propsConversions.h>
+#include <react/core/propsConversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {

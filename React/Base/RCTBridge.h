@@ -97,8 +97,8 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Experimental.
  * Check/set if JSI-bound NativeModule is enabled. By default it's off.
  */
-RCT_EXTERN BOOL RCTJSINativeModuleEnabled(void);
-RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
+RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
+RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -151,8 +151,12 @@ RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
  * lazily instantiated, so calling these methods for the first time with a given
  * module name/class may cause the class to be sychronously instantiated,
  * potentially blocking both the calling thread and main thread for a short time.
+ *
+ * Note: This method does NOT lazily load the particular module if it's not yet loaded.
  */
 - (id)moduleForName:(NSString *)moduleName;
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad;
+// Note: This method lazily load the module as necessary.
 - (id)moduleForClass:(Class)moduleClass;
 
 /**
