@@ -223,6 +223,7 @@
     "flow-bin": "^0.86.0",
     "jest": "24.0.0-alpha.6",
     "jest-junit": "5.2.0",
+    "jsc-android": "latest",
     "prettier": "1.13.6",
     "react": "16.6.1",
     "react-native-dummy": "0.1.0",
