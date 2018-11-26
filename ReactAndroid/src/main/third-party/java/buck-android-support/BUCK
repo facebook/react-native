@@ -1,5 +1,5 @@
-load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_integration_tests_target")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
 # this lib was compiled by buck version : 6cbf2709778ea352a169d1c84e3ef2894dfa39ec
 fb_native.prebuilt_jar(

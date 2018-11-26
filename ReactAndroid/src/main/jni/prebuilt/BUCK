@@ -1,6 +1,7 @@
-load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar", "rn_prebuilt_native_library")
+
 # Temp workaround to get the build working e2e, Gradle builds them for us
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
 rn_prebuilt_native_library(
     name = "reactnative-libs",
