@@ -12,7 +12,24 @@
 #include <react/textlayoutmanager/RCTFontUtils.h>
 #include <react/textlayoutmanager/RCTTextPrimitivesConversions.h>
 
-@implementation RCTSharedShadowNodeWrapper
+using namespace facebook::react;
+
+@implementation RCTWeakEventEmitterWrapper {
+  std::weak_ptr<const EventEmitter> _weakEventEmitter;
+}
+
+- (void)setEventEmitter:(SharedEventEmitter)eventEmitter {
+  _weakEventEmitter = eventEmitter;
+}
+
+- (SharedEventEmitter)eventEmitter {
+  return _weakEventEmitter.lock();
+}
+
+- (void)dealloc {
+  _weakEventEmitter.reset();
+}
+
 @end
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(
@@ -243,12 +260,13 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
             initWithAttributedString:nsAttributedStringFragment];
 
     if (fragment.parentShadowNode) {
-      RCTSharedShadowNodeWrapper *parentShadowNode =
-          [RCTSharedShadowNodeWrapper new];
-      parentShadowNode.node = fragment.parentShadowNode;
+      RCTWeakEventEmitterWrapper *eventEmitterWrapper =
+          [RCTWeakEventEmitterWrapper new];
+      eventEmitterWrapper.eventEmitter =
+          fragment.parentShadowNode->getEventEmitter();
 
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
-          @{RCTAttributedStringParentShadowNode : parentShadowNode};
+          @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
 
       [nsMutableAttributedStringFragment
           addAttributes:additionalTextAttributes
