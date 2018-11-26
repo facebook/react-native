@@ -487,6 +487,8 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
     fragments.push_back(dynamicFragment);
   }
   value("fragments", fragments);
+  value(
+      "hash", std::hash<facebook::react::AttributedString>{}(attributedString));
   value("string", attributedString.getString());
   return value;
 }
