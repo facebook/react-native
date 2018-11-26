@@ -267,6 +267,12 @@ using namespace facebook::react;
   [self invalidateLayer];
 }
 
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _eventEmitter.reset();
+}
+
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
   // This is a classic textbook implementation of `hitTest:` with a couple of improvements:
