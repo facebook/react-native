@@ -39,11 +39,11 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogNotesRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
 const includesChangelog =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('changelog');
-const correctlyFormattedChangelog = changelogNotesRegex.test(
+const correctlyFormattedChangelog = changelogRegex.test(
   danger.github.pr.body,
 );
 
