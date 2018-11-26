@@ -17,7 +17,6 @@ const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const TVEventHandler = require('TVEventHandler');
-const TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 const UIManager = require('UIManager');
 const View = require('View');
 
@@ -26,6 +25,19 @@ const normalizeColor = require('normalizeColor');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+
+const extractSingleTouch = nativeEvent => {
+  const touches = nativeEvent.touches;
+  const changedTouches = nativeEvent.changedTouches;
+  const hasTouches = touches && touches.length > 0;
+  const hasChangedTouches = changedTouches && changedTouches.length > 0;
+
+  return !hasTouches && hasChangedTouches
+    ? changedTouches[0]
+    : hasTouches
+      ? touches[0]
+      : nativeEvent;
+};
 
 /**
  * `Touchable`: Taps done right.
@@ -526,7 +538,7 @@ const TouchableMixin = {
       pressExpandBottom += hitSlop.bottom;
     }
 
-    const touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
+    const touch = extractSingleTouch(e.nativeEvent);
     const pageX = touch && touch.pageX;
     const pageY = touch && touch.pageY;
 
@@ -779,7 +791,7 @@ const TouchableMixin = {
   },
 
   _savePressInLocation: function(e: PressEvent) {
-    const touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
+    const touch = extractSingleTouch(e.nativeEvent);
     const pageX = touch && touch.pageX;
     const pageY = touch && touch.pageY;
     const locationX = touch && touch.locationX;
