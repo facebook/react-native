@@ -63,6 +63,12 @@ using namespace facebook::react;
   [self setNeedsDisplay];
 }
 
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _paragraphLocalData.reset();
+}
+
 - (void)drawRect:(CGRect)rect
 {
   if (!_paragraphLocalData) {
