@@ -113,7 +113,11 @@ static JSValueRef nativeInjectHMRUpdate(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   String execJSString = Value(ctx, arguments[0]).toString();
-  String jsURL = Value(ctx, arguments[1]).toString();
+  // Temporary workaround for 0.57 and Metro 48 which did not pass second
+  // argument to this function.
+  // Actually we probably should to check both arguments before use and
+  // throw JS exception with suitable error string.
+  String jsURL = argumentCount > 1 ? Value(ctx, arguments[1]).toString() : String();
   evaluateScript(ctx, execJSString, jsURL);
   return Value::makeUndefined(ctx);
 }
