@@ -460,7 +460,16 @@ type Props = $ReadOnly<{|
 |}>;
 
 /* TODO: Make State type strict */
-type State = Object;
+type State = {
+  viewState: string,
+  lastErrorEvent: ?{
+    domain: string,
+    code: number,
+    description: string,
+  },
+  startInLoadingState: boolean,
+  loading?: string,
+};
 
 class WebView extends React.Component<Props, State> {
   static JSNavigationScheme = JSNavigationScheme;
@@ -473,7 +482,7 @@ class WebView extends React.Component<Props, State> {
 
   state = {
     viewState: WebViewState.IDLE,
-    lastErrorEvent: (null: ?ErrorEvent),
+    lastErrorEvent: null,
     startInLoadingState: true,
   };
 
@@ -514,9 +523,8 @@ class WebView extends React.Component<Props, State> {
         errorEvent.description,
       );
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error(
-        'RCTWebView invalid state encountered: ' + this.state.loading,
-      );
+      const loading = this.state.loading || 'undefined';
+      console.error('RCTWebView invalid state encountered: ' + loading);
     }
 
     const webViewStyles = [styles.container, styles.webView, this.props.style];
