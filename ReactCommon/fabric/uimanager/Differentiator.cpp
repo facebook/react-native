@@ -20,7 +20,17 @@ static void sliceChildShadowNodeViewPairsRecursively(
 
     const auto layoutableShadowNode =
         dynamic_cast<const LayoutableShadowNode *>(childShadowNode.get());
+#ifndef ANDROID
+    // New approach (iOS):
+    // Non-view components are treated as layout-only views (they aren't
+    // represented as `ShadowView`s).
+    if (!layoutableShadowNode || layoutableShadowNode->isLayoutOnly()) {
+#else
+    // Previous approach (Android):
+    // Non-view components are treated as normal views with an empty layout
+    // (they are represented as `ShadowView`s).
     if (layoutableShadowNode && layoutableShadowNode->isLayoutOnly()) {
+#endif
       sliceChildShadowNodeViewPairsRecursively(
           pairList,
           layoutOffset + shadowView.layoutMetrics.frame.origin,
