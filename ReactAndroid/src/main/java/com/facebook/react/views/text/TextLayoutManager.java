@@ -204,15 +204,11 @@ public class TextLayoutManager {
     TextPaint textPaint = sTextPaintInstance;
     Layout layout;
 
-    Spannable preparedSpannableText = view == null ? null : view.getSpanned();
+    Spannable preparedSpannableText = spannedFromTextFragments(context, attributedString.getArray("fragments"), attributedString.getString("string"));
 
     // TODO add these props to paragraph attributes
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
     boolean includeFontPadding = true;
-
-    if (preparedSpannableText == null) {
-      preparedSpannableText = spannedFromTextFragments(context, attributedString.getArray("fragments"), attributedString.getString("string"));
-    }
 
     if (preparedSpannableText == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
