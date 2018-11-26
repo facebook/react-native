@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
                               rootTag:(ReactTag)rootTag;
 
-- (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName;
+- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 @end
 

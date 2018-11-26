@@ -9,6 +9,7 @@
 #import <memory>
 
 #import <React/RCTBridge.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
+
+@property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 
 @end
 

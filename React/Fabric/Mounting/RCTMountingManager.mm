@@ -47,19 +47,17 @@ using namespace facebook::react;
   for (const auto &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        NSString *componentName = RCTNSStringFromString(mutation.newChildShadowView.componentName, NSASCIIStringEncoding);
         RCTCreateMountItem *mountItem =
-          [[RCTCreateMountItem alloc] initWithComponentName:componentName
-                                                        tag:mutation.newChildShadowView.tag];
+          [[RCTCreateMountItem alloc] initWithComponentHandle:mutation.newChildShadowView.componentHandle
+                                                          tag:mutation.newChildShadowView.tag];
         [mountItems addObject:mountItem];
         break;
       }
 
       case ShadowViewMutation::Delete: {
-        NSString *componentName = RCTNSStringFromString(mutation.oldChildShadowView.componentName, NSASCIIStringEncoding);
         RCTDeleteMountItem *mountItem =
-          [[RCTDeleteMountItem alloc] initWithComponentName:componentName
-                                                        tag:mutation.oldChildShadowView.tag];
+          [[RCTDeleteMountItem alloc] initWithComponentHandle:mutation.oldChildShadowView.componentHandle
+                                                          tag:mutation.oldChildShadowView.tag];
         [mountItems addObject:mountItem];
         break;
       }
@@ -170,10 +168,10 @@ using namespace facebook::react;
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
 }
 
-- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
   RCTExecuteOnMainQueue(^{
-    [self->_componentViewRegistry preliminaryCreateComponentViewWithName:componentName];
+    [self->_componentViewRegistry optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   });
 }
 

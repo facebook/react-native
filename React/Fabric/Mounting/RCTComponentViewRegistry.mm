@@ -10,6 +10,8 @@
 #import <Foundation/NSMapTable.h>
 #import <React/RCTAssert.h>
 
+using namespace facebook::react;
+
 #define LEGACY_UIMANAGER_INTEGRATION_ENABLED 1
 
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
@@ -67,8 +69,8 @@
 const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
 @implementation RCTComponentViewRegistry {
-  NSMapTable<id, UIView<RCTComponentViewProtocol> *> *_registry;
-  NSMapTable<NSString *, NSHashTable<UIView<RCTComponentViewProtocol> *> *> *_recyclePool;
+  NSMapTable<id /* ReactTag */, UIView<RCTComponentViewProtocol> *> *_registry;
+  NSMapTable<id /* ComponentHandle */, NSHashTable<UIView<RCTComponentViewProtocol> *> *> *_recyclePool;
 }
 
 - (instancetype)init
@@ -76,15 +78,16 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   if (self = [super init]) {
     _registry = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsIntegerPersonality | NSPointerFunctionsOpaqueMemory
                                       valueOptions:NSPointerFunctionsObjectPersonality];
-    _recyclePool = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsObjectPersonality
+    _recyclePool = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsOpaquePersonality | NSPointerFunctionsOpaqueMemory
                                          valueOptions:NSPointerFunctionsObjectPersonality];
+    _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
   }
 
   return self;
 }
 
-- (UIView<RCTComponentViewProtocol> *)dequeueComponentViewWithName:(NSString *)componentName
-                                                               tag:(ReactTag)tag
+- (UIView<RCTComponentViewProtocol> *)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+                                                                          tag:(ReactTag)tag
 {
   RCTAssertMainQueue();
 
@@ -92,7 +95,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     @"RCTComponentViewRegistry: Attempt to dequeue already registered component.");
 
   UIView<RCTComponentViewProtocol> *componentView =
-    [self _dequeueComponentViewWithName:componentName];
+    [self _dequeueComponentViewWithComponentHandle:componentHandle];
   componentView.tag = tag;
   [_registry setObject:componentView forKey:(__bridge id)(void *)tag];
 
@@ -103,9 +106,9 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return componentView;
 }
 
-- (void)enqueueComponentViewWithName:(NSString *)componentName
-                                 tag:(ReactTag)tag
-                       componentView:(UIView<RCTComponentViewProtocol> *)componentView
+- (void)enqueueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+                                            tag:(ReactTag)tag
+                                  componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
 
@@ -118,14 +121,14 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 
   [_registry removeObjectForKey:(__bridge id)(void *)tag];
   componentView.tag = 0;
-  [self _enqueueComponentViewWithName:componentName componentView:componentView];
+  [self _enqueueComponentViewWithComponentHandle:componentHandle componentView:componentView];
 }
 
-- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
-  [self _enqueueComponentViewWithName:componentName
-                        componentView:[self _createComponentViewWithName:componentName]];
+  [self _enqueueComponentViewWithComponentHandle:componentHandle
+                                   componentView:[self.componentViewFactory createComponentViewWithComponentHandle:componentHandle]];
 }
 
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag
@@ -140,21 +143,13 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return componentView.tag;
 }
 
-- (UIView<RCTComponentViewProtocol> *)_createComponentViewWithName:(NSString *)componentName
+- (nullable UIView<RCTComponentViewProtocol> *)_dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
-  // This is temporary approach.
-  NSString *className = [NSString stringWithFormat:@"RCT%@ComponentView", componentName];
-  UIView<RCTComponentViewProtocol> *componentView = [[NSClassFromString(className) alloc] init];
-  return componentView;
-}
-
-- (nullable UIView<RCTComponentViewProtocol> *)_dequeueComponentViewWithName:(NSString *)componentName
-{
-  RCTAssertMainQueue();
-  NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews = [_recyclePool objectForKey:componentName];
+  NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
+    [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews || componentViews.count == 0) {
-    return [self _createComponentViewWithName:componentName];
+    return [self.componentViewFactory createComponentViewWithComponentHandle:componentHandle];
   }
 
   UIView<RCTComponentViewProtocol> *componentView = [componentViews anyObject];
@@ -162,16 +157,17 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return componentView;
 }
 
-- (void)_enqueueComponentViewWithName:(NSString *)componentName
-                        componentView:(UIView<RCTComponentViewProtocol> *)componentView
+- (void)_enqueueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+                                   componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
   [componentView prepareForRecycle];
 
-  NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews = [_recyclePool objectForKey:componentName];
+  NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
+    [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews) {
     componentViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsObjectPersonality];
-    [_recyclePool setObject:componentViews forKey:componentName];
+    [_recyclePool setObject:componentViews forKey:(__bridge id)(void *)componentHandle];
   }
 
   if (componentViews.count >= RCTComponentViewRegistryRecyclePoolMaxSize) {
