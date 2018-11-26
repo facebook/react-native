@@ -72,11 +72,9 @@ public class ReactTextViewManager
   @Override
   public Object updateLocalData(ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     ReadableMap attributedString = localData.getMap("attributedString");
-    ReadableArray fragments = attributedString.getArray("fragments");
-    String string = attributedString.getString("string");
 
-    Spannable spanned = TextLayoutManager.spannedFromTextFragments(view.getContext(),
-      fragments, string);
+    Spannable spanned = TextLayoutManager.getOrCreateSpannableForText(view.getContext(),
+      attributedString);
     view.setSpanned(spanned);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
@@ -105,7 +103,6 @@ public class ReactTextViewManager
 
   public long measure(
     ReactContext context,
-    ReactTextView view,
     ReadableNativeMap localData,
     ReadableNativeMap props,
     float width,
@@ -114,7 +111,6 @@ public class ReactTextViewManager
     YogaMeasureMode heightMode) {
 
     return TextLayoutManager.measureText(context,
-      view,
       localData,
       props,
       width,

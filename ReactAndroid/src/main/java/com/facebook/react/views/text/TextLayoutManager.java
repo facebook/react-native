@@ -23,17 +23,16 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
+import android.util.LruCache;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
-import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +46,17 @@ public class TextLayoutManager {
   // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
-  private static void buildSpannedFromShadowNode(
-    Context context,
-    ReadableArray fragments,
-    SpannableStringBuilder sb,
-    List<SetSpanOperation> ops) {
+  // Specifies the amount of spannable that are stored into the {@link sSpannableCache}.
+  private static final int spannableCacheSize = 100;
+
+  private static final Object sSpannableCacheLock = new Object();
+  private static LruCache<Double, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+
+  private static void buildSpannableFromFragment(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
 
     for (int i = 0, length = fragments.size(); i < length; i++) {
       ReadableMap fragment = fragments.getMap(i);
@@ -64,7 +69,7 @@ public class TextLayoutManager {
 //      if (child instanceof ReactRawTextShadowNode) {
 //        sb.append(((ReactRawTextShadowNode) child).getText());
 //      } else if (child instanceof ReactBaseTextShadowNode) {
-//        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops);
+//        buildSpannableFromFragment((ReactBaseTextShadowNode) child, sb, ops);
 //      } else if (child instanceof ReactTextInlineImageShadowNode) {
 //        // We make the image take up 1 character in the span and put a corresponding character into
 //        // the text so that the image doesn't run over any following text.
@@ -150,19 +155,39 @@ public class TextLayoutManager {
     }
   }
 
-  protected static Spannable spannedFromTextFragments(
-    Context context,
-    ReadableArray fragments, String text) {
-    SpannableStringBuilder sb = new SpannableStringBuilder();
+  protected static Spannable getOrCreateSpannableForText(
+      Context context,
+      ReadableMap attributedString) {
 
-    // TODO(5837930): Investigate whether it's worth optimizing this part and do it if so
+    Double hash = attributedString.getDouble("hash");
+    Spannable preparedSpannableText;
+
+    synchronized (sSpannableCacheLock) {
+      preparedSpannableText = sSpannableCache.get(hash);
+      if (preparedSpannableText != null) {
+        return preparedSpannableText;
+      }
+    }
+
+    preparedSpannableText = createSpannableFromAttributedString(context, attributedString);
+    synchronized (sSpannableCacheLock) {
+      sSpannableCache.put(hash, preparedSpannableText);
+    }
+    return preparedSpannableText;
+  }
+
+  private static Spannable createSpannableFromAttributedString(
+      Context context,
+      ReadableMap attributedString) {
+
+    SpannableStringBuilder sb = new SpannableStringBuilder();
 
     // The {@link SpannableStringBuilder} implementation require setSpan operation to be called
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannedFromShadowNode(context, fragments, sb, ops);
+    buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
 
 // TODO T31905686: add support for inline Images
 //    textShadowNode.mContainsImages = false;
@@ -191,20 +216,17 @@ public class TextLayoutManager {
   }
 
   public static long measureText(
-    ReactContext context,
-    ReactTextView view,
-    ReadableNativeMap attributedString,
-    ReadableNativeMap paragraphAttributes,
-    float width,
-    YogaMeasureMode widthYogaMeasureMode,
-    float height,
-    YogaMeasureMode heightYogaMeasureMode) {
+      ReactContext context,
+      ReadableNativeMap attributedString,
+      ReadableNativeMap paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Layout layout;
-
-    Spannable preparedSpannableText = spannedFromTextFragments(context, attributedString.getArray("fragments"), attributedString.getString("string"));
+    Spannable preparedSpannableText = getOrCreateSpannableForText(context, attributedString);
 
     // TODO add these props to paragraph attributes
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -221,6 +243,7 @@ public class TextLayoutManager {
     // technically, width should never be negative, but there is currently a bug in
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
 
+    Layout layout;
     if (boring == null &&
       (unconstrainedWidth ||
         (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -282,7 +305,10 @@ public class TextLayoutManager {
       }
     }
 
-    int maximumNumberOfLines = paragraphAttributes.hasKey("maximumNumberOfLines") ? paragraphAttributes.getInt("maximumNumberOfLines") : UNSET;
+    int maximumNumberOfLines =
+        paragraphAttributes.hasKey("maximumNumberOfLines")
+            ? paragraphAttributes.getInt("maximumNumberOfLines")
+            : UNSET;
 
     width = layout.getWidth();
     if (maximumNumberOfLines != UNSET

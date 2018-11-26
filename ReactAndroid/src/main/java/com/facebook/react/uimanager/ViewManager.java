@@ -215,7 +215,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   public long measure(
       ReactContext context,
-      T view,
       ReadableNativeMap localData,
       ReadableNativeMap props,
       float width,
