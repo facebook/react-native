@@ -30,6 +30,7 @@
     "moduleNameMapper": {
       "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
+    "testRegex": "/__tests__/.*-test\\.js$",
     "testPathIgnorePatterns": [
       "Libraries/Renderer",
       "/node_modules/",
