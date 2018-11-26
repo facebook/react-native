@@ -10,6 +10,7 @@
 #import <react/components/image/ImageEventEmitter.h>
 #import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
+#import <react/components/image/ImageShadowNode.h>
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
@@ -42,6 +43,11 @@ using namespace facebook::react;
 }
 
 #pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ImageShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {

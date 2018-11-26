@@ -7,6 +7,7 @@
 
 #import "RCTRootComponentView.h"
 
+#import <react/components/root/RootShadowNode.h>
 #import <react/components/root/RootProps.h>
 
 using namespace facebook::react;
@@ -21,6 +22,11 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
++ (ComponentHandle)componentHandle
+{
+  return RootShadowNode::Handle();
 }
 
 @end

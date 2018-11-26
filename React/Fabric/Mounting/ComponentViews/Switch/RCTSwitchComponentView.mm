@@ -9,6 +9,7 @@
 
 #import <react/components/switch/SwitchEventEmitter.h>
 #import <react/components/switch/SwitchProps.h>
+#import <react/components/switch/SwitchShadowNode.h>
 
 using namespace facebook::react;
 
@@ -35,6 +36,13 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return SwitchShadowNode::Handle();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

@@ -7,6 +7,7 @@
 
 #import "RCTViewComponentView.h"
 
+#import <react/components/view/ViewShadowNode.h>
 #import <react/components/view/ViewProps.h>
 #import <react/components/view/ViewEventEmitter.h>
 #import <objc/runtime.h>
@@ -76,6 +77,16 @@ using namespace facebook::react;
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   _backgroundColor = backgroundColor;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  RCTAssert(
+    self == [RCTViewComponentView class],
+    @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).", NSStringFromClass([self class]));
+  return ViewShadowNode::Handle();
 }
 
 - (void)updateProps:(SharedProps)props

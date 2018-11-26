@@ -9,6 +9,7 @@
 
 #import <react/components/text/ParagraphLocalData.h>
 #import <react/components/text/ParagraphProps.h>
+#import <react/components/text/ParagraphShadowNode.h>
 #import <react/core/LocalData.h>
 #import <react/graphics/Geometry.h>
 #import <react/textlayoutmanager/TextLayoutManager.h>
@@ -35,6 +36,13 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ParagraphShadowNode::Handle();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
