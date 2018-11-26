@@ -105,13 +105,6 @@ const TouchableBounce = ((createReactClass({
   },
 
   /**
-   * Triggers a bounce animation without invoking any callbacks.
-   */
-  bounce: function() {
-    this.bounceTo(0.93, 0.1, 0, () => this.bounceTo(1, 0.4, 0));
-  },
-
-  /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
