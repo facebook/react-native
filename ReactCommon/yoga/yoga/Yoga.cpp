@@ -381,7 +381,10 @@ void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
 }
 
 void YGNodeSetIsReferenceBaseline(YGNodeRef node, bool isReferenceBaseline) {
-  node->setIsReferenceBaseline(isReferenceBaseline);
+  if (node->isReferenceBaseline() != isReferenceBaseline) {
+    node->setIsReferenceBaseline(isReferenceBaseline);
+    node->markDirtyAndPropogate();
+  }
 }
 
 bool YGNodeIsReferenceBaseline(YGNodeRef node) {
