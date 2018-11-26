@@ -103,7 +103,7 @@ public class ReactTextViewManager
     return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
   }
 
-  public float[] measure(
+  public long measure(
     ReactContext context,
     ReactTextView view,
     ReadableNativeMap localData,

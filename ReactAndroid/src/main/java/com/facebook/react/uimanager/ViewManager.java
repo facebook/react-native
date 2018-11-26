@@ -213,7 +213,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
-  public float[] measure(
+  public long measure(
       ReactContext context,
       T view,
       ReadableNativeMap localData,
@@ -222,6 +222,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode) {
-    return null;
+    return 0;
   }
 }

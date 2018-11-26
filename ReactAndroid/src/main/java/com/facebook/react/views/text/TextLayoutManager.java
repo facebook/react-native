@@ -32,6 +32,7 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,7 +190,7 @@ public class TextLayoutManager {
     return sb;
   }
 
-  public static float[] measureText(
+  public static long measureText(
     ReactContext context,
     ReactTextView view,
     ReadableNativeMap attributedString,
@@ -296,7 +297,7 @@ public class TextLayoutManager {
       height = layout.getHeight();
     }
 
-    return new float[] { PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height) };
+    return YogaMeasureOutput.make(PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height));
   }
 
   private static class SetSpanOperation {

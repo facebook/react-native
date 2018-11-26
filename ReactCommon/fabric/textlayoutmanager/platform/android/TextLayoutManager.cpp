@@ -8,6 +8,7 @@
 #include "TextLayoutManager.h"
 
 #include <react/attributedstring/conversions.h>
+#include <react/core/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
 using namespace facebook::jni;
@@ -32,7 +33,7 @@ Size TextLayoutManager::measure(
 
   auto clazz =
       jni::findClassStatic("com/facebook/fbreact/fabric/FabricUIManager");
-  static auto measure = clazz->getMethod<JArrayFloat::javaobject(
+  static auto measure = clazz->getMethod<jlong(
       jint,
       jstring,
       ReadableNativeMap::javaobject,
@@ -49,7 +50,7 @@ Size TextLayoutManager::measure(
   int maxWidth = (int)maximumSize.width;
   int maxHeight = (int)maximumSize.height;
   local_ref<JString> componentName = make_jstring("RCTText");
-  auto values = measure(
+  return yogaMeassureToSize(measure(
       fabricUIManager,
       reactTag,
       componentName.get(),
@@ -58,13 +59,7 @@ Size TextLayoutManager::measure(
       minWidth,
       maxWidth,
       minHeight,
-      maxHeight);
-
-  std::vector<float> indices;
-  indices.resize(values->size());
-  values->getRegion(0, values->size(), indices.data());
-
-  return {indices[0], indices[1]};
+      maxHeight));
 }
 
 } // namespace react
