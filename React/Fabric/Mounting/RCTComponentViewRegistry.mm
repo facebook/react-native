@@ -81,9 +81,20 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     _recyclePool = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsOpaquePersonality | NSPointerFunctionsOpaqueMemory
                                          valueOptions:NSPointerFunctionsObjectPersonality];
     _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
+
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
   }
 
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (UIView<RCTComponentViewProtocol> *)dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
@@ -175,6 +186,11 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   }
 
   [componentViews addObject:componentView];
+}
+
+- (void)handleApplicationDidReceiveMemoryWarningNotification
+{
+  [_recyclePool removeAllObjects];
 }
 
 @end
