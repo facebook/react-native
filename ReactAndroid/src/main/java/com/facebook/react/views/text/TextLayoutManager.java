@@ -164,6 +164,7 @@ public class TextLayoutManager {
 
     synchronized (sSpannableCacheLock) {
       preparedSpannableText = sSpannableCache.get(hash);
+      //TODO: T31905686 the hash does not guarantee equality of texts
       if (preparedSpannableText != null) {
         return preparedSpannableText;
       }

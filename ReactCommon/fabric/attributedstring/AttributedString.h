@@ -89,11 +89,7 @@ struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
     return std::hash<decltype(fragment.string)>{}(fragment.string) +
-        std::hash<decltype(fragment.textAttributes)>{}(
-               fragment.textAttributes) +
-        std::hash<decltype(fragment.shadowNode)>{}(fragment.shadowNode) +
-        std::hash<decltype(fragment.parentShadowNode)>{}(
-               fragment.parentShadowNode);
+        std::hash<decltype(fragment.textAttributes)>{}(fragment.textAttributes);
   }
 };
 
