@@ -14,8 +14,9 @@
 const EmitterSubscription = require('EmitterSubscription');
 const EventSubscriptionVendor = require('EventSubscriptionVendor');
 
-const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
+
+const emptyFunctionThatReturnsTrue = () => true;
 
 /**
  * @class EventEmitter
@@ -155,10 +156,8 @@ class EventEmitter {
     ] = (this._subscriber.getSubscriptionsForType(eventType): any);
     return subscriptions
       ? subscriptions
-          .filter(emptyFunction.thatReturnsTrue)
-          .map(function(subscription) {
-            return subscription.listener;
-          })
+          .filter(emptyFunctionThatReturnsTrue)
+          .map(subscription => subscription.listener)
       : [];
   }
 

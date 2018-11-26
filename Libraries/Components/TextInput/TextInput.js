@@ -26,7 +26,6 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
 const createReactClass = require('create-react-class');
-const emptyFunction = require('fbjs/lib/emptyFunction');
 const invariant = require('fbjs/lib/invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
@@ -275,6 +274,8 @@ type Props = $ReadOnly<{|
   caretHidden?: ?boolean,
   contextMenuHidden?: ?boolean,
 |}>;
+
+const emptyFunctionThatReturnsTrue = () => true;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -999,7 +1000,7 @@ const TextInput = createReactClass({
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChange={this._onSelectionChange}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
         />
       );
@@ -1036,7 +1037,7 @@ const TextInput = createReactClass({
           onContentSizeChange={this.props.onContentSizeChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
@@ -1089,7 +1090,7 @@ const TextInput = createReactClass({
         onContentSizeChange={this.props.onContentSizeChange}
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
-        onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+        onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         text={this._getText()}
         dataDetectorTypes={this.props.dataDetectorTypes}
         onScroll={this._onScroll}
