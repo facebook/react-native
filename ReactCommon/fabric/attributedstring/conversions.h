@@ -381,8 +381,6 @@ inline folly::dynamic toDynamic(
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
-  values("minimumFontSize", paragraphAttributes.minimumFontSize);
-  values("maximumFontSize", paragraphAttributes.maximumFontSize);
   return values;
 }
 
