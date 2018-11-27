@@ -1267,6 +1267,9 @@ const TextInput = createReactClass({
   },
 
   _onBlur: function(event: BlurEvent) {
+    // This is a hack to fix https://fburl.com/toehyir8
+    // @todo(rsnara) Figure out why this is necessary.
+    this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
