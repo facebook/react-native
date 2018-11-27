@@ -1,6 +1,7 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "appcompat",
     aar = ":appcompat-binary-aar",
     visibility = ["//ReactAndroid/..."],
@@ -12,7 +13,7 @@ fb_native.remote_file(
     url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
 )
 
-fb_native.android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "android-jsc",
     aar = ":android-jsc-aar",
 )

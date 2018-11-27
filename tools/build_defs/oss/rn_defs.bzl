@@ -145,6 +145,9 @@ def rn_prebuilt_native_library(*args, **kwargs):
 def rn_prebuilt_jar(*args, **kwargs):
     native.prebuilt_jar(*args, **kwargs)
 
+def rn_genrule(*args, **kwargs):
+    native.genrule(*args, **kwargs)
+
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
 
