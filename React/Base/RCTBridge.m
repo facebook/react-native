@@ -361,6 +361,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
+{
+  [self.batchedBridge updateModuleWithInstance:instance];
+}
+
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules
 {
   [self.batchedBridge registerAdditionalModuleClasses:modules];
