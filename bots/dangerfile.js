@@ -43,9 +43,7 @@ const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|D
 const includesChangelog =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('changelog');
-const correctlyFormattedChangelog = changelogRegex.test(
-  danger.github.pr.body,
-);
+const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
 if (!includesChangelog) {
   const title = ':clipboard: Changelog';
