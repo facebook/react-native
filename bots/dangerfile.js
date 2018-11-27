@@ -39,21 +39,19 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
-const includesReleaseNotes =
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
+const includesChangelog =
   danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('release notes');
-const correctlyFormattedReleaseNotes = releaseNotesRegex.test(
-  danger.github.pr.body,
-);
+  danger.github.pr.body.toLowerCase().includes('changelog');
+const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
-if (!includesReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR appears to be missing Release Notes.';
+if (!includesChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea = 'This PR appears to be missing Changelog.';
   warn(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR may have incorrectly formatted Release Notes.';
+} else if (!correctlyFormattedChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea = 'This PR may have incorrectly formatted Changelog.';
   warn(`${title} - <i>${idea}</i>`);
 }
 
