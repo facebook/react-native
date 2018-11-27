@@ -50,7 +50,7 @@ public class TextLayoutManager {
   private static final int spannableCacheSize = 100;
 
   private static final Object sSpannableCacheLock = new Object();
-  private static LruCache<Double, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+  private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
 
   private static void buildSpannableFromFragment(
       Context context,
@@ -159,12 +159,11 @@ public class TextLayoutManager {
       Context context,
       ReadableMap attributedString) {
 
-    Double hash = attributedString.getDouble("hash");
     Spannable preparedSpannableText;
-
+    String attributedStringPayload = attributedString.toString();
     synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get(hash);
-      //TODO: T31905686 the hash does not guarantee equality of texts
+      preparedSpannableText = sSpannableCache.get(attributedStringPayload);
+      //TODO: T31905686 implement proper equality of attributedStrings
       if (preparedSpannableText != null) {
         return preparedSpannableText;
       }
@@ -172,7 +171,7 @@ public class TextLayoutManager {
 
     preparedSpannableText = createSpannableFromAttributedString(context, attributedString);
     synchronized (sSpannableCacheLock) {
-      sSpannableCache.put(hash, preparedSpannableText);
+      sSpannableCache.put(attributedStringPayload, preparedSpannableText);
     }
     return preparedSpannableText;
   }
