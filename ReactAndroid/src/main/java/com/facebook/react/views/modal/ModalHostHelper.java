@@ -56,13 +56,19 @@ import com.facebook.infer.annotation.Assertions;
     if (windowFullscreen && statusBarId > 0) {
         statusBarHeight = (int) resources.getDimension(statusBarId);
     }
+    
+    int navigationBarHeight = 0;
+    int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      navigationBarHeight = (int)resources.getDimension(resourceId);
+    }
 
     if (SIZE_POINT.x < SIZE_POINT.y) {
       // If we are vertical the width value comes from min width and height comes from max height
-      return new Point(MIN_POINT.x, MAX_POINT.y + statusBarHeight);
+      return new Point(MIN_POINT.x, MAX_POINT.y + statusBarHeight + navigationBarHeight);
     } else {
       // If we are horizontal the width value comes from max width and height comes from min height
-      return new Point(MAX_POINT.x, MIN_POINT.y + statusBarHeight);
+      return new Point(MAX_POINT.x, MIN_POINT.y + statusBarHeight + navigationBarHeight);
     }
   }
 }
