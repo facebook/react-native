@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivityIndicator renders correctly 1`] = `
+<ActivityIndicator
+  animating={true}
+  color="#0000ff"
+  hidesWhenStopped={true}
+  size="large"
+/>
+`;
