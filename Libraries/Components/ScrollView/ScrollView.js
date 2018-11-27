@@ -301,6 +301,13 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   overScrollMode?: ?('auto' | 'always' | 'never'),
+  /**
+   * Causes the scrollbars not to turn transparent when they are not in use.
+   * The default value is false.
+   *
+   * @platform android
+   */
+  persistentScrollbar?: ?boolean,
 |}>;
 
 type VRProps = $ReadOnly<{|
@@ -442,6 +449,7 @@ export type Props = $ReadOnly<{|
    * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
+
   /**
    * When false, the view cannot be scrolled via touch interaction.
    * The default value is true.

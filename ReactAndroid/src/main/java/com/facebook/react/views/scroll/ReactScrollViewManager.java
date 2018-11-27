@@ -264,6 +264,11 @@ public class ReactScrollViewManager
     }
   }
 
+  @ReactProp(name = "persistentScrollbar")
+  public void setPersistentScrollbar(ReactScrollView view, boolean value) {
+    view.setScrollbarFadingEnabled(!value);
+  }
+
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
