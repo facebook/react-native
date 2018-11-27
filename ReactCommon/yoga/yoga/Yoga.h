@@ -70,6 +70,7 @@ typedef float (
     *YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
+typedef void (*YGNodeCleanupFunc)(YGNodeRef node);
 typedef int (*YGLogger)(
     const YGConfigRef config,
     const YGNodeRef node,
@@ -84,6 +85,9 @@ WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
 WIN_EXPORT YGNodeRef YGNodeClone(const YGNodeRef node);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
+WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
+    const YGNodeRef node,
+    YGNodeCleanupFunc cleanup);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
 WIN_EXPORT int32_t YGNodeGetInstanceCount(void);

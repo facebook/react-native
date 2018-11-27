@@ -319,7 +319,9 @@ static void YGConfigFreeRecursive(const YGNodeRef root) {
   }
 }
 
-void YGNodeFreeRecursive(const YGNodeRef root) {
+void YGNodeFreeRecursiveWithCleanupFunc(
+    const YGNodeRef root,
+    YGNodeCleanupFunc cleanup) {
   while (YGNodeGetChildCount(root) > 0) {
     const YGNodeRef child = YGNodeGetChild(root, 0);
     if (child->getOwner() != root) {
@@ -329,7 +331,14 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
     YGNodeRemoveChild(root, child);
     YGNodeFreeRecursive(child);
   }
+  if (cleanup != nullptr) {
+    cleanup(root);
+  }
   YGNodeFree(root);
+}
+
+void YGNodeFreeRecursive(const YGNodeRef root) {
+  return YGNodeFreeRecursiveWithCleanupFunc(root, nullptr);
 }
 
 void YGNodeReset(const YGNodeRef node) {
