@@ -151,10 +151,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if ((textShadowNode.mTextShadowOffsetDx != 0
-        || textShadowNode.mTextShadowOffsetDy != 0
-        || textShadowNode.mTextShadowRadius != 0)
-        && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
+      if (
+        (
+          textShadowNode.mTextShadowOffsetDx != 0 ||
+          textShadowNode.mTextShadowOffsetDy != 0 ||
+          textShadowNode.mTextShadowRadius != 0
+        ) &&
+        Color.alpha(textShadowNode.mTextShadowColor) != 0
+      ) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -270,7 +274,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
-  protected float mTextShadowRadius = 1;
+  protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
   protected boolean mIsUnderlineTextDecorationSet = false;
