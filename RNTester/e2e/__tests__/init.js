@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+/* eslint-env jasmine */
+
 const detox = require('detox');
-const config = require('../../package.json').detox;
+const config = require('../../../package.json').detox;
 const adapter = require('detox/runners/jest/adapter');
 
 jest.setTimeout(480000);

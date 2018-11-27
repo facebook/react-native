@@ -8,6 +8,8 @@
  * @format
  */
 
+/* eslint-env jest */
+
 'use strict';
 
 const React = require('React');
