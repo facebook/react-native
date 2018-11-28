@@ -229,12 +229,9 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
   for (auto fragment : attributedString.getFragments()) {
     NSAttributedString *nsAttributedStringFragment;
 
-    auto layoutableShadowNode =
-        std::dynamic_pointer_cast<const LayoutableShadowNode>(
-            fragment.shadowNode);
+    auto layoutMetrics = fragment.shadowView.layoutMetrics;
 
-    if (layoutableShadowNode) {
-      auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
+    if (layoutMetrics != EmptyLayoutMetrics) {
       CGRect bounds = {.origin = {.x = layoutMetrics.frame.origin.x,
                                   .y = layoutMetrics.frame.origin.y},
                        .size = {.width = layoutMetrics.frame.size.width,
@@ -259,11 +256,10 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
         [[NSMutableAttributedString alloc]
             initWithAttributedString:nsAttributedStringFragment];
 
-    if (fragment.parentShadowNode) {
+    if (fragment.parentShadowView.componentHandle) {
       RCTWeakEventEmitterWrapper *eventEmitterWrapper =
           [RCTWeakEventEmitterWrapper new];
-      eventEmitterWrapper.eventEmitter =
-          fragment.parentShadowNode->getEventEmitter();
+      eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
 
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
           @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};

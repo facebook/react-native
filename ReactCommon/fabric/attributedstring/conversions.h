@@ -478,8 +478,8 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   for (auto fragment : attributedString.getFragments()) {
     folly::dynamic dynamicFragment = folly::dynamic::object();
     dynamicFragment["string"] = fragment.string;
-    if (fragment.parentShadowNode) {
-      dynamicFragment["reactTag"] = fragment.parentShadowNode->getTag();
+    if (fragment.parentShadowView.componentHandle) {
+      dynamicFragment["reactTag"] = fragment.parentShadowView.tag;
     }
     dynamicFragment["textAttributes"] = toDynamic(fragment.textAttributes);
     fragments.push_back(dynamicFragment);
