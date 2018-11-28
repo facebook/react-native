@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <react/uimanager/ShadowView.h>
+#include <react/mounting/ShadowView.h>
 
 namespace facebook {
 namespace react {

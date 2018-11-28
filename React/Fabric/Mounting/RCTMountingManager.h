@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 #import <react/core/ReactPrimitives.h>
-#import <react/uimanager/ShadowView.h>
-#import <react/uimanager/ShadowViewMutation.h>
+#import <react/mounting/ShadowView.h>
+#import <react/mounting/ShadowViewMutation.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTMountingManagerDelegate.h>
 

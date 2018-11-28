@@ -7,10 +7,10 @@
 
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/mounting/Differentiator.h>
+#include <react/mounting/ShadowViewMutation.h>
 
-#include "Differentiator.h"
 #include "ShadowTreeDelegate.h"
-#include "ShadowViewMutation.h"
 
 namespace facebook {
 namespace react {

@@ -14,7 +14,6 @@
 #include <react/uimanager/UITemplateProcessor.h>
 
 #include "ComponentDescriptorFactory.h"
-#include "Differentiator.h"
 
 namespace facebook {
 namespace react {

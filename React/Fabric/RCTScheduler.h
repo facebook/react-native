@@ -11,7 +11,7 @@
 #import <React/RCTPrimitives.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/uimanager/ShadowViewMutation.h>
+#import <react/mounting/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
