@@ -52,6 +52,10 @@ class UIManager {
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
+  void setNativeProps(
+      const SharedShadowNode &shadowNode,
+      const RawProps &rawProps) const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
