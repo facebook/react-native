@@ -59,3 +59,20 @@ using ShadowViewNodePairList = std::vector<ShadowViewNodePair>;
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+
+template <>
+struct hash<facebook::react::ShadowView> {
+  size_t operator()(const facebook::react::ShadowView &shadowView) const {
+    return std::hash<decltype(shadowView.componentHandle)>{}(
+               shadowView.componentHandle) +
+        std::hash<decltype(shadowView.tag)>{}(shadowView.tag) +
+        std::hash<decltype(shadowView.props)>{}(shadowView.props) +
+        std::hash<decltype(shadowView.eventEmitter)>{}(
+               shadowView.eventEmitter) +
+        std::hash<decltype(shadowView.localData)>{}(shadowView.localData);
+  }
+};
+
+} // namespace std
