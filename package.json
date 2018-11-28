@@ -154,7 +154,7 @@
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
-    "chalk": "^1.1.1",
+    "chalk": "^2.4.1",
     "commander": "^2.9.0",
     "compression": "^1.7.1",
     "connect": "^3.6.5",
