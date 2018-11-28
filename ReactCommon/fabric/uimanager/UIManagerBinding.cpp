@@ -68,10 +68,11 @@ void UIManagerBinding::dispatchEvent(
     const EventTarget *eventTarget,
     const std::string &type,
     const folly::dynamic &payload) const {
+  SystraceSection s("UIManagerBinding::dispatchEvent");
+
   auto eventTargetValue = jsi::Value::null();
 
   if (eventTarget) {
-    SystraceSection s("UIManagerBinding::JSIDispatchFabricEventToTarget");
     auto &eventTargetWrapper =
         static_cast<const EventTargetWrapper &>(*eventTarget);
     eventTargetValue = eventTargetWrapper.instanceHandle.lock(runtime);
