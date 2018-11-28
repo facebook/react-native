@@ -781,25 +781,25 @@ exports.examples = [
   {
     title: 'Clear button mode',
     render: function() {
-      return (
-        <View>
-          <WithLabel label="never">
-            <TextInput style={styles.default} clearButtonMode="never" />
-          </WithLabel>
-          <WithLabel label="while editing">
-            <TextInput style={styles.default} clearButtonMode="while-editing" />
-          </WithLabel>
-          <WithLabel label="unless editing">
+      const clearButtonModes = [
+        'never',
+        'while-editing',
+        'unless-editing',
+        'always',
+      ];
+      const examples = clearButtonModes.map(mode => {
+        return (
+          <WithLabel label={mode}>
             <TextInput
+              key={mode}
               style={styles.default}
-              clearButtonMode="unless-editing"
+              clearButtonMode={mode}
+              defaultValue={mode}
             />
           </WithLabel>
-          <WithLabel label="always">
-            <TextInput style={styles.default} clearButtonMode="always" />
-          </WithLabel>
-        </View>
-      );
+        );
+      });
+      return <View>{examples}</View>;
     },
   },
   {
