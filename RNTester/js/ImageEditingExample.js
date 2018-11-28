@@ -184,7 +184,7 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   _scaledImageSize: ImageSize;
   _horizontal: boolean;
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // Scale an image to the minimum size that is large enough to completely
     // fill the crop box.
     const widthRatio = this.props.image.width / this.props.size.width;
