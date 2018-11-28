@@ -15,7 +15,7 @@ class SwitchEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onChange(const bool &value) const;
+  void onChange(bool value) const;
 };
 
 } // namespace react
