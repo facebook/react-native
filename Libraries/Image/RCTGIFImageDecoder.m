@@ -84,7 +84,7 @@ RCT_EXPORT_MODULE()
     // Create animation
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
     animation.calculationMode = kCAAnimationDiscrete;
-    animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
+    animation.repeatCount = loopCount;
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
