@@ -40,7 +40,6 @@ EventEmitter::EventEmitter(
     WeakEventDispatcher eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       weakEventTarget_({}),
-      tag_(tag),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
@@ -48,19 +47,14 @@ void EventEmitter::dispatchEvent(
     const folly::dynamic &payload,
     const EventPriority &priority) const {
   SystraceSection s("EventEmitter::dispatchEvent");
+
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
-
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), extendedPayload, eventTarget_),
-      priority);
+      RawEvent(normalizeEventType(type), payload, eventTarget_), priority);
 }
 
 void EventEmitter::enable() const {

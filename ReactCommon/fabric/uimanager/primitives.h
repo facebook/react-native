@@ -31,10 +31,11 @@ inline RawProps rawPropsFromDynamic(const folly::dynamic object) noexcept {
 }
 
 struct EventTargetWrapper : public EventTarget {
-  EventTargetWrapper(jsi::WeakObject instanceHandle)
-      : instanceHandle(std::move(instanceHandle)) {}
+  EventTargetWrapper(jsi::WeakObject instanceHandle, Tag tag)
+      : instanceHandle(std::move(instanceHandle)), tag(tag) {}
 
   mutable jsi::WeakObject instanceHandle;
+  mutable Tag tag;
 };
 
 struct EventHandlerWrapper : public EventHandler {
@@ -97,9 +98,11 @@ inline static RawProps rawPropsFromValue(
 
 inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
-    const jsi::Value &value) {
+    const jsi::Value &eventTargetValue,
+    const jsi::Value &tagValue) {
   return std::make_shared<EventTargetWrapper>(
-      jsi::WeakObject(runtime, value.getObject(runtime)));
+      jsi::WeakObject(runtime, eventTargetValue.getObject(runtime)),
+      tagValue.getNumber());
 }
 
 inline static Tag tagFromValue(jsi::Runtime &runtime, const jsi::Value &value) {

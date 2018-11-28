@@ -84,7 +84,6 @@ class EventEmitter {
 
   mutable SharedEventTarget eventTarget_;
   mutable WeakEventTarget weakEventTarget_;
-  Tag tag_;
   WeakEventDispatcher eventDispatcher_;
   mutable int enableCounter_{0};
 };

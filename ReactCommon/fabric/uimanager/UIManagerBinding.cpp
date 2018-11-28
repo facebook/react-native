@@ -71,6 +71,7 @@ void UIManagerBinding::dispatchEvent(
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
   auto eventTargetValue = jsi::Value::null();
+  folly::dynamic extendedPayload;
 
   if (eventTarget) {
     auto &eventTargetWrapper =
@@ -79,6 +80,13 @@ void UIManagerBinding::dispatchEvent(
     if (eventTargetValue.isUndefined()) {
       return;
     }
+
+    // Mixing `target` into `payload`.
+    assert(payload.isObject());
+    extendedPayload = folly::dynamic::object("target", eventTargetWrapper.tag);
+    extendedPayload.merge_patch(payload);
+  } else {
+    extendedPayload = payload;
   }
 
   auto &eventHandlerWrapper =
@@ -87,7 +95,7 @@ void UIManagerBinding::dispatchEvent(
       runtime,
       {std::move(eventTargetValue),
        jsi::String::createFromUtf8(runtime, type),
-       jsi::valueFromDynamic(runtime, payload)});
+       jsi::valueFromDynamic(runtime, extendedPayload)});
 }
 
 void UIManagerBinding::invalidate() const {
@@ -119,7 +127,7 @@ jsi::Value UIManagerBinding::get(
                   componentNameFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   rawPropsFromValue(runtime, arguments[3]),
-                  eventTargetFromValue(runtime, arguments[4])));
+                  eventTargetFromValue(runtime, arguments[4], arguments[0])));
         });
   }
 
