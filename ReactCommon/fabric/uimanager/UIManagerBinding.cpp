@@ -281,6 +281,29 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getRelativeLayoutMetrics") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              shadowNodeFromValue(runtime, arguments[1]).get());
+          auto frame = layoutMetrics.frame;
+          auto result = jsi::Object(runtime);
+          result.setProperty(runtime, "left", frame.origin.x);
+          result.setProperty(runtime, "top", frame.origin.y);
+          result.setProperty(runtime, "width", frame.size.width);
+          result.setProperty(runtime, "height", frame.size.height);
+          return result;
+        });
+  }
+
   return jsi::Value::undefined();
 }
 
