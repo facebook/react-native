@@ -44,7 +44,10 @@ void EventQueue::onBeat(jsi::Runtime &runtime) const {
 
     for (const auto &event : queue) {
       eventPipe_(
-          runtime, event.eventTarget.lock().get(), event.type, event.payload);
+          runtime,
+          event.eventTarget.lock().get(),
+          event.type,
+          event.payloadFactory);
     }
   }
 }

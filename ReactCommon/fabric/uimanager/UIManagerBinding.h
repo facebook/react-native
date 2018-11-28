@@ -49,7 +49,7 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       const EventTarget *eventTarget,
       const std::string &type,
-      const folly::dynamic &payload) const;
+      const ValueFactory &payloadFactory) const;
 
   /*
    * Invalidates the binding and underlying UIManager.

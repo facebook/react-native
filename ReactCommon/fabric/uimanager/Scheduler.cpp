@@ -37,8 +37,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
                        jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
-                       const folly::dynamic &payload) {
-    uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payload);
+                       const ValueFactory &payloadFactory) {
+    uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payloadFactory);
   };
 
   auto eventDispatcher = std::make_shared<EventDispatcher>(

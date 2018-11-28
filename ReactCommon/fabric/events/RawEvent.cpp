@@ -12,10 +12,10 @@ namespace react {
 
 RawEvent::RawEvent(
     std::string type,
-    folly::dynamic payload,
+    ValueFactory payloadFactory,
     WeakEventTarget eventTarget)
     : type(std::move(type)),
-      payload(std::move(payload)),
+      payloadFactory(std::move(payloadFactory)),
       eventTarget(std::move(eventTarget)) {}
 
 } // namespace react

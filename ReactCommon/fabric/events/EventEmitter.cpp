@@ -8,6 +8,8 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
 #include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
@@ -34,6 +36,12 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
   return mutex;
 }
 
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
+}
+
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
     Tag tag,
@@ -46,6 +54,18 @@ void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
+}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
   SystraceSection s("EventEmitter::dispatchEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -54,7 +74,8 @@ void EventEmitter::dispatchEvent(
   }
 
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), payload, eventTarget_), priority);
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      priority);
 }
 
 void EventEmitter::enable() const {

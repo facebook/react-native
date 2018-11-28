@@ -67,11 +67,11 @@ void UIManagerBinding::dispatchEvent(
     jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
-    const folly::dynamic &payload) const {
+    const ValueFactory &payloadFactory) const {
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
+  auto payload = payloadFactory(runtime);
   auto eventTargetValue = jsi::Value::null();
-  folly::dynamic extendedPayload;
 
   if (eventTarget) {
     auto &eventTargetWrapper =
@@ -83,10 +83,8 @@ void UIManagerBinding::dispatchEvent(
 
     // Mixing `target` into `payload`.
     assert(payload.isObject());
-    extendedPayload = folly::dynamic::object("target", eventTargetWrapper.tag);
-    extendedPayload.merge_patch(payload);
-  } else {
-    extendedPayload = payload;
+    payload.asObject(runtime).setProperty(
+        runtime, "target", eventTargetWrapper.tag);
   }
 
   auto &eventHandlerWrapper =
@@ -95,7 +93,7 @@ void UIManagerBinding::dispatchEvent(
       runtime,
       {std::move(eventTargetValue),
        jsi::String::createFromUtf8(runtime, type),
-       jsi::valueFromDynamic(runtime, extendedPayload)});
+       std::move(payload)});
 }
 
 void UIManagerBinding::invalidate() const {
