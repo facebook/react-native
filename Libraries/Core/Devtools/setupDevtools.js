@@ -10,16 +10,6 @@
 
 'use strict';
 
-type DevToolsPluginConnection = {
-  isAppActive: () => boolean,
-  host: string,
-  port: number,
-};
-
-type DevToolsPlugin = {
-  connectToDevTools: (connection: DevToolsPluginConnection) => void,
-};
-
 let register = function() {
   // noop
 };

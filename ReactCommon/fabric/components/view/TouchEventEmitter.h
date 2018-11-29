@@ -6,9 +6,9 @@
  */
 #pragma once
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/events/EventEmitter.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {
@@ -110,6 +110,12 @@ class TouchEventEmitter : public EventEmitter {
   void onTouchMove(const TouchEvent &event) const;
   void onTouchEnd(const TouchEvent &event) const;
   void onTouchCancel(const TouchEvent &event) const;
+
+ private:
+  void dispatchTouchEvent(
+      const std::string &type,
+      const TouchEvent &event,
+      const EventPriority &priority) const;
 };
 
 } // namespace react

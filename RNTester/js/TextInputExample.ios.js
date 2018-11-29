@@ -14,7 +14,7 @@ const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
 const React = require('react');
 const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -71,7 +71,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
               'onSelectionChange range: ' +
                 event.nativeEvent.selection.start +
                 ',' +
-                event.nativeEvent.selection.end,
+                (event.nativeEvent.selection.end || ''),
             )
           }
           onKeyPress={event => {
@@ -348,10 +348,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
 }
 
 type SelectionExampleState = {
-  selection: {|
+  selection: $ReadOnly<{|
     start: number,
     end?: number,
-  |},
+  |}>,
   value: string,
 };
 
@@ -490,9 +490,6 @@ class AutogrowingTextInputExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
-  page: {
-    paddingBottom: 300,
-  },
   default: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
@@ -519,13 +516,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
-  },
-  multilineChild: {
-    width: 50,
-    height: 40,
-    position: 'absolute',
-    right: 5,
-    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -791,25 +781,25 @@ exports.examples = [
   {
     title: 'Clear button mode',
     render: function() {
-      return (
-        <View>
-          <WithLabel label="never">
-            <TextInput style={styles.default} clearButtonMode="never" />
-          </WithLabel>
-          <WithLabel label="while editing">
-            <TextInput style={styles.default} clearButtonMode="while-editing" />
-          </WithLabel>
-          <WithLabel label="unless editing">
+      const clearButtonModes = [
+        'never',
+        'while-editing',
+        'unless-editing',
+        'always',
+      ];
+      const examples = clearButtonModes.map(mode => {
+        return (
+          <WithLabel label={mode}>
             <TextInput
+              key={mode}
               style={styles.default}
-              clearButtonMode="unless-editing"
+              clearButtonMode={mode}
+              defaultValue={mode}
             />
           </WithLabel>
-          <WithLabel label="always">
-            <TextInput style={styles.default} clearButtonMode="always" />
-          </WithLabel>
-        </View>
-      );
+        );
+      });
+      return <View>{examples}</View>;
     },
   },
   {
@@ -872,7 +862,9 @@ exports.examples = [
             returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
-            onSubmitEditing={event => alert(event.nativeEvent.text)}
+            onSubmitEditing={event =>
+              Alert.alert('Alert', event.nativeEvent.text)
+            }
           />
         </View>
       );

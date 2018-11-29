@@ -45,7 +45,7 @@ Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
 }
 
 void JSINativeModules::reset() {
-  m_genNativeModuleJS = nullptr;
+  m_genNativeModuleJS = folly::none;
   m_objects.clear();
 }
 
@@ -65,7 +65,7 @@ folly::Optional<Object> JSINativeModules::createModule(
 
   auto result = m_moduleRegistry->getConfig(name);
   if (!result.hasValue()) {
-    return nullptr;
+    return folly::none;
   }
 
   Value moduleInfo = m_genNativeModuleJS->call(

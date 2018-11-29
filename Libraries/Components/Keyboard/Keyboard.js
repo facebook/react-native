@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -121,7 +121,10 @@ let Keyboard = {
    * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
    * @param {function} callback function to be called when the event fires.
    */
-  removeListener(eventName: KeyboardEventName, callback: Function) {
+  removeListener(
+    eventName: KeyboardEventName,
+    callback: KeyboardEventListener,
+  ) {
     invariant(false, 'Dummy method used for documentation');
   },
 
@@ -155,12 +158,12 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   const {duration, easing} = event;
-  if (duration) {
+  if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
       duration: duration,
       update: {
         duration: duration,
-        type: (easing && LayoutAnimation.Types[easing]) || 'keyboard',
+        type: (easing != null && LayoutAnimation.Types[easing]) || 'keyboard',
       },
     });
   }

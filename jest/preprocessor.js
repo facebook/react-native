@@ -33,7 +33,6 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
-/* $FlowFixMe(site=react_native_oss) */
 const transformer = require('metro/src/reactNativeTransformer');
 module.exports = {
   process(src /*: string */, file /*: string */) {
@@ -59,6 +58,7 @@ module.exports = {
         minify: false,
         platform: '',
         projectRoot: '',
+        publicPath: '/assets',
         retainLines: true,
         sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },

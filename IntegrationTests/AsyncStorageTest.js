@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {AsyncStorage, Text, View} = ReactNative;
+const {AsyncStorage, Text, View, StyleSheet} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 const deepDiffer = require('deepDiffer');
@@ -191,7 +191,7 @@ class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
 
   render() {
     return (
-      <View style={{backgroundColor: 'white', padding: 40}}>
+      <View style={styles.container}>
         <Text>
           {/* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
              * comment suppresses an error found when Flow v0.54 was deployed.
@@ -204,6 +204,13 @@ class AsyncStorageTest extends React.Component<{}, $FlowFixMeState> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    padding: 40,
+  },
+});
 
 AsyncStorageTest.displayName = 'AsyncStorageTest';
 

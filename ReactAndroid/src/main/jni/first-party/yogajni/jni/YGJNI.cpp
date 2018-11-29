@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) 2018-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
@@ -371,6 +370,17 @@ void jni_YGNodeRemoveChild(jlong nativePointer, jlong childPointer) {
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
 }
 
+void jni_YGNodeSetIsReferenceBaseline(
+    jlong nativePointer,
+    jboolean isReferenceBaseline) {
+  YGNodeSetIsReferenceBaseline(
+      _jlong2YGNodeRef(nativePointer), isReferenceBaseline);
+}
+
+jboolean jni_YGNodeIsReferenceBaseline(jlong nativePointer) {
+  return YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer));
+}
+
 void jni_YGNodeCalculateLayout(
     alias_ref<jclass>,
     jlong nativePointer,
@@ -647,130 +657,112 @@ jint jni_YGNodeGetInstanceCount() {
 }
 
 #define YGMakeNativeMethod(name) makeNativeMethod(#name, name)
-#define YGRealMakeCriticalNativeMethod(name) \
-  makeCriticalNativeMethod(#name, name)
-#define YGWrapCriticalNativeMethodForRegularCall(name) \
-  makeNativeMethod(                                    \
-      #name,                                           \
-      ::facebook::jni::detail::CriticalMethod<decltype(&name)>::call<&name>)
-
-#define YGRegisterNatives(YGMakeCriticalNativeMethod)                        \
-  registerNatives(                                                           \
-      "com/facebook/yoga/YogaNode",                                          \
-      {                                                                      \
-          YGMakeNativeMethod(jni_YGNodeNew),                                 \
-          YGMakeNativeMethod(jni_YGNodeNewWithConfig),                       \
-          YGMakeCriticalNativeMethod(jni_YGNodeFree),                        \
-          YGMakeCriticalNativeMethod(jni_YGNodeReset),                       \
-          YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),               \
-          YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),                 \
-          YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),                 \
-          YGMakeNativeMethod(jni_YGNodeCalculateLayout),                     \
-          YGMakeCriticalNativeMethod(jni_YGNodeMarkDirty),                   \
-          YGMakeCriticalNativeMethod(                                        \
-              jni_YGNodeMarkDirtyAndPropogateToDescendants),                 \
-          YGMakeCriticalNativeMethod(jni_YGNodeIsDirty),                     \
-          YGMakeCriticalNativeMethod(jni_YGNodeSetHasMeasureFunc),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeSetHasBaselineFunc),          \
-          YGMakeCriticalNativeMethod(jni_YGNodeCopyStyle),                   \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDirection),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDirection),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexDirection),       \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexDirection),       \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetJustifyContent),      \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetJustifyContent),      \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignItems),          \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignItems),          \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignSelf),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignSelf),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignContent),        \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignContent),        \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetPositionType),        \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionType),        \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexWrap),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetOverflow),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetOverflow),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDisplay),             \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDisplay),             \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlex),                \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexGrow),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexGrow),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexShrink),          \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexShrink),          \
-          YGMakeNativeMethod(jni_YGNodeStyleGetFlexBasis),                   \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasis),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisPercent),    \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisAuto),       \
-          YGMakeNativeMethod(jni_YGNodeStyleGetMargin),                      \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMargin),              \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginPercent),       \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginAuto),          \
-          YGMakeNativeMethod(jni_YGNodeStyleGetPadding),                     \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPadding),             \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPaddingPercent),      \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetBorder),              \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetBorder),              \
-          YGMakeNativeMethod(jni_YGNodeStyleGetPosition),                    \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPosition),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionPercent),     \
-          YGMakeNativeMethod(jni_YGNodeStyleGetWidth),                       \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidth),               \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthPercent),        \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthAuto),           \
-          YGMakeNativeMethod(jni_YGNodeStyleGetHeight),                      \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeight),              \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightPercent),       \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightAuto),          \
-          YGMakeNativeMethod(jni_YGNodeStyleGetMinWidth),                    \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidth),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidthPercent),     \
-          YGMakeNativeMethod(jni_YGNodeStyleGetMinHeight),                   \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeight),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeightPercent),    \
-          YGMakeNativeMethod(jni_YGNodeStyleGetMaxWidth),                    \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidth),            \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidthPercent),     \
-          YGMakeNativeMethod(jni_YGNodeStyleGetMaxHeight),                   \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeight),           \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeightPercent),    \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAspectRatio),         \
-          YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),         \
-          YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),            \
-          YGMakeCriticalNativeMethod(jni_YGNodePrint),                       \
-          YGMakeNativeMethod(jni_YGNodeClone),                               \
-          YGMakeCriticalNativeMethod(jni_YGNodeSetOwner),                    \
-      });                                                                    \
-  registerNatives(                                                           \
-      "com/facebook/yoga/YogaConfig",                                        \
-      {                                                                      \
-          YGMakeNativeMethod(jni_YGConfigNew),                               \
-          YGMakeNativeMethod(jni_YGConfigFree),                              \
-          YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),     \
-          YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),                 \
-          YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),                  \
-          YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),               \
-          YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),      \
-          YGMakeNativeMethod(jni_YGConfigSetLogger),                         \
-          YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),               \
-          YGMakeNativeMethod(                                                \
-              jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour), \
-      });
-
-void jni_bindNativeMethods(alias_ref<jclass>, jboolean useFastCall) {
-  if (useFastCall) {
-    YGRegisterNatives(YGRealMakeCriticalNativeMethod);
-  } else {
-    YGRegisterNatives(YGWrapCriticalNativeMethodForRegularCall);
-  }
-}
+#define YGMakeCriticalNativeMethod(name) makeCriticalNativeMethod(#name, name)
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return initialize(vm, [] {
     registerNatives(
-        "com/facebook/yoga/YogaJNI",
+        "com/facebook/yoga/YogaNode",
         {
-            YGMakeNativeMethod(jni_bindNativeMethods),
+            YGMakeNativeMethod(jni_YGNodeNew),
+            YGMakeNativeMethod(jni_YGNodeNewWithConfig),
+            YGMakeCriticalNativeMethod(jni_YGNodeFree),
+            YGMakeCriticalNativeMethod(jni_YGNodeReset),
+            YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),
+            YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),
+            YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),
+            YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),
+            YGMakeCriticalNativeMethod(jni_YGNodeSetIsReferenceBaseline),
+            YGMakeCriticalNativeMethod(jni_YGNodeIsReferenceBaseline),
+            YGMakeNativeMethod(jni_YGNodeCalculateLayout),
+            YGMakeCriticalNativeMethod(jni_YGNodeMarkDirty),
+            YGMakeCriticalNativeMethod(
+                jni_YGNodeMarkDirtyAndPropogateToDescendants),
+            YGMakeCriticalNativeMethod(jni_YGNodeIsDirty),
+            YGMakeCriticalNativeMethod(jni_YGNodeSetHasMeasureFunc),
+            YGMakeCriticalNativeMethod(jni_YGNodeSetHasBaselineFunc),
+            YGMakeCriticalNativeMethod(jni_YGNodeCopyStyle),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDirection),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDirection),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexDirection),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexDirection),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetJustifyContent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetJustifyContent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignItems),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignItems),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignSelf),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignSelf),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAlignContent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignContent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetPositionType),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionType),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexWrap),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetOverflow),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetOverflow),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDisplay),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDisplay),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlex),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexGrow),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexGrow),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexShrink),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexShrink),
+            YGMakeNativeMethod(jni_YGNodeStyleGetFlexBasis),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasis),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexBasisAuto),
+            YGMakeNativeMethod(jni_YGNodeStyleGetMargin),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMargin),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMarginAuto),
+            YGMakeNativeMethod(jni_YGNodeStyleGetPadding),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPadding),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPaddingPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetBorder),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetBorder),
+            YGMakeNativeMethod(jni_YGNodeStyleGetPosition),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPosition),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionPercent),
+            YGMakeNativeMethod(jni_YGNodeStyleGetWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetWidthAuto),
+            YGMakeNativeMethod(jni_YGNodeStyleGetHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetHeightAuto),
+            YGMakeNativeMethod(jni_YGNodeStyleGetMinWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinWidthPercent),
+            YGMakeNativeMethod(jni_YGNodeStyleGetMinHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMinHeightPercent),
+            YGMakeNativeMethod(jni_YGNodeStyleGetMaxWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidth),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxWidthPercent),
+            YGMakeNativeMethod(jni_YGNodeStyleGetMaxHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeight),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeightPercent),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAspectRatio),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
+            YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
+            YGMakeCriticalNativeMethod(jni_YGNodePrint),
+            YGMakeNativeMethod(jni_YGNodeClone),
+            YGMakeCriticalNativeMethod(jni_YGNodeSetOwner),
+        });
+    registerNatives(
+        "com/facebook/yoga/YogaConfig",
+        {
+            YGMakeNativeMethod(jni_YGConfigNew),
+            YGMakeNativeMethod(jni_YGConfigFree),
+            YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
+            YGMakeNativeMethod(jni_YGConfigSetUseWebDefaults),
+            YGMakeNativeMethod(jni_YGConfigSetPrintTreeFlag),
+            YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
+            YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
+            YGMakeNativeMethod(jni_YGConfigSetLogger),
+            YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),
+            YGMakeNativeMethod(
+                jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
         });
   });
 }

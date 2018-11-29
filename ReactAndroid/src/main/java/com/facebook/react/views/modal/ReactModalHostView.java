@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -123,9 +124,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      Activity currentActivity = getCurrentActivity();
-      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
-        mDialog.dismiss();
+      if (mDialog.isShowing()) {
+        Activity dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+        if (dialogContext == null || !dialogContext.isFinishing()) {
+          mDialog.dismiss();
+        }
       }
       mDialog = null;
 

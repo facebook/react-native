@@ -13,7 +13,6 @@
 const log = require('../util/log').out('bundle');
 const Server = require('metro/src/Server');
 
-/* $FlowFixMe(site=react_native_oss) */
 const outputBundle = require('metro/src/shared/output/bundle');
 const path = require('path');
 const saveAssets = require('./saveAssets');

@@ -9,8 +9,8 @@
 #import <memory>
 
 #import <React/RCTBridge.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/uimanager/FabricUIManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,11 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-/*
- * Deprecated. Do not use.
- */
-@property (nonatomic) std::function<facebook::react::UIManagerInstaller> uiManagerInstaller;
-@property (nonatomic) std::function<facebook::react::UIManagerUninstaller> uiManagerUninstaller;
+@property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 
 @end
 
@@ -65,12 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface RCTSurfacePresenter (Deprecated)
-
-/**
- * We need to expose `uiManager` for registration
- * purposes. Eventually, we will move this down to C++ side.
- */
-- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
 
 /**
  * Returns a underlying bridge.

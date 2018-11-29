@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <fabric/components/scrollview/ScrollViewEventEmitter.h>
-#include <fabric/components/scrollview/ScrollViewProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/scrollview/ScrollViewEventEmitter.h>
+#include <react/components/scrollview/ScrollViewProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {

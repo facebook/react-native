@@ -15,7 +15,6 @@
 
 const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
 const guid = require('guid');
-const isNode = require('fbjs/lib/isNode');
 const toIterator = require('toIterator');
 
 module.exports = (function(global, undefined) {
@@ -96,9 +95,6 @@ module.exports = (function(global, undefined) {
   if (__DEV__) {
     SECRET_SIZE_PROP = '$size' + guid();
   }
-
-  // In oldIE we use the DOM Node `uniqueID` property to get create the hash.
-  const OLD_IE_HASH_PREFIX = 'IE_HASH_';
 
   class Map {
     /**
@@ -523,34 +519,6 @@ module.exports = (function(global, undefined) {
     }
   }
 
-  /**
-   * IE has a `uniqueID` set on every DOM node. So we construct the hash from
-   * this uniqueID to avoid memory leaks and the IE cloneNode bug where it
-   * clones properties in addition to the attributes.
-   *
-   * @param {object} node
-   * @return {?string}
-   */
-  function getIENodeHash(node) {
-    let uniqueID;
-    switch (node.nodeType) {
-      case 1: // Element
-        uniqueID = node.uniqueID;
-        break;
-      case 9: // Document
-        uniqueID = node.documentElement.uniqueID;
-        break;
-      default:
-        return null;
-    }
-
-    if (uniqueID) {
-      return OLD_IE_HASH_PREFIX + uniqueID;
-    } else {
-      return null;
-    }
-  }
-
   const getHash = (function() {
     const propIsEnumerable = Object.prototype.propertyIsEnumerable;
     const hashProperty = '__MAP_POLYFILL_INTERNAL_HASH__';
@@ -572,8 +540,6 @@ module.exports = (function(global, undefined) {
         o.propertyIsEnumerable[hashProperty]
       ) {
         return o.propertyIsEnumerable[hashProperty];
-      } else if (!isES5 && isNode(o) && getIENodeHash(o)) {
-        return getIENodeHash(o);
       } else if (!isES5 && o[hashProperty]) {
         return o[hashProperty];
       }
@@ -590,18 +556,12 @@ module.exports = (function(global, undefined) {
         } else if (o.propertyIsEnumerable) {
           // Since we can't define a non-enumerable property on the object
           // we'll hijack one of the less-used non-enumerable properties to
-          // save our hash on it. Addiotionally, since this is a function it
+          // save our hash on it. Additionally, since this is a function it
           // will not show up in `JSON.stringify` which is what we want.
           o.propertyIsEnumerable = function() {
             return propIsEnumerable.apply(this, arguments);
           };
           o.propertyIsEnumerable[hashProperty] = hashCounter;
-        } else if (isNode(o)) {
-          // At this point we couldn't get the IE `uniqueID` to use as a hash
-          // and we couldn't use a non-enumerable property to exploit the
-          // dontEnum bug so we simply add the `hashProperty` on the node
-          // itself.
-          o[hashProperty] = hashCounter;
         } else {
           throw new Error('Unable to set a non-enumerable property on object.');
         }

@@ -26,7 +26,6 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -302,6 +301,13 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   overScrollMode?: ?('auto' | 'always' | 'never'),
+  /**
+   * Causes the scrollbars not to turn transparent when they are not in use.
+   * The default value is false.
+   *
+   * @platform android
+   */
+  persistentScrollbar?: ?boolean,
 |}>;
 
 type VRProps = $ReadOnly<{|
@@ -397,8 +403,8 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.85 was deployed. To see the error, delete this comment
+  /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.86 was deployed. To see the error, delete this comment
    * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
@@ -443,6 +449,7 @@ export type Props = $ReadOnly<{|
    * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
+
   /**
    * When false, the view cannot be scrolled via touch interaction.
    * The default value is true.

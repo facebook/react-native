@@ -439,9 +439,38 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _moduleDataByName[moduleName].instance;
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  if (!lazilyLoad) {
+    return [self moduleForName:moduleName];
+  }
+
+  RCTModuleData *moduleData = _moduleDataByName[moduleName];
+  if (moduleData) {
+    return moduleData.instance;
+  }
+
+  // Module may not be loaded yet, so attempt to force load it here.
+  const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
+    [self.delegate bridge:self didNotFindModule:moduleName];
+  if (result) {
+    // Try again.
+    moduleData = _moduleDataByName[moduleName];
+  } else {
+    RCTLogError(@"Unable to find module for %@", moduleName);
+  }
+
+  return moduleData.instance;
+}
+
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
   return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass) lazilyLoadIfNecessary:YES];
 }
 
 - (std::shared_ptr<ModuleRegistry>)_buildModuleRegistryUnlocked
@@ -518,7 +547,24 @@ struct RCTInstanceCallback : public InstanceCallback {
   _moduleRegistryCreated = YES;
 }
 
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+{
+  NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
+  if (moduleName) {
+    RCTModuleData *const moduleData = _moduleDataByName[moduleName];
+    if (moduleData) {
+      moduleData.instance = instance;
+    }
+  }
+}
+
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
+{
+  return [self _registerModulesForClasses:moduleClasses lazilyDiscovered:NO];
+}
+
+- (NSArray<RCTModuleData *> *)_registerModulesForClasses:(NSArray<Class> *)moduleClasses
+                                        lazilyDiscovered:(BOOL)lazilyDiscovered
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways,
                           @"-[RCTCxxBridge initModulesWithDispatchGroup:] autoexported moduleData", nil);
@@ -526,7 +572,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSArray *moduleClassesCopy = [moduleClasses copy];
   NSMutableArray<RCTModuleData *> *moduleDataByID = [NSMutableArray arrayWithCapacity:moduleClassesCopy.count];
   for (Class moduleClass in moduleClassesCopy) {
-    if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+    if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
       continue;
     }
     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
@@ -534,7 +580,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     // Check for module name collisions
     RCTModuleData *moduleData = _moduleDataByName[moduleName];
     if (moduleData) {
-      if (moduleData.hasInstance) {
+      if (moduleData.hasInstance || lazilyDiscovered) {
         // Existing module was preregistered, so it takes precedence
         continue;
       } else if ([moduleClass new] == nil) {
@@ -631,7 +677,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     // we must use the names provided by the delegate method here.
     for (NSString *moduleName in moduleClasses) {
       Class moduleClass = moduleClasses[moduleName];
-      if (RCTJSINativeModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTJSINativeModule)]) {
+      if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
         continue;
       }
 
@@ -645,10 +691,8 @@ struct RCTInstanceCallback : public InstanceCallback {
           // The new module returned nil from init, so use the old module
           continue;
         } else if ([moduleData.moduleClass new] != nil) {
-          // Both modules were non-nil, so it's unclear which should take precedence
-          RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
-                      "name '%@', but name was already registered by class %@",
-                      moduleClass, moduleName, moduleData.moduleClass);
+          // Use existing module since it was already loaded but not yet instantiated.
+          continue;
         }
       }
 
@@ -667,7 +711,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
   // Set up moduleData for automatically-exported modules
-  NSArray<RCTModuleData *> *moduleDataById = [self registerModulesForClasses:modules];
+  NSArray<RCTModuleData *> *moduleDataById = [self _registerModulesForClasses:modules lazilyDiscovered:lazilyDiscovered];
 
   if (lazilyDiscovered) {
 #if RCT_DEBUG
@@ -861,6 +905,7 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   _loading = NO;
   _valid = NO;
+  _moduleRegistryCreated = NO;
 
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self->_jsMessageThread) {
@@ -957,6 +1002,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   _loading = NO;
   _valid = NO;
   _didInvalidate = YES;
+  _moduleRegistryCreated = NO;
 
   if ([RCTBridge currentBridge] == self) {
     [RCTBridge setCurrentBridge:nil];

@@ -69,6 +69,13 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
+// We need RCTReachabilityCallback's and module methods to be called on the same thread so that we can have
+// guarantees about when we mess with the reachability callbacks.
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 #pragma mark - Lifecycle
 
 - (instancetype)initWithHost:(NSString *)host

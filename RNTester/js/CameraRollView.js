@@ -259,15 +259,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
   },
-  url: {
-    fontSize: 9,
-    marginBottom: 14,
-  },
   image: {
     margin: 4,
-  },
-  info: {
-    flex: 1,
   },
   container: {
     flex: 1,

@@ -9,9 +9,9 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/events/EventDispatcher.h>
-#include <fabric/events/primitives.h>
 #include <folly/dynamic.h>
+#include <react/events/EventDispatcher.h>
+#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -45,6 +45,8 @@ class EventEmitter {
  public:
   static std::recursive_mutex &DispatchMutex();
 
+  static ValueFactory defaultPayloadFactory();
+
   EventEmitter(
       SharedEventTarget eventTarget,
       Tag tag,
@@ -53,13 +55,15 @@ class EventEmitter {
   virtual ~EventEmitter() = default;
 
   /*
-   * Indicates that an event can be delivered to `eventTarget`.
-   * Callsite must acquire `DispatchMutex` to access those methods.
-   * The `setEnabled` operation is not guaranteed: sometimes `EventEmitter`
-   * can be re-enabled after disabling, sometimes not.
+   * `DispatchMutex` must be acquired before calling.
+   * Enables/disables event emitter.
+   * Enabled event emitter retains a pointer to `eventTarget` strongly (as
+   * `std::shared_ptr`) whereas disabled one weakly (as `std::weak_ptr`).
+   * The enable state is additive; a number of `enable` calls should be equal to
+   * a number of `disable` calls to release the event target.
    */
-  void setEnabled(bool enabled) const;
-  bool getEnabled() const;
+  void enable() const;
+  void disable() const;
 
  protected:
 #ifdef ANDROID
@@ -74,14 +78,22 @@ class EventEmitter {
    */
   void dispatchEvent(
       const std::string &type,
-      const folly::dynamic &payload = folly::dynamic::object(),
+      const ValueFactory &payloadFactory =
+          EventEmitter::defaultPayloadFactory(),
+      const EventPriority &priority = EventPriority::AsynchronousBatched) const;
+
+  void dispatchEvent(
+      const std::string &type,
+      const folly::dynamic &payload,
       const EventPriority &priority = EventPriority::AsynchronousBatched) const;
 
  private:
+  void toggleEventTargetOwnership_() const;
+
   mutable SharedEventTarget eventTarget_;
   mutable WeakEventTarget weakEventTarget_;
-  Tag tag_;
   WeakEventDispatcher eventDispatcher_;
+  mutable int enableCounter_{0};
 };
 
 } // namespace react

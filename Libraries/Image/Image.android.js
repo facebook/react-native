@@ -262,10 +262,9 @@ let Image = (
 Image = React.forwardRef(Image);
 
 /**
- * Prefetches a remote image for later use by downloading it to the disk
- * cache
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
 Image.getSize = getSize;
 

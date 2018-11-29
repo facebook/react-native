@@ -76,7 +76,7 @@ class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
 
-  _onSelectPermission = (permission: string) => {
+  _onSelectPermission = (permission: string | number) => {
     this.setState({
       permission: permission,
     });
@@ -118,10 +118,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-  },
-  singleLine: {
-    fontSize: 16,
-    padding: 4,
   },
   text: {
     margin: 10,

@@ -60,7 +60,16 @@ function genModule(
       const methodType = isPromise ? 'promise' : isSync ? 'sync' : 'async';
       module[methodName] = genMethod(moduleID, methodID, methodType);
     });
+
   Object.assign(module, constants);
+
+  if (module.getConstants == null) {
+    module.getConstants = () => constants;
+  } else {
+    console.warn(
+      `Unable to define method 'getConstants()' on NativeModule '${moduleName}'. NativeModule '${moduleName}' already has a constant or method called 'getConstants'. Please remove it.`,
+    );
+  }
 
   if (__DEV__) {
     BatchedBridge.createDebugLookup(moduleID, moduleName, methods);

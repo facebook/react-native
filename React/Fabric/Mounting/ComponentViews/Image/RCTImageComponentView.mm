@@ -7,12 +7,13 @@
 
 #import "RCTImageComponentView.h"
 
-#import <fabric/components/image/ImageEventEmitter.h>
-#import <fabric/components/image/ImageLocalData.h>
-#import <fabric/components/image/ImageProps.h>
-#import <fabric/imagemanager/ImageRequest.h>
-#import <fabric/imagemanager/ImageResponse.h>
-#import <fabric/imagemanager/RCTImagePrimitivesConversions.h>
+#import <react/components/image/ImageEventEmitter.h>
+#import <react/components/image/ImageLocalData.h>
+#import <react/components/image/ImageProps.h>
+#import <react/components/image/ImageShadowNode.h>
+#import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/ImageResponse.h>
+#import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "MainQueueExecutor.h"
@@ -42,6 +43,11 @@ using namespace facebook::react;
 }
 
 #pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ImageShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
@@ -73,7 +79,7 @@ using namespace facebook::react;
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
   assert(_imageLocalData);
   auto future = _imageLocalData->getImageRequest().getResponseFuture();
-  future.via(&MainQueueExecutor::instance()).then([self](ImageResponse &&imageResponse) {
+  future.via(&MainQueueExecutor::instance()).thenValue([self](ImageResponse &&imageResponse) {
     self.image = (__bridge UIImage *)imageResponse.getImage().get();
   });
 }

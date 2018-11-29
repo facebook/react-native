@@ -362,10 +362,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 13,
   },
-  spinner: {
-    width: 20,
-    marginRight: 6,
-  },
   buttons: {
     flexDirection: 'row',
     height: 30,

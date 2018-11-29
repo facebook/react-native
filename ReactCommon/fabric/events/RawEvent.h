@@ -8,8 +8,9 @@
 
 #include <memory>
 
-#include <fabric/events/primitives.h>
 #include <folly/dynamic.h>
+#include <jsi/jsi.h>
+#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -21,11 +22,11 @@ class RawEvent {
  public:
   RawEvent(
       std::string type,
-      folly::dynamic payload,
+      ValueFactory payloadFactory,
       WeakEventTarget eventTarget);
 
   const std::string type;
-  const folly::dynamic payload;
+  const ValueFactory payloadFactory;
   const WeakEventTarget eventTarget;
 };
 

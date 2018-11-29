@@ -58,7 +58,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.container}>
         <Text>Hello</Text>
         <Image
           source={{
@@ -110,6 +110,9 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   base: {
     width: 100,
     height: 100,

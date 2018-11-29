@@ -577,7 +577,7 @@ const MatrixMath = {
     );
 
     // output values
-    var perspective = [];
+    let perspective = [];
     const quaternion = [];
     const scale = [];
     const skew = [];
@@ -590,7 +590,7 @@ const MatrixMath = {
     }
     const matrix = [];
     const perspectiveMatrix = [];
-    for (var i = 0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
       matrix.push([]);
       for (let j = 0; j < 4; j++) {
         const value = transformMatrix[i * 4 + j] / transformMatrix[15];
@@ -622,7 +622,7 @@ const MatrixMath = {
       const transposedInversePerspectiveMatrix = MatrixMath.transpose(
         inversePerspectiveMatrix,
       );
-      var perspective = MatrixMath.multiplyVectorByMatrix(
+      perspective = MatrixMath.multiplyVectorByMatrix(
         rightHandSide,
         transposedInversePerspectiveMatrix,
       );
@@ -633,14 +633,14 @@ const MatrixMath = {
     }
 
     // translation is simple
-    for (var i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       translation[i] = matrix[3][i];
     }
 
     // Now get scale and shear.
     // 'row' is a 3 element array of 3 component vectors
     const row = [];
-    for (i = 0; i < 3; i++) {
+    for (let i = 0; i < 3; i++) {
       row[i] = [matrix[i][0], matrix[i][1], matrix[i][2]];
     }
 
@@ -678,7 +678,7 @@ const MatrixMath = {
     // is -1, then negate the matrix and the scaling factors.
     const pdum3 = MatrixMath.v3Cross(row[1], row[2]);
     if (MatrixMath.v3Dot(row[0], pdum3) < 0) {
-      for (i = 0; i < 3; i++) {
+      for (let i = 0; i < 3; i++) {
         scale[i] *= -1;
         row[i][0] *= -1;
         row[i][1] *= -1;

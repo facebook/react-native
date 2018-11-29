@@ -8,6 +8,7 @@
 #pragma once
 
 #include <folly/dynamic.h>
+#include <jsi/jsi.h>
 
 namespace facebook {
 namespace react {
@@ -46,10 +47,13 @@ struct EventTarget {};
 using SharedEventTarget = std::shared_ptr<const EventTarget>;
 using WeakEventTarget = std::weak_ptr<const EventTarget>;
 
+using ValueFactory = std::function<jsi::Value(jsi::Runtime &runtime)>;
+
 using EventPipe = std::function<void(
+    jsi::Runtime &runtime,
     const EventTarget *eventTarget,
     const std::string &type,
-    const folly::dynamic &payload)>;
+    const ValueFactory &payloadFactory)>;
 
 } // namespace react
 } // namespace facebook
