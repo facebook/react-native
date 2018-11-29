@@ -231,6 +231,9 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     return (
       <AndroidDrawerLayout
         {...props}
+        /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.87 was deployed. To see the
+         * error, delete this comment and run Flow. */
         ref={this._nativeRef}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
@@ -322,18 +325,30 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    * Native methods
    */
   blur() {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).blur();
   }
 
   focus() {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).focus();
   }
 
   measure(callback: MeasureOnSuccessCallback) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measure(callback);
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measureInWindow(callback);
   }
 
@@ -342,6 +357,9 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void,
   ) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).measureLayout(
       relativeToNativeNode,
       onSuccess,
@@ -350,6 +368,9 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   }
 
   setNativeProps(nativeProps: Object) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
     nullthrows(this._nativeRef.current).setNativeProps(nativeProps);
   }
 }
