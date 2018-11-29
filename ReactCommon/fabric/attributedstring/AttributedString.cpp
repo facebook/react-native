@@ -18,12 +18,12 @@ using Fragments = AttributedString::Fragments;
 #pragma mark - Fragment
 
 bool Fragment::operator==(const Fragment &rhs) const {
-  return std::tie(string, textAttributes, shadowNode, parentShadowNode) ==
+  return std::tie(string, textAttributes, shadowView, parentShadowView) ==
       std::tie(
              rhs.string,
              rhs.textAttributes,
-             rhs.shadowNode,
-             rhs.parentShadowNode);
+             rhs.shadowView,
+             rhs.parentShadowView);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {
@@ -73,7 +73,7 @@ std::string AttributedString::getString() const {
 }
 
 bool AttributedString::operator==(const AttributedString &rhs) const {
-  return fragments_ != rhs.fragments_;
+  return fragments_ == rhs.fragments_;
 }
 
 bool AttributedString::operator!=(const AttributedString &rhs) const {
@@ -89,11 +89,6 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   for (auto &&fragment : fragments_) {
     auto propsList =
         fragment.textAttributes.DebugStringConvertible::getDebugProps();
-
-    if (fragment.shadowNode) {
-      propsList.push_back(std::make_shared<DebugStringConvertibleItem>(
-          "shadowNode", fragment.shadowNode->getDebugDescription()));
-    }
 
     list.push_back(std::make_shared<DebugStringConvertibleItem>(
         "Fragment",

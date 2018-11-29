@@ -7,12 +7,16 @@
 package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.queue.MessageQueueThread;
 
 public interface FabricBinding {
 
   // TODO: T31905686 change types of UIManager and EventBeatManager when moving to OSS
   void register(
-      JavaScriptContextHolder jsContext, FabricBinder fabricBinder, Object eventBeatManager);
+      JavaScriptContextHolder jsContext,
+      FabricBinder fabricBinder,
+      Object eventBeatManager,
+      MessageQueueThread jsMessageQueueThread);
 
   void unregister();
 }

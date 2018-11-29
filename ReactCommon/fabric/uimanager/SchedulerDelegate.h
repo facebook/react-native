@@ -9,7 +9,7 @@
 
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
-#include <react/uimanager/ShadowViewMutation.h>
+#include <react/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {

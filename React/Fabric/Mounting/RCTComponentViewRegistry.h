@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <react/core/ReactPrimitives.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,21 +19,23 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTComponentViewRegistry : NSObject
 
+@property (nonatomic, strong, readonly) RCTComponentViewFactory *componentViewFactory;
+
 /**
  * Returns a native view instance from the recycle pool (or create)
- * for given `componentName` and with given `tag`.
+ * for given `componentHandle` and with given `tag`.
  * #RefuseSingleUse
  */
-- (UIView<RCTComponentViewProtocol> *)dequeueComponentViewWithName:(NSString *)componentName
-                                                               tag:(ReactTag)tag;
+- (UIView<RCTComponentViewProtocol> *)dequeueComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
+                                                                          tag:(ReactTag)tag;
 
 /**
  * Puts a given native component view to the recycle pool.
  * #RefuseSingleUse
  */
-- (void)enqueueComponentViewWithName:(NSString *)componentName
-                                 tag:(ReactTag)tag
-                       componentView:(UIView<RCTComponentViewProtocol> *)componentView;
+- (void)enqueueComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
+                                            tag:(ReactTag)tag
+                                  componentView:(UIView<RCTComponentViewProtocol> *)componentView;
 
 /**
  * Returns a native component view by given `tag`.
@@ -46,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Creates a component view with a given type and puts it to the recycle pool.
  */
-- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName;
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 @end
 

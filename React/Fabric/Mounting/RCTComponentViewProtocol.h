@@ -24,6 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTComponentViewProtocol <NSObject>
 
 /*
+ * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * represents.
+ */
++ (facebook::react::ComponentHandle)componentHandle;
+
+/*
  * Called for mounting (attaching) a child component view inside `self`
  * component view.
  * Receiver must add `childComponentView` as a subview.

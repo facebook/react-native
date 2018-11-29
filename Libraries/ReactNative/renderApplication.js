@@ -49,8 +49,8 @@ function renderApplication<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    const AsyncMode = React.unstable_AsyncMode;
-    renderable = <AsyncMode>{renderable}</AsyncMode>;
+    const ConcurrentMode = React.unstable_ConcurrentMode;
+    renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
   if (fabric) {

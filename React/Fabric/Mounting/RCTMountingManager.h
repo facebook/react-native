@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/uimanager/ShadowView.h>
-#import <react/uimanager/ShadowViewMutation.h>
+#import <react/core/ReactPrimitives.h>
+#import <react/mounting/ShadowView.h>
+#import <react/mounting/ShadowViewMutation.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTMountingManagerDelegate.h>
 
@@ -37,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The receiver is free to ignore the request.
  * Can be called from any thread.
  */
-- (void)preliminaryCreateComponentViewWithName:(NSString *)componentName;
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 @end
 

@@ -45,6 +45,8 @@ class EventEmitter {
  public:
   static std::recursive_mutex &DispatchMutex();
 
+  static ValueFactory defaultPayloadFactory();
+
   EventEmitter(
       SharedEventTarget eventTarget,
       Tag tag,
@@ -76,7 +78,13 @@ class EventEmitter {
    */
   void dispatchEvent(
       const std::string &type,
-      const folly::dynamic &payload = folly::dynamic::object(),
+      const ValueFactory &payloadFactory =
+          EventEmitter::defaultPayloadFactory(),
+      const EventPriority &priority = EventPriority::AsynchronousBatched) const;
+
+  void dispatchEvent(
+      const std::string &type,
+      const folly::dynamic &payload,
       const EventPriority &priority = EventPriority::AsynchronousBatched) const;
 
  private:
@@ -84,7 +92,6 @@ class EventEmitter {
 
   mutable SharedEventTarget eventTarget_;
   mutable WeakEventTarget weakEventTarget_;
-  Tag tag_;
   WeakEventDispatcher eventDispatcher_;
   mutable int enableCounter_{0};
 };

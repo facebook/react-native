@@ -98,7 +98,7 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
  * Check/set if JSI-bound NativeModule is enabled. By default it's off.
  */
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
-RCT_EXTERN void RCTEnableJSINativeModule(BOOL enabled);
+RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.

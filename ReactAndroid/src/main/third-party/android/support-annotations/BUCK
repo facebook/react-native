@@ -1,6 +1,7 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_prebuilt_jar")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.prebuilt_jar(
+rn_prebuilt_jar(
     name = "android-support-annotations",
     binary_jar = ":support-annotations-binary.jar",
     visibility = ["//ReactAndroid/..."],

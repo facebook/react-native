@@ -15,6 +15,7 @@
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/mounting/ShadowView.h>
 
 namespace facebook {
 namespace react {
@@ -35,8 +36,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    public:
     std::string string;
     TextAttributes textAttributes;
-    SharedShadowNode shadowNode;
-    SharedShadowNode parentShadowNode;
+    ShadowView shadowView;
+    ShadowView parentShadowView;
 
     bool operator==(const Fragment &rhs) const;
     bool operator!=(const Fragment &rhs) const;
@@ -91,9 +92,9 @@ struct hash<facebook::react::AttributedString::Fragment> {
     return std::hash<decltype(fragment.string)>{}(fragment.string) +
         std::hash<decltype(fragment.textAttributes)>{}(
                fragment.textAttributes) +
-        std::hash<decltype(fragment.shadowNode)>{}(fragment.shadowNode) +
-        std::hash<decltype(fragment.parentShadowNode)>{}(
-               fragment.parentShadowNode);
+        std::hash<decltype(fragment.shadowView)>{}(fragment.shadowView) +
+        std::hash<decltype(fragment.parentShadowView)>{}(
+               fragment.parentShadowView);
   }
 };
 

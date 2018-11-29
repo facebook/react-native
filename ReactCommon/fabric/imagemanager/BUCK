@@ -98,6 +98,7 @@ rn_xplat_cxx_library(
         "xplat//third-party/glog:glog",
         "xplat//yoga:yoga",
         react_native_xplat_target("fabric/core:core"),
+        react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/graphics:graphics"),
     ],

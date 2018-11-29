@@ -6,12 +6,7 @@
  */
 package com.facebook.react.uimanager;
 
-import static java.lang.System.arraycopy;
-
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -30,8 +25,6 @@ import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -60,8 +53,6 @@ import javax.annotation.Nullable;
 @ReactPropertyHolder
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
-  private static final boolean DEBUG = ReactBuildConfig.DEBUG || PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  private static final String TAG = ReactShadowNodeImpl.class.getSimpleName();
   private static final YogaConfig sYogaConfig;
 
   static {
@@ -90,12 +81,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private YogaNode mYogaNode;
-  private int mGenerationDebugInformation = 1;
-  private ReactShadowNode mOriginalReactShadowNode = null;
-
-  private @Nullable ReactStylesDiffMap mNewProps;
-  private long mInstanceHandle;
-  private boolean mIsSealed = false;
 
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0);
@@ -107,32 +92,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     } else {
       mYogaNode = null;
     }
-  }
-
-  protected ReactShadowNodeImpl(ReactShadowNodeImpl original) {
-    mReactTag = original.mReactTag;
-    mRootTag = original.mRootTag;
-    mViewClassName = original.mViewClassName;
-    mThemedContext = original.mThemedContext;
-    mShouldNotifyOnLayout = original.mShouldNotifyOnLayout;
-    mIsLayoutOnly = original.mIsLayoutOnly;
-    mNativeParent = original.mNativeParent;
-    mDefaultPadding = new Spacing(original.mDefaultPadding);
-    // Cloned nodes should be always updated.
-    mNodeUpdated = true;
-    // "cached" screen coordinates are not cloned because FabricJS not always clone the last
-    // ReactShadowNode that was rendered in the screen.
-    mScreenX = 0;
-    mScreenY = 0;
-    mScreenWidth = 0;
-    mScreenHeight = 0;
-    mGenerationDebugInformation = original.mGenerationDebugInformation + 1;
-    arraycopy(original.mPadding, 0, mPadding, 0, original.mPadding.length);
-    arraycopy(original.mPaddingIsPercent, 0, mPaddingIsPercent, 0, original.mPaddingIsPercent.length);
-    mNewProps = null;
-    mParent = null;
-    mOriginalReactShadowNode = original;
-    mIsSealed = false;
   }
 
   /**
@@ -337,12 +296,6 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   @Override
   public void onAfterUpdateTransaction() {
     // no-op
-  }
-
-  @Override
-  @Nullable
-  public ReactStylesDiffMap getNewProps() {
-    return mNewProps;
   }
 
   /**
@@ -976,7 +929,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
 
     result.append("<").append(getClass().getSimpleName()).append(" view='").append(getViewClass())
-      .append("' tag=").append(getReactTag()).append(" gen=").append(mGenerationDebugInformation);
+      .append("' tag=").append(getReactTag());
     if (mYogaNode != null) {
       result.append(" layout='x:").append(getScreenX())
         .append(" y:").append(getScreenY()).append(" w:").append(getLayoutWidth()).append(" h:")
@@ -1003,17 +956,4 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
   }
 
-  @Nullable
-  @Override
-  public List<ReactShadowNode> getChildrenList() {
-    return mChildren == null ? null : Collections.<ReactShadowNode>unmodifiableList(mChildren);
-  }
-
-  @Override
-  public void updateScreenLayout(ReactShadowNode prevNode) {
-    mScreenHeight = prevNode.getScreenHeight();
-    mScreenWidth = prevNode.getScreenWidth();
-    mScreenX = prevNode.getScreenX();
-    mScreenY = prevNode.getScreenY();
-  }
 }

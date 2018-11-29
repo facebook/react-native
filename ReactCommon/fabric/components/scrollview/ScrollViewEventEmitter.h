@@ -44,7 +44,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
   void dispatchScrollViewEvent(
       const std::string &name,
       const ScrollViewMetrics &scrollViewMetrics,
-      const folly::dynamic &payload = {}) const;
+      EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 
 } // namespace react

@@ -72,12 +72,17 @@
           modules: new Map(bundle.modules),
         };
       } else {
-        this._lastNumModifiedFiles =
-          bundle.modules.length + bundle.deleted.length;
+        // TODO T37123645 The former case is deprecated, but necessary in order to
+        // support older versions of the Metro bundler.
+        const modules = bundle.modules
+          ? bundle.modules
+          : bundle.added.concat(bundle.modified);
+
+        this._lastNumModifiedFiles = modules.length + bundle.deleted.length;
 
         this._lastBundle.revisionId = bundle.revisionId;
 
-        for (const [key, value] of bundle.modules) {
+        for (const [key, value] of modules) {
           this._lastBundle.modules.set(key, value);
         }
 

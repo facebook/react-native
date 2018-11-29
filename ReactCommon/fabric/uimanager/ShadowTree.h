@@ -12,8 +12,8 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/ShadowViewMutation.h>
 #include <react/uimanager/ShadowTreeDelegate.h>
-#include <react/uimanager/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -77,6 +77,21 @@ class ShadowTree final {
    */
   bool complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
 
+  /*
+   * Replaces a given old shadow node with a new one in the tree by cloning all
+   * nodes on the path to the root node and then complete the tree.
+   * Can be called from any thread.
+   * Returns `true` if the operation finished successfully.
+   */
+  bool completeByReplacingShadowNode(
+      const SharedShadowNode &oldShadowNode,
+      const SharedShadowNode &newShadowNode) const;
+
+  /*
+   * Returns a root shadow node that represents the last committed three.
+   */
+  SharedRootShadowNode getRootShadowNode() const;
+
 #pragma mark - Delegate
 
   /*
@@ -104,11 +119,6 @@ class ShadowTree final {
 
   void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
-
-  /*
-   * Return `rootShadowNodeMutex_` protected by `commitMutex_`.
-   */
-  SharedRootShadowNode getRootShadowNode() const;
 
   const SurfaceId surfaceId_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.

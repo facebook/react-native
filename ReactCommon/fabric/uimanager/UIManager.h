@@ -8,6 +8,7 @@
 
 #include <react/core/ShadowNode.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
@@ -15,6 +16,8 @@ namespace react {
 
 class UIManager {
  public:
+  void setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry);
+
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
 
@@ -49,6 +52,20 @@ class UIManager {
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
 
+  void setNativeProps(
+      const SharedShadowNode &shadowNode,
+      const RawProps &rawProps) const;
+
+  /*
+   * Returns layout metrics of given `shadowNode` relative to
+   * `ancestorShadowNode` (relative to the root node in case if provided
+   * `ancestorShadowNode` is nullptr).
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      const ShadowNode &shadowNode,
+      const ShadowNode *ancestorShadowNode) const;
+
+  ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
 };

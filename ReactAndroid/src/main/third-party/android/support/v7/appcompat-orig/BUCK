@@ -1,5 +1,5 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_genrule", "rn_prebuilt_jar")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
@@ -38,13 +38,13 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-fb_native.genrule(
+rn_genrule(
     name = "classes-unpacker-cmd",
     out = "classes.jar",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT",
 )
 
-fb_native.genrule(
+rn_genrule(
     name = "res-unpacker-cmd",
     out = "res",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT",

@@ -7,10 +7,10 @@
 
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/mounting/Differentiator.h>
+#include <react/mounting/ShadowViewMutation.h>
 
-#include "Differentiator.h"
 #include "ShadowTreeDelegate.h"
-#include "ShadowViewMutation.h"
 
 namespace facebook {
 namespace react {
@@ -96,6 +96,35 @@ bool ShadowTree::complete(
                              SharedShadowNodeSharedList(rootChildNodes)});
 
   return complete(oldRootShadowNode, newRootShadowNode);
+}
+
+bool ShadowTree::completeByReplacingShadowNode(
+    const SharedShadowNode &oldShadowNode,
+    const SharedShadowNode &newShadowNode) const {
+  auto rootShadowNode = getRootShadowNode();
+  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+  oldShadowNode->constructAncestorPath(*rootShadowNode, ancestors);
+
+  if (ancestors.size() == 0) {
+    return false;
+  }
+
+  auto oldChild = oldShadowNode;
+  auto newChild = newShadowNode;
+
+  SharedShadowNodeUnsharedList sharedChildren;
+
+  for (const auto &ancestor : ancestors) {
+    auto children = ancestor.get().getChildren();
+    std::replace(children.begin(), children.end(), oldChild, newChild);
+
+    sharedChildren = std::make_shared<SharedShadowNodeList>(children);
+
+    oldChild = ancestor.get().shared_from_this();
+    newChild = oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
+  }
+
+  return complete(sharedChildren);
 }
 
 bool ShadowTree::complete(
