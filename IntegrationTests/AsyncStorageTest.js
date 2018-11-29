@@ -71,7 +71,6 @@ function testSetAndGet() {
     AsyncStorage.getItem(KEY_1, (err2, result) => {
       expectAsyncNoError('testSetAndGet/getItem', err2);
       expectEqual(result, VAL_1, 'testSetAndGet setItem');
-      expectTrue(result !== null, 'should not be null');
       updateMessage('get(key_1) correctly returned ' + String(result));
       runTestCase('should get null for missing key', testMissingGet);
     });
@@ -106,7 +105,6 @@ function testRemoveItem() {
     AsyncStorage.setItem(KEY_2, VAL_2, () => {
       AsyncStorage.getAllKeys((err, result) => {
         expectAsyncNoError('testRemoveItem/getAllKeys', err);
-        expectTrue(result !== null, 'should not be null');
         expectTrue(
           Array.isArray(result) &&
             result.indexOf(KEY_1) >= 0 &&

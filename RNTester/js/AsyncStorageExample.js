@@ -31,7 +31,7 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
   _loadInitialState = async () => {
     try {
       const value = await AsyncStorage.getItem(STORAGE_KEY);
-      if (value !== null) {
+      if (value) {
         this.setState({selectedValue: value});
         this._appendMessage('Recovered selection from disk: ' + value);
       } else {

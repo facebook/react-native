@@ -19,6 +19,14 @@ const RCTAsyncStorage =
   NativeModules.AsyncSQLiteDBStorage ||
   NativeModules.AsyncLocalStorage;
 
+type MultiRequestType = {|
+  keys: Array<string>,
+  callback: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
+  keyIndex: number,
+  resolve: ?(result?: Promise<any>) => void,
+  reject: ?(error?: any) => void,
+|};
+
 /**
  * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value
  * storage system that is global to the app.  It should be used instead of
@@ -27,7 +35,7 @@ const RCTAsyncStorage =
  * See http://facebook.github.io/react-native/docs/asyncstorage.html
  */
 const AsyncStorage = {
-  _getRequests: ([]: Array<any>),
+  _getRequests: ([]: Array<MultiRequestType>),
   _getKeys: ([]: Array<string>),
   _immediate: (null: ?number),
 
@@ -38,8 +46,8 @@ const AsyncStorage = {
    */
   getItem: function(
     key: string,
-    callback?: ?(error: ?Error, result: string|null) => void,
-  ): Promise<string|null> {
+    callback?: ?(error: ?Error, result: ?string) => void,
+  ): Promise<?string> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
@@ -154,7 +162,7 @@ const AsyncStorage = {
    */
   getAllKeys: function(
     callback?: ?(error: ?Error, keys: ?Array<string>) => void,
-  ): Promise<?Array<string>> {
+  ): Promise<$ReadOnlyArray<string>> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.getAllKeys(function(error, keys) {
         const err = convertError(error);
@@ -232,7 +240,7 @@ const AsyncStorage = {
       });
     }
 
-    const getRequest: Object = {
+    const getRequest: MultiRequestType = {
       keys: keys,
       callback: callback,
       // do we need this?
@@ -265,7 +273,7 @@ const AsyncStorage = {
    */
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
-    callback?: ?(errors: ?Array<?Error>) => void,
+    callback?: ?(errors: ?$ReadOnlyArray<?Error>) => void,
   ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
@@ -287,7 +295,7 @@ const AsyncStorage = {
    */
   multiRemove: function(
     keys: Array<string>,
-    callback?: ?(errors: ?Array<?Error>) => void,
+    callback?: ?(errors: ?$ReadOnlyArray<?Error>) => void,
   ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
@@ -312,7 +320,7 @@ const AsyncStorage = {
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
-    callback?: ?(errors: ?Array<?Error>) => void,
+    callback?: ?(errors: ?$ReadOnlyArray<?Error>) => void,
   ): Promise<null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
@@ -334,7 +342,7 @@ if (!RCTAsyncStorage.multiMerge) {
   delete AsyncStorage.multiMerge;
 }
 
-function convertErrors(errs): ?Array<?Error> {
+function convertErrors(errs): ?$ReadOnlyArray<?Error> {
   if (!errs) {
     return null;
   }
