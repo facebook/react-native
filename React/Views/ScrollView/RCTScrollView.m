@@ -303,7 +303,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  super.contentOffset = contentOffset;
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
 - (void)setFrame:(CGRect)frame
