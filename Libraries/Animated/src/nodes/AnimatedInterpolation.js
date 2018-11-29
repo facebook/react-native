@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedInterpolation
  * @flow
  * @format
  */
@@ -288,7 +285,7 @@ function checkValidInputRange(arr: Array<number>) {
        * mean this implicit string conversion, you can do something like
        * String(myThing)
        */
-      'inputRange must be monotonically increasing ' + arr,
+      'inputRange must be monotonically non-decreasing ' + arr,
     );
   }
 }
@@ -358,7 +355,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
       }
       if (/deg$/.test(value)) {
         const degrees = parseFloat(value) || 0;
-        const radians = degrees * Math.PI / 180.0;
+        const radians = (degrees * Math.PI) / 180.0;
         return radians;
       } else {
         // Assume radians
@@ -374,7 +371,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
 
     return {
       inputRange: this._config.inputRange,
-      // Only the `outputRange` can contain strings so we don't need to tranform `inputRange` here
+      // Only the `outputRange` can contain strings so we don't need to transform `inputRange` here
       outputRange: this.__transformDataType(this._config.outputRange),
       extrapolateLeft:
         this._config.extrapolateLeft || this._config.extrapolate || 'extend',

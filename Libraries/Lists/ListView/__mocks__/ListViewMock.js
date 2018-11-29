@@ -1,12 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
@@ -19,6 +17,11 @@ const StaticRenderer = require('StaticRenderer');
 class ListViewMock extends React.Component<$FlowFixMeProps> {
   static latestRef: ?ListViewMock;
   static defaultProps = {
+    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
+     * error caught by Flow 0.59 which was not caught before. Most likely, this
+     * error is because an exported function parameter is missing an
+     * annotation. Without an annotation, these parameters are uncovered by
+     * Flow. */
     renderScrollComponent: props => <ScrollView {...props} />,
   };
   componentDidMount() {

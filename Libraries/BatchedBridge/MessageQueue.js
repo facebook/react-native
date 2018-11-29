@@ -1,17 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule MessageQueue
  * @flow
  * @format
  */
-
-/*eslint no-bitwise: 0*/
 
 'use strict';
 
@@ -26,11 +21,7 @@ export type SpyData = {
   type: number,
   module: ?string,
   method: string | number,
-  isSync: boolean,
-  successCbId: number,
-  failCbId: number,
-  args: Array<any>,
-  returnValue?: any,
+  args: any[],
 };
 
 const TO_JS = 0;
@@ -41,48 +32,59 @@ const METHOD_IDS = 1;
 const PARAMS = 2;
 const MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
+// eslint-disable-next-line no-bitwise
 const TRACE_TAG_REACT_APPS = 1 << 17;
 
-const DEBUG_INFO_LIMIT = 64;
-
-// Work around an initialization order issue
-let JSTimers = null;
+const DEBUG_INFO_LIMIT = 32;
 
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
-  _queue: [Array<number>, Array<number>, Array<any>, number];
-  _successCallbacks: Array<?Function>;
-  _failureCallbacks: Array<?Function>;
+  _queue: [number[], number[], any[], number];
+  _successCallbacks: {[key: number]: ?Function};
+  _failureCallbacks: {[key: number]: ?Function};
   _callID: number;
-  _inCall: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
+  _immediatesCallback: ?() => void;
 
-  _debugInfo: Object;
-  _remoteModuleTable: Object;
-  _remoteMethodTable: Object;
+  _debugInfo: {[number]: [number, number]};
+  _remoteModuleTable: {[number]: string};
+  _remoteMethodTable: {[number]: string[]};
 
   __spy: ?(data: SpyData) => void;
 
   constructor() {
     this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
-    this._successCallbacks = [];
-    this._failureCallbacks = [];
+    this._successCallbacks = {};
+    this._failureCallbacks = {};
     this._callID = 0;
     this._lastFlush = 0;
-    this._eventLoopStartTime = new Date().getTime();
+    this._eventLoopStartTime = Date.now();
+    this._immediatesCallback = null;
 
     if (__DEV__) {
       this._debugInfo = {};
       this._remoteModuleTable = {};
       this._remoteMethodTable = {};
     }
+
+    (this: any).callFunctionReturnFlushedQueue = this.callFunctionReturnFlushedQueue.bind(
+      this,
+    );
+    (this: any).callFunctionReturnResultAndFlushedQueue = this.callFunctionReturnResultAndFlushedQueue.bind(
+      this,
+    );
+    (this: any).flushedQueue = this.flushedQueue.bind(this);
+    (this: any).invokeCallbackAndReturnFlushedQueue = this.invokeCallbackAndReturnFlushedQueue.bind(
+      this,
+    );
   }
 
   /**
    * Public APIs
    */
+
   static spy(spyOrToggle: boolean | ((data: SpyData) => void)) {
     if (spyOrToggle === true) {
       MessageQueue.prototype.__spy = info => {
@@ -99,40 +101,36 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue = (
-    module: string,
-    method: string,
-    args: Array<any>,
-  ) => {
+  callFunctionReturnFlushedQueue(module: string, method: string, args: any[]) {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
 
     return this.flushedQueue();
-  };
+  }
 
-  callFunctionReturnResultAndFlushedQueue = (
+  callFunctionReturnResultAndFlushedQueue(
     module: string,
     method: string,
-    args: Array<any>,
-  ) => {
+    args: any[],
+  ) {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
     });
 
     return [result, this.flushedQueue()];
-  };
+  }
 
-  invokeCallbackAndReturnFlushedQueue = (cbID: number, args: Array<any>) => {
+  invokeCallbackAndReturnFlushedQueue(cbID: number, args: any[]) {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
     });
 
     return this.flushedQueue();
-  };
+  }
 
-  flushedQueue = () => {
+  flushedQueue() {
     this.__guard(() => {
       this.__callImmediates();
     });
@@ -140,10 +138,10 @@ class MessageQueue {
     const queue = this._queue;
     this._queue = [[], [], [], this._callID];
     return queue[0].length ? queue : null;
-  };
+  }
 
   getEventLoopRunningTime() {
-    return new Date().getTime() - this._eventLoopStartTime;
+    return Date.now() - this._eventLoopStartTime;
   }
 
   registerCallableModule(name: string, module: Object) {
@@ -170,7 +168,7 @@ class MessageQueue {
   enqueueNativeCall(
     moduleID: number,
     methodID: number,
-    params: Array<any>,
+    params: any[],
     onFail: ?Function,
     onSucc: ?Function,
   ) {
@@ -183,7 +181,9 @@ class MessageQueue {
       }
       // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       // to indicate fail (0) or success (1)
+      // eslint-disable-next-line no-bitwise
       onFail && params.push(this._callID << 1);
+      // eslint-disable-next-line no-bitwise
       onSucc && params.push((this._callID << 1) | 1);
       this._successCallbacks[this._callID] = onSucc;
       this._failureCallbacks[this._callID] = onFail;
@@ -203,60 +203,103 @@ class MessageQueue {
     this._queue[METHOD_IDS].push(methodID);
 
     if (__DEV__) {
-      // Any params sent over the bridge should be encodable as JSON
-      JSON.stringify(params);
+      // Validate that parameters passed over the bridge are
+      // folly-convertible.  As a special case, if a prop value is a
+      // function it is permitted here, and special-cased in the
+      // conversion.
+      const isValidArgument = val => {
+        const t = typeof val;
+        if (
+          t === 'undefined' ||
+          t === 'null' ||
+          t === 'boolean' ||
+          t === 'string'
+        ) {
+          return true;
+        }
+        if (t === 'number') {
+          return isFinite(val);
+        }
+        if (t === 'function' || t !== 'object') {
+          return false;
+        }
+        if (Array.isArray(val)) {
+          return val.every(isValidArgument);
+        }
+        for (const k in val) {
+          if (typeof val[k] !== 'function' && !isValidArgument(val[k])) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      // Replacement allows normally non-JSON-convertible values to be
+      // seen.  There is ambiguity with string values, but in context,
+      // it should at least be a strong hint.
+      const replacer = (key, val) => {
+        const t = typeof val;
+        if (t === 'function') {
+          return '<<Function ' + val.name + '>>';
+        } else if (t === 'number' && !isFinite(val)) {
+          return '<<' + val.toString() + '>>';
+        } else {
+          return val;
+        }
+      };
+
+      // Note that JSON.stringify
+      invariant(
+        isValidArgument(params),
+        '%s is not usable as a native method argument',
+        JSON.stringify(params, replacer),
+      );
 
       // The params object should not be mutated after being queued
       deepFreezeAndThrowOnMutationInDev((params: any));
     }
     this._queue[PARAMS].push(params);
 
-    const now = new Date().getTime();
+    const now = Date.now();
     if (
       global.nativeFlushQueueImmediate &&
-      (now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS ||
-        this._inCall === 0)
+      now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
     ) {
-      var queue = this._queue;
+      const queue = this._queue;
       this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
       global.nativeFlushQueueImmediate(queue);
     }
     Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
-
-    if (this.__spy) {
-      this.__spyNativeCall(moduleID, methodID, params, {
-        failCbId: onFail ? params[params.length - 2] : -1,
-        successCbId: onSucc ? params[params.length - 1] : -1,
+    if (__DEV__ && this.__spy && isFinite(moduleID)) {
+      this.__spy({
+        type: TO_NATIVE,
+        module: this._remoteModuleTable[moduleID],
+        method: this._remoteMethodTable[moduleID][methodID],
+        args: params,
+      });
+    } else if (this.__spy) {
+      this.__spy({
+        type: TO_NATIVE,
+        module: moduleID + '',
+        method: methodID,
+        args: params,
       });
     }
   }
 
-  callSyncHook(moduleID: number, methodID: number, args: Array<any>) {
-    if (__DEV__) {
-      invariant(
-        global.nativeCallSyncHook,
-        'Calling synchronous methods on native ' +
-          'modules is not supported in Chrome.\n\n Consider providing alternative ' +
-          'methods to expose this method in debug mode, e.g. by exposing constants ' +
-          'ahead-of-time.',
-      );
-    }
-    const returnValue = global.nativeCallSyncHook(moduleID, methodID, args);
-    if (this.__spy) {
-      this.__spyNativeCall(moduleID, methodID, args, {
-        isSync: true,
-        returnValue,
-      });
-    }
-    return returnValue;
-  }
-
-  createDebugLookup(moduleID: number, name: string, methods: Array<string>) {
+  createDebugLookup(moduleID: number, name: string, methods: string[]) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
       this._remoteMethodTable[moduleID] = methods;
     }
+  }
+
+  // For JSTimers to register its callback. Otherwise a circular dependency
+  // between modules is introduced. Note that only one callback may be
+  // registered at a time.
+  setImmediatesCallback(fn: () => void) {
+    this._immediatesCallback = fn;
   }
 
   /**
@@ -264,31 +307,48 @@ class MessageQueue {
    */
 
   __guard(fn: () => void) {
-    this._inCall++;
-    try {
+    if (this.__shouldPauseOnThrow()) {
       fn();
-    } catch (error) {
-      ErrorUtils.reportFatalError(error);
-    } finally {
-      this._inCall--;
+    } else {
+      try {
+        fn();
+      } catch (error) {
+        ErrorUtils.reportFatalError(error);
+      }
     }
+  }
+
+  // MessageQueue installs a global handler to catch all exceptions where JS users can register their own behavior
+  // This handler makes all exceptions to be propagated from inside MessageQueue rather than by the VM at their origin
+  // This makes stacktraces to be placed at MessageQueue rather than at where they were launched
+  // The parameter DebuggerInternal.shouldPauseOnThrow is used to check before catching all exceptions and
+  // can be configured by the VM or any Inspector
+  __shouldPauseOnThrow() {
+    return (
+      // $FlowFixMe
+      typeof DebuggerInternal !== 'undefined' &&
+      DebuggerInternal.shouldPauseOnThrow === true // eslint-disable-line no-undef
+    );
   }
 
   __callImmediates() {
     Systrace.beginEvent('JSTimers.callImmediates()');
-    if (!JSTimers) {
-      JSTimers = require('JSTimers');
+    if (this._immediatesCallback != null) {
+      this._immediatesCallback();
     }
-    JSTimers.callImmediates();
     Systrace.endEvent();
   }
 
-  __callFunction(module: string, method: string, args: Array<any>) {
-    this._lastFlush = new Date().getTime();
+  __callFunction(module: string, method: string, args: any[]): any {
+    this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
-    Systrace.beginEvent(`${module}.${method}()`);
+    if (__DEV__ || this.__spy) {
+      Systrace.beginEvent(`${module}.${method}(${stringifySafe(args)})`);
+    } else {
+      Systrace.beginEvent(`${module}.${method}(...)`);
+    }
     if (this.__spy) {
-      this.__spyJSCall(module, method, args);
+      this.__spy({type: TO_JS, module, method, args});
     }
     const moduleMethods = this.getCallableModule(module);
     invariant(
@@ -308,12 +368,14 @@ class MessageQueue {
     return result;
   }
 
-  __invokeCallback(cbID: number, args: Array<any>) {
-    this._lastFlush = new Date().getTime();
+  __invokeCallback(cbID: number, args: any[]) {
+    this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
 
     // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.
+    // eslint-disable-next-line no-bitwise
     const callID = cbID >>> 1;
+    // eslint-disable-next-line no-bitwise
     const isSuccess = cbID & 1;
     const callback = isSuccess
       ? this._successCallbacks[callID]
@@ -334,12 +396,9 @@ class MessageQueue {
       }
       const profileName = debug
         ? '<callback for ' + module + '.' + method + '>'
-        : cbID + '';
-      if (this.__spy) {
-        this.__spyJSCall(null, profileName, args, {
-          failCbId: isSuccess ? -1 : cbID,
-          successCbId: isSuccess ? cbID : -1,
-        });
+        : cbID;
+      if (callback && this.__spy) {
+        this.__spy({type: TO_JS, module: null, method: profileName, args});
       }
       Systrace.beginEvent(
         `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`,
@@ -350,63 +409,13 @@ class MessageQueue {
       return;
     }
 
-    this._successCallbacks[callID] = this._failureCallbacks[callID] = null;
-    callback.apply(null, args);
+    delete this._successCallbacks[callID];
+    delete this._failureCallbacks[callID];
+    callback(...args);
 
     if (__DEV__) {
       Systrace.endEvent();
     }
-  }
-
-  __spyJSCall(
-    module: ?string,
-    method: string,
-    methodArgs: Array<any>,
-    params: any,
-  ) {
-    if (!this.__spy) {
-      return;
-    }
-    this.__spy({
-      type: TO_JS,
-      isSync: false,
-      module,
-      method,
-      failCbId: -1,
-      successCbId: -1,
-      args: methodArgs,
-      ...params,
-    });
-  }
-
-  __spyNativeCall(
-    moduleID: number,
-    methodID: number,
-    methodArgs: Array<any>,
-    params: any,
-  ) {
-    const spy = this.__spy;
-    if (!spy) {
-      return;
-    }
-
-    let moduleName = moduleID + '';
-    let methodName = methodID;
-    if (__DEV__ && isFinite(moduleID)) {
-      moduleName = this._remoteModuleTable[moduleID];
-      methodName = this._remoteMethodTable[moduleID][methodID];
-    }
-
-    spy({
-      type: TO_NATIVE,
-      isSync: false,
-      module: moduleName,
-      method: methodName,
-      failCbId: -1,
-      successCbId: -1,
-      args: methodArgs,
-      ...params,
-    });
   }
 }
 

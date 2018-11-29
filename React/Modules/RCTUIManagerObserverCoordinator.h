@@ -1,20 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
 #import <React/RCTViewManager.h>
 
+typedef dispatch_block_t RCTUIManagerMountingBlock;
+
 /**
- * Allows to hook into UIManager internals. This can be used to execute code at
+ * Allows hooking into UIManager internals. This can be used to execute code at
  * specific points during the view updating process.
- * All observer handler is called on UIManager queue.
+ * New observers must not be added inside observer handlers.
+ * The particular order of handler invocation is not guaranteed.
+ * All observer handlers are called on UIManager queue.
  */
 @protocol RCTUIManagerObserver <NSObject>
 
@@ -38,11 +40,23 @@
 - (void)uiManagerDidPerformLayout:(RCTUIManager *)manager;
 
 /**
- * Called before flushing UI blocks at the end of a batch. Note that this won't
- * get called for partial batches when using `unsafeFlushUIChangesBeforeBatchEnds`.
+ * Called before flushing UI blocks at the end of a batch.
  * This is called from the UIManager queue. Can be used to add UI operations in that batch.
  */
-- (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)manager;
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)manager;
+
+/**
+ * Called right before flushing UI blocks and allows to intercept the mounting process.
+ * Return `YES` to cancel default execution of the `block` (and perform the
+ * execution later).
+ */
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block;
+
+/**
+ * Called just after flushing UI blocks.
+ * This is called from the UIManager queue.
+ */
+- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager;
 
 @end
 

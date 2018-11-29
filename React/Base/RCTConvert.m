@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTConvert.h"
@@ -68,7 +66,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   for (NSNumber *number in json) {
     NSInteger index = number.integerValue;
     if (RCT_DEBUG && index < 0) {
-      RCTLogError(@"Invalid index value %zd. Indices must be positive.", index);
+      RCTLogError(@"Invalid index value %lld. Indices must be positive.", (long long)index);
     }
     [indexSet addIndex:index];
   }
@@ -222,6 +220,20 @@ RCT_ENUM_CONVERTER(NSURLRequestCachePolicy, (@{
   return nil;
 }
 
++ (NSLocale *)NSLocale:(id)json
+{
+  if ([json isKindOfClass:[NSString class]]) {
+    NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:json];
+    if (!locale) {
+      RCTLogError(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
+    }
+    return locale;
+  } else if (json) {
+    RCTLogConvertError(json, @"a locale");
+  }
+  return nil;
+}
+
 // JS Standard for time is milliseconds
 RCT_CUSTOM_CONVERTER(NSTimeInterval, NSTimeInterval, [self double:json] / 1000.0)
 
@@ -349,7 +361,22 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
-#endif
+
+#if WEBKIT_IOS_10_APIS_AVAILABLE
+RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
+ @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
+ @"link": @(WKDataDetectorTypeLink),
+ @"address": @(WKDataDetectorTypeAddress),
+ @"calendarEvent": @(WKDataDetectorTypeCalendarEvent),
+ @"trackingNumber": @(WKDataDetectorTypeTrackingNumber),
+ @"flightNumber": @(WKDataDetectorTypeFlightNumber),
+ @"lookupSuggestion": @(WKDataDetectorTypeLookupSuggestion),
+ @"none": @(WKDataDetectorTypeNone),
+ @"all": @(WKDataDetectorTypeAll),
+ }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
+ #endif // WEBKIT_IOS_10_APIS_AVAILABLE
+
+ #endif // !TARGET_OS_TV
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -403,7 +430,7 @@ static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, 
   NSUInteger count = fields.count;
   if ([json isKindOfClass:[NSArray class]]) {
     if (RCT_DEBUG && [json count] != count) {
-      RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json);
+      RCTLogError(@"Expected array with count %llu, but count is %llu: %@", (unsigned long long)count, (unsigned long long)[json count], json);
     } else {
       for (NSUInteger i = 0; i < count; i++) {
         result[i] = [RCTConvert CGFloat:RCTNilIfNull(json[i])];
@@ -534,12 +561,6 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
   return values;
 }
 
-SEL RCTConvertSelectorForType(NSString *type)
-{
-  const char *input = type.UTF8String;
-  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
-}
-
 RCT_ARRAY_CONVERTER(NSURL)
 RCT_ARRAY_CONVERTER(RCTFileURL)
 RCT_ARRAY_CONVERTER(UIColor)
@@ -651,7 +672,8 @@ RCT_ENUM_CONVERTER(YGJustify, (@{
   @"flex-end": @(YGJustifyFlexEnd),
   @"center": @(YGJustifyCenter),
   @"space-between": @(YGJustifySpaceBetween),
-  @"space-around": @(YGJustifySpaceAround)
+  @"space-around": @(YGJustifySpaceAround),
+  @"space-evenly": @(YGJustifySpaceEvenly)
 }), YGJustifyFlexStart, intValue)
 
 RCT_ENUM_CONVERTER(YGAlign, (@{
@@ -678,7 +700,8 @@ RCT_ENUM_CONVERTER(YGPositionType, (@{
 
 RCT_ENUM_CONVERTER(YGWrap, (@{
   @"wrap": @(YGWrapWrap),
-  @"nowrap": @(YGWrapNoWrap)
+  @"nowrap": @(YGWrapNoWrap),
+  @"wrap-reverse": @(YGWrapWrapReverse)
 }), YGWrapNoWrap, intValue)
 
 RCT_ENUM_CONVERTER(RCTPointerEvents, (@{

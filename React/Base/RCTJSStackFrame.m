@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTJSStackFrame.h"
@@ -12,13 +10,40 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+/**
+* The RegEx used to parse Error.stack.
+*
+* JavaScriptCore has the following format:
+*
+*   Exception: Error: argh
+*     func1@/path/to/file.js:2:18
+*     func2@/path/to/file.js:6:8
+*     eval@[native code]
+*     global code@/path/to/file.js:13:5
+*
+* Another supported format:
+*
+*  Error: argh
+*   at func1 (/path/to/file.js:2:18)
+*   at func2 (/path/to/file.js:6:8)
+*   at eval (native)
+*   at global (/path/to/file.js:13:5)
+*/
 static NSRegularExpression *RCTJSStackFrameRegex()
 {
   static dispatch_once_t onceToken;
   static NSRegularExpression *_regex;
   dispatch_once(&onceToken, ^{
+    NSString *pattern =
+      @"\\s*(?:at)?\\s*" // Skip leading "at" and whitespace, noncapturing
+      @"(.+?)"           // Capture the function name (group 1)
+      @"\\s*[@(]"        // Skip whitespace, then @ or (
+      @"(.*):"           // Capture the file name (group 2), then colon
+      @"(\\d+):(\\d+)"   // Line and column number (groups 3 and 4)
+      @"\\)?$"           // Optional closing paren and EOL
+    ;
     NSError *regexError;
-    _regex = [NSRegularExpression regularExpressionWithPattern:@"^([^@]+)@(.*):(\\d+):(\\d+)$" options:0 error:&regexError];
+    _regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&regexError];
     if (regexError) {
       RCTLogError(@"Failed to build regex: %@", [regexError localizedDescription]);
     }
@@ -56,7 +81,9 @@ static NSRegularExpression *RCTJSStackFrameRegex()
     return nil;
   }
 
-  NSString *methodName = [line substringWithRange:[match rangeAtIndex:1]];
+  // methodName may not be present for e.g. anonymous functions
+  const NSRange methodNameRange = [match rangeAtIndex:1];
+  NSString *methodName = methodNameRange.location == NSNotFound ? nil : [line substringWithRange:methodNameRange];
   NSString *file = [line substringWithRange:[match rangeAtIndex:2]];
   NSString *lineNumber = [line substringWithRange:[match rangeAtIndex:3]];
   NSString *column = [line substringWithRange:[match rangeAtIndex:4]];
@@ -69,7 +96,7 @@ static NSRegularExpression *RCTJSStackFrameRegex()
 
 + (instancetype)stackFrameWithDictionary:(NSDictionary *)dict
 {
-  return [[self alloc] initWithMethodName:dict[@"methodName"]
+  return [[self alloc] initWithMethodName:RCTNilIfNull(dict[@"methodName"])
                                      file:dict[@"file"]
                                lineNumber:[RCTNilIfNull(dict[@"lineNumber"]) integerValue]
                                    column:[RCTNilIfNull(dict[@"column"]) integerValue]];

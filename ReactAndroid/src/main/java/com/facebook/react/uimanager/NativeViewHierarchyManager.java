@@ -1,19 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
+import android.annotation.TargetApi;
 import android.content.res.Resources;
-import android.util.Log;
+import android.os.Build;
+import com.facebook.common.logging.FLog;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -22,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
-
+import com.facebook.react.R;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
@@ -35,10 +32,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -77,6 +77,7 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
 
   private boolean mLayoutAnimationEnabled;
+  private PopupMenu mPopupMenu;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     this(viewManagers, new RootViewManager());
@@ -116,15 +117,28 @@ public class NativeViewHierarchyManager {
     mLayoutAnimationEnabled = enabled;
   }
 
+  public synchronized void updateInstanceHandle(int tag, long instanceHandle) {
+    UiThreadUtil.assertOnUiThread();
+
+    try {
+      updateInstanceHandle(resolveView(tag), instanceHandle);
+    } catch (IllegalViewOperationException e) {
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
+    }
+  }
+
   public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
     try {
       ViewManager viewManager = resolveViewManager(tag);
       View viewToUpdate = resolveView(tag);
-      viewManager.updateProperties(viewToUpdate, props);
+
+      if (props != null) {
+        viewManager.updateProperties(viewToUpdate, props);
+      }
     } catch (IllegalViewOperationException e) {
-      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
     }
   }
 
@@ -137,12 +151,7 @@ public class NativeViewHierarchyManager {
   }
 
   public synchronized void updateLayout(
-      int parentTag,
-      int tag,
-      int x,
-      int y,
-      int width,
-      int height) {
+      int parentTag, int tag, int x, int y, int width, int height) {
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_VIEW,
@@ -168,6 +177,19 @@ public class NativeViewHierarchyManager {
           View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
           View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
 
+      // We update the layout of the ReactRootView when there is a change in the layout of its child.
+      // This is required to re-measure the size of the native View container (usually a
+      // FrameLayout) that is configured with layout_height = WRAP_CONTENT or layout_width =
+      // WRAP_CONTENT
+      //
+      // This code is going to be executed ONLY when there is a change in the size of the Root
+      // View defined in the js side. Changes in the layout of inner views will not trigger an update
+      // on the layour of the Root View.
+      ViewParent parent = viewToUpdate.getParent();
+      if (parent instanceof RootView) {
+        parent.requestLayout();
+      }
+
       // Check if the parent of the view has to layout the view, or the child has to lay itself out.
       if (!mRootTags.get(parentTag)) {
         ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
@@ -189,6 +211,26 @@ public class NativeViewHierarchyManager {
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
+  }
+
+  @TargetApi(Build.VERSION_CODES.DONUT)
+  private void updateInstanceHandle(View viewToUpdate, long instanceHandle) {
+    UiThreadUtil.assertOnUiThread();
+    viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
+  }
+
+  @Nullable
+  @TargetApi(Build.VERSION_CODES.DONUT)
+  public long getInstanceHandle(int reactTag) {
+    View view = mTagsToViews.get(reactTag);
+    if (view == null) {
+      throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
+    }
+    Long instanceHandle = (Long) view.getTag(R.id.view_tag_instance_handle);
+    if (instanceHandle == null) {
+      throw new IllegalViewOperationException("Unable to find instanceHandle for tag: " + reactTag);
+    }
+    return instanceHandle;
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
@@ -501,10 +543,12 @@ public class NativeViewHierarchyManager {
       ViewGroup view,
       ThemedReactContext themedContext) {
     if (view.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses " +
-          "the id field to track react tags and will overwrite this field. If that is fine, " +
-          "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+      FLog.e(
+        TAG,
+        "Trying to add a root view with an explicit id (" + view.getId() + ") already " +
+        "set. React Native uses the id field to track react tags and will overwrite this field. " +
+        "If that is fine, explicitly overwrite the id field to View.NO_ID before calling " +
+        "addRootView.");
     }
 
     mTagsToViews.put(tag, view);
@@ -518,6 +562,11 @@ public class NativeViewHierarchyManager {
    */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
+    if (mTagsToViewManagers.get(view.getId()) == null) {
+      // This view has already been dropped (likely due to a threading issue caused by async js
+      // execution). Ignore this drop operation.
+      return;
+    }
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
       resolveViewManager(view.getId()).onDropViewInstance(view);
@@ -528,7 +577,9 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (child == null) {
+            FLog.e(TAG, "Unable to drop null child view");
+        } else if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }
@@ -718,24 +769,35 @@ public class NativeViewHierarchyManager {
    * @param success will be called with the position of the selected item as the first argument, or
    *        no arguments if the menu is dismissed
    */
-  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success) {
+  public synchronized void showPopupMenu(int reactTag, ReadableArray items, Callback success,
+                                         Callback error) {
     UiThreadUtil.assertOnUiThread();
     View anchor = mTagsToViews.get(reactTag);
     if (anchor == null) {
-      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
+      error.invoke("Can't display popup. Could not find view with tag " + reactTag);
+      return;
     }
-    PopupMenu popupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
+    mPopupMenu = new PopupMenu(getReactContextForView(reactTag), anchor);
 
-    Menu menu = popupMenu.getMenu();
+    Menu menu = mPopupMenu.getMenu();
     for (int i = 0; i < items.size(); i++) {
       menu.add(Menu.NONE, Menu.NONE, i, items.getString(i));
     }
 
     PopupMenuCallbackHandler handler = new PopupMenuCallbackHandler(success);
-    popupMenu.setOnMenuItemClickListener(handler);
-    popupMenu.setOnDismissListener(handler);
+    mPopupMenu.setOnMenuItemClickListener(handler);
+    mPopupMenu.setOnDismissListener(handler);
 
-    popupMenu.show();
+    mPopupMenu.show();
+  }
+
+  /**
+   * Dismiss the last opened PopupMenu {@link PopupMenu}.
+   */
+  public void dismissPopupMenu() {
+    if (mPopupMenu != null) {
+      mPopupMenu.dismiss();
+    }
   }
 
   private static class PopupMenuCallbackHandler implements PopupMenu.OnMenuItemClickListener,

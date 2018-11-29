@@ -1,0 +1,37 @@
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
+
+EXPORTED_HEADERS = [
+    "InspectorInterfaces.h",
+]
+
+rn_xplat_cxx_library(
+    name = "jsinspector",
+    srcs = glob(
+        ["*.cpp"],
+    ),
+    headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        exclude = EXPORTED_HEADERS,
+        prefix = "jsinspector",
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", header)
+            for header in EXPORTED_HEADERS
+        ],
+        prefix = "jsinspector",
+    ),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-std=c++1y",
+    ],
+    fbandroid_preferred_linkage = "shared",
+    visibility = [
+        "PUBLIC",
+    ],
+)

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -6,7 +9,6 @@
 #include <memory>
 
 #include <cxxreact/NativeToJsBridge.h>
-#include <jschelpers/Value.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -21,15 +23,15 @@ namespace react {
 
 class JSBigString;
 class JSExecutorFactory;
-class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
+class RAMBundleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
-  virtual void onBatchComplete() = 0;
-  virtual void incrementPendingJSCalls() = 0;
-  virtual void decrementPendingJSCalls() = 0;
+  virtual void onBatchComplete() {}
+  virtual void incrementPendingJSCalls() {}
+  virtual void decrementPendingJSCalls() {}
 };
 
 class RN_EXPORT Instance {
@@ -44,39 +46,36 @@ public:
 
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
-  void loadUnbundle(std::unique_ptr<JSModulesUnbundle> unbundle,
-                    std::unique_ptr<const JSBigString> startupScript,
-                    std::string startupScriptSourceURL, bool loadSynchronously);
+  static bool isIndexedRAMBundle(const char *sourcePath);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
+                             const std::string& sourceURL,
+                             bool loadSynchronously);
+  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+                     std::unique_ptr<const JSBigString> startupScript,
+                     std::string startupScriptSourceURL, bool loadSynchronously);
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
+  bool isInspectable();
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
 
   // This method is experimental, and may be modified or removed.
-  template <typename T>
-  Value callFunctionSync(const std::string &module, const std::string &method,
-                         T &&args) {
-    CHECK(nativeToJsBridge_);
-    return nativeToJsBridge_->callFunctionSync(module, method,
-                                               std::forward<T>(args));
-  }
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
   const ModuleRegistry &getModuleRegistry() const;
   ModuleRegistry &getModuleRegistry();
 
-#ifdef WITH_JSC_MEMORY_PRESSURE
   void handleMemoryPressure(int pressureLevel);
-#endif
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadApplication(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> startupScript,
                        std::string startupScriptSourceURL);
-  void loadApplicationSync(std::unique_ptr<JSModulesUnbundle> unbundle,
+  void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                            std::unique_ptr<const JSBigString> startupScript,
                            std::string startupScriptSourceURL);
 

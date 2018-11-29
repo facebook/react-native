@@ -1,13 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule CameraRollExample
  * @format
  */
 'use strict';
@@ -31,16 +28,32 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-class CameraRollExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+import type {PhotoIdentifier, GroupTypes} from 'CameraRoll';
+
+type Props = $ReadOnly<{|
+  navigator?: ?Array<
+    $ReadOnly<{|
+      title: string,
+      component: Class<React.Component<any, any>>,
+      backButtonTitle: string,
+      passProps: $ReadOnly<{|asset: PhotoIdentifier|}>,
+    |}>,
+  >,
+|}>;
+
+type State = {|
+  groupTypes: GroupTypes,
+  sliderValue: number,
+  bigImages: boolean,
+|};
+
+class CameraRollExample extends React.Component<Props, State> {
   state = {
     groupTypes: 'SavedPhotos',
     sliderValue: 1,
     bigImages: true,
   };
-  _cameraRollView: ?CameraRollView;
+  _cameraRollView: ?React.ElementRef<typeof CameraRollView>;
   render() {
     return (
       <View>
@@ -48,16 +61,12 @@ class CameraRollExample extends React.Component<
           onValueChange={this._onSwitchChange}
           value={this.state.bigImages}
         />
-        <Text>
-          {(this.state.bigImages ? 'Big' : 'Small') + ' Images'}
-        </Text>
+        <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
         <Slider
           value={this.state.sliderValue}
           onValueChange={this._onSliderChange}
         />
-        <Text>
-          {'Group Type: ' + this.state.groupTypes}
-        </Text>
+        <Text>{'Group Type: ' + this.state.groupTypes}</Text>
         <CameraRollView
           ref={ref => {
             this._cameraRollView = ref;
@@ -81,7 +90,7 @@ class CameraRollExample extends React.Component<
     }
   }
 
-  _renderImage = asset => {
+  _renderImage = (asset: PhotoIdentifier) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
@@ -89,22 +98,16 @@ class CameraRollExample extends React.Component<
       ? JSON.stringify(location)
       : 'Unknown location';
     return (
-      <TouchableOpacity key={asset} onPress={this.loadAsset.bind(this, asset)}>
+      <TouchableOpacity
+        key={asset.node.image.uri}
+        onPress={this.loadAsset.bind(this, asset)}>
         <View style={styles.row}>
           <Image source={asset.node.image} style={imageStyle} />
           <View style={styles.info}>
-            <Text style={styles.url}>
-              {asset.node.image.uri}
-            </Text>
-            <Text>
-              {locationStr}
-            </Text>
-            <Text>
-              {asset.node.group_name}
-            </Text>
-            <Text>
-              {new Date(asset.node.timestamp).toString()}
-            </Text>
+            <Text style={styles.url}>{asset.node.image.uri}</Text>
+            <Text>{locationStr}</Text>
+            <Text>{asset.node.group_name}</Text>
+            <Text>{new Date(asset.node.timestamp).toString()}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -150,7 +153,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Photos',
-    render(): React.Element<any> {
+    render(): React.Node {
       return <CameraRollExample />;
     },
   },

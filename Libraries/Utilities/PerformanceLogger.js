@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PerformanceLogger
  * @flow
  * @format
  */
@@ -16,7 +13,9 @@ const Systrace = require('Systrace');
 
 const infoLog = require('infoLog');
 const performanceNow =
-  global.nativePerformanceNow || require('fbjs/lib/performanceNow');
+  global.nativeQPLTimestamp ||
+  global.nativePerformanceNow ||
+  require('fbjs/lib/performanceNow');
 
 type Timespan = {
   description?: string,
@@ -27,9 +26,10 @@ type Timespan = {
 
 let timespans: {[key: string]: Timespan} = {};
 let extras: {[key: string]: any} = {};
+let points: {[key: string]: number} = {};
 const cookies: {[key: string]: number} = {};
 
-const PRINT_TO_CONSOLE = false;
+const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 /**
  * This is meant to collect and log performance data in production, which means
@@ -69,7 +69,7 @@ const PerformanceLogger = {
       startTime: performanceNow(),
     };
     cookies[key] = Systrace.beginAsyncEvent(key);
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'start: ' + key);
     }
   },
@@ -97,7 +97,7 @@ const PerformanceLogger = {
 
     timespan.endTime = performanceNow();
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
-    if (__DEV__ && PRINT_TO_CONSOLE) {
+    if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'end: ' + key);
     }
 
@@ -108,6 +108,10 @@ const PerformanceLogger = {
   clear() {
     timespans = {};
     extras = {};
+    points = {};
+    if (PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clear');
+    }
   },
 
   clearCompleted() {
@@ -117,6 +121,10 @@ const PerformanceLogger = {
       }
     }
     extras = {};
+    points = {};
+    if (PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clearCompleted');
+    }
   },
 
   clearExceptTimespans(keys: Array<string>) {
@@ -127,6 +135,10 @@ const PerformanceLogger = {
       return previous;
     }, {});
     extras = {};
+    points = {};
+    if (PRINT_TO_CONSOLE) {
+      infoLog('PerformanceLogger.js', 'clearExceptTimespans', keys);
+    }
   },
 
   currentTimestamp() {
@@ -175,6 +187,33 @@ const PerformanceLogger = {
 
   getExtras() {
     return extras;
+  },
+
+  logExtras() {
+    infoLog(extras);
+  },
+
+  markPoint(key: string, timestamp?: number) {
+    if (points[key]) {
+      if (__DEV__) {
+        infoLog(
+          'PerformanceLogger: Attempting to mark a point that has been already logged ',
+          key,
+        );
+      }
+      return;
+    }
+    points[key] = timestamp ?? performanceNow();
+  },
+
+  getPoints() {
+    return points;
+  },
+
+  logPoints() {
+    for (const key in points) {
+      infoLog(key + ': ' + points[key] + 'ms');
+    }
   },
 };
 

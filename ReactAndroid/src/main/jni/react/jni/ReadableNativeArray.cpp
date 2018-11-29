@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "ReadableNativeArray.h"
 
@@ -43,16 +46,9 @@ jdouble ReadableNativeArray::getDouble(jint index) {
 }
 
 jint ReadableNativeArray::getInt(jint index) {
-  auto integer = array_.at(index).getInt();
-  static_assert(std::is_same<decltype(integer), int64_t>::value,
-                "folly::dynamic int is not int64_t");
-  jint javaint = static_cast<jint>(integer);
-  if (integer != javaint) {
-    throwNewJavaException(
-      exceptions::gUnexpectedNativeTypeExceptionClass,
-      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
-  }
-  return javaint;
+  const folly::dynamic& val = array_.at(index);
+  int64_t integer = convertDynamicIfIntegral(val);
+  return makeJIntOrThrow(integer);
 }
 
 const char* ReadableNativeArray::getString(jint index) {
@@ -61,6 +57,43 @@ const char* ReadableNativeArray::getString(jint index) {
     return nullptr;
   }
   return dyn.getString().c_str();
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeArray::importArray() {
+  jint size = array_.size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    switch(array_.at(i).type()) {
+      case folly::dynamic::Type::NULLT: {
+        jarray->setElement(i, nullptr);
+        break;
+      }
+      case folly::dynamic::Type::BOOL: {
+        (*jarray)[i] = JBoolean::valueOf(ReadableNativeArray::getBoolean(i));
+        break;
+      }
+      case folly::dynamic::Type::INT64:
+      case folly::dynamic::Type::DOUBLE: {
+        (*jarray)[i] = JDouble::valueOf(ReadableNativeArray::getDouble(i));
+        break;
+      }
+      case folly::dynamic::Type::STRING: {
+        (*jarray)[i] = make_jstring(ReadableNativeArray::getString(i));
+        break;
+      }
+      case folly::dynamic::Type::OBJECT: {
+        (*jarray)[i] = ReadableNativeArray::getMap(i);
+        break;
+      }
+      case folly::dynamic::Type::ARRAY: {
+        (*jarray)[i] = ReadableNativeArray::getArray(i);
+        break;
+      }
+      default:
+      break;
+    }
+  }
+  return jarray;
 }
 
 local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray(jint index) {
@@ -74,6 +107,15 @@ local_ref<ReadableNativeArray::jhybridobject> ReadableNativeArray::getArray(jint
 
 local_ref<ReadableType> ReadableNativeArray::getType(jint index) {
   return ReadableType::getType(array_.at(index).type());
+}
+
+local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
+  jint size = array_.size();
+  auto jarray = JArrayClass<jobject>::newArray(size);
+  for (jint i = 0; i < size; i++) {
+    jarray->setElement(i, ReadableNativeArray::getType(i).get());
+  }
+  return jarray;
 }
 
 local_ref<NativeMap::jhybridobject> ReadableNativeArray::getMap(jint index) {
@@ -90,15 +132,17 @@ local_ref<ReadableNativeMap::jhybridobject> getMapFixed(alias_ref<ReadableNative
 
 void ReadableNativeArray::registerNatives() {
   registerHybrid({
-    makeNativeMethod("size", ReadableNativeArray::getSize),
-    makeNativeMethod("isNull", ReadableNativeArray::isNull),
-    makeNativeMethod("getBoolean", ReadableNativeArray::getBoolean),
-    makeNativeMethod("getDouble", ReadableNativeArray::getDouble),
-    makeNativeMethod("getInt", ReadableNativeArray::getInt),
-    makeNativeMethod("getString", ReadableNativeArray::getString),
-    makeNativeMethod("getArray", ReadableNativeArray::getArray),
-    makeNativeMethod("getMap", getMapFixed),
-    makeNativeMethod("getType", ReadableNativeArray::getType),
+    makeNativeMethod("importArray", ReadableNativeArray::importArray),
+    makeNativeMethod("importTypeArray", ReadableNativeArray::importTypeArray),
+    makeNativeMethod("sizeNative", ReadableNativeArray::getSize),
+    makeNativeMethod("isNullNative", ReadableNativeArray::isNull),
+    makeNativeMethod("getBooleanNative", ReadableNativeArray::getBoolean),
+    makeNativeMethod("getDoubleNative", ReadableNativeArray::getDouble),
+    makeNativeMethod("getIntNative", ReadableNativeArray::getInt),
+    makeNativeMethod("getStringNative", ReadableNativeArray::getString),
+    makeNativeMethod("getArrayNative", ReadableNativeArray::getArray),
+    makeNativeMethod("getMapNative", getMapFixed),
+    makeNativeMethod("getTypeNative", ReadableNativeArray::getType),
   });
 }
 

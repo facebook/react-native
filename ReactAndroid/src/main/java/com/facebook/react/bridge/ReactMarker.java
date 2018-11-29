@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.bridge;
 
@@ -81,7 +84,7 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag) {
-    logMarker(name, null, 0);
+    logMarker(name, tag, 0);
   }
 
   @DoNotStrip

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -15,6 +13,7 @@
 
 @class RCTBridge;
 @class RCTModalHostViewController;
+@class RCTTVRemoteHandler;
 
 @protocol RCTModalHostViewInteractor;
 
@@ -26,6 +25,8 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 
+@property (nonatomic, copy) NSNumber *identifier;
+
 @property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
 
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
@@ -33,6 +34,7 @@
 
 #if TARGET_OS_TV
 @property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
+@property (nonatomic, strong) RCTTVRemoteHandler *tvRemoteHandler;
 #endif
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;

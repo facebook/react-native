@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTHTTPRequestHandler.h"
@@ -108,6 +106,21 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     delegate = [_delegates objectForKey:task];
   }
   [delegate URLRequest:task didSendDataWithProgress:totalBytesSent];
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+willPerformHTTPRedirection:(NSHTTPURLResponse *)response
+        newRequest:(NSURLRequest *)request
+ completionHandler:(void (^)(NSURLRequest *))completionHandler
+{
+  // Reset the cookies on redirect.
+  // This is necessary because we're not letting iOS handle cookies by itself
+  NSMutableURLRequest *nextRequest = [request mutableCopy];
+
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:request.URL];
+  nextRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  completionHandler(nextRequest);
 }
 
 - (void)URLSession:(NSURLSession *)session

@@ -1,7 +1,7 @@
 {
   "name": "react-native-cli",
   "version": "2.0.1",
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "description": "The React Native CLI tools",
   "main": "index.js",
   "engines": {
@@ -18,7 +18,7 @@
     "react-native": "index.js"
   },
   "dependencies": {
-    "chalk": "^1.1.1",
+    "chalk": "^2.4.1",
     "minimist": "^1.2.0",
     "prompt": "^0.2.14",
     "semver": "^5.0.3"

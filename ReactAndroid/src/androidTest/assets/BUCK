@@ -1,4 +1,6 @@
-android_resource(
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_resource")
+
+rn_android_resource(
     name = "assets",
     assets = ".",
     visibility = ["PUBLIC"],

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.camera;
@@ -58,7 +56,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "CameraRollManager";
+  public static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -420,22 +418,32 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(photoDescriptor.getFileDescriptor());
 
-        if (width <= 0 || height <= 0) {
-          width =
+        try {
+          if (width <= 0 || height <= 0) {
+            width =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height =
+                Integer.parseInt(
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+          }
+          int timeInMillisec =
               Integer.parseInt(
-                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-          height =
-              Integer.parseInt(
-                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                  retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+          int playableDuration = timeInMillisec / 1000;
+          image.putInt("playableDuration", playableDuration);
+        } catch (NumberFormatException e) {
+          FLog.e(
+              ReactConstants.TAG,
+              "Number format exception occurred while trying to fetch video metadata for "
+                  + photoUri.toString(),
+              e);
+          return false;
+        } finally {
+          retriever.release();
+          photoDescriptor.close();
         }
-        int timeInMillisec =
-            Integer.parseInt(
-                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        int playableDuration = timeInMillisec / 1000;
-        image.putInt("playableDuration", playableDuration);
-        retriever.release();
-        photoDescriptor.close();
-      } catch (IOException e) {
+      } catch (Exception e) {
         FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
         return false;
       }

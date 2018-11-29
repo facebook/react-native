@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTMultipartStreamReader.h"
@@ -76,7 +74,7 @@
   // Throttle progress events so we don't send more that around 60 per second.
   CFTimeInterval currentTime = CACurrentMediaTime();
 
-  NSUInteger headersContentLength = headers[@"Content-Length"] != nil ? [headers[@"Content-Length"] unsignedIntValue] : 0;
+  NSInteger headersContentLength = headers[@"Content-Length"] != nil ? [headers[@"Content-Length"] integerValue] : 0;
   if (callback && (currentTime - _lastDownloadProgress > 0.016 || final)) {
     _lastDownloadProgress = currentTime;
     callback(headers, @(headersContentLength), @(contentLength));

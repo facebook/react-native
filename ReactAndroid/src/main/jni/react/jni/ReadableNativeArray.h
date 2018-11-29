@@ -1,4 +1,7 @@
- // Copyright 2004-present Facebook. All Rights Reserved.
+//  Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -19,6 +22,8 @@ class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeA
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
   static void mapException(const std::exception& ex);
+  jni::local_ref<jni::JArrayClass<jobject>> importArray();
+  jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
   jint getSize();
   jboolean isNull(jint index);
   jboolean getBoolean(jint index);

@@ -1,35 +1,31 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule IntegrationTestHarnessTest
  */
+
 'use strict';
 
-var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {
-  Text,
-  View,
-} = ReactNative;
-var { TestModule } = ReactNative.NativeModules;
+const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, View, StyleSheet} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-class IntegrationTestHarnessTest extends React.Component<{
+type Props = $ReadOnly<{|
   shouldThrow?: boolean,
   waitOneFrame?: boolean,
-}, $FlowFixMeState> {
-  static propTypes = {
-    shouldThrow: PropTypes.bool,
-    waitOneFrame: PropTypes.bool,
-  };
+|}>;
 
+type State = {|
+  done: boolean,
+|};
+
+class IntegrationTestHarnessTest extends React.Component<Props, State> {
   state = {
     done: false,
   };
@@ -58,15 +54,25 @@ class IntegrationTestHarnessTest extends React.Component<{
 
   render() {
     return (
-      <View style={{backgroundColor: 'white', padding: 40}}>
+      <View style={styles.container}>
         <Text>
-          {this.constructor.displayName + ': '}
+          {/* $FlowFixMe(>=0.54.0 site=react_native_fb,react_native_oss) This
+             * comment suppresses an error found when Flow v0.54 was deployed.
+             * To see the error delete this comment and run Flow. */
+          this.constructor.displayName + ': '}
           {this.state.done ? 'Done' : 'Testing...'}
         </Text>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    padding: 40,
+  },
+});
 
 IntegrationTestHarnessTest.displayName = 'IntegrationTestHarnessTest';
 

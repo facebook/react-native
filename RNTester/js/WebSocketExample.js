@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WebSocketExample
  * @format
  */
 'use strict';
@@ -38,16 +35,10 @@ const WS_STATES = [
 
 class Button extends React.Component {
   render(): React.Element<any> {
-    const label = (
-      <Text style={styles.buttonLabel}>
-        {this.props.label}
-      </Text>
-    );
+    const label = <Text style={styles.buttonLabel}>{this.props.label}</Text>;
     if (this.props.disabled) {
       return (
-        <View style={[styles.button, styles.disabledButton]}>
-          {label}
-        </View>
+        <View style={[styles.button, styles.disabledButton]}>{label}</View>
       );
     }
     return (
@@ -62,14 +53,8 @@ class Row extends React.Component {
   render(): React.Element<any> {
     return (
       <View style={styles.row}>
-        <Text>
-          {this.props.label}
-        </Text>
-        {this.props.value
-          ? <Text>
-              {this.props.value}
-            </Text>
-          : null}
+        <Text>{this.props.label}</Text>
+        {this.props.value ? <Text>{this.props.value}</Text> : null}
         {this.props.children}
       </View>
     );

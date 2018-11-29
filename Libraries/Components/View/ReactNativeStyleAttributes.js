@@ -1,42 +1,45 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ReactNativeStyleAttributes
+ * @format strict-local
  * @flow
  */
 
 'use strict';
 
-var ImageStylePropTypes = require('ImageStylePropTypes');
-var TextStylePropTypes = require('TextStylePropTypes');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
+const TextStylePropTypes = require('TextStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-var keyMirror = require('fbjs/lib/keyMirror');
-var processColor = require('processColor');
-var processTransform = require('processTransform');
-var sizesDiffer = require('sizesDiffer');
+const processColor = require('processColor');
+const processTransform = require('processTransform');
+const sizesDiffer = require('sizesDiffer');
 
-var ReactNativeStyleAttributes = {
-  ...keyMirror(ViewStylePropTypes),
-  ...keyMirror(TextStylePropTypes),
-  ...keyMirror(ImageStylePropTypes),
-};
+const ReactNativeStyleAttributes = {};
 
-ReactNativeStyleAttributes.transform = { process: processTransform };
-ReactNativeStyleAttributes.shadowOffset = { diff: sizesDiffer };
+for (const attributeName of Object.keys({
+  ...DeprecatedViewStylePropTypes,
+  ...TextStylePropTypes,
+  ...DeprecatedImageStylePropTypes,
+})) {
+  ReactNativeStyleAttributes[attributeName] = true;
+}
 
-var colorAttributes = { process: processColor };
+ReactNativeStyleAttributes.transform = {process: processTransform};
+ReactNativeStyleAttributes.shadowOffset = {diff: sizesDiffer};
+
+const colorAttributes = {process: processColor};
 ReactNativeStyleAttributes.backgroundColor = colorAttributes;
 ReactNativeStyleAttributes.borderBottomColor = colorAttributes;
 ReactNativeStyleAttributes.borderColor = colorAttributes;
 ReactNativeStyleAttributes.borderLeftColor = colorAttributes;
 ReactNativeStyleAttributes.borderRightColor = colorAttributes;
 ReactNativeStyleAttributes.borderTopColor = colorAttributes;
+ReactNativeStyleAttributes.borderStartColor = colorAttributes;
+ReactNativeStyleAttributes.borderEndColor = colorAttributes;
 ReactNativeStyleAttributes.color = colorAttributes;
 ReactNativeStyleAttributes.shadowColor = colorAttributes;
 ReactNativeStyleAttributes.textDecorationColor = colorAttributes;

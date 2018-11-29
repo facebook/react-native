@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -12,12 +10,15 @@ package com.facebook.react.uimanager;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -57,7 +58,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   /**
    * This method should return a subclass of {@link ReactShadowNode} which will be then used for
-   * measuring position and size of the view. In mose of the cases this should just return an
+   * measuring position and size of the view. In most of the cases this should just return an
    * instance of {@link ReactShadowNode}
    */
   public C createShadowNodeInstance() {
@@ -203,5 +204,23 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   public Map<String, String> getNativeProps() {
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
+  }
+
+  /**
+   *
+   */
+  public @Nullable Object updateLocalData(T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+    return null;
+  }
+
+  public long measure(
+      ReactContext context,
+      ReadableNativeMap localData,
+      ReadableNativeMap props,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
+    return 0;
   }
 }

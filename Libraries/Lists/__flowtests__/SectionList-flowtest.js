@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @format
@@ -19,8 +17,9 @@ function renderMyListItem(info: {item: {title: string}, index: number}) {
   return <span />;
 }
 
-const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) =>
-  <span />;
+const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
+  <span />
+);
 
 module.exports = {
   testGoodDataWithGoodItem() {
@@ -88,6 +87,9 @@ module.exports = {
 
   testBadSectionsShape(): React.Element<*> {
     const sections = [
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       {
         key: 'a',
         items: [

@@ -1,22 +1,22 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ProgressBarTestModule
+ * @format
  */
 
-"use strict";
+'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var ProgressBar = require('ProgressBarAndroid');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const ReactNative = require('react-native');
+const {StyleSheet} = ReactNative;
+const ProgressBar = require('ProgressBarAndroid');
+const View = require('View');
 
-var renderApplication = require('renderApplication');
+const renderApplication = require('renderApplication');
 
 class ProgressBarSampleApp extends React.Component {
   state = {};
@@ -24,14 +24,14 @@ class ProgressBarSampleApp extends React.Component {
   render() {
     return (
       <View>
-        <ProgressBar styleAttr="Horizontal" testID="Horizontal"/>
-        <ProgressBar styleAttr="Small" testID="Small"/>
-        <ProgressBar styleAttr="Large" testID="Large"/>
-        <ProgressBar styleAttr="Normal" testID="Normal"/>
-        <ProgressBar styleAttr="Inverse" testID="Inverse"/>
-        <ProgressBar styleAttr="SmallInverse" testID="SmallInverse"/>
-        <ProgressBar styleAttr="LargeInverse" testID="LargeInverse"/>
-        <View style={{width:200}}>
+        <ProgressBar styleAttr="Horizontal" testID="Horizontal" />
+        <ProgressBar styleAttr="Small" testID="Small" />
+        <ProgressBar styleAttr="Large" testID="Large" />
+        <ProgressBar styleAttr="Normal" testID="Normal" />
+        <ProgressBar styleAttr="Inverse" testID="Inverse" />
+        <ProgressBar styleAttr="SmallInverse" testID="SmallInverse" />
+        <ProgressBar styleAttr="LargeInverse" testID="LargeInverse" />
+        <View style={styles.wrapper}>
           <ProgressBar styleAttr="Horizontal" testID="Horizontal200" />
         </View>
       </View>
@@ -39,7 +39,7 @@ class ProgressBarSampleApp extends React.Component {
   }
 }
 
-var ProgressBarTestModule = {
+const ProgressBarTestModule = {
   renderProgressBarApplication: function(rootTag) {
     renderApplication(ProgressBarSampleApp, {}, rootTag);
   },
@@ -47,7 +47,13 @@ var ProgressBarTestModule = {
 
 BatchedBridge.registerCallableModule(
   'ProgressBarTestModule',
-  ProgressBarTestModule
+  ProgressBarTestModule,
 );
+
+const styles = StyleSheet.create({
+  wrapper: {
+    width: 200,
+  },
+});
 
 module.exports = ProgressBarTestModule;

@@ -1,38 +1,34 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule TextInputExample
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
 
 class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
+    prev3Text: '<No Event>',
   };
 
-  updateText = (text) => {
-    this.setState((state) => {
+  updateText = text => {
+    this.setState(state => {
       return {
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   };
@@ -44,74 +40,71 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           autoCapitalize="none"
           placeholder="Enter text to see events"
           autoCorrect={false}
+          multiline
           onFocus={() => this.updateText('onFocus')}
           onBlur={() => this.updateText('onBlur')}
-          onChange={(event) => this.updateText(
-            'onChange text: ' + event.nativeEvent.text
-          )}
-          onContentSizeChange={(event) => this.updateText(
-            'onContentSizeChange size: ' + event.nativeEvent.contentSize
-          )}
-          onEndEditing={(event) => this.updateText(
-            'onEndEditing text: ' + event.nativeEvent.text
-          )}
-          onSubmitEditing={(event) => this.updateText(
-            'onSubmitEditing text: ' + event.nativeEvent.text
-          )}
+          onChange={event =>
+            this.updateText('onChange text: ' + event.nativeEvent.text)
+          }
+          onContentSizeChange={event =>
+            this.updateText(
+              'onContentSizeChange size: ' +
+                JSON.stringify(event.nativeEvent.contentSize),
+            )
+          }
+          onEndEditing={event =>
+            this.updateText('onEndEditing text: ' + event.nativeEvent.text)
+          }
+          onSubmitEditing={event =>
+            this.updateText('onSubmitEditing text: ' + event.nativeEvent.text)
+          }
+          onKeyPress={event =>
+            this.updateText('onKeyPress key: ' + event.nativeEvent.key)
+          }
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
-          {this.state.curText}{'\n'}
+          {this.state.curText}
+          {'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
   }
 }
 
-class AutoExpandingTextInput extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      height: 0,
-    };
-  }
-  render() {
-    return (
-      <TextInput
-        {...this.props}
-        multiline={true}
-        onContentSizeChange={(event) => {
-          this.setState({height: event.nativeEvent.contentSize.height});
-        }}
-        style={[styles.default, {height: Math.min(200, Math.max(35, this.state.height))}]}
-      />
-    );
-  }
-}
-
 class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
+   * an error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
   }
   render() {
-    var limit = 20;
-    var remainder = limit - this.state.text.length;
-    var remainderColor = remainder > 5 ? 'blue' : 'red';
+    const limit = 20;
+    const remainder = limit - this.state.text.length;
+    const remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       <View style={styles.rewriteContainer}>
         <TextInput
           multiline={false}
           maxLength={limit}
-          onChangeText={(text) => {
+          onChangeText={text => {
             text = text.replace(/ /g, '_');
             this.setState({text});
           }}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
           style={styles.default}
           value={this.state.text}
         />
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
         <Text style={[styles.remainder, {color: remainderColor}]}>
           {remainder}
         </Text>
@@ -120,19 +113,26 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class TokenizedTextExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
+   * an error found when Flow v0.85 was deployed. To see the error, delete this
+   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
   }
   render() {
-
     //define delimiter
     let delimiter = /\s+/;
 
     //split string
     let _text = this.state.text;
-    let token, index, parts = [];
+    let token,
+      index,
+      parts = [];
     while (_text) {
       delimiter.lastIndex = 0;
       token = delimiter.exec(_text);
@@ -151,9 +151,13 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
     parts.push(_text);
 
     //highlight hashtags
-    parts = parts.map((text) => {
+    parts = parts.map(text => {
       if (/^#/.test(text)) {
-        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+        return (
+          <Text key={text} style={styles.hashtag}>
+            {text}
+          </Text>
+        );
       } else {
         return text;
       }
@@ -164,7 +168,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
         <TextInput
           multiline={true}
           style={styles.multiline}
-          onChangeText={(text) => {
+          onChangeText={text => {
             this.setState({text});
           }}>
           <Text>{parts}</Text>
@@ -175,7 +179,7 @@ class TokenizedTextExample extends React.Component<$FlowFixMeProps, $FlowFixMeSt
 }
 
 class BlurOnSubmitExample extends React.Component<{}> {
-  focusNextField = (nextField) => {
+  focusNextField = nextField => {
     this.refs[nextField].focus();
   };
 
@@ -228,7 +232,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
   }
 }
 
-class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class ToggleDefaultPaddingExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   constructor(props) {
     super(props);
     this.state = {hasPadding: false};
@@ -236,8 +243,9 @@ class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $Flow
   render() {
     return (
       <View>
-        <TextInput style={this.state.hasPadding ? { padding: 0 } : null}/>
-        <Text onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
+        <TextInput style={this.state.hasPadding ? {padding: 0} : null} />
+        <Text
+          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
           Toggle padding
         </Text>
       </View>
@@ -246,21 +254,24 @@ class ToggleDefaultPaddingExample extends React.Component<$FlowFixMeProps, $Flow
 }
 
 type SelectionExampleState = {
-  selection: {
-    start: number;
-    end: number;
-  };
-  value: string;
+  selection: $ReadOnly<{|
+    start: number,
+    end?: number,
+  |}>,
+  value: string,
 };
 
-class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExampleState> {
+class SelectionExample extends React.Component<
+  $FlowFixMeProps,
+  SelectionExampleState,
+> {
   _textInput: any;
 
   constructor(props) {
     super(props);
     this.state = {
       selection: {start: 0, end: 0},
-      value: props.value
+      value: props.value,
     };
   }
 
@@ -269,7 +280,7 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 
   getRandomPosition() {
-    var length = this.state.value.length;
+    const length = this.state.value.length;
     return Math.round(Math.random() * length);
   }
 
@@ -279,7 +290,10 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 
   selectRandom() {
-    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
+    const positions = [
+      this.getRandomPosition(),
+      this.getRandomPosition(),
+    ].sort();
     this.select(...positions);
   }
 
@@ -292,13 +306,13 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
   }
 
   render() {
-    var length = this.state.value.length;
+    const length = this.state.value.length;
 
     return (
       <View>
         <TextInput
           multiline={this.props.multiline}
-          onChangeText={(value) => this.setState({value})}
+          onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => (this._textInput = textInput)}
           selection={this.state.selection}
@@ -306,36 +320,108 @@ class SelectionExample extends React.Component<$FlowFixMeProps, SelectionExample
           value={this.state.value}
         />
         <View>
-          <Text>
-            selection = {JSON.stringify(this.state.selection)}
-          </Text>
+          <Text>selection = {JSON.stringify(this.state.selection)}</Text>
           <Text onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
           </Text>
           <Text onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
           </Text>
-          <Text onPress={this.placeAtRandom.bind(this)}>
-            Place at Random
-          </Text>
-          <Text onPress={this.select.bind(this, 0, length)}>
-            Select All
-          </Text>
-          <Text onPress={this.selectRandom.bind(this)}>
-            Select Random
-          </Text>
+          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
+          <Text onPress={this.select.bind(this, 0, length)}>Select All</Text>
+          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
         </View>
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+class AutogrowingTextInputExample extends React.Component<{}> {
+  constructor(props) {
+    super(props);
+
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    this.state = {
+      width: 100,
+      multiline: true,
+      text: '',
+      contentSize: {
+        width: 0,
+        height: 0,
+      },
+    };
+  }
+
+  UNSAFE_componentWillReceiveProps(props) {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    this.setState({
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+      multiline: props.multiline,
+    });
+  }
+
+  render() {
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    const {style, multiline, ...props} = this.props;
+    return (
+      <View>
+        <Text>Width:</Text>
+        <Slider
+          value={100}
+          minimumValue={0}
+          maximumValue={100}
+          step={10}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          onValueChange={value => this.setState({width: value})}
+        />
+        <Text>Multiline:</Text>
+        <Switch
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          value={this.state.multiline}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          onValueChange={value => this.setState({multiline: value})}
+        />
+        <Text>TextInput:</Text>
+        <TextInput
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          multiline={this.state.multiline}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          style={[style, {width: this.state.width + '%'}]}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          onChangeText={value => this.setState({text: value})}
+          onContentSizeChange={event =>
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+             * found when making Flow check .android.js files. */
+            this.setState({contentSize: event.nativeEvent.contentSize})
+          }
+          {...props}
+        />
+        <Text>Plain text value representation:</Text>
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
+        <Text>{this.state.text}</Text>
+        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+          * found when making Flow check .android.js files. */}
+        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
   multiline: {
     height: 60,
     fontSize: 16,
-    padding: 4,
-    marginBottom: 10,
   },
   eventLabel: {
     margin: 3,
@@ -343,7 +429,6 @@ var styles = StyleSheet.create({
   },
   singleLine: {
     fontSize: 16,
-    padding: 4,
   },
   singleLineWithHeightTextInput: {
     height: 30,
@@ -363,28 +448,26 @@ exports.examples = [
       return (
         <TextInput
           autoFocus={true}
-          style={styles.singleLine}
+          multiline={true}
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+           * found when making Flow check .android.js files. */
+          style={styles.input}
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
-    }
+    },
   },
   {
     title: "Live Re-Write (<sp>  ->  '_')",
     render: function() {
       return <RewriteExample />;
-    }
+    },
   },
   {
     title: 'Auto-capitalize',
     render: function() {
-      var autoCapitalizeTypes = [
-        'none',
-        'sentences',
-        'words',
-        'characters',
-      ];
-      var examples = autoCapitalizeTypes.map((type) => {
+      const autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
+      const examples = autoCapitalizeTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -395,7 +478,7 @@ exports.examples = [
         );
       });
       return <View>{examples}</View>;
-    }
+    },
   },
   {
     title: 'Auto-correct',
@@ -414,18 +497,18 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Keyboard types',
     render: function() {
-      var keyboardTypes = [
+      const keyboardTypes = [
         'default',
         'email-address',
         'numeric',
         'phone-pad',
       ];
-      var examples = keyboardTypes.map((type) => {
+      const examples = keyboardTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -436,15 +519,19 @@ exports.examples = [
         );
       });
       return <View>{examples}</View>;
-    }
+    },
   },
   {
     title: 'Blur on submit',
-    render: function(): React.Element<any> { return <BlurOnSubmitExample />; },
+    render: function(): React.Element<any> {
+      return <BlurOnSubmitExample />;
+    },
   },
   {
     title: 'Event handling',
-    render: function(): React.Element<any> { return <TextEventsExample />; },
+    render: function(): React.Element<any> {
+      return <TextEventsExample />;
+    },
   },
   {
     title: 'Colors and text inputs',
@@ -479,7 +566,10 @@ exports.examples = [
           />
           <TextInput
             defaultValue="Same BackgroundColor as View "
-            style={[styles.singleLine, {backgroundColor: 'rgba(100, 100, 100, 0.3)'}]}>
+            style={[
+              styles.singleLine,
+              {backgroundColor: 'rgba(100, 100, 100, 0.3)'},
+            ]}>
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
@@ -487,11 +577,11 @@ exports.examples = [
           <TextInput
             defaultValue="Highlight Color is red"
             selectionColor={'red'}
-            style={styles.singleLine}>
-          </TextInput>
+            style={styles.singleLine}
+          />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Text input, themes and heights',
@@ -502,7 +592,7 @@ exports.examples = [
           style={[styles.singleLineWithHeightTextInput]}
         />
       );
-    }
+    },
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
@@ -514,11 +604,17 @@ exports.examples = [
             placeholder="Custom fonts like Sans-Serif are supported"
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: 'bold'},
+            ]}
             placeholder="Sans-Serif bold"
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontStyle: 'italic'},
+            ]}
             placeholder="Sans-Serif italic"
           />
           <TextInput
@@ -527,7 +623,32 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
+  },
+  {
+    title: 'letterSpacing',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 0}]}
+            placeholder="letterSpacing = 0"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 2}]}
+            placeholder="letterSpacing = 2"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: 9}]}
+            placeholder="letterSpacing = 9"
+          />
+          <TextInput
+            style={[styles.singleLine, {letterSpacing: -1}]}
+            placeholder="letterSpacing = -1"
+          />
+        </View>
+      );
+    },
   },
   {
     title: 'Passwords',
@@ -547,19 +668,19 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Editable',
     render: function() {
       return (
         <TextInput
-           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
-           editable={false}
-           style={styles.singleLine}
-         />
+          defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
+          editable={false}
+          style={styles.singleLine}
+        />
       );
-    }
+    },
   },
   {
     title: 'Multiline',
@@ -571,24 +692,36 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            style={[styles.multiline, {textAlign: 'left', textAlignVertical: 'top'}]}
+            style={[
+              styles.multiline,
+              {textAlign: 'left', textAlignVertical: 'top'},
+            ]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            style={[styles.multiline, {textAlign: 'center', textAlignVertical: 'center'}]}
+            style={[
+              styles.multiline,
+              {textAlign: 'center', textAlignVertical: 'center'},
+            ]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            style={[styles.multiline, {color: 'blue'}, {textAlign: 'right', textAlignVertical: 'bottom'}]}>
-            <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
+            style={[
+              styles.multiline,
+              {color: 'blue'},
+              {textAlign: 'right', textAlignVertical: 'bottom'},
+            ]}>
+            <Text style={styles.multiline}>
+              multiline with children, aligned bottom-right
+            </Text>
           </TextInput>
         </View>
       );
-    }
+    },
   },
   {
     title: 'Fixed number of lines',
@@ -596,43 +729,54 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <TextInput numberOfLines={2}
+          <TextInput
+            numberOfLines={2}
             multiline={true}
             placeholder="Two line input"
           />
-          <TextInput numberOfLines={5}
+          <TextInput
+            numberOfLines={5}
             multiline={true}
             placeholder="Five line input"
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Auto-expanding',
     render: function() {
       return (
         <View>
-          <AutoExpandingTextInput
-            placeholder="height increases with content"
-            defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
+          <AutogrowingTextInputExample
             enablesReturnKeyAutomatically={true}
             returnKeyType="done"
-          />
+            multiline={true}
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
         </View>
       );
-    }
+    },
   },
   {
     title: 'Attributed text',
     render: function() {
       return <TokenizedTextExample />;
-    }
+    },
   },
   {
     title: 'Return key',
     render: function() {
-      var returnKeyTypes = [
+      const returnKeyTypes = [
         'none',
         'go',
         'search',
@@ -641,11 +785,8 @@ exports.examples = [
         'previous',
         'next',
       ];
-      var returnKeyLabels = [
-        'Compile',
-        'React Native',
-      ];
-      var examples = returnKeyTypes.map((type) => {
+      const returnKeyLabels = ['Compile', 'React Native'];
+      const examples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -655,7 +796,7 @@ exports.examples = [
           />
         );
       });
-      var types = returnKeyLabels.map((type) => {
+      const types = returnKeyLabels.map(type => {
         return (
           <TextInput
             key={type}
@@ -665,8 +806,13 @@ exports.examples = [
           />
         );
       });
-      return <View>{examples}{types}</View>;
-    }
+      return (
+        <View>
+          {examples}
+          {types}
+        </View>
+      );
+    },
   },
   {
     title: 'Inline Images',
@@ -690,11 +836,13 @@ exports.examples = [
           />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element<any> { return <ToggleDefaultPaddingExample />; },
+    render: function(): React.Element<any> {
+      return <ToggleDefaultPaddingExample />;
+    },
   },
   {
     title: 'Text selection & cursor placement',
@@ -702,16 +850,18 @@ exports.examples = [
       return (
         <View>
           <SelectionExample
+            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+             * found when making Flow check .android.js files. */
             style={styles.default}
             value="text selection can be changed"
           />
           <SelectionExample
             multiline
             style={styles.multiline}
-            value={"multiline text selection\ncan also be changed"}
+            value={'multiline text selection\ncan also be changed'}
           />
         </View>
       );
-    }
+    },
   },
 ];

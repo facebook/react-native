@@ -1,25 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDevSettings.h"
 
 #import <objc/runtime.h>
 
-#import <JavaScriptCore/JavaScriptCore.h>
-
-#import <jschelpers/JavaScriptCore.h>
-
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "RCTJSCSamplingProfiler.h"
-#import "RCTJSEnvironment.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -32,13 +24,11 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
-#define ENABLE_PACKAGER_CONNECTION RCT_DEV && __has_include("RCTPackagerConnection.h")
-
 #if ENABLE_PACKAGER_CONNECTION
+#import "RCTPackagerClient.h"
 #import "RCTPackagerConnection.h"
 #endif
 
@@ -113,9 +103,8 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
   NSURLSessionDataTask *_liveReloadUpdateTask;
   NSURL *_liveReloadURL;
   BOOL _isJSLoaded;
-
 #if ENABLE_PACKAGER_CONNECTION
-  RCTPackagerConnection *_packagerConnection;
+  RCTHandlerToken _reloadToken;
 #endif
 }
 
@@ -167,9 +156,22 @@ RCT_EXPORT_MODULE()
 {
   RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
   _bridge = bridge;
-  [self _configurePackagerConnection];
 
-#if ENABLE_INSPECTOR
+#if ENABLE_PACKAGER_CONNECTION
+  RCTBridge *__weak weakBridge = bridge;
+  _reloadToken =
+  [[RCTPackagerConnection sharedPackagerConnection]
+   addNotificationHandler:^(id params) {
+     if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+       weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+     }
+     [weakBridge reload];
+   }
+   queue:dispatch_get_main_queue()
+   forMethod:@"reload"];
+#endif
+
+#if RCT_ENABLE_INSPECTOR
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it
@@ -177,8 +179,7 @@ RCT_EXPORT_MODULE()
   // after the current main thread operation is done.
   dispatch_async(dispatch_get_main_queue(), ^{
     [bridge dispatchBlock:^{
-      [RCTInspectorDevServerHelper connectForContext:bridge.jsContextRef
-                                       withBundleURL:bridge.bundleURL];
+      [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
     } queue:RCTJSThread];
   });
 #endif
@@ -192,6 +193,9 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [_liveReloadUpdateTask cancel];
+#if ENABLE_PACKAGER_CONNECTION
+  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
+#endif
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -203,6 +207,15 @@ RCT_EXPORT_MODULE()
 - (id)settingForKey:(NSString *)key
 {
   return [_dataSource settingForKey:key];
+}
+
+- (BOOL)isNuclideDebuggingAvailable
+{
+#if RCT_ENABLE_INSPECTOR
+  return _bridge.isInspectable;
+#else
+  return false;
+#endif // RCT_ENABLE_INSPECTOR
 }
 
 - (BOOL)isRemoteDebuggingAvailable
@@ -219,11 +232,6 @@ RCT_EXPORT_MODULE()
 - (BOOL)isLiveReloadAvailable
 {
   return (_liveReloadURL != nil);
-}
-
-- (BOOL)isJSCSamplingProfilerAvailable
-{
-  return JSC_JSSamplingProfilerEnabled(_bridge.jsContextRef);
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -338,20 +346,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-- (void)toggleJSCSamplingProfiler
-{
-  JSContext *context = _bridge.jsContext;
-  JSGlobalContextRef globalContext = context.JSGlobalContextRef;
-  // JSPokeSamplingProfiler() toggles the profiling process
-  JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
-
-  if (JSC_JSValueGetType(globalContext, jsResult) != kJSTypeNull) {
-    NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
-    RCTJSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[RCTJSCSamplingProfiler class]];
-    [profilerModule operationCompletedWithResults:results];
-  }
-}
-
 - (BOOL)isElementInspectorShown
 {
   return [[self settingForKey:kRCTDevSettingIsInspectorShown] boolValue];
@@ -365,16 +359,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
-{
-  [self _updateSettingWithValue:@(startSamplingProfilerOnLaunch) forKey:kRCTDevSettingStartSamplingProfilerOnLaunch];
-}
-
-- (BOOL)startSamplingProfilerOnLaunch
-{
-  return [[self settingForKey:kRCTDevSettingStartSamplingProfilerOnLaunch] boolValue];
 }
 
 - (void)setExecutorClass:(Class)executorClass
@@ -396,32 +380,18 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-#if ENABLE_PACKAGER_CONNECTION
+#if RCT_DEV
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
-  RCTAssert(_packagerConnection, @"Expected packager connection");
-  [_packagerConnection addHandler:handler forMethod:name];
+#if ENABLE_PACKAGER_CONNECTION
+  [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
+#endif
 }
-
-#elif RCT_DEV
-
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name {}
 
 #endif
 
 #pragma mark - Internal
-
-- (void)_configurePackagerConnection
-{
-#if ENABLE_PACKAGER_CONNECTION
-  if (_packagerConnection) {
-    return;
-  }
-
-  _packagerConnection = [RCTPackagerConnection connectionForBridge:_bridge];
-#endif
-}
 
 /**
  *  Query the data source for all possible settings and make sure we're doing the right
@@ -512,7 +482,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (id)settingForKey:(NSString *)key { return nil; }
 - (void)reload {}
 - (void)toggleElementInspector {}
-- (void)toggleJSCSamplingProfiler {}
 
 @end
 

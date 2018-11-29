@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDecayAnimation.h"
@@ -12,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <React/RCTConvert.h>
 
+#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTDecayAnimation ()
@@ -41,20 +40,25 @@
                   callBack:(nullable RCTResponseSenderBlock)callback;
 {
   if ((self = [super init])) {
-    NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
-
+    _callback = [callback copy];
     _animationId = animationId;
+    _valueNode = valueNode;
     _fromValue = 0;
     _lastValue = 0;
-    _valueNode = valueNode;
-    _callback = [callback copy];
-    _velocity = [RCTConvert CGFloat:config[@"velocity"]];
-    _deceleration = [RCTConvert CGFloat:config[@"deceleration"]];
-    _iterations = iterations.integerValue;
-    _currentLoop = 1;
-    _animationHasFinished = iterations.integerValue == 0;
+    _velocity = [RCTConvert CGFloat:config[@"velocity"]]; // initial velocity
+    [self resetAnimationConfig:config];
   }
   return self;
+}
+
+- (void)resetAnimationConfig:(NSDictionary *)config
+{
+  NSNumber *iterations = [RCTConvert NSNumber:config[@"iterations"]] ?: @1;
+  _fromValue = _lastValue;
+  _deceleration = [RCTConvert CGFloat:config[@"deceleration"]];
+  _iterations = iterations.integerValue;
+  _currentLoop = 1;
+  _animationHasFinished = iterations.integerValue == 0;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -97,7 +101,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   CGFloat value = _fromValue +
     (_velocity / (1 - _deceleration)) *
-    (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0));
+    (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0 / RCTAnimationDragCoefficient()));
 
   [self updateValue:value];
 

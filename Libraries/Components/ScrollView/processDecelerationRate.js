@@ -1,20 +1,30 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule processDecelerationRate
+ * @format
+ * @flow
  */
+
 'use strict';
 
-function processDecelerationRate(decelerationRate) {
+const Platform = require('Platform');
+
+function processDecelerationRate(
+  decelerationRate: number | 'normal' | 'fast',
+): number {
   if (decelerationRate === 'normal') {
-    decelerationRate = 0.998;
+    return Platform.select({
+      ios: 0.998,
+      android: 0.985,
+    });
   } else if (decelerationRate === 'fast') {
-    decelerationRate = 0.99;
+    return Platform.select({
+      ios: 0.99,
+      android: 0.9,
+    });
   }
   return decelerationRate;
 }

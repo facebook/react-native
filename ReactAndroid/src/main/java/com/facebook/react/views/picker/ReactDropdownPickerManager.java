@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.picker;
@@ -20,7 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 @ReactModule(name = ReactDropdownPickerManager.REACT_CLASS)
 public class ReactDropdownPickerManager extends ReactPickerManager {
 
-  protected static final String REACT_CLASS = "AndroidDropdownPicker";
+  public static final String REACT_CLASS = "AndroidDropdownPicker";
 
   @Override
   public String getName() {

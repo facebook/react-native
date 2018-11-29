@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTBridge.h>
@@ -38,6 +36,7 @@
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
 @property (nonatomic, readonly) BOOL isLiveReloadAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
+@property (nonatomic, readonly) BOOL isNuclideDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
@@ -73,11 +72,6 @@
 - (void)toggleElementInspector;
 
 /**
- * Toggle JSC's sampling profiler.
- */
-- (void)toggleJSCSamplingProfiler;
-
-/**
  * Enables starting of profiling sampler on launch
  */
 @property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;
@@ -93,9 +87,7 @@
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
 #if RCT_DEV
-
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name;
-
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
 #endif
 
 @end

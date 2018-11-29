@@ -1,33 +1,75 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SegmentedControlIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var PropTypes = require('prop-types');
-var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
 
-var createReactClass = require('create-react-class');
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-type DefaultProps = {
-  values: Array<string>,
-  enabled: boolean,
-};
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'ReactNative';
 
-var SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
+type Event = SyntheticEvent<
+  $ReadOnly<{|
+    value: number,
+    selectedSegmentIndex: number,
+  |}>,
+>;
 
-type Event = Object;
+type SegmentedControlIOSProps = $ReadOnly<{|
+  ...ViewProps,
+  /**
+   * The labels for the control's segment buttons, in order.
+   */
+  values?: $ReadOnlyArray<string>,
+  /**
+   * The index in `props.values` of the segment to be (pre)selected.
+   */
+  selectedIndex?: ?number,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the segment's value as an argument
+   */
+  onValueChange?: ?(value: number) => mixed,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the event as an argument
+   */
+  onChange?: ?(event: Event) => mixed,
+  /**
+   * If false the user won't be able to interact with the control.
+   * Default value is true.
+   */
+  enabled?: boolean,
+  /**
+   * Accent color of the control.
+   */
+  tintColor?: ?string,
+  /**
+   * If true, then selecting a segment won't persist visually.
+   * The `onValueChange` callback will still work as expected.
+   */
+  momentary?: ?boolean,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...SegmentedControlIOSProps,
+  forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+|}>;
+
+type NativeSegmentedControlIOS = Class<
+  NativeComponent<SegmentedControlIOSProps>,
+>;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -35,7 +77,7 @@ type Event = Object;
  * #### Programmatically changing selected index
  *
  * The selected index can be changed on the fly by assigning the
- * selectIndex prop to a state variable, then changing that variable.
+ * selectedIndex prop to a state variable, then changing that variable.
  * Note that the state variable would need to be updated as the user
  * selects a value and changes the index, as shown in the example below.
  *
@@ -49,86 +91,50 @@ type Event = Object;
  * />
  * ````
  */
-// $FlowFixMe(>=0.41.0)
-var SegmentedControlIOS = createReactClass({
-  displayName: 'SegmentedControlIOS',
-  mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * The labels for the control's segment buttons, in order.
-     */
-    values: PropTypes.arrayOf(PropTypes.string),
+const RCTSegmentedControl = ((requireNativeComponent(
+  'RCTSegmentedControl',
+): any): NativeSegmentedControlIOS);
 
-    /**
-     * The index in `props.values` of the segment to be (pre)selected.
-     */
-    selectedIndex: PropTypes.number,
+class SegmentedControlIOS extends React.Component<Props> {
+  static defaultProps = {
+    values: [],
+    enabled: true,
+  };
 
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the segment's value as an argument
-     */
-    onValueChange: PropTypes.func,
-
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the event as an argument
-     */
-    onChange: PropTypes.func,
-
-    /**
-     * If false the user won't be able to interact with the control.
-     * Default value is true.
-     */
-    enabled: PropTypes.bool,
-
-    /**
-     * Accent color of the control.
-     */
-    tintColor: PropTypes.string,
-
-    /**
-     * If true, then selecting a segment won't persist visually.
-     * The `onValueChange` callback will still work as expected.
-     */
-    momentary: PropTypes.bool
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
-      values: [],
-      enabled: true
-    };
-  },
-
-  _onChange: function(event: Event) {
+  _onChange = (event: Event) => {
     this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
-  },
+    this.props.onValueChange &&
+      this.props.onValueChange(event.nativeEvent.value);
+  };
 
-  render: function() {
+  render() {
+    const {forwardedRef, ...props} = this.props;
     return (
       <RCTSegmentedControl
-        {...this.props}
-        ref={SEGMENTED_CONTROL_REFERENCE}
+        {...props}
+        ref={forwardedRef}
         style={[styles.segmentedControl, this.props.style]}
         onChange={this._onChange}
       />
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   segmentedControl: {
     height: 28,
   },
 });
 
-var RCTSegmentedControl = requireNativeComponent(
-  'RCTSegmentedControl',
-  SegmentedControlIOS
+// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
+const SegmentedControlIOSWithRef = React.forwardRef(
+  (
+    props: SegmentedControlIOSProps,
+    forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+  ) => {
+    return <SegmentedControlIOS {...props} forwardedRef={forwardedRef} />;
+  },
 );
 
-module.exports = SegmentedControlIOS;
+module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);

@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ImageBackground
  * @flow
  * @format
  */
@@ -18,8 +15,6 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 const ensureComponentIsNative = require('ensureComponentIsNative');
-
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -33,7 +28,7 @@ import type {NativeMethodsMixinType} from 'ReactNativeTypes';
  *     return (
  *       <ImageBackground
  *         style={{width: 50, height: 50}}
- *         source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
+ *         source={{uri: 'https://facebook.github.io/react-native/img/opengraph.png'}}
  *       >
  *         <Text>React</Text>
  *       </ImageBackground>
@@ -55,12 +50,9 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     }
   }
 
-  _viewRef: ?NativeMethodsMixinType = null;
+  _viewRef: ?React.ElementRef<typeof View> = null;
 
   _captureRef = ref => {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     this._viewRef = ref;
   };
 
@@ -68,7 +60,10 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style} ref={this._captureRef}>
+      <View
+        accessibilityIgnoresInvertColors={true}
+        style={style}
+        ref={this._captureRef}>
         <Image
           {...props}
           style={[

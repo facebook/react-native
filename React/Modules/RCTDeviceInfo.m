@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDeviceInfo.h"
@@ -12,6 +10,7 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUIUtils.h"
 #import "RCTUtils.h"
 
 @implementation RCTDeviceInfo {
@@ -52,22 +51,48 @@ RCT_EXPORT_MODULE()
 #endif
 }
 
+static BOOL RCTIsIPhoneX() {
+  static BOOL isIPhoneX = NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    RCTAssertMainQueue();
+
+    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
+    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
+    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
+    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
+
+    isIPhoneX =
+      CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
+  });
+
+  return isIPhoneX;
+}
+
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
 
-  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
-  CGRect screenSize = [[UIScreen mainScreen] bounds];
-  NSDictionary *dims = @{
-                         @"width": @(screenSize.size.width),
-                         @"height": @(screenSize.size.height),
-                         @"scale": @(RCTScreenScale()),
-                         @"fontScale": @(bridge.accessibilityManager.multiplier)
-                         };
+  RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
+  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
+  NSDictionary<NSString *, NSNumber *> *dims = @{
+      @"width": @(window.width),
+      @"height": @(window.height),
+      @"scale": @(window.scale),
+      @"fontScale": @(window.fontScale)
+  };
   return @{
-           @"window": dims,
-           @"screen": dims
-           };
+      @"window": dims,
+      @"screen": dims
+  };
+}
+
+- (void)dealloc
+{
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)invalidate
@@ -80,9 +105,14 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
-  NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
-  constants[@"Dimensions"] = RCTExportedDimensions(_bridge);
-  return constants;
+  return @{
+    @"Dimensions": RCTExportedDimensions(_bridge),
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated": @(RCTIsIPhoneX()),
+  };
 }
 
 - (void)didReceiveNewContentSizeMultiplier

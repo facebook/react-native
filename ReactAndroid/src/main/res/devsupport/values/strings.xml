@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload</string>
+  <string name="catalyst_debugjs_nuclide" project="catalyst" translatable="false">Debug JS in Nuclide</string>
+  <string name="catalyst_debugjs_nuclide_failure" project="catalyst" translatable="false">The request to attach Nuclide could not reach Metro Bundler!</string>
   <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug JS Remotely</string>
   <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Remote JS Debugging</string>
   <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Reloading</string>
