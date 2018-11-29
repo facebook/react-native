@@ -146,7 +146,7 @@ type StackEntryProps = {
  * Merges the prop stack with the default values.
  */
 function mergePropsStack(
-  propsStack: Array<StackEntryProps>,
+  propsStack: $ReadOnlyArray<StackEntryProps>,
   defaultValues: StackEntryProps,
 ): StackEntryProps {
   return propsStack.reduce((prev, cur) => {
@@ -260,7 +260,7 @@ class StatusBar extends React.Component<Props> {
    * @param animation Optional animation when
    *    changing the status bar hidden property.
    */
-  static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+  static setHidden(hidden: boolean = true, animation?: StatusBarAnimation) {
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
       StatusBarManager.setHidden(hidden, animation || 'none');
