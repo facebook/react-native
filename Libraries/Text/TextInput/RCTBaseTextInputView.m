@@ -295,11 +295,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    __block NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
+        // Fix TextInput maxlength cuts Unicode caracters (Emojis) #10964
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
+            // ensure emoji character was not cut
+            if(substringRange.location + substring.length > allowedLength){
+              *stop = true;
+              allowedLength = substringRange.location;
+            }
+        }];
+        
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
