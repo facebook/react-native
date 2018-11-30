@@ -10,12 +10,12 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
 class ToastExample extends React.Component<{}, $FlowFixMeState> {
   static title = 'Toast Example';
@@ -117,7 +117,7 @@ class ToastExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },

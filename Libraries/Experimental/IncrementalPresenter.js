@@ -68,14 +68,15 @@ class IncrementalPresenter extends React.Component<Props> {
     this.props.onDone && this.props.onDone();
   }
   render() {
+    let style: ViewStyleProp;
     if (
       this.props.disabled !== true &&
       this.context.incrementalGroupEnabled !== false &&
       !this._isDone
     ) {
-      var style = [this.props.style, {opacity: 0, position: 'absolute'}];
+      style = [this.props.style, {opacity: 0, position: 'absolute'}];
     } else {
-      var style = this.props.style;
+      style = this.props.style;
     }
     return (
       <IncrementalGroup

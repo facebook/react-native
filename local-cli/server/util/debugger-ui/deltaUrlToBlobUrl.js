@@ -22,20 +22,14 @@
   async function deltaUrlToBlobUrl(deltaUrl) {
     const client = global.DeltaPatcher.get(deltaUrl);
 
-    const deltaBundleId = client.getLastBundleId()
-      ? `&deltaBundleId=${client.getLastBundleId()}`
+    const revisionId = client.getLastRevisionId()
+      ? `&revisionId=${client.getLastRevisionId()}`
       : '';
 
-    const data = await fetch(deltaUrl + deltaBundleId);
+    const data = await fetch(deltaUrl + revisionId);
     const bundle = await data.json();
 
-    const deltaPatcher = client.applyDelta({
-      id: bundle.id,
-      pre: new Map(bundle.pre),
-      post: new Map(bundle.post),
-      delta: new Map(bundle.delta),
-      reset: bundle.reset,
-    });
+    const deltaPatcher = client.applyDelta(bundle);
 
     let cachedBundle = cachedBundleUrls.get(deltaUrl);
 

@@ -30,7 +30,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/graphics",
+        prefix = "react/graphics",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -42,7 +42,7 @@ rn_xplat_cxx_library(
         [
             ("platform/android", "**/*.h"),
         ],
-        prefix = "fabric/graphics",
+        prefix = "react/graphics",
     ),
     fbandroid_srcs = glob(
         [
@@ -63,7 +63,7 @@ rn_xplat_cxx_library(
         [
             ("platform/ios", "*.h"),
         ],
-        prefix = "fabric/graphics",
+        prefix = "react/graphics",
     ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
@@ -104,7 +104,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID,APPLE),
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

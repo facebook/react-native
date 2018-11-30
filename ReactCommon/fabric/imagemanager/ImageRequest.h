@@ -9,10 +9,10 @@
 
 #include <mutex>
 
-#include <fabric/imagemanager/ImageResponse.h>
-#include <fabric/imagemanager/primitives.h>
 #include <folly/futures/Future.h>
 #include <folly/futures/FutureSplitter.h>
+#include <react/imagemanager/ImageResponse.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -33,6 +33,8 @@ class ImageRequest final {
    */
   class ImageNoLongerNeededException;
 
+  ImageRequest();
+
   /*
    * `ImageRequest` is constructed with `ImageSource` and
    * `ImageResponse` future which must be moved in inside the object.
@@ -40,8 +42,6 @@ class ImageRequest final {
   ImageRequest(
       const ImageSource &imageSource,
       folly::Future<ImageResponse> &&responseFuture);
-
-  ImageRequest();
 
   /*
    * The move constructor.

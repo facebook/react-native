@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/scrollview/primitives.h>
-#include <fabric/components/view/ViewProps.h>
+#include <react/components/scrollview/primitives.h>
+#include <react/components/view/ViewProps.h>
 
 namespace facebook {
 namespace react {

@@ -7,10 +7,6 @@
 
 package com.facebook.react.modules.datepicker;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.DialogFragment;
@@ -19,23 +15,17 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.widget.DatePicker;
-
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+
+import javax.annotation.Nullable;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
  * the user selects a date.
  */
-@ReactModule(name = "DatePickerAndroid")
+@ReactModule(name = DatePickerDialogModule.FRAGMENT_TAG)
 public class DatePickerDialogModule extends ReactContextBaseJavaModule {
 
   @VisibleForTesting
@@ -57,7 +47,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "DatePickerAndroid";
+    return DatePickerDialogModule.FRAGMENT_TAG;
   }
 
   private class DatePickerDialogListener implements OnDateSetListener, OnDismissListener {

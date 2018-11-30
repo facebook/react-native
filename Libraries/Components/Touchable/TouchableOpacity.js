@@ -24,14 +24,14 @@ const flattenStyle = require('flattenStyle');
 
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
-
-type Event = Object;
+import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
+import type {PressEvent} from 'CoreEventTypes';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type TVProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?Object,
+  tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -193,7 +193,7 @@ const TouchableOpacity = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     if (e.dispatchConfig.registrationName === 'onResponderGrant') {
       this._opacityActive(0);
     } else {
@@ -202,16 +202,16 @@ const TouchableOpacity = ((createReactClass({
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -247,7 +247,7 @@ const TouchableOpacity = ((createReactClass({
 
   _getChildStyleOpacityWithDefault: function() {
     const childStyle = flattenStyle(this.props.style) || {};
-    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+    return childStyle.opacity == null ? 1 : childStyle.opacity;
   },
 
   render: function() {

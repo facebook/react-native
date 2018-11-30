@@ -16,8 +16,11 @@ const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getProps()->textAttributes);
+
     cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
-        getProps()->textAttributes, shared_from_this());
+        textAttributes, shared_from_this());
   }
 
   return cachedAttributedString_.value();
@@ -29,11 +32,17 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateLocalData() {
+void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
+  auto attributedString = getAttributedString();
+  auto currentLocalData = std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData && currentLocalData->getAttributedString() == attributedString) {
+    return;
+  }
+
   auto localData = std::make_shared<ParagraphLocalData>();
-  localData->setAttributedString(getAttributedString());
+  localData->setAttributedString(std::move(attributedString));
   localData->setTextLayoutManager(textLayoutManager_);
   setLocalData(localData);
 }
@@ -49,7 +58,7 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateLocalData();
+  updateLocalDataIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   StyleSheet,
@@ -169,7 +169,7 @@ class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
     } else if (this.state.timesPressed > 0) {
@@ -203,7 +203,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
     } else if (this.state.timesPressed > 0) {
@@ -231,7 +231,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_feedback_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
@@ -254,8 +254,8 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   }
 
   _appendEvent = eventName => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -269,7 +269,7 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_delay_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_delay_events_button"
@@ -293,8 +293,8 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   }
 
   _appendEvent = eventName => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -317,7 +317,7 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
           <Text>{this._renderConsoleText()}</Text>
         </View>
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <View
             style={styles.wrapper}
             testID="touchable_3dtouch_button"
@@ -346,7 +346,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var log = '';
+    let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
     } else if (this.state.timesPressed > 0) {
@@ -355,7 +355,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View testID="touchable_hit_slop">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             onPress={this.onPress}
             style={styles.hitSlopWrapper}
@@ -458,16 +458,17 @@ class TouchableDisabled extends React.Component<{}> {
   }
 }
 
-var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
+const heartImage = {
+  uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
+};
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  icon: {
-    width: 24,
-    height: 24,
+  centered: {
+    justifyContent: 'center',
   },
   image: {
     width: 50,

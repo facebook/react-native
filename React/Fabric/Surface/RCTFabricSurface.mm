@@ -49,7 +49,8 @@
     _rootTag = [RCTAllocateRootViewTag() integerValue];
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    // FIXME: Replace with `_maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);`.
+    _maximumSize = RCTScreenSize();
 
     _touchHandler = [RCTSurfaceTouchHandler new];
 

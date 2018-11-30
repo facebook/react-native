@@ -20,7 +20,6 @@ const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const deprecatedPropType = require('deprecatedPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
 const RCTModalHostView = requireNativeComponent('RCTModalHostView');
@@ -218,7 +217,7 @@ class Modal extends React.Component<Props> {
   }
 
   render(): React.Node {
-    if (this.props.visible === false) {
+    if (this.props.visible !== true) {
       return null;
     }
 

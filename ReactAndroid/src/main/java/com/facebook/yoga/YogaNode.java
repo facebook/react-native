@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 package com.facebook.yoga;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -16,7 +17,7 @@ import javax.annotation.Nullable;
 public class YogaNode implements Cloneable {
 
   static {
-      YogaJNI.init();
+    SoLoader.loadLibrary("yoga");
   }
 
   /**
@@ -159,6 +160,7 @@ public class YogaNode implements Cloneable {
   }
 
   private static native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
+
   public void addChildAt(YogaNode child, int i) {
     if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
@@ -181,6 +183,18 @@ public class YogaNode implements Cloneable {
     mChildren.add(i, child);
     child.mOwner = null;
     jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
+  }
+
+  private static native void jni_YGNodeSetIsReferenceBaseline(long nativePointer, boolean isReferenceBaseline);
+
+  public void setIsReferenceBaseline(boolean isReferenceBaseline) {
+    jni_YGNodeSetIsReferenceBaseline(mNativePointer, isReferenceBaseline);
+  }
+
+  private static native boolean jni_YGNodeIsReferenceBaseline(long nativePointer);
+
+  public boolean isReferenceBaseline() {
+    return jni_YGNodeIsReferenceBaseline(mNativePointer);
   }
 
   private static native void jni_YGNodeSetOwner(long nativePointer, long newOwnerNativePointer);

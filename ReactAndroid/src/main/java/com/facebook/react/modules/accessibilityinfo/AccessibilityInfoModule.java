@@ -24,9 +24,11 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * Module that monitors and provides information about the state of Touch Exploration service
  * on the device. For API >= 19.
  */
-@ReactModule(name = "AccessibilityInfo")
+@ReactModule(name = AccessibilityInfoModule.NAME)
 public class AccessibilityInfoModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
+
+    public static final String NAME = "AccessibilityInfo";
 
     @TargetApi(19)
     private class ReactTouchExplorationStateChangeListener

@@ -1,0 +1,110 @@
+# BUILD FILE SYNTAX: SKYLARK
+
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_dep", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jsi",
+    srcs = [
+        "jsi.cpp",
+    ],
+    header_namespace = "jsi",
+    exported_headers = [
+        "instrumentation.h",
+        "jsi.h",
+        "jsi-inl.h",
+    ],
+    compiler_flags = [
+        "-O3",
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+        "-Wcast-qual",
+        "-Wdelete-non-virtual-dtor",
+        "-Wwrite-strings",
+    ],
+    cxx_compiler_flags = [
+        "-Wglobal-constructors",
+        "-Wmissing-prototypes",
+    ],
+    fbobjc_compiler_flags = [
+        "-Wglobal-constructors",
+        "-Wmissing-prototypes",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+rn_xplat_cxx_library(
+    name = "JSIDynamic",
+    srcs = [
+        "JSIDynamic.cpp",
+    ],
+    header_namespace = "jsi",
+    exported_headers = [
+        "JSIDynamic.h",
+    ],
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbobjc_force_static = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "xplat//folly:molly",
+        react_native_xplat_dep("jsi:jsi"),
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "JSCRuntime",
+    srcs = [
+        "JSCRuntime.cpp",
+    ],
+    header_namespace = "jsi",
+    exported_headers = [
+        "JSCRuntime.h",
+    ],
+    cxx_exported_platform_linker_flags = [
+        (
+            "macosx-x86_64",
+            [
+                "-framework",
+                "JavaScriptCore",
+            ],
+        ),
+    ],
+    cxx_platform_deps = [
+        (
+            "^(linux|gcc|platform)",
+            [
+                "xplat//jsc:jsc",
+            ],
+        ),
+    ],
+    fbandroid_compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-O3",
+    ],
+    fbandroid_deps = [
+        "xplat//jsc:jsc",
+    ],
+    fbobjc_compiler_flags = [
+        "-Os",
+    ],
+    fbobjc_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
+    ],
+    visibility = ["PUBLIC"],
+    xplat_mangled_args = {
+        "soname": "libjscjsi.$(ext)",
+    },
+    exported_deps = [
+        react_native_xplat_dep("jsi:jsi"),
+    ],
+)

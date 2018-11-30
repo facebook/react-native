@@ -40,7 +40,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var chalk = require('chalk');
 var prompt = require('prompt');
@@ -59,7 +58,7 @@ var semver = require('semver');
  *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
  */
 
-var options = require('minimist')(process.argv.slice(2));
+var args = require('minimist')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(process.cwd(), 'node_modules', 'react-native', 'cli.js');
@@ -74,7 +73,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-if (options._.length === 0 && (options.v || options.version)) {
+if (args._.length === 0 && (args.v || args.version)) {
   printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
 }
 
@@ -113,20 +112,20 @@ if (fs.existsSync(cliPath)) {
   cli = require(cliPath);
 }
 
-var commands = options._;
+var commands = args._;
 if (cli) {
   cli.run();
 } else {
-  if (options._.length === 0 && (options.h || options.help)) {
+  if (args._.length === 0 && (args.h || args.help)) {
     console.log(
       [
         '',
-        '  Usage: react-native [command] [options]',
+        '  Usage: react-native [command] [args]',
         '',
         '',
         '  Commands:',
         '',
-        '    init <ProjectName> [options]  generates a new project and installs its dependencies',
+        '    init <ProjectName> [args]  generates a new project and installs its dependencies',
         '',
         '  Options:',
         '',
@@ -152,7 +151,7 @@ if (cli) {
         console.error('Usage: react-native init <ProjectName> [--verbose]');
         process.exit(1);
       } else {
-        init(commands[1], options);
+        init(commands[1], args);
       }
       break;
     default:
@@ -215,6 +214,11 @@ function createAfterConfirmation(name, options) {
   };
 
   prompt.get(property, function(err, result) {
+    if (err) {
+      console.log('Error initializing project');
+      process.exit(1);
+    }
+
     if (result.yesno[0] === 'y') {
       createProject(name, options);
     } else {

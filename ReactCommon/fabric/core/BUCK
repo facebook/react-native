@@ -23,7 +23,7 @@ rn_xplat_cxx_library(
             ("layout", "*.h"),
             ("shadownode", "*.h"),
         ],
-        prefix = "fabric/core",
+        prefix = "react/core",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -68,7 +68,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID,APPLE),
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

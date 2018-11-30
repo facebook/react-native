@@ -116,13 +116,39 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
-  volatile private int mViewManagerConstantsCacheSize;
+  private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
 
+  @SuppressWarnings("deprecated")
   public UIManagerModule(
       ReactApplicationContext reactContext,
       ViewManagerResolver viewManagerResolver,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        viewManagerResolver,
+        new UIImplementationProvider(),
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  @SuppressWarnings("deprecated")
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagersList,
+      int minTimeLeftInFrameForNonBatchedOperationMs) {
+    this(
+        reactContext,
+        viewManagersList,
+        new UIImplementationProvider(),
+        minTimeLeftInFrameForNonBatchedOperationMs);
+  }
+
+  @Deprecated
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      ViewManagerResolver viewManagerResolver,
+      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -130,7 +156,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mUIImplementation =
-        new UIImplementation(
+        uiImplementationProvider.createUIImplementation(
             reactContext,
             viewManagerResolver,
             mEventDispatcher,
@@ -139,9 +165,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     reactContext.addLifecycleEventListener(this);
   }
 
+  @Deprecated
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagersList,
+      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -149,7 +177,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mUIImplementation =
-        new UIImplementation(
+        uiImplementationProvider.createUIImplementation(
             reactContext,
             viewManagersList,
             mEventDispatcher,
@@ -157,6 +185,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
     reactContext.addLifecycleEventListener(this);
   }
+
   /**
    * This method gives an access to the {@link UIImplementation} object that can be used to execute
    * operations on the view hierarchy.
@@ -334,6 +363,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+      final T rootView) {
+        return addRootView(rootView, null, null);
+      }
+
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
@@ -345,7 +379,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
-      final T rootView) {
+      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
@@ -772,7 +806,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * @return the rootTag
    */
   public int resolveRootTagFromReactTag(int reactTag) {
-    return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+    return ViewUtil.isRootTag(reactTag)
+        ? reactTag
+        : mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
   /** Dirties the node associated with the given react tag */

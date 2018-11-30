@@ -9,11 +9,11 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/LayoutMetrics.h>
-#import <fabric/core/Props.h>
-#import <fabric/components/view/ViewEventEmitter.h>
-#import <fabric/components/view/ViewProps.h>
-#import <fabric/events/EventEmitter.h>
+#import <react/core/LayoutMetrics.h>
+#import <react/core/Props.h>
+#import <react/components/view/ViewEventEmitter.h>
+#import <react/components/view/ViewProps.h>
+#import <react/events/EventEmitter.h>
 #import <React/RCTTouchableComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN

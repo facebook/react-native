@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, Easing, StyleSheet, Text, View} = ReactNative;
-var RNTesterButton = require('./RNTesterButton');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
+const RNTesterButton = require('./RNTesterButton');
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
@@ -59,6 +59,9 @@ exports.examples = [
         }
       }
       class FadeInExample extends React.Component<$FlowFixMeProps, any> {
+        /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.85 was deployed. To see the error, delete
+         * this comment and run Flow. */
         constructor(props) {
           super(props);
           this.state = {
@@ -158,7 +161,7 @@ exports.examples = [
         <View>
           <RNTesterButton
             onPress={() => {
-              var timing = Animated.timing;
+              const timing = Animated.timing;
               Animated.sequence([
                 // One after the other
                 timing(this.anims[0], {
@@ -243,7 +246,7 @@ exports.examples = [
           <Animated.Image
             source={require('./bunny.png')}
             style={[
-              {width: 70, height: 70},
+              styles.rotatingImage,
               {
                 transform: [
                   {
@@ -285,7 +288,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   content: {
     backgroundColor: 'deepskyblue',
     borderWidth: 1,
@@ -294,5 +297,9 @@ var styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
+  },
+  rotatingImage: {
+    width: 70,
+    height: 70,
   },
 });

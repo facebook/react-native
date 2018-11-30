@@ -175,10 +175,6 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._binaryType = binaryType;
   }
 
-  get binaryType(): ?BinaryType {
-    return this._binaryType;
-  }
-
   close(code?: number, reason?: string): void {
     if (this.readyState === this.CLOSING || this.readyState === this.CLOSED) {
       return;

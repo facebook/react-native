@@ -7,11 +7,11 @@
 
 #include "ViewProps.h"
 
-#include <fabric/components/view/conversions.h>
-#include <fabric/components/view/propsConversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
-#include <fabric/graphics/conversions.h>
+#include <react/components/view/conversions.h>
+#include <react/components/view/propsConversions.h>
+#include <react/core/propsConversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -21,6 +21,7 @@ ViewProps::ViewProps(const YGStyle &yogaStyle) : YogaStylableProps(yogaStyle) {}
 ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps)
     : Props(sourceProps, rawProps),
       YogaStylableProps(sourceProps, rawProps),
+      AccessibilityProps(sourceProps, rawProps),
       opacity(
           convertRawProp(rawProps, "opacity", sourceProps.opacity, (Float)1.0)),
       foregroundColor(convertRawProp(

@@ -22,9 +22,6 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')
 .*/node_modules/invariant/.*
@@ -59,6 +56,7 @@ module.system.haste.paths.blacklist=.*/__mocks__/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/react-native/react-native-implementation.js
 module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
 
 munge_underscores=true
@@ -100,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.82.0
+^0.87.0

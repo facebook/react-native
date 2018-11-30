@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 
-  protected static final String REACT_CLASS = "RCTImageView";
+  public static final String REACT_CLASS = "RCTImageView";
 
   @Override
   public String getName() {

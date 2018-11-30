@@ -8,6 +8,9 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
+#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -33,46 +36,72 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
   return mutex;
 }
 
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
+}
+
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
     Tag tag,
     WeakEventDispatcher eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
-      tag_(tag),
+      weakEventTarget_({}),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
+}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
+
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
-
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), extendedPayload, eventTarget_),
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
       priority);
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
-  bool alreadyEnabled = eventTarget_ != nullptr;
-  if (enabled == alreadyEnabled) {
+void EventEmitter::enable() const {
+  enableCounter_++;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::disable() const {
+  enableCounter_--;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::toggleEventTargetOwnership_() const {
+  bool shouldBeRetained = enableCounter_ > 0;
+  bool alreadyBeRetained = eventTarget_ != nullptr;
+  if (shouldBeRetained == alreadyBeRetained) {
     return;
   }
 
-  if (!enabled) {
+  if (shouldBeRetained) {
+    eventTarget_ = weakEventTarget_.lock();
+    weakEventTarget_.reset();
+  } else {
+    weakEventTarget_ = eventTarget_;
     eventTarget_.reset();
   }
-}
-
-bool EventEmitter::getEnabled() const {
-  return eventTarget_ != nullptr;
 }
 
 } // namespace react

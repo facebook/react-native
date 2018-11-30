@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
+import com.facebook.react.bridge.UiThreadUtil;
 
 /**
  * Wrapper class for abstracting away availability of the JellyBean Choreographer. If Choreographer
@@ -23,13 +24,17 @@ public class ChoreographerCompat {
   private static final long ONE_FRAME_MILLIS = 17;
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-  private static final ChoreographerCompat INSTANCE = new ChoreographerCompat();
+  private static ChoreographerCompat sInstance;
 
   private Handler mHandler;
   private Choreographer mChoreographer;
 
   public static ChoreographerCompat getInstance() {
-    return INSTANCE;
+    UiThreadUtil.assertOnUiThread();
+    if (sInstance == null){
+      sInstance = new ChoreographerCompat();
+    }
+    return sInstance;
   }
 
   private ChoreographerCompat() {

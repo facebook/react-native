@@ -59,7 +59,6 @@ module.exports = [
   '__takeSnapshot',
   'takeSnapshot',
   'getViewManagerConfig',
-  'measureViewsInRect',
   'blur',
   'focus',
   'genericBubblingEventTypes',

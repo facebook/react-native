@@ -116,14 +116,14 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
     this.setState({mode: newMode});
   };
 
-  onValueChange = (key: string, value: string) => {
+  onValueChange = (key: string, value: string | number) => {
     const newState = {};
     newState[key] = value;
     this.setState(newState);
   };
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   picker: {
     width: 100,
   },

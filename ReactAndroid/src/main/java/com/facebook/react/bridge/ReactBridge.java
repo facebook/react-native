@@ -9,19 +9,34 @@ package com.facebook.react.bridge;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import android.os.SystemClock;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
 public class ReactBridge {
+  private static volatile long sLoadStartTime = 0;
+  private static volatile long sLoadEndTime = 0;
+
   private static boolean sDidInit = false;
-  public static void staticInit() {
-    // No locking required here, worst case we'll call into SoLoader twice
-    // which will do its own locking internally
-    if (!sDidInit) {
-      Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
-      SoLoader.loadLibrary("reactnativejni");
-      sDidInit = true;
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+
+  public synchronized static void staticInit() {
+    if (sDidInit) {
+      return;
     }
+    sDidInit = true;
+
+    sLoadStartTime = SystemClock.uptimeMillis();
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
+    SoLoader.loadLibrary("reactnativejni");
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    sLoadEndTime = SystemClock.uptimeMillis();
+  }
+
+  public static long getLoadStartTime() {
+    return sLoadStartTime;
+  }
+
+  public static long getLoadEndTime() {
+    return sLoadEndTime;
   }
 }

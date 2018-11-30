@@ -7,8 +7,8 @@
 
 #include "RootProps.h"
 
-#include <fabric/components/view/YogaLayoutableShadowNode.h>
-#include <fabric/components/view/conversions.h>
+#include <react/components/view/YogaLayoutableShadowNode.h>
+#include <react/components/view/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -25,6 +25,9 @@ static YGStyle yogaStyleFromLayoutConstraints(
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
   yogaStyle.maxDimensions[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
+
+  yogaStyle.direction =
+      yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
 
   return yogaStyle;
 }

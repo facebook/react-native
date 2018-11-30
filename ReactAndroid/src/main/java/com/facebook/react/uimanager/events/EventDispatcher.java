@@ -365,11 +365,11 @@ public class EventDispatcher implements LifecycleEventListener {
             event.dispatch(mReactEventEmitter);
             event.dispose();
           }
-          for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
-            listener.onBatchEventDispatched();
-          }
           clearEventsToDispatch();
           mEventCookieToLastEventIdx.clear();
+        }
+        for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
+          listener.onBatchEventDispatched();
         }
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

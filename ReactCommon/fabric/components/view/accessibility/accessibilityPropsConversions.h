@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibilityPrimitives.h>
 #include <folly/dynamic.h>
+#include <react/components/view/AccessibilityPrimitives.h>
 
 namespace facebook {
 namespace react {
@@ -67,7 +67,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     return;
   }
   if (string == "allowsDirectInteraction") {
-    result = AccessibilityTraits::DirectInteraction;
+    result = AccessibilityTraits::AllowsDirectInteraction;
     return;
   }
   if (string == "pageTurn") {

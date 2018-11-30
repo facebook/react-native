@@ -9,18 +9,18 @@ package com.facebook.react.views.text;
 
 import android.text.Layout;
 import android.text.Spannable;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import javax.annotation.Nullable;
-import com.facebook.yoga.YogaMeasureMode;
 
 /**
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
@@ -72,11 +72,9 @@ public class ReactTextViewManager
   @Override
   public Object updateLocalData(ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     ReadableMap attributedString = localData.getMap("attributedString");
-    ReadableArray fragments = attributedString.getArray("fragments");
-    String string = attributedString.getString("string");
 
-    Spannable spanned = TextLayoutManager.spannedFromTextFragments(view.getContext(),
-      fragments, string);
+    Spannable spanned = TextLayoutManager.getOrCreateSpannableForText(view.getContext(),
+      attributedString);
     view.setSpanned(spanned);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
@@ -103,24 +101,21 @@ public class ReactTextViewManager
     return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
   }
 
-  public float[] measure(
+  public long measure(
     ReactContext context,
-    ReactTextView view,
     ReadableNativeMap localData,
     ReadableNativeMap props,
     float width,
-    int widthMode,
+    YogaMeasureMode widthMode,
     float height,
-    int heightMode) {
+    YogaMeasureMode heightMode) {
 
-    // TODO: should widthMode and heightMode be a YogaMeasureMode?
     return TextLayoutManager.measureText(context,
-      view,
       localData,
       props,
       width,
-      YogaMeasureMode.fromInt(widthMode),
+      widthMode,
       height,
-      YogaMeasureMode.fromInt(heightMode));
+      heightMode);
   }
 }

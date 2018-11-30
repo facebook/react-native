@@ -10,7 +10,6 @@
 #import <sys/stat.h>
 
 #import <cxxreact/JSBundleType.h>
-#import <jschelpers/JavaScriptCore.h>
 
 #import "RCTBridge.h"
 #import "RCTConvert.h"
@@ -19,6 +18,8 @@
 #import "RCTUtils.h"
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
+
+static const int32_t JSNoBytecodeFileFormatVersion = -1;
 
 @interface RCTSource()
 {

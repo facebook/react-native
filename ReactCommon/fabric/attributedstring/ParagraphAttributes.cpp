@@ -7,9 +7,9 @@
 
 #include "ParagraphAttributes.h"
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
-#include <fabric/graphics/conversions.h>
+#include <react/attributedstring/conversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

@@ -18,13 +18,7 @@ const ios = require('./ios');
 const wrapCommands = require('./wrapCommands');
 const {ASSET_REGISTRY_PATH} = require('./Constants');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const flatten = require('lodash').flatten;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const minimist = require('minimist');
 const path = require('path');
 
@@ -128,7 +122,9 @@ const defaultRNConfig = {
 async function getCliConfig(): Promise<RNConfig> {
   const cliArgs = minimist(process.argv.slice(2));
   const config = await Config.load(
-    cliArgs.config != null ? path.resolve(__dirname, cliArgs.config) : null,
+    typeof cliArgs.config === 'string'
+      ? path.resolve(__dirname, cliArgs.config)
+      : null,
   );
 
   // $FlowFixMe Metro configuration is immutable.

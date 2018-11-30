@@ -43,7 +43,7 @@ public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  protected static final String REACT_CLASS = "RCTScrollView";
+  public static final String REACT_CLASS = "RCTScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -262,6 +262,11 @@ public class ReactScrollViewManager
     } else {
       scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }
+  }
+
+  @ReactProp(name = "persistentScrollbar")
+  public void setPersistentScrollbar(ReactScrollView view, boolean value) {
+    view.setScrollbarFadingEnabled(!value);
   }
 
   @Override

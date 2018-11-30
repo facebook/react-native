@@ -10,7 +10,7 @@
 #include <functional>
 #include <limits>
 
-#include <fabric/graphics/ColorComponents.h>
+#include <react/graphics/ColorComponents.h>
 
 namespace facebook {
 namespace react {
@@ -52,6 +52,10 @@ class SharedColor {
 
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
+
+SharedColor clearColor();
+SharedColor blackColor();
+SharedColor whiteColor();
 
 } // namespace react
 } // namespace facebook

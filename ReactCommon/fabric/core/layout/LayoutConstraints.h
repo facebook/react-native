@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/LayoutPrimitives.h>
-#include <fabric/graphics/Geometry.h>
+#include <react/core/LayoutPrimitives.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -19,7 +19,7 @@ namespace react {
 struct LayoutConstraints {
   Size minimumSize{0, 0};
   Size maximumSize{kFloatUndefined, kFloatUndefined};
-  LayoutDirection layoutDirection;
+  LayoutDirection layoutDirection{LayoutDirection::Undefined};
 };
 
 } // namespace react

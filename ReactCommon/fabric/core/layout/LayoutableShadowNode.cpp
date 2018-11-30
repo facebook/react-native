@@ -7,11 +7,12 @@
 
 #include "LayoutableShadowNode.h"
 
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
-#include <fabric/graphics/conversions.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/ShadowNode.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
@@ -33,6 +34,35 @@ bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
 
 bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
   return false;
+}
+
+LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
+    const LayoutableShadowNode &ancestorLayoutableShadowNode) const {
+  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+
+  auto &ancestorShadowNode =
+      dynamic_cast<const ShadowNode &>(ancestorLayoutableShadowNode);
+  auto &shadowNode = dynamic_cast<const ShadowNode &>(*this);
+
+  if (!shadowNode.constructAncestorPath(ancestorShadowNode, ancestors)) {
+    return EmptyLayoutMetrics;
+  }
+
+  auto layoutMetrics = getLayoutMetrics();
+
+  for (const auto &currentShadowNode : ancestors) {
+    auto layoutableCurrentShadowNode =
+        dynamic_cast<const LayoutableShadowNode *>(&currentShadowNode.get());
+
+    if (!layoutableCurrentShadowNode) {
+      return EmptyLayoutMetrics;
+    }
+
+    layoutMetrics.frame.origin +=
+        layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+  }
+
+  return layoutMetrics;
 }
 
 void LayoutableShadowNode::cleanLayout() {
