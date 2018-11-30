@@ -32,8 +32,6 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   NSOperationQueue *_imageDecodeQueue;
   NSCache *_decodedImageCache;
   NSMutableDictionary *_cacheStaleTimes;
-
-  NSDateFormatter *_headerDateFormatter;
 }
 
 - (instancetype)init
@@ -50,7 +48,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                                            selector:@selector(clearCache)
                                                name:UIApplicationWillResignActiveNotification
                                              object:nil];
-  
+
   return self;
 }
 
@@ -137,14 +135,16 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 }
 
 - (NSDate *)dateWithHeaderString:(NSString *)headerDateString {
-  if (_headerDateFormatter == nil) {
-    _headerDateFormatter = [[NSDateFormatter alloc] init];
-    _headerDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-    _headerDateFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
-    _headerDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-  }
+  static NSDateFormatter *formatter;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    formatter = [[NSDateFormatter alloc] init];
+    formatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
+    formatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+  });
 
-  return [_headerDateFormatter dateFromString:headerDateString];
+  return [formatter dateFromString:headerDateString];
 }
 
 @end
