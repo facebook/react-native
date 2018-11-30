@@ -19,11 +19,18 @@ const RCTAsyncStorage =
   NativeModules.AsyncSQLiteDBStorage ||
   NativeModules.AsyncLocalStorage;
 
-type MultiRequestType = {|
-  keys: Array<string>,
-  callback: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
+type ReadOnlyArrayString = $ReadOnlyArray<string>;
+
+type MultiGetCallbackFunction = (
+  errors: ?$ReadOnlyArray<Error>,
+  result: ?$ReadOnlyArray<ReadOnlyArrayString>,
+) => void;
+
+type MultiRequest = {|
+  keys: $ReadOnlyArray<string>,
+  callback: ?MultiGetCallbackFunction,
   keyIndex: number,
-  resolve: ?(result?: Promise<any>) => void,
+  resolve: ?(result?: Promise<?$ReadOnlyArray<ReadOnlyArrayString>>) => void,
   reject: ?(error?: any) => void,
 |};
 
@@ -35,7 +42,7 @@ type MultiRequestType = {|
  * See http://facebook.github.io/react-native/docs/asyncstorage.html
  */
 const AsyncStorage = {
-  _getRequests: ([]: Array<MultiRequestType>),
+  _getRequests: ([]: Array<MultiRequest>),
   _getKeys: ([]: Array<string>),
   _immediate: (null: ?number),
 
@@ -161,8 +168,8 @@ const AsyncStorage = {
    * See http://facebook.github.io/react-native/docs/asyncstorage.html#getallkeys
    */
   getAllKeys: function(
-    callback?: ?(error: ?Error, keys: ?Array<string>) => void,
-  ): Promise<$ReadOnlyArray<string>> {
+    callback?: ?(error: ?Error, keys: ?ReadOnlyArrayString) => void,
+  ): Promise<ReadOnlyArrayString> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.getAllKeys(function(error, keys) {
         const err = convertError(error);
@@ -231,8 +238,8 @@ const AsyncStorage = {
    */
   multiGet: function(
     keys: Array<string>,
-    callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void,
-  ): Promise<?Array<Array<string>>> {
+    callback?: ?MultiGetCallbackFunction,
+  ): Promise<?$ReadOnlyArray<ReadOnlyArrayString>> {
     if (!this._immediate) {
       this._immediate = setImmediate(() => {
         this._immediate = null;
@@ -240,7 +247,7 @@ const AsyncStorage = {
       });
     }
 
-    const getRequest: MultiRequestType = {
+    const getRequest: MultiRequest = {
       keys: keys,
       callback: callback,
       // do we need this?
