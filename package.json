@@ -173,7 +173,7 @@
     "inquirer": "^3.0.6",
     "jest": "24.0.0-alpha.6",
     "jest-junit": "5.2.0",
-    "jsc-android": "^236355.1.0",
+    "jsc-android": "236355.1.0",
     "lodash": "^4.17.5",
     "metro": "0.50.0",
     "metro-babel-register": "0.50.0",
