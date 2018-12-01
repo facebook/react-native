@@ -24,7 +24,7 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
   return shadowTree;
 }
 
-bool ShadowTreeRegistry::get(
+bool ShadowTreeRegistry::visit(
     SurfaceId surfaceId,
     std::function<void(const ShadowTree &shadowTree)> callback) const {
   std::shared_lock<folly::SharedMutex> lock(mutex_);

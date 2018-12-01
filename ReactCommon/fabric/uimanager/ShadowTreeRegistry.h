@@ -44,7 +44,7 @@ class ShadowTreeRegistry final {
    * `surfaceId`, otherwise returns `false` without calling the `callback`.
    * Can be called from any thread.
    */
-  bool get(
+  bool visit(
       SurfaceId surfaceId,
       std::function<void(const ShadowTree &shadowTree)> callback) const;
 
