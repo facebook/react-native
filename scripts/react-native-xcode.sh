@@ -82,6 +82,8 @@ fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
+[ -z "$NODE_ARGS" ] && export NODE_ARGS=""
+
 [ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
@@ -106,7 +108,7 @@ type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-"$NODE_BINARY" "$CLI_PATH" $BUNDLE_COMMAND \
+"$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
