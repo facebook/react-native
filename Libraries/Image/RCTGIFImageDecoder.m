@@ -32,8 +32,18 @@ RCT_EXPORT_MODULE()
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
   NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
-  NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
-
+  NSUInteger loopCount = 0;
+  if ([[properties[(id)kCGImagePropertyGIFDictionary] allKeys] containsObject:(id)kCGImagePropertyGIFLoopCount]) {
+    loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
+    if (loopCount == 0) {
+      // A loop count of 0 means infinite
+      loopCount = HUGE_VALF;
+    } else {
+      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
+      loopCount += 1;
+    }
+  }
+  
   UIImage *image = nil;
   size_t imageCount = CGImageSourceGetCount(imageSource);
   if (imageCount > 1) {
@@ -84,11 +94,12 @@ RCT_EXPORT_MODULE()
     // Create animation
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
     animation.calculationMode = kCAAnimationDiscrete;
-    animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
+    animation.repeatCount = loopCount;
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
     animation.removedOnCompletion = NO;
+    animation.fillMode = kCAFillModeForwards;
     image.reactKeyframeAnimation = animation;
 
   } else {
