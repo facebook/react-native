@@ -7,13 +7,13 @@
 
 /* global device, element, by, expect */
 
-describe('Sanity', () => {
-  beforeEach(async () => {
-    await device.reloadReactNative();
+describe('Button', () => {
+  beforeAll(async () => {
+    await element(by.id('explorer_search')).replaceText('<Button>');
     await element(by.label('<Button> Simple React Native button component.')).tap();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     //TODO - remove app state persistency, till then, we must go back to main screen,
     await element(by.label('Back')).tap();
   });
