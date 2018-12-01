@@ -84,7 +84,7 @@ void UIManager::setNativeProps(
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
   auto newShadowNode = shadowNode->clone(ShadowNodeFragment{.props = props});
 
-  shadowTreeRegistry_->get(
+  shadowTreeRegistry_->visit(
       shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {
         shadowTree.completeByReplacingShadowNode(shadowNode, newShadowNode);
       });
@@ -96,7 +96,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
   if (!ancestorShadowNode) {
-    shadowTreeRegistry_->get(
+    shadowTreeRegistry_->visit(
         shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
           ancestorShadowNode = shadowTree.getRootShadowNode().get();
         });
