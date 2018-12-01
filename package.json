@@ -237,7 +237,7 @@
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -quiet",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone 8"
       }
