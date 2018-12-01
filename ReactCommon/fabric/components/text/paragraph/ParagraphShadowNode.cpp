@@ -36,8 +36,10 @@ void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
   auto attributedString = getAttributedString();
-  auto currentLocalData = std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
-  if (currentLocalData && currentLocalData->getAttributedString() == attributedString) {
+  auto currentLocalData =
+      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData &&
+      currentLocalData->getAttributedString() == attributedString) {
     return;
   }
 
@@ -51,7 +53,6 @@ void ParagraphShadowNode::updateLocalDataIfNeeded() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
-      getTag(),
       getAttributedString(),
       getProps()->paragraphAttributes,
       layoutConstraints);

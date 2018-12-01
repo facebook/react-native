@@ -95,7 +95,7 @@ void Scheduler::renderTemplateToSurface(
         *componentDescriptorRegistry_,
         nMR);
 
-    shadowTreeRegistry_.get(surfaceId, [=](const ShadowTree &shadowTree) {
+    shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
       shadowTree.complete(
           std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
     });
@@ -106,7 +106,7 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
-  shadowTreeRegistry_.get(surfaceId, [](const ShadowTree &shadowTree) {
+  shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
     // As part of stopping the Surface, we have to commit an empty tree.
     shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
         ShadowNode::emptySharedShadowNodeSharedList()));
@@ -127,7 +127,7 @@ Size Scheduler::measureSurface(
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
   Size size;
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
+  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     size = shadowTree.measure(layoutConstraints, layoutContext);
   });
   return size;
@@ -137,7 +137,7 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
+  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     shadowTree.synchronize([&]() {
       shadowTree.constraintLayout(layoutConstraints, layoutContext);
     });
@@ -170,7 +170,7 @@ void Scheduler::shadowTreeDidCommit(
 void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
-  shadowTreeRegistry_.get(surfaceId, [&](const ShadowTree &shadowTree) {
+  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     shadowTree.complete(rootChildNodes);
   });
 }

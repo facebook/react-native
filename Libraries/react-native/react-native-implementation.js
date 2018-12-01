@@ -139,9 +139,6 @@ module.exports = {
   get TextInput() {
     return require('TextInput');
   },
-  get ToastAndroid() {
-    return require('ToastAndroid');
-  },
   get ToolbarAndroid() {
     return require('ToolbarAndroid');
   },
@@ -272,6 +269,9 @@ module.exports = {
   },
   get TimePickerAndroid() {
     return require('TimePickerAndroid');
+  },
+  get ToastAndroid() {
+    return require('ToastAndroid');
   },
   get TVEventHandler() {
     return require('TVEventHandler');
