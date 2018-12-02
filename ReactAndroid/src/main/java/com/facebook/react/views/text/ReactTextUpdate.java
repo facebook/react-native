@@ -26,6 +26,7 @@ public class ReactTextUpdate {
   private final float mPaddingBottom;
   private final int mTextAlign;
   private final int mTextBreakStrategy;
+  private final int mJustificationMode;
 
   /**
    * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
@@ -49,7 +50,8 @@ public class ReactTextUpdate {
         paddingEnd,
         paddingBottom,
         textAlign,
-        Layout.BREAK_STRATEGY_HIGH_QUALITY);
+        Layout.BREAK_STRATEGY_HIGH_QUALITY,
+        Layout.JUSTIFICATION_MODE_NONE);
   }
 
   public ReactTextUpdate(
@@ -61,7 +63,8 @@ public class ReactTextUpdate {
     float paddingEnd,
     float paddingBottom,
     int textAlign,
-    int textBreakStrategy) {
+    int textBreakStrategy,
+    int justificationMode) {
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -71,6 +74,7 @@ public class ReactTextUpdate {
     mPaddingBottom = paddingBottom;
     mTextAlign = textAlign;
     mTextBreakStrategy = textBreakStrategy;
+    mJustificationMode = justificationMode;
   }
 
   public Spannable getText() {
@@ -107,5 +111,9 @@ public class ReactTextUpdate {
 
   public int getTextBreakStrategy() {
     return mTextBreakStrategy;
+  }
+
+  public int getJustificationMode() {
+    return mJustificationMode;
   }
 }

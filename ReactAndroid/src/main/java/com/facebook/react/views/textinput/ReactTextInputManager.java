@@ -10,10 +10,12 @@ package com.facebook.react.views.textinput;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -430,19 +432,28 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
-    if (textAlign == null || "auto".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.NO_GRAVITY);
-    } else if ("left".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else if ("right".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.RIGHT);
-    } else if ("center".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
-    } else if ("justify".equals(textAlign)) {
-      // Fallback gracefully for cross-platform compat instead of error
+    if ("justify".equals(textAlign)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+      }
       view.setGravityHorizontal(Gravity.LEFT);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
+      }
+
+      if (textAlign == null || "auto".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.NO_GRAVITY);
+      } else if ("left".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.LEFT);
+      } else if ("right".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.RIGHT);
+      } else if ("center".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+      } else {
+        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      }
+
     }
   }
 

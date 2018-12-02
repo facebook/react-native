@@ -72,6 +72,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
         setBreakStrategy(update.getTextBreakStrategy());
       }
     }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      if (getJustificationMode() != update.getJustificationMode()) {
+        setJustificationMode(update.getJustificationMode());
+      }
+    }
   }
 
   @Override

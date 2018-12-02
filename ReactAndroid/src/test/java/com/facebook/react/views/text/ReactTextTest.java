@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
@@ -422,6 +423,21 @@ public class ReactTextTest {
     assertThat(textView.getText().toString()).isEqualTo("test text");
     assertThat(textView.getMaxLines()).isEqualTo(2);
     assertThat(textView.getEllipsize()).isEqualTo(TextUtils.TruncateAt.END);
+  }
+
+  @TargetApi(Build.VERSION_CODES.O)
+  @Test
+  public void testTextAlignJustifyApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+            uiManager,
+            JavaOnlyMap.of("textAlign", "justify"),
+            JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo("test text");
+    assertThat(textView.getJustificationMode()).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD);
   }
 
   /**

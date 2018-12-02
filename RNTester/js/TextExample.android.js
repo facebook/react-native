@@ -322,10 +322,16 @@ class TextExample extends React.Component<{}> {
           <Text style={{textAlign: 'center'}}>
             center center center center center center center center center
             center center
-          </Text>
+        </Text>
           <Text style={{textAlign: 'right'}}>
             right right right right right right right right right right right
             right right
+          </Text>
+          <Text style={{textAlign: 'justify'}}>
+            justify (works when api level >= 26 otherwise fallbacks to "left"):
+            this text component{"'"}s contents are laid out with "textAlign:
+            justify" and as you can see all of the lines except the last one
+            span the available width of the parent container.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Unicode">
